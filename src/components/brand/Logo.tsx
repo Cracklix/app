@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Check } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface LogoProps {
   className?: string;
@@ -12,24 +13,42 @@ export default function Logo({ className = "", variant = 'light' }: LogoProps) {
   const isLight = variant === 'light';
   
   return (
-    <Link href="/" className={`flex items-center gap-3 group ${className}`}>
+    <Link href="/" className={`flex items-center gap-3.5 group ${className}`}>
+      {/* Premium Stylish Badge */}
       <div className="relative shrink-0 hidden sm:block">
-        <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-[#ff7a00] flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:scale-105 transition-transform">
-          <span className="text-white text-xl lg:text-2xl font-black">C</span>
-        </div>
-        <div className="absolute -bottom-1 -right-1 w-5 h-5 lg:w-6 lg:h-6 bg-white rounded-full border-2 border-[#ff7a00] flex items-center justify-center shadow-sm">
-          <Check className="text-[#ff7a00] h-3 w-3 lg:h-4 lg:w-4 stroke-[4px]" />
-        </div>
+        <motion.div 
+          whileHover={{ scale: 1.05, rotate: 2 }}
+          className="w-11 h-11 lg:w-13 lg:h-13 rounded-[14px] bg-gradient-to-br from-[#ff7a00] to-[#ff9d42] flex items-center justify-center shadow-[0_8px_20px_-4px_rgba(255,122,0,0.4)] transition-all duration-300 border border-white/20"
+        >
+          <div className="relative flex items-center justify-center">
+            <span className="text-white text-2xl lg:text-3xl font-black italic tracking-tighter select-none">
+              C
+            </span>
+            <div className="absolute -top-1 -right-2.5 bg-white rounded-full p-0.5 shadow-lg border-2 border-orange-500">
+               <Check className="text-[#ff7a00] h-3.5 w-3.5 stroke-[4px]" />
+            </div>
+          </div>
+        </motion.div>
+        
+        {/* Subtle Glow beneath the icon */}
+        <div className="absolute inset-0 bg-orange-500/20 blur-xl -z-10 rounded-full group-hover:bg-orange-500/30 transition-colors" />
       </div>
 
       <div className="flex flex-col">
-        <h1 className="text-2xl lg:text-3xl font-black leading-none tracking-tight">
-          <span className={isLight ? 'text-white' : 'text-[#0c1527]'}>Crack</span>
-          <span className="text-[#ff7a00]">lix</span>
+        <h1 className="text-2xl lg:text-3xl font-black leading-none tracking-tight flex items-baseline">
+          <span className={`${isLight ? 'text-white' : 'text-[#0c1527]'} font-extrabold`}>
+            Crack
+          </span>
+          <span className="text-[#ff7a00] font-black italic ml-0.5">
+            lix
+          </span>
         </h1>
-        <p className={`text-[8px] lg:text-[10px] uppercase tracking-[3px] font-black mt-1 ${isLight ? 'text-white/60' : 'text-gray-400'}`}>
-          Punjab Exam Authority
-        </p>
+        <div className="flex items-center gap-1.5 mt-1">
+          <div className={`h-[1px] w-4 ${isLight ? 'bg-white/20' : 'bg-gray-200'}`} />
+          <p className={`text-[9px] lg:text-[10px] uppercase tracking-[0.25em] font-black ${isLight ? 'text-white/60' : 'text-gray-400'}`}>
+            Punjab Exam Authority
+          </p>
+        </div>
       </div>
     </Link>
   );
