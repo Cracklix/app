@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -69,7 +70,7 @@
     }
   },
   "auth": {
-    "providers": ["email", "google", "phone"]
+    "providers": ["phone"]
   },
   "firestore": {
     "/users/{userId}": {

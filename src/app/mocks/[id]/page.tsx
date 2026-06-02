@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -75,7 +76,7 @@ export default function MockAttempt() {
       return answers[idx] === q.correctAnswer ? acc + 1 : acc
     }, 0)
     
-    // Identify weak topics (any topic where a question was missed)
+    // Identify weak topics (any topic where accuracy < 70%)
     const topicStats: Record<string, { total: number; correct: number }> = {}
     SAMPLE_MOCK.questions.forEach((q, idx) => {
       if (!topicStats[q.topic]) topicStats[q.topic] = { total: 0, correct: 0 }
@@ -93,7 +94,7 @@ export default function MockAttempt() {
       answers,
       score: correctCount,
       accuracy: Math.round((correctCount / (Object.keys(answers).length || 1)) * 100),
-      rank: Math.floor(Math.random() * 500) + 1, // Mock rank
+      rank: Math.floor(Math.random() * 500) + 1,
       weakTopics,
       correctCount,
       incorrectCount: Object.keys(answers).length - correctCount,
@@ -110,7 +111,7 @@ export default function MockAttempt() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background">
-      <header className="h-16 border-b flex items-center justify-between px-6 bg-card shrink-0">
+      <header className="h-16 border-b flex items-center justify-between px-6 bg-card shrink-0 shadow-sm relative z-50">
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
             <ShieldCheck className="h-5 w-5 text-white" />
@@ -130,16 +131,16 @@ export default function MockAttempt() {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogTitle>Ready to submit?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  You have answered {Object.keys(answers).length} out of {SAMPLE_MOCK.questions.length} questions.
-                  You cannot change your answers after submission.
+                  You have attempted {Object.keys(answers).length} out of {SAMPLE_MOCK.questions.length} questions.
+                  Submission is final and results will be calculated immediately.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Go Back</AlertDialogCancel>
+                <AlertDialogCancel>Back to Test</AlertDialogCancel>
                 <AlertDialogAction onClick={submitMock} className="bg-primary hover:bg-primary/90">
-                  Finish and Submit
+                  Submit Now
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -148,34 +149,34 @@ export default function MockAttempt() {
       </header>
 
       <main className="flex flex-1 overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar bg-slate-50/30">
           <div className="max-w-3xl mx-auto space-y-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-                  Section: General Paper
+                <span className="text-xs font-black text-primary bg-primary/5 px-3 py-1.5 rounded-lg border border-primary/10 tracking-widest uppercase">
+                  Q {currentIdx + 1}
                 </span>
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
-                  Question {currentIdx + 1}
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+                  Section: {question.topic}
                 </span>
               </div>
-              <div className="flex items-center gap-2 px-3 py-1 bg-secondary/10 border border-secondary/20 rounded-lg">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-secondary/5 border border-secondary/10 rounded-lg">
                 <AlertCircle className="h-3 w-3 text-secondary" />
-                <span className="text-xs font-bold text-secondary uppercase tracking-widest">
-                  Topic: {question.topic}
+                <span className="text-[10px] font-black text-secondary uppercase tracking-widest">
+                  Level: {question.difficulty}
                 </span>
               </div>
             </div>
 
-            <div className="space-y-6">
-              <h2 className="text-xl sm:text-2xl font-medium leading-relaxed text-foreground/90">
+            <div className="space-y-8">
+              <h2 className="text-xl sm:text-2xl font-bold leading-relaxed text-primary">
                 {question.question}
               </h2>
 
               <RadioGroup 
                 value={answers[currentIdx]?.toString() || ""} 
                 onValueChange={(val) => setAnswers(prev => ({ ...prev, [currentIdx]: parseInt(val) }))}
-                className="space-y-4"
+                className="grid grid-cols-1 gap-4"
               >
                 {question.options.map((opt, i) => {
                   const isSelected = answers[currentIdx] === i
@@ -183,12 +184,12 @@ export default function MockAttempt() {
                     <div 
                       key={i} 
                       onClick={() => setAnswers(prev => ({ ...prev, [currentIdx]: i }))}
-                      className={`flex items-center space-x-3 p-5 border-2 rounded-2xl transition-all cursor-pointer hover:border-primary/40 ${isSelected ? 'border-primary bg-primary/5 ring-4 ring-primary/5' : 'border-border bg-card/50'}`}
+                      className={`flex items-center space-x-3 p-5 border-2 rounded-2xl transition-all cursor-pointer ${isSelected ? 'border-primary bg-primary/5 shadow-lg shadow-primary/5' : 'border-border bg-white hover:border-muted-foreground/30'}`}
                     >
                       <RadioGroupItem value={i.toString()} id={`opt-${i}`} className="text-primary border-primary shrink-0" />
-                      <Label htmlFor={`opt-${i}`} className="flex-1 cursor-pointer text-base font-medium select-none">
-                        <span className="mr-4 text-muted-foreground font-headline font-bold">
-                          {String.fromCharCode(65 + i)}.
+                      <Label htmlFor={`opt-${i}`} className="flex-1 cursor-pointer text-base font-bold select-none text-primary/80">
+                        <span className="mr-4 text-muted-foreground font-headline font-black opacity-30">
+                          {String.fromCharCode(65 + i)}
                         </span>
                         {opt}
                       </Label>
@@ -200,26 +201,26 @@ export default function MockAttempt() {
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-12 border-t">
               <div className="flex gap-4 w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="flex-1 sm:flex-none" onClick={handlePrev} disabled={currentIdx === 0}>
+                <Button variant="outline" size="lg" className="flex-1 sm:flex-none font-bold" onClick={handlePrev} disabled={currentIdx === 0}>
                   <ChevronLeft className="mr-2 h-4 w-4" /> Previous
                 </Button>
-                <Button variant="outline" size="lg" className="flex-1 sm:flex-none" onClick={handleNext} disabled={currentIdx === SAMPLE_MOCK.questions.length - 1}>
+                <Button variant="outline" size="lg" className="flex-1 sm:flex-none font-bold" onClick={handleNext} disabled={currentIdx === SAMPLE_MOCK.questions.length - 1}>
                   Next <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
               <Button 
                 variant="ghost" 
-                className={`w-full sm:w-auto font-bold transition-all ${flagged.includes(currentIdx) ? "text-orange-500 bg-orange-500/10 hover:bg-orange-500/20" : "hover:bg-primary/5"}`} 
+                className={`w-full sm:w-auto font-black uppercase tracking-widest text-[10px] transition-all h-12 rounded-xl border-2 ${flagged.includes(currentIdx) ? "text-accent bg-accent/5 border-accent/20" : "border-transparent"}`} 
                 onClick={toggleFlag}
               >
                 <Flag className={`mr-2 h-4 w-4 ${flagged.includes(currentIdx) ? "fill-current" : ""}`} />
-                {flagged.includes(currentIdx) ? "Flagged for Review" : "Flag for Review"}
+                {flagged.includes(currentIdx) ? "Review Marked" : "Mark for Review"}
               </Button>
             </div>
           </div>
         </div>
 
-        <aside className="w-80 border-l bg-card/50 overflow-y-auto hidden lg:block p-6">
+        <aside className="w-80 border-l bg-card overflow-y-auto hidden lg:block p-8">
           <QuestionPalette 
             totalQuestions={SAMPLE_MOCK.questions.length}
             currentIndex={currentIdx}
