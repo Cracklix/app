@@ -1,4 +1,3 @@
-
 import { 
   Firestore, 
   collection, 
@@ -11,7 +10,8 @@ import {
   query, 
   where, 
   serverTimestamp,
-  addDoc
+  addDoc,
+  orderBy
 } from 'firebase/firestore';
 import { 
   Board, 
@@ -43,29 +43,37 @@ export const FirestoreService = {
 
   // --- Questions ---
   async getQuestions(db: Firestore): Promise<Question[]> {
-    const snap = await getDocs(collection(db, 'questions'));
+    const snap = await getDocs(query(collection(db, 'questions'), orderBy('createdAt', 'desc')));
     return snap.docs.map(d => ({ id: d.id, ...d.data() } as Question));
   },
 
-  async addQuestion(db: Firestore, question: Omit<Question, 'id'>) {
-    return addDoc(collection(db, 'questions'), question);
+  async setQuestion(db: Firestore, id: string, data: any) {
+    return setDoc(doc(db, 'questions', id), data, { merge: true });
+  },
+
+  async deleteQuestion(db: Firestore, id: string) {
+    return deleteDoc(doc(db, 'questions', id));
   },
 
   // --- Mocks ---
   async getMocks(db: Firestore): Promise<MockTest[]> {
-    const snap = await getDocs(collection(db, 'mocks'));
+    const snap = await getDocs(query(collection(db, 'mocks'), orderBy('createdAt', 'desc')));
     return snap.docs.map(d => ({ id: d.id, ...d.data() } as MockTest));
   },
 
-  async addMock(db: Firestore, mock: Omit<MockTest, 'id'>) {
-    return addDoc(collection(db, 'mocks'), mock);
+  async publishMock(db: Firestore, id: string, data: any) {
+    return setDoc(doc(db, 'mocks', id), data);
+  },
+
+  async deleteMock(db: Firestore, id: string) {
+    return deleteDoc(doc(db, 'mocks', id));
   },
 
   // --- Results ---
-  async saveResult(db: Firestore, result: Omit<AttemptResult, 'id'>) {
+  async saveResult(db: Firestore, result: any) {
     return addDoc(collection(db, 'results'), {
       ...result,
-      timestamp: new Date().toISOString()
+      timestamp: serverTimestamp()
     });
   }
 };
