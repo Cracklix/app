@@ -1,9 +1,8 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { useDoc, useCollection, useFirestore, useUser } from "@/firebase"
+import { useDoc, useFirestore, useUser } from "@/firebase"
 import { doc, collection, query, where, getDocs, addDoc, serverTimestamp } from "firebase/firestore"
 import Timer from "@/components/mocks/Timer"
 import QuestionPalette from "@/components/mocks/QuestionPalette"
@@ -22,6 +21,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { errorEmitter } from "@/firebase/error-emitter"
+import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 
 export default function MockAttempt() {
   const params = useParams()
@@ -30,7 +31,6 @@ export default function MockAttempt() {
   const { user } = useUser()
   const mockId = params.id as string
   
-  // --- Data Fetching ---
   const { data: mockConfig, loading: mockLoading } = useDoc<any>(useMemo(() => (db ? doc(db, "mocks", mockId) : null), [db, mockId]))
   
   const [questions, setQuestions] = useState<any[]>([])
@@ -46,7 +46,8 @@ export default function MockAttempt() {
         const qData = qSnaps.map(snap => snap.docs[0]?.data()).filter(Boolean)
         setQuestions(qData)
       } catch (e) {
-        console.error("Failed to fetch questions", e)
+        // Handled via listener in onSnapshot within useDoc/useCollection usually,
+        // but since this is manual Promise.all, we handle specifically if needed.
       } finally {
         setLoadingQuestions(false)
       }
@@ -54,7 +55,6 @@ export default function MockAttempt() {
     fetchQuestions()
   }, [db, mockConfig])
 
-  // --- State ---
   const [currentIdx, setCurrentIdx] = useState(0)
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [flagged, setFlagged] = useState<number[]>([])
@@ -113,7 +113,7 @@ export default function MockAttempt() {
     setAnswers(newAnswers)
   }
 
-  const submitMock = async () => {
+  const submitMock = () => {
     if (isSubmitting) return
     setIsSubmitting(true)
 
@@ -148,18 +148,27 @@ export default function MockAttempt() {
       timestamp: new Date().toISOString()
     }
     
-    try {
-      if (db) {
-        await addDoc(collection(db, "results"), {
-          ...resultData,
-          createdAt: serverTimestamp()
-        })
-      }
-      localStorage.setItem(`last_result_${mockId}`, JSON.stringify(resultData))
-      localStorage.removeItem(`mock_progress_${mockId}`)
-      router.push(`/results/${mockId}`)
-    } catch (e) {
-      console.error("Failed to save result", e)
+    if (db) {
+      const resultsRef = collection(db, "results")
+      addDoc(resultsRef, {
+        ...resultData,
+        createdAt: serverTimestamp()
+      })
+      .then(() => {
+        localStorage.setItem(`last_result_${mockId}`, JSON.stringify(resultData))
+        localStorage.removeItem(`mock_progress_${mockId}`)
+        router.push(`/results/${mockId}`)
+      })
+      .catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: resultsRef.path,
+          operation: 'create',
+          requestResourceData: resultData,
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+        setIsSubmitting(false)
+      })
+    } else {
       setIsSubmitting(false)
     }
   }

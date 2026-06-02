@@ -1,17 +1,20 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Bell, Trash2, Edit, Send, Info } from "lucide-react"
+import { Plus, Trash2, Edit, Send } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc, query, orderBy } from "firebase/firestore"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Badge } from "@/components/ui/badge"
+import { errorEmitter } from "@/firebase/error-emitter"
+import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 
 export default function AdminNotifications() {
   const db = useFirestore()
@@ -22,7 +25,7 @@ export default function AdminNotifications() {
 
   const [editingNotice, setEditingNotice] = useState<any>(null)
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!db || !editingNotice) return
     const noticeId = editingNotice.id || `n-${Date.now()}`
     const noticeRef = doc(db, "notifications", noticeId)
@@ -34,23 +37,35 @@ export default function AdminNotifications() {
       time: editingNotice.time || "Just now"
     }
 
-    try {
-      await setDoc(noticeRef, payload, { merge: true })
-      toast({ title: "Broadcast Sent", description: "Notification live for all aspirants." })
-      setEditingNotice(null)
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to broadcast." })
-    }
+    setDoc(noticeRef, payload, { merge: true })
+      .then(() => {
+        toast({ title: "Broadcast Sent", description: "Notification live for all aspirants." })
+        setEditingNotice(null)
+      })
+      .catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: noticeRef.path,
+          operation: 'write',
+          requestResourceData: payload,
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+      });
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm("Remove this alert?")) return
-    try {
-      await deleteDoc(doc(db, "notifications", id))
-      toast({ title: "Deleted", description: "Alert removed." })
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Error", description: "Could not delete." })
-    }
+    const noticeRef = doc(db, "notifications", id)
+    deleteDoc(noticeRef)
+      .then(() => {
+        toast({ title: "Deleted", description: "Alert removed." })
+      })
+      .catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: noticeRef.path,
+          operation: 'delete',
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+      });
   }
 
   return (
@@ -135,7 +150,7 @@ export default function AdminNotifications() {
               </div>
               <div className="space-y-2">
                 <Label className="text-xs font-black uppercase text-slate-500">Alert Type</Label>
-                <select value={editingNotice?.type || "alert"} onChange={e => setEditingNotice({...editingNotice, type: e.target.value})} className="w-full h-10 rounded-md bg-white/5 border-white/10 text-sm px-3">
+                <select value={editingNotice?.type || "alert"} onChange={e => setEditingNotice({...editingNotice, type: e.target.value})} className="w-full h-10 rounded-md bg-[#1E293B] border-white/10 text-white text-sm px-3">
                   <option value="alert">General Alert</option>
                   <option value="result">Exam Result</option>
                   <option value="vacancy">New Vacancy</option>

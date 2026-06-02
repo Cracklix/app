@@ -1,19 +1,21 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Newspaper, Trash2, Edit, Save, Calendar, Search } from "lucide-react"
+import { Plus, Trash2, Edit, Save, Calendar, Search } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc, query, orderBy } from "firebase/firestore"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
+import { errorEmitter } from "@/firebase/error-emitter"
+import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 
 export default function AdminCurrentAffairs() {
   const db = useFirestore()
@@ -25,7 +27,7 @@ export default function AdminCurrentAffairs() {
   const [editingCA, setEditingCA] = useState<any>(null)
   const [searchTerm, setSearchTerm] = useState("")
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!db || !editingCA) return
     const caId = editingCA.id || `ca-${Date.now()}`
     const caRef = doc(db, "current_affairs", caId)
@@ -36,30 +38,42 @@ export default function AdminCurrentAffairs() {
       updatedAt: new Date().toISOString()
     }
 
-    try {
-      await setDoc(caRef, payload, { merge: true })
-      toast({ title: "Success", description: "Article published successfully." })
-      setEditingCA(null)
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Error", description: "Could not save article." })
-    }
+    setDoc(caRef, payload, { merge: true })
+      .then(() => {
+        toast({ title: "Success", description: "Article published successfully." })
+        setEditingCA(null)
+      })
+      .catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: caRef.path,
+          operation: 'write',
+          requestResourceData: payload,
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+      });
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm("Delete this news article?")) return
-    try {
-      await deleteDoc(doc(db, "current_affairs", id))
-      toast({ title: "Deleted", description: "Article removed." })
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Error", description: "Could not delete." })
-    }
+    const caRef = doc(db, "current_affairs", id)
+    deleteDoc(caRef)
+      .then(() => {
+        toast({ title: "Deleted", description: "Article removed." })
+      })
+      .catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: caRef.path,
+          operation: 'delete',
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+      });
   }
 
   const filteredCA = useMemo(() => {
     if (!currentAffairs) return []
     return currentAffairs.filter(ca => 
-      ca.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      ca.category.toLowerCase().includes(searchTerm.toLowerCase())
+      ca.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      ca.category?.toLowerCase().includes(searchTerm.toLowerCase())
     )
   }, [currentAffairs, searchTerm])
 

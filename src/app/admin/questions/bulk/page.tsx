@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
@@ -12,7 +11,9 @@ import { useFirestore, useCollection } from "@/firebase"
 import { collection, doc, writeBatch, serverTimestamp } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { parseBulkQuestions } from "@/lib/parser"
-import { FileText, Zap, CheckCircle2, AlertCircle, Database, ChevronLeft } from "lucide-react"
+import { FileText, Zap, CheckCircle2, Database, ChevronLeft } from "lucide-react"
+import { errorEmitter } from "@/firebase/error-emitter"
+import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 
 export default function BulkImportPage() {
   const router = useRouter()
@@ -40,30 +41,37 @@ export default function BulkImportPage() {
     }
   }
 
-  const handleImport = async () => {
+  const handleImport = () => {
     if (!db || parsedQuestions.length === 0) return
     setIsImporting(true)
 
-    try {
-      const batch = writeBatch(db)
-      parsedQuestions.forEach(q => {
-        const newRef = doc(collection(db, "questions"))
-        batch.set(newRef, {
-          ...q,
-          id: newRef.id,
-          createdAt: serverTimestamp(),
-          author: "Arsh Grewal"
-        })
+    const batch = writeBatch(db)
+    parsedQuestions.forEach(q => {
+      const newRef = doc(collection(db, "questions"))
+      batch.set(newRef, {
+        ...q,
+        id: newRef.id,
+        createdAt: serverTimestamp(),
+        author: "Arsh Grewal"
       })
+    })
 
-      await batch.commit()
-      toast({ title: "Import Successful", description: `${parsedQuestions.length} questions added to global bank.` })
-      router.push("/admin/questions")
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Import Failed", description: e.message })
-    } finally {
-      setIsImporting(false)
-    }
+    batch.commit()
+      .then(() => {
+        toast({ title: "Import Successful", description: `${parsedQuestions.length} questions added to global bank.` })
+        router.push("/admin/questions")
+      })
+      .catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: '/questions',
+          operation: 'write',
+          requestResourceData: { batchSize: parsedQuestions.length },
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+      })
+      .finally(() => {
+        setIsImporting(false)
+      })
   }
 
   return (

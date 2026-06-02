@@ -1,19 +1,20 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Plus, Search, Edit, Upload, Image as ImageIcon, X, Trash2 } from "lucide-react"
+import { Plus, Edit, Image as ImageIcon, Trash2 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
 import Image from "next/image"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/hooks/use-toast"
+import { errorEmitter } from "@/firebase/error-emitter"
+import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 
 export default function ExamManagement() {
   const db = useFirestore()
@@ -22,29 +23,41 @@ export default function ExamManagement() {
   const [editingBoard, setEditingBoard] = useState<any>(null)
   const [previewIcon, setPreviewIcon] = useState<string | null>(null)
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!db || !editingBoard) return
     const boardRef = doc(db, "boards", editingBoard.id || `board-${Date.now()}`)
     const payload = { ...editingBoard, id: boardRef.id, iconUrl: previewIcon || editingBoard.iconUrl || "" }
     
-    try {
-      await setDoc(boardRef, payload, { merge: true })
-      toast({ title: "Success", description: "Board information updated." })
-      setEditingBoard(null)
-      setPreviewIcon(null)
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Error", description: "Could not save board." })
-    }
+    setDoc(boardRef, payload, { merge: true })
+      .then(() => {
+        toast({ title: "Success", description: "Board information updated." })
+        setEditingBoard(null)
+        setPreviewIcon(null)
+      })
+      .catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: boardRef.path,
+          operation: 'write',
+          requestResourceData: payload,
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+      });
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm("Delete this recruitment board?")) return
-    try {
-      await deleteDoc(doc(db, "boards", id))
-      toast({ title: "Deleted", description: "Board removed." })
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Error", description: "Could not delete." })
-    }
+    const boardRef = doc(db, "boards", id)
+    deleteDoc(boardRef)
+      .then(() => {
+        toast({ title: "Deleted", description: "Board removed." })
+      })
+      .catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: boardRef.path,
+          operation: 'delete',
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+      });
   }
 
   return (
@@ -85,7 +98,7 @@ export default function ExamManagement() {
                   <TableCell>
                     <div className="h-10 w-10 rounded-lg bg-background border flex items-center justify-center overflow-hidden relative">
                       {board.iconUrl ? (
-                        <Image src={board.iconUrl} alt={board.abbreviation} fill className="object-contain p-1" />
+                        <Image src={board.iconUrl} alt={board.abbreviation || 'Board'} fill className="object-contain p-1" />
                       ) : (
                         <ImageIcon className="h-5 w-5 text-muted-foreground" />
                       )}
@@ -117,7 +130,7 @@ export default function ExamManagement() {
   )
 }
 
-function BoardDialogContent({ editingBoard, setEditingBoard, handleSave, previewIcon, setPreviewIcon }: any) {
+function BoardDialogContent({ editingBoard, setEditingBoard, handleSave }: any) {
   return (
     <DialogContent className="sm:max-w-md">
       <DialogHeader>
