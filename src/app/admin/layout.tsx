@@ -1,3 +1,4 @@
+
 'use client';
 
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
@@ -15,13 +16,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter()
   const pathname = usePathname()
 
-  useEffect(() => {
-    const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || user?.email === 'arshdeepgrewal1122@gmail.com';
+  const isFounder = user?.email === 'arshdeepgrewal1122@gmail.com';
+  const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || isFounder;
 
+  useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
       router.push('/login')
     }
-  }, [user, profile, loading, router])
+  }, [user, profile, loading, router, isAdmin])
 
   const handleLogout = async () => {
     await signOut(auth)
@@ -30,9 +32,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (loading) return <div className="h-screen w-full bg-[#0F172A] flex items-center justify-center"><ShieldCheck className="h-10 w-10 text-primary animate-pulse" /></div>
   
-  const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || user?.email === 'arshdeepgrewal1122@gmail.com';
-
   if (!user || !isAdmin) return null
+
+  const displayName = profile?.name || user?.displayName || 'System Admin';
 
   return (
     <SidebarProvider>
@@ -79,7 +81,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             <SidebarGroup className="mt-auto pb-8">
               <SidebarMenu>
-                {(profile?.role === 'SUPER_ADMIN' || user?.email === 'arshdeepgrewal1122@gmail.com') && (
+                {(profile?.role === 'SUPER_ADMIN' || isFounder) && (
                   <AdminNavItem icon={<Settings />} label="Portal Settings" href="/admin/settings" active={pathname === "/admin/settings"} />
                 )}
                 <SidebarMenuItem>
@@ -105,13 +107,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="flex items-center gap-6 shrink-0">
               <div className="flex items-center gap-4">
                 <div className="text-right hidden md:block">
-                  <p className="text-xs font-bold leading-none truncate max-w-[150px]">{profile?.name || 'System Admin'}</p>
+                  <p className="text-xs font-bold leading-none truncate max-w-[150px]">{displayName}</p>
                   <p className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mt-1">
-                    {profile?.role === 'SUPER_ADMIN' || user?.email === 'arshdeepgrewal1122@gmail.com' ? 'Founder & Lead' : 'Content Admin'}
+                    {profile?.role === 'SUPER_ADMIN' || isFounder ? 'Founder & Lead' : 'Content Admin'}
                   </p>
                 </div>
                 <div className="h-9 w-9 rounded-xl bg-primary/20 flex items-center justify-center border border-primary/20">
-                  <span className="font-black text-primary text-xs">{profile?.name?.split(' ').map(n => n[0]).join('') || 'SA'}</span>
+                  <span className="font-black text-primary text-xs">{displayName.split(' ').map(n => n[0]).join('')}</span>
                 </div>
               </div>
             </div>

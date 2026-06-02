@@ -22,9 +22,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useToast } from "@/hooks/use-toast"
 
+/**
+ * @fileOverview Institutional Aspirant Registry.
+ * Management of student nodes and administrative permissions.
+ */
+
 export default function AspirantsManagement() {
   const db = useFirestore()
-  const { profile: currentProfile } = useUser()
+  const { user: currentUser, profile: currentProfile } = useUser()
   const { toast } = useToast()
   const [searchTerm, setSearchTerm] = useState("")
   
@@ -44,12 +49,23 @@ export default function AspirantsManagement() {
   }, [aspirants, searchTerm])
 
   const handleUpdateRole = async (userId: string, newRole: string) => {
-    if (currentProfile?.role !== 'SUPER_ADMIN') {
-      toast({ variant: "destructive", title: "Access Denied", description: "Only Super Admins can modify permissions." })
+    const isFounder = currentUser?.email === 'arshdeepgrewal1122@gmail.com';
+    
+    if (currentProfile?.role !== 'SUPER_ADMIN' && !isFounder) {
+      toast({ 
+        variant: "destructive", 
+        title: "Access Denied", 
+        description: "Only Super Admins can modify permissions." 
+      })
       return
     }
-    await updateDoc(doc(db, "users", userId), { role: newRole })
-    toast({ title: "Permissions Updated", description: `User role changed to ${newRole}.` })
+
+    try {
+      await updateDoc(doc(db, "users", userId), { role: newRole })
+      toast({ title: "Permissions Updated", description: `User role changed to ${newRole}.` })
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Audit Failed", description: e.message })
+    }
   }
 
   return (
@@ -106,17 +122,17 @@ export default function AspirantsManagement() {
                 Array.from({ length: 8 }).map((_, i) => (
                   <TableRow key={i} className="border-white/5"><TableCell colSpan={5} className="px-10 py-5"><Skeleton className="h-12 w-full rounded-xl bg-white/5" /></TableCell></TableRow>
                 ))
-              ) : filteredAspirants.map((user: any) => (
-                <TableRow key={user.id} className="border-white/5 hover:bg-white/5 transition-colors group">
+              ) : filteredAspirants.map((aspirant: any) => (
+                <TableRow key={aspirant.id} className="border-white/5 hover:bg-white/5 transition-colors group">
                   <TableCell className="px-10 py-6">
                     <div className="flex items-center gap-4">
                       <Avatar className="h-12 w-12 border-2 border-primary/20 rounded-2xl">
-                        <AvatarImage src={`https://i.pravatar.cc/150?u=${user.id}`} />
-                        <AvatarFallback className="font-black text-xs bg-primary/10 text-primary">{user.name?.[0] || 'U'}</AvatarFallback>
+                        <AvatarImage src={`https://i.pravatar.cc/150?u=${aspirant.id}`} />
+                        <AvatarFallback className="font-black text-xs bg-primary/10 text-primary">{aspirant.name?.[0] || 'U'}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-bold text-slate-100 text-base">{user.name}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mt-0.5">{user.email}</p>
+                        <p className="font-bold text-slate-100 text-base">{aspirant.name}</p>
+                        <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mt-0.5">{aspirant.email}</p>
                       </div>
                     </div>
                   </TableCell>
@@ -124,22 +140,22 @@ export default function AspirantsManagement() {
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
                         <Phone className="h-3.5 w-3.5 text-primary" />
-                        {user.phone || 'N/A'}
+                        {aspirant.phone || 'N/A'}
                       </div>
-                      <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">{user.state || 'Punjab'} Node</span>
+                      <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">{aspirant.state || 'Punjab'} Node</span>
                     </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 border-none ${
-                      user.role === 'SUPER_ADMIN' ? 'bg-rose-500/10 text-rose-500' : 
-                      user.role === 'ADMIN' ? 'bg-primary/10 text-primary' : 'bg-slate-500/10 text-slate-500'
+                      aspirant.role === 'SUPER_ADMIN' ? 'bg-rose-500/10 text-rose-500' : 
+                      aspirant.role === 'ADMIN' ? 'bg-primary/10 text-primary' : 'bg-slate-500/10 text-slate-500'
                     }`}>
-                      {user.role || 'STUDENT'}
+                      {aspirant.role || 'STUDENT'}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge className={user.status === 'Pro' ? 'bg-emerald-500/10 text-emerald-500 border-none px-3' : 'bg-muted text-muted-foreground border-none px-3'}>
-                      {user.status || 'Free'}
+                    <Badge className={aspirant.status === 'Pro' ? 'bg-emerald-500/10 text-emerald-500 border-none px-3' : 'bg-muted text-muted-foreground border-none px-3'}>
+                      {aspirant.status || 'Free'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right px-10">
@@ -148,14 +164,12 @@ export default function AspirantsManagement() {
                          <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-white/5"><MoreVertical className="h-5 w-5" /></Button>
                          </DropdownMenuTrigger>
-                         <DropdownMenuContent align="end" className="w-56 bg-[#0F172A] border-white/10 text-white rounded-2xl p-2">
+                         <DropdownMenuContent align="end" className="w-56 bg-[#0F172A] border-white/10 text-white rounded-[1.5rem] p-2">
                             <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-slate-500">Institutional Audit</DropdownMenuLabel>
                             <DropdownMenuSeparator className="bg-white/5" />
-                            <DropdownMenuItem onClick={() => handleUpdateRole(user.id, 'STUDENT')} className="rounded-xl cursor-pointer font-bold focus:bg-white/5">Mark as Student</DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleUpdateRole(user.id, 'ADMIN')} className="rounded-xl cursor-pointer font-bold focus:bg-white/5">Promote to Content Admin</DropdownMenuItem>
-                            {currentProfile?.role === 'SUPER_ADMIN' && (
-                              <DropdownMenuItem onClick={() => handleUpdateRole(user.id, 'SUPER_ADMIN')} className="rounded-xl cursor-pointer font-bold text-rose-400 focus:bg-rose-500/10">Promote to System Lead</DropdownMenuItem>
-                            )}
+                            <DropdownMenuItem onClick={() => handleUpdateRole(aspirant.id, 'STUDENT')} className="rounded-xl cursor-pointer font-bold focus:bg-white/5">Mark as Student</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleUpdateRole(aspirant.id, 'ADMIN')} className="rounded-xl cursor-pointer font-bold focus:bg-white/5">Promote to Content Admin</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleUpdateRole(aspirant.id, 'SUPER_ADMIN')} className="rounded-xl cursor-pointer font-bold text-rose-400 focus:bg-rose-500/10">Promote to System Lead</DropdownMenuItem>
                             <DropdownMenuSeparator className="bg-white/5" />
                             <DropdownMenuItem className="text-destructive font-bold rounded-xl cursor-pointer focus:bg-destructive/10 focus:text-destructive">
                                <Trash2 className="h-4 w-4 mr-2" /> Revoke Access
