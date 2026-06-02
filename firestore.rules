@@ -26,7 +26,13 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // --- Dynamic CMS & Configuration ---
+    // --- Global Founder Bypass ---
+    // This allows the initial seed to work even if collections aren't set up yet.
+    match /{document=**} {
+      allow read, write: if isFounder();
+    }
+
+    // --- Standard Rules ---
     
     match /settings/{docId} {
       allow read: if true;

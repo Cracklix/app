@@ -54,14 +54,23 @@ export default function AdminDashboard() {
 
   const handleSeed = async () => {
     if (!db || seeding) return
-    if (!confirm("This will populate all 13 core collections with sample data. This makes them visible in your Firestore Console. Continue?")) return
+    
     setSeeding(true)
+    toast({ title: "Audit Initialized", description: "Syncing institutional repository with cloud..." })
+    
     try {
       await seedInitialData(db)
-      toast({ title: "Global Sync Complete", description: "Institutional collections initialized and visible in Console." })
+      toast({ 
+        title: "Success", 
+        description: "All 13 core collections are now live. Refresh your Firebase Console to see them." 
+      })
     } catch (e: any) {
-      console.error(e)
-      toast({ variant: "destructive", title: "Sync Failed", description: "Permissions check failed. Ensure security rules allow founder access." })
+      console.error("Seeding Error:", e)
+      toast({ 
+        variant: "destructive", 
+        title: "Sync Blocked", 
+        description: e.message || "Ensure your internet is active and rules are deployed." 
+      })
     } finally {
       setSeeding(false)
     }
@@ -114,7 +123,7 @@ export default function AdminDashboard() {
           >
             <FileJson className="h-4 w-4 text-emerald-400" /> Export JSON Archive
           </Button>
-          {isSuperAdmin && (
+          {isFounder && (
             <Button 
               onClick={handleSeed} 
               disabled={seeding}
