@@ -1,27 +1,26 @@
-
 'use client';
 
 import { motion } from "framer-motion";
-import { ShieldCheck, Target, Trophy, Clock } from "lucide-react";
+import { ClipboardCheck, FileSearch, TrendingUp, Smartphone } from "lucide-react";
 
 const features = [
   { 
-    icon: <ShieldCheck className="h-8 w-8 text-white" />, 
+    icon: <ClipboardCheck className="h-8 w-8 text-white" />, 
     title: "Real Exam Pattern Based Mocks", 
     desc: "Mocks designed exactly as per the latest exam pattern."
   },
   { 
-    icon: <Target className="h-8 w-8 text-white" />, 
+    icon: <FileSearch className="h-8 w-8 text-white" />, 
     title: "Detailed Solutions", 
     desc: "Step-by-step solutions with explanations."
   },
   { 
-    icon: <Trophy className="h-8 w-8 text-white" />, 
+    icon: <TrendingUp className="h-8 w-8 text-white" />, 
     title: "Performance Analytics", 
     desc: "Track your progress and performance."
   },
   { 
-    icon: <Clock className="h-8 w-8 text-white" />, 
+    icon: <Smartphone className="h-8 w-8 text-white" />, 
     title: "Study Anytime Anywhere", 
     desc: "Learn from mobile, tablet or desktop."
   },
@@ -48,7 +47,7 @@ export default function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
               viewport={{ once: true }}
-              className="bg-white/5 border border-white/10 rounded-[2rem] p-8 hover:border-[#F97316]/50 hover:shadow-[#F97316]/10 hover:shadow-2xl transition-all group backdrop-blur-sm"
+              className="bg-white/5 border border-white/10 rounded-[2rem] p-8 hover:border-[#F97316] hover:shadow-[#F97316]/20 hover:shadow-2xl transition-all group backdrop-blur-sm"
             >
               <div className="h-16 w-16 rounded-xl bg-[#F97316] flex items-center justify-center mb-6 shadow-lg shadow-[#F97316]/20 group-hover:scale-110 transition-transform">
                 {feature.icon}

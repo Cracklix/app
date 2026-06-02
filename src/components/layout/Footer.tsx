@@ -1,13 +1,12 @@
-
 'use client';
 
 import Link from "next/link";
 import Logo from "@/components/brand/Logo";
-import { Twitter, Facebook, Instagram, Mail, Phone } from "lucide-react";
+import { Twitter, Facebook, Instagram, Mail, Phone, Heart } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#0F172A] text-white pt-24 pb-12 border-t border-white/5">
+    <footer className="bg-gradient-to-r from-[#08152D] via-[#0B1D3F] to-[#08152D] text-white pt-24 pb-12 border-t border-white/5">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
           <div className="lg:col-span-1">
@@ -68,8 +67,8 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/10 mt-20 pt-10 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
-          <div>© 2026 Cracklix Authority. All rights reserved.</div>
-          <div className="flex items-center gap-2">Made with <span className="text-[#F97316]">❤️</span> for Punjab Aspirants</div>
+          <div>© 2026 CRACKLIX AUTHORITY. All rights reserved.</div>
+          <div className="flex items-center gap-2">Made with <Heart className="h-3 w-3 text-red-500 fill-current" /> for Punjab Aspirants</div>
         </div>
       </div>
     </footer>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { motion } from "framer-motion";
@@ -9,7 +8,7 @@ import Image from "next/image";
 
 export default function Hero() {
   return (
-    <section className="relative pt-20 pb-32 lg:pt-32 lg:pb-48 overflow-hidden bg-gradient-to-br from-[#0F172A] via-[#1E3A8A] to-[#0F172A]">
+    <section className="relative pt-20 pb-32 lg:pt-32 lg:pb-48 overflow-hidden bg-gradient-to-br from-[#08152D] via-[#0F172A] to-[#08152D]">
       {/* Punjab Map Watermark */}
       <div className="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center">
         <svg viewBox="0 0 100 100" className="w-[1000px] h-[1000px] text-white fill-current">
@@ -63,6 +62,7 @@ export default function Hero() {
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 priority
+                data-ai-hint="golden temple"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-transparent to-transparent opacity-80" />
               <div className="absolute bottom-10 left-10">

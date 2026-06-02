@@ -1,19 +1,28 @@
-
 'use client';
 
 import { motion } from "framer-motion";
-import { ShieldCheck, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { 
+  PsssbIcon, 
+  PpscIcon, 
+  PoliceIcon, 
+  TeachingIcon, 
+  JusticeIcon, 
+  PowerIcon, 
+  MedIcon, 
+  BankIcon 
+} from "@/lib/exam-icons";
 
 const exams = [
-  { name: "PSSSB", desc: "Subordinate Services Selection Board", exams: 12, mocks: 256 },
-  { name: "PPSC", desc: "Punjab Public Service Commission", exams: 9, mocks: 198 },
-  { name: "Punjab Police", desc: "Punjab Police Recruitment", exams: 7, mocks: 145 },
-  { name: "Teaching Exams", desc: "ETT, Master Cadre, PSTET", exams: 15, mocks: 320 },
-  { name: "High Court", desc: "Punjab & Haryana High Court", exams: 6, mocks: 108 },
-  { name: "PSPCL & PSTCL", desc: "Power Sector Recruitment", exams: 8, mocks: 162 },
-  { name: "BFUHS", desc: "Baba Farid University (Health)", exams: 4, mocks: 86 },
-  { name: "Banking", desc: "Cooperative & State Banks", exams: 10, mocks: 210 },
+  { name: "PSSSB", desc: "Subordinate Services Selection Board", exams: 12, mocks: 256, Icon: PsssbIcon },
+  { name: "PPSC", desc: "Punjab Public Service Commission", exams: 9, mocks: 198, Icon: PpscIcon },
+  { name: "Punjab Police", desc: "Punjab Police Recruitment", exams: 7, mocks: 145, Icon: PoliceIcon },
+  { name: "Teaching Exams", desc: "ETT, Master Cadre, PSTET", exams: 15, mocks: 320, Icon: TeachingIcon },
+  { name: "High Court", desc: "Punjab & Haryana High Court", exams: 6, mocks: 108, Icon: JusticeIcon },
+  { name: "PSPCL & PSTCL", desc: "Power Sector Recruitment", exams: 8, mocks: 162, Icon: PowerIcon },
+  { name: "BFUHS", desc: "Baba Farid University (Health)", exams: 4, mocks: 86, Icon: MedIcon },
+  { name: "Banking", desc: "Cooperative & State Banks", exams: 10, mocks: 210, Icon: BankIcon },
 ];
 
 export default function PopularExams() {
@@ -47,7 +56,9 @@ export default function PopularExams() {
               <Link href="/exams">
                 <div className="bg-white rounded-[2rem] border border-gray-100 p-8 hover:shadow-2xl hover:border-[#F97316]/20 transition-all duration-300 group h-full flex flex-col">
                   <div className="w-16 h-16 rounded-2xl bg-[#F8FAFC] mb-6 flex items-center justify-center group-hover:bg-[#0F172A] transition-colors duration-300">
-                    <ShieldCheck className="h-8 w-8 text-[#0F172A] group-hover:text-white" />
+                    <div className="text-[#0F172A] group-hover:text-white transition-colors">
+                      <exam.Icon />
+                    </div>
                   </div>
 
                   <h3 className="font-headline font-bold text-2xl text-[#0F172A] group-hover:text-[#F97316] transition-colors">
