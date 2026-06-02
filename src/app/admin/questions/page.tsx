@@ -55,7 +55,7 @@ export default function QuestionBank() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-4xl font-black font-headline text-primary uppercase tracking-tight">Global MCQ Bank</h1>
-          <p className="text-muted-foreground mt-1">Audit Mode: Arsh Grewal Management.</p>
+          <p className="text-muted-foreground mt-1">Institutional Audit Mode: Arsh Grewal Management.</p>
         </div>
         <div className="flex gap-4">
           <Button asChild variant="outline" className="gap-2 border-foreground/10 h-12 px-6 rounded-xl font-bold">

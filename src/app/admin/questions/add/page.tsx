@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ChevronLeft, Save, Sparkles, Languages } from "lucide-react"
+import { ChevronLeft, Save, Languages } from "lucide-react"
 import { useFirestore, useDoc, useCollection } from "@/firebase"
 import { doc, setDoc, serverTimestamp, collection } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
@@ -47,19 +47,24 @@ export default function QuestionEntryPage() {
 
   const handleSave = () => {
     if (!db) return
-    if (!formData.questionEn || !formData.subjectId) {
-      toast({ variant: "destructive", title: "Validation Error", description: "English question and metadata required." })
+    if (!formData.questionEn || !formData.subjectId || !formData.boardId) {
+      toast({ variant: "destructive", title: "Validation Error", description: "All classification metadata and English statement required." })
       return
     }
 
     setIsSaving(true)
     const finalId = questionId || `q-${Date.now()}`
     const questionRef = doc(db, "questions", finalId)
-    const payload = { ...formData, id: finalId, createdAt: isEditing ? (existingData?.createdAt || serverTimestamp()) : serverTimestamp() }
+    const payload = { 
+      ...formData, 
+      id: finalId, 
+      createdAt: isEditing ? (existingData?.createdAt || serverTimestamp()) : serverTimestamp(),
+      author: "Arsh Grewal"
+    }
 
     setDoc(questionRef, payload, { merge: true })
       .then(() => {
-        toast({ title: isEditing ? "Updated" : "Created", description: "Question committed to global bank." })
+        toast({ title: isEditing ? "Bank Updated" : "Bank Committed", description: "Question successfully audited and saved." })
         router.push("/admin/questions")
       })
       .catch(async (error) => {
@@ -75,12 +80,12 @@ export default function QuestionEntryPage() {
         <div className="flex items-center gap-6">
           <Button variant="ghost" size="icon" className="rounded-2xl h-12 w-12 border border-foreground/5 bg-card/30" onClick={() => router.back()}><ChevronLeft className="h-6 w-6" /></Button>
           <div>
-            <h1 className="text-3xl font-black font-headline text-primary uppercase">{isEditing ? "Edit MCQ" : "Composition Portal"}</h1>
+            <h1 className="text-3xl font-black font-headline text-primary uppercase">{isEditing ? "Audit MCQ" : "Manual Composition"}</h1>
             <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mt-1">Audit Mode: Arsh Grewal Management</p>
           </div>
         </div>
         <Button className="bg-primary hover:bg-primary/90 gap-3 font-black px-10 h-14 shadow-xl rounded-2xl" onClick={handleSave} disabled={isSaving}>
-          <Save className="h-4 w-4" /> {isSaving ? "Saving..." : "Commit to Bank"}
+          <Save className="h-4 w-4" /> {isSaving ? "Syncing..." : "Commit to Bank"}
         </Button>
       </div>
 
@@ -88,7 +93,7 @@ export default function QuestionEntryPage() {
         <div className="lg:col-span-8 space-y-8">
           <Tabs defaultValue="english" className="w-full">
             <div className="flex items-center justify-between mb-4">
-               <Label className="text-xs font-black uppercase text-muted-foreground ml-1">Language Content</Label>
+               <Label className="text-xs font-black uppercase text-muted-foreground ml-1">Language Logic</Label>
                <TabsList className="bg-slate-100 rounded-xl p-1">
                   <TabsTrigger value="english" className="rounded-lg gap-2 text-xs font-bold"><Languages className="h-3 w-3" /> English</TabsTrigger>
                   <TabsTrigger value="punjabi" className="rounded-lg gap-2 text-xs font-bold"><Languages className="h-3 w-3" /> Punjabi</TabsTrigger>
@@ -128,21 +133,21 @@ export default function QuestionEntryPage() {
         <div className="lg:col-span-4 space-y-6 pt-10">
           <Card className="border-foreground/5 bg-card/50 shadow-xl rounded-[2rem]">
             <CardContent className="p-8 space-y-6">
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <Label className="text-[10px] font-black uppercase">Authority & Exam</Label>
                 <Select value={formData.boardId} onValueChange={val => setFormData({...formData, boardId: val})}>
-                  <SelectTrigger className="rounded-xl h-11 bg-background border-none shadow-sm"><SelectValue placeholder="Board" /></SelectTrigger>
+                  <SelectTrigger className="rounded-xl h-11 bg-background border-none shadow-sm"><SelectValue placeholder="Select Board" /></SelectTrigger>
                   <SelectContent>{boards?.map(b => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
                 </Select>
                 <Select value={formData.examId} onValueChange={val => setFormData({...formData, examId: val})}>
-                  <SelectTrigger className="rounded-xl h-11 bg-background border-none shadow-sm"><SelectValue placeholder="Exam" /></SelectTrigger>
+                  <SelectTrigger className="rounded-xl h-11 bg-background border-none shadow-sm"><SelectValue placeholder="Select Exam" /></SelectTrigger>
                   <SelectContent>{exams?.filter(e => e.boardId === formData.boardId).map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-4 pt-4">
                 <Label className="text-[10px] font-black uppercase">Subject & Level</Label>
                 <Select value={formData.subjectId} onValueChange={val => setFormData({...formData, subjectId: val})}>
-                  <SelectTrigger className="rounded-xl h-11 bg-background border-none shadow-sm"><SelectValue placeholder="Subject" /></SelectTrigger>
+                  <SelectTrigger className="rounded-xl h-11 bg-background border-none shadow-sm"><SelectValue placeholder="Select Subject" /></SelectTrigger>
                   <SelectContent>{subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                 </Select>
                 <Select value={formData.difficulty} onValueChange={val => setFormData({...formData, difficulty: val as any})}>
@@ -151,7 +156,7 @@ export default function QuestionEntryPage() {
                 </Select>
               </div>
               <div className="space-y-4 pt-4 border-t border-white/5">
-                <Label className="text-[10px] font-black uppercase">Correct Answer Key</Label>
+                <Label className="text-[10px] font-black uppercase">Institutional Answer Key</Label>
                 <RadioGroup value={formData.correctAnswer} onValueChange={val => setFormData({...formData, correctAnswer: val as any})} className="grid grid-cols-2 gap-3">
                   {['A','B','C','D'].map(opt => (
                     <div key={opt} className={`flex items-center gap-2 p-3 rounded-xl border ${formData.correctAnswer === opt ? 'border-primary bg-primary/10' : 'border-white/5'}`}>
