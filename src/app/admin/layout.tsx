@@ -1,6 +1,5 @@
-
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { LayoutDashboard, Database, ClipboardList, TrendingUp, Settings, Users, LogOut, Bell, ShieldCheck, GraduationCap, Zap } from "lucide-react"
+import { LayoutDashboard, Database, ClipboardList, TrendingUp, Settings, Users, LogOut, Bell, ShieldCheck, GraduationCap, Zap, Newspaper, AlertCircle } from "lucide-react"
 import Link from "next/link"
 import Logo from "@/components/brand/Logo"
 
@@ -20,6 +19,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <AdminNavItem icon={<Zap className="text-primary" />} label="Bulk Import" href="/admin/questions/bulk" />
                   <AdminNavItem icon={<Database />} label="Question Bank" href="/admin/questions" />
                   <AdminNavItem icon={<ClipboardList />} label="Mock Builder" href="/admin/mocks" />
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+
+            <SidebarGroup className="mt-4">
+              <SidebarGroupLabel className="px-6 text-xs font-black uppercase tracking-widest text-white/20">Content Engine</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <AdminNavItem icon={<Newspaper className="text-emerald-400" />} label="Current Affairs" href="/admin/current-affairs" />
+                  <AdminNavItem icon={<AlertCircle className="text-orange-400" />} label="Exam Alerts" href="/admin/notifications" />
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
