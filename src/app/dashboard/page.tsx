@@ -34,7 +34,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, AreaChart, Area } from "recharts"
 
 /**
  * @fileOverview Phase 71-72: Advanced Selection Dashboard.
@@ -89,9 +88,10 @@ export default function StudentDashboard() {
     results.forEach((res: any) => {
       if (res.subjectStats) {
         Object.entries(res.subjectStats).forEach(([subj, stats]: [string, any]) => {
-          if (!subjectMap[subj]) subjectMap[subj] = { correct: 0, total: 0 }
-          subjectMap[subj].correct += stats.correct || 0
-          subjectMap[subj].total += stats.total || 0
+          const matchedKey = Object.keys(subjectMap).find(k => k.toLowerCase().includes(subj.toLowerCase())) || subj;
+          if (!subjectMap[matchedKey]) subjectMap[matchedKey] = { correct: 0, total: 0 }
+          subjectMap[matchedKey].correct += stats.correct || 0
+          subjectMap[matchedKey].total += stats.total || 0
         })
       }
     })

@@ -1,10 +1,11 @@
+
 "use client"
 
 import { useMemo, useState } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useCollection, useFirestore, useUser } from "@/firebase"
-import { collection, query, where, orderBy } from "firebase/firestore"
+import { collection, query, where, orderBy, limit } from "firebase/firestore"
 import { Card, CardContent } from "@/components/ui/card"
 import { Bookmark, Search, Trash2, ChevronRight, BrainCircuit, ShieldCheck, Languages, AlertCircle, History, Star, Zap, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -34,8 +35,6 @@ export default function RevisionCenter() {
     if (!results) return []
     const wrongs: any[] = []
     results.forEach(res => {
-      // In a real app, you'd fetch the actual question details here
-      // For this MVP UI, we visualize the count of missed nodes
       if (res.accuracy < 100) wrongs.push({
         id: res.id,
         title: `Missed in ${res.mockTitle}`,
