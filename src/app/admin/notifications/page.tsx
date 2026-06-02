@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
@@ -17,6 +16,11 @@ import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
+
+/**
+ * @fileOverview Admin Exam Gazette (Notifications) Console.
+ * Allows institutional broadcasts for results, admit cards, and job alerts.
+ */
 
 export default function AdminNotifications() {
   const db = useFirestore()
@@ -82,7 +86,7 @@ export default function AdminNotifications() {
           <h1 className="text-4xl font-black font-headline text-primary uppercase tracking-tight">Exam Gazette</h1>
           <p className="text-muted-foreground mt-1">Broadcast critical institutional updates about exams, results, and recruitments.</p>
         </div>
-        <Button onClick={() => setEditingNotice({ title: "", message: "", category: "Recruitment", board: "PSSSB", time: "Just now", important: false })} className="bg-orange-50 hover:bg-orange-600 gap-2 h-12 px-8 rounded-xl font-bold shadow-xl shadow-orange-500/20">
+        <Button onClick={() => setEditingNotice({ title: "", message: "", category: "Recruitment", board: "PSSSB", time: "Just now", important: false })} className="bg-orange-500 hover:bg-orange-600 text-white gap-2 h-12 px-8 rounded-xl font-bold shadow-xl shadow-orange-500/20">
           <Plus className="h-5 w-5" /> Deploy Alert
         </Button>
       </div>
