@@ -1,4 +1,3 @@
-
 'use client';
 
 import { motion } from "framer-motion"
@@ -6,44 +5,41 @@ import { ShieldCheck, Target, Trophy, Clock } from "lucide-react"
 
 const features = [
   { 
-    icon: <ShieldCheck className="h-8 w-8 text-[#F97316]" />, 
+    icon: <ShieldCheck className="h-8 w-8 text-white" />, 
     title: "Real Exam Pattern Based Mocks", 
-    desc: "Mocks designed exactly as per the latest exam pattern and syllabus issued by PSSSB, PPSC, and other boards."
+    desc: "Mocks designed exactly as per the latest exam pattern."
   },
   { 
-    icon: <Target className="h-8 w-8 text-[#F97316]" />, 
+    icon: <Target className="h-8 w-8 text-white" />, 
     title: "Detailed Solutions", 
-    desc: "Step-by-step solutions with core concept explanations to clear your doubts and improve fundamental knowledge."
+    desc: "Step-by-step solutions with explanations."
   },
   { 
-    icon: <Trophy className="h-8 w-8 text-[#F97316]" />, 
+    icon: <Trophy className="h-8 w-8 text-white" />, 
     title: "Performance Analytics", 
-    desc: "Track your progress with in-depth analytics, subject-wise heatmaps, and personalized ranking insights."
+    desc: "Track your progress and performance."
   },
   { 
-    icon: <Clock className="h-8 w-8 text-[#F97316]" />, 
+    icon: <Clock className="h-8 w-8 text-white" />, 
     title: "Study Anytime Anywhere", 
-    desc: "Learn on the go with our mobile app. Access all your mocks, notes, and pyqs from any device, anytime."
+    desc: "Learn from mobile, tablet or desktop."
   },
 ]
 
 export default function Features() {
   return (
-    <section className="py-24 bg-[#0F172A]">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-20">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-headline font-bold text-white"
-          >
-            Why Choose <span className="text-[#F97316]">Cracklix</span>?
-          </motion.h2>
-          <p className="text-white/50 mt-4 max-w-2xl mx-auto text-lg">We provide high-authority tools designed specifically for government job aspirants.</p>
-        </div>
+    <section className="py-24 bg-[#08152d] text-white">
+      <div className="max-w-7xl mx-auto px-6">
+        <motion.h2 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center text-5xl font-bold mb-16"
+        >
+          Why Choose <span className="text-orange-500">Cracklix?</span>
+        </motion.h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, idx) => (
             <motion.div 
               key={idx}
@@ -51,13 +47,17 @@ export default function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
               viewport={{ once: true }}
-              className="glass-card p-10 rounded-[2.5rem] space-y-6 text-left border-white/5 hover:border-[#F97316]/30 transition-all group"
+              className="bg-white/5 border border-white/10 rounded-2xl p-8 hover:border-orange-500/50 transition-all group"
             >
-              <div className="h-16 w-16 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-[#F97316]/10 transition-colors">
+              <div className="h-16 w-16 rounded-xl bg-orange-500 flex items-center justify-center mb-6 shadow-lg shadow-orange-500/20">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-bold text-white group-hover:text-[#F97316] transition-colors">{feature.title}</h3>
-              <p className="text-sm text-white/50 leading-relaxed font-medium">{feature.desc}</p>
+              <h3 className="font-bold text-xl mb-3 group-hover:text-orange-500 transition-colors">
+                {feature.title}
+              </h3>
+              <p className="text-gray-300 leading-relaxed">
+                {feature.desc}
+              </p>
             </motion.div>
           ))}
         </div>
