@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { Bell, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
 import { useState } from "react";
@@ -19,17 +19,17 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-[1000] w-full bg-[#0c1527] border-b border-white/10 py-4">
-      <div className="container mx-auto max-w-[85%] flex items-center justify-between">
+    <nav className="sticky top-0 z-[1000] w-full bg-[#0B1528] border-b border-white/5 py-4">
+      <div className="container mx-auto max-w-[90%] flex items-center justify-between px-4">
         <Logo variant="light" />
 
         {/* Desktop Links */}
-        <div className="hidden lg:flex items-center gap-[30px] text-[15px] font-medium text-[#cbd5e1]">
+        <div className="hidden lg:flex items-center gap-[30px] text-[15px] font-medium text-[#7A8B9E]">
           {links.map(link => (
             <Link 
               key={link.label} 
               href={link.href} 
-              className={`transition-colors hover:text-[#ff7a00] ${link.active ? 'text-[#ff7a00]' : ''}`}
+              className={`transition-colors hover:text-[#FF8800] ${link.active ? 'text-white' : ''}`}
             >
               {link.label}
             </Link>
@@ -37,12 +37,7 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-5">
-          <button className="relative text-white hover:text-[#ff7a00] transition-colors p-1">
-            <Bell className="h-5 w-5" />
-            <span className="absolute -top-1 -right-2 bg-[#ff7a00] text-[10px] px-1.5 py-0.5 rounded-full font-bold">3</span>
-          </button>
-          
-          <Button asChild className="bg-[#ff7a00] hover:bg-[#ff7a00]/90 text-white font-bold px-6 rounded-md h-10 hidden sm:flex border-none cursor-pointer">
+          <Button asChild className="bg-[#FF8800] hover:bg-[#E07700] text-white font-bold px-6 py-2.5 rounded-lg h-auto hidden sm:flex border-none transition-all hover:-translate-y-0.5 shadow-lg shadow-[#FF8800]/20">
             <Link href="/login">Login</Link>
           </Button>
           
@@ -62,19 +57,19 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-full left-0 w-full bg-[#0c1527] border-b border-white/10 lg:hidden flex flex-col p-6 gap-4"
+            className="absolute top-full left-0 w-full bg-[#0B1528] border-b border-white/10 lg:hidden flex flex-col p-6 gap-4"
           >
             {links.map(link => (
               <Link 
                 key={link.label} 
                 href={link.href} 
-                className="text-[#cbd5e1] hover:text-[#ff7a00] font-bold text-sm uppercase tracking-widest"
+                className="text-[#7A8B9E] hover:text-[#FF8800] font-bold text-sm uppercase tracking-widest"
                 onClick={() => setIsOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-            <Button asChild className="bg-[#ff7a00] hover:bg-[#ff7a00]/90 text-white font-bold w-full h-12">
+            <Button asChild className="bg-[#FF8800] hover:bg-[#E07700] text-white font-bold w-full h-12 rounded-lg">
               <Link href="/login" onClick={() => setIsOpen(false)}>Login</Link>
             </Button>
           </motion.div>
