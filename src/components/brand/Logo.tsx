@@ -14,34 +14,39 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
   
   return (
     <Link href="/" className={`flex items-center gap-3.5 group ${className}`}>
-      {/* Premium SaaS Icon: Punjab Map + Integrated Checkmark */}
+      {/* New Premium Circular C-Tick Icon */}
       <motion.div 
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="relative w-12 h-12 flex items-center justify-center bg-[#F97316] rounded-xl shadow-xl shadow-orange-500/20 shrink-0 overflow-hidden"
+        className="relative w-12 h-12 flex items-center justify-center shrink-0"
       >
-        <svg 
-          viewBox="0 0 100 100" 
-          fill="none" 
-          xmlns="http://www.w3.org/2000/svg" 
-          className="w-8 h-8"
-        >
-          {/* Geometric Punjab Map Silhouette */}
-          <path 
-            d="M28 22 L72 18 L88 42 L82 78 L48 88 L22 68 L18 38 Z" 
-            fill="white" 
-            fillOpacity="0.15"
-          />
-          {/* Clean Integrated Checkmark */}
-          <motion.path 
+        <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+          {/* Orange Circle */}
+          <circle cx="26" cy="26" r="24" stroke="#F97316" strokeWidth="3"/>
+
+          {/* C Shape - Color adjusts based on background */}
+          <motion.path
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            d="M34 54 L48 68 L74 36" 
-            stroke="white" 
-            strokeWidth="11" 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            d="M34 14 C22 10, 12 18, 12 26 C12 34, 22 42, 34 38"
+            stroke={isDarkBackground ? "#FFFFFF" : "#0F172A"}
+            strokeWidth="5"
+            strokeLinecap="round"
+            fill="none"
+          />
+
+          {/* Tick */}
+          <motion.path
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+            d="M18 27 L24 33 L36 20"
+            stroke="#F97316"
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
           />
         </svg>
       </motion.div>
@@ -56,8 +61,8 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
           </span>
         </div>
         {showTagline && (
-          <span className={`text-[10px] font-black uppercase tracking-[0.25em] mt-1.5 ${isDarkBackground ? 'text-white/40' : 'text-[#0F172A]/40'}`}>
-            Punjab Exam Preparation
+          <span className={`text-[10px] font-black uppercase tracking-[0.2em] mt-1.5 ${isDarkBackground ? 'text-white/40' : 'text-[#0F172A]/40'}`}>
+            MOCK TEST DA NETFLIX
           </span>
         )}
       </div>
