@@ -1,3 +1,4 @@
+
 'use client';
 
 import Navbar from "@/components/layout/Navbar";
@@ -17,8 +18,9 @@ export default function HomePage() {
     <main className="min-h-screen bg-white">
       <Navbar />
       <Hero />
-      {/* Note: Stats is integrated into Hero as per the blueprint */}
-      <PopularExams />
+      <div className="mt-20">
+        <PopularExams />
+      </div>
       <LatestMocks />
       <Features />
       <AppPreview />
