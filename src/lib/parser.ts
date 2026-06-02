@@ -6,7 +6,10 @@
 
 import { Question, Difficulty } from "@/types";
 
-export function parseBulkQuestions(rawText: string, metadata: { subjectId: string; difficulty: Difficulty }): Partial<Question>[] {
+export function parseBulkQuestions(
+  rawText: string, 
+  metadata: { boardId: string; examId: string; subjectId: string; difficulty: Difficulty }
+): Partial<Question>[] {
   const normalizedText = rawText.replace(/\r\n/g, "\n").replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
   
   // Split by "Q" followed by a number and a dot, or "Question"
@@ -35,25 +38,19 @@ export function parseBulkQuestions(rawText: string, metadata: { subjectId: strin
         return null;
       }
 
-      const optionsEn = [
-        aMatch[1].trim(),
-        bMatch[1].trim(),
-        cMatch[1].trim(),
-        dMatch[1].trim()
-      ];
-      
-      const answerChar = answerMatch[1].toUpperCase();
-      const correctAnswer = ['A', 'B', 'C', 'D'].indexOf(answerChar);
-
       return {
-        textEn: textMatch[1].trim(),
-        optionsEn,
-        correctAnswer,
+        questionEn: textMatch[1].trim(),
+        optionAEn: aMatch[1].trim(),
+        optionBEn: bMatch[1].trim(),
+        optionCEn: cMatch[1].trim(),
+        optionDEn: dMatch[1].trim(),
+        correctAnswer: answerMatch[1].toUpperCase() as 'A' | 'B' | 'C' | 'D',
         explanationEn: explanationMatch ? explanationMatch[1].trim() : "Correct answer verified as per official Punjab Recruitment Board pattern.",
-        subjectId: metadata.subjectId || "punjab-gk",
-        difficulty: metadata.difficulty || "Medium",
-        topic: "Bulk Import",
-        author: "Arsh Grewal"
+        boardId: metadata.boardId,
+        examId: metadata.examId,
+        subjectId: metadata.subjectId,
+        difficulty: metadata.difficulty,
+        createdAt: new Date().toISOString()
       };
     } catch (e) {
       return null;

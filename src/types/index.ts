@@ -1,6 +1,7 @@
 
-export type Difficulty = 'Easy' | 'Medium' | 'Hard';
+export type Difficulty = 'easy' | 'medium' | 'hard';
 export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'STUDENT';
+export type MockType = 'FULL' | 'SUBJECT' | 'SECTIONAL' | 'PYQ';
 
 export interface Board {
   id: string;
@@ -28,43 +29,49 @@ export interface Subject {
 
 export interface Question {
   id: string;
+  boardId: string;
+  examId: string;
   subjectId: string;
-  boardId?: string;
-  examId?: string;
-  topic: string;
   difficulty: Difficulty;
-  
+
   // Bilingual Content
-  textEn: string;
-  textPa?: string;
-  
-  // Options Mapping
-  optionsEn: string[]; // [A, B, C, D]
-  optionsPa?: string[]; // [A, B, C, D]
-  
-  correctAnswer: number; // 0, 1, 2, 3
-  
+  questionEn: string;
+  questionPa: string;
+
+  // Options Mapping - English
+  optionAEn: string;
+  optionBEn: string;
+  optionCEn: string;
+  optionDEn: string;
+
+  // Options Mapping - Punjabi
+  optionAPa: string;
+  optionBPa: string;
+  optionCPa: string;
+  optionDPa: string;
+
+  correctAnswer: 'A' | 'B' | 'C' | 'D';
+
   explanationEn: string;
-  explanationPa?: string;
-  
-  createdAt?: any;
+  explanationPa: string;
+
+  createdAt: any;
   author?: string;
-  lastModified?: any;
 }
 
 export interface MockTest {
   id: string;
-  examId: string;
   title: string;
+  boardId: string;
+  examId: string;
+  subjectId?: string;
+  mockType: MockType;
   duration: number;
   totalQuestions: number;
   questionIds: string[];
-  attempts: number;
-  difficulty?: Difficulty;
-  type?: 'Full' | 'Subject' | 'Sectional' | 'PYQ';
-  language?: string;
-  createdAt?: any;
-  publishedBy?: string;
+  difficulty: string;
+  published: boolean;
+  createdAt: any;
 }
 
 export interface UserProfile {
@@ -90,7 +97,7 @@ export interface AttemptResult {
   incorrectCount: number;
   skippedCount: number;
   totalQuestions: number;
-  timeTaken?: number; // in seconds
+  timeTaken?: number;
   weakTopics: string[];
   timestamp: string;
   answers: Record<number, number>;
