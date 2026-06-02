@@ -1,3 +1,6 @@
+
+"use client"
+
 import { cn } from "@/lib/utils"
 
 interface QuestionPaletteProps {
@@ -16,17 +19,17 @@ export default function QuestionPalette({
   onSelect
 }: QuestionPaletteProps) {
   return (
-    <div className="p-6 bg-card border rounded-2xl shadow-sm">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="font-headline font-black text-xs uppercase tracking-widest text-muted-foreground">
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <h3 className="font-headline font-black text-xs uppercase tracking-[0.2em] text-slate-400">
           Question Palette
         </h3>
-        <span className="text-[10px] font-bold text-primary px-2 py-0.5 bg-primary/10 rounded">
-          {answeredIndices.length} / {totalQuestions} Done
+        <span className="text-[10px] font-black text-[#F97316] px-3 py-1 bg-orange-50 rounded-lg border border-orange-100">
+          {answeredIndices.length} / {totalQuestions}
         </span>
       </div>
       
-      <div className="question-palette-grid">
+      <div className="grid grid-cols-5 gap-3">
         {Array.from({ length: totalQuestions }).map((_, i) => {
           const isCurrent = currentIndex === i
           const isAnswered = answeredIndices.includes(i)
@@ -37,43 +40,43 @@ export default function QuestionPalette({
               key={i}
               onClick={() => onSelect(i)}
               className={cn(
-                "h-10 w-10 rounded-xl text-xs font-bold transition-all border-2 flex items-center justify-center",
-                isCurrent && "border-primary bg-primary/10 text-primary shadow-lg shadow-primary/10",
-                !isCurrent && isAnswered && "bg-secondary border-secondary text-secondary-foreground",
-                !isCurrent && isFlagged && "bg-orange-500 border-orange-500 text-white",
-                !isCurrent && !isAnswered && !isFlagged && "bg-muted/30 border-transparent hover:border-muted-foreground/20 text-muted-foreground"
+                "h-10 w-10 rounded-xl text-xs font-black transition-all duration-200 border-2 flex items-center justify-center",
+                isCurrent && "border-[#F97316] bg-orange-50 text-[#F97316] shadow-lg shadow-orange-500/10 scale-110 z-10",
+                !isCurrent && isAnswered && "bg-blue-600 border-blue-600 text-white",
+                !isCurrent && isFlagged && "bg-amber-500 border-amber-500 text-white",
+                !isCurrent && !isAnswered && !isFlagged && "bg-slate-50 border-slate-100 hover:border-slate-300 text-slate-400"
               )}
             >
-              {(i + 1).toString().padStart(2, '0')}
+              {i + 1}
             </button>
           )
         })}
       </div>
 
-      <div className="mt-8 pt-6 border-t border-foreground/5 grid grid-cols-2 gap-y-3 gap-x-4">
+      <div className="pt-8 border-t border-slate-100 grid grid-cols-2 gap-y-4 gap-x-6">
         <LegendItem variant="current" label="Current" />
         <LegendItem variant="answered" label="Answered" />
-        <LegendItem variant="flagged" label="Review" />
-        <LegendItem variant="not-answered" label="Remaining" />
+        <LegendItem variant="flagged" label="Flagged" />
+        <LegendItem variant="remaining" label="Not Visited" />
       </div>
     </div>
   )
 }
 
-function LegendItem({ variant, label }: { variant: 'current' | 'answered' | 'flagged' | 'not-answered', label: string }) {
+function LegendItem({ variant, label }: { variant: 'current' | 'answered' | 'flagged' | 'remaining', label: string }) {
   const getStyles = () => {
     switch (variant) {
-      case 'current': return "bg-primary/20 border-primary"
-      case 'answered': return "bg-secondary"
-      case 'flagged': return "bg-orange-500"
-      case 'not-answered': return "bg-muted/30"
+      case 'current': return "bg-orange-50 border-orange-200"
+      case 'answered': return "bg-blue-600"
+      case 'flagged': return "bg-amber-500"
+      case 'remaining': return "bg-slate-100"
     }
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <div className={cn("h-3 w-3 rounded-md", getStyles())} />
-      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{label}</span>
+    <div className="flex items-center gap-3">
+      <div className={cn("h-4 w-4 rounded-md border", getStyles())} />
+      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</span>
     </div>
   )
 }

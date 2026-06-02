@@ -72,30 +72,6 @@ export const EXAMS: Exam[] = [
     activeQuestions: 1200,
     totalQuestions: 100,
     duration: 120
-  },
-  {
-    id: "pspcl-alm",
-    name: "Assistant Lineman (ALM)",
-    board: "Power Sector",
-    description: "Technical recruitment for PSPCL and PSTCL power utilities.",
-    category: "Technical",
-    thumbnail: "exam-pspcl",
-    totalMocks: 20,
-    activeQuestions: 1000,
-    totalQuestions: 100,
-    duration: 120
-  },
-  {
-    id: "coop-bank-clerk",
-    name: "Cooperative Bank Clerk",
-    board: "Cooperative",
-    description: "Management and Data Entry Operator posts for Punjab State Cooperative Banks.",
-    category: "Banking",
-    thumbnail: "exam-pspcl",
-    totalMocks: 30,
-    activeQuestions: 2000,
-    totalQuestions: 100,
-    duration: 120
   }
 ];
 
@@ -142,13 +118,43 @@ export const MOCK_QUESTIONS: Question[] = [
   },
   {
     id: "q5",
-    topic: "Punjab GK",
+    topic: "Geography",
     subject: "General Knowledge",
     question: "Which river is known as the 'Backbone of Punjab'?",
     options: ["Sutlej", "Beas", "Ravi", "Chenab"],
     correctAnswer: 0,
     difficulty: "Easy",
-    explanation: "The Sutlej river is the longest of the five rivers that flow through the historic crossroads region of Punjab."
+    explanation: "The Sutlej river is the longest of the five rivers that flow through Punjab."
+  },
+  {
+    id: "q6",
+    topic: "Polity",
+    subject: "Punjab GK",
+    question: "How many members are there in the Punjab Legislative Assembly?",
+    options: ["117", "110", "121", "105"],
+    correctAnswer: 0,
+    difficulty: "Medium",
+    explanation: "The Punjab Vidhan Sabha consists of 117 members."
+  },
+  {
+    id: "q7",
+    topic: "Culture",
+    subject: "Punjab GK",
+    question: "Which dance is specifically performed by women in Punjab?",
+    options: ["Bhangra", "Giddha", "Malwai Giddha", "Jhummar"],
+    correctAnswer: 1,
+    difficulty: "Easy",
+    explanation: "Giddha is a popular folk dance of women in the Punjab region."
+  },
+  {
+    id: "q8",
+    topic: "Economy",
+    subject: "Punjab GK",
+    question: "When was the Green Revolution started in Punjab?",
+    options: ["1960s", "1970s", "1950s", "1980s"],
+    correctAnswer: 0,
+    difficulty: "Medium",
+    explanation: "The Green Revolution in India was first introduced in Punjab in the late 1960s."
   }
 ];
 
@@ -176,13 +182,6 @@ export const CURRENT_AFFAIRS: CurrentAffair[] = [
     date: "Oct 22, 2026",
     category: "Environment",
     summary: "A 50-crore conservation project announced to protect migratory birds at Harike Wetland."
-  },
-  {
-    id: "ca3",
-    title: "Punjab Police Academy Phillaur wins National Award",
-    date: "Oct 20, 2026",
-    category: "Achievement",
-    summary: "The historic academy at Phillaur was recognized for excellence in training SI and Constable ranks."
   }
 ];
 
@@ -194,13 +193,5 @@ export const NOTIFICATIONS: Notification[] = [
     time: "2 hours ago",
     isRead: false,
     type: "result"
-  },
-  {
-    id: "n2",
-    title: "New Exam Alert",
-    message: "Punjab Police SI notification expected in November.",
-    time: "5 hours ago",
-    isRead: true,
-    type: "alert"
   }
 ];

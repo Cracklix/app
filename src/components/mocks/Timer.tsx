@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useEffect, useState } from "react"
@@ -31,15 +32,15 @@ export default function Timer({ initialMinutes, onTimeUp }: TimerProps) {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
-  const isLowTime = timeLeft < (initialMinutes * 0.1 * 60) // 10% left
+  const isLowTime = timeLeft < (initialMinutes * 0.1 * 60) // 10% left (e.g. 12 mins for a 120 min test)
 
   return (
     <div className={cn(
-      "flex items-center gap-2 px-4 py-2 rounded-lg font-headline font-bold text-lg border transition-colors",
-      isLowTime ? "bg-destructive/10 border-destructive text-destructive animate-pulse" : "bg-card border-border text-primary"
+      "flex items-center gap-3 px-5 py-2.5 rounded-2xl font-headline font-black text-lg border-2 transition-all duration-300 shadow-sm",
+      isLowTime ? "bg-red-50 border-red-200 text-red-600 animate-pulse" : "bg-slate-50 border-slate-100 text-[#0F172A]"
     )}>
-      <Clock className="h-5 w-5" />
-      <span>{formatTime(timeLeft)}</span>
+      <Clock className={cn("h-5 w-5", isLowTime ? "text-red-500" : "text-[#F97316]")} />
+      <span className="tabular-nums tracking-tighter">{formatTime(timeLeft)}</span>
     </div>
   )
 }

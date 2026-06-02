@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, XCircle, BrainCircuit, ChevronRight, HelpCircle, Trophy, Target, Zap } from "lucide-react"
+import { CheckCircle2, XCircle, BrainCircuit, ChevronRight, HelpCircle, Trophy, Target, Zap, Share2 } from "lucide-react"
 import { MOCK_QUESTIONS } from "@/lib/mock-data"
 import { rationalizeMockQuestion, RationalizeMockQuestionOutput } from "@/ai/flows/rationalize-mock-question"
 import Link from "next/link"
@@ -46,13 +46,17 @@ export default function ResultPage() {
 
   if (!sessionData) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen bg-slate-50">
         <Navbar />
-        <main className="flex-1 flex flex-col items-center justify-center p-8 space-y-4 text-center">
-          <Trophy className="h-16 w-16 text-muted-foreground opacity-20" />
-          <h1 className="text-2xl font-headline font-bold">No results found for this attempt</h1>
-          <p className="text-muted-foreground">It seems you haven't completed this test yet or the session expired.</p>
-          <Button asChild className="bg-primary hover:bg-primary/90 mt-4">
+        <main className="flex-1 flex flex-col items-center justify-center p-8 space-y-6 text-center">
+          <div className="h-20 w-20 bg-slate-200 rounded-3xl flex items-center justify-center animate-pulse">
+            <Trophy className="h-10 w-10 text-slate-400" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-headline font-black text-[#0F172A]">Result Not Found</h1>
+            <p className="text-slate-500 max-w-md">The attempt session might have expired or you navigated here without finishing the test.</p>
+          </div>
+          <Button asChild className="bg-[#F97316] hover:bg-[#EA580C] text-white font-bold h-12 px-8 rounded-xl shadow-lg shadow-orange-500/20">
             <Link href="/mocks">Browse Mock Tests</Link>
           </Button>
         </main>
@@ -60,160 +64,205 @@ export default function ResultPage() {
     )
   }
 
-  const { correctCount, incorrectCount, totalQuestions, answers, accuracy, weakTopics } = sessionData
+  const { correctCount, incorrectCount, totalQuestions, answers, accuracy, weakTopics, mockTitle } = sessionData
   const score = sessionData.score || 0
   const skippedCount = totalQuestions - (Object.keys(answers).length)
   const scorePercent = Math.round((score / totalQuestions) * 100)
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-slate-50/50">
       <Navbar />
-      <main className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          <Card className="lg:col-span-2 border-primary/20 bg-primary/5 overflow-hidden shadow-xl shadow-primary/5">
-            <CardHeader className="bg-primary/10 border-b border-primary/10">
-              <CardTitle className="font-headline text-3xl flex items-center gap-3">
-                <Trophy className="text-primary h-8 w-8" />
-                Performance Report
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-8">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
-                <Stat icon={<CheckCircle2 className="text-green-500" />} label="Correct" value={correctCount} />
-                <Stat icon={<XCircle className="text-destructive" />} label="Incorrect" value={incorrectCount} />
-                <Stat icon={<HelpCircle className="text-muted-foreground" />} label="Skipped" value={skippedCount} />
-                <Stat icon={<Target className="text-secondary" />} label="Accuracy" value={`${accuracy}%`} />
+      <main className="container mx-auto px-6 py-12 max-w-6xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+          <Card className="lg:col-span-2 border-none bg-white shadow-xl shadow-slate-200/50 rounded-[2.5rem] overflow-hidden">
+            <CardHeader className="p-8 border-b border-slate-50 flex flex-row items-center justify-between">
+              <div className="space-y-1">
+                <CardTitle className="font-headline text-3xl font-black text-[#0F172A] flex items-center gap-3">
+                  <div className="h-10 w-10 bg-orange-50 rounded-xl flex items-center justify-center">
+                    <Trophy className="text-[#F97316] h-6 w-6" />
+                  </div>
+                  Performance Summary
+                </CardTitle>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{mockTitle}</p>
               </div>
-              <div className="mt-12 space-y-4">
+              <Button variant="outline" size="icon" className="rounded-xl border-slate-100">
+                <Share2 className="h-4 w-4 text-slate-400" />
+              </Button>
+            </CardHeader>
+            <CardContent className="p-10">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center mb-16">
+                <Stat icon={<CheckCircle2 className="text-emerald-500" />} label="Correct" value={correctCount} />
+                <Stat icon={<XCircle className="text-rose-500" />} label="Incorrect" value={incorrectCount} />
+                <Stat icon={<HelpCircle className="text-slate-400" />} label="Skipped" value={skippedCount} />
+                <Stat icon={<Target className="text-blue-600" />} label="Accuracy" value={`${accuracy}%`} />
+              </div>
+              
+              <div className="space-y-6 bg-slate-50 p-8 rounded-[2rem] border border-slate-100">
                 <div className="flex justify-between items-end">
-                  <span className="text-sm font-black uppercase tracking-widest text-muted-foreground">Overall Mastery</span>
-                  <span className={`text-sm font-black uppercase tracking-widest ${scorePercent > 70 ? 'text-green-500' : 'text-primary'}`}>
-                    {scorePercent > 70 ? 'Distinguished' : 'Improving'}
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Total Score</p>
+                    <p className="text-4xl font-headline font-black text-[#0F172A]">
+                      {score} <span className="text-lg text-slate-300">/ {totalQuestions}</span>
+                    </p>
+                  </div>
+                  <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${scorePercent > 70 ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-[#F97316]'}`}>
+                    {scorePercent > 80 ? 'Exceptional' : scorePercent > 60 ? 'Competitive' : 'Needs Practice'}
                   </span>
                 </div>
-                <Progress value={scorePercent} className="h-4 rounded-full bg-primary/10" />
+                <Progress value={scorePercent} className="h-3 rounded-full bg-slate-200" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-secondary/20 bg-secondary/5 h-full">
-            <CardHeader>
-              <CardTitle className="font-headline text-xl flex items-center gap-2">
-                <Zap className="h-5 w-5 text-secondary" />
-                Study Roadmap
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Our analysis shows you should prioritize revision in the following subjects to boost your rank.
-              </p>
-              <div className="space-y-3">
-                {weakTopics.length > 0 ? (
-                  weakTopics.map((topic: string) => (
-                    <RecommendationItem key={topic} text={`Strengthen concept of ${topic}`} />
-                  ))
-                ) : (
-                  <RecommendationItem text="All sections show strong consistency." />
-                )}
-              </div>
-              <div className="pt-4">
-                <Button className="w-full bg-secondary hover:bg-secondary/90 text-white font-bold h-12 rounded-xl">
-                  Re-Attempt Similar Mocks
+          <div className="space-y-6">
+            <Card className="border-none bg-[#0B1528] text-white shadow-2xl shadow-slate-900/10 rounded-[2.5rem] overflow-hidden">
+              <CardHeader className="p-8">
+                <CardTitle className="font-headline text-xl font-black flex items-center gap-3">
+                  <div className="h-10 w-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
+                    <Zap className="h-5 w-5 text-blue-400" />
+                  </div>
+                  Weak Subjects
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-8 pb-8 space-y-6">
+                <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                  Prioritize these topics in your next study session to maximize your selection chances.
+                </p>
+                <div className="space-y-3">
+                  {weakTopics.length > 0 ? (
+                    weakTopics.map((topic: string) => (
+                      <div key={topic} className="flex items-center gap-3 bg-white/5 p-4 rounded-2xl border border-white/5 group hover:bg-white/10 transition-colors">
+                        <div className="h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
+                        <span className="text-sm font-bold text-slate-200">{topic}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="bg-emerald-500/10 p-4 rounded-2xl border border-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center gap-3">
+                      <CheckCircle2 className="h-4 w-4" /> All sections consistent.
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none bg-white shadow-xl shadow-slate-200/50 rounded-[2.5rem] p-8">
+              <div className="flex flex-col gap-4">
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Next Step</p>
+                <h4 className="font-headline text-xl font-black text-[#0F172A]">Beat Your High Score</h4>
+                <p className="text-sm text-slate-500 leading-relaxed">Attempt a similar mock series for {mockTitle} to master the pattern.</p>
+                <Button asChild className="w-full bg-[#F97316] hover:bg-[#EA580C] text-white font-bold h-14 rounded-2xl mt-4">
+                  <Link href="/mocks">Browse Tests</Link>
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </Card>
+          </div>
         </div>
 
-        <div className="space-y-8">
-          <h2 className="text-2xl font-headline font-bold text-primary">Detailed Solutions & AI Analysis</h2>
-          {MOCK_QUESTIONS.map((q, idx) => {
-            const userAnsIdx = answers[idx]
-            const isCorrect = userAnsIdx === q.correctAnswer
-            const isSkipped = userAnsIdx === undefined
+        <div className="space-y-12">
+          <div className="flex items-center justify-between">
+            <h2 className="text-3xl font-headline font-black text-[#0F172A]">Solutions & AI Tutor</h2>
+            <Badge className="bg-slate-900 text-white px-4 py-1.5 rounded-xl border-none font-bold">8 MCQs Analysis</Badge>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-8">
+            {MOCK_QUESTIONS.map((q, idx) => {
+              const userAnsIdx = answers[idx]
+              const isCorrect = userAnsIdx === q.correctAnswer
+              const isSkipped = userAnsIdx === undefined
 
-            return (
-              <Card key={q.id} className={`overflow-hidden transition-all ${isSkipped ? 'border-muted' : isCorrect ? 'border-green-500/30' : 'border-destructive/30'}`}>
-                <CardContent className="p-8">
-                  <div className="flex justify-between items-start mb-6">
-                    <div className="flex gap-3 items-center">
-                      <div className="h-8 w-8 rounded-lg bg-card border flex items-center justify-center font-headline font-bold text-xs">
-                        Q{idx + 1}
+              return (
+                <Card key={q.id} className={`border-none shadow-xl shadow-slate-200/30 rounded-[2.5rem] overflow-hidden transition-all duration-300 ${isSkipped ? 'opacity-80' : ''}`}>
+                  <CardContent className="p-8 md:p-12">
+                    <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+                      <div className="flex gap-4 items-center">
+                        <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center font-headline font-black text-sm text-[#0F172A]">
+                          {idx + 1}
+                        </div>
+                        <Badge className={`px-4 py-1.5 rounded-xl border-none font-black uppercase tracking-widest text-[10px] ${
+                          isSkipped ? 'bg-slate-100 text-slate-400' : 
+                          isCorrect ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
+                        }`}>
+                          {isSkipped ? 'Skipped' : isCorrect ? 'Correct' : 'Incorrect'}
+                        </Badge>
                       </div>
-                      <Badge className={`${
-                        isSkipped ? 'bg-muted text-muted-foreground' : 
-                        isCorrect ? 'bg-green-500/10 text-green-500' : 'bg-destructive/10 text-destructive'
-                      } border-none font-bold uppercase tracking-widest text-[10px]`}>
-                        {isSkipped ? 'Skipped' : isCorrect ? 'Correct' : 'Incorrect'}
-                      </Badge>
+                      <div className="flex items-center gap-6">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">{q.topic}</span>
+                        <div className="h-4 w-px bg-slate-100" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">{q.difficulty}</span>
+                      </div>
                     </div>
-                    <span className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">{q.topic} • {q.difficulty}</span>
-                  </div>
 
-                  <p className="text-lg sm:text-xl font-medium mb-8 text-foreground/90 leading-relaxed">{q.question}</p>
+                    <p className="text-xl md:text-2xl font-bold mb-12 text-[#0F172A] leading-relaxed">{q.question}</p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                    {q.options.map((opt, i) => {
-                      const isOptionCorrect = i === q.correctAnswer
-                      const isOptionUserChoice = i === userAnsIdx
-                      
-                      let variantClasses = "border-border bg-white"
-                      if (isOptionCorrect) variantClasses = "border-green-500 bg-green-500/10 text-green-700"
-                      else if (isOptionUserChoice && !isCorrect) variantClasses = "border-destructive bg-destructive/10 text-destructive"
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+                      {q.options.map((opt, i) => {
+                        const isOptionCorrect = i === q.correctAnswer
+                        const isOptionUserChoice = i === userAnsIdx
+                        
+                        let styleClasses = "border-slate-100 bg-white"
+                        if (isOptionCorrect) styleClasses = "border-emerald-500 bg-emerald-50 text-emerald-700 ring-4 ring-emerald-500/5"
+                        else if (isOptionUserChoice && !isCorrect) styleClasses = "border-rose-500 bg-rose-50 text-rose-700 ring-4 ring-rose-500/5"
 
-                      return (
-                        <div key={i} className={`p-4 rounded-xl border-2 text-sm font-medium flex items-center justify-between ${variantClasses}`}>
-                          <span className="flex items-center gap-3">
-                             <span className="font-headline font-black text-xs opacity-40">{String.fromCharCode(65 + i)}</span>
-                             {opt}
+                        return (
+                          <div key={i} className={`p-5 rounded-2xl border-2 text-base font-bold flex items-center justify-between transition-all ${styleClasses}`}>
+                            <span className="flex items-center gap-4">
+                               <span className={`font-headline font-black text-xs transition-colors ${isOptionCorrect ? 'text-emerald-500' : isOptionUserChoice ? 'text-rose-500' : 'text-slate-300'}`}>
+                                 {String.fromCharCode(65 + i)}
+                               </span>
+                               {opt}
+                            </span>
+                            {isOptionCorrect && <CheckCircle2 className="h-5 w-5 text-emerald-500" />}
+                            {isOptionUserChoice && !isCorrect && <XCircle className="h-5 w-5 text-rose-500" />}
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    {results[q.id] ? (
+                      <div className="bg-orange-50/50 border-2 border-orange-100 rounded-[2rem] p-8 md:p-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="flex items-center gap-3 mb-8 text-[#F97316]">
+                          <div className="h-10 w-10 bg-[#F97316] rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
+                            <BrainCircuit className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="font-headline text-2xl font-black">AI Tutor Logic</h4>
+                        </div>
+                        <p className="text-lg leading-relaxed mb-8 text-slate-700 whitespace-pre-wrap font-medium">
+                          {results[q.id].rationalization}
+                        </p>
+                        <div className="space-y-4">
+                           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#F97316]/60">Mastery Points</p>
+                           <div className="flex flex-wrap gap-3">
+                            {results[q.id].keyLearningPoints.map((point, pi) => (
+                              <div key={pi} className="bg-white border border-orange-100 text-slate-700 px-5 py-2 rounded-xl text-sm font-bold shadow-sm">
+                                {point}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-between h-20 rounded-2xl border-2 border-dashed border-slate-200 hover:bg-orange-50 hover:border-orange-200 group transition-all duration-300"
+                        onClick={() => handleRationalize(q.id, q.question, q.options, q.correctAnswer, userAnsIdx)}
+                        disabled={rationalizing === q.id}
+                      >
+                        <span className="flex items-center gap-5 px-4">
+                          <div className={`h-10 w-10 rounded-xl flex items-center justify-center transition-all ${rationalizing === q.id ? 'bg-orange-500 animate-spin' : 'bg-slate-100 group-hover:bg-orange-500'}`}>
+                            <BrainCircuit className={`h-5 w-5 transition-colors ${rationalizing === q.id || 'group-hover:text-white' ? 'text-white' : 'text-slate-400'}`} />
+                          </div>
+                          <span className={`font-black uppercase tracking-widest text-xs transition-colors ${rationalizing === q.id ? 'text-[#F97316]' : 'text-slate-400 group-hover:text-[#F97316]'}`}>
+                            {rationalizing === q.id ? "Consulting AI Tutor..." : "Get Step-by-Step AI Explanation"}
                           </span>
-                          {isOptionCorrect && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-                          {isOptionUserChoice && !isCorrect && <XCircle className="h-4 w-4 text-destructive" />}
-                        </div>
-                      )
-                    })}
-                  </div>
-
-                  {results[q.id] ? (
-                    <div className="bg-primary/5 border border-primary/20 rounded-2xl p-8 mt-6">
-                      <div className="flex items-center gap-2 mb-6 text-primary">
-                        <BrainCircuit className="h-6 w-6" />
-                        <h4 className="font-headline text-xl font-bold">AI Explanation</h4>
-                      </div>
-                      <p className="text-base leading-relaxed mb-6 text-foreground/80 whitespace-pre-wrap">
-                        {results[q.id].rationalization}
-                      </p>
-                      <div className="space-y-3">
-                         <p className="text-xs font-black uppercase tracking-widest text-primary/60">Key Takeaways</p>
-                         <div className="flex flex-wrap gap-2">
-                          {results[q.id].keyLearningPoints.map((point, pi) => (
-                            <Badge key={pi} variant="secondary" className="bg-secondary/10 text-secondary border-none px-3 py-1">
-                              {point}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <Button 
-                      variant="ghost" 
-                      className="text-primary hover:bg-primary/5 w-full justify-between h-14 rounded-xl border border-dashed border-primary/20 group"
-                      onClick={() => handleRationalize(q.id, q.question, q.options, q.correctAnswer, userAnsIdx)}
-                      disabled={rationalizing === q.id}
-                    >
-                      <span className="flex items-center gap-3">
-                        <BrainCircuit className={`h-5 w-5 ${rationalizing === q.id ? 'animate-spin' : ''}`} />
-                        <span className="font-bold">
-                          {rationalizing === q.id ? "Analyzing..." : "Rationalize with AI"}
                         </span>
-                      </span>
-                      <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            )
-          })}
+                        <ChevronRight className={`h-5 w-5 mr-4 transition-all ${rationalizing === q.id ? 'opacity-0' : 'text-slate-300 group-hover:text-[#F97316] group-hover:translate-x-1'}`} />
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
         </div>
       </main>
     </div>
@@ -222,19 +271,10 @@ export default function ResultPage() {
 
 function Stat({ icon, label, value }: { icon: React.ReactNode, label: string, value: any }) {
   return (
-    <div className="space-y-2">
-      <div className="flex justify-center">{icon}</div>
-      <p className="text-3xl font-headline font-black text-foreground">{value}</p>
-      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{label}</p>
-    </div>
-  )
-}
-
-function RecommendationItem({ text }: { text: string }) {
-  return (
-    <div className="flex items-center gap-3 bg-white/50 p-3 rounded-lg border border-secondary/5">
-      <div className="h-2 w-2 rounded-full bg-secondary shrink-0" />
-      <span className="text-xs font-bold text-muted-foreground leading-relaxed">{text}</span>
+    <div className="space-y-3">
+      <div className="flex justify-center transform transition-transform hover:scale-110 duration-300">{icon}</div>
+      <p className="text-3xl font-headline font-black text-[#0F172A] tracking-tighter">{value}</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{label}</p>
     </div>
   )
 }

@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { EXAMS, SAMPLE_MOCK } from "@/lib/mock-data"
+import { SAMPLE_MOCK } from "@/lib/mock-data"
 import Timer from "@/components/mocks/Timer"
 import QuestionPalette from "@/components/mocks/QuestionPalette"
 import { Button } from "@/components/ui/button"
@@ -27,9 +27,9 @@ export default function MockAttempt() {
   const router = useRouter()
   const mockId = params.id as string
   
-  // In a real app, we'd fetch this. For now, we use our sample or find by ID if possible.
   const mockData = useMemo(() => {
-    return SAMPLE_MOCK.id === mockId ? SAMPLE_MOCK : SAMPLE_MOCK
+    // In a real app, fetch by ID. Here we use SAMPLE_MOCK for demonstration.
+    return SAMPLE_MOCK
   }, [mockId])
 
   const [currentIdx, setCurrentIdx] = useState(0)
@@ -107,6 +107,7 @@ export default function MockAttempt() {
     
     const resultData = {
       mockId: mockData.id,
+      mockTitle: mockData.title,
       userId: "guest",
       answers,
       score: correctCount,
@@ -127,14 +128,14 @@ export default function MockAttempt() {
   if (!isMounted) return null
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-background">
-      <header className="h-16 border-b flex items-center justify-between px-6 bg-card shrink-0 shadow-sm relative z-50">
+    <div className="flex flex-col h-screen overflow-hidden bg-white text-slate-900">
+      <header className="h-16 border-b flex items-center justify-between px-6 bg-white shrink-0 shadow-sm relative z-50">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
+          <div className="h-9 w-9 bg-[#F97316] rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
             <ShieldCheck className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="font-headline font-bold text-sm sm:text-lg truncate max-w-[200px] sm:max-w-md">
+            <h1 className="font-headline font-black text-sm sm:text-lg tracking-tight truncate max-w-[200px] sm:max-w-md">
               {mockData.title}
             </h1>
           </div>
@@ -144,19 +145,19 @@ export default function MockAttempt() {
           <Timer initialMinutes={mockData.durationInMinutes} onTimeUp={submitMock} />
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" className="font-bold">Submit Exam</Button>
+              <Button className="bg-[#F97316] hover:bg-[#EA580C] text-white font-bold rounded-xl px-6 shadow-xl shadow-orange-500/10">Submit Exam</Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="rounded-3xl border-none shadow-2xl">
               <AlertDialogHeader>
-                <AlertDialogTitle>Ready to submit?</AlertDialogTitle>
-                <AlertDialogDescription>
+                <AlertDialogTitle className="font-headline text-2xl font-black">Ready to submit?</AlertDialogTitle>
+                <AlertDialogDescription className="text-slate-500">
                   You have attempted {Object.keys(answers).length} out of {mockData.questions.length} questions.
-                  Submission is final and results will be calculated immediately.
+                  Submission is final and your performance analytics will be available immediately.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Back to Test</AlertDialogCancel>
-                <AlertDialogAction onClick={submitMock} className="bg-primary hover:bg-primary/90">
+                <AlertDialogCancel className="rounded-xl font-bold">Back to Test</AlertDialogCancel>
+                <AlertDialogAction onClick={submitMock} className="bg-[#F97316] hover:bg-[#EA580C] text-white font-bold rounded-xl px-8 shadow-xl shadow-orange-500/20">
                   Submit Now
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -166,27 +167,27 @@ export default function MockAttempt() {
       </header>
 
       <main className="flex flex-1 overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar bg-slate-50/30">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar bg-slate-50/50">
           <div className="max-w-3xl mx-auto space-y-8 pb-20">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-black text-primary bg-primary/5 px-3 py-1.5 rounded-lg border border-primary/10 tracking-widest uppercase">
-                  Q {currentIdx + 1}
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-black text-[#F97316] bg-orange-50 px-4 py-2 rounded-xl border border-orange-100 tracking-widest uppercase">
+                  Question {currentIdx + 1}
                 </span>
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
-                  Section: {question.topic}
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+                  Topic: {question.topic}
                 </span>
               </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-secondary/5 border border-secondary/10 rounded-lg">
-                <AlertCircle className="h-3 w-3 text-secondary" />
-                <span className="text-[10px] font-black text-secondary uppercase tracking-widest">
-                  Level: {question.difficulty}
+              <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-xl">
+                <AlertCircle className="h-3.5 w-3.5 text-blue-600" />
+                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
+                  Difficulty: {question.difficulty}
                 </span>
               </div>
             </div>
 
             <div className="space-y-8">
-              <h2 className="text-xl sm:text-2xl font-bold leading-relaxed text-primary">
+              <h2 className="text-xl sm:text-2xl font-bold leading-relaxed text-[#0F172A]">
                 {question.question}
               </h2>
 
@@ -201,11 +202,11 @@ export default function MockAttempt() {
                     <div 
                       key={i} 
                       onClick={() => setAnswers(prev => ({ ...prev, [currentIdx]: i }))}
-                      className={`flex items-center space-x-3 p-5 border-2 rounded-2xl transition-all cursor-pointer ${isSelected ? 'border-primary bg-primary/5 shadow-lg shadow-primary/5' : 'border-border bg-white hover:border-muted-foreground/30'}`}
+                      className={`flex items-center space-x-4 p-5 border-2 rounded-2xl transition-all duration-200 cursor-pointer group ${isSelected ? 'border-[#F97316] bg-orange-50/30 ring-4 ring-orange-500/5' : 'border-slate-100 bg-white hover:border-slate-300'}`}
                     >
-                      <RadioGroupItem value={i.toString()} id={`opt-${i}`} className="text-primary border-primary shrink-0" />
-                      <Label htmlFor={`opt-${i}`} className="flex-1 cursor-pointer text-base font-bold select-none text-primary/80">
-                        <span className="mr-4 text-muted-foreground font-headline font-black opacity-30">
+                      <RadioGroupItem value={i.toString()} id={`opt-${i}`} className="text-[#F97316] border-slate-300 shrink-0" />
+                      <Label htmlFor={`opt-${i}`} className="flex-1 cursor-pointer text-base font-bold select-none text-slate-700">
+                        <span className={`mr-4 text-xs font-black uppercase tracking-widest transition-colors ${isSelected ? 'text-[#F97316]' : 'text-slate-300 group-hover:text-slate-400'}`}>
                           {String.fromCharCode(65 + i)}
                         </span>
                         {opt}
@@ -216,21 +217,21 @@ export default function MockAttempt() {
               </RadioGroup>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-12 border-t">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-12 border-t border-slate-100">
               <div className="flex gap-4 w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="flex-1 sm:flex-none font-bold" onClick={handlePrev} disabled={currentIdx === 0}>
+                <Button variant="outline" size="lg" className="flex-1 sm:flex-none font-bold rounded-xl border-slate-200" onClick={handlePrev} disabled={currentIdx === 0}>
                   <ChevronLeft className="mr-2 h-4 w-4" /> Previous
                 </Button>
-                <Button variant="outline" size="lg" className="flex-1 sm:flex-none font-bold" onClick={handleNext} disabled={currentIdx === mockData.questions.length - 1}>
+                <Button variant="outline" size="lg" className="flex-1 sm:flex-none font-bold rounded-xl border-slate-200" onClick={handleNext} disabled={currentIdx === mockData.questions.length - 1}>
                   Next <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
               
-              <div className="flex gap-2 w-full sm:w-auto">
+              <div className="flex gap-3 w-full sm:w-auto">
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  className="text-muted-foreground hover:text-destructive gap-2"
+                  className="text-slate-400 hover:text-red-500 gap-2 h-12 rounded-xl px-4"
                   onClick={clearResponse}
                   disabled={answers[currentIdx] === undefined}
                 >
@@ -238,25 +239,27 @@ export default function MockAttempt() {
                 </Button>
                 <Button 
                   variant="ghost" 
-                  className={`flex-1 sm:flex-none font-black uppercase tracking-widest text-[10px] transition-all h-12 rounded-xl border-2 ${flagged.includes(currentIdx) ? "text-accent bg-accent/5 border-accent/20" : "border-transparent"}`} 
+                  className={`flex-1 sm:flex-none font-black uppercase tracking-widest text-[10px] transition-all h-12 px-6 rounded-xl border-2 ${flagged.includes(currentIdx) ? "text-amber-600 bg-amber-50 border-amber-200" : "border-transparent text-slate-400 hover:bg-slate-100"}`} 
                   onClick={toggleFlag}
                 >
-                  <Flag className={`mr-2 h-4 w-4 ${flagged.includes(currentIdx) ? "fill-current" : ""}`} />
-                  {flagged.includes(currentIdx) ? "Review Marked" : "Mark for Review"}
+                  <Flag className={`mr-2 h-3.5 w-3.5 ${flagged.includes(currentIdx) ? "fill-current" : ""}`} />
+                  {flagged.includes(currentIdx) ? "Marked" : "Review Later"}
                 </Button>
               </div>
             </div>
           </div>
         </div>
 
-        <aside className="w-80 border-l bg-card overflow-y-auto hidden lg:block p-8">
-          <QuestionPalette 
-            totalQuestions={mockData.questions.length}
-            currentIndex={currentIdx}
-            answeredIndices={Object.keys(answers).map(Number)}
-            flaggedIndices={flagged}
-            onSelect={setCurrentIdx}
-          />
+        <aside className="w-80 border-l border-slate-100 bg-white overflow-y-auto hidden lg:block">
+          <div className="p-8">
+             <QuestionPalette 
+              totalQuestions={mockData.questions.length}
+              currentIndex={currentIdx}
+              answeredIndices={Object.keys(answers).map(Number)}
+              flaggedIndices={flagged}
+              onSelect={setCurrentIdx}
+            />
+          </div>
         </aside>
       </main>
     </div>
