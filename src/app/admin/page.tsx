@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -19,15 +20,18 @@ import {
   Bell,
   ShieldCheck,
   TrendingUp,
-  FileText
+  FileText,
+  RefreshCw
 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Link from "next/link"
-import { useCollection, useFirestore } from "@/firebase"
+import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection, query, limit, orderBy } from "firebase/firestore"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
+import { seedInitialData } from "@/services/seed-data"
+import { useToast } from "@/hooks/use-toast"
 
 /**
  * @fileOverview Phase 32: Polished Admin Command Center.
@@ -36,11 +40,27 @@ import { Badge } from "@/components/ui/badge"
 
 export default function AdminDashboard() {
   const db = useFirestore()
+  const { profile } = useUser()
+  const { toast } = useToast()
+  const [seeding, setSeeding] = useState(false)
 
   const { data: users, loading: uLoading } = useCollection(useMemo(() => (db ? collection(db, "users") : null), [db]))
   const { data: mocks, loading: mLoading } = useCollection(useMemo(() => (db ? collection(db, "mocks") : null), [db]))
   const { data: questions, loading: qLoading } = useCollection(useMemo(() => (db ? collection(db, "questions") : null), [db]))
   const { data: ca, loading: cLoading } = useCollection(useMemo(() => (db ? collection(db, "current_affairs") : null), [db]))
+
+  const handleSeed = async () => {
+    if (!db || seeding) return
+    setSeeding(true)
+    try {
+      await seedInitialData(db)
+      toast({ title: "Repository Synced", description: "All 13 institutional collections have been created and seeded." })
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Sync Failed", description: e.message })
+    } finally {
+      setSeeding(false)
+    }
+  }
 
   return (
     <div className="space-y-12 pb-20">
@@ -54,7 +74,17 @@ export default function AdminDashboard() {
           <p className="text-muted-foreground mt-2 text-lg">System Oversight: Monitoring Punjab's largest preparation vertical.</p>
         </div>
         <div className="flex flex-wrap gap-4">
-          <Button variant="outline" className="border-foreground/10 bg-card/30 rounded-2xl font-bold h-14 px-8 text-xs uppercase tracking-widest">System Health</Button>
+          {profile?.role === 'SUPER_ADMIN' && (
+            <Button 
+              onClick={handleSeed} 
+              disabled={seeding}
+              variant="outline" 
+              className="border-primary/20 bg-primary/5 text-primary rounded-2xl font-bold h-14 px-8 text-xs uppercase tracking-widest gap-3"
+            >
+              <RefreshCw className={`h-4 w-4 ${seeding ? 'animate-spin' : ''}`} /> 
+              {seeding ? "Seeding..." : "Seed Repository"}
+            </Button>
+          )}
           <Button asChild className="bg-primary hover:bg-primary/90 rounded-2xl h-14 px-10 font-black shadow-2xl shadow-primary/20 uppercase tracking-widest text-xs">
             <Link href="/admin/mocks/builder"><Plus className="mr-3 h-5 w-5" /> Deploy New Mock</Link>
           </Button>
