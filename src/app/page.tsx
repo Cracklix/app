@@ -37,12 +37,14 @@ export default function HomePage() {
          <div className="container mx-auto px-6 max-w-7xl">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                
+               {/* Left: Popular Hubs */}
                <div className="lg:col-span-8">
                   <PopularExams />
                </div>
 
+               {/* Right: Real-time Engagement */}
                <div className="lg:col-span-4 space-y-8 pt-16">
-                  {/* Daily Question Engagement */}
+                  {/* Phase 62: Daily Question Engagement */}
                   <Card className="rounded-[2.5rem] border-none bg-[#0F172A] text-white p-10 overflow-hidden relative shadow-3xl">
                      <div className="absolute top-0 right-0 p-6 opacity-10 rotate-12"><Sparkles className="h-32 w-32" /></div>
                      <div className="relative z-10 space-y-6">
@@ -116,6 +118,7 @@ export default function HomePage() {
                <RankerCard name="Navneet Kaur" exam="Master Cadre" rank="SST Merit" year="2024" />
             </div>
 
+            {/* Testimonial Feature */}
             <div className="mt-24 bg-[#0B1528] rounded-[4rem] p-10 md:p-24 text-white relative overflow-hidden shadow-3xl">
                <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[150%] bg-primary/10 blur-[120px] rounded-full" />
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative z-10">
@@ -147,6 +150,7 @@ export default function HomePage() {
          </div>
       </section>
 
+      {/* Featured Mocks */}
       <LatestMocks />
 
       {/* 3. Daily Content Engine */}

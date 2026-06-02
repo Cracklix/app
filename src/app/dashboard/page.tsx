@@ -34,8 +34,8 @@ import Link from "next/link"
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from "recharts"
 
 /**
- * @fileOverview Final Student Performance Dashboard.
- * Features: "Continue Last Session", Mastery Charts, and Selection Forecasting.
+ * @fileOverview Phase 61-64: Intelligent Student Performance Dashboard.
+ * Features: Selection Forecasting, Session Recovery, and Daily Mastery.
  */
 
 export default function StudentDashboard() {
@@ -66,6 +66,7 @@ export default function StudentDashboard() {
     
     const avgAcc = Math.round(results.reduce((acc: number, r: any) => acc + (r.accuracy || 0), 0) / results.length)
     
+    // Group results by subject for mastery chart
     const subjectMap: Record<string, { correct: number; total: number }> = {}
     results.forEach((res: any) => {
       if (res.subjectStats) {
@@ -87,6 +88,7 @@ export default function StudentDashboard() {
       avgAccuracy: avgAcc, 
       rank: "Top 12%", 
       subjectData,
+      // Selection probability logic: Base 45% + bonus for accuracy above 60%
       selectionProb: Math.min(96, Math.max(30, avgAcc + 12))
     }
   }, [results])
@@ -99,6 +101,7 @@ export default function StudentDashboard() {
       <main className="container mx-auto px-6 py-16 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           
+          {/* Left Sidebar: Profile & Quick Stats */}
           <div className="lg:col-span-4 space-y-10">
             <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3.5rem] bg-white overflow-hidden group">
                <div className="h-32 w-full bg-[#08152D] relative">
@@ -116,12 +119,13 @@ export default function StudentDashboard() {
                     <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-1">{profile?.email}</p>
                   </div>
                   <div className="flex flex-wrap gap-3">
-                    <Badge className="bg-primary text-white border-none px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20">{profile?.status} Access</Badge>
+                    <Badge className="bg-primary text-white border-none px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20">{profile?.status || 'Free'} Access</Badge>
                     <Badge variant="outline" className="border-slate-200 text-slate-400 text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-2xl">{profile?.targetExam || "Punjab Verticals"}</Badge>
                   </div>
                </CardContent>
             </Card>
 
+            {/* Resume Session Phase 63 */}
             {lastSession && (
               <Card className="border-none bg-emerald-600 text-white p-10 rounded-[3rem] shadow-3xl shadow-emerald-900/20 relative overflow-hidden group cursor-pointer" onClick={() => router.push(`/mocks/${lastSession.mockId}/attempt`)}>
                  <div className="absolute top-0 right-0 p-6 opacity-10 rotate-12 group-hover:scale-110 transition-transform"><PlayCircle className="h-32 w-32" /></div>
@@ -143,6 +147,7 @@ export default function StudentDashboard() {
                <Metric icon={<Star className="text-amber-500" />} label="Active Streak" value="5 Days" />
             </div>
 
+            {/* AI Tutor Insights Phase 61 */}
             <Card className="border-none shadow-3xl shadow-slate-900/10 rounded-[3rem] bg-[#0F172A] text-white p-10 space-y-8 relative overflow-hidden">
                <div className="absolute top-0 right-0 p-6 opacity-10"><BrainCircuit className="h-32 w-32 text-primary" /></div>
                <div className="flex items-center gap-4 relative z-10">
@@ -162,6 +167,7 @@ export default function StudentDashboard() {
             </Card>
           </div>
 
+          {/* Right Main Panel: Analytics & History */}
           <div className="lg:col-span-8 space-y-12">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                <div className="space-y-1">
@@ -179,6 +185,7 @@ export default function StudentDashboard() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+               {/* Subject Mastery Phase 67 */}
                <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3.5rem] bg-white p-10">
                   <div className="flex items-center justify-between mb-10">
                     <div className="space-y-1">
@@ -216,6 +223,7 @@ export default function StudentDashboard() {
                   </div>
                </Card>
 
+               {/* Selection Probability Phase 61 */}
                <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3.5rem] bg-white p-12 flex flex-col justify-center text-center space-y-8 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-125 transition-transform"><TrendingUp className="h-40 w-40" /></div>
                   <div className="space-y-2 relative z-10">
