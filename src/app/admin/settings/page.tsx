@@ -16,7 +16,7 @@ export default function AdminSettings() {
   const [heroData, setHeroData] = useState({
     line1: "Prepare Smarter.",
     line2: "Score Higher.",
-    description: "Punjab Government Exams di Complete Preparation ik hi Platform te.",
+    description: "Complete your Punjab Government Exam preparation on a single platform. Trust Cracklix for your professional success.",
     primaryBtn: "Start Free Mock",
     secondaryBtn: "Explore Exams",
     imageUrl: ""

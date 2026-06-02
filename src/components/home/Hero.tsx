@@ -19,7 +19,7 @@ export default function Hero() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-punjab')?.imageUrl || "https://picsum.photos/seed/punjab-hero/1200/800";
 
   return (
-    <header className="relative min-h-[900px] flex items-center pt-20 pb-80 overflow-hidden bg-[#0c1527]">
+    <header className="relative min-h-[950px] flex items-center pt-20 pb-[380px] overflow-hidden bg-[#0c1527]">
       {/* Background Image (Right Aligned) */}
       <div className="absolute right-0 top-0 w-full lg:w-[60%] h-full z-0">
         <Image 
@@ -56,7 +56,7 @@ export default function Hero() {
             </h1>
             
             <p className="text-[20px] text-gray-300 mt-6 mb-12 max-w-lg font-medium leading-relaxed">
-              Punjab Government Exams di Complete Preparation ik hi Platform te. Trust Cracklix for your career success.
+              Complete your Punjab Government Exam preparation on a single platform. Trust Cracklix for your professional success.
             </p>
             
             <div className="flex flex-wrap gap-4 relative z-20">
@@ -71,7 +71,7 @@ export default function Hero() {
         </div>
 
         {/* Floating Stats Bar - Responsively Grid Controlled */}
-        <div className="absolute bottom-[-160px] left-0 w-full hidden md:block">
+        <div className="absolute bottom-[-180px] left-0 w-full hidden md:block">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto px-6">
             {stats.map((stat, idx) => (
               <motion.div
