@@ -42,15 +42,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <SidebarHeader className="p-6">
             <Logo variant="light" className="scale-90 origin-left" />
           </SidebarHeader>
-          <SidebarContent>
+          <SidebarContent className="custom-scrollbar overflow-x-hidden">
             <SidebarGroup>
               <SidebarGroupLabel className="px-6 text-xs font-black uppercase tracking-widest text-white/20">Data Operations</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  <AdminNavItem icon={<Database />} label="MCQ Bank" href="/admin/questions" />
-                  <AdminNavItem icon={<Zap className="text-primary" />} label="Bulk Import" href="/admin/questions/bulk" />
-                  <AdminNavItem icon={<ClipboardList />} label="Mock Builder" href="/admin/mocks" />
-                  <AdminNavItem icon={<AlertTriangle className="text-rose-400" />} label="Error Reports" href="/admin/reports" />
+                  <AdminNavItem icon={<Database className="size-4" />} label="MCQ Bank" href="/admin/questions" />
+                  <AdminNavItem icon={<Zap className="size-4 text-primary fill-primary/20" />} label="Bulk Import" href="/admin/questions/bulk" />
+                  <AdminNavItem icon={<ClipboardList className="size-4" />} label="Mock Builder" href="/admin/mocks" />
+                  <AdminNavItem icon={<AlertTriangle className="size-4 text-rose-400" />} label="Error Reports" href="/admin/reports" />
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
@@ -59,9 +59,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <SidebarGroupLabel className="px-6 text-xs font-black uppercase tracking-widest text-white/20">Content Engine</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  <AdminNavItem icon={<Newspaper className="text-emerald-400" />} label="Daily Analysis" href="/current-affairs" />
-                  <AdminNavItem icon={<AlertCircle className="text-orange-400" />} label="Exam Gazette" href="/notifications" />
-                  <AdminNavItem icon={<FileText className="text-blue-400" />} label="PYQ Archives" href="/admin/pyqs" />
+                  <AdminNavItem icon={<Newspaper className="size-4 text-emerald-400" />} label="Daily Analysis" href="/current-affairs" />
+                  <AdminNavItem icon={<AlertCircle className="size-4 text-orange-400" />} label="Exam Gazette" href="/notifications" />
+                  <AdminNavItem icon={<FileText className="size-4 text-blue-400" />} label="PYQ Archives" href="/admin/pyqs" />
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
@@ -70,20 +70,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <SidebarGroupLabel className="px-6 text-xs font-black uppercase tracking-widest text-white/20">Core Management</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  <AdminNavItem icon={<LayoutDashboard />} label="Command Center" href="/admin" />
-                  <AdminNavItem icon={<GraduationCap />} label="Exams & Boards" href="/admin/exams" />
-                  <AdminNavItem icon={<Users />} label="Aspirant Registry" href="/admin/users" />
-                  <AdminNavItem icon={<TrendingUp />} label="Analytics Engine" href="/admin/analytics" />
+                  <AdminNavItem icon={<LayoutDashboard className="size-4" />} label="Command Center" href="/admin" />
+                  <AdminNavItem icon={<GraduationCap className="size-4" />} label="Exams & Boards" href="/admin/exams" />
+                  <AdminNavItem icon={<Users className="size-4" />} label="Aspirant Registry" href="/admin/users" />
+                  <AdminNavItem icon={<TrendingUp className="size-4" />} label="Analytics Engine" href="/admin/analytics" />
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
 
             <SidebarGroup className="mt-auto pb-8">
               <SidebarMenu>
-                {(profile?.role === 'SUPER_ADMIN' || user?.email === 'arshdeepgrewal1122@gmail.com') && <AdminNavItem icon={<Settings />} label="Portal Settings" href="/admin/settings" />}
+                {(profile?.role === 'SUPER_ADMIN' || user?.email === 'arshdeepgrewal1122@gmail.com') && <AdminNavItem icon={<Settings className="size-4" />} label="Portal Settings" href="/admin/settings" />}
                 <SidebarMenuItem>
-                   <SidebarMenuButton onClick={handleLogout} className="px-6 text-destructive/70 hover:bg-destructive/10 hover:text-destructive transition-colors">
-                    <LogOut className="h-4 w-4 mr-2" /> Logout Portal
+                   <SidebarMenuButton onClick={handleLogout} className="px-6 text-destructive/70 hover:bg-destructive/10 hover:text-destructive transition-colors h-11">
+                    <LogOut className="h-4 w-4 mr-3 shrink-0" /> <span className="font-bold">Logout Portal</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
@@ -127,10 +127,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 function AdminNavItem({ icon, label, href }: { icon: React.ReactNode, label: string, href: string }) {
   return (
     <SidebarMenuItem>
-      <SidebarMenuButton asChild className="px-6 hover:bg-white/5 hover:text-primary transition-all text-white/60 font-medium">
-        <Link href={href}>
-          <span className="h-4 w-4 mr-2">{icon}</span>
-          {label}
+      <SidebarMenuButton asChild className="px-6 hover:bg-white/5 hover:text-primary transition-all text-white/60 font-medium h-11 group">
+        <Link href={href} className="flex items-center gap-3">
+          <div className="shrink-0 flex items-center justify-center">
+            {icon}
+          </div>
+          <span className="font-bold tracking-tight">{label}</span>
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>

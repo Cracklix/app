@@ -43,7 +43,7 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
         </svg>
       </motion.div>
 
-      <div className="flex flex-col">
+      <div className="flex flex-col min-w-0">
         <div className="flex items-baseline leading-none">
           <span className={`text-2xl font-extrabold tracking-tighter ${isLightVariant ? 'text-white' : 'text-[#0F172A]'}`}>
             Crack
@@ -53,8 +53,8 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
           </span>
         </div>
         {showTagline && (
-          <span className={`text-[10px] font-black uppercase tracking-[0.15em] mt-0.5 whitespace-nowrap ${isLightVariant ? 'text-white/40' : 'text-[#0F172A]/40'}`}>
-            PUNJAB'S NO. 1 MOCK TEST HUB
+          <span className={`text-[9px] font-black uppercase tracking-[0.12em] mt-1 line-clamp-1 opacity-60 ${isLightVariant ? 'text-white' : 'text-[#0F172A]'}`}>
+            PUNJAB'S NO. 1 MOCK HUB
           </span>
         )}
       </div>
