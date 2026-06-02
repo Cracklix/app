@@ -19,8 +19,8 @@ export default function Hero() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-punjab')?.imageUrl || "https://picsum.photos/seed/punjab-hero/1200/800";
 
   return (
-    <header className="relative min-h-[750px] flex items-center pt-20 pb-48 overflow-hidden bg-[#0c1527]">
-      {/* Golden Temple Background Image (Right Aligned) */}
+    <header className="relative min-h-[850px] flex items-center pt-20 pb-64 overflow-hidden bg-[#0c1527]">
+      {/* Background Image (Right Aligned) */}
       <div className="absolute right-0 top-0 w-full lg:w-[60%] h-full z-0">
         <Image 
           src={heroImage} 
@@ -43,7 +43,7 @@ export default function Hero() {
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="w-full lg:w-[50%] text-left"
+            className="w-full lg:w-[55%] text-left"
           >
             {/* Tagline */}
             <div className="inline-flex items-center gap-2 bg-white/10 px-4 py-1.5 rounded-full mb-8 text-sm font-medium border border-white/10 backdrop-blur-md">
@@ -55,38 +55,38 @@ export default function Hero() {
               <span className="text-[#ff7a00]">Score Higher.</span>
             </h1>
             
-            <p className="text-[20px] text-gray-300 mt-6 mb-10 max-w-lg font-medium leading-relaxed">
-              Punjab Government Exams di Complete Preparation ik hi Platform te.
+            <p className="text-[20px] text-gray-300 mt-6 mb-12 max-w-lg font-medium leading-relaxed">
+              Punjab Government Exams di Complete Preparation ik hi Platform te. Trust Cracklix for your career success.
             </p>
             
-            <div className="flex flex-wrap gap-4">
-              <Button asChild size="lg" className="h-[52px] px-8 bg-[#ff7a00] hover:bg-[#ff7a00]/90 text-white font-bold rounded-xl gap-2 shadow-lg shadow-orange-500/20">
+            <div className="flex flex-wrap gap-4 relative z-20">
+              <Button asChild size="lg" className="h-[56px] px-10 bg-[#ff7a00] hover:bg-[#ff7a00]/90 text-white font-bold rounded-xl gap-2 shadow-lg shadow-orange-500/30">
                 <Link href="/mocks">Start Free Mock <ArrowRight className="h-5 w-5" /></Link>
               </Button>
-              <Button variant="outline" asChild size="lg" className="h-[52px] px-8 border-white/30 text-white hover:bg-white/10 rounded-xl font-bold bg-white/5 backdrop-blur-sm">
+              <Button variant="outline" asChild size="lg" className="h-[56px] px-10 border-white/30 text-white hover:bg-white/10 rounded-xl font-bold bg-white/5 backdrop-blur-sm">
                 <Link href="/exams">Explore Exams</Link>
               </Button>
             </div>
           </motion.div>
         </div>
 
-        {/* Floating Stats Bar - Adjusted position to prevent overlap */}
-        <div className="absolute bottom-[-100px] left-0 w-full hidden md:block">
-          <div className="grid grid-cols-4 gap-4">
+        {/* Floating Stats Bar - Positioned with ample clearance */}
+        <div className="absolute bottom-[-140px] left-0 w-full hidden md:block">
+          <div className="grid grid-cols-4 gap-6 max-w-7xl mx-auto px-6">
             {stats.map((stat, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 + idx * 0.1 }}
-                className="bg-[#111e38]/80 backdrop-blur-xl border border-white/10 p-6 rounded-2xl flex items-center gap-4 shadow-2xl"
+                className="bg-[#111e38]/90 backdrop-blur-xl border border-white/10 p-7 rounded-[24px] flex items-center gap-5 shadow-2xl"
               >
-                <div className="shrink-0 p-3 rounded-xl bg-white/5">
+                <div className="shrink-0 p-4 rounded-2xl bg-white/5 border border-white/5">
                   {stat.icon}
                 </div>
                 <div>
-                  <h3 className="text-white text-xl font-bold leading-none mb-1">{stat.value}</h3>
-                  <p className="text-gray-400 text-sm font-medium">{stat.label}</p>
+                  <h3 className="text-white text-2xl font-black leading-none mb-1">{stat.value}</h3>
+                  <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">{stat.label}</p>
                 </div>
               </motion.div>
             ))}
