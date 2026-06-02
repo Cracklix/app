@@ -20,7 +20,8 @@ import {
   TrendingUp,
   RefreshCw,
   Download,
-  FileJson
+  FileJson,
+  Rocket
 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Link from "next/link"
@@ -49,13 +50,14 @@ export default function AdminDashboard() {
 
   const handleSeed = async () => {
     if (!db || seeding) return
-    if (!confirm("This will populate all 13 core collections with sample data. Continue?")) return
+    if (!confirm("This will populate all 13 core collections with sample data. This makes them visible in your Firestore Console. Continue?")) return
     setSeeding(true)
     try {
       await seedInitialData(db)
-      toast({ title: "Global Sync Complete", description: "Institutional collections initialized." })
+      toast({ title: "Global Sync Complete", description: "Institutional collections initialized and visible in Console." })
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Sync Failed", description: e.message })
+      console.error(e)
+      toast({ variant: "destructive", title: "Sync Failed", description: "Permissions check failed. Ensure you are logged in as arshdeepgrewal1122@gmail.com" })
     } finally {
       setSeeding(false)
     }
@@ -112,11 +114,10 @@ export default function AdminDashboard() {
             <Button 
               onClick={handleSeed} 
               disabled={seeding}
-              variant="outline" 
-              className="border-primary/20 bg-primary/5 text-primary rounded-2xl font-bold h-14 px-8 text-xs uppercase tracking-widest gap-3"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black h-14 px-8 text-xs uppercase tracking-widest gap-3 shadow-xl shadow-emerald-900/20"
             >
-              <RefreshCw className={`h-4 w-4 ${seeding ? 'animate-spin' : ''}`} /> 
-              {seeding ? "Syncing..." : "Initialize Repo"}
+              <Rocket className={`h-4 w-4 ${seeding ? 'animate-spin' : ''}`} /> 
+              {seeding ? "Initializing..." : "Initialize Global Repo"}
             </Button>
           )}
           <Button asChild className="bg-primary hover:bg-primary/90 rounded-2xl h-14 px-10 font-black shadow-2xl shadow-primary/20 uppercase tracking-widest text-xs">
