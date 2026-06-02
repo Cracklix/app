@@ -2,59 +2,54 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // FORCE DEPLOYMENT ID: CRACKLIX_RESOLVE_V115
+    // FORCE DEPLOYMENT ID: CRACKLIX_RESOLVE_V118
     // AUTHOR: Arsh Grewal Management
-    // TIMESTAMP: 2024-06-03T11:00:00Z
-    // PURPOSE: Explicitly resolve 'get' and 'list' operations for settings, current_affairs and notifications.
+    // PURPOSE: Explicitly allow public read access for all content collections to fix permission denied errors.
 
-    // 1. Content Collections: Broad public read access (Required for Homepage feeds)
-    match /notifications/{allPaths=**} {
+    match /notifications/{docId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
-    match /current_affairs/{allPaths=**} {
+    match /current_affairs/{docId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
-    match /boards/{allPaths=**} {
+    match /boards/{docId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
-    match /exams/{allPaths=**} {
+    match /exams/{docId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
-    match /subjects/{allPaths=**} {
+    match /subjects/{docId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
-    match /questions/{allPaths=**} {
+    match /questions/{docId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
-    match /mocks/{allPaths=**} {
+    match /mocks/{docId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
-    // 2. Platform Settings: Publicly readable for dynamic Hero/Branding
-    match /settings/{allPaths=**} {
+    match /settings/{docId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
-    // 3. User Profiles: Strict privacy matching
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // 4. Test Results: Privacy matching with fallback for new creations
     match /results/{resultId} {
       allow create: if request.auth != null;
       allow read: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid);
