@@ -8,14 +8,15 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import Logo from "@/components/brand/Logo"
-import { ShieldCheck, Mail, Lock, ChevronLeft } from "lucide-react"
+import { ShieldCheck, Mail, Lock, ChevronLeft, User } from "lucide-react"
 import { useAuth } from "@/firebase"
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   signInWithPopup, 
   GoogleAuthProvider,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  updateProfile
 } from "firebase/auth"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
@@ -24,6 +25,7 @@ import { motion } from "framer-motion"
 
 export default function LoginPage() {
   const [mode, setMode] = useState<'login' | 'register'>('login')
+  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [resetEmail, setResetEmail] = useState("")
@@ -36,7 +38,7 @@ export default function LoginPage() {
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email || !password) return
+    if (!email || !password || (mode === 'register' && !name)) return
     
     setLoading(true)
     try {
@@ -44,8 +46,9 @@ export default function LoginPage() {
         await signInWithEmailAndPassword(auth, email, password)
         toast({ title: "Welcome back!", description: "Successfully logged in." })
       } else {
-        await createUserWithEmailAndPassword(auth, email, password)
-        toast({ title: "Account created!", description: "Please complete your profile." })
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+        await updateProfile(userCredential.user, { displayName: name })
+        toast({ title: "Account created!", description: `Welcome, ${name}! Please complete your profile.` })
         router.push("/profile-setup")
         return
       }
@@ -120,6 +123,24 @@ export default function LoginPage() {
           
           <CardContent className="space-y-6 px-8 pb-10">
             <form onSubmit={handleEmailAuth} className="space-y-5">
+              {mode === 'register' && (
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-slate-300 text-xs font-black uppercase tracking-widest">Full Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                    <Input 
+                      id="name" 
+                      type="text"
+                      className="pl-12 h-13 bg-white/[0.05] border-white/10 text-white rounded-xl focus:ring-primary/50" 
+                      placeholder="Amandeep Singh"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+              )}
+              
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-slate-300 text-xs font-black uppercase tracking-widest">Email Address</Label>
                 <div className="relative">
