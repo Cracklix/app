@@ -102,6 +102,19 @@
         "imageUrl": { "type": "string" }
       }
     },
+    "Notification": {
+      "title": "Notification",
+      "description": "Exam alerts and result broadcasts.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "time": { "type": "string" },
+        "type": { "type": "string", "enum": ["alert", "result", "vacancy"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
     "AttemptResult": {
       "title": "Attempt Result",
       "description": "User results and analytics for a mock attempt.",
@@ -148,6 +161,10 @@
     "/current_affairs/{caId}": {
       "schema": { "$ref": "#/backend/entities/CurrentAffair" },
       "description": "Daily news updates."
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/backend/entities/Notification" },
+      "description": "Global exam alerts."
     },
     "/results/{resultId}": {
       "schema": { "$ref": "#/backend/entities/AttemptResult" },
