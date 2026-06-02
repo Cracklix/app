@@ -1,6 +1,6 @@
 
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { LayoutDashboard, Database, ClipboardList, TrendingUp, Settings, Users, LogOut, Bell, ShieldCheck, GraduationCap } from "lucide-react"
+import { LayoutDashboard, Database, ClipboardList, TrendingUp, Settings, Users, LogOut, Bell, ShieldCheck, GraduationCap, Zap } from "lucide-react"
 import Link from "next/link"
 import Logo from "@/components/brand/Logo"
 
@@ -14,13 +14,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </SidebarHeader>
           <SidebarContent>
             <SidebarGroup>
+              <SidebarGroupLabel className="px-6 text-xs font-black uppercase tracking-widest text-white/20">High Speed Data</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <AdminNavItem icon={<Zap className="text-primary" />} label="Bulk Import" href="/admin/questions/bulk" />
+                  <AdminNavItem icon={<Database />} label="Question Bank" href="/admin/questions" />
+                  <AdminNavItem icon={<ClipboardList />} label="Mock Builder" href="/admin/mocks" />
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+
+            <SidebarGroup className="mt-4">
               <SidebarGroupLabel className="px-6 text-xs font-black uppercase tracking-widest text-white/20">Core Management</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   <AdminNavItem icon={<LayoutDashboard />} label="Overview" href="/admin" />
-                  <AdminNavItem icon={<GraduationCap />} label="Exams" href="/admin/exams" />
-                  <AdminNavItem icon={<Database />} label="Question Bank" href="/admin/questions" />
-                  <AdminNavItem icon={<ClipboardList />} label="Mock Management" href="/admin/mocks" />
+                  <AdminNavItem icon={<GraduationCap />} label="Exams & Boards" href="/admin/exams" />
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>

@@ -32,12 +32,16 @@ export interface Question {
   boardId?: string;
   examId?: string;
   text: string;
+  textPa?: string; // Punjabi version
   options: string[];
+  optionsPa?: string[]; // Punjabi options
   correctAnswer: number;
   explanation: string;
+  explanationPa?: string; // Punjabi explanation
   difficulty: Difficulty;
   topic: string;
   createdAt?: any;
+  author?: string;
 }
 
 export interface MockTest {
@@ -51,6 +55,7 @@ export interface MockTest {
   difficulty?: Difficulty;
   type?: string;
   createdAt?: any;
+  publishedBy?: string;
 }
 
 export interface AttemptResult {
