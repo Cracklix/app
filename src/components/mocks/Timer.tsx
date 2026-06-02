@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -9,11 +9,12 @@ interface TimerProps {
   initialMinutes: number
   onTimeUp: () => void
   initialSeconds?: number
+  onTick?: (seconds: number) => void
 }
 
-export default function Timer({ initialMinutes, onTimeUp, initialSeconds }: TimerProps) {
-  // Use initialSeconds (remainingTime from session) if available, else fallback to initialMinutes
+export default function Timer({ initialMinutes, onTimeUp, initialSeconds, onTick }: TimerProps) {
   const [timeLeft, setTimeLeft] = useState(initialSeconds && initialSeconds > 0 ? initialSeconds : initialMinutes * 60)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -21,12 +22,18 @@ export default function Timer({ initialMinutes, onTimeUp, initialSeconds }: Time
       return
     }
 
-    const timer = setInterval(() => {
-      setTimeLeft(prev => prev - 1)
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        const next = prev - 1
+        if (onTick) onTick(next)
+        return next
+      })
     }, 1000)
 
-    return () => clearInterval(timer)
-  }, [timeLeft, onTimeUp])
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [timeLeft, onTimeUp, onTick])
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600)

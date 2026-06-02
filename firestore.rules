@@ -2,8 +2,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // FORCE DEPLOYMENT ID: CRACKLIX_PRODUCTION_HARDENING_V3
-    // AUTHOR: Arsh Grewal Institutional Management
+    // CRACKLIX PRODUCTION HARDENING V4
+    // Institutional Grade Security Rules
 
     function isAuthenticated() {
       return request.auth != null;
@@ -24,43 +24,51 @@ service cloud.firestore {
       );
     }
 
+    // --- Core Schemas ---
+
     match /users/{userId} {
-      allow read: if isAuthenticated();
-      allow write: if isOwner(userId) || isAdmin();
+      // Students can read their own profile. Admins can read all for support.
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      // Only the user or an admin can update profile data.
+      allow write: if isAuthenticated() && (isOwner(userId) || isAdmin());
     }
 
     match /boards/{docId} {
-      allow read: if true;
+      allow read: if true; // Public catalog
       allow write: if isAdmin();
     }
 
     match /exams/{docId} {
-      allow read: if true;
+      allow read: if true; // Public catalog
       allow write: if isAdmin();
     }
 
     match /subjects/{docId} {
-      allow read: if true;
+      allow read: if true; 
       allow write: if isAdmin();
     }
 
     match /questions/{docId} {
+      // Questions are readable by authenticated students (to take tests) 
+      // but write is strictly for admin/super-admin (IP Protection).
       allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
 
     match /mocks/{docId} {
-      allow read: if true;
+      allow read: if true; 
       allow write: if isAdmin();
     }
 
     match /results/{resultId} {
+      // Students only see their own performance metrics.
       allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
       allow create: if isAuthenticated();
-      allow delete, update: if isAdmin();
+      allow update, delete: if isAdmin();
     }
 
     match /test_sessions/{sessionId} {
+      // Session persistence logic (Auto-Save)
       allow read, write: if isAuthenticated() && (request.auth.uid in sessionId || isAdmin());
     }
 

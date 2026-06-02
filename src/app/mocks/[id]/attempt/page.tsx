@@ -4,13 +4,13 @@
 import { useState, useEffect, useMemo, useCallback } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useDoc, useFirestore, useUser } from "@/firebase"
-import { doc, collection, query, where, getDocs, addDoc, setDoc, serverTimestamp } from "firebase/firestore"
+import { doc, collection, query, where, getDoc, getDocs, addDoc, setDoc, serverTimestamp } from "firebase/firestore"
 import Timer from "@/components/mocks/Timer"
 import QuestionPalette from "@/components/mocks/QuestionPalette"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import { ChevronLeft, ChevronRight, Flag, ShieldCheck, Trash2, Sparkles, Languages, AlertTriangle } from "lucide-react"
+import { ChevronLeft, ChevronRight, Flag, ShieldCheck, Trash2, Sparkles, Languages, AlertTriangle, Loader2 } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +24,12 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
+import { Badge } from "@/components/ui/badge"
+
+/**
+ * @fileOverview Phase 4: Institutional CBT Attempt Engine.
+ * Features: Timer, Palette, Auto-Save (10s), Session Recovery, and Bilingual Toggles.
+ */
 
 export default function MockAttemptPage() {
   const params = useParams()
@@ -44,50 +50,64 @@ export default function MockAttemptPage() {
   const [language, setLanguage] = useState<'english' | 'punjabi'>('english')
   const [remainingTime, setRemainingTime] = useState(0)
 
-  // 1. Fetch Questions logic
+  // 1. Optimized Question Fetching
   useEffect(() => {
     async function fetchQuestions() {
-      if (!db || !mockConfig?.questionIds) return
+      if (!db || !mockConfig?.questionIds || mockConfig.questionIds.length === 0) return
       setLoadingQuestions(true)
       try {
         const qData: any[] = []
-        // Chunked fetching or individual for small mocks. For scale, consider getDocs with in query
-        for (const id of mockConfig.questionIds) {
-          const qSnap = await getDocs(query(collection(db, "questions"), where("id", "==", id)))
-          if (!qSnap.empty) { qData.push(qSnap.docs[0].data()) }
-        }
+        // Fetch questions in parallel batches for performance
+        const fetchPromises = mockConfig.questionIds.map((id: string) => getDoc(doc(db, "questions", id)))
+        const snapshots = await Promise.all(fetchPromises)
+        snapshots.forEach(snap => {
+          if (snap.exists()) qData.push(snap.data())
+        })
+        
         setQuestions(qData)
         if (remainingTime === 0) setRemainingTime((mockConfig.duration || 120) * 60)
-      } catch (e) { console.error(e) } finally { setLoadingQuestions(false) }
+      } catch (e) { 
+        console.error("Critical: Failed to load question bank", e) 
+      } finally { 
+        setLoadingQuestions(false) 
+      }
     }
     fetchQuestions()
   }, [db, mockConfig])
 
-  // 2. Resume Session logic
+  // 2. Cloud Session Recovery
   useEffect(() => {
     if (!db || !user || !mockId) return
     const sessionRef = doc(db, "test_sessions", `${user.uid}_${mockId}`)
-    getDocs(query(collection(db, "test_sessions"), where("id", "==", sessionRef.id))).then(snap => {
-      if (!snap.empty) {
-        const data = snap.docs[0].data()
+    getDoc(sessionRef).then(snap => {
+      if (snap.exists()) {
+        const data = snap.data()
         if (data.status === 'IN_PROGRESS') {
           setAnswers(data.answers || {})
           setFlagged(data.flagged || [])
           setCurrentIdx(data.currentIdx || 0)
-          setRemainingTime(data.remainingTime)
-          toast({ title: "Session Resumed", description: "Your progress has been recovered from the cloud." })
+          if (data.remainingTime > 0) setRemainingTime(data.remainingTime)
+          toast({ title: "Session Resumed", description: "Audit trail recovered from cloud." })
         }
       }
     })
   }, [db, user, mockId])
 
-  // 3. Auto-Save Logic (10 seconds)
+  // 3. Automated Checkpoint Sync (Every 10 seconds)
   useEffect(() => {
     if (!db || !user || questions.length === 0 || isSubmitting) return
     const interval = setInterval(() => {
       const sessionRef = doc(db, "test_sessions", `${user.uid}_${mockId}`)
       setDoc(sessionRef, {
-        id: sessionRef.id, userId: user.uid, mockId, currentIdx, answers, flagged, remainingTime, status: 'IN_PROGRESS', updatedAt: serverTimestamp()
+        id: sessionRef.id, 
+        userId: user.uid, 
+        mockId, 
+        currentIdx, 
+        answers, 
+        flagged, 
+        remainingTime, 
+        status: 'IN_PROGRESS', 
+        updatedAt: serverTimestamp()
       }, { merge: true })
     }, 10000)
     return () => clearInterval(interval)
@@ -102,9 +122,13 @@ export default function MockAttemptPage() {
 
   const handleReport = () => {
     if (!db || !user || !question) return
-    const reportRef = collection(db, "reports")
-    addDoc(reportRef, {
-      questionId: question.id, userId: user.uid, type: 'WRONG_ANS', comment: 'Student Audit Report', status: 'PENDING', timestamp: serverTimestamp()
+    addDoc(collection(db, "reports"), {
+      questionId: question.id, 
+      userId: user.uid, 
+      type: 'WRONG_ANS', 
+      comment: 'Aspirant Audit Flag', 
+      status: 'PENDING', 
+      timestamp: serverTimestamp()
     })
     toast({ title: "Audit Logged", description: "Verified auditors will review this statement." })
   }
@@ -135,10 +159,18 @@ export default function MockAttemptPage() {
       .map(([topic]) => topic)
 
     const resultData = {
-      mockId, mockTitle: mockConfig?.title || "Mock Test", userId: user?.uid || "guest",
-      score: correctCount, accuracy: Math.round((correctCount / (Object.keys(answers).length || 1)) * 100),
-      correctCount, incorrectCount: Object.keys(answers).length - correctCount, skippedCount: questions.length - Object.keys(answers).length,
-      totalQuestions: questions.length, weakTopics, timestamp: new Date().toISOString(), answers
+      mockId, 
+      mockTitle: mockConfig?.title || "Mock Test", 
+      userId: user?.uid || "guest",
+      score: correctCount, 
+      accuracy: Math.round((correctCount / (Object.keys(answers).length || 1)) * 100),
+      correctCount, 
+      incorrectCount: Object.keys(answers).length - correctCount, 
+      skippedCount: questions.length - Object.keys(answers).length,
+      totalQuestions: questions.length, 
+      weakTopics, 
+      timestamp: new Date().toISOString(), 
+      answers
     }
     
     if (db) {
@@ -150,20 +182,26 @@ export default function MockAttemptPage() {
     }
   }, [isSubmitting, questions, answers, mockId, mockConfig, user, db, router])
 
-  if (mockLoading || loadingQuestions) return <div className="h-screen flex items-center justify-center bg-white"><Sparkles className="h-12 w-12 text-primary animate-pulse" /></div>
+  if (mockLoading || loadingQuestions) return (
+    <div className="h-screen flex flex-col items-center justify-center bg-white space-y-4">
+      <Loader2 className="h-12 w-12 text-primary animate-spin" />
+      <p className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">Loading Question Bank...</p>
+    </div>
+  )
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-white text-slate-900 font-body">
       <header className="h-20 border-b flex items-center justify-between px-8 bg-[#0B1528] text-white shrink-0 z-50 shadow-2xl relative">
         <div className="flex items-center gap-6">
           <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center shadow-2xl shadow-primary/20"><ShieldCheck className="h-6 w-6 text-white" /></div>
-          <div>
-             <h1 className="font-headline font-black text-sm sm:text-xl tracking-tight truncate max-w-[200px] sm:max-w-md uppercase">{mockConfig?.title}</h1>
+          <div className="hidden sm:block">
+             <h1 className="font-headline font-black text-sm tracking-tight truncate max-w-md uppercase">{mockConfig?.title}</h1>
              <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mt-1">Official Pattern 2026 • Arsh Grewal Audit</p>
           </div>
         </div>
-        <div className="flex items-center gap-8">
-          <Timer initialMinutes={mockConfig?.duration || 120} onTimeUp={submitMock} initialSeconds={remainingTime} />
+        
+        <div className="flex items-center gap-4 sm:gap-8">
+          <Timer initialMinutes={mockConfig?.duration || 120} onTimeUp={submitMock} initialSeconds={remainingTime} onTick={setRemainingTime} />
           <Tabs value={language} onValueChange={(v: any) => setLanguage(v)} className="hidden md:block">
             <TabsList className="bg-white/5 border border-white/10 rounded-2xl h-12 p-1">
               <TabsTrigger value="english" className="rounded-xl text-[10px] font-black uppercase px-6"><Languages className="h-4 w-4 mr-2" /> English</TabsTrigger>
@@ -171,17 +209,34 @@ export default function MockAttemptPage() {
             </TabsList>
           </Tabs>
           <AlertDialog>
-            <AlertDialogTrigger asChild><Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-xs px-10 h-12 rounded-2xl shadow-xl shadow-emerald-900/20">Final Submission</Button></AlertDialogTrigger>
-            <AlertDialogContent className="rounded-[3rem] bg-white border-none shadow-3xl p-10"><AlertDialogHeader><AlertDialogTitle className="font-headline text-3xl font-black text-[#0F172A] uppercase">Audit Summary</AlertDialogTitle><AlertDialogDescription className="text-slate-500 font-medium py-8 space-y-4"><div className="flex justify-between items-center bg-emerald-50 p-5 rounded-2xl border border-emerald-100"><span className="font-bold text-slate-700">Answered Statement:</span> <span className="font-black text-2xl text-emerald-600">{Object.keys(answers).length}</span></div><div className="flex justify-between items-center bg-slate-50 p-5 rounded-2xl border border-slate-200"><span className="font-bold text-slate-400">Not Visited / Skipped:</span> <span className="font-black text-2xl text-slate-400">{questions.length - Object.keys(answers).length}</span></div></AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="pt-6 flex gap-4"><AlertDialogCancel className="rounded-2xl font-bold h-14 px-10">Back to Audit</AlertDialogCancel><AlertDialogAction onClick={submitMock} className="bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-xs rounded-2xl px-12 h-14 shadow-2xl">Confirm Submission</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+            <AlertDialogTrigger asChild><Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-xs px-10 h-12 rounded-2xl shadow-xl">Submit Audit</Button></AlertDialogTrigger>
+            <AlertDialogContent className="rounded-[3rem] bg-white border-none shadow-3xl p-10">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="font-headline text-3xl font-black text-[#0F172A] uppercase">Audit Summary</AlertDialogTitle>
+                <AlertDialogDescription className="text-slate-500 font-medium py-8 space-y-4">
+                  <div className="flex justify-between items-center bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
+                    <span className="font-bold text-slate-700">Answered Statement:</span> 
+                    <span className="font-black text-2xl text-emerald-600">{Object.keys(answers).length}</span>
+                  </div>
+                  <div className="flex justify-between items-center bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                    <span className="font-bold text-slate-400">Not Visited / Skipped:</span> 
+                    <span className="font-black text-2xl text-slate-400">{questions.length - Object.keys(answers).length}</span>
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="pt-6 flex gap-4">
+                <AlertDialogCancel className="rounded-2xl font-bold h-14 px-10">Back to Audit</AlertDialogCancel>
+                <AlertDialogAction onClick={submitMock} className="bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-xs rounded-2xl px-12 h-14">Confirm Submission</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
           </AlertDialog>
         </div>
       </header>
 
       <main className="flex flex-1 overflow-hidden">
         <div className="flex-1 overflow-y-auto p-4 sm:p-16 bg-slate-50/50 custom-scrollbar relative">
-          {/* Progress Bar */}
-          <div className="absolute top-0 left-0 h-1 bg-primary/20 w-full">
-             <div className="h-full bg-primary transition-all duration-500 shadow-3xl shadow-primary/40" style={{ width: `${((currentIdx + 1) / questions.length) * 100}%` }} />
+          <div className="absolute top-0 left-0 h-1.5 bg-primary/20 w-full z-10">
+             <div className="h-full bg-primary transition-all duration-700 shadow-3xl" style={{ width: `${((currentIdx + 1) / (questions.length || 1)) * 100}%` }} />
           </div>
 
           <div className="max-w-4xl mx-auto space-y-12 pb-32">
@@ -209,7 +264,7 @@ export default function MockAttemptPage() {
                        <RadioGroupItem value={i.toString()} id={`opt-${i}`} className="text-primary border-slate-300 scale-150" />
                        <Label htmlFor={`opt-${i}`} className="flex-1 cursor-pointer text-xl font-bold select-none text-slate-700 flex items-center gap-8">
                           <span className={`h-10 w-10 shrink-0 rounded-xl flex items-center justify-center text-xs font-black uppercase transition-all ${isSelected ? 'bg-primary text-white shadow-xl' : 'bg-slate-100 text-slate-400'}`}>{key}</span>
-                          <span className="leading-relaxed">{optionText}</span>
+                          <span className="leading-snug">{optionText}</span>
                        </Label>
                     </div>
                   )
