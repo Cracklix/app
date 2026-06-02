@@ -1,7 +1,6 @@
 
 export type Difficulty = 'Easy' | 'Medium' | 'Hard';
 export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'STUDENT';
-export type BoardCategory = 'PSSSB' | 'PPSC' | 'Punjab Police' | 'Education' | 'High Court' | 'Power Sector' | 'Health' | 'Cooperative';
 
 export interface Board {
   id: string;
@@ -32,15 +31,22 @@ export interface Question {
   subjectId: string;
   boardId?: string;
   examId?: string;
-  textEn: string; 
-  textPa?: string; 
-  optionsEn: string[]; 
-  optionsPa?: string[]; 
-  correctAnswer: number; // 0, 1, 2, 3
-  explanationEn: string; 
-  explanationPa?: string; 
-  difficulty: Difficulty;
   topic: string;
+  difficulty: Difficulty;
+  
+  // Bilingual Content
+  textEn: string;
+  textPa?: string;
+  
+  // Options Mapping
+  optionsEn: string[]; // [A, B, C, D]
+  optionsPa?: string[]; // [A, B, C, D]
+  
+  correctAnswer: number; // 0, 1, 2, 3
+  
+  explanationEn: string;
+  explanationPa?: string;
+  
   createdAt?: any;
   author?: string;
   lastModified?: any;
@@ -55,36 +61,10 @@ export interface MockTest {
   questionIds: string[];
   attempts: number;
   difficulty?: Difficulty;
-  type?: string;
+  type?: 'Full' | 'Subject' | 'Sectional' | 'PYQ';
   language?: string;
   createdAt?: any;
   publishedBy?: string;
-}
-
-export interface CurrentAffair {
-  id: string;
-  title: string;
-  category: string;
-  date: string;
-  summary: string;
-  content?: string;
-  imageUrl?: string;
-}
-
-export interface AttemptResult {
-  id?: string;
-  userId: string;
-  mockId: string;
-  mockTitle?: string;
-  score: number;
-  accuracy: number;
-  rank?: number;
-  weakTopics: string[];
-  correctCount?: number;
-  incorrectCount?: number;
-  totalQuestions?: number;
-  timestamp?: string;
-  answers?: Record<number, number>;
 }
 
 export interface UserProfile {
@@ -99,11 +79,19 @@ export interface UserProfile {
   status: 'Pro' | 'Free';
 }
 
-export interface SiteSettings {
-  heroLine1: string;
-  heroLine2: string;
-  heroDescription: string;
-  heroPrimaryBtn: string;
-  heroSecondaryBtn: string;
-  heroImageUrl: string;
+export interface AttemptResult {
+  id?: string;
+  userId: string;
+  mockId: string;
+  mockTitle?: string;
+  score: number;
+  accuracy: number;
+  correctCount: number;
+  incorrectCount: number;
+  skippedCount: number;
+  totalQuestions: number;
+  timeTaken?: number; // in seconds
+  weakTopics: string[];
+  timestamp: string;
+  answers: Record<number, number>;
 }
