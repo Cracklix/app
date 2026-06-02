@@ -4,15 +4,15 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    --background: 0 0% 100%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 24 95% 53%; /* Orange #F97316 */
+    --primary: 24 95% 53%; /* Brand Orange #F97316 */
     --primary-foreground: 0 0% 100%;
-    --secondary: 222 47% 11%; /* Navy #0F172A */
+    --secondary: 222 47% 11%; /* Brand Navy #0F172A */
     --secondary-foreground: 0 0% 100%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -54,19 +54,23 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body;
+    @apply bg-background text-foreground font-body antialiased;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-headline tracking-tight;
+    @apply font-headline tracking-tighter;
   }
 }
 
 .hero-gradient {
-  background: linear-gradient(to bottom, #0F172A 0%, #1E293B 100%);
+  background: radial-gradient(circle at top right, #1E3A8A 0%, #0F172A 100%);
 }
 
-.card-shadow {
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+.glass-card {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10;
+}
+
+.text-gradient-orange {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-orange-600;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
