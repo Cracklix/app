@@ -1,10 +1,9 @@
-
 {
   "placeholderImages": [
     {
       "id": "hero-punjab",
       "description": "Golden Temple Amritsar at night",
-      "imageUrl": "https://picsum.photos/seed/punjab-hero/1200/600",
+      "imageUrl": "https://picsum.photos/seed/punjab-hero/1200/800",
       "imageHint": "golden temple"
     },
     {

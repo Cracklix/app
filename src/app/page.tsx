@@ -1,4 +1,3 @@
-
 import Navbar from "@/components/layout/Navbar"
 import { Button } from "@/components/ui/button"
 import { Shield, Zap, BookOpen, Trophy, ArrowRight, Smartphone, CircleCheckBig, BarChart3, Clock, Target, ChartColumn, Download, Star } from "lucide-react"
@@ -172,10 +171,10 @@ export default function Home() {
             <div className="relative flex justify-center lg:justify-end gap-8">
                {/* iPhone Mockups */}
                <div className="relative w-64 h-[520px] rounded-[3rem] border-[8px] border-[#1E293B] shadow-2xl overflow-hidden translate-y-12">
-                 <Image src={mobile1?.imageUrl || ""} alt="App Screenshot 1" fill className="object-cover" data-ai-hint="iphone app screen" />
+                 <Image src={mobile1?.imageUrl || "https://picsum.photos/seed/mockup1/400/800"} alt="App Screenshot 1" fill className="object-cover" data-ai-hint="iphone app screen" />
                </div>
                <div className="relative w-64 h-[520px] rounded-[3rem] border-[8px] border-[#1E293B] shadow-2xl overflow-hidden -translate-y-4">
-                 <Image src={mobile2?.imageUrl || ""} alt="App Screenshot 2" fill className="object-cover" data-ai-hint="mobile app mockup" />
+                 <Image src={mobile2?.imageUrl || "https://picsum.photos/seed/mockup2/400/800"} alt="App Screenshot 2" fill className="object-cover" data-ai-hint="mobile app mockup" />
                </div>
             </div>
           </div>
