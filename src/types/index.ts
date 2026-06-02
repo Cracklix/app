@@ -74,6 +74,7 @@ export interface MockTest {
   difficulty: string;
   published: boolean;
   createdAt: any;
+  author?: string;
 }
 
 export interface UserProfile {
@@ -86,6 +87,8 @@ export interface UserProfile {
   targetExam: string;
   createdAt: any;
   status: 'Pro' | 'Free';
+  bestScore?: number;
+  rank?: string;
 }
 
 export interface TestSession {

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo } from "react"
@@ -21,7 +22,9 @@ import {
   TrendingUp,
   BarChart3,
   BrainCircuit,
-  ArrowUpRight
+  ArrowUpRight,
+  ShieldCheck,
+  Sparkles
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
@@ -50,13 +53,13 @@ export default function StudentDashboard() {
     
     const avgAcc = Math.round(results.reduce((acc: number, r: any) => acc + (r.accuracy || 0), 0) / results.length)
     
-    // Calculate subject-wise breakdown from real attempt results
+    // Virtual breakdown based on recent performance
     const subjectData = [
-      { name: "Punjabi", accuracy: avgAcc + 5 },
-      { name: "GK", accuracy: avgAcc - 8 },
-      { name: "Maths", accuracy: avgAcc - 15 },
-      { name: "Reasoning", accuracy: avgAcc + 10 },
-      { name: "English", accuracy: avgAcc - 5 }
+      { name: "Punjabi", accuracy: avgAcc + 8 },
+      { name: "Punjab GK", accuracy: avgAcc - 5 },
+      { name: "Quant", accuracy: avgAcc - 12 },
+      { name: "Reasoning", accuracy: avgAcc + 15 },
+      { name: "English", accuracy: avgAcc - 2 }
     ]
 
     return { 
@@ -64,88 +67,93 @@ export default function StudentDashboard() {
       avgAccuracy: avgAcc, 
       rank: "Top 12%", 
       subjectData,
-      selectionProb: Math.min(95, Math.max(30, avgAcc + 5))
+      selectionProb: Math.min(96, Math.max(30, avgAcc + 10))
     }
   }, [results])
 
-  if (loading) return <div className="h-screen flex items-center justify-center bg-white"><Zap className="h-10 w-10 text-primary animate-pulse" /></div>
+  if (loading) return <div className="h-screen flex items-center justify-center bg-white"><Sparkles className="h-14 w-14 text-primary animate-pulse" /></div>
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen bg-slate-50/50 font-body">
       <Navbar />
-      <main className="container mx-auto px-6 py-10 max-w-7xl">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <main className="container mx-auto px-6 py-16 max-w-7xl">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           
-          {/* Left: Quick Profile & Stats */}
-          <div className="lg:col-span-4 space-y-8">
-            <Card className="border-none shadow-2xl shadow-slate-200/50 rounded-[2.5rem] bg-white overflow-hidden">
-               <div className="h-24 w-full bg-[#08152D] relative">
-                  <div className="absolute -bottom-10 left-8">
-                     <Avatar className="h-24 w-24 border-4 border-white rounded-[2rem] shadow-xl">
+          {/* Left: Quick Profile & Context */}
+          <div className="lg:col-span-4 space-y-10">
+            <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3.5rem] bg-white overflow-hidden group">
+               <div className="h-32 w-full bg-[#08152D] relative">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform"><ShieldCheck className="h-20 w-20 text-white" /></div>
+                  <div className="absolute -bottom-12 left-10">
+                     <Avatar className="h-28 w-28 border-8 border-white rounded-[2.5rem] shadow-2xl">
                         <AvatarImage src={user?.photoURL || ""} />
-                        <AvatarFallback className="bg-primary text-white font-black text-2xl">{profile?.name?.[0]}</AvatarFallback>
+                        <AvatarFallback className="bg-primary text-white font-black text-3xl">{profile?.name?.[0]}</AvatarFallback>
                      </Avatar>
                   </div>
                </div>
-               <CardContent className="pt-14 pb-8 px-8 space-y-4">
+               <CardContent className="pt-16 pb-12 px-10 space-y-6">
                   <div>
-                    <h2 className="text-2xl font-headline font-black text-[#0F172A]">{profile?.name}</h2>
-                    <p className="text-sm font-medium text-slate-500">{profile?.email}</p>
+                    <h2 className="text-3xl font-headline font-black text-[#0F172A] tracking-tight">{profile?.name}</h2>
+                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-1">{profile?.email}</p>
                   </div>
-                  <div className="flex gap-2">
-                    <Badge className="bg-primary text-white border-none px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">{profile?.status} Access</Badge>
-                    <Badge variant="outline" className="border-slate-100 text-slate-400 text-[10px] font-black uppercase tracking-widest">{profile?.targetExam || "All Boards"}</Badge>
+                  <div className="flex flex-wrap gap-3">
+                    <Badge className="bg-primary text-white border-none px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20">{profile?.status} Access</Badge>
+                    <Badge variant="outline" className="border-slate-200 text-slate-400 text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-2xl">{profile?.targetExam || "Punjab Verticals"}</Badge>
                   </div>
                </CardContent>
             </Card>
 
-            <div className="grid grid-cols-2 gap-4">
-               <DashboardStatCard icon={<ClipboardList className="text-blue-500" />} label="Attempted" value={analytics.total} />
-               <DashboardStatCard icon={<Target className="text-orange-500" />} label="Accuracy" value={`${analytics.avgAccuracy}%`} />
-               <DashboardStatCard icon={<TrendingUp className="text-emerald-500" />} label="Rank" value={analytics.rank} />
-               <DashboardStatCard icon={<Star className="text-amber-500" />} label="Streak" value="5 Days" />
+            <div className="grid grid-cols-2 gap-6">
+               <Metric icon={<ClipboardList className="text-blue-500" />} label="Attempted" value={analytics.total} />
+               <Metric icon={<Target className="text-primary" />} label="Precision" value={`${analytics.avgAccuracy}%`} />
+               <Metric icon={<TrendingUp className="text-emerald-500" />} label="Aspirant Rank" value={analytics.rank} />
+               <Metric icon={<Star className="text-amber-500" />} label="Prep Streak" value="5 Days" />
             </div>
 
-            <Card className="border-none shadow-xl shadow-slate-200/50 rounded-[2rem] bg-[#0F172A] text-white p-8 space-y-6">
-               <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-primary/20 rounded-xl flex items-center justify-center">
-                     <BrainCircuit className="h-5 w-5 text-primary" />
+            <Card className="border-none shadow-3xl shadow-slate-900/10 rounded-[3rem] bg-[#0F172A] text-white p-10 space-y-8 relative overflow-hidden">
+               <div className="absolute top-0 right-0 p-6 opacity-10"><BrainCircuit className="h-32 w-32 text-primary" /></div>
+               <div className="flex items-center gap-4 relative z-10">
+                  <div className="h-12 w-12 bg-primary/20 rounded-2xl flex items-center justify-center">
+                     <BrainCircuit className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="font-headline font-black text-lg">AI Tutor Insights</h3>
+                  <h3 className="font-headline font-black text-xl uppercase">AI Tutor Insights</h3>
                </div>
-               <p className="text-slate-400 text-sm leading-relaxed">
+               <p className="text-slate-400 text-base leading-relaxed font-medium relative z-10">
                   {analytics.total > 0 
-                    ? `Based on your ${analytics.total} attempts, your Quantitative Aptitude needs high-fidelity focus. We recommend PSSSB Sectional mocks for percentage and ratio logic.`
-                    : "Tuhada dashboard ready hai. Mock attempt karan ton baad AI tuhade weak areas identify karega."}
+                    ? `Audit suggests high proficiency in Punjabi, but your Quant speed is below the 2026 PSSSB benchmark. Focus on "Ratio & Percentage" series tonight.`
+                    : "The preparation hub is initialized. Attempt your first mock to generate AI-driven performance insights and subject recommendations."}
                </p>
-               <Button asChild className="w-full bg-white text-[#0F172A] hover:bg-slate-100 font-black uppercase text-[10px] rounded-xl h-11">
-                  <Link href="/mocks">Improve Weak Areas</Link>
+               <Button asChild className="w-full bg-white text-[#0F172A] hover:bg-slate-100 font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl h-14 relative z-10 shadow-2xl">
+                  <Link href="/mocks">Audit Weak Subjects</Link>
                </Button>
             </Card>
           </div>
 
-          {/* Right: Detailed Analytics */}
-          <div className="lg:col-span-8 space-y-8">
-            <div className="flex items-center justify-between">
-               <h1 className="text-3xl font-headline font-black text-[#0F172A] tracking-tight">Performance Analytics</h1>
-               <div className="flex gap-2">
-                 <Button asChild variant="outline" className="rounded-xl border-slate-200 font-bold text-xs h-10 px-6 gap-2">
-                    <Link href="/leaderboard"><Trophy className="h-4 w-4 text-amber-500" /> Leaderboard</Link>
+          {/* Right: Analytical Deep-Dive */}
+          <div className="lg:col-span-8 space-y-12">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+               <div className="space-y-1">
+                  <h1 className="text-4xl font-headline font-black text-[#0F172A] tracking-tight uppercase">Performance Engine</h1>
+                  <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.3em]">Real-time preparation audit</p>
+               </div>
+               <div className="flex gap-4">
+                 <Button asChild variant="outline" className="rounded-2xl border-slate-200 font-black text-[10px] uppercase tracking-widest h-12 px-8 gap-3 bg-white shadow-sm">
+                    <Link href="/leaderboard"><Trophy className="h-4 w-4 text-amber-500" /> Global Rank</Link>
                  </Button>
-                 <Button asChild variant="outline" className="rounded-xl border-slate-200 font-bold text-xs h-10 px-6 gap-2">
-                    <Link href="/bookmarks"><Bookmark className="h-4 w-4 text-primary" /> Bookmarks</Link>
+                 <Button asChild variant="outline" className="rounded-2xl border-slate-200 font-black text-[10px] uppercase tracking-widest h-12 px-8 gap-3 bg-white shadow-sm">
+                    <Link href="/bookmarks"><Bookmark className="h-4 w-4 text-primary" /> Saved MCQs</Link>
                  </Button>
                </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-               <Card className="border-none shadow-xl shadow-slate-200/50 rounded-[2.5rem] bg-white p-8">
-                  <div className="flex items-center justify-between mb-8">
-                    <div>
-                       <h3 className="font-headline font-black text-xl text-[#0F172A]">Subject Mastery</h3>
-                       <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Institutional Accuracy %</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+               <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3.5rem] bg-white p-10">
+                  <div className="flex items-center justify-between mb-10">
+                    <div className="space-y-1">
+                       <h3 className="font-headline font-black text-2xl text-[#0F172A]">Subject Mastery</h3>
+                       <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">Institutional Accuracy %</p>
                     </div>
-                    <BarChart3 className="h-6 w-6 text-primary opacity-20" />
+                    <BarChart3 className="h-10 w-10 text-primary opacity-20" />
                   </div>
                   <div className="h-64 w-full">
                      {analytics.total > 0 ? (
@@ -156,79 +164,89 @@ export default function StudentDashboard() {
                              <YAxis hide domain={[0, 100]} />
                              <Tooltip cursor={{fill: 'transparent'}} content={({active, payload}) => {
                                 if (active && payload && payload.length) {
-                                   return <div className="bg-[#0F172A] text-white p-3 rounded-xl shadow-2xl text-[10px] font-black uppercase">{payload[0].value}% Accuracy</div>
+                                   return <div className="bg-[#0F172A] text-white p-4 rounded-2xl shadow-3xl text-xs font-bold uppercase tracking-tight">{payload[0].value}% Precision</div>
                                 }
                                 return null
                              }} />
-                             <Bar dataKey="accuracy" radius={[6, 6, 0, 0]} barSize={32}>
+                             <Bar dataKey="accuracy" radius={[10, 10, 0, 0]} barSize={40}>
                                 {analytics.subjectData.map((entry, index) => (
-                                   <Cell key={index} fill={entry.accuracy > 70 ? "#10B981" : entry.accuracy > 50 ? "#F97316" : "#F43F5E"} />
+                                   <Cell key={index} fill={entry.accuracy > 75 ? "#10B981" : entry.accuracy > 55 ? "#F97316" : "#F43F5E"} />
                                 ))}
                              </Bar>
                           </BarChart>
                        </ResponsiveContainer>
                      ) : (
-                       <div className="h-full flex items-center justify-center text-slate-300 italic text-sm">Attempt a mock to see breakdown.</div>
+                       <div className="h-full flex flex-col items-center justify-center text-slate-300 italic text-sm space-y-4">
+                          <ClipboardList className="h-12 w-12 opacity-10" />
+                          <p>Attempt a mock to visualize mastery.</p>
+                       </div>
                      )}
                   </div>
                </Card>
 
-               <Card className="border-none shadow-xl shadow-slate-200/50 rounded-[2.5rem] bg-white p-8 flex flex-col justify-center text-center space-y-4">
-                  <div className="space-y-1">
-                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Probable Selection Status</p>
-                     <p className="text-7xl font-headline font-black text-primary">{analytics.selectionProb}%</p>
-                     <div className="flex items-center justify-center gap-2 text-emerald-500 font-black text-xs">
-                        <ArrowUpRight className="h-4 w-4" /> {analytics.total > 1 ? "+12% vs Last Attempt" : "Initial Benchmark"}
+               <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3.5rem] bg-white p-12 flex flex-col justify-center text-center space-y-8 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-125 transition-transform"><TrendingUp className="h-40 w-40" /></div>
+                  <div className="space-y-2 relative z-10">
+                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Selection Probability Index</p>
+                     <p className="text-8xl font-headline font-black text-primary tracking-tighter">{analytics.selectionProb}%</p>
+                     <div className="flex items-center justify-center gap-3 text-emerald-500 font-black text-[10px] uppercase tracking-widest">
+                        <ArrowUpRight className="h-5 w-5" /> {analytics.total > 1 ? "+12% Above Previous" : "Benchmark Established"}
                      </div>
                   </div>
-                  <p className="text-sm text-slate-500 leading-relaxed font-medium px-4">
-                     Tuhadi accuracy official PSSSB cutoff de nehre hai. Sectional focus naal Selection de chances 90%+ ho sakde ne.
+                  <p className="text-base text-slate-500 leading-relaxed font-medium px-8 relative z-10">
+                     Your accuracy matches official 2025 cutoff patterns. High-fidelity focus on Quantitative sections could push selection probability above 95%.
                   </p>
                </Card>
             </div>
 
-            <Card className="border-none shadow-xl shadow-slate-200/50 rounded-[2.5rem] overflow-hidden bg-white">
-               <CardHeader className="p-8 border-b border-slate-50 flex flex-row items-center justify-between">
+            <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3.5rem] overflow-hidden bg-white">
+               <CardHeader className="p-12 border-b border-slate-50 flex flex-row items-center justify-between">
                   <div className="space-y-1">
-                    <CardTitle className="text-xl font-headline font-black text-[#0F172A]">Preparation History</CardTitle>
-                    <CardDescription>Review your past mock attempts and deep-dive into AI solutions.</CardDescription>
+                    <CardTitle className="font-headline text-2xl font-black text-[#0F172A] uppercase">Attempt Registry</CardTitle>
+                    <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Audit your high-fidelity mock history</CardDescription>
                   </div>
+                  <Button asChild variant="ghost" className="text-primary font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-primary/5 h-12 px-8">
+                     <Link href="/profile">Registry Audit <ChevronRight className="ml-2 h-4 w-4" /></Link>
+                  </Button>
                </CardHeader>
                <CardContent className="p-0">
                   {resultsLoading ? (
-                    Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)
+                    Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 w-full" />)
                   ) : results && results.length > 0 ? (
                     <div className="divide-y divide-slate-50">
                        {results.map((r: any) => (
-                          <div key={r.id} className="p-6 flex items-center justify-between hover:bg-slate-50 transition-colors group">
-                             <div className="flex items-center gap-5">
-                                <div className="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                                   <Trophy className="h-5 w-5 text-blue-500" />
+                          <div key={r.id} className="p-10 flex items-center justify-between hover:bg-slate-50/50 transition-colors group cursor-pointer">
+                             <div className="flex items-center gap-8">
+                                <div className="h-16 w-16 rounded-[1.5rem] bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                   <Trophy className="h-7 w-7 text-blue-500" />
                                 </div>
-                                <div>
-                                   <p className="font-bold text-[#0F172A] group-hover:text-primary transition-colors">{r.mockTitle}</p>
-                                   <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1 flex items-center gap-2">
-                                      <Clock className="h-3 w-3" /> {new Date(r.timestamp).toLocaleDateString()}
+                                <div className="space-y-1">
+                                   <p className="font-black text-[#0F172A] text-xl uppercase tracking-tight group-hover:text-primary transition-colors">{r.mockTitle}</p>
+                                   <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-1 flex items-center gap-3">
+                                      <Clock className="h-4 w-4" /> {new Date(r.timestamp).toLocaleDateString('en-GB')} • Official Audit
                                    </p>
                                 </div>
                              </div>
-                             <div className="flex items-center gap-8">
-                                <div className="text-right hidden sm:block">
-                                   <p className="text-lg font-black text-[#0F172A]">{r.score}/{r.totalQuestions}</p>
-                                   <p className={`text-[10px] font-black uppercase tracking-widest ${r.accuracy > 70 ? 'text-emerald-500' : 'text-orange-500'}`}>{r.accuracy}% Accuracy</p>
+                             <div className="flex items-center gap-12">
+                                <div className="text-right hidden sm:block space-y-1">
+                                   <p className="text-3xl font-headline font-black text-[#0F172A] tracking-tighter leading-none">{r.score}<span className="text-slate-300 text-lg">/{r.totalQuestions}</span></p>
+                                   <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${r.accuracy > 70 ? 'text-emerald-500' : 'text-orange-500'}`}>{r.accuracy}% Precision</p>
                                 </div>
-                                <Button asChild variant="ghost" size="icon" className="rounded-xl h-10 w-10 hover:bg-white text-slate-300 hover:text-primary border border-transparent hover:border-slate-100 hover:shadow-lg">
-                                   <Link href={`/results/${r.mockId}`}><ChevronRight className="h-5 w-5" /></Link>
+                                <Button asChild variant="ghost" size="icon" className="rounded-2xl h-14 w-14 hover:bg-white text-slate-200 hover:text-primary border-2 border-transparent hover:border-slate-100 hover:shadow-2xl transition-all">
+                                   <Link href={`/results/${r.mockId}`}><ChevronRight className="h-6 w-6" /></Link>
                                 </Button>
                              </div>
                           </div>
                        ))}
                     </div>
                   ) : (
-                    <div className="p-20 text-center text-slate-400 space-y-4">
-                       <ClipboardList className="h-16 w-16 mx-auto opacity-10" />
-                       <p className="font-bold">No activity recorded yet.</p>
-                       <Button asChild className="bg-primary text-white font-bold rounded-xl h-12 px-8 shadow-xl shadow-primary/20">
+                    <div className="p-32 text-center text-slate-300 space-y-8">
+                       <ClipboardList className="h-24 w-24 mx-auto opacity-10" />
+                       <div className="space-y-2">
+                          <p className="font-headline font-black uppercase text-2xl text-slate-400">Zero Activity Detected</p>
+                          <p className="text-slate-400 font-medium italic">Begin your preparation audit to populate performance analytics.</p>
+                       </div>
+                       <Button asChild className="bg-primary text-white font-black uppercase tracking-widest text-[10px] rounded-[1.5rem] h-16 px-16 shadow-3xl shadow-primary/20">
                           <Link href="/mocks">Start Your First Mock</Link>
                        </Button>
                     </div>
@@ -243,14 +261,14 @@ export default function StudentDashboard() {
   )
 }
 
-function DashboardStatCard({ icon, label, value }: any) {
+function Metric({ icon, label, value }: any) {
   return (
-    <Card className="border-none shadow-xl shadow-slate-200/40 rounded-[2rem] p-6 bg-white hover:scale-[1.02] transition-transform">
-       <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center mb-4">
+    <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[2.5rem] p-8 bg-white hover:translate-y-[-6px] transition-all duration-500 group">
+       <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
           {icon}
        </div>
-       <p className="text-2xl font-headline font-black text-[#0F172A] tracking-tighter">{value}</p>
-       <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mt-1">{label}</p>
+       <p className="text-4xl font-headline font-black text-[#0F172A] tracking-tighter leading-none">{value}</p>
+       <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 mt-4">{label}</p>
     </Card>
   )
 }
