@@ -1,55 +1,48 @@
 import { Exam } from "@/types"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
-import Image from "next/image"
-import { PlaceHolderImages } from "@/lib/placeholder-images"
-import { ArrowRight } from "lucide-react"
+import { PsssbIcon, PpscIcon, PoliceIcon, TeachingIcon, JusticeIcon, PowerIcon, MedIcon, BankIcon } from "@/lib/exam-icons"
 
 interface ExamCardProps {
   exam: Exam
 }
 
 export default function ExamCard({ exam }: ExamCardProps) {
-  const placeholder = PlaceHolderImages.find(p => p.id === exam.thumbnail)
+  // Map categories to specific styles and icons from the design
+  const getCategoryStyles = (category: string) => {
+    switch (category) {
+      case "PSSSB": return { bg: "bg-[#F0F7FF]", color: "text-[#3B82F6]", icon: <PsssbIcon /> };
+      case "PPSC": return { bg: "bg-[#F0FDF4]", color: "text-[#22C55E]", icon: <PpscIcon /> };
+      case "Punjab Police": return { bg: "bg-[#FFF1F2]", color: "text-[#F43F5E]", icon: <PoliceIcon /> };
+      case "Teaching Exams": return { bg: "bg-[#F5F3FF]", color: "text-[#8B5CF6]", icon: <TeachingIcon /> };
+      case "High Court": return { bg: "bg-[#F8FAFC]", color: "text-[#64748B]", icon: <JusticeIcon /> };
+      case "PSPCL & PSTCL": return { bg: "bg-[#FFFBEB]", color: "text-[#F59E0B]", icon: <PowerIcon /> };
+      case "BFUHS": return { bg: "bg-[#ECFEFF]", color: "text-[#06B6D4]", icon: <MedIcon /> };
+      case "Banking & Cooperative": return { bg: "bg-[#FFF7ED]", color: "text-[#EA580C]", icon: <BankIcon /> };
+      default: return { bg: "bg-muted/30", color: "text-muted-foreground", icon: null };
+    }
+  }
+
+  const styles = getCategoryStyles(exam.category);
 
   return (
-    <Card className="overflow-hidden group hover:border-primary/50 transition-all border-foreground/5 bg-card/50 hover:bg-card">
-      <div className="relative h-56 w-full overflow-hidden">
-        <Image
-          src={placeholder?.imageUrl || "https://picsum.photos/seed/default/400/250"}
-          alt={exam.title}
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-          data-ai-hint={placeholder?.imageHint || "education"}
-        />
-        <div className="absolute top-4 left-4">
-          <Badge className="bg-secondary text-white font-black uppercase tracking-wider text-[10px] border-none px-3 py-1">
-            {exam.category}
-          </Badge>
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-      </div>
-      <CardHeader className="pb-2">
-        <CardTitle className="font-headline text-2xl font-black group-hover:text-primary transition-colors">{exam.title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-          {exam.description}
-        </p>
-      </CardContent>
-      <CardFooter className="flex justify-between items-center pt-4 border-t border-foreground/5">
-        <div className="flex flex-col">
-          <span className="text-xl font-black text-secondary">{exam.totalMocks}</span>
-          <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Mock Tests</span>
-        </div>
-        <Button asChild variant="outline" className="font-bold border-primary/20 hover:bg-primary hover:text-white transition-all group/btn">
-          <Link href={`/exams/${exam.id}`} className="flex items-center">
-            View Details <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-          </Link>
-        </Button>
-      </CardFooter>
-    </Card>
+    <Link href={`/exams/${exam.id}`}>
+      <Card className={`group border-none ${styles.bg} hover:shadow-xl transition-all duration-300 rounded-2xl p-6 text-center`}>
+        <CardContent className="p-0 flex flex-col items-center">
+          <div className={`h-16 w-16 mb-4 flex items-center justify-center ${styles.color}`}>
+            {styles.icon}
+          </div>
+          <h3 className="font-headline text-xl font-black mb-1 text-secondary">{exam.title}</h3>
+          <div className="flex items-center gap-4 mt-2">
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+              {exam.totalMocks}+ Exams
+            </span>
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+              {exam.activeQuestions / 10}+ Mocks
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
   )
 }
