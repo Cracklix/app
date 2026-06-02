@@ -18,19 +18,19 @@ export default function Logo({ className = "", variant = 'dark' }: LogoProps) {
           stroke="currentColor"
           strokeWidth="3"
         >
-          {/* Refined C Shape */}
+          {/* Refined C Shape for Cracklix */}
           <path 
             d="M80 25 C 60 5, 20 20, 20 50 C 20 80, 60 95, 80 75" 
             strokeLinecap="round" 
           />
-          {/* Inset Punjab Outline Simplified */}
+          {/* Institutional Punjab Map Outline (Simplified) */}
           <path 
             d="M45 40 L55 45 L60 60 L50 70 L40 60 Z" 
             className={isLight ? 'text-white/40' : 'text-[#0B1F3A]/20'}
             fill="currentColor"
             stroke="none"
           />
-          {/* Refined Victory Check */}
+          {/* Success Checkmark */}
           <path
             d="M40 50 L50 60 L75 35"
             className="text-[#F59E0B]"
@@ -47,8 +47,8 @@ export default function Logo({ className = "", variant = 'dark' }: LogoProps) {
           <span className={isLight ? 'text-white' : 'text-[#0B1F3A]'}>Crack</span>
           <span className="text-[#1E5EFF]">lix</span>
         </span>
-        <span className={`text-[9px] uppercase tracking-widest font-medium ${isLight ? 'text-white/60' : 'text-muted-foreground'}`}>
-          Institutional Trust
+        <span className={`text-[9px] uppercase tracking-widest font-black ${isLight ? 'text-white/60' : 'text-muted-foreground'}`}>
+          Punjab Exam Trust
         </span>
       </div>
     </Link>

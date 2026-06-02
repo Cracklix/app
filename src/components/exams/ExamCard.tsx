@@ -1,7 +1,8 @@
 import { Exam } from "@/types"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
-import { Trophy } from "lucide-react"
+import { ArrowRight, BookOpen, Clock } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 interface ExamCardProps {
   exam: Exam
@@ -10,31 +11,35 @@ interface ExamCardProps {
 export default function ExamCard({ exam }: ExamCardProps) {
   return (
     <Link href={`/exams/${exam.id}`}>
-      <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 group rounded-xl overflow-hidden h-full flex flex-col">
+      <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group rounded-[1.5rem] overflow-hidden h-full flex flex-col">
         <CardContent className="p-8 flex flex-col h-full">
-          <div className="flex justify-between items-start mb-6">
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#1E5EFF] bg-blue-50 px-2 py-1 rounded border border-blue-100">
+          <div className="flex justify-between items-start mb-8">
+            <span className="text-[10px] font-black uppercase tracking-widest text-[#1E5EFF] bg-blue-50 px-3 py-1 rounded border border-blue-100">
               {exam.category}
             </span>
-            <Trophy className="h-5 w-5 text-gray-200 group-hover:text-[#F59E0B] transition-colors" />
           </div>
           
-          <h3 className="font-headline text-xl font-bold mb-3 text-[#0B1F3A] group-hover:text-[#1E5EFF] transition-colors">
+          <h3 className="font-headline text-2xl font-black mb-4 text-[#0B1F3A] group-hover:text-[#1E5EFF] transition-colors">
             {exam.title}
           </h3>
           
-          <p className="text-sm text-gray-500 leading-relaxed line-clamp-2 mb-6">
+          <p className="text-sm text-gray-500 font-medium leading-relaxed line-clamp-2 mb-8">
             {exam.description}
           </p>
 
-          <div className="mt-auto space-y-2 border-t border-gray-50 pt-6">
-            <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-gray-400">
-              <span>Mocks</span>
-              <span className="text-[#0B1F3A]">{exam.totalMocks}</span>
+          <div className="mt-auto space-y-4 pt-8 border-t border-gray-50">
+            <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.1em] text-gray-400">
+              <span className="flex items-center gap-2"><Clock className="h-3 w-3" /> Mock Tests</span>
+              <span className="text-[#0B1F3A]">{exam.totalMocks} Series</span>
             </div>
-            <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-gray-400">
-              <span>MCQs</span>
-              <span className="text-[#0B1F3A]">{exam.activeQuestions}+</span>
+            <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.1em] text-gray-400">
+              <span className="flex items-center gap-2"><BookOpen className="h-3 w-3" /> Questions</span>
+              <span className="text-[#0B1F3A]">{exam.activeQuestions}+ MCQs</span>
+            </div>
+            <div className="pt-4">
+              <Button variant="ghost" className="w-full justify-between p-0 font-black uppercase tracking-widest text-[10px] text-secondary hover:bg-transparent group-hover:translate-x-1 transition-transform">
+                Start Preparation <ArrowRight className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </CardContent>
