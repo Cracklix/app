@@ -60,7 +60,7 @@ export default function LoginPage() {
           id: user.uid,
           name: name,
           email: email,
-          phone: phone,
+          phone: `+91 ${phone}`,
           state: "Punjab",
           targetExam: "", // To be filled in profile-setup
           createdAt: serverTimestamp(),
@@ -160,15 +160,19 @@ export default function LoginPage() {
                   <div className="space-y-2">
                     <Label htmlFor="phone" className="text-slate-300 text-xs font-black uppercase tracking-widest">Mobile Number</Label>
                     <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-slate-500" />
+                        <span className="text-slate-400 text-sm font-bold border-r border-white/10 pr-2">+91</span>
+                      </div>
                       <Input 
                         id="phone" 
                         type="tel"
-                        className="pl-12 h-13 bg-white/[0.05] border-white/10 text-white rounded-xl focus:ring-primary/50" 
-                        placeholder="+91 98881 XXXXX"
+                        className="pl-24 h-13 bg-white/[0.05] border-white/10 text-white rounded-xl focus:ring-primary/50" 
+                        placeholder="62847 XXXXX"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         required
+                        maxLength={10}
                       />
                     </div>
                   </div>

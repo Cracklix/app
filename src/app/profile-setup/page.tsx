@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -52,7 +53,7 @@ export default function ProfileSetup() {
         id: user.uid,
         name: formData.name,
         email: user.email,
-        phone: formData.phone,
+        phone: `+91 ${formData.phone}`,
         targetExam: formData.targetExam,
         state: "Punjab",
         createdAt: serverTimestamp(),
@@ -109,13 +110,17 @@ export default function ProfileSetup() {
           <div className="space-y-2">
             <Label className="text-xs font-black uppercase tracking-widest text-slate-400">Mobile Number</Label>
             <div className="relative">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                <Phone className="h-4 w-4 text-slate-400" />
+                <span className="text-slate-500 text-sm font-bold border-r border-slate-200 pr-2">+91</span>
+              </div>
               <Input 
                 type="tel"
-                placeholder="+91 98XXX XXXXX" 
-                className="pl-12 h-12 rounded-xl border-slate-200 bg-slate-50/50"
+                placeholder="98XXX XXXXX" 
+                className="pl-24 h-12 rounded-xl border-slate-200 bg-slate-50/50"
                 value={formData.phone}
                 onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                maxLength={10}
               />
             </div>
           </div>
