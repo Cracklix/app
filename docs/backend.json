@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -7,12 +8,13 @@
       "properties": {
         "id": { "type": "string" },
         "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
         "phone": { "type": "string" },
         "state": { "type": "string", "enum": ["Punjab"] },
         "targetExam": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["id", "name", "phone"]
+      "required": ["id", "name", "email"]
     },
     "Exam": {
       "title": "Exam",
@@ -85,7 +87,7 @@
     }
   },
   "auth": {
-    "providers": ["phone"]
+    "providers": ["google", "password"]
   },
   "firestore": {
     "/users/{userId}": {
