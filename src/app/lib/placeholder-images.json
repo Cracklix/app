@@ -1,28 +1,46 @@
 {
   "placeholderImages": [
     {
-      "id": "hero-bg",
-      "description": "Abstract technological background",
-      "imageUrl": "https://picsum.photos/seed/prep1/1200/600",
-      "imageHint": "technology abstract"
+      "id": "hero-punjab",
+      "description": "Golden Temple Amritsar at night",
+      "imageUrl": "https://picsum.photos/seed/punjab-hero/1200/600",
+      "imageHint": "golden temple"
     },
     {
-      "id": "exam-medical",
-      "description": "Medical exam preparation",
-      "imageUrl": "https://picsum.photos/seed/med1/400/250",
-      "imageHint": "medical science"
+      "id": "exam-psssb",
+      "description": "Punjab government seal",
+      "imageUrl": "https://picsum.photos/seed/psssb/400/250",
+      "imageHint": "government seal"
     },
     {
-      "id": "exam-engineering",
-      "description": "Engineering entrance exam",
-      "imageUrl": "https://picsum.photos/seed/eng1/400/250",
-      "imageHint": "engineering blueprint"
+      "id": "exam-police",
+      "description": "Punjab Police insignia",
+      "imageUrl": "https://picsum.photos/seed/police/400/250",
+      "imageHint": "police emblem"
     },
     {
-      "id": "exam-civil",
-      "description": "Civil services exam",
-      "imageUrl": "https://picsum.photos/seed/civil1/400/250",
-      "imageHint": "government building"
+      "id": "exam-ppsc",
+      "description": "Historic administrative building Punjab",
+      "imageUrl": "https://picsum.photos/seed/ppsc/400/250",
+      "imageHint": "historic building"
+    },
+    {
+      "id": "exam-teaching",
+      "description": "Classroom in Punjab",
+      "imageUrl": "https://picsum.photos/seed/teaching/400/250",
+      "imageHint": "classroom study"
+    },
+    {
+      "id": "exam-pspcl",
+      "description": "Power lines and electricity infrastructure",
+      "imageUrl": "https://picsum.photos/seed/pspcl/400/250",
+      "imageHint": "power lines"
+    },
+    {
+      "id": "exam-hc",
+      "description": "Courtroom gavel and scales",
+      "imageUrl": "https://picsum.photos/seed/court/400/250",
+      "imageHint": "justice scale"
     }
   ]
 }
