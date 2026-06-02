@@ -15,8 +15,8 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 /**
- * @fileOverview Phase 50: Revision Center.
- * Central hub for bookmarks, wrong attempts, and high-priority revision.
+ * @fileOverview Final Revision Hub.
+ * Central portal for Bookmarks, Wrong Attempts, and AI Rationalizations.
  */
 
 export default function RevisionCenter() {
@@ -42,13 +42,13 @@ export default function RevisionCenter() {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                  <History className="h-5 w-5 text-primary" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Institutional Audit Hub</span>
+                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Preparation Audit Hub</span>
               </div>
               <h1 className="text-5xl md:text-7xl font-headline font-black text-[#0F172A] tracking-tight uppercase leading-[0.9]">
                 Revision <br/> <span className="text-primary">Center</span>
               </h1>
               <p className="text-slate-500 font-medium text-lg max-w-xl">
-                Master the concepts you missed. Review your saved items and improve your accuracy for the 2026 Punjab exams.
+                Master the concepts you missed. Review your saved items and improve your accuracy for the 2026 Punjab recruitment cycle.
               </p>
             </div>
             <div className="relative w-full md:w-80">
@@ -68,10 +68,10 @@ export default function RevisionCenter() {
                    <Bookmark className="h-4 w-4" /> Bookmarks
                 </TabsTrigger>
                 <TabsTrigger value="wrong" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white">
-                   <AlertCircle className="h-4 w-4" /> Wrong MCQs
+                   <AlertCircle className="h-4 w-4" /> Wrong Attempts
                 </TabsTrigger>
                 <TabsTrigger value="starred" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white">
-                   <Star className="h-4 w-4" /> Priority Items
+                   <Star className="h-4 w-4" /> Priority
                 </TabsTrigger>
              </TabsList>
 
@@ -85,7 +85,7 @@ export default function RevisionCenter() {
                         <div className="flex items-center justify-between">
                            <div className="flex items-center gap-4">
                               <Badge className="bg-primary/10 text-primary border-none text-[9px] font-black uppercase tracking-widest px-3">
-                                 {b.subjectId || 'Punjab GK'}
+                                 {b.subjectId || 'General Punjab GK'}
                               </Badge>
                               <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Added {new Date(b.timestamp).toLocaleDateString()}</span>
                            </div>
@@ -101,7 +101,7 @@ export default function RevisionCenter() {
                         <div className="pt-6 border-t border-slate-50 flex items-center justify-between">
                            <div className="flex gap-4">
                               <Button variant="outline" className="rounded-xl border-slate-100 text-[10px] font-black uppercase h-10 px-6 gap-2">
-                                 <Languages className="h-4 w-4" /> Bilingual
+                                 <Languages className="h-4 w-4" /> Bilingual Support
                               </Button>
                               <Button variant="ghost" className="text-primary font-black uppercase text-[10px] gap-2">
                                  <BrainCircuit className="h-4 w-4" /> AI Rationalization
@@ -115,16 +115,16 @@ export default function RevisionCenter() {
                     </Card>
                   ))
                 ) : (
-                  <RevisionEmptyState icon={<Bookmark />} title="No Bookmarks Found" desc="Save difficult questions during mocks to revise them later." />
+                  <RevisionEmptyState icon={<Bookmark />} title="No Bookmarks Detected" desc="Save high-fidelity questions during mocks to revise them later." />
                 )}
              </TabsContent>
 
              <TabsContent value="wrong">
-                <RevisionEmptyState icon={<AlertCircle />} title="Precision Engine Clean" desc="Questions you answer incorrectly will automatically appear here for re-auditing." />
+                <RevisionEmptyState icon={<AlertCircle />} title="Audit Engine Clean" desc="Mismatched audit choices will appear here for re-analysis." />
              </TabsContent>
 
              <TabsContent value="starred">
-                <RevisionEmptyState icon={<Star />} title="Focus Priority Empty" desc="Mark items as high-priority to build your custom revision strategy." />
+                <RevisionEmptyState icon={<Star />} title="Priority Matrix Empty" desc="Tag items as high-priority to build your custom revision strategy." />
              </TabsContent>
           </Tabs>
         </div>

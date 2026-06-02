@@ -15,12 +15,10 @@ import {
   Database, 
   Zap,
   Sparkles,
-  Settings,
-  Filter,
-  Layers,
   ClipboardCheck,
   Search,
-  CheckCircle2
+  CheckCircle2,
+  Filter
 } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp } from "firebase/firestore"
@@ -29,8 +27,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Final Production-Ready Smart Mock Builder.
- * Features: Auto-Mock Generation, Sectional Blueprinting, Manual Library.
+ * @fileOverview Final Smart Mock Builder.
+ * Features: Blueprint-driven Auto-Assembly & Manual Library Selection.
  */
 
 export default function MockBuilderPage() {
@@ -59,7 +57,7 @@ export default function MockBuilderPage() {
 
   const handleAutoPick = () => {
     if (!questionBank || questionBank.length === 0) {
-      toast({ variant: "destructive", title: "Bank Empty", description: "No questions available to extract." })
+      toast({ variant: "destructive", title: "Bank Empty", description: "Initialize question bank first." })
       return
     }
 
@@ -76,12 +74,13 @@ export default function MockBuilderPage() {
       toast({ 
         variant: "destructive", 
         title: "Shortfall Detected", 
-        description: `Only ${pool.length} MCQs found matching this blueprint. Target: ${smartConfig.count}` 
+        description: `Only ${pool.length} items match this blueprint. Target: ${smartConfig.count}` 
       })
       return
     }
 
-    const selected = pool.sort(() => 0.5 - Math.random()).slice(0, smartConfig.count)
+    const shuffled = pool.sort(() => 0.5 - Math.random())
+    const selected = shuffled.slice(0, smartConfig.count)
     setSelectedQuestions(selected)
     
     toast({ 
@@ -92,7 +91,7 @@ export default function MockBuilderPage() {
 
   const handlePublish = () => {
     if (!mockData.title || !mockData.examId || selectedQuestions.length === 0) {
-      toast({ variant: "destructive", title: "Audit Failed", description: "Title, Hub and questions required." })
+      toast({ variant: "destructive", title: "Audit Failed", description: "Title, Exam, and Questions are mandatory." })
       return
     }
 
@@ -111,7 +110,7 @@ export default function MockBuilderPage() {
 
     setDoc(mockRef, payload)
       .then(() => {
-        toast({ title: "Series Deployed", description: "The mock series is now live." })
+        toast({ title: "Series Deployed", description: "Test series is now live in the repository." })
         router.push("/admin/mocks")
       })
       .catch(async () => {
@@ -141,7 +140,7 @@ export default function MockBuilderPage() {
           </Button>
           <div>
             <h1 className="text-4xl font-black font-headline text-primary uppercase tracking-tight">Smart Builder</h1>
-            <p className="text-muted-foreground mt-1">Scale your series with blueprint-driven assembly.</p>
+            <p className="text-muted-foreground mt-1">Institutional Assembly: Blueprint-driven mock generation.</p>
           </div>
         </div>
         <Button className="bg-primary hover:bg-primary/90 gap-3 font-black px-12 h-16 shadow-3xl rounded-2xl" onClick={handlePublish} disabled={isPublishing}>
@@ -152,25 +151,25 @@ export default function MockBuilderPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-4 space-y-8">
           <Card className="border-foreground/5 bg-card/50 shadow-2xl rounded-[2.5rem] overflow-hidden">
-            <CardHeader className="p-10 pb-0">
-               <CardTitle className="text-2xl font-headline font-black uppercase text-slate-100">Metadata</CardTitle>
+            <CardHeader className="p-10">
+               <CardTitle className="text-2xl font-headline font-black uppercase">Mock Blueprint</CardTitle>
             </CardHeader>
-            <CardContent className="p-10 space-y-8">
+            <CardContent className="p-10 pt-0 space-y-8">
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Series Title</Label>
+                <Label className="text-[10px] font-black uppercase text-slate-500">Series Title</Label>
                 <Input placeholder="e.g. PSSSB Clerk Full Mock 01" value={mockData.title} onChange={e => setMockData({...mockData, title: e.target.value})} className="rounded-xl h-12 bg-background border-none shadow-inner" />
               </div>
               
               <div className="grid grid-cols-1 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Authority</Label>
+                  <Label className="text-[10px] font-black uppercase text-slate-500">Authority</Label>
                   <Select onValueChange={val => setMockData({...mockData, boardId: val})}>
                     <SelectTrigger className="rounded-xl h-12 bg-background border-none shadow-sm"><SelectValue placeholder="Select Board" /></SelectTrigger>
                     <SelectContent>{boards?.map(b => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Exam Hub</Label>
+                  <Label className="text-[10px] font-black uppercase text-slate-500">Exam Hub</Label>
                   <Select onValueChange={val => setMockData({...mockData, examId: val})}>
                     <SelectTrigger className="rounded-xl h-12 bg-background border-none shadow-sm"><SelectValue placeholder="Select Exam" /></SelectTrigger>
                     <SelectContent>{exams?.filter(e => e.boardId === mockData.boardId).map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent>
@@ -180,17 +179,14 @@ export default function MockBuilderPage() {
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Time (Min)</Label>
+                  <Label className="text-[10px] font-black uppercase text-slate-500">Time (Min)</Label>
                   <Input type="number" value={mockData.duration} onChange={e => setMockData({...mockData, duration: parseInt(e.target.value)})} className="rounded-xl h-12 bg-background border-none text-center font-black" />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Type</Label>
-                  <Select onValueChange={val => setMockData({...mockData, mockType: val as any})} defaultValue="FULL">
+                  <Label className="text-[10px] font-black uppercase text-slate-500">Level</Label>
+                  <Select onValueChange={val => setMockData({...mockData, difficulty: val})} defaultValue="Medium">
                     <SelectTrigger className="rounded-xl h-12 bg-background border-none shadow-sm"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="FULL">Full Length</SelectItem>
-                      <SelectItem value="SUBJECT">Subject Wise</SelectItem>
-                    </SelectContent>
+                    <SelectContent><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent>
                   </Select>
                 </div>
               </div>
@@ -201,7 +197,7 @@ export default function MockBuilderPage() {
              <Database className="h-10 w-10 text-primary mx-auto opacity-20" />
              <div>
                 <p className="text-5xl font-black font-headline text-slate-100">{selectedQuestions.length}</p>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Questions Linked</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Linked Questions</p>
              </div>
           </Card>
         </div>
@@ -220,8 +216,8 @@ export default function MockBuilderPage() {
                           <Zap className="h-10 w-10" />
                        </div>
                        <div className="space-y-2">
-                          <h3 className="text-3xl font-headline font-black text-slate-800 uppercase">Smart Extraction</h3>
-                          <p className="text-slate-500 font-medium">Define quantity and subject to generate instantly.</p>
+                          <h3 className="text-3xl font-headline font-black text-slate-800 uppercase">Extraction Engine</h3>
+                          <p className="text-slate-500 font-medium">Define parameters to generate instant series.</p>
                        </div>
                        
                        <div className="grid grid-cols-1 gap-6 text-left">
@@ -230,7 +226,7 @@ export default function MockBuilderPage() {
                              <Select onValueChange={val => setSmartConfig({...smartConfig, subjectId: val})} defaultValue="all">
                                 <SelectTrigger className="h-14 rounded-xl bg-slate-50 border-none shadow-inner"><SelectValue /></SelectTrigger>
                                 <SelectContent>
-                                   <SelectItem value="all">Mix All Subjects</SelectItem>
+                                   <SelectItem value="all">Mixed (Balanced)</SelectItem>
                                    {subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                                 </SelectContent>
                              </Select>
@@ -242,7 +238,7 @@ export default function MockBuilderPage() {
                                 <Input type="number" value={smartConfig.count} onChange={e => setSmartConfig({...smartConfig, count: parseInt(e.target.value)})} className="h-14 rounded-xl bg-slate-50 border-none shadow-inner text-xl font-black text-center" />
                              </div>
                              <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase text-slate-400">Difficulty</Label>
+                                <Label className="text-[10px] font-black uppercase text-slate-400">Subject Level</Label>
                                 <Select onValueChange={val => setSmartConfig({...smartConfig, difficulty: val})} defaultValue="all">
                                    <SelectTrigger className="h-14 rounded-xl bg-slate-50 border-none shadow-inner"><SelectValue /></SelectTrigger>
                                    <SelectContent><SelectItem value="all">Mixed</SelectItem><SelectItem value="easy">Easy</SelectItem><SelectItem value="medium">Medium</SelectItem><SelectItem value="hard">Hard</SelectItem></SelectContent>
@@ -281,7 +277,7 @@ export default function MockBuilderPage() {
                             variant={isAdded ? "default" : "outline"}
                             className={`rounded-xl h-10 px-6 font-black uppercase text-[9px] tracking-widest ${isAdded ? 'bg-emerald-500' : ''}`}
                            >
-                             {isAdded ? <CheckCircle2 className="h-4 w-4 mr-2" /> : 'Link'} {isAdded ? 'Added' : 'MCQ'}
+                             {isAdded ? <CheckCircle2 className="h-4 w-4 mr-2" /> : 'Link'} {isAdded ? 'Linked' : 'MCQ'}
                            </Button>
                         </div>
                       )
