@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -7,8 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import Logo from "@/components/brand/Logo"
-import { ShieldCheck, Mail, Lock, ChevronLeft, User } from "lucide-react"
-import { useAuth } from "@/firebase"
+import { ShieldCheck, Mail, Lock, ChevronLeft, User, Phone } from "lucide-react"
+import { useAuth, useFirestore } from "@/firebase"
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
@@ -17,6 +18,7 @@ import {
   sendPasswordResetEmail,
   updateProfile
 } from "firebase/auth"
+import { doc, setDoc, serverTimestamp } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
 import Link from "next/link"
@@ -25,6 +27,7 @@ import { motion } from "framer-motion"
 export default function LoginPage() {
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [name, setName] = useState("")
+  const [phone, setPhone] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [resetEmail, setResetEmail] = useState("")
@@ -33,25 +36,40 @@ export default function LoginPage() {
   
   const router = useRouter()
   const auth = useAuth()
+  const db = useFirestore()
   const { toast } = useToast()
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email || !password || (mode === 'register' && !name)) return
+    if (!email || !password || (mode === 'register' && (!name || !phone))) return
     
     setLoading(true)
     try {
       if (mode === 'login') {
         await signInWithEmailAndPassword(auth, email, password)
         toast({ title: "Welcome back!", description: "Successfully logged in." })
+        router.push("/")
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-        await updateProfile(userCredential.user, { displayName: name })
-        toast({ title: "Account created!", description: `Welcome, ${name}! Please complete your profile.` })
+        const user = userCredential.user
+        
+        await updateProfile(user, { displayName: name })
+        
+        // Save to Firestore immediately
+        await setDoc(doc(db, 'users', user.uid), {
+          id: user.uid,
+          name: name,
+          email: email,
+          phone: phone,
+          state: "Punjab",
+          targetExam: "", // To be filled in profile-setup
+          createdAt: serverTimestamp(),
+          status: 'Free'
+        }, { merge: true })
+
+        toast({ title: "Account created!", description: `Welcome, ${name}!` })
         router.push("/profile-setup")
-        return
       }
-      router.push("/")
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -123,21 +141,38 @@ export default function LoginPage() {
           <CardContent className="space-y-6 px-8 pb-10">
             <form onSubmit={handleEmailAuth} className="space-y-5">
               {mode === 'register' && (
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-slate-300 text-xs font-black uppercase tracking-widest">Full Name</Label>
-                  <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                    <Input 
-                      id="name" 
-                      type="text"
-                      className="pl-12 h-13 bg-white/[0.05] border-white/10 text-white rounded-xl focus:ring-primary/50" 
-                      placeholder="Arsh Grewal"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
-                    />
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-slate-300 text-xs font-black uppercase tracking-widest">Full Name</Label>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                      <Input 
+                        id="name" 
+                        type="text"
+                        className="pl-12 h-13 bg-white/[0.05] border-white/10 text-white rounded-xl focus:ring-primary/50" 
+                        placeholder="Arsh Grewal"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-slate-300 text-xs font-black uppercase tracking-widest">Mobile Number</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                      <Input 
+                        id="phone" 
+                        type="tel"
+                        className="pl-12 h-13 bg-white/[0.05] border-white/10 text-white rounded-xl focus:ring-primary/50" 
+                        placeholder="+91 98881 XXXXX"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </>
               )}
               
               <div className="space-y-2">
