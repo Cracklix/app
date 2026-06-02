@@ -27,7 +27,7 @@ service cloud.firestore {
     }
 
     // --- Global Founder Bypass ---
-    // This allows the initial seed to work even if collections aren't set up yet.
+    // This allows the initial seed and all admin operations to work for the founder.
     match /{document=**} {
       allow read, write: if isFounder();
     }
@@ -84,9 +84,7 @@ service cloud.firestore {
 
     match /test_sessions/{sessionId} {
       allow read: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
-      allow create: if isAuthenticated() && (isAdmin() || request.resource.data.userId == request.auth.uid);
-      allow update: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
-      allow delete: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow write: if isAuthenticated() && (isAdmin() || request.resource.data.userId == request.auth.uid);
     }
 
     match /current_affairs/{docId} {

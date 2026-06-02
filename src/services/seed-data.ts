@@ -1,9 +1,9 @@
 
-import { Firestore, doc, setDoc, serverTimestamp, collection, addDoc } from 'firebase/firestore';
+import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
  * @fileOverview Institutional Seeding Engine for Cracklix.
- * Populates the repository with the official Punjab Government Exam Hierarchy.
+ * Populates the repository with the full official Punjab Government Exam Hierarchy.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('Initializing Structured Punjab Repository Sync...');
@@ -13,13 +13,13 @@ export async function seedInitialData(db: Firestore) {
     { id: 'psssb', abbreviation: 'PSSSB', name: 'Punjab Subordinate Services Selection Board', description: 'Handles Group B, C, and D non-gazetted positions.', iconUrl: 'https://picsum.photos/seed/psssb/200/200' },
     { id: 'ppsc', abbreviation: 'PPSC', name: 'Punjab Public Service Commission', description: 'Handles Group A and B gazetted administrative posts.', iconUrl: 'https://picsum.photos/seed/ppsc/200/200' },
     { id: 'police', abbreviation: 'Police', name: 'Punjab Police Recruitment Board', description: 'Dedicated law enforcement cadre recruitment.', iconUrl: 'https://picsum.photos/seed/police/200/200' },
-    { id: 'education', abbreviation: 'Education', name: 'Punjab Education Department', description: 'PSTET, Master Cadre, and ETT recruitment.', iconUrl: 'https://picsum.photos/seed/teaching/200/200' },
-    { id: 'pspcl', abbreviation: 'PSPCL', name: 'PSPCL & PSTCL', description: 'Power Corporation technical and clerical posts.', iconUrl: 'https://picsum.photos/seed/pspcl/200/200' },
-    { id: 'highcourt', abbreviation: 'High Court', name: 'High Court Clerk (SSSC)', description: 'Subordinate Courts of Punjab and Haryana.', iconUrl: 'https://picsum.photos/seed/court/200/200' },
+    { id: 'education', abbreviation: 'Education', name: 'Punjab Education Department', description: 'PSTET, Master Cadre, ETT, and Lecturer recruitment.', iconUrl: 'https://picsum.photos/seed/teaching/200/200' },
+    { id: 'technical', abbreviation: 'Technical', name: 'Technical & Autonomous Bodies', description: 'PSPCL, PSTCL, and Departmental Boards.', iconUrl: 'https://picsum.photos/seed/pspcl/200/200' },
+    { id: 'highcourt', abbreviation: 'High Court', name: 'Punjab & Haryana High Court', description: 'Judicial clerical and stenographer recruitment.', iconUrl: 'https://picsum.photos/seed/court/200/200' },
   ];
   for (const b of boards) await setDoc(doc(db, 'boards', b.id), b);
 
-  // 2. Core Subjects (Common vs Different)
+  // 2. Core Subjects (Common Base vs Specialized)
   const subjects = [
     { id: 'punjabi-qualifying', name: 'Mandatory Punjabi (Qualifying)', description: 'Part-A: 50-mark standard matrix exam.' },
     { id: 'punjab-history', name: 'Punjab History & Culture', description: 'Ancient history to modern freedom movements.' },
@@ -29,8 +29,8 @@ export async function seedInitialData(db: Firestore) {
     { id: 'ict', name: 'ICT (Computers)', description: 'Basics of hardware, software, and networking.' },
     { id: 'english', name: 'General English', description: 'Grammar and vocabulary.' },
     { id: 'cdp', name: 'Child Development (CDP)', description: 'Psychology of teaching and pedagogy.' },
-    { id: 'science', name: 'General Science', description: 'High school level science.' },
-    { id: 'sst', name: 'Social Studies', description: 'Geography, Civics, and History.' },
+    { id: 'law', name: 'Digital & Cyber Laws', description: 'Law enforcement specific legislation.' },
+    { id: 'accounts', name: 'Financial Accounting', description: 'Auditing and accounting laws.' },
   ];
   for (const s of subjects) await setDoc(doc(db, 'subjects', s.id), s);
 
@@ -55,41 +55,31 @@ export async function seedInitialData(db: Firestore) {
     { id: 'police-hc', boardId: 'police', name: 'Head Constable / ASI', category: 'Police', totalMocks: 20, activeQuestions: 1500, duration: 120 },
     
     // Education
-    { id: 'pstet-1', boardId: 'education', name: 'PSTET Paper 1 (Classes 1-5)', category: 'Teaching', totalMocks: 30, activeQuestions: 2000, duration: 150 },
-    { id: 'pstet-2', boardId: 'education', name: 'PSTET Paper 2 (Classes 6-8)', category: 'Teaching', totalMocks: 30, activeQuestions: 2000, duration: 150 },
-    { id: 'ett-cadre', boardId: 'education', name: 'ETT Cadre (Primary)', category: 'Teaching', totalMocks: 40, activeQuestions: 3500, duration: 120 },
+    { id: 'pstet-1', boardId: 'education', name: 'PSTET Paper 1 (Primary)', category: 'Teaching', totalMocks: 30, activeQuestions: 2000, duration: 150 },
+    { id: 'pstet-2', boardId: 'education', name: 'PSTET Paper 2 (Upper Primary)', category: 'Teaching', totalMocks: 30, activeQuestions: 2000, duration: 150 },
+    { id: 'ett-cadre', boardId: 'education', name: 'ETT Cadre recruitment', category: 'Teaching', totalMocks: 40, activeQuestions: 3500, duration: 120 },
     { id: 'master-cadre', boardId: 'education', name: 'Master Cadre (TGT)', category: 'Teaching', totalMocks: 50, activeQuestions: 4000, duration: 150 },
     { id: 'lecturer-cadre', boardId: 'education', name: 'Lecturer Cadre (PGT)', category: 'Teaching', totalMocks: 20, activeQuestions: 3000, duration: 150 },
 
+    // Technical / Autonomous
+    { id: 'pspcl-ldc', boardId: 'technical', name: 'PSPCL Lower Division Clerk', category: 'Clerical', totalMocks: 15, activeQuestions: 1200, duration: 120 },
+    { id: 'pspcl-je', boardId: 'technical', name: 'PSPCL Junior Engineer', category: 'Technical', totalMocks: 10, activeQuestions: 1500, duration: 120 },
+
     // High Court
-    { id: 'hc-clerk', boardId: 'highcourt', name: 'High Court Clerk', category: 'Judicial', totalMocks: 25, activeQuestions: 1200, duration: 120 },
+    { id: 'hc-clerk', boardId: 'highcourt', name: 'High Court Clerk (SSSC)', category: 'Judicial', totalMocks: 25, activeQuestions: 1200, duration: 120 },
   ];
   for (const e of exams) await setDoc(doc(db, 'exams', e.id), e);
 
-  // 4. Sample Question
-  const questions = [
-    {
-      id: 'q-seed-1', boardId: 'psssb', examId: 'psssb-clerk', subjectId: 'punjab-history', difficulty: 'easy',
-      questionEn: 'Who was the first Guru of Sikhs?',
-      questionPa: 'ਸਿੱਖਾਂ ਦੇ ਪਹਿਲੇ ਗੁਰੂ ਕੌਣ ਸਨ?',
-      optionAEn: 'Guru Nanak Dev Ji', optionAPa: 'ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ',
-      optionBEn: 'Guru Angad Dev Ji', optionBPa: 'ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ',
-      optionCEn: 'Guru Arjan Dev Ji', optionCPa: 'ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ',
-      optionDEn: 'Guru Gobind Singh Ji', optionDPa: 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ',
-      correctAnswer: 'A',
-      explanationEn: 'Guru Nanak Dev Ji was the founder of Sikhism.',
-      createdAt: serverTimestamp(), author: 'Institutional Seed'
-    }
-  ];
-  for (const q of questions) await setDoc(doc(db, 'questions', q.id), q);
-
-  // 5. Settings
+  // 4. Global Settings
   await setDoc(doc(db, 'settings', 'global'), {
     platformName: "Cracklix",
-    announcement: "🔥 Punjab 2026 Recruitment Calendar Live",
+    announcement: "🔥 Punjab 2026 Recruitment Calendar Live. Check Official Hubs.",
     showAnnouncement: true,
+    heroLine1: "Prepare Smarter.",
+    heroLine2: "Score Higher.",
+    heroDescription: "The absolute common base and post-specific preparation hub for PSSSB, PPSC, and Punjab Police exams.",
     updatedAt: serverTimestamp()
   }, { merge: true });
 
-  console.log('Institutional Seed Complete. Official Punjab Hierarchy Live.');
+  console.log('Institutional Seed Complete. Exhaustive Punjab Hierarchy Live.');
 }

@@ -62,8 +62,10 @@ export default function AdminDashboard() {
       await seedInitialData(db)
       toast({ 
         title: "Success", 
-        description: "All 13 core collections are now live. Refresh your Firebase Console to see them." 
+        description: "All core collections (PSSSB, PPSC, Police, Education) are now live." 
       })
+      // Refresh after seeding to populate UI
+      setTimeout(() => window.location.reload(), 1500)
     } catch (e: any) {
       console.error("Seeding Error:", e)
       toast({ 
