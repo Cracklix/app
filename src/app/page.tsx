@@ -1,37 +1,17 @@
-import Navbar from "@/components/layout/Navbar"
-import { Button } from "@/components/ui/button"
-import { ArrowRight, CheckCircle2, BarChart3, Target, ShieldCheck, Trophy, Search } from "lucide-react"
-import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { EXAMS, SAMPLE_MOCK } from "@/lib/mock-data"
-import Logo from "@/components/brand/Logo"
+import Navbar from "@/components/layout/Navbar";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, CheckCircle2, BarChart3, Target, ShieldCheck, Trophy } from "lucide-react";
+import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
+import { EXAMS } from "@/lib/mock-data";
+import Logo from "@/components/brand/Logo";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      {/* 1. NAVBAR */}
-      <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 backdrop-blur-md">
-        <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-          <Logo />
-          
-          <div className="hidden lg:flex items-center gap-10 text-sm font-semibold text-gray-600">
-            <Link href="/exams" className="hover:text-secondary transition-colors">Exams</Link>
-            <Link href="/mocks" className="hover:text-secondary transition-colors">Mock Tests</Link>
-            <Link href="/results" className="hover:text-secondary transition-colors">Results</Link>
-            <Link href="/pricing" className="hover:text-secondary transition-colors">Pricing</Link>
-            <Link href="/about" className="hover:text-secondary transition-colors">About</Link>
-          </div>
+    <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
+      <Navbar />
 
-          <div className="flex items-center gap-6">
-            <Link href="/login" className="text-sm font-bold text-gray-700 hover:text-secondary transition-colors">Login</Link>
-            <Button asChild size="sm" className="bg-secondary hover:bg-secondary/90 text-white font-bold px-6 rounded-xl shadow-lg shadow-blue-200">
-              <Link href="/mocks">Start Free Mock</Link>
-            </Button>
-          </div>
-        </div>
-      </nav>
-
-      {/* 2. HERO SECTION */}
+      {/* 1. HERO SECTION (Institutional Trust) */}
       <section className="relative pt-24 pb-32 px-6 trust-gradient overflow-hidden border-b">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
@@ -64,7 +44,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* DASHBOARD PREVIEW (RIGHT) */}
+            {/* DASHBOARD PREVIEW (Institutional UI) */}
             <div className="relative">
               <div className="dashboard-preview-card p-10 space-y-10 border-2">
                 <div className="flex justify-between items-center border-b pb-6">
@@ -77,7 +57,7 @@ export default function Home() {
                    </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-8">
+                <div className="grid grid-cols-3 gap-8 text-center">
                   <DashboardStat label="Score" value="72/100" />
                   <DashboardStat label="Global Rank" value="128/4500" color="text-secondary" />
                   <DashboardStat label="Accuracy" value="81%" />
@@ -100,19 +80,14 @@ export default function Home() {
                    Smart Tip: You improved your rank by 340 places this week!
                 </div>
               </div>
-              
-              {/* पंजाब Outline Watermark */}
-              <div className="absolute -z-10 -bottom-20 -right-20 opacity-[0.03] scale-150 rotate-12 pointer-events-none">
-                 <Logo variant="dark" className="scale-[5]" />
-              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. TRUST STRIP */}
+      {/* 2. TRUST STRIP */}
       <section className="py-12 bg-primary">
-        <div className="container mx-auto px-6 overflow-hidden">
+        <div className="container mx-auto px-6">
           <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] text-center mb-10">
             Official Recruitment Boards Coverage
           </p>
@@ -129,7 +104,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. POPULAR EXAMS */}
+      {/* 3. POPULAR EXAMS (Structured) */}
       <section className="py-24 bg-white">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
@@ -146,7 +121,7 @@ export default function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {EXAMS.slice(0, 6).map(exam => (
-              <Card key={exam.id} className="hover:shadow-xl transition-all duration-300 border-gray-100 group rounded-2xl overflow-hidden">
+              <Card key={exam.id} className="hover:shadow-xl transition-all duration-300 border-gray-100 group rounded-2xl overflow-hidden bg-white">
                  <CardContent className="p-10 space-y-8">
                    <div className="flex justify-between items-start">
                      <div className="text-[10px] font-black text-secondary bg-secondary/5 px-4 py-1.5 rounded-full border border-secondary/10 uppercase tracking-widest">
@@ -171,7 +146,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. WHY CRACKLIX */}
+      {/* 4. WHY CRACKLIX */}
       <section className="py-32 bg-gray-50 border-y">
         <div className="container mx-auto px-6">
           <div className="text-center mb-24 space-y-4">
@@ -200,13 +175,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. PRICING */}
+      {/* 5. PRICING */}
       <section className="py-24 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="text-4xl font-bold text-primary">Simple, Result-Oriented Pricing</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-4xl font-bold text-primary mb-16">Simple, Result-Oriented Pricing</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto text-left">
              <PricingCard 
                 title="Free Access" 
                 price="₹0" 
@@ -224,7 +197,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 7. FINAL CTA */}
+      {/* 6. FINAL CTA */}
       <section className="py-32 bg-secondary relative overflow-hidden">
         <div className="container mx-auto px-6 text-center text-white space-y-12 relative z-10">
           <h2 className="text-5xl md:text-6xl font-bold leading-tight">Start Your Government Job<br />Preparation Today</h2>
@@ -236,14 +209,8 @@ export default function Home() {
             <p className="text-xs font-bold text-white/40 uppercase tracking-[0.4em]">Cracklix — Focus on results, not distractions</p>
           </div>
         </div>
-        
-        {/* Subtle Watermark Decoration */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.05] scale-[10] pointer-events-none">
-           <Trophy />
-        </div>
       </section>
 
-      {/* 8. FOOTER */}
       <footer className="py-20 border-t bg-white">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-12 mb-16">
@@ -262,16 +229,16 @@ export default function Home() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
 
 function DashboardStat({ label, value, color = "text-primary" }: { label: string, value: string, color?: string }) {
   return (
-    <div className="space-y-1 text-center">
+    <div className="space-y-1">
       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{label}</p>
       <p className={`text-3xl font-bold tracking-tight ${color}`}>{value}</p>
     </div>
-  )
+  );
 }
 
 function TrustBadge({ label }: { label: string }) {
@@ -280,7 +247,7 @@ function TrustBadge({ label }: { label: string }) {
        <div className="h-1.5 w-1.5 rounded-full bg-accent" />
        <span>{label}</span>
     </div>
-  )
+  );
 }
 
 function WhyCard({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
@@ -292,7 +259,7 @@ function WhyCard({ icon, title, desc }: { icon: React.ReactNode, title: string, 
       <h4 className="text-2xl font-bold text-primary">{title}</h4>
       <p className="text-gray-500 leading-relaxed font-medium">{desc}</p>
     </div>
-  )
+  );
 }
 
 function PricingCard({ title, price, features, cta, isFeatured }: { title: string, price: string, features: string[], cta: string, isFeatured?: boolean }) {
@@ -312,5 +279,5 @@ function PricingCard({ title, price, features, cta, isFeatured }: { title: strin
          {cta}
        </Button>
     </div>
-  )
+  );
 }

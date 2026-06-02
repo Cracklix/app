@@ -18,20 +18,20 @@ export default function Logo({ className = "", variant = 'dark' }: LogoProps) {
           stroke="currentColor"
           strokeWidth="4"
         >
-          {/* Refined C Shape for institutional look */}
+          {/* Institutional C Shape */}
           <path 
             d="M85 25 C 65 5, 15 20, 15 50 C 15 80, 65 95, 85 75" 
             strokeLinecap="round" 
             className="opacity-90"
           />
-          {/* Subtle Punjab Map Outline Inside */}
+          {/* Subtle Punjab Map Outline */}
           <path 
             d="M40 35 L55 40 L60 60 L45 70 L35 55 Z" 
             className={isLight ? 'text-white/20' : 'text-[#0B1F3A]/10'}
             fill="currentColor"
             stroke="none"
           />
-          {/* Success Checkmark - Highlighted */}
+          {/* Success Checkmark */}
           <path
             d="M42 50 L52 60 L75 35"
             className="text-[#F59E0B]"
