@@ -1,77 +1,173 @@
 import { Exam, Mock, Question, CurrentAffair, Notification } from "@/types";
 
 export const EXAMS: Exam[] = [
+  // 1. PSSSB
   {
     id: "psssb-patwari",
     title: "PSSSB Patwari",
-    description: "Revenue Patwari, Canal Patwari and Zilladar exams for Punjab state.",
+    description: "Revenue Patwari, Canal Patwari and Ziladar recruitment for Punjab.",
     category: "PSSSB",
     thumbnail: "exam-psssb",
     totalMocks: 45,
     activeQuestions: 1200
   },
   {
-    id: "punjab-police-si",
-    title: "Punjab Police SI",
-    description: "Recruitment for Sub Inspectors in District, Armed and Intelligence cadres.",
-    category: "Punjab Police",
-    thumbnail: "exam-police",
-    totalMocks: 30,
-    activeQuestions: 2500
+    id: "psssb-clerk",
+    title: "PSSSB Clerk (General/IT/Accounts)",
+    description: "Comprehensive preparation for Clerk, Clerk IT and Clerk Accounts posts.",
+    category: "PSSSB",
+    thumbnail: "exam-psssb",
+    totalMocks: 60,
+    activeQuestions: 2200
   },
   {
+    id: "psssb-excise",
+    title: "Excise & Taxation Inspector",
+    description: "High-level mock series for Group B non-gazetted inspector posts.",
+    category: "PSSSB",
+    thumbnail: "exam-psssb",
+    totalMocks: 25,
+    activeQuestions: 1500
+  },
+  {
+    id: "psssb-forest-guard",
+    title: "Forest Guard & Forester",
+    description: "Physical and written exam preparation for Punjab Forest department.",
+    category: "PSSSB",
+    thumbnail: "exam-psssb",
+    totalMocks: 20,
+    activeQuestions: 1000
+  },
+
+  // 2. PPSC
+  {
     id: "ppsc-pcs",
-    title: "PPSC PCS",
-    description: "Punjab Civil Services - Executive and Allied services recruitment.",
+    title: "Punjab Civil Services (PCS)",
+    description: "Executive, DSP, Tehsildar and Allied services recruitment.",
     category: "PPSC",
     thumbnail: "exam-ppsc",
     totalMocks: 12,
     activeQuestions: 5000
   },
   {
+    id: "ppsc-naib-tehsildar",
+    title: "Naib Tehsildar",
+    description: "Specialized series for one of Punjab's most competitive Class 2 exams.",
+    category: "PPSC",
+    thumbnail: "exam-ppsc",
+    totalMocks: 15,
+    activeQuestions: 1800
+  },
+  {
+    id: "ppsc-je",
+    title: "Junior Engineer (JE) - Civil/Mech/Elec",
+    description: "Technical and Non-technical mock tests for PPSC JE posts.",
+    category: "PPSC",
+    thumbnail: "exam-ppsc",
+    totalMocks: 30,
+    activeQuestions: 2500
+  },
+
+  // 3. Punjab Police
+  {
+    id: "police-constable",
+    title: "Punjab Police Constable",
+    description: "District and Armed Cadre recruitment sessions.",
+    category: "Punjab Police",
+    thumbnail: "exam-police",
+    totalMocks: 40,
+    activeQuestions: 2000
+  },
+  {
+    id: "police-si",
+    title: "Punjab Police Sub-Inspector (SI)",
+    description: "District, Armed and Investigation cadre preparation.",
+    category: "Punjab Police",
+    thumbnail: "exam-police",
+    totalMocks: 35,
+    activeQuestions: 2800
+  },
+  {
+    id: "police-ia",
+    title: "Intelligence Assistant (IA)",
+    description: "Specialized computer and GK tests for Intelligence cadre.",
+    category: "Punjab Police",
+    thumbnail: "exam-police",
+    totalMocks: 20,
+    activeQuestions: 1200
+  },
+
+  // 4. Teaching / School Education
+  {
     id: "pstet",
     title: "PSTET Paper 1 & 2",
-    description: "Punjab State Teacher Eligibility Test for primary and upper primary levels.",
+    description: "Punjab State Teacher Eligibility Test for all levels.",
     category: "Teaching Exams",
     thumbnail: "exam-teaching",
+    totalMocks: 50,
+    activeQuestions: 3000
+  },
+  {
+    id: "master-cadre",
+    title: "Master Cadre (All Subjects)",
+    description: "Subject-wise preparation for Maths, Science, SS, and Punjabi.",
+    category: "Teaching Exams",
+    thumbnail: "exam-teaching",
+    totalMocks: 80,
+    activeQuestions: 6000
+  },
+
+  // 5. High Court
+  {
+    id: "hc-clerk",
+    title: "High Court Clerk (SSSC)",
+    description: "Subordinate Courts of Punjab recruitment tests.",
+    category: "High Court",
+    thumbnail: "exam-hc",
     totalMocks: 25,
+    activeQuestions: 1500
+  },
+
+  // 6. Power Sector
+  {
+    id: "pspcl-alm",
+    title: "PSPCL Assistant Lineman (ALM)",
+    description: "Dedicated series for technical electrical posts.",
+    category: "PSPCL & PSTCL",
+    thumbnail: "exam-pspcl",
+    totalMocks: 20,
     activeQuestions: 1800
   },
   {
     id: "pspcl-ldc",
-    title: "PSPCL LDC & Clerk",
-    description: "Lower Division Clerk and Junior Engineer positions in Punjab State Power Corporation.",
+    title: "PSPCL LDC & Typist",
+    description: "Lower Division Clerk recruitment in the power sector.",
     category: "PSPCL & PSTCL",
     thumbnail: "exam-pspcl",
-    totalMocks: 20,
-    activeQuestions: 1500
+    totalMocks: 22,
+    activeQuestions: 1400
   },
+
+  // 7. Medical / BFUHS
   {
-    id: "hc-clerk",
-    title: "High Court Clerk",
-    description: "Recruitment for Clerks in Subordinate Courts of Punjab and Haryana.",
-    category: "High Court",
-    thumbnail: "exam-hc",
-    totalMocks: 15,
-    activeQuestions: 900
-  },
-  {
-    id: "bfuhs-nurse",
+    id: "bfuhs-staff-nurse",
     title: "BFUHS Staff Nurse",
-    description: "Medical recruitment for Staff Nurses, Pharmacists and MLT roles.",
+    description: "Medical recruitment for Staff Nurse and Pharmacist roles.",
     category: "BFUHS",
-    thumbnail: "exam-teaching", // Using placeholder for now
-    totalMocks: 18,
+    thumbnail: "exam-teaching",
+    totalMocks: 25,
     activeQuestions: 2200
   },
+
+  // 8. Banking & Cooperative
   {
     id: "coop-bank",
-    title: "Cooperative Bank Clerk",
-    description: "Banking recruitment for Cooperative Banks, MARKFED and Milkfed.",
+    title: "Cooperative Bank Clerk-cum-DEO",
+    description: "Banking and computer efficiency tests.",
     category: "Banking & Cooperative",
-    thumbnail: "exam-pspcl", // Using placeholder for now
-    totalMocks: 22,
-    activeQuestions: 3000
+    thumbnail: "exam-pspcl",
+    totalMocks: 30,
+    activeQuestions: 2000
   }
 ];
 

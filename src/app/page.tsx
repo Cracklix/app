@@ -1,6 +1,6 @@
 import Navbar from "@/components/layout/Navbar"
 import { Button } from "@/components/ui/button"
-import { Shield, Zap, BookOpen, Trophy, ArrowRight, Smartphone, CircleCheckBig, BarChart3, Clock, Target, ChartColumn, Download, Star } from "lucide-react"
+import { Shield, BookOpen, ArrowRight, CircleCheckBig, ChartColumn, Smartphone, Star, Clock, Target } from "lucide-react"
 import Link from "next/link"
 import ExamCard from "@/components/exams/ExamCard"
 import { EXAMS } from "@/lib/mock-data"
@@ -8,6 +8,7 @@ import Image from "next/image"
 import { PlaceHolderImages } from "@/lib/placeholder-images"
 import { Badge } from "@/components/ui/badge"
 import { PsssbIcon, PoliceIcon, TeachingIcon, PpscIcon } from "@/lib/exam-icons"
+import Logo from "@/components/brand/Logo"
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(p => p.id === "hero-punjab")
@@ -15,11 +16,14 @@ export default function Home() {
   const mobile2 = PlaceHolderImages.find(p => p.id === "mobile-mockup-2")
 
   const latestMocks = [
-    { title: "PSSSB CLERK Full Length Mock 01", icon: <PsssbIcon />, questions: 100, time: 120, badge: "New" },
-    { title: "PUNJAB POLICE SI Mock Test 02", icon: <PoliceIcon />, questions: 100, time: 120, badge: "New" },
-    { title: "PSTET PAPER 1 Assessment 01", icon: <TeachingIcon />, questions: 150, time: 150, badge: "New" },
-    { title: "PPSC PCS Full Length Mock 01", icon: <PpscIcon />, questions: 100, time: 120, badge: "New" },
+    { title: "PSSSB Patwari Full Length Mock 01", icon: <PsssbIcon />, questions: 120, time: 120, badge: "New", examId: "psssb-patwari" },
+    { title: "Punjab Police SI Assessment 04", icon: <PoliceIcon />, questions: 100, time: 120, badge: "Trending", examId: "police-si" },
+    { title: "PPSC PCS Prelims CSAT Mock", icon: <PpscIcon />, questions: 80, time: 120, badge: "Premium", examId: "ppsc-pcs" },
+    { title: "PSTET Paper 1 Complete Set", icon: <TeachingIcon />, questions: 150, time: 150, badge: "New", examId: "pstet" },
   ]
+
+  // Group exams by board for the homepage section
+  const boards = Array.from(new Set(EXAMS.map(e => e.category)));
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -30,7 +34,7 @@ export default function Home() {
         {/* Punjab Map Watermark */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl opacity-[0.03] pointer-events-none">
           <svg viewBox="0 0 100 100" className="w-full h-full fill-white">
-            <path d="M50 5 L70 15 L85 40 L80 70 L50 95 L20 70 L15 40 L30 15 Z" />
+            <path d="M52 5 L68 12 L82 35 L88 55 L78 85 L50 96 L25 88 L12 65 L8 40 L22 15 Z" />
           </svg>
         </div>
 
@@ -39,7 +43,7 @@ export default function Home() {
             <div className="text-left space-y-10">
               <div className="inline-flex items-center gap-2 bg-white/10 text-primary border border-white/10 px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-widest backdrop-blur-sm">
                 <Shield className="h-4 w-4" />
-                Punjab's Most Trusted Platform
+                Punjab's Smartest Platform
               </div>
               <h1 className="text-6xl md:text-8xl font-black font-headline leading-[0.95] text-white tracking-tighter">
                 Prepare Smarter.<br />
@@ -60,8 +64,8 @@ export default function Home() {
                 <Button asChild size="lg" className="h-16 px-12 bg-primary hover:bg-primary/90 text-white font-black rounded-2xl gap-2 text-lg shadow-xl shadow-primary/20 transition-all hover:scale-105">
                   <Link href="/mocks">Start Free Mock <ArrowRight className="h-5 w-5" /></Link>
                 </Button>
-                <Button variant="outline" size="lg" className="h-16 px-12 border-white/20 text-white hover:bg-white/10 rounded-2xl font-bold text-lg backdrop-blur-sm">
-                  Explore Exams
+                <Button variant="outline" asChild size="lg" className="h-16 px-12 border-white/20 text-white hover:bg-white/10 rounded-2xl font-bold text-lg backdrop-blur-sm">
+                  <Link href="/exams">Explore Exams</Link>
                 </Button>
               </div>
             </div>
@@ -92,22 +96,25 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Popular Exams Grid */}
+      {/* Popular Exam Boards Section */}
       <section className="py-32 bg-white">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
             <div>
-              <h2 className="text-4xl md:text-5xl font-black font-headline text-secondary tracking-tight">Popular Exams</h2>
-              <p className="text-muted-foreground mt-2 text-lg">Curated content for Punjab's biggest recruitment drives.</p>
+              <h2 className="text-4xl md:text-5xl font-black font-headline text-secondary tracking-tight">Popular Boards</h2>
+              <p className="text-muted-foreground mt-2 text-lg">Browse tests by major Punjab recruitment boards.</p>
             </div>
             <Link href="/exams" className="text-primary font-bold text-lg flex items-center hover:underline group">
-              View All Exams <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              View All Boards <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {EXAMS.map(exam => (
-              <ExamCard key={exam.id} exam={exam} />
-            ))}
+            {boards.map(board => {
+              const representativeExam = EXAMS.find(e => e.category === board)!;
+              return (
+                <ExamCard key={board} exam={representativeExam} label={board} />
+              )
+            })}
           </div>
         </div>
       </section>
@@ -196,9 +203,7 @@ export default function Home() {
       <footer className="py-20 border-t bg-white">
         <div className="container mx-auto px-4 text-center space-y-10">
           <div className="flex flex-col items-center gap-4">
-            <span className="font-headline text-3xl font-black uppercase text-secondary">
-              CRACK<span className="text-primary">LIX</span>
-            </span>
+            <Logo />
             <p className="text-muted-foreground font-medium max-w-sm">Punjab's #1 Dedicated Platform for State Government Competitive Exams.</p>
           </div>
           <div className="flex justify-center gap-12 text-sm font-bold text-muted-foreground uppercase tracking-widest">
@@ -228,23 +233,25 @@ function HeroStat({ icon, value, label }: { icon: React.ReactNode, value: string
   )
 }
 
-function MockCard({ title, icon, questions, time, badge }: { title: string, icon: React.ReactNode, questions: number, time: number, badge: string }) {
+function MockCard({ title, icon, questions, time, badge, examId }: { title: string, icon: React.ReactNode, questions: number, time: number, badge: string, examId: string }) {
   return (
-    <div className="bg-[#0F172A] p-8 rounded-[2rem] border border-white/5 hover:border-primary/40 transition-all group cursor-pointer shadow-xl hover:-translate-y-2">
-      <div className="flex justify-between items-start mb-8">
-        <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-          {icon}
+    <Link href={`/mocks/${examId}`}>
+      <div className="bg-[#0F172A] p-8 rounded-[2rem] border border-white/5 hover:border-primary/40 transition-all group cursor-pointer shadow-xl hover:-translate-y-2">
+        <div className="flex justify-between items-start mb-8">
+          <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+            {icon}
+          </div>
+          <Badge className="bg-green-500/10 text-green-500 border border-green-500/20 text-[10px] font-black uppercase tracking-widest px-3 py-1">{badge}</Badge>
         </div>
-        <Badge className="bg-green-500/10 text-green-500 border border-green-500/20 text-[10px] font-black uppercase tracking-widest px-3 py-1">{badge}</Badge>
+        <h4 className="text-white font-headline font-bold text-xl mb-6 leading-tight group-hover:text-primary transition-colors h-14 overflow-hidden">
+          {title}
+        </h4>
+        <div className="flex items-center gap-6 text-white/40 text-[11px] font-bold uppercase tracking-widest border-t border-white/5 pt-6">
+          <span className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-primary/60" /> {questions} Qs</span>
+          <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary/60" /> {time} Min</span>
+        </div>
       </div>
-      <h4 className="text-white font-headline font-bold text-xl mb-6 leading-tight group-hover:text-primary transition-colors h-14 overflow-hidden">
-        {title}
-      </h4>
-      <div className="flex items-center gap-6 text-white/40 text-[11px] font-bold uppercase tracking-widest border-t border-white/5 pt-6">
-        <span className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-primary/60" /> {questions} Qs</span>
-        <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary/60" /> {time} Min</span>
-      </div>
-    </div>
+    </Link>
   )
 }
 
