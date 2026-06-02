@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import Stats from "./Stats";
@@ -13,13 +13,6 @@ export default function Hero() {
 
   return (
     <header className="relative pt-[100px] pb-[160px] text-white overflow-hidden bg-[#0c1527]">
-      {/* Punjab Map Watermark */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none z-0">
-        <svg viewBox="0 0 100 100" className="w-full h-full object-contain fill-white">
-          <path d="M40 35 L55 40 L60 60 L45 70 L35 55 Z" />
-        </svg>
-      </div>
-
       <div className="container mx-auto px-6 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
           <motion.div 
@@ -28,11 +21,6 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
             className="flex-1 text-left"
           >
-            <span className="inline-block bg-white/10 px-4 py-1.5 rounded-full mb-6 text-sm font-semibold text-[#ff7a00] border border-white/10 backdrop-blur-sm">
-              <Star className="inline-block h-4 w-4 fill-current mr-2" />
-              #1 Punjab Exam Preparation Platform
-            </span>
-            
             <h1 className="text-[52px] font-bold leading-[1.2] mt-5">
               Prepare Smarter.<br />
               <span className="text-[#ff7a00]">Score Higher.</span>
@@ -73,7 +61,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Stats Bar */}
       <Stats />
     </header>
   );
