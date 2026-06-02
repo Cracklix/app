@@ -1,4 +1,3 @@
-
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { LayoutDashboard, Database, ClipboardList, TrendingUp, Settings, Users, LogOut, Bell, ShieldCheck, GraduationCap } from "lucide-react"
 import Link from "next/link"
@@ -65,11 +64,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </button>
               <div className="flex items-center gap-4">
                 <div className="text-right hidden sm:block">
-                  <p className="text-sm font-bold leading-none">Admin Control</p>
-                  <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mt-1">Tier 1 Access</p>
+                  <p className="text-sm font-bold leading-none">Arsh Grewal</p>
+                  <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mt-1">Lead Developer</p>
                 </div>
                 <div className="h-9 w-9 rounded-xl bg-primary/20 flex items-center justify-center border border-primary/20">
-                  <span className="font-black text-primary text-xs">AC</span>
+                  <span className="font-black text-primary text-xs">AG</span>
                 </div>
               </div>
             </div>
