@@ -3,13 +3,14 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { SAMPLE_MOCK } from "@/lib/mock-data"
+import { useDoc, useCollection, useFirestore, useUser } from "@/firebase"
+import { doc, collection, query, where, getDocs, addDoc, serverTimestamp } from "firebase/firestore"
 import Timer from "@/components/mocks/Timer"
 import QuestionPalette from "@/components/mocks/QuestionPalette"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import { ChevronLeft, ChevronRight, Flag, ShieldCheck, AlertCircle, Trash2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, Flag, ShieldCheck, AlertCircle, Trash2, Sparkles } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,19 +26,42 @@ import {
 export default function MockAttempt() {
   const params = useParams()
   const router = useRouter()
+  const db = useFirestore()
+  const { user } = useUser()
   const mockId = params.id as string
   
-  const mockData = useMemo(() => {
-    // In a real app, fetch by ID. Here we use SAMPLE_MOCK for demonstration.
-    return SAMPLE_MOCK
-  }, [mockId])
+  // --- Data Fetching ---
+  const { data: mockConfig, loading: mockLoading } = useDoc<any>(useMemo(() => (db ? doc(db, "mocks", mockId) : null), [db, mockId]))
+  
+  const [questions, setQuestions] = useState<any[]>([])
+  const [loadingQuestions, setLoadingQuestions] = useState(true)
 
+  useEffect(() => {
+    async function fetchQuestions() {
+      if (!db || !mockConfig?.questionIds) return
+      
+      try {
+        const qRefs = mockConfig.questionIds.map((id: string) => doc(db, "questions", id))
+        const qSnaps = await Promise.all(qRefs.map((ref: any) => getDocs(query(collection(db, "questions"), where("id", "==", ref.id)))))
+        const qData = qSnaps.map(snap => snap.docs[0]?.data()).filter(Boolean)
+        setQuestions(qData)
+      } catch (e) {
+        console.error("Failed to fetch questions", e)
+      } finally {
+        setLoadingQuestions(false)
+      }
+    }
+    fetchQuestions()
+  }, [db, mockConfig])
+
+  // --- State ---
   const [currentIdx, setCurrentIdx] = useState(0)
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [flagged, setFlagged] = useState<number[]>([])
   const [isMounted, setIsMounted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   
-  const question = mockData.questions[currentIdx]
+  const question = questions[currentIdx]
 
   useEffect(() => {
     setIsMounted(true)
@@ -65,7 +89,7 @@ export default function MockAttempt() {
   }, [answers, flagged, currentIdx, isMounted, mockId])
 
   const handleNext = () => {
-    if (currentIdx < mockData.questions.length - 1) {
+    if (currentIdx < questions.length - 1) {
       setCurrentIdx(currentIdx + 1)
     }
   }
@@ -89,16 +113,20 @@ export default function MockAttempt() {
     setAnswers(newAnswers)
   }
 
-  const submitMock = () => {
-    const correctCount = mockData.questions.reduce((acc, q, idx) => {
+  const submitMock = async () => {
+    if (isSubmitting) return
+    setIsSubmitting(true)
+
+    const correctCount = questions.reduce((acc, q, idx) => {
       return answers[idx] === q.correctAnswer ? acc + 1 : acc
     }, 0)
     
     const topicStats: Record<string, { total: number; correct: number }> = {}
-    mockData.questions.forEach((q, idx) => {
-      if (!topicStats[q.topic]) topicStats[q.topic] = { total: 0, correct: 0 }
-      topicStats[q.topic].total++
-      if (answers[idx] === q.correctAnswer) topicStats[q.topic].correct++
+    questions.forEach((q, idx) => {
+      const topic = q.topic || "General"
+      if (!topicStats[topic]) topicStats[topic] = { total: 0, correct: 0 }
+      topicStats[topic].total++
+      if (answers[idx] === q.correctAnswer) topicStats[topic].correct++
     })
 
     const weakTopics = Object.entries(topicStats)
@@ -106,26 +134,39 @@ export default function MockAttempt() {
       .map(([topic]) => topic)
     
     const resultData = {
-      mockId: mockData.id,
-      mockTitle: mockData.title,
-      userId: "guest",
+      mockId: mockId,
+      mockTitle: mockConfig?.title || "Mock Test",
+      userId: user?.uid || "guest",
+      userName: user?.displayName || "Anonymous Aspirant",
       answers,
       score: correctCount,
       accuracy: Math.round((correctCount / (Object.keys(answers).length || 1)) * 100),
-      rank: Math.floor(Math.random() * 500) + 1,
       weakTopics,
       correctCount,
       incorrectCount: Object.keys(answers).length - correctCount,
-      totalQuestions: mockData.questions.length,
+      totalQuestions: questions.length,
       timestamp: new Date().toISOString()
     }
     
-    localStorage.setItem(`last_result_${mockId}`, JSON.stringify(resultData))
-    localStorage.removeItem(`mock_progress_${mockId}`)
-    router.push(`/results/${mockId}`)
+    try {
+      if (db) {
+        await addDoc(collection(db, "results"), {
+          ...resultData,
+          createdAt: serverTimestamp()
+        })
+      }
+      localStorage.setItem(`last_result_${mockId}`, JSON.stringify(resultData))
+      localStorage.removeItem(`mock_progress_${mockId}`)
+      router.push(`/results/${mockId}`)
+    } catch (e) {
+      console.error("Failed to save result", e)
+      setIsSubmitting(false)
+    }
   }
 
-  if (!isMounted) return null
+  if (!isMounted || mockLoading || loadingQuestions) {
+    return <div className="h-screen flex items-center justify-center bg-white"><Sparkles className="h-10 w-10 text-primary animate-spin" /></div>
+  }
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-white text-slate-900">
@@ -136,13 +177,13 @@ export default function MockAttempt() {
           </div>
           <div>
             <h1 className="font-headline font-black text-sm sm:text-lg tracking-tight truncate max-w-[200px] sm:max-w-md">
-              {mockData.title}
+              {mockConfig?.title}
             </h1>
           </div>
         </div>
         
         <div className="flex items-center gap-4 sm:gap-6">
-          <Timer initialMinutes={mockData.durationInMinutes} onTimeUp={submitMock} />
+          <Timer initialMinutes={mockConfig?.duration || 120} onTimeUp={submitMock} />
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button className="bg-[#F97316] hover:bg-[#EA580C] text-white font-bold rounded-xl px-6 shadow-xl shadow-orange-500/10">Submit Exam</Button>
@@ -151,14 +192,14 @@ export default function MockAttempt() {
               <AlertDialogHeader>
                 <AlertDialogTitle className="font-headline text-2xl font-black">Ready to submit?</AlertDialogTitle>
                 <AlertDialogDescription className="text-slate-500">
-                  You have attempted {Object.keys(answers).length} out of {mockData.questions.length} questions.
+                  You have attempted {Object.keys(answers).length} out of {questions.length} questions.
                   Submission is final and your performance analytics will be available immediately.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel className="rounded-xl font-bold">Back to Test</AlertDialogCancel>
                 <AlertDialogAction onClick={submitMock} className="bg-[#F97316] hover:bg-[#EA580C] text-white font-bold rounded-xl px-8 shadow-xl shadow-orange-500/20">
-                  Submit Now
+                  {isSubmitting ? "Processing..." : "Submit Now"}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -175,20 +216,20 @@ export default function MockAttempt() {
                   Question {currentIdx + 1}
                 </span>
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-                  Topic: {question.topic}
+                  Topic: {question?.topic}
                 </span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-xl">
                 <AlertCircle className="h-3.5 w-3.5 text-blue-600" />
                 <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
-                  Difficulty: {question.difficulty}
+                  Difficulty: {question?.difficulty}
                 </span>
               </div>
             </div>
 
             <div className="space-y-8">
               <h2 className="text-xl sm:text-2xl font-bold leading-relaxed text-[#0F172A]">
-                {question.question}
+                {question?.text}
               </h2>
 
               <RadioGroup 
@@ -196,7 +237,7 @@ export default function MockAttempt() {
                 onValueChange={(val) => setAnswers(prev => ({ ...prev, [currentIdx]: parseInt(val) }))}
                 className="grid grid-cols-1 gap-4"
               >
-                {question.options.map((opt, i) => {
+                {question?.options?.map((opt: string, i: number) => {
                   const isSelected = answers[currentIdx] === i
                   return (
                     <div 
@@ -222,7 +263,7 @@ export default function MockAttempt() {
                 <Button variant="outline" size="lg" className="flex-1 sm:flex-none font-bold rounded-xl border-slate-200" onClick={handlePrev} disabled={currentIdx === 0}>
                   <ChevronLeft className="mr-2 h-4 w-4" /> Previous
                 </Button>
-                <Button variant="outline" size="lg" className="flex-1 sm:flex-none font-bold rounded-xl border-slate-200" onClick={handleNext} disabled={currentIdx === mockData.questions.length - 1}>
+                <Button variant="outline" size="lg" className="flex-1 sm:flex-none font-bold rounded-xl border-slate-200" onClick={handleNext} disabled={currentIdx === questions.length - 1}>
                   Next <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -253,7 +294,7 @@ export default function MockAttempt() {
         <aside className="w-80 border-l border-slate-100 bg-white overflow-y-auto hidden lg:block">
           <div className="p-8">
              <QuestionPalette 
-              totalQuestions={mockData.questions.length}
+              totalQuestions={questions.length}
               currentIndex={currentIdx}
               answeredIndices={Object.keys(answers).map(Number)}
               flaggedIndices={flagged}

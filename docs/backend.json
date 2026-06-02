@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -63,25 +64,44 @@
         "duration": { "type": "number" },
         "totalQuestions": { "type": "number" },
         "questionIds": { "type": "array", "items": { "type": "string" } },
-        "attempts": { "type": "number" }
+        "attempts": { "type": "number" },
+        "difficulty": { "type": "string" },
+        "type": { "type": "string" },
+        "language": { "type": "string" }
       }
     },
     "Question": {
       "title": "Question Bank",
-      "description": "Individual MCQ for the database.",
+      "description": "Individual MCQ with bilingual support.",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
         "subjectId": { "type": "string" },
         "boardId": { "type": "string" },
         "examId": { "type": "string" },
-        "text": { "type": "string" },
-        "options": { "type": "array", "items": { "type": "string" } },
+        "textEn": { "type": "string" },
+        "textPa": { "type": "string" },
+        "optionsEn": { "type": "array", "items": { "type": "string" } },
+        "optionsPa": { "type": "array", "items": { "type": "string" } },
         "correctAnswer": { "type": "number" },
-        "explanation": { "type": "string" },
+        "explanationEn": { "type": "string" },
+        "explanationPa": { "type": "string" },
         "difficulty": { "type": "string", "enum": ["Easy", "Medium", "Hard"] },
         "topic": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "CurrentAffair": {
+      "title": "Current Affair",
+      "description": "Daily or monthly news updates.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "date": { "type": "string" },
+        "content": { "type": "string" },
+        "imageUrl": { "type": "string" }
       }
     },
     "AttemptResult": {
@@ -94,7 +114,8 @@
         "score": { "type": "number" },
         "accuracy": { "type": "number" },
         "weakTopics": { "type": "array", "items": { "type": "string" } },
-        "timestamp": { "type": "string", "format": "date-time" }
+        "timestamp": { "type": "string", "format": "date-time" },
+        "answers": { "type": "object" }
       }
     }
   },
@@ -125,6 +146,10 @@
     "/mocks/{mockId}": {
       "schema": { "$ref": "#/backend/entities/MockTest" },
       "description": "Mock tests series."
+    },
+    "/current_affairs/{caId}": {
+      "schema": { "$ref": "#/backend/entities/CurrentAffair" },
+      "description": "Daily news updates."
     },
     "/results/{resultId}": {
       "schema": { "$ref": "#/backend/entities/AttemptResult" },

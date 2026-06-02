@@ -1,7 +1,8 @@
+
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 export async function seedInitialData(db: Firestore) {
-  console.log('Starting seed process...');
+  console.log('Starting institutional seed process for Cracklix...');
 
   const boards = [
     { id: 'psssb', name: 'Punjab Subordinate Services Selection Board', abbreviation: 'PSSSB', description: 'Major board for Group B & C technical and non-technical recruitment.' },
@@ -26,76 +27,45 @@ export async function seedInitialData(db: Firestore) {
     await setDoc(doc(db, 'subjects', subject.id), subject);
   }
 
-  const exams = [
-    { 
-      id: 'revenue-patwari', 
-      boardId: 'psssb', 
-      name: 'Revenue Patwari', 
-      category: 'Revenue', 
-      description: 'Unified exam for Revenue Patwari, Canal Patwari and Ziladar posts.', 
-      totalMocks: 45, 
-      activeQuestions: 1200 
+  const currentAffairs = [
+    {
+      id: 'ca1',
+      title: 'Punjab Cabinet Approves Solar Energy Policy 2026',
+      category: 'Punjab',
+      date: 'Oct 28, 2026',
+      summary: 'The Punjab Cabinet has approved a major shift towards solar energy for government buildings and agriculture pumps.',
+      createdAt: serverTimestamp()
     },
-    { 
-      id: 'psssb-clerk', 
-      boardId: 'psssb', 
-      name: 'Clerk (General/IT/Accounts)', 
-      category: 'Clerical', 
-      description: 'Common recruitment for clerical posts across various Punjab departments.', 
-      totalMocks: 60, 
-      activeQuestions: 2500 
+    {
+      id: 'ca2',
+      title: 'Global Sports Summit: Punjab to Host 2027 Athletics',
+      category: 'Sports',
+      date: 'Oct 26, 2026',
+      summary: 'Ludhiana and Jalandhar will host the upcoming international athletics meet, boosting sports infrastructure.',
+      createdAt: serverTimestamp()
     },
-    { 
-      id: 'police-constable', 
-      boardId: 'punjab-police', 
-      name: 'Constable (District/Armed)', 
-      category: 'Police', 
-      description: 'Annual recruitment for Constable posts in various police cadres.', 
-      totalMocks: 50, 
-      activeQuestions: 3000 
-    },
-    { 
-      id: 'pcs-prelims', 
-      boardId: 'ppsc', 
-      name: 'Civil Services Prelims', 
-      category: 'Executive', 
-      description: 'Preliminary exam for the elite Punjab Civil Services.', 
-      totalMocks: 20, 
-      activeQuestions: 5000 
+    {
+      id: 'ca3',
+      title: 'New Recruitment Rules for PPSC Gazetted Officers',
+      category: 'Schemes',
+      date: 'Oct 25, 2026',
+      summary: 'The PPSC has updated the syllabus and marking pattern for the Executive and DSP cadre exams.',
+      createdAt: serverTimestamp()
     }
   ];
 
-  for (const exam of exams) {
-    await setDoc(doc(db, 'exams', exam.id), exam);
+  for (const ca of currentAffairs) {
+    await setDoc(doc(db, 'current_affairs', ca.id), ca);
   }
 
-  const sampleQuestions = [
-    {
-      id: 'q-sample-1',
-      subjectId: 'punjabi-lang',
-      text: 'ਪੰਜਾਬੀ ਭਾਸ਼ਾ ਦੀ ਟਕਸਾਲੀ ਬੋਲੀ ਕਿਹੜੀ ਹੈ?',
-      options: ['ਮਾਲਵੀ', 'ਮਾਝੀ', 'ਦੁਆਬੀ', 'ਪੁਆਧੀ'],
-      correctAnswer: 1,
-      difficulty: 'Easy',
-      topic: 'Grammar',
-      explanation: 'ਮਾਝੀ ਉਪ-ਭਾਸ਼ਾ ਪੰਜਾਬੀ ਦੀ ਟਕਸਾਲੀ (Standard) ਬੋਲੀ ਹੈ।',
-      createdAt: serverTimestamp()
-    },
-    {
-      id: 'q-sample-2',
-      subjectId: 'punjab-gk',
-      text: 'Which Guru founded the city of Amritsar?',
-      options: ['Guru Nanak Dev Ji', 'Guru Ram Das Ji', 'Guru Arjan Dev Ji', 'Guru Gobind Singh Ji'],
-      correctAnswer: 1,
-      difficulty: 'Medium',
-      topic: 'History',
-      explanation: 'Guru Ram Das Ji founded the city of Amritsar, originally called Ramdaspur.',
-      createdAt: serverTimestamp()
-    }
+  const notifications = [
+    { id: 'n1', title: 'PSSSB Patwari Result Declared', time: '10m ago', createdAt: serverTimestamp() },
+    { id: 'n2', title: 'New Vacancies: 500 Sub-Inspectors', time: '2h ago', createdAt: serverTimestamp() },
+    { id: 'n3', title: 'PSTET Admit Card Download Live', time: '5h ago', createdAt: serverTimestamp() }
   ];
 
-  for (const q of sampleQuestions) {
-    await setDoc(doc(db, 'questions', q.id), q);
+  for (const n of notifications) {
+    await setDoc(doc(db, 'notifications', n.id), n);
   }
 
   console.log('Seed data successfully populated for Arsh Grewal project.');

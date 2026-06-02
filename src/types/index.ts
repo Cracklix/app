@@ -31,12 +31,12 @@ export interface Question {
   subjectId: string;
   boardId?: string;
   examId?: string;
-  text: string;
+  text: string; // Default or English
   textPa?: string; // Punjabi version
-  options: string[];
+  options: string[]; // Default or English
   optionsPa?: string[]; // Punjabi options
   correctAnswer: number;
-  explanation: string;
+  explanation: string; // Default or English
   explanationPa?: string; // Punjabi explanation
   difficulty: Difficulty;
   topic: string;
@@ -54,14 +54,26 @@ export interface MockTest {
   attempts: number;
   difficulty?: Difficulty;
   type?: string;
+  language?: string;
   createdAt?: any;
   publishedBy?: string;
+}
+
+export interface CurrentAffair {
+  id: string;
+  title: string;
+  category: string;
+  date: string;
+  summary: string;
+  content?: string;
+  imageUrl?: string;
 }
 
 export interface AttemptResult {
   id?: string;
   userId: string;
   mockId: string;
+  mockTitle?: string;
   score: number;
   accuracy: number;
   rank?: number;

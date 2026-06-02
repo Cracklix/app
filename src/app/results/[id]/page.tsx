@@ -1,31 +1,50 @@
 
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useParams } from "next/navigation"
 import Navbar from "@/components/layout/Navbar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, XCircle, BrainCircuit, ChevronRight, HelpCircle, Trophy, Target, Zap, Share2 } from "lucide-react"
-import { MOCK_QUESTIONS } from "@/lib/mock-data"
+import { CheckCircle2, XCircle, BrainCircuit, ChevronRight, HelpCircle, Trophy, Target, Zap, Share2, Sparkles } from "lucide-react"
 import { rationalizeMockQuestion, RationalizeMockQuestionOutput } from "@/ai/flows/rationalize-mock-question"
+import { useDoc, useFirestore } from "@/firebase"
+import { doc, getDocs, query, collection, where } from "firebase/firestore"
 import Link from "next/link"
 
 export default function ResultPage() {
   const params = useParams()
   const mockId = params.id as string
+  const db = useFirestore()
+
   const [rationalizing, setRationalizing] = useState<string | null>(null)
   const [results, setResults] = useState<Record<string, RationalizeMockQuestionOutput>>({})
   const [sessionData, setSessionData] = useState<any>(null)
+  const [questions, setQuestions] = useState<any[]>([])
 
   useEffect(() => {
     const saved = localStorage.getItem(`last_result_${mockId}`)
     if (saved) {
-      setSessionData(JSON.parse(saved))
+      const data = JSON.parse(saved)
+      setSessionData(data)
+      
+      // Fetch questions for analysis if not in sessionData
+      if (db && data.mockId) {
+        const fetchQs = async () => {
+          const mockSnap = await getDocs(query(collection(db, "mocks"), where("id", "==", data.mockId)))
+          const mockData = mockSnap.docs[0]?.data()
+          if (mockData?.questionIds) {
+             const qRefs = mockData.questionIds.map((id: string) => doc(db, "questions", id))
+             const qSnaps = await Promise.all(qRefs.map((ref: any) => getDocs(query(collection(db, "questions"), where("id", "==", ref.id)))))
+             setQuestions(qSnaps.map(snap => snap.docs[0]?.data()).filter(Boolean))
+          }
+        }
+        fetchQs()
+      }
     }
-  }, [mockId])
+  }, [mockId, db])
 
   const handleRationalize = async (qId: string, qText: string, options: string[], correct: number, userAns: number | undefined) => {
     setRationalizing(qId)
@@ -53,12 +72,9 @@ export default function ResultPage() {
             <Trophy className="h-10 w-10 text-slate-400" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-3xl font-headline font-black text-[#0F172A]">Result Not Found</h1>
-            <p className="text-slate-500 max-w-md">The attempt session might have expired or you navigated here without finishing the test.</p>
+            <h1 className="text-3xl font-headline font-black text-[#0F172A]">Result Processing</h1>
+            <p className="text-slate-500 max-w-md">Retrieving your high-fidelity performance metrics...</p>
           </div>
-          <Button asChild className="bg-[#F97316] hover:bg-[#EA580C] text-white font-bold h-12 px-8 rounded-xl shadow-lg shadow-orange-500/20">
-            <Link href="/mocks">Browse Mock Tests</Link>
-          </Button>
         </main>
       </div>
     )
@@ -121,12 +137,12 @@ export default function ResultPage() {
                   <div className="h-10 w-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
                     <Zap className="h-5 w-5 text-blue-400" />
                   </div>
-                  Weak Subjects
+                  Weak Topics
                 </CardTitle>
               </CardHeader>
               <CardContent className="px-8 pb-8 space-y-6">
                 <p className="text-sm text-slate-400 leading-relaxed font-medium">
-                  Prioritize these topics in your next study session to maximize your selection chances.
+                  Prioritize these areas in your next study session for {mockTitle}.
                 </p>
                 <div className="space-y-3">
                   {weakTopics.length > 0 ? (
@@ -138,7 +154,7 @@ export default function ResultPage() {
                     ))
                   ) : (
                     <div className="bg-emerald-500/10 p-4 rounded-2xl border border-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center gap-3">
-                      <CheckCircle2 className="h-4 w-4" /> All sections consistent.
+                      <CheckCircle2 className="h-4 w-4" /> Mastery achieved.
                     </div>
                   )}
                 </div>
@@ -148,10 +164,10 @@ export default function ResultPage() {
             <Card className="border-none bg-white shadow-xl shadow-slate-200/50 rounded-[2.5rem] p-8">
               <div className="flex flex-col gap-4">
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Next Step</p>
-                <h4 className="font-headline text-xl font-black text-[#0F172A]">Beat Your High Score</h4>
-                <p className="text-sm text-slate-500 leading-relaxed">Attempt a similar mock series for {mockTitle} to master the pattern.</p>
+                <h4 className="font-headline text-xl font-black text-[#0F172A]">Consistency is Key</h4>
+                <p className="text-sm text-slate-500 leading-relaxed">Attempting 3 mocks/week increases selection probability by 40%.</p>
                 <Button asChild className="w-full bg-[#F97316] hover:bg-[#EA580C] text-white font-bold h-14 rounded-2xl mt-4">
-                  <Link href="/mocks">Browse Tests</Link>
+                  <Link href="/mocks">Start Next Mock</Link>
                 </Button>
               </div>
             </Card>
@@ -160,12 +176,12 @@ export default function ResultPage() {
 
         <div className="space-y-12">
           <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-headline font-black text-[#0F172A]">Solutions & AI Tutor</h2>
-            <Badge className="bg-slate-900 text-white px-4 py-1.5 rounded-xl border-none font-bold">8 MCQs Analysis</Badge>
+            <h2 className="text-3xl font-headline font-black text-[#0F172A]">Answer Key & Explanations</h2>
+            <Badge className="bg-slate-900 text-white px-4 py-1.5 rounded-xl border-none font-bold">Deep Audit Mode</Badge>
           </div>
           
           <div className="grid grid-cols-1 gap-8">
-            {MOCK_QUESTIONS.map((q, idx) => {
+            {questions.map((q, idx) => {
               const userAnsIdx = answers[idx]
               const isCorrect = userAnsIdx === q.correctAnswer
               const isSkipped = userAnsIdx === undefined
@@ -192,10 +208,10 @@ export default function ResultPage() {
                       </div>
                     </div>
 
-                    <p className="text-xl md:text-2xl font-bold mb-12 text-[#0F172A] leading-relaxed">{q.question}</p>
+                    <p className="text-xl md:text-2xl font-bold mb-12 text-[#0F172A] leading-relaxed">{q.text}</p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-                      {q.options.map((opt, i) => {
+                      {q.options?.map((opt: string, i: number) => {
                         const isOptionCorrect = i === q.correctAnswer
                         const isOptionUserChoice = i === userAnsIdx
                         
@@ -218,46 +234,55 @@ export default function ResultPage() {
                       })}
                     </div>
 
-                    {results[q.id] ? (
-                      <div className="bg-orange-50/50 border-2 border-orange-100 rounded-[2rem] p-8 md:p-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="flex items-center gap-3 mb-8 text-[#F97316]">
-                          <div className="h-10 w-10 bg-[#F97316] rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
-                            <BrainCircuit className="h-5 w-5 text-white" />
-                          </div>
-                          <h4 className="font-headline text-2xl font-black">AI Tutor Logic</h4>
-                        </div>
-                        <p className="text-lg leading-relaxed mb-8 text-slate-700 whitespace-pre-wrap font-medium">
-                          {results[q.id].rationalization}
+                    <div className="bg-slate-50 rounded-[2rem] p-8 border border-slate-100">
+                        <h4 className="font-bold text-sm uppercase tracking-widest text-slate-400 mb-4">Official Explanation</h4>
+                        <p className="text-lg text-slate-700 leading-relaxed font-medium">
+                          {q.explanation}
                         </p>
-                        <div className="space-y-4">
-                           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#F97316]/60">Mastery Points</p>
-                           <div className="flex flex-wrap gap-3">
-                            {results[q.id].keyLearningPoints.map((point, pi) => (
-                              <div key={pi} className="bg-white border border-orange-100 text-slate-700 px-5 py-2 rounded-xl text-sm font-bold shadow-sm">
-                                {point}
+                    </div>
+
+                    <div className="mt-8">
+                       {results[q.id] ? (
+                          <div className="bg-orange-50/50 border-2 border-orange-100 rounded-[2rem] p-8 md:p-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="flex items-center gap-3 mb-8 text-[#F97316]">
+                              <div className="h-10 w-10 bg-[#F97316] rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
+                                <BrainCircuit className="h-5 w-5 text-white" />
                               </div>
-                            ))}
+                              <h4 className="font-headline text-2xl font-black">AI Tutor Logic</h4>
+                            </div>
+                            <p className="text-lg leading-relaxed mb-8 text-slate-700 whitespace-pre-wrap font-medium">
+                              {results[q.id].rationalization}
+                            </p>
+                            <div className="space-y-4">
+                              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#F97316]/60">Mastery Points</p>
+                              <div className="flex flex-wrap gap-3">
+                                {results[q.id].keyLearningPoints.map((point, pi) => (
+                                  <div key={pi} className="bg-white border border-orange-100 text-slate-700 px-5 py-2 rounded-xl text-sm font-bold shadow-sm">
+                                    {point}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <Button 
-                        variant="ghost" 
-                        className="w-full justify-between h-20 rounded-2xl border-2 border-dashed border-slate-200 hover:bg-orange-50 hover:border-orange-200 group transition-all duration-300"
-                        onClick={() => handleRationalize(q.id, q.question, q.options, q.correctAnswer, userAnsIdx)}
-                        disabled={rationalizing === q.id}
-                      >
-                        <span className="flex items-center gap-5 px-4">
-                          <div className={`h-10 w-10 rounded-xl flex items-center justify-center transition-all ${rationalizing === q.id ? 'bg-orange-500 animate-spin' : 'bg-slate-100 group-hover:bg-orange-500'}`}>
-                            <BrainCircuit className={`h-5 w-5 transition-colors ${rationalizing === q.id || 'group-hover:text-white' ? 'text-white' : 'text-slate-400'}`} />
-                          </div>
-                          <span className={`font-black uppercase tracking-widest text-xs transition-colors ${rationalizing === q.id ? 'text-[#F97316]' : 'text-slate-400 group-hover:text-[#F97316]'}`}>
-                            {rationalizing === q.id ? "Consulting AI Tutor..." : "Get Step-by-Step AI Explanation"}
-                          </span>
-                        </span>
-                        <ChevronRight className={`h-5 w-5 mr-4 transition-all ${rationalizing === q.id ? 'opacity-0' : 'text-slate-300 group-hover:text-[#F97316] group-hover:translate-x-1'}`} />
-                      </Button>
-                    )}
+                        ) : (
+                          <Button 
+                            variant="ghost" 
+                            className="w-full justify-between h-20 rounded-2xl border-2 border-dashed border-slate-200 hover:bg-orange-50 hover:border-orange-200 group transition-all duration-300"
+                            onClick={() => handleRationalize(q.id, q.text, q.options, q.correctAnswer, userAnsIdx)}
+                            disabled={rationalizing === q.id}
+                          >
+                            <span className="flex items-center gap-5 px-4">
+                              <div className={`h-10 w-10 rounded-xl flex items-center justify-center transition-all ${rationalizing === q.id ? 'bg-orange-500 animate-spin' : 'bg-slate-100 group-hover:bg-orange-500'}`}>
+                                <BrainCircuit className={`h-5 w-5 transition-colors ${rationalizing === q.id || 'group-hover:text-white' ? 'text-white' : 'text-slate-400'}`} />
+                              </div>
+                              <span className={`font-black uppercase tracking-widest text-xs transition-colors ${rationalizing === q.id ? 'text-[#F97316]' : 'text-slate-400 group-hover:text-[#F97316]'}`}>
+                                {rationalizing === q.id ? "Consulting AI Tutor..." : "Get Step-by-Step AI Logic"}
+                              </span>
+                            </span>
+                            <ChevronRight className={`h-5 w-5 mr-4 transition-all ${rationalizing === q.id ? 'opacity-0' : 'text-slate-300 group-hover:text-[#F97316] group-hover:translate-x-1'}`} />
+                          </Button>
+                        )}
+                    </div>
                   </CardContent>
                 </Card>
               )
