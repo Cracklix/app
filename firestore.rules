@@ -11,33 +11,26 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.token.email == 'arshdeepgrewal1122@gmail.com';
     }
 
-    function getUserData() {
-      return isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data 
-        : null;
-    }
-
     function isAdmin() {
-      let data = getUserData();
-      return isFounder() || (data != null && (data.role == 'ADMIN' || data.role == 'SUPER_ADMIN'));
+      return isFounder() || (isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['ADMIN', 'SUPER_ADMIN']);
     }
 
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // --- Global Founder Bypass ---
-    match /{document=**} {
-      allow read, write: if isFounder();
-    }
+    // --- Public Institutional Data ---
+    // These collections must be readable by everyone (including guests) for SEO and browsing
+    match /boards/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /exams/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /subjects/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /mocks/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /settings/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /current_affairs/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /notifications/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /pyqs/{docId} { allow read: if true; allow write: if isAdmin(); }
 
-    // --- Standard Rules ---
-    
-    match /settings/{docId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
+    // --- Protected Aspirant Data ---
     match /users/{userId} {
       allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
       allow create: if isAuthenticated();
@@ -45,39 +38,14 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    match /boards/{docId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    match /exams/{docId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    match /subjects/{docId} {
-      allow read: if true; 
-      allow write: if isAdmin();
-    }
-
     match /questions/{docId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
 
-    match /mocks/{docId} {
-      allow get, list: if true; 
-      allow write: if isAdmin();
-    }
-
-    match /pyqs/{docId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
     match /results/{resultId} {
       allow read: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
-      allow create: if isAuthenticated() && (isAdmin() || request.resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && (request.resource.data.userId == request.auth.uid || isAdmin());
       allow update, delete: if isAdmin();
     }
 
@@ -86,14 +54,10 @@ service cloud.firestore {
       allow write: if isAuthenticated() && (isAdmin() || request.resource.data.userId == request.auth.uid);
     }
 
-    match /current_affairs/{docId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    match /notifications/{docId} {
-      allow read: if true;
-      allow write: if isAdmin();
+    match /bookmarks/{docId} {
+      allow read: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
     }
 
     match /reports/{docId} {
@@ -101,14 +65,14 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
-    match /bookmarks/{docId} {
-      allow read: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
-      allow create: if isAuthenticated() && (isAdmin() || request.resource.data.userId == request.auth.uid);
-      allow delete: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
     }
 
-    match /audit_logs/{logId} {
-      allow read, write: if isAdmin();
+    // --- Global Founder Bypass ---
+    match /{document=**} {
+      allow read, write: if isFounder();
     }
   }
 }
