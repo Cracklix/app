@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo } from "react"
@@ -25,24 +26,26 @@ import {
   ShieldCheck,
   Sparkles,
   PlayCircle,
-  Timer
+  Timer,
+  CheckCircle2,
+  ListTodo
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from "recharts"
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, AreaChart, Area } from "recharts"
 
 /**
- * @fileOverview Phase 61-64: Intelligent Student Performance Dashboard.
- * Features: Selection Forecasting, Session Recovery, Exam Countdown, and Mastery Analytics.
+ * @fileOverview Phase 71-72: Advanced Selection Dashboard.
+ * Features: Exam Readiness Score, Goal Tracker, and Precision Forecasting.
  */
 
 export default function StudentDashboard() {
   const { user, profile, loading } = useUser()
   const db = useFirestore()
   const router = useRouter()
-  const [daysLeft, setDaysLeft] = useState(87) // Placeholder for target exam countdown
+  const [daysLeft] = useState(87)
 
   useEffect(() => {
     if (!loading && !user) router.push("/login")
@@ -50,7 +53,7 @@ export default function StudentDashboard() {
 
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
-    return query(collection(db, "results"), where("userId", "==", user.uid), orderBy("timestamp", "desc"), limit(10))
+    return query(collection(db, "results"), where("userId", "==", user.uid), orderBy("timestamp", "desc"), limit(20))
   }, [db, user])
 
   const sessionQuery = useMemo(() => {
@@ -63,11 +66,26 @@ export default function StudentDashboard() {
   const lastSession = activeSessions?.[0]
 
   const analytics = useMemo(() => {
-    if (!results || results.length === 0) return { total: 0, avgAccuracy: 0, rank: "N/A", subjectData: [], selectionProb: 45, weakSubject: "N/A" }
+    if (!results || results.length === 0) return { 
+      total: 0, 
+      avgAccuracy: 0, 
+      rank: "N/A", 
+      subjectData: [], 
+      selectionProb: 45, 
+      weakSubject: "N/A",
+      readinessScore: 35
+    }
     
     const avgAcc = Math.round(results.reduce((acc: number, r: any) => acc + (r.accuracy || 0), 0) / results.length)
     
-    const subjectMap: Record<string, { correct: number; total: number }> = {}
+    const subjectMap: Record<string, { correct: number; total: number }> = {
+      'Punjab GK': { correct: 0, total: 0 },
+      'Reasoning': { correct: 0, total: 0 },
+      'Numerical Ability': { correct: 0, total: 0 },
+      'General English': { correct: 0, total: 0 },
+      'Punjabi Language': { correct: 0, total: 0 },
+    }
+
     results.forEach((res: any) => {
       if (res.subjectStats) {
         Object.entries(res.subjectStats).forEach(([subj, stats]: [string, any]) => {
@@ -80,16 +98,19 @@ export default function StudentDashboard() {
 
     const subjectData = Object.entries(subjectMap).map(([name, stats]) => ({
       name,
-      accuracy: Math.round((stats.correct / (stats.total || 1)) * 100)
-    })).sort((a, b) => a.accuracy - b.accuracy)
+      accuracy: stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0
+    })).sort((a, b) => b.accuracy - a.accuracy)
+
+    const readiness = Math.round(subjectData.reduce((acc, s) => acc + s.accuracy, 0) / subjectData.length)
 
     return { 
       total: results.length, 
       avgAccuracy: avgAcc, 
       rank: avgAcc > 85 ? "Top 2%" : avgAcc > 70 ? "Top 12%" : "Top 45%", 
       subjectData,
-      weakSubject: subjectData[0]?.name || "N/A",
-      selectionProb: Math.min(96, Math.max(30, avgAcc + (avgAcc > 60 ? 12 : -5)))
+      weakSubject: [...subjectData].reverse().find(s => s.accuracy > 0)?.name || "Baseline Needed",
+      selectionProb: Math.min(96, Math.max(30, avgAcc + (avgAcc > 60 ? 12 : -5))),
+      readinessScore: readiness > 0 ? readiness : 35
     }
   }, [results])
 
@@ -101,8 +122,8 @@ export default function StudentDashboard() {
       <main className="container mx-auto px-6 py-16 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           
-          {/* Left Sidebar: Profile & Intelligent Targets */}
           <div className="lg:col-span-4 space-y-10">
+            {/* Profile Overview */}
             <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3.5rem] bg-white overflow-hidden group">
                <div className="h-32 w-full bg-[#08152D] relative">
                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform"><ShieldCheck className="h-20 w-20 text-white" /></div>
@@ -125,7 +146,23 @@ export default function StudentDashboard() {
                </CardContent>
             </Card>
 
-            {/* Phase 64: Exam Countdown */}
+            {/* Today's Goal Tracker (Phase 72) */}
+            <Card className="border-none bg-white p-10 rounded-[3rem] shadow-3xl space-y-8">
+               <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                     <p className="text-[10px] font-black uppercase tracking-widest text-primary">Daily Planner</p>
+                     <h3 className="text-2xl font-headline font-black text-[#0F172A]">Today's Goal</h3>
+                  </div>
+                  <ListTodo className="h-6 w-6 text-slate-300" />
+               </div>
+               <div className="space-y-6">
+                  <GoalItem label="Attempt 50 MCQs" current={analytics.total > 0 ? 12 : 0} total={50} />
+                  <GoalItem label="1 Full Mock Series" current={0} total={1} />
+                  <GoalItem label="Review 15 Analysis Cards" current={5} total={15} />
+               </div>
+            </Card>
+
+            {/* Exam Countdown */}
             <Card className="border-none bg-[#0F172A] text-white p-10 rounded-[3rem] shadow-3xl relative overflow-hidden">
                <div className="absolute top-0 right-0 p-6 opacity-5 rotate-12"><Timer className="h-32 w-32" /></div>
                <div className="relative z-10 space-y-6">
@@ -143,7 +180,6 @@ export default function StudentDashboard() {
                </div>
             </Card>
 
-            {/* Resume Session Phase 63 */}
             {lastSession && (
               <Card className="border-none bg-emerald-600 text-white p-10 rounded-[3rem] shadow-3xl shadow-emerald-900/20 relative overflow-hidden group cursor-pointer" onClick={() => router.push(`/mocks/${lastSession.mockId}/attempt`)}>
                  <div className="absolute top-0 right-0 p-6 opacity-10 rotate-12 group-hover:scale-110 transition-transform"><PlayCircle className="h-32 w-32" /></div>
@@ -153,55 +189,48 @@ export default function StudentDashboard() {
                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-100">Resume Live Session</span>
                     </div>
                     <h3 className="text-2xl font-headline font-black leading-tight uppercase">Continue Mock</h3>
-                    <p className="text-emerald-50 text-sm font-medium opacity-80">You have {Object.keys(lastSession.answers || {}).length} questions saved. Ready to finish?</p>
+                    <p className="text-emerald-50 text-sm font-medium opacity-80">Syncing nodes... Continue where you left off.</p>
                  </div>
               </Card>
             )}
-
-            <div className="grid grid-cols-2 gap-6">
-               <Metric icon={<ClipboardList className="text-blue-500" />} label="Attempts" value={analytics.total} />
-               <Metric icon={<Target className="text-primary" />} label="Avg Precision" value={`${analytics.avgAccuracy}%`} />
-               <Metric icon={<TrendingUp className="text-emerald-500" />} label="Punjab Rank" value={analytics.rank} />
-               <Metric icon={<Star className="text-amber-500" />} label="Active Streak" value="5 Days" />
-            </div>
           </div>
 
-          {/* Right Main Panel: Advanced Analytics Phase 61/67 */}
           <div className="lg:col-span-8 space-y-12">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                <div className="space-y-1">
                   <h1 className="text-4xl font-headline font-black text-[#0F172A] tracking-tight uppercase">Performance Engine</h1>
-                  <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.3em]">Institutional Analytics v2.0</p>
+                  <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.3em]">Institutional Readiness Audit</p>
                </div>
                <div className="flex gap-4">
-                 <Button asChild variant="outline" className="rounded-2xl border-slate-200 font-black text-[10px] uppercase tracking-widest h-12 px-8 gap-3 bg-white shadow-sm">
+                 <Button asChild variant="outline" className="rounded-2xl border-slate-200 font-black text-[10px] uppercase tracking-widest h-12 px-8 gap-3 bg-white shadow-sm hover:border-primary">
                     <Link href="/leaderboard"><Trophy className="h-4 w-4 text-amber-500" /> Leaderboard</Link>
                  </Button>
-                 <Button asChild variant="outline" className="rounded-2xl border-slate-200 font-black text-[10px] uppercase tracking-widest h-12 px-8 gap-3 bg-white shadow-sm">
-                    <Link href="/revision"><Bookmark className="h-4 w-4 text-primary" /> Revision Center</Link>
+                 <Button asChild variant="outline" className="rounded-2xl border-slate-200 font-black text-[10px] uppercase tracking-widest h-12 px-8 gap-3 bg-white shadow-sm hover:border-primary">
+                    <Link href="/revision"><Bookmark className="h-4 w-4 text-primary" /> Revision Hub</Link>
                  </Button>
                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-               {/* Selection Probability Phase 61 */}
-               <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3.5rem] bg-white p-12 flex flex-col justify-center text-center space-y-8 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-125 transition-transform"><TrendingUp className="h-40 w-40" /></div>
+               {/* Exam Readiness Score (Phase 71) */}
+               <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3.5rem] bg-white p-12 text-center space-y-8 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-125 transition-transform"><CheckCircle2 className="h-40 w-40" /></div>
                   <div className="space-y-2 relative z-10">
-                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Selection Forecast</p>
-                     <p className="text-8xl font-headline font-black text-primary tracking-tighter">{analytics.selectionProb}%</p>
+                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Exam Readiness Score</p>
+                     <p className="text-8xl font-headline font-black text-[#0F172A] tracking-tighter">{analytics.readinessScore}%</p>
                      <div className="flex items-center justify-center gap-3 text-emerald-500 font-black text-[10px] uppercase tracking-widest">
-                        <ArrowUpRight className="h-5 w-5" /> Based on 2026 Cutoff Norms
+                        <ArrowUpRight className="h-5 w-5" /> Institutional Standard: 70%
                      </div>
                   </div>
-                  <p className="text-base text-slate-500 leading-relaxed font-medium px-8 relative z-10">
-                     {analytics.total > 0 
-                      ? `Your current precision is higher than 84% of aspirants targeting ${profile?.targetExam || 'Punjab'}.` 
-                      : 'Attempt your first mock to generate your official selection forecast.'}
-                  </p>
+                  <div className="space-y-4 pt-4 border-t border-slate-50 relative z-10">
+                     <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Target Vertical: {profile?.targetExam || 'General'}</p>
+                     <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-primary transition-all duration-1000" style={{ width: `${analytics.readinessScore}%` }} />
+                     </div>
+                  </div>
                </Card>
 
-               {/* AI Recommendations Phase 61 */}
+               {/* AI Rationalization Engine */}
                <Card className="border-none shadow-3xl shadow-slate-900/10 rounded-[3rem] bg-[#0F172A] text-white p-10 space-y-8 relative overflow-hidden flex flex-col justify-between">
                   <div className="absolute top-0 right-0 p-6 opacity-10"><BrainCircuit className="h-32 w-32 text-primary" /></div>
                   <div className="space-y-6 relative z-10">
@@ -209,35 +238,64 @@ export default function StudentDashboard() {
                         <div className="h-12 w-12 bg-primary/20 rounded-2xl flex items-center justify-center">
                            <BrainCircuit className="h-6 w-6 text-primary" />
                         </div>
-                        <h3 className="font-headline font-black text-xl uppercase tracking-tight">AI Audit Recommendations</h3>
+                        <h3 className="font-headline font-black text-xl uppercase tracking-tight">AI Audit Engine</h3>
                      </div>
                      <div className="space-y-4">
                         <p className="text-slate-400 text-sm leading-relaxed font-medium">
-                           Institutional scan detected a {analytics.weakSubject !== 'N/A' ? `weak node in "${analytics.weakSubject}"` : 'need for baseline benchmarking'}.
+                           Scan detected conceptual weakness in <span className="text-white font-black underline decoration-primary underline-offset-4">"{analytics.weakSubject}"</span>.
                         </p>
-                        <div className="p-6 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-between group cursor-pointer hover:bg-white/10 transition-all">
+                        <div className="p-6 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-between group cursor-pointer hover:bg-white/10 transition-all" onClick={() => router.push('/mocks')}>
                            <div className="space-y-1">
-                              <p className="text-[10px] font-black uppercase text-primary tracking-widest">Suggested Practice</p>
-                              <p className="font-bold text-slate-200">{analytics.weakSubject !== 'N/A' ? `${analytics.weakSubject} Mastery` : 'General GK Mock #1'}</p>
+                              <p className="text-[10px] font-black uppercase text-primary tracking-widest">Recommended Series</p>
+                              <p className="font-bold text-slate-200">{analytics.weakSubject} Mastery Mock</p>
                            </div>
                            <ChevronRight className="h-5 w-5 text-slate-500 group-hover:text-primary transition-all" />
                         </div>
                      </div>
                   </div>
                   <Button asChild className="w-full bg-white text-[#0F172A] hover:bg-slate-100 font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl h-16 relative z-10 shadow-2xl">
-                     <Link href="/mocks">Start Audit Session</Link>
+                     <Link href="/mocks">Improve Readiness Score</Link>
                   </Button>
                </Card>
             </div>
 
+            {/* Subject Matrix */}
+            <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3.5rem] bg-white overflow-hidden">
+               <CardHeader className="p-12 border-b border-slate-50">
+                  <div className="space-y-1">
+                    <CardTitle className="font-headline text-2xl font-black text-[#0F172A] uppercase">Subject Precision Matrix</CardTitle>
+                    <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Sectional accuracy audit based on last 20 attempts</CardDescription>
+                  </div>
+               </CardHeader>
+               <CardContent className="p-12">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                     <div className="space-y-10">
+                        {analytics.subjectData.slice(0, 3).map((s: any) => (
+                           <SubjectProgress key={s.name} label={s.name} value={s.accuracy} />
+                        ))}
+                     </div>
+                     <div className="space-y-10">
+                        {analytics.subjectData.slice(3).map((s: any) => (
+                           <SubjectProgress key={s.name} label={s.name} value={s.accuracy} />
+                        ))}
+                        {analytics.subjectData.length === 0 && (
+                           <div className="h-full flex items-center justify-center text-slate-300 italic text-sm">
+                              Begin your first mock to generate precision nodes.
+                           </div>
+                        )}
+                     </div>
+                  </div>
+               </CardContent>
+            </Card>
+
             <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3.5rem] overflow-hidden bg-white">
                <CardHeader className="p-12 border-b border-slate-50 flex flex-row items-center justify-between">
                   <div className="space-y-1">
-                    <CardTitle className="font-headline text-2xl font-black text-[#0F172A] uppercase">Audit Registry</CardTitle>
-                    <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Deep review of your attempt history</CardDescription>
+                    <CardTitle className="font-headline text-2xl font-black text-[#0F172A] uppercase">Attempt Registry</CardTitle>
+                    <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Deep review of your high-fidelity results</CardDescription>
                   </div>
                   <Button asChild variant="ghost" className="text-primary font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-primary/5 h-12 px-8">
-                     <Link href="/profile">View History <ChevronRight className="ml-2 h-4 w-4" /></Link>
+                     <Link href="/profile">Full Registry <ChevronRight className="ml-2 h-4 w-4" /></Link>
                   </Button>
                </CardHeader>
                <CardContent className="p-0">
@@ -245,7 +303,7 @@ export default function StudentDashboard() {
                     Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 w-full" />)
                   ) : results && results.length > 0 ? (
                     <div className="divide-y divide-slate-50">
-                       {results.map((r: any) => (
+                       {results.slice(0, 5).map((r: any) => (
                           <div key={r.id} className="p-10 flex items-center justify-between hover:bg-slate-50/50 transition-colors group cursor-pointer">
                              <div className="flex items-center gap-8">
                                 <div className="h-16 w-16 rounded-[1.5rem] bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
@@ -273,10 +331,7 @@ export default function StudentDashboard() {
                   ) : (
                     <div className="p-32 text-center text-slate-300 space-y-8">
                        <ClipboardList className="h-24 w-24 mx-auto opacity-10" />
-                       <div className="space-y-2">
-                          <p className="font-headline font-black uppercase text-2xl text-slate-400">Zero Activity Detected</p>
-                          <p className="text-slate-400 font-medium italic">Begin your preparation audit to populate performance analytics.</p>
-                       </div>
+                       <p className="font-headline font-black uppercase text-2xl text-slate-400">Zero Node Activity</p>
                        <Button asChild className="bg-primary text-white font-black uppercase tracking-widest text-[10px] rounded-[1.5rem] h-16 px-16 shadow-3xl shadow-primary/20">
                           <Link href="/mocks">Start Your First Mock</Link>
                        </Button>
@@ -292,14 +347,31 @@ export default function StudentDashboard() {
   )
 }
 
-function Metric({ icon, label, value }: any) {
-  return (
-    <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[2.5rem] p-8 bg-white hover:translate-y-[-6px] transition-all duration-500 group">
-       <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-          {icon}
-       </div>
-       <p className="text-4xl font-headline font-black text-[#0F172A] tracking-tighter leading-none">{value}</p>
-       <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 mt-4">{label}</p>
-    </Card>
-  )
+function SubjectProgress({ label, value }: { label: string, value: number }) {
+   return (
+      <div className="space-y-4">
+         <div className="flex justify-between items-end">
+            <span className="text-xs font-black uppercase tracking-widest text-[#0F172A]">{label}</span>
+            <span className={`text-[10px] font-black px-2 py-0.5 rounded-lg ${value > 70 ? 'bg-emerald-50 text-emerald-600' : 'bg-orange-50 text-orange-600'}`}>{value}% Mastery</span>
+         </div>
+         <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+            <div className={`h-full transition-all duration-1000 ${value > 70 ? 'bg-emerald-500' : 'bg-primary'}`} style={{ width: `${value}%` }} />
+         </div>
+      </div>
+   )
+}
+
+function GoalItem({ label, current, total }: { label: string, current: number, total: number }) {
+   const percent = Math.min(100, (current / total) * 100)
+   return (
+      <div className="space-y-3">
+         <div className="flex justify-between text-[11px] font-bold">
+            <span className="text-slate-500">{label}</span>
+            <span className="text-[#0F172A]">{current}/{total}</span>
+         </div>
+         <div className="h-1 w-full bg-slate-50 rounded-full overflow-hidden">
+            <div className="h-full bg-primary transition-all duration-1000" style={{ width: `${percent}%` }} />
+         </div>
+      </div>
+   )
 }

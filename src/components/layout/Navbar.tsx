@@ -1,7 +1,8 @@
+
 'use client';
 
 import Link from "next/link";
-import { Menu, X, User, LogOut, ShieldCheck, ChevronDown, Bell, LayoutDashboard, Search, Trophy, Bookmark, Megaphone } from "lucide-react";
+import { Menu, X, User, LogOut, ShieldCheck, ChevronDown, Bell, LayoutDashboard, Search, Trophy, Bookmark, Megaphone, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
 import { useState, useMemo } from "react";
@@ -22,7 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Refined Navbar with Phase 41 Announcement Bar integration.
+ * @fileOverview Refined Navbar with Phase 75 Exam Calendar integration.
  */
 
 export default function Navbar() {
@@ -44,16 +45,15 @@ export default function Navbar() {
   const links = [
     { label: "Exams", href: "/exams" },
     { label: "Mocks", href: "/mocks" },
-    { label: "Leaderboard", href: "/leaderboard" },
-    { label: "Current Affairs", href: "/current-affairs" },
+    { label: "Calendar", href: "/exam-calendar", icon: <CalendarDays className="h-4 w-4" /> },
+    { label: "Analysis", href: "/current-affairs" },
   ];
 
-  // Force Admin access for the founder email
-  const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || user?.email === 'arshdeepgrewal1122@gmail.com';
+  const isFounder = user?.email === 'arshdeepgrewal1122@gmail.com';
+  const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || isFounder;
 
   return (
     <div className="sticky top-0 z-[1000] w-full">
-      {/* Phase 41: Shimmering Announcement Bar */}
       {settings?.showAnnouncement && (
         <div className="bg-primary text-white py-2.5 px-6 flex items-center justify-center gap-3 overflow-hidden shadow-2xl relative">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_2.5s_infinite] pointer-events-none" />
@@ -74,8 +74,9 @@ export default function Navbar() {
                 <Link 
                   key={link.label} 
                   href={link.href} 
-                  className={`transition-colors hover:text-primary ${pathname === link.href ? 'text-white' : ''}`}
+                  className={`transition-colors hover:text-primary flex items-center gap-2 ${pathname === link.href ? 'text-white' : ''}`}
                 >
+                  {link.icon}
                   {link.label}
                 </Link>
               ))}
@@ -111,9 +112,9 @@ export default function Navbar() {
                     <DropdownMenuLabel className="font-headline font-bold px-4 py-3 text-slate-400 text-[10px] uppercase tracking-widest">Account Hub</DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-white/5 mb-2" />
                     <DropdownNavItem href="/dashboard" icon={<LayoutDashboard />} label="Performance Engine" />
+                    <DropdownNavItem href="/exam-calendar" icon={<CalendarDays className="text-primary" />} label="Recruitment Tracker" />
                     <DropdownNavItem href="/leaderboard" icon={<Trophy className="text-amber-500" />} label="Punjab Hall of Fame" />
                     <DropdownNavItem href="/bookmarks" icon={<Bookmark className="text-primary" />} label="Study Repository" />
-                    <DropdownNavItem href="/profile" icon={<User />} label="Profile Settings" />
                     {isAdmin && (
                       <>
                         <DropdownMenuSeparator className="bg-white/5 my-2" />

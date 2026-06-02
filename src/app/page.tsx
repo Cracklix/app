@@ -1,3 +1,4 @@
+
 "use client"
 
 import Navbar from "@/components/layout/Navbar";
@@ -13,13 +14,13 @@ import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText, Bell, ChevronRight, Trophy, Zap, Star, GraduationCap, CheckCircle2, ShieldCheck, TrendingUp, Landmark, BrainCircuit, Sparkles } from "lucide-react";
+import { Calendar, FileText, Bell, ChevronRight, Trophy, Zap, Star, GraduationCap, CheckCircle2, ShieldCheck, TrendingUp, Landmark, BrainCircuit, Sparkles, CalendarDays, Timer } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
 /**
- * @fileOverview Final Homepage Module.
- * Features: Official Alert Hub, Daily Challenge, Alumni Success, and Strategic Insights.
+ * @fileOverview Final Homepage Module (Phase 79).
+ * Features: Official Alert Hub, Exam Calendar Snippets, and Success Alumni.
  */
 
 export default function HomePage() {
@@ -36,19 +37,34 @@ export default function HomePage() {
       <Navbar />
       <Hero />
       
-      {/* 1. Official Alert Hub & Daily Mastery (Phase 62) */}
       <section className="py-12 bg-[#F8FAFC] -mt-10 relative z-20">
          <div className="container mx-auto px-6 max-w-7xl">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                
-               {/* Left: Popular Exam Vertical HQs */}
                <div className="lg:col-span-8">
                   <PopularExams />
+
+                  {/* Trending Calendar Snippet (Phase 79) */}
+                  <div className="mt-12 bg-white rounded-[3.5rem] p-12 shadow-3xl shadow-slate-900/5 border border-slate-100 overflow-hidden relative group">
+                     <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform"><CalendarDays className="h-32 w-32" /></div>
+                     <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+                        <div className="space-y-4 text-center md:text-left">
+                           <div className="flex items-center justify-center md:justify-start gap-3">
+                              <CalendarDays className="h-5 w-5 text-primary" />
+                              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Exam Calendar 2026</span>
+                           </div>
+                           <h3 className="text-3xl font-headline font-black text-[#0F172A] uppercase leading-tight">Sync Your <br/> Preparation Schedule</h3>
+                           <p className="text-slate-500 font-medium">Track application deadlines and official board exam dates for all Punjab verticals.</p>
+                        </div>
+                        <Button asChild className="h-16 px-12 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-widest text-xs rounded-2xl gap-3 shadow-2xl group">
+                           <Link href="/exam-calendar">Open Full Calendar <ChevronRight className="h-4 w-4 group-hover:translate-x-2 transition-transform" /></Link>
+                        </Button>
+                     </div>
+                  </div>
                </div>
 
-               {/* Right: Real-time Institutional Engagement */}
                <div className="lg:col-span-4 space-y-8 pt-16">
-                  {/* Phase 62: Daily Mastery Challenge */}
+                  {/* Daily Mastery Challenge */}
                   <Card className="rounded-[3rem] border-none bg-[#0F172A] text-white p-12 overflow-hidden relative shadow-4xl group">
                      <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-110 transition-transform"><Sparkles className="h-40 w-40" /></div>
                      <div className="relative z-10 space-y-8">
@@ -60,18 +76,18 @@ export default function HomePage() {
                            </div>
                         </div>
                         <div className="p-8 bg-white/5 rounded-[2rem] border border-white/5 shadow-inner">
-                           <p className="text-slate-300 text-lg leading-relaxed font-medium italic">"Which constitutional amendment act is known as the 'Mini Constitution' of India?"</p>
+                           <p className="text-slate-300 text-lg leading-relaxed font-medium italic">"The Battle of Aliwal was fought between Sikhs and British in which year?"</p>
                         </div>
                         <Button asChild className="w-full bg-white text-[#0F172A] hover:bg-slate-100 h-16 rounded-2xl font-black uppercase tracking-widest text-xs shadow-3xl">
                            <Link href="/dashboard">Attempt & Earn XP</Link>
                         </Button>
                         <div className="flex items-center justify-center gap-4 text-[9px] font-black text-slate-500 uppercase tracking-widest">
-                           <Zap className="h-3.5 w-3.5 text-primary" /> 1,450 Aspirants Active Now
+                           <Zap className="h-3.5 w-3.5 text-primary" /> 2,150 Aspirants Active Now
                         </div>
                      </div>
                   </Card>
 
-                  {/* Official Recruitment Gazette Registry */}
+                  {/* Official Recruitment Gazette */}
                   <Card className="rounded-[3rem] border-none shadow-2xl bg-white p-12 overflow-hidden relative">
                      <div className="absolute top-0 right-0 p-8 opacity-5"><Bell className="h-24 w-24" /></div>
                      <div className="flex items-center justify-between mb-10 relative z-10">
@@ -79,7 +95,7 @@ export default function HomePage() {
                            <Bell className="h-6 w-6 text-primary" /> Official Feed
                         </h3>
                         <div className="flex items-center gap-2">
-                           <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+                           <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                            <span className="text-[10px] font-black uppercase text-emerald-600 tracking-widest">Live Updates</span>
                         </div>
                      </div>
@@ -87,7 +103,7 @@ export default function HomePage() {
                         {notices && notices.length > 0 ? notices.map((n: any) => (
                            <Link key={n.id} href="/notifications" className="flex gap-6 group cursor-pointer border-b border-slate-50 pb-8 last:border-0 last:pb-0">
                               <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-300 ${
-                                n.category === 'Result' ? 'bg-emerald-50 text-emerald-500 shadow-emerald-100' : 
+                                n.category === 'Result' ? 'bg-emerald-50 text-emerald-500' : 
                                 'bg-slate-50 text-slate-400 group-hover:bg-primary/10 group-hover:text-primary shadow-sm'
                               }`}>
                                  <Zap className="h-7 w-7" />
@@ -103,11 +119,11 @@ export default function HomePage() {
                         )) : (
                           <div className="py-10 text-center space-y-4 opacity-30 italic">
                              <Bell className="h-10 w-10 mx-auto" />
-                             <p className="text-xs uppercase font-black tracking-widest">Syncing with official board gazettes...</p>
+                             <p className="text-xs uppercase font-black tracking-widest">Syncing with board feeds...</p>
                           </div>
                         )}
                         <Button asChild variant="ghost" className="w-full pt-8 text-[11px] font-black uppercase tracking-[0.2em] text-primary hover:bg-primary/5 rounded-2xl border-2 border-dashed border-primary/10 h-20">
-                           <Link href="/notifications">Explore Full Gazette <ChevronRight className="ml-2 h-4 w-4" /></Link>
+                           <Link href="/notifications">Full Recruitment Gazette <ChevronRight className="ml-2 h-4 w-4" /></Link>
                         </Button>
                      </div>
                   </Card>
@@ -116,22 +132,22 @@ export default function HomePage() {
          </div>
       </section>
 
-      {/* 2. Institutional Hall of Fame */}
+      {/* Institutional Alumni Section */}
       <section className="py-32 bg-white">
          <div className="container mx-auto px-6 max-w-7xl">
             <div className="text-center space-y-6 mb-24">
                <Badge className="bg-primary/10 text-primary border-none px-8 py-2.5 rounded-full font-black uppercase tracking-[0.3em] text-[11px]">Institutional Alumni</Badge>
                <h2 className="text-6xl md:text-8xl font-headline font-black text-[#0F172A] uppercase leading-[0.9] tracking-tight">Hall Of <br/><span className="text-primary">Rankers</span></h2>
                <p className="text-slate-500 font-medium max-w-2xl mx-auto text-xl italic mt-8 leading-relaxed">
-                  "The high-fidelity mocks and AI-powered rationalizations of Cracklix were pivotal in my PPSC Executive success."
+                  "The high-fidelity mocks and official patterns on Cracklix made my selection in PSSSB Clerk 2025 possible."
                </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-               <RankerCard name="Amritpal Singh" exam="PSSSB Patwari" rank="Rank 04" year="2025" />
+               <RankerCard name="Harpreet Singh" exam="PSSSB Patwari" rank="Rank 02" year="2025" />
                <RankerCard name="Kiran Deep Kaur" exam="PPSC PCS" rank="Qualified" year="2024" />
-               <RankerCard name="Gursewak Singh" exam="Punjab Police" rank="Dist. Cadre" year="2025" />
-               <RankerCard name="Navneet Kaur" exam="Master Cadre" rank="SST Merit" year="2024" />
+               <RankerCard name="Gursewak Singh" exam="Punjab Police" rank="Sub-Inspector" year="2025" />
+               <RankerCard name="Amritpal Kaur" exam="Master Cadre" rank="Math Merit" year="2024" />
             </div>
 
             <div className="mt-32 bg-[#0B1528] rounded-[5rem] p-12 md:p-32 text-white relative overflow-hidden shadow-4xl group">
@@ -142,21 +158,21 @@ export default function HomePage() {
                         {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="fill-current h-10 w-10" />)}
                      </div>
                      <blockquote className="text-5xl md:text-7xl font-headline font-medium italic leading-[1] tracking-tighter antialiased">
-                        "The Punjab GK and Punjabi qualifying modules on Cracklix are indistinguishable from real board patterns."
+                        "Cracklix is not just a platform; it's a success partner for every serious aspirant in Punjab."
                      </blockquote>
                      <div className="flex items-center gap-10">
                         <div className="h-24 w-24 rounded-[2.5rem] bg-white/10 flex items-center justify-center border border-white/10 shadow-3xl">
                            <ShieldCheck className="h-12 w-12 text-primary" />
                         </div>
                         <div>
-                           <p className="text-4xl font-black uppercase tracking-tight leading-none">Harmanjit Singh</p>
-                           <p className="text-primary font-bold uppercase tracking-widest text-[11px] mt-4">Revenue Patwari, Bathinda Batch 2025</p>
+                           <p className="text-4xl font-black uppercase tracking-tight leading-none">Amrit Grewal</p>
+                           <p className="text-primary font-bold uppercase tracking-widest text-[11px] mt-4">Excise Inspector, Batch 2025</p>
                         </div>
                      </div>
                   </div>
                   <div className="hidden lg:block">
                      <div className="relative h-[700px] w-full bg-slate-800 rounded-[5rem] overflow-hidden border-[20px] border-white/5 shadow-4xl">
-                        <Image src="https://picsum.photos/seed/patwari/800/1000" fill alt="Success Story" className="object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105" />
+                        <Image src="https://picsum.photos/seed/inspector/800/1000" fill alt="Success Story" className="object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105" />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#0B1528] via-transparent to-transparent opacity-70" />
                      </div>
                   </div>
@@ -167,7 +183,7 @@ export default function HomePage() {
 
       <LatestMocks />
 
-      {/* 3. Deep Analysis Hub */}
+      {/* Deep Analysis Portal */}
       <section className="py-40 bg-[#0B1528] text-white overflow-hidden border-y border-white/5">
          <div className="container mx-auto px-6 max-w-7xl relative">
             <div className="absolute top-0 right-0 p-24 opacity-[0.03] -rotate-12 pointer-events-none"><Landmark className="h-[500px] w-[500px]" /></div>
@@ -179,7 +195,7 @@ export default function HomePage() {
                      <span className="text-[11px] font-black uppercase tracking-[0.5em] text-primary">Strategic Insights Hub</span>
                   </div>
                   <h2 className="text-7xl md:text-9xl font-headline font-black tracking-tighter uppercase leading-[0.85]">Punjab <br/> <span className="text-primary">Analysis</span></h2>
-                  <p className="text-slate-400 text-2xl max-w-xl font-medium leading-relaxed mt-6">Expert highlights of state governance and historical nodes tailored for 2026 recruitment boards.</p>
+                  <p className="text-slate-400 text-2xl max-w-xl font-medium leading-relaxed mt-6">Daily highlights of state governance and history nodes verified for 2026 recruitment cycles.</p>
                </div>
                <Button asChild className="bg-white/5 border border-white/10 h-24 px-20 rounded-[2.5rem] font-black uppercase text-sm tracking-widest hover:bg-primary hover:text-white hover:border-primary transition-all shadow-4xl flex items-center gap-6 group">
                   <Link href="/current-affairs">Open Analysis Feed <ChevronRight className="h-6 w-6 group-hover:translate-x-2 transition-transform" /></Link>
