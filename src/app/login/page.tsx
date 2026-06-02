@@ -168,7 +168,7 @@ export default function LoginPage() {
                         id="phone" 
                         type="tel"
                         className="pl-24 h-13 bg-white/[0.05] border-white/10 text-white rounded-xl focus:ring-primary/50" 
-                        placeholder="62847 XXXXX"
+                        placeholder="98XXX XXXXX"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         required
