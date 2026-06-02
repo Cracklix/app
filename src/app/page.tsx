@@ -10,33 +10,17 @@ import Features from "@/components/home/Features";
 import AppPreview from "@/components/home/AppPreview";
 import Footer from "@/components/layout/Footer";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
+    <main className="min-h-screen bg-white">
       <Navbar />
-      
-      <main>
-        {/* Hero Section with dark navy gradient */}
-        <Hero />
-        
-        {/* Statistics Floating Row */}
-        <Stats />
-        
-        {/* Popular Exams Grid */}
-        <PopularExams />
-        
-        {/* Latest Mock Tests */}
-        <LatestMocks />
-        
-        {/* Feature Highlights with Dark Background */}
-        <Features />
-        
-        {/* Mobile App Promotion Section */}
-        <AppPreview />
-      </main>
-      
-      {/* Comprehensive Footer */}
+      <Hero />
+      <Stats />
+      <PopularExams />
+      <LatestMocks />
+      <Features />
+      <AppPreview />
       <Footer />
-    </div>
+    </main>
   );
 }
