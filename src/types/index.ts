@@ -99,6 +99,31 @@ export interface TestSession {
   updatedAt: any;
 }
 
+export interface CurrentAffair {
+  id: string;
+  title: string;
+  content: string;
+  summary: string;
+  category: string;
+  date: string;
+  featured?: boolean;
+  tags?: string[];
+  imageUrl?: string;
+  createdAt: any;
+}
+
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  category: 'Recruitment' | 'Admit Card' | 'Answer Key' | 'Result' | 'Notice';
+  board: string;
+  time: string;
+  important: boolean;
+  pdfUrl?: string;
+  createdAt: any;
+}
+
 export interface AttemptResult {
   id?: string;
   userId: string;

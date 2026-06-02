@@ -1,3 +1,4 @@
+
 "use client"
 
 import Navbar from "@/components/layout/Navbar";
@@ -10,10 +11,10 @@ import Footer from "@/components/layout/Footer";
 import { useCollection, useFirestore } from "@/firebase";
 import { collection, query, orderBy, limit } from "firebase/firestore";
 import { useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText, Bell, ChevronRight, Trophy, Zap, MapPin, Star, GraduationCap, CheckCircle2 } from "lucide-react";
+import { Calendar, FileText, Bell, ChevronRight, Trophy, Zap, Star, GraduationCap, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -23,7 +24,7 @@ export default function HomePage() {
   const caQuery = useMemo(() => (db ? query(collection(db, "current_affairs"), orderBy("date", "desc"), limit(3)) : null), [db]);
   const { data: latestCA } = useCollection<any>(caQuery);
 
-  const noticeQuery = useMemo(() => (db ? query(collection(db, "notifications"), orderBy("time", "desc"), limit(5)) : null), [db]);
+  const noticeQuery = useMemo(() => (db ? query(collection(db, "notifications"), orderBy("createdAt", "desc"), limit(5)) : null), [db]);
   const { data: notices } = useCollection<any>(noticeQuery);
 
   return (
@@ -48,17 +49,19 @@ export default function HomePage() {
                         <Badge variant="outline" className="border-slate-100 text-[10px] font-black uppercase text-slate-400">Live</Badge>
                      </div>
                      <div className="space-y-6 relative z-10">
-                        {notices?.map((n: any) => (
-                           <div key={n.id} className="flex gap-4 group cursor-pointer">
-                              <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
-                                 <FileText className="h-5 w-5 text-slate-400 group-hover:text-primary" />
+                        {notices && notices.length > 0 ? notices.map((n: any) => (
+                           <Link key={n.id} href="/notifications" className="flex gap-4 group cursor-pointer">
+                              <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${n.type === 'result' ? 'bg-emerald-50 text-emerald-500' : 'bg-slate-50 text-slate-400 group-hover:bg-primary/10 group-hover:text-primary'}`}>
+                                 <FileText className="h-5 w-5" />
                               </div>
                               <div className="space-y-1">
-                                 <p className="text-sm font-bold leading-snug group-hover:text-primary transition-colors">{n.title}</p>
+                                 <p className="text-sm font-bold leading-snug group-hover:text-primary transition-colors line-clamp-1">{n.title}</p>
                                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{n.time}</p>
                               </div>
-                           </div>
-                        ))}
+                           </Link>
+                        )) : (
+                          <p className="text-xs text-slate-400 italic">Checking for new recruitment updates...</p>
+                        )}
                         <Link href="/notifications" className="block pt-4 text-center text-xs font-black uppercase tracking-widest text-primary hover:underline">
                            View All Recruitment Notices
                         </Link>
@@ -69,7 +72,7 @@ export default function HomePage() {
          </div>
       </section>
 
-      {/* 2. Top Rankers & Success Stories Section (Beat Testbook) */}
+      {/* 2. Top Rankers & Success Stories Section */}
       <section className="py-24 bg-white">
          <div className="container mx-auto px-6 max-w-7xl">
             <div className="text-center space-y-4 mb-16">
@@ -130,7 +133,7 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-               {latestCA?.map((ca: any) => (
+               {latestCA && latestCA.length > 0 ? latestCA.map((ca: any) => (
                   <Card key={ca.id} className="bg-white/5 border-white/10 rounded-[2.5rem] overflow-hidden hover:bg-white/[0.08] transition-all group cursor-pointer border border-transparent hover:border-primary/20">
                      <CardContent className="p-10 space-y-6">
                         <div className="flex justify-between items-center">
@@ -148,7 +151,11 @@ export default function HomePage() {
                         </div>
                      </CardContent>
                   </Card>
-               ))}
+               )) : (
+                 Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="h-64 rounded-[2.5rem] bg-white/5 animate-pulse" />
+                 ))
+               )}
             </div>
          </div>
       </section>
