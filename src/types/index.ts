@@ -33,6 +33,7 @@ export interface Question {
   examId: string;
   subjectId: string;
   difficulty: Difficulty;
+  topic?: string;
 
   // Bilingual Content
   questionEn: string;
@@ -86,6 +87,18 @@ export interface UserProfile {
   status: 'Pro' | 'Free';
 }
 
+export interface TestSession {
+  id: string;
+  userId: string;
+  mockId: string;
+  currentIdx: number;
+  answers: Record<number, number>;
+  flagged: number[];
+  remainingTime: number;
+  status: 'IN_PROGRESS' | 'SUBMITTED';
+  updatedAt: any;
+}
+
 export interface AttemptResult {
   id?: string;
   userId: string;
@@ -97,7 +110,6 @@ export interface AttemptResult {
   incorrectCount: number;
   skippedCount: number;
   totalQuestions: number;
-  timeTaken?: number;
   weakTopics: string[];
   timestamp: string;
   answers: Record<number, number>;
