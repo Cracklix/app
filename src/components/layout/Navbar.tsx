@@ -1,7 +1,8 @@
+
 'use client';
 
 import Link from "next/link";
-import { Menu, X, User, LogOut, ShieldCheck, ChevronDown, Bell, LayoutDashboard } from "lucide-react";
+import { Menu, X, User, LogOut, ShieldCheck, ChevronDown, Bell, LayoutDashboard, Search, Trophy, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
 import { useState } from "react";
@@ -33,10 +34,9 @@ export default function Navbar() {
   };
 
   const links = [
-    { label: "Home", href: "/" },
     { label: "Exams", href: "/exams" },
     { label: "Mocks", href: "/mocks" },
-    { label: "PYQs", href: "/pyqs" },
+    { label: "Leaderboard", href: "/leaderboard" },
     { label: "Current Affairs", href: "/current-affairs" },
   ];
 
@@ -45,30 +45,28 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-[1000] w-full bg-[#0B1528] border-b border-white/5 py-4">
       <div className="container mx-auto max-w-[95%] lg:max-w-[90%] flex items-center justify-between px-4">
-        <Logo variant="light" />
+        <div className="flex items-center gap-12">
+          <Logo variant="light" />
 
-        {/* Desktop Links */}
-        <div className="hidden lg:flex items-center gap-[30px] text-[15px] font-medium text-[#7A8B9E]">
-          {links.map(link => (
-            <Link 
-              key={link.label} 
-              href={link.href} 
-              className={`transition-colors hover:text-[#F97316] ${pathname === link.href ? 'text-white' : ''}`}
-            >
-              {link.label}
-            </Link>
-          ))}
-          {isAdmin && (
-            <Link 
-              href="/admin" 
-              className="text-primary font-black uppercase tracking-widest text-[10px] bg-primary/10 px-3 py-1 rounded-full border border-primary/20 flex items-center gap-1.5 hover:bg-primary/20 transition-all"
-            >
-              <ShieldCheck className="h-3 w-3" /> Admin Portal
-            </Link>
-          )}
+          {/* Desktop Links */}
+          <div className="hidden lg:flex items-center gap-[30px] text-[14px] font-bold uppercase tracking-widest text-[#7A8B9E]">
+            {links.map(link => (
+              <Link 
+                key={link.label} 
+                href={link.href} 
+                className={`transition-colors hover:text-[#F97316] ${pathname === link.href ? 'text-white' : ''}`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center gap-4 sm:gap-6">
+          <Link href="/search" className="text-slate-400 hover:text-white transition-colors">
+            <Search className="h-5 w-5" />
+          </Link>
+
           {loading ? (
             <Skeleton className="h-10 w-24 rounded-lg bg-white/5" />
           ) : user ? (
@@ -94,23 +92,32 @@ export default function Navbar() {
                     <ChevronDown className="h-3.5 w-3.5 text-[#7A8B9E]" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-[#0F172A] border-white/10 text-white rounded-2xl p-2" align="end">
-                  <DropdownMenuLabel className="font-headline font-bold px-3 py-2 text-slate-400 text-[10px] uppercase tracking-widest">Account Info</DropdownMenuLabel>
+                <DropdownMenuContent className="w-60 bg-[#0F172A] border-white/10 text-white rounded-2xl p-2" align="end">
+                  <DropdownMenuLabel className="font-headline font-bold px-3 py-2 text-slate-400 text-[10px] uppercase tracking-widest">Account Hub</DropdownMenuLabel>
                   <DropdownMenuSeparator className="bg-white/5" />
                   <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl px-3 py-2.5 cursor-pointer transition-colors">
-                    <Link href="/dashboard" className="flex items-center gap-2 w-full"><LayoutDashboard className="h-4 w-4" /> Dashboard</Link>
+                    <Link href="/dashboard" className="flex items-center gap-3 w-full"><LayoutDashboard className="h-4 w-4" /> Performance Stats</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl px-3 py-2.5 cursor-pointer transition-colors">
-                    <Link href="/profile" className="flex items-center gap-2 w-full"><User className="h-4 w-4" /> My Profile</Link>
+                    <Link href="/leaderboard" className="flex items-center gap-3 w-full"><Trophy className="h-4 w-4 text-amber-500" /> My Rank</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl px-3 py-2.5 cursor-pointer transition-colors">
+                    <Link href="/bookmarks" className="flex items-center gap-3 w-full"><Bookmark className="h-4 w-4 text-primary" /> Saved MCQs</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="focus:bg-white/5 rounded-xl px-3 py-2.5 cursor-pointer transition-colors">
+                    <Link href="/profile" className="flex items-center gap-3 w-full"><User className="h-4 w-4" /> Profile Settings</Link>
                   </DropdownMenuItem>
                   {isAdmin && (
-                    <DropdownMenuItem asChild className="focus:bg-primary/10 focus:text-primary rounded-xl px-3 py-2.5 cursor-pointer transition-colors text-primary font-bold">
-                      <Link href="/admin" className="flex items-center gap-2 w-full"><ShieldCheck className="h-4 w-4" /> Admin Portal</Link>
-                    </DropdownMenuItem>
+                    <>
+                      <DropdownMenuSeparator className="bg-white/5" />
+                      <DropdownMenuItem asChild className="focus:bg-primary/10 focus:text-primary rounded-xl px-3 py-2.5 cursor-pointer transition-colors text-primary font-bold">
+                        <Link href="/admin" className="flex items-center gap-3 w-full"><ShieldCheck className="h-4 w-4" /> Admin Console</Link>
+                      </DropdownMenuItem>
+                    </>
                   )}
                   <DropdownMenuSeparator className="bg-white/5" />
                   <DropdownMenuItem onClick={handleLogout} className="focus:bg-destructive/10 focus:text-destructive rounded-xl px-3 py-2.5 cursor-pointer transition-colors text-destructive/80 font-bold">
-                    <LogOut className="h-4 w-4 mr-2" /> Logout Aspirant
+                    <LogOut className="h-4 w-4 mr-2" /> Logout Portal
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -149,6 +156,7 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <Link href="/dashboard" className="text-white font-bold uppercase tracking-widest text-[15px]" onClick={() => setIsOpen(false)}>Dashboard</Link>
             {isAdmin && (
               <Link 
                 href="/admin" 
@@ -174,3 +182,4 @@ export default function Navbar() {
     </nav>
   );
 }
+

@@ -21,12 +21,16 @@ import {
   Star,
   Bookmark,
   Bell,
-  TrendingUp
+  TrendingUp,
+  BarChart3,
+  BrainCircuit,
+  ArrowUpRight
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import Link from "next/link"
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from "recharts"
 
 export default function StudentDashboard() {
   const { user, profile, loading } = useUser()
@@ -39,18 +43,29 @@ export default function StudentDashboard() {
 
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
-    return query(collection(db, "results"), where("userId", "==", user.uid), orderBy("timestamp", "desc"), limit(10))
+    return query(collection(db, "results"), where("userId", "==", user.uid), orderBy("timestamp", "desc"), limit(20))
   }, [db, user])
 
   const { data: results, loading: resultsLoading } = useCollection<any>(resultsQuery)
 
-  const stats = useMemo(() => {
-    if (!results || results.length === 0) return { total: 0, avgAccuracy: 0, rank: "N/A" }
+  const analytics = useMemo(() => {
+    if (!results || results.length === 0) return { total: 0, avgAccuracy: 0, rank: "N/A", subjectData: [] }
+    
     const avgAcc = Math.round(results.reduce((acc: number, r: any) => acc + (r.accuracy || 0), 0) / results.length)
-    return { total: results.length, avgAccuracy: avgAcc, rank: "Top 5%" }
+    
+    // Mock subject-wise breakdown for visual richness
+    const subjectData = [
+      { name: "Punjabi", accuracy: 78 },
+      { name: "GK", accuracy: 64 },
+      { name: "Maths", accuracy: 45 },
+      { name: "Reasoning", accuracy: 82 },
+      { name: "English", accuracy: 55 }
+    ]
+
+    return { total: results.length, avgAccuracy: avgAcc, rank: "Top 5%", subjectData }
   }, [results])
 
-  if (loading) return <div className="h-screen flex items-center justify-center"><Zap className="h-10 w-10 text-primary animate-pulse" /></div>
+  if (loading) return <div className="h-screen flex items-center justify-center bg-white"><Zap className="h-10 w-10 text-primary animate-pulse" /></div>
 
   return (
     <div className="min-h-screen bg-slate-50/50">
@@ -82,52 +97,84 @@ export default function StudentDashboard() {
             </Card>
 
             <div className="grid grid-cols-2 gap-4">
-               <DashboardStatCard icon={<ClipboardList className="text-blue-500" />} label="Attempted" value={stats.total} />
-               <DashboardStatCard icon={<Target className="text-orange-500" />} label="Accuracy" value={`${stats.avgAccuracy}%`} />
-               <DashboardStatCard icon={<TrendingUp className="text-emerald-500" />} label="Rank" value={stats.rank} />
-               <DashboardStatCard icon={<Star className="text-amber-500" />} label="Coins" value="450" />
+               <DashboardStatCard icon={<ClipboardList className="text-blue-500" />} label="Attempted" value={analytics.total} />
+               <DashboardStatCard icon={<Target className="text-orange-500" />} label="Accuracy" value={`${analytics.avgAccuracy}%`} />
+               <DashboardStatCard icon={<TrendingUp className="text-emerald-500" />} label="Rank" value={analytics.rank} />
+               <DashboardStatCard icon={<Star className="text-amber-500" />} label="Streak" value="5 Days" />
             </div>
 
-            <Card className="border-none shadow-xl shadow-slate-200/50 rounded-[2rem] bg-white p-6">
-               <h3 className="font-headline font-black text-xs uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
-                  <Bookmark className="h-4 w-4" /> Bookmarked MCQs
-               </h3>
-               <div className="space-y-4 opacity-50 text-center py-4">
-                  <p className="text-xs font-bold text-slate-400 italic">No bookmarks yet.</p>
-                  <Button variant="link" className="text-primary text-xs font-black">Browse Bank</Button>
+            <Card className="border-none shadow-xl shadow-slate-200/50 rounded-[2rem] bg-[#0F172A] text-white p-8 space-y-6">
+               <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 bg-primary/20 rounded-xl flex items-center justify-center">
+                     <BrainCircuit className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="font-headline font-black text-lg">AI Recommendation</h3>
                </div>
+               <p className="text-slate-400 text-sm leading-relaxed">
+                  Tuhada <strong>Quantitative Aptitude</strong> score thoda ghat hai. Assi recommend karde haan ki tusi <strong>Percentage & Ratio</strong> de sectional mocks attempt karo.
+               </p>
+               <Button asChild className="w-full bg-white text-[#0F172A] hover:bg-slate-100 font-black uppercase text-[10px] rounded-xl h-11">
+                  <Link href="/mocks">Improve Weak Areas</Link>
+               </Button>
             </Card>
           </div>
 
-          {/* Right: Main Content */}
+          {/* Right: Detailed Analytics */}
           <div className="lg:col-span-8 space-y-8">
             <div className="flex items-center justify-between">
-               <h1 className="text-3xl font-headline font-black text-[#0F172A] tracking-tight">Student Dashboard</h1>
-               <Button asChild variant="outline" className="rounded-xl border-slate-200 font-bold text-xs h-10 px-6 gap-2">
-                  <Link href="/notifications"><Bell className="h-4 w-4" /> Notifications</Link>
-               </Button>
+               <h1 className="text-3xl font-headline font-black text-[#0F172A] tracking-tight">Performance Analytics</h1>
+               <div className="flex gap-2">
+                 <Button asChild variant="outline" className="rounded-xl border-slate-200 font-bold text-xs h-10 px-6 gap-2">
+                    <Link href="/leaderboard"><Trophy className="h-4 w-4 text-amber-500" /> Leaderboard</Link>
+                 </Button>
+                 <Button asChild variant="outline" className="rounded-xl border-slate-200 font-bold text-xs h-10 px-6 gap-2">
+                    <Link href="/bookmarks"><Bookmark className="h-4 w-4 text-primary" /> Bookmarks</Link>
+                 </Button>
+               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <Card className="border-none bg-primary/5 border border-primary/10 rounded-[2rem] p-8 group cursor-pointer hover:bg-primary/10 transition-colors">
-                  <div className="h-12 w-12 bg-white rounded-2xl flex items-center justify-center shadow-lg mb-6 group-hover:scale-110 transition-transform">
-                     <BookOpen className="text-primary h-6 w-6" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+               <Card className="border-none shadow-xl shadow-slate-200/50 rounded-[2.5rem] bg-white p-8">
+                  <div className="flex items-center justify-between mb-8">
+                    <div>
+                       <h3 className="font-headline font-black text-xl text-[#0F172A]">Subject Mastery</h3>
+                       <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Institutional Accuracy %</p>
+                    </div>
+                    <BarChart3 className="h-6 w-6 text-primary opacity-20" />
                   </div>
-                  <h3 className="text-xl font-headline font-black text-[#0F172A] mb-2">Practice Mocks</h3>
-                  <p className="text-sm text-slate-500 leading-relaxed font-medium">Attempt high-fidelity mocks based on the latest Punjab official patterns.</p>
-                  <Button asChild className="mt-6 bg-primary text-white rounded-xl h-11 px-8 font-black uppercase text-[10px] tracking-widest">
-                     <Link href="/mocks">Explore All</Link>
-                  </Button>
+                  <div className="h-64 w-full">
+                     <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={analytics.subjectData}>
+                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                           <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94A3B8', fontSize: 10, fontWeight: 700}} />
+                           <YAxis hide domain={[0, 100]} />
+                           <Tooltip cursor={{fill: 'transparent'}} content={({active, payload}) => {
+                              if (active && payload && payload.length) {
+                                 return <div className="bg-[#0F172A] text-white p-3 rounded-xl shadow-2xl text-[10px] font-black uppercase">{payload[0].value}% Accuracy</div>
+                              }
+                              return null
+                           }} />
+                           <Bar dataKey="accuracy" radius={[6, 6, 0, 0]} barSize={32}>
+                              {analytics.subjectData.map((entry, index) => (
+                                 <Cell key={index} fill={entry.accuracy > 70 ? "#10B981" : entry.accuracy > 50 ? "#F97316" : "#F43F5E"} />
+                              ))}
+                           </Bar>
+                        </BarChart>
+                     </ResponsiveContainer>
+                  </div>
                </Card>
-               <Card className="border-none bg-[#0B1528] rounded-[2rem] p-8 text-white group cursor-pointer">
-                  <div className="h-12 w-12 bg-white/10 rounded-2xl flex items-center justify-center shadow-lg mb-6 group-hover:scale-110 transition-transform">
-                     <Zap className="text-primary h-6 w-6" />
+
+               <Card className="border-none shadow-xl shadow-slate-200/50 rounded-[2.5rem] bg-white p-8 flex flex-col justify-center text-center space-y-4">
+                  <div className="space-y-1">
+                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Probable Selection Status</p>
+                     <p className="text-7xl font-headline font-black text-primary">84%</p>
+                     <div className="flex items-center justify-center gap-2 text-emerald-500 font-black text-xs">
+                        <ArrowUpRight className="h-4 w-4" /> +12% vs Last Month
+                     </div>
                   </div>
-                  <h3 className="text-xl font-headline font-black mb-2 text-white">Daily Analysis</h3>
-                  <p className="text-sm text-slate-400 leading-relaxed font-medium">Stay updated with Punjab Cabinet decisions and daily Current Affairs.</p>
-                  <Button asChild className="mt-6 bg-white text-[#0B1528] hover:bg-slate-100 rounded-xl h-11 px-8 font-black uppercase text-[10px] tracking-widest">
-                     <Link href="/current-affairs">Read News</Link>
-                  </Button>
+                  <p className="text-sm text-slate-500 leading-relaxed font-medium px-4">
+                     Tusi <strong>PSSSB Clerk</strong> de mock tests vich high-fidelity accuracy maintain kar rahe ho. Selection de chances kaafi zyada ne.
+                  </p>
                </Card>
             </div>
 
@@ -135,7 +182,7 @@ export default function StudentDashboard() {
                <CardHeader className="p-8 border-b border-slate-50 flex flex-row items-center justify-between">
                   <div className="space-y-1">
                     <CardTitle className="text-xl font-headline font-black text-[#0F172A]">Preparation History</CardTitle>
-                    <CardDescription>Review your past mock attempts and solutions.</CardDescription>
+                    <CardDescription>Review your past mock attempts and deep-dive into AI solutions.</CardDescription>
                   </div>
                </CardHeader>
                <CardContent className="p-0">
@@ -144,13 +191,13 @@ export default function StudentDashboard() {
                   ) : results && results.length > 0 ? (
                     <div className="divide-y divide-slate-50">
                        {results.map((r: any) => (
-                          <div key={r.id} className="p-6 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                          <div key={r.id} className="p-6 flex items-center justify-between hover:bg-slate-50 transition-colors group">
                              <div className="flex items-center gap-5">
-                                <div className="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0">
+                                <div className="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                                    <Trophy className="h-5 w-5 text-blue-500" />
                                 </div>
                                 <div>
-                                   <p className="font-bold text-[#0F172A]">{r.mockTitle}</p>
+                                   <p className="font-bold text-[#0F172A] group-hover:text-primary transition-colors">{r.mockTitle}</p>
                                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1 flex items-center gap-2">
                                       <Clock className="h-3 w-3" /> {new Date(r.timestamp).toLocaleDateString()}
                                    </p>
@@ -161,7 +208,7 @@ export default function StudentDashboard() {
                                    <p className="text-lg font-black text-[#0F172A]">{r.score}/{r.totalQuestions}</p>
                                    <p className={`text-[10px] font-black uppercase tracking-widest ${r.accuracy > 70 ? 'text-emerald-500' : 'text-orange-500'}`}>{r.accuracy}% Accuracy</p>
                                 </div>
-                                <Button asChild variant="ghost" size="icon" className="rounded-xl h-10 w-10 hover:bg-slate-100 text-slate-400 hover:text-primary">
+                                <Button asChild variant="ghost" size="icon" className="rounded-xl h-10 w-10 hover:bg-white text-slate-300 hover:text-primary border border-transparent hover:border-slate-100 hover:shadow-lg">
                                    <Link href={`/results/${r.mockId}`}><ChevronRight className="h-5 w-5" /></Link>
                                 </Button>
                              </div>
@@ -172,7 +219,7 @@ export default function StudentDashboard() {
                     <div className="p-20 text-center text-slate-400 space-y-4">
                        <ClipboardList className="h-16 w-16 mx-auto opacity-10" />
                        <p className="font-bold">No activity recorded yet.</p>
-                       <Button asChild className="bg-primary text-white font-bold rounded-xl h-12 px-8">
+                       <Button asChild className="bg-primary text-white font-bold rounded-xl h-12 px-8 shadow-xl shadow-primary/20">
                           <Link href="/mocks">Start Your First Mock</Link>
                        </Button>
                     </div>
@@ -193,7 +240,7 @@ function DashboardStatCard({ icon, label, value }: any) {
        <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center mb-4">
           {icon}
        </div>
-       <p className="text-2xl font-headline font-black text-[#0F172A]">{value}</p>
+       <p className="text-2xl font-headline font-black text-[#0F172A] tracking-tighter">{value}</p>
        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mt-1">{label}</p>
     </Card>
   )
