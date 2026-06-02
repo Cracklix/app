@@ -18,7 +18,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-white">
       <Navbar />
       <Hero />
-      <div className="mt-20">
+      <div className="mt-72 lg:mt-80">
         <PopularExams />
       </div>
       <LatestMocks />

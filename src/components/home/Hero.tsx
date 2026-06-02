@@ -1,3 +1,4 @@
+
 'use client';
 
 import { motion } from "framer-motion";
@@ -18,9 +19,9 @@ export default function Hero() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-punjab')?.imageUrl || "https://picsum.photos/seed/punjab-hero/1200/800";
 
   return (
-    <header className="relative min-h-[900px] flex items-center pt-20 pb-[400px] lg:pb-[450px] overflow-hidden bg-[#0c1527]">
+    <header className="relative min-h-[900px] flex items-center pt-20 pb-[500px] lg:pb-[550px] bg-[#0c1527]">
       {/* Background Image (Right Aligned) */}
-      <div className="absolute right-0 top-0 w-full lg:w-[60%] h-full z-0">
+      <div className="absolute right-0 top-0 w-full lg:w-[60%] h-full z-0 overflow-hidden">
         <Image 
           src={heroImage} 
           alt="Golden Temple at Night" 
@@ -69,8 +70,8 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Floating Stats Bar - Responsively Grid Controlled */}
-        <div className="absolute bottom-[-220px] lg:bottom-[-200px] left-0 w-full hidden md:block">
+        {/* Floating Stats Bar - Moved further down to prevent overlap */}
+        <div className="absolute bottom-[-280px] lg:bottom-[-260px] left-0 w-full hidden md:block">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto px-6">
             {stats.map((stat, idx) => (
               <motion.div
@@ -85,7 +86,7 @@ export default function Hero() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-white text-xl lg:text-2xl font-black leading-none mb-1 truncate">{stat.value}</h3>
-                  <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest leading-tight truncate lg:whitespace-normal">
+                  <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest leading-tight truncate">
                     {stat.label}
                   </p>
                 </div>
