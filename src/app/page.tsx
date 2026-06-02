@@ -11,16 +11,14 @@ import Footer from "@/components/layout/Footer";
 
 /**
  * @fileOverview The primary entry point for the Cracklix platform.
- * Renders the full homepage with institutional authority styling.
+ * Renders the full homepage with institutional SaaS styling.
  */
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-[#08152D]">
       <Navbar />
       <Hero />
-      <div className="mt-20 lg:mt-32">
-        <PopularExams />
-      </div>
+      <PopularExams />
       <LatestMocks />
       <Features />
       <AppPreview />
