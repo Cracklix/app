@@ -2,6 +2,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // FORCE DEPLOYMENT ID: CRACKLIX_SYNC_v102
+    // TRIGGERED BY: Arsh Grewal Management
+    // TIMESTAMP: 2024-06-02T19:10:00Z
+
     // Helper to check if user is authenticated
     function isAuthenticated() {
       return request.auth != null;
@@ -12,24 +16,22 @@ service cloud.firestore {
       allow read, write: if isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Public content: Anyone can read (get/list), only authenticated users (admins) can write
-    // Explicitly splitting read into get and list to ensure collection-level query compatibility
-    match /boards/{id} { allow get, list: if true; allow write: if isAuthenticated(); }
-    match /exams/{id} { allow get, list: if true; allow write: if isAuthenticated(); }
-    match /subjects/{id} { allow get, list: if true; allow write: if isAuthenticated(); }
-    match /questions/{id} { allow get, list: if true; allow write: if isAuthenticated(); }
-    match /mocks/{id} { allow get, list: if true; allow write: if isAuthenticated(); }
-    match /current_affairs/{id} { allow get, list: if true; allow write: if isAuthenticated(); }
-    match /notifications/{id} { allow get, list: if true; allow write: if isAuthenticated(); }
-    match /settings/{id} { allow get, list: if true; allow write: if isAuthenticated(); }
+    // Content Collections: Explicitly allowing global READ (get and list) 
+    // for all public-facing content using recursive wildcards.
+    
+    match /boards/{document=**} { allow read: if true; allow write: if isAuthenticated(); }
+    match /exams/{document=**} { allow read: if true; allow write: if isAuthenticated(); }
+    match /subjects/{document=**} { allow read: if true; allow write: if isAuthenticated(); }
+    match /questions/{document=**} { allow read: if true; allow write: if isAuthenticated(); }
+    match /mocks/{document=**} { allow read: if true; allow write: if isAuthenticated(); }
+    match /current_affairs/{document=**} { allow read: if true; allow write: if isAuthenticated(); }
+    match /notifications/{document=**} { allow read: if true; allow write: if isAuthenticated(); }
+    match /settings/{document=**} { allow read: if true; allow write: if isAuthenticated(); }
 
     // Results: Users can only read/write their own results
     match /results/{id} {
       allow create: if isAuthenticated();
-      allow get, list: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
     }
-    
-    // Deployment trigger: Resolving list permission errors for content collections
-    // Triggered at: 2024-05-20T10:20:00Z
   }
 }
