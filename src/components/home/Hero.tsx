@@ -19,7 +19,7 @@ export default function Hero() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-punjab')?.imageUrl || "https://picsum.photos/seed/punjab-hero/1200/800";
 
   return (
-    <header className="relative min-h-[850px] flex items-center pt-20 pb-64 overflow-hidden bg-[#0c1527]">
+    <header className="relative min-h-[900px] flex items-center pt-20 pb-80 overflow-hidden bg-[#0c1527]">
       {/* Background Image (Right Aligned) */}
       <div className="absolute right-0 top-0 w-full lg:w-[60%] h-full z-0">
         <Image 
@@ -70,23 +70,25 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Floating Stats Bar - Positioned with ample clearance */}
-        <div className="absolute bottom-[-140px] left-0 w-full hidden md:block">
-          <div className="grid grid-cols-4 gap-6 max-w-7xl mx-auto px-6">
+        {/* Floating Stats Bar - Responsively Grid Controlled */}
+        <div className="absolute bottom-[-160px] left-0 w-full hidden md:block">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto px-6">
             {stats.map((stat, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 + idx * 0.1 }}
-                className="bg-[#111e38]/90 backdrop-blur-xl border border-white/10 p-7 rounded-[24px] flex items-center gap-5 shadow-2xl"
+                className="bg-[#111e38]/90 backdrop-blur-xl border border-white/10 p-6 rounded-[24px] flex items-center gap-4 shadow-2xl overflow-hidden"
               >
                 <div className="shrink-0 p-4 rounded-2xl bg-white/5 border border-white/5">
                   {stat.icon}
                 </div>
-                <div>
-                  <h3 className="text-white text-2xl font-black leading-none mb-1">{stat.value}</h3>
-                  <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">{stat.label}</p>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-white text-xl lg:text-2xl font-black leading-none mb-1 truncate">{stat.value}</h3>
+                  <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest leading-tight truncate lg:whitespace-normal">
+                    {stat.label}
+                  </p>
                 </div>
               </motion.div>
             ))}
