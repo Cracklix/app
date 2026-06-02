@@ -1,5 +1,6 @@
+
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { LayoutDashboard, Database, ClipboardList, TrendingUp, Settings, Users, LogOut, Bell, ShieldCheck } from "lucide-react"
+import { LayoutDashboard, Database, ClipboardList, TrendingUp, Settings, Users, LogOut, Bell, ShieldCheck, GraduationCap } from "lucide-react"
 import Link from "next/link"
 import Logo from "@/components/brand/Logo"
 
@@ -17,6 +18,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <SidebarGroupContent>
                 <SidebarMenu>
                   <AdminNavItem icon={<LayoutDashboard />} label="Overview" href="/admin" />
+                  <AdminNavItem icon={<GraduationCap />} label="Exams" href="/admin/exams" />
                   <AdminNavItem icon={<Database />} label="Question Bank" href="/admin/questions" />
                   <AdminNavItem icon={<ClipboardList />} label="Mock Management" href="/admin/mocks" />
                 </SidebarMenu>

@@ -22,7 +22,10 @@
       "properties": {
         "id": { "type": "string" },
         "name": { "type": "string" },
-        "category": { "type": "string", "enum": ["Police", "Clerk", "Teaching", "Banking"] },
+        "board": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "iconUrl": { "type": "string" },
         "totalQuestions": { "type": "number" },
         "duration": { "type": "number" }
       }
