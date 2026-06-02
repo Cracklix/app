@@ -53,8 +53,8 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
           </span>
         </div>
         {showTagline && (
-          <span className={`text-[10px] font-bold uppercase tracking-[0.2em] mt-0.5 ${isLightVariant ? 'text-white/40' : 'text-[#0F172A]/40'}`}>
-            Punjab Exam Preparation
+          <span className={`text-[10px] font-black uppercase tracking-[0.15em] mt-0.5 whitespace-nowrap ${isLightVariant ? 'text-white/40' : 'text-[#0F172A]/40'}`}>
+            PUNJAB'S NO. 1 MOCK TEST HUB
           </span>
         )}
       </div>
