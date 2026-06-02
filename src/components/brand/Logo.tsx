@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link"
@@ -8,44 +7,25 @@ interface LogoProps {
   variant?: 'light' | 'dark';
 }
 
-export default function Logo({ className = "", variant = 'dark' }: LogoProps) {
+export default function Logo({ className = "", variant = 'light' }: LogoProps) {
   const isLight = variant === 'light';
   
   return (
-    <Link href="/" className={`flex items-center gap-2 group ${className}`}>
-      <div className="relative h-8 w-8 flex items-center justify-center shrink-0">
-        <svg
-          viewBox="0 0 100 100"
-          className={`h-full w-full ${isLight ? 'text-white' : 'text-[#0F172A]'}`}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="6"
-        >
-          {/* Institutional C with Checkmark */}
-          <path 
-            d="M80 30 C 70 15, 25 15, 25 50 C 25 85, 70 85, 80 70" 
-            strokeLinecap="round" 
-            className="opacity-90"
-          />
-          <path
-            d="M45 50 L55 60 L85 30"
-            className="text-[#F97316]"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="10"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+    <Link href="/" className={`flex items-center gap-3 group ${className}`}>
+      {/* Institutional Checkmark Symbol */}
+      <div className="w-12 h-12 rounded-full border-2 border-[#F97316] flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/20 group-hover:scale-105 transition-transform">
+        <span className="text-[#F97316] font-black text-2xl">✓</span>
       </div>
-      <div className="flex flex-col leading-none">
-        <span className="font-headline font-bold text-xl tracking-tighter italic">
+
+      <div className="flex flex-col">
+        <h1 className="text-3xl font-black leading-none tracking-tight">
           <span className={isLight ? 'text-white' : 'text-[#0F172A]'}>Crack</span>
           <span className="text-[#F97316]">lix</span>
-        </span>
-        <span className={`text-[7px] uppercase tracking-[0.2em] font-black ${isLight ? 'text-white/60' : 'text-gray-400'}`}>
+        </h1>
+
+        <p className={`text-[10px] uppercase tracking-[3px] font-black mt-1 ${isLight ? 'text-white/60' : 'text-gray-400'}`}>
           Punjab Exam Preparation
-        </span>
+        </p>
       </div>
     </Link>
   )
