@@ -19,16 +19,10 @@ import {
   ChevronRight, 
   Trophy, 
   Zap, 
-  Star, 
-  GraduationCap, 
-  CheckCircle2, 
   ShieldCheck, 
   TrendingUp, 
-  Landmark, 
   BrainCircuit, 
   Sparkles, 
-  Timer, 
-  Scale, 
   BookOpen, 
   ClipboardList,
   Users,
@@ -39,7 +33,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 /**
- * @fileOverview Final Homepage Module (Phase 130).
+ * @fileOverview Final Homepage Module (Phase 145).
  * Focuses on Punjab Authority Positioning & Real Institutional Trust.
  */
 

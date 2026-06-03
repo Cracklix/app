@@ -4,9 +4,10 @@
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { motion } from "framer-motion"
-import { GraduationCap, ShieldCheck, Target, Heart, ArrowRight } from "lucide-react"
+import { GraduationCap, ShieldCheck, Target, Heart, ArrowRight, UserCheck, Flame, Globe } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { Button } from "@/components/ui/button"
 
 export default function AboutPage() {
   return (
@@ -97,11 +98,23 @@ export default function AboutPage() {
            </div>
         </section>
 
+        {/* Stats */}
+        <section className="py-24 bg-[#0F172A] text-white">
+           <div className="container mx-auto px-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+                 <StatNode icon={<UserCheck className="text-primary" />} val="15,000+" label="Active Aspirants" />
+                 <StatNode icon={<Flame className="text-orange-500" />} val="1M+" label="MCQs Attempted" />
+                 <StatNode icon={<Globe className="text-blue-400" />} val="22" label="Districts Covered" />
+                 <StatNode icon={<Target className="text-emerald-500" />} val="94%" label="Accuracy Node" />
+              </div>
+           </div>
+        </section>
+
         {/* CTA */}
         <section className="py-24 bg-primary text-white">
            <div className="container mx-auto px-6 text-center space-y-8">
               <h2 className="text-4xl md:text-5xl font-headline font-black">Ready to start your journey?</h2>
-              <p className="text-white/80 max-w-xl mx-auto text-lg">Join 15,000+ aspirants already preparing with Cracklix's institutional grade mock series.</p>
+              <p className="text-white/80 max-w-xl mx-auto text-lg">Join the thousands of aspirants already preparing with Cracklix's institutional grade mock series.</p>
               <div className="flex justify-center gap-4">
                  <Button asChild className="bg-white text-primary hover:bg-slate-100 font-black px-10 h-14 rounded-2xl">
                     <Link href="/mocks">Start Free Mock <ArrowRight className="ml-2 h-4 w-4" /></Link>
@@ -119,8 +132,18 @@ function VisionCard({ icon, title, desc }: any) {
   return (
     <div className="bg-white p-10 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 space-y-6">
        <div className="h-16 w-16 bg-slate-50 rounded-2xl flex items-center justify-center">{icon}</div>
-       <h3 className="text-2xl font-headline font-black text-[#0F172A]">{title}</h3>
+       <h3 className="text-2xl font-headline font-black text-[#0F172A] uppercase">{title}</h3>
        <p className="text-slate-500 leading-relaxed font-medium">{desc}</p>
     </div>
   )
+}
+
+function StatNode({ icon, val, label }: any) {
+   return (
+      <div className="space-y-4">
+         <div className="flex justify-center">{icon}</div>
+         <p className="text-5xl font-headline font-black tracking-tighter">{val}</p>
+         <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</p>
+      </div>
+   )
 }

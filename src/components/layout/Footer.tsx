@@ -60,7 +60,7 @@ export default function Footer() {
               <li><Link href="/mocks" className="hover:text-primary transition-colors">Free Mock Tests</Link></li>
               <li><Link href="/current-affairs" className="hover:text-primary transition-colors">Daily Analysis</Link></li>
               <li><Link href="/pyqs" className="hover:text-primary transition-colors">Previous Year Papers</Link></li>
-              <li><Link href="/notifications" className="hover:text-primary transition-colors">Job Notifications</Link></li>
+              <li><Link href="/about" className="hover:text-primary transition-colors">Origin Story</Link></li>
             </ul>
           </div>
 
@@ -72,7 +72,7 @@ export default function Footer() {
                <SocialIcon icon={<Facebook />} href={content.fb} />
             </div>
             <div className="mt-8 space-y-2">
-               <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Support Line</p>
+               <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Founder: Arsh Grewal</p>
                <p className="text-lg font-black text-primary">{content.phone}</p>
             </div>
           </div>
@@ -80,10 +80,10 @@ export default function Footer() {
 
         <div className="mt-24 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-slate-500 text-sm font-bold italic">
-            © 2026 {settings?.platformName || 'Cracklix'} Technologies. All patterns verified.
+            © 2026 {settings?.platformName || 'Cracklix'} Technologies. Built with ❤️ in Punjab.
           </p>
           <div className="flex items-center gap-2 text-slate-400 font-bold text-sm">
-             Built with <Heart className="h-4 w-4 text-rose-500 fill-current" /> for Punjab Aspirants
+             Built for Punjab Aspirants by <span className="text-white font-black">Arsh Grewal</span>
           </div>
         </div>
       </div>
