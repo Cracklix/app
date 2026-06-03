@@ -1,7 +1,6 @@
 /**
  * @fileOverview Hardened Trilingual Bulk MCQ Extraction Engine.
- * Optimized for "Stacked Bilingual" formats where English and Punjabi are pasted together.
- * Supports auto-detection of Mock Metadata (Title, Time) and Section/Part headers.
+ * Optimized for "Stacked Bilingual" formats and same-line mixed text.
  */
 
 import { Question, Difficulty } from "@/types";
@@ -25,7 +24,9 @@ export function parseBulkQuestions(
   
   let detectedTitle = "";
   let detectedDuration = 120;
-  let detectedTotal = 0;
+
+  const enRegex = /[a-zA-Z]{2,}/;
+  const paRegex = /[\u0A00-\u0A7F]/;
 
   const isQuestionStart = (line: string) => /^(Q\d+|Question\s*\d+|Q\.\s*\d+|\d+)[\.\:\)]/i.test(line.trim());
   const isOption = (line: string) => /^[A-D][\.\:\)]/i.test(line.trim());
@@ -33,7 +34,6 @@ export function parseBulkQuestions(
   const isExplanation = (line: string) => /^(Explanation|Solution|Rationale|Details|ਵਿਆਖਿਆ|Explanation \(English\)|ਵਿਆਖਿਆ \(ਪੰਜਾਬੀ\))[\:\-\s]/i.test(line.trim());
   const isSubject = (line: string) => /^(Subject|S\:|PART\-[A-Z]|Section)[\:\-\s]/i.test(line.trim());
 
-  // Subject ID mapping helper
   const mapSubject = (val: string): string => {
     const cleaned = val.toLowerCase();
     if (cleaned.includes('punjabi')) return 'punjabi-qualifying';
@@ -52,7 +52,6 @@ export function parseBulkQuestions(
     const trimmed = line.trim();
     if (!trimmed || trimmed.includes('════════')) return;
 
-    // Look for Mock Metadata in the first 20 lines
     if (idx < 20) {
       if ((trimmed.toUpperCase().includes('MOCK TEST') || trimmed.toUpperCase().includes('EXAM')) && !detectedTitle) {
         detectedTitle = trimmed;
@@ -79,46 +78,54 @@ export function parseBulkQuestions(
         correctAnswer: 'A',
         status: 'PUBLISHED',
         createdAt: new Date().toISOString(),
-        questionEn: "",
-        questionPa: "",
+        questionEn: "", questionPa: "",
         optionAEn: "", optionAPa: "",
         optionBEn: "", optionBPa: "",
         optionCEn: "", optionCPa: "",
         optionDEn: "", optionDPa: "",
-        explanationEn: "",
-        explanationPa: ""
+        explanationEn: "", explanationPa: ""
       };
-      currentQuestion.questionEn = trimmed.replace(/^(Q\d+|Question\s*\d+|Q\.\s*\d+|\d+)[\.\:\)]\s*/i, '');
+      
+      let text = trimmed.replace(/^(Q\d+|Question\s*\d+|Q\.\s*\d+|\d+)[\.\:\)]\s*/i, '');
+      
+      // Split if mixed on same line
+      if (enRegex.test(text) && paRegex.test(text)) {
+        const firstPaIdx = text.search(/[\u0A00-\u0A7F]/);
+        if (firstPaIdx > 0) {
+          currentQuestion.questionEn = text.substring(0, firstPaIdx).trim();
+          currentQuestion.questionPa = text.substring(firstPaIdx).trim();
+        } else {
+          currentQuestion.questionEn = text;
+        }
+      } else {
+        currentQuestion.questionEn = text;
+      }
     } else if (currentQuestion) {
-      // Logic for stacked bilingual: second line of question is Punjabi
-      if (!isOption(trimmed) && !isAnswer(trimmed) && !isExplanation(trimmed) && !currentQuestion.questionPa && currentQuestion.questionEn) {
-         currentQuestion.questionPa = trimmed;
+      if (!isOption(trimmed) && !isAnswer(trimmed) && !isExplanation(trimmed)) {
+        if (!currentQuestion.questionPa && paRegex.test(trimmed)) {
+          currentQuestion.questionPa = trimmed;
+        } else if (!currentQuestion.questionEn && enRegex.test(trimmed)) {
+          currentQuestion.questionEn = trimmed;
+        }
       } else if (isOption(trimmed)) {
         const char = trimmed[0].toUpperCase();
-        const optionVal = trimmed.substring(2).trim();
-        // If English option already exists, assign to Punjabi
+        const val = trimmed.substring(2).trim();
         if (currentQuestion[`option${char}En`]) {
-           currentQuestion[`option${char}Pa`] = optionVal;
+          currentQuestion[`option${char}Pa`] = val;
+        } else if (paRegex.test(val) && !enRegex.test(val)) {
+          currentQuestion[`option${char}Pa`] = val;
         } else {
-           currentQuestion[`option${char}En`] = optionVal;
+          currentQuestion[`option${char}En`] = val;
         }
       } else if (isAnswer(trimmed)) {
         const match = trimmed.match(/[A-D]/i);
         if (match) currentQuestion.correctAnswer = match[0].toUpperCase();
       } else if (isExplanation(trimmed)) {
         const expVal = trimmed.replace(/^(Explanation|Solution|Rationale|Details|ਵਿਆਖਿਆ|Explanation \(English\)|ਵਿਆਖਿਆ \(ਪੰਜਾਬੀ\))[\:\-\s]*/i, '');
-        // Detect if explanation is English or Punjabi based on keyword
         if (trimmed.toLowerCase().includes('punjabi') || trimmed.includes('ਵਿਆਖਿਆ')) {
-           currentQuestion.explanationPa = expVal;
+          currentQuestion.explanationPa = expVal;
         } else {
-           currentQuestion.explanationEn = expVal;
-        }
-      } else {
-        // Appending logic for multi-line
-        if (currentQuestion.explanationPa) {
-           currentQuestion.explanationPa += '\n' + trimmed;
-        } else if (currentQuestion.explanationEn) {
-           currentQuestion.explanationEn += '\n' + trimmed;
+          currentQuestion.explanationEn = expVal;
         }
       }
     }
@@ -126,16 +133,22 @@ export function parseBulkQuestions(
 
   if (currentQuestion) questions.push(currentQuestion);
 
-  // Post-process: If Pa fields are empty, copy En (fallback)
-  const finalized = questions.map(q => ({
-    ...q,
-    questionPa: q.questionPa || q.questionEn,
-    optionAPa: q.optionAPa || q.optionAEn,
-    optionBPa: q.optionBPa || q.optionBEn,
-    optionCPa: q.optionCPa || q.optionCEn,
-    optionDPa: q.optionDPa || q.optionDEn,
-    explanationPa: q.explanationPa || q.explanationEn
-  }));
+  const finalized = questions.map(q => {
+    // Strip trailing answer markers from questions
+    const cleanEn = (q.questionEn || "").replace(/(Answer|Key|Ans|Correct|Correct Answer|ਸਹੀ ਉੱਤਰ)[\:\-\s]*$/i, '').trim();
+    const cleanPa = (q.questionPa || "").replace(/(Answer|Key|Ans|Correct|Correct Answer|ਸਹੀ ਉੱਤਰ)[\:\-\s]*$/i, '').trim();
+    
+    return {
+      ...q,
+      questionEn: cleanEn,
+      questionPa: cleanPa || cleanEn,
+      optionAPa: q.optionAPa || q.optionAEn,
+      optionBPa: q.optionBPa || q.optionBEn,
+      optionCPa: q.optionCPa || q.optionCEn,
+      optionDPa: q.optionDPa || q.optionDEn,
+      explanationPa: q.explanationPa || q.explanationEn
+    };
+  });
 
   return {
     questions: finalized,

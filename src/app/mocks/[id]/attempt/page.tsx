@@ -155,15 +155,13 @@ export default function MockAttemptPage() {
   const regLabel = mock?.examType === 'central' ? 'हिन्दी' : 'ਪੰਜਾਬੀ'
   const regKey = mock?.examType === 'central' ? 'Hi' : 'Pa'
 
-  // Correct Paper A Logic: Ensure questions 1-50 are strictly labeled as Punjabi Language
   const isPaperA = currentIdx < 50;
   const activePaper = isPaperA ? "PAPER A: PUNJABI QUALIFYING" : (q?.paper || "PAPER B: MAIN EXAM")
   const activeSection = isPaperA ? "Punjabi Language & Grammar" : (q?.section || "General Assessment")
 
-  // Strict Duplication Check: If En and Pa are same, only show one block
-  const qEnVal = (q?.questionEn || "").trim()
-  const qPaVal = (q?.[`question${regKey}`] || "").trim()
-  const isDuplicate = qEnVal === qPaVal
+  const qEn = (q?.questionEn || "").trim()
+  const qPa = (q?.[`question${regKey}`] || "").trim()
+  const isDuplicate = qEn === qPa
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-white text-[#0F172A]">
@@ -202,12 +200,12 @@ export default function MockAttemptPage() {
           <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
              <div className="max-w-4xl mx-auto space-y-6">
                 <div className="space-y-4 text-left">
-                   {language === 'en' && <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528]">{q?.questionEn}</p>}
-                   {language === 'reg' && <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528]">{qPaVal || q?.questionEn}</p>}
+                   {language === 'en' && <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528]">{qEn}</p>}
+                   {language === 'reg' && <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528]">{qPa || qEn}</p>}
                    {language === 'bilingual' && (
                       <div className="space-y-3">
-                         <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528]">{q?.questionEn}</p>
-                         {!isDuplicate && <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528] border-t border-slate-100 pt-3">{qPaVal}</p>}
+                         <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528]">{qEn}</p>
+                         {!isDuplicate && qPa && <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528] border-t border-slate-100 pt-3">{qPa}</p>}
                       </div>
                    )}
                 </div>
@@ -233,10 +231,10 @@ export default function MockAttemptPage() {
                             {language === 'bilingual' ? (
                                <>
                                   <span className="leading-tight">{optEn}</span>
-                                  {!isOptDuplicate && <span className="leading-tight pt-1 opacity-80">{optPa}</span>}
+                                  {!isOptDuplicate && optPa && <span className="leading-tight pt-1 opacity-80">{optPa}</span>}
                                </>
                             ) : (
-                               <span>{language === 'en' ? optEn : optPa || optEn}</span>
+                               <span>{language === 'en' ? optEn : (optPa || optEn)}</span>
                             )}
                          </Label>
                          <span className="text-[10px] font-black text-slate-300">{k}</span>
