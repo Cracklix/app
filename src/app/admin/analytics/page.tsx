@@ -53,7 +53,7 @@ export default function AdminAnalytics() {
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Operational Growth Monitor</span>
            </div>
           <h1 className="text-5xl font-black font-headline text-primary uppercase tracking-tight">System Analytics</h1>
-          <p className="text-muted-foreground mt-2 text-lg">Institutional monitoring for growth and aspirant participation.</p>
+          <p className="text-[#0F172A] mt-2 text-lg font-medium">Institutional monitoring for growth and aspirant participation.</p>
         </div>
       </div>
 

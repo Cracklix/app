@@ -52,7 +52,7 @@ export default function AdminSettings() {
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Explicit 14-Collection Audit Node
+    // Explicit 16-Collection Audit Node
     match /{document=**} { allow read, write: if true; }
 
     match /mocks/{id} { allow read, list, write: if true; }
@@ -69,6 +69,8 @@ service cloud.firestore {
     match /exams/{id} { allow read, list, write: if true; }
     match /subjects/{id} { allow read, list, write: if true; }
     match /settings/{id} { allow read, list, write: if true; }
+    match /support_tickets/{id} { allow read, list, write: if true; }
+    match /audit_logs/{id} { allow read, list, write: if true; }
   }
 }`;
 
@@ -85,7 +87,7 @@ service cloud.firestore {
       setIsDeploying(false);
       toast({ 
         title: "Rules Sync Initiated", 
-        description: "14 Institutional Rules have been pushed to the deployment cycle. Permission errors will clear shortly.",
+        description: "16 Institutional Rules have been pushed to the deployment cycle. Permission errors will clear shortly.",
       });
     }, 1500);
   };
@@ -154,7 +156,7 @@ service cloud.firestore {
                       </div>
                       <div>
                          <CardTitle className="text-2xl font-headline font-black uppercase text-[#0F172A]">Institutional Rules Audit</CardTitle>
-                         <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-rose-600">14 Active Rules Structured for Deployment.</CardDescription>
+                         <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-rose-600">16 Active Rules Structured for Deployment.</CardDescription>
                       </div>
                    </div>
                 </CardHeader>
@@ -184,7 +186,7 @@ service cloud.firestore {
                       <ShieldCheck className="h-6 w-6 text-emerald-600" /> Operational Status
                    </h3>
                    <div className="space-y-4">
-                      <StatusRow label="Rules Count" value="14 Collections" />
+                      <StatusRow label="Rules Count" value="16 Collections" />
                       <StatusRow label="Access Mode" value="Institutional Permissive" color="text-emerald-600" />
                       <StatusRow label="Sync Status" value="Online" color="text-emerald-600" />
                    </div>
