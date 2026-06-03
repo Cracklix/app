@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useMemo } from "react";
+import React, { useMemo, ReactNode } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/home/Hero";
 import PopularExams from "@/components/home/PopularExams";
@@ -34,7 +34,7 @@ import Image from "next/image";
 
 /**
  * @fileOverview Final Dynamic Homepage Module.
- * Resolved icon reference errors and integrated launch engagement nodes.
+ * Hardened with full imports and DEV MODE stability checks.
  */
 
 export default function HomePage() {
@@ -199,7 +199,7 @@ export default function HomePage() {
   );
 }
 
-function TrustMetric({ icon, label, value }: { icon: React.ReactNode, label: string, value: string | number }) {
+function TrustMetric({ icon, label, value }: { icon: ReactNode, label: string, value: string | number }) {
    return (
       <div className="space-y-3 group">
          <div className="flex justify-center transition-transform group-hover:scale-110">{icon}</div>
