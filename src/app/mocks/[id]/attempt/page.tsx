@@ -14,7 +14,6 @@ import {
   ChevronRight, 
   PauseCircle, 
   PlayCircle,
-  Maximize,
   LayoutGrid,
   CheckCircle2,
   Languages,
@@ -24,21 +23,8 @@ import {
   Monitor
 } from "lucide-react"
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import {
   Sheet,
   SheetContent,
-  SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { useToast } from "@/hooks/use-toast"
@@ -48,7 +34,7 @@ type LangMode = 'en' | 'reg' | 'bilingual'
 
 /**
  * @fileOverview Final Testbook-Style CBT Engine.
- * Optimized: Reduced typography, parallel data fetching, and fixed trilingual mapping.
+ * Optimized: Parallel data fetching, compact trilingual nodes, and fixed icon conflicts.
  */
 
 export default function MockAttemptPage() {
@@ -72,7 +58,7 @@ export default function MockAttemptPage() {
   const [isPaused, setIsPaused] = useState(false)
   const [loadingQs, setLoadingQs] = useState(true)
 
-  // Optimization: Parallel Fetching
+  // High Speed Optimization: Parallel Execution
   useEffect(() => {
     async function init() {
       if (!db || !mock?.questionIds) return
@@ -86,7 +72,6 @@ export default function MockAttemptPage() {
         setQuestions(qData)
         setRemainingTime((mock.duration || 120) * 60)
       } catch (err) {
-        console.error("Failed to load questions:", err)
         toast({ variant: "destructive", title: "Sync Failure", description: "Could not fetch question nodes." })
       } finally {
         setLoadingQs(false)
@@ -155,10 +140,10 @@ export default function MockAttemptPage() {
     try {
       await addDoc(collection(db, "results"), payload)
       await setDoc(doc(db, "test_sessions", `${user.uid}_${mockId}`), { status: 'SUBMITTED', updatedAt: serverTimestamp() }, { merge: true })
-      toast({ title: "Audit Successful", description: "Result trail pushed to cloud repository." })
+      toast({ title: "Submission Success", description: "Mock finalized successfully." })
       router.push(`/results/${mockId}`)
     } catch (e) {
-      toast({ variant: "destructive", title: "Transmission Failed", description: "Check connection and retry." })
+      toast({ variant: "destructive", title: "Audit Failed", description: "Submission failed. Check network." })
       setIsSubmitting(false)
     }
   }, [isSubmitting, questions, answers, mock, user, db, router, mockId, toast])
@@ -166,7 +151,7 @@ export default function MockAttemptPage() {
   if (mockLoading || loadingQs) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-4">
       <Loader2 className="h-10 w-10 text-primary animate-spin" />
-      <p className="font-black uppercase text-[10px] tracking-widest text-slate-400">Syncing Question Hub...</p>
+      <p className="font-black uppercase text-[10px] tracking-widest text-slate-400 italic">Syncing Question Hub...</p>
     </div>
   )
 
@@ -184,9 +169,11 @@ export default function MockAttemptPage() {
     'english': 'General English'
   }
 
+  const activePaper = q?.paper || (currentIdx < 50 ? "PAPER A: PUNJABI QUALIFYING" : "PAPER B: MAIN EXAM")
+  const activeSection = subjectNames[q?.subjectId] || q?.section || "General Section"
+
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-white text-[#0F172A]">
-      {/* Header Nodes */}
       <header className="h-14 border-b flex items-center justify-between px-4 bg-[#0B1528] text-white shrink-0 z-[60]">
         <div className="flex items-center gap-1.5 bg-white/5 p-1 rounded-lg">
            <LangTab label="EN" active={language === 'en'} onClick={() => setLanguage('en')} />
@@ -200,20 +187,19 @@ export default function MockAttemptPage() {
             {isPaused ? <PlayCircle className="h-5 w-5" /> : <PauseCircle className="h-5 w-5" />}
           </Button>
           <Button variant="ghost" size="icon" onClick={() => document.documentElement.requestFullscreen()} className="h-9 w-9 text-slate-400 hover:text-white hidden md:flex">
-             <Maximize className="h-5 w-5" />
+             <Monitor className="h-5 w-5" />
           </Button>
-          <Button onClick={submitMock} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[10px] h-9 px-6 rounded-xl">Submit</Button>
+          <Button onClick={submitMock} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[10px] h-9 px-6 rounded-xl shadow-lg transition-all active:scale-95">Submit Test</Button>
         </div>
       </header>
 
       <main className="flex flex-1 overflow-hidden relative">
         <div className="flex-1 flex flex-col overflow-hidden bg-[#F8FAFC]">
-          {/* Metadata Bar */}
-          <div className="px-6 py-2 border-b border-slate-200 bg-white flex items-center justify-between shrink-0">
+          <div className="px-6 py-2 border-b border-slate-200 bg-white flex items-center justify-between shrink-0 shadow-sm">
              <div className="flex items-center gap-4 text-left">
                 <div className="space-y-0.5">
-                   <p className="text-[9px] font-black text-orange-600 uppercase tracking-widest leading-none">{q?.paper || "EXAM AUDIT"}</p>
-                   <h2 className="text-[11px] font-bold text-slate-700 uppercase tracking-tight">{subjectNames[q?.subjectId] || "General Section"}</h2>
+                   <p className="text-[9px] font-black text-orange-600 uppercase tracking-widest leading-none">{activePaper}</p>
+                   <h2 className="text-[11px] font-bold text-slate-700 uppercase tracking-tight">{activeSection}</h2>
                 </div>
                 <div className="h-6 w-px bg-slate-100" />
                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">Question {currentIdx + 1} of {questions.length}</span>
@@ -222,24 +208,22 @@ export default function MockAttemptPage() {
 
           <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
              <div className="max-w-4xl mx-auto space-y-6">
-                {/* Question Area - High Density Typography */}
-                <div className="space-y-3 text-left">
+                <div className="space-y-4 text-left">
                    {(language === 'en' || language === 'bilingual') && (
-                      <p className="text-base md:text-lg font-bold leading-relaxed text-[#0B1528] antialiased whitespace-pre-line">
+                      <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528] antialiased whitespace-pre-line">
                          {q?.questionEn}
                       </p>
                    )}
                    {(language === 'reg' || language === 'bilingual') && (
                       <p className={cn(
-                        "text-base md:text-lg font-bold leading-relaxed text-[#0B1528] antialiased whitespace-pre-line",
-                        language === 'bilingual' ? 'text-slate-600 border-t border-slate-100 pt-3' : ''
+                        "text-lg md:text-xl font-bold leading-snug text-[#0B1528] antialiased whitespace-pre-line",
+                        language === 'bilingual' ? 'text-slate-500 border-t border-slate-100 pt-3' : ''
                       )}>
                          {q?.[`question${regKey}`] || q?.questionEn}
                       </p>
                    )}
                 </div>
 
-                {/* Options Grid */}
                 <RadioGroup 
                   value={answers[currentIdx]?.toString() || ""} 
                   onValueChange={(v) => setAnswers(prev => ({ ...prev, [currentIdx]: parseInt(v) }))} 
@@ -249,7 +233,7 @@ export default function MockAttemptPage() {
                     const isSelected = answers[currentIdx] === i
                     return (
                       <div key={i} onClick={() => setAnswers(prev => ({ ...prev, [currentIdx]: i }))} className={cn(
-                        "flex items-center space-x-3 p-3 md:p-4 border rounded-xl transition-all cursor-pointer bg-white shadow-sm",
+                        "flex items-center space-x-3 p-3 md:p-4 border rounded-xl transition-all cursor-pointer bg-white shadow-sm hover:border-primary/30",
                         isSelected ? 'border-primary ring-1 ring-primary/20 bg-primary/[0.02]' : 'border-slate-200'
                       )}>
                          <RadioGroupItem value={i.toString()} id={`opt-${i}`} className="text-primary" />
@@ -271,8 +255,7 @@ export default function MockAttemptPage() {
              </div>
           </div>
 
-          {/* Navigation Footer */}
-          <footer className="h-16 border-t border-slate-200 bg-white px-6 flex items-center justify-between shrink-0">
+          <footer className="h-16 border-t border-slate-200 bg-white px-6 flex items-center justify-between shrink-0 z-50">
              <div className="flex gap-2">
                 <Button variant="outline" className="h-10 px-4 text-[10px] font-black uppercase tracking-widest" onClick={handlePrev} disabled={currentIdx === 0}>Previous</Button>
                 <Button variant="outline" className="h-10 px-4 text-[10px] font-black uppercase tracking-widest text-slate-400" onClick={clearResponse}><Trash2 className="h-3.5 w-3.5 mr-1" /> Clear</Button>
@@ -287,7 +270,6 @@ export default function MockAttemptPage() {
           </footer>
         </div>
 
-        {/* Sidebar Audit Map */}
         <aside className="w-[300px] border-l border-slate-200 bg-white p-5 hidden lg:flex flex-col overflow-hidden">
            <div className="flex-1 overflow-y-auto custom-scrollbar">
               <QuestionPalette 
@@ -299,11 +281,10 @@ export default function MockAttemptPage() {
            </div>
         </aside>
 
-        {/* Mobile Palette Node */}
         <div className="lg:hidden fixed bottom-20 right-4 z-[80]">
            <Sheet>
               <SheetTrigger asChild><Button className="h-12 w-12 rounded-full bg-[#0B1528] text-white shadow-2xl"><LayoutGrid className="h-5 w-5" /></Button></SheetTrigger>
-              <SheetContent side="bottom" className="h-[70vh] p-6 rounded-t-[3rem]">
+              <SheetContent side="bottom" className="h-[70vh] p-6 rounded-t-[3rem] border-t-4 border-primary">
                  <QuestionPalette totalQuestions={questions.length} currentIndex={currentIdx} answeredIndices={Object.keys(answers).map(Number)} flaggedIndices={flagged} visitedIndices={visited} onSelect={setCurrentIdx} />
               </SheetContent>
            </Sheet>
@@ -324,5 +305,3 @@ function LangTab({ label, active, onClick }: any) {
     <button onClick={onClick} className={cn("px-2.5 py-1 rounded text-[10px] font-black tracking-widest transition-all", active ? "bg-white text-[#0B1528] shadow-sm" : "text-white/40 hover:text-white")}>{label}</button>
   )
 }
-
-function Maximize({ className }: any) { return <Monitor className={className} /> }
