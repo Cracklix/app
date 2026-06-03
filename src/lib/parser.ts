@@ -1,4 +1,3 @@
-
 /**
  * @fileOverview Hardened Trilingual Bulk MCQ Extraction Engine.
  * Optimized for targeting specific language nodes (EN/PA/HI) and multi-subject pastes.
@@ -50,6 +49,7 @@ export function parseBulkQuestions(
         currentQuestion.subjectId = trimmed.replace(/^(Subject|S\:)[\:\-]\s*/i, '');
       } else {
         // Append to current question text if no prefix matches
+        if (!currentQuestion[`question${lang}`]) currentQuestion[`question${lang}`] = "";
         currentQuestion[`question${lang}`] += ' ' + trimmed;
       }
     }
