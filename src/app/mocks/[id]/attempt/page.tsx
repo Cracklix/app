@@ -87,7 +87,7 @@ export default function MockAttemptPage() {
       if (currentIdx < cumulative) {
         return { 
           name: section.name, 
-          paper: section.name.includes("Qualifying") || section.name.includes("Paper A") ? "PAPER A" : "PAPER B" 
+          paper: section.name.includes("Qualifying") || section.name.includes("Paper A") || section.name.toLowerCase().includes("punjabi") ? "PAPER A" : "PAPER B" 
         }
       }
     }
@@ -101,7 +101,6 @@ export default function MockAttemptPage() {
     const correctMap: Record<string, number> = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 }
     let score = 0
     
-    // Subject stats tracking
     const subjectStats: Record<string, { correct: number; total: number; attempted: number }> = {}
 
     questions.forEach((q, idx) => {
@@ -148,6 +147,9 @@ export default function MockAttemptPage() {
   const regLabel = mock?.examType === 'central' ? 'हिन्दी' : 'ਪੰਜਾਬੀ'
   const regKey = mock?.examType === 'central' ? 'Hi' : 'Pa'
 
+  // Institutional Rule: Force Punjabi only for Paper A or Punjabi subjects
+  const isPunjabiOnlyNode = currentSection.paper === "PAPER A" || q?.subjectId === "punjabi-qualifying" || currentSection.name.toLowerCase().includes("punjabi");
+
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-white text-[#0F172A]">
       <header className="h-14 border-b flex items-center justify-between px-4 bg-[#0B1528] text-white shrink-0 z-[60]">
@@ -184,17 +186,23 @@ export default function MockAttemptPage() {
           <div className="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar">
              <div className="max-w-4xl mx-auto space-y-10">
                 <div className="space-y-6 text-left">
-                   {language === 'en' && <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">{q?.questionEn}</p>}
-                   {language === 'reg' && <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">{q?.[`question${regKey}`] || q?.questionEn}</p>}
-                   {language === 'bilingual' && (
-                      <div className="space-y-6">
-                         <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">{q?.questionEn}</p>
-                         {(q?.[`question${regKey}`]?.trim() !== q?.questionEn?.trim()) && q?.[`question${regKey}`] && (
-                            <div className="pt-6 border-t border-slate-200">
-                               <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">{q?.[`question${regKey}`]}</p>
+                   {isPunjabiOnlyNode ? (
+                      <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">{q?.[`question${regKey}`] || q?.questionEn}</p>
+                   ) : (
+                      <>
+                        {language === 'en' && <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">{q?.questionEn}</p>}
+                        {language === 'reg' && <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">{q?.[`question${regKey}`] || q?.questionEn}</p>}
+                        {language === 'bilingual' && (
+                            <div className="space-y-6">
+                              <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">{q?.questionEn}</p>
+                              {(q?.[`question${regKey}`]?.trim() !== q?.questionEn?.trim()) && q?.[`question${regKey}`] && (
+                                  <div className="pt-6 border-t border-slate-200">
+                                    <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">{q?.[`question${regKey}`]}</p>
+                                  </div>
+                              )}
                             </div>
-                         )}
-                      </div>
+                        )}
+                      </>
                    )}
                 </div>
 
@@ -215,13 +223,19 @@ export default function MockAttemptPage() {
                       )}>
                          <RadioGroupItem value={i.toString()} id={`opt-${i}`} className="text-primary" />
                          <Label htmlFor={`opt-${i}`} className="flex-1 cursor-pointer select-none text-base md:text-lg font-bold text-[#0B1528] flex flex-col gap-1">
-                            {language === 'bilingual' ? (
-                               <>
-                                  <span className="leading-tight">{optEn}</span>
-                                  {optPa?.trim() !== optEn?.trim() && optPa && <span className="leading-tight opacity-70 border-t border-slate-50 pt-1 mt-1">{optPa}</span>}
-                               </>
+                            {isPunjabiOnlyNode ? (
+                               <span className="leading-tight">{optPa || optEn}</span>
                             ) : (
-                               <span>{language === 'en' ? optEn : (optPa || optEn)}</span>
+                               <>
+                                  {language === 'bilingual' ? (
+                                    <>
+                                        <span className="leading-tight">{optEn}</span>
+                                        {optPa?.trim() !== optEn?.trim() && optPa && <span className="leading-tight opacity-70 border-t border-slate-50 pt-1 mt-1">{optPa}</span>}
+                                    </>
+                                  ) : (
+                                    <span>{language === 'en' ? optEn : (optPa || optEn)}</span>
+                                  )}
+                               </>
                             )}
                          </Label>
                          <span className="text-xs font-black text-slate-300">{k}</span>
