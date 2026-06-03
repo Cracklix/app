@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo, useCallback } from "react"
@@ -34,7 +35,7 @@ type LangMode = 'en' | 'reg' | 'bilingual'
 
 /**
  * @fileOverview Final Testbook-Style CBT Engine.
- * Optimized: Parallel data fetching, compact trilingual nodes, and fixed icon conflicts.
+ * Fixed: Bilingual duplication check and dynamic metadata section mapping.
  */
 
 export default function MockAttemptPage() {
@@ -58,7 +59,6 @@ export default function MockAttemptPage() {
   const [isPaused, setIsPaused] = useState(false)
   const [loadingQs, setLoadingQs] = useState(true)
 
-  // High Speed Optimization: Parallel Execution
   useEffect(() => {
     async function init() {
       if (!db || !mock?.questionIds) return
@@ -160,17 +160,21 @@ export default function MockAttemptPage() {
   const regKey = mock?.examType === 'central' ? 'Hi' : 'Pa'
 
   const subjectNames: Record<string, string> = {
-    'punjabi-qualifying': 'Mandatory Punjabi',
-    'punjab-history': 'Punjab History',
-    'gk-ca': 'General Knowledge',
+    'punjabi-qualifying': 'Punjabi Language & Grammar',
+    'punjab-history': 'Punjab History & Culture',
+    'gk-ca': 'General Knowledge & Current Affairs',
     'reasoning': 'Logical Reasoning',
     'math': 'Numerical Ability',
-    'ict': 'Computers/ICT',
+    'ict': 'Computers / IT',
     'english': 'General English'
   }
 
   const activePaper = q?.paper || (currentIdx < 50 ? "PAPER A: PUNJABI QUALIFYING" : "PAPER B: MAIN EXAM")
-  const activeSection = subjectNames[q?.subjectId] || q?.section || "General Section"
+  const activeSection = subjectNames[q?.subjectId] || q?.section || "General Assessment"
+
+  // Duplication Check: Don't show English if it's missing or identical to regional text
+  const showEn = (language === 'en' || language === 'bilingual') && q?.questionEn && q?.questionEn !== q?.[`question${regKey}`]
+  const showReg = (language === 'reg' || language === 'bilingual')
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-white text-[#0F172A]">
@@ -209,15 +213,15 @@ export default function MockAttemptPage() {
           <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
              <div className="max-w-4xl mx-auto space-y-6">
                 <div className="space-y-4 text-left">
-                   {(language === 'en' || language === 'bilingual') && (
+                   {showEn && (
                       <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528] antialiased whitespace-pre-line">
                          {q?.questionEn}
                       </p>
                    )}
-                   {(language === 'reg' || language === 'bilingual') && (
+                   {showReg && (
                       <p className={cn(
                         "text-lg md:text-xl font-bold leading-snug text-[#0B1528] antialiased whitespace-pre-line",
-                        language === 'bilingual' ? 'text-slate-500 border-t border-slate-100 pt-3' : ''
+                        language === 'bilingual' && showEn ? 'text-slate-500 border-t border-slate-100 pt-3' : ''
                       )}>
                          {q?.[`question${regKey}`] || q?.questionEn}
                       </p>
@@ -231,6 +235,10 @@ export default function MockAttemptPage() {
                 >
                   {['A', 'B', 'C', 'D'].map((k, i) => {
                     const isSelected = answers[currentIdx] === i
+                    const optEn = q?.[`option${k}En`]
+                    const optReg = q?.[`option${k}${regKey}`]
+                    const hasValidTranslation = optReg && optReg !== optEn
+
                     return (
                       <div key={i} onClick={() => setAnswers(prev => ({ ...prev, [currentIdx]: i }))} className={cn(
                         "flex items-center space-x-3 p-3 md:p-4 border rounded-xl transition-all cursor-pointer bg-white shadow-sm hover:border-primary/30",
@@ -240,11 +248,11 @@ export default function MockAttemptPage() {
                          <Label htmlFor={`opt-${i}`} className="flex-1 cursor-pointer select-none text-sm md:text-base font-bold text-[#0B1528] flex flex-col gap-0.5">
                             {language === 'bilingual' ? (
                                <>
-                                  <span className="text-[11px] text-slate-500 font-medium">{q?.[`option${k}En`]}</span>
-                                  <span className="leading-tight">{q?.[`option${k}${regKey}`]}</span>
+                                  <span className="text-[11px] text-slate-500 font-medium">{optEn}</span>
+                                  {hasValidTranslation && <span className="leading-tight">{optReg}</span>}
                                </>
                             ) : (
-                               <span>{language === 'en' ? q?.[`option${k}En`] : q?.[`option${k}${regKey}`]}</span>
+                               <span>{language === 'en' ? optEn : optReg || optEn}</span>
                             )}
                          </Label>
                          <span className="text-[10px] font-black text-slate-300">{k}</span>
@@ -270,7 +278,7 @@ export default function MockAttemptPage() {
           </footer>
         </div>
 
-        <aside className="w-[300px] border-l border-slate-200 bg-white p-5 hidden lg:flex flex-col overflow-hidden">
+        <aside className="w-[300px] border-l border-slate-200 bg-white p-5 hidden lg:flex flex-col overflow-hidden shrink-0">
            <div className="flex-1 overflow-y-auto custom-scrollbar">
               <QuestionPalette 
                 totalQuestions={questions.length} currentIndex={currentIdx} 
