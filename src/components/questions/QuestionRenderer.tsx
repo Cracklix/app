@@ -30,25 +30,30 @@ const COLORS = ['#F97316', '#3B82F6', '#10B981', '#EF4444', '#8B5CF6'];
 
 export default function QuestionRenderer({ question, language }: QuestionRendererProps) {
   const isEn = language === 'en';
+  
+  // Safe Fallback for Missing Language Data
+  const questionText = (isEn ? question.questionEn : question.questionPa) || question.questionEn || question.questionPa;
+  const instructionText = (isEn ? question.instructionEn : question.instructionPa) || question.instructionEn || question.instructionPa;
+  const passageText = (isEn ? question.passageEn : question.passagePa) || question.passageEn || question.passagePa;
 
   return (
     <div className="space-y-8 w-full text-left">
       {/* 1. Instruction Node */}
-      {(isEn ? question.instructionEn : question.instructionPa) && (
+      {instructionText && (
         <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl">
           <p className="text-xs font-black uppercase tracking-widest text-blue-600 mb-1">Instruction</p>
           <p className="text-sm font-bold text-blue-800 italic">
-            {isEn ? question.instructionEn : question.instructionPa}
+            {instructionText}
           </p>
         </div>
       )}
 
       {/* 2. Passage Node (Reading Comprehension / Caselet) */}
-      {(isEn ? question.passageEn : question.passagePa) && (
+      {passageText && (
         <div className="bg-slate-50 border border-slate-100 p-8 rounded-3xl shadow-inner">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">Read the following passage:</p>
           <div className="text-base md:text-lg leading-relaxed text-slate-700 whitespace-pre-wrap font-medium">
-            {isEn ? question.passageEn : question.passagePa}
+            {passageText}
           </div>
         </div>
       )}
@@ -129,11 +134,11 @@ export default function QuestionRenderer({ question, language }: QuestionRendere
       {/* 4. Question Statement */}
       <div className="space-y-4">
         <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">
-          {isEn ? question.questionEn : question.questionPa}
+          {questionText}
         </p>
         
-        {/* If Bilingual Mode (Handled outside if needed, but here's a fallback) */}
-        {!isEn && question.questionEn && question.questionType === 'BILINGUAL_MCQ' && (
+        {/* Bilingual Stack Logic (Only if secondary language exists and it's not a single-language forcing node) */}
+        {!isEn && question.questionEn && question.questionEn !== questionText && (
           <div className="pt-4 border-t border-slate-100">
              <p className="text-xl md:text-2xl font-bold leading-snug text-slate-400">
                 {question.questionEn}

@@ -38,6 +38,7 @@ export default function MockAttemptPage() {
   
   const { data: mock, loading: mockLoading } = useDoc<any>(useMemo(() => (db ? doc(db, "mocks", mockId) : null), [db, mockId]))
   const { data: allPatterns } = useCollection<any>(useMemo(() => (db ? collection(db, "exam_patterns") : null), [db]))
+  const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
   
   const [questions, setQuestions] = useState<any[]>([])
   const [currentIdx, setCurrentIdx] = useState(0)
@@ -77,22 +78,36 @@ export default function MockAttemptPage() {
   }, [db, mock, toast])
 
   const currentSection = useMemo(() => {
-    if (currentIdx < 50) return { name: "PUNJABI LANGUAGE & GRAMMAR", paper: "PAPER A" }
+    const currentQ = questions[currentIdx];
     
-    if (!activePattern || !questions.length) return { name: "General Assessment", paper: "PAPER B" }
+    // Prioritize Question's own Subject Data
+    if (currentQ?.subjectId) {
+       const sub = subjects?.find(s => s.id === currentQ.subjectId);
+       if (sub) {
+          return { 
+             name: sub.name.toUpperCase(), 
+             paper: currentQ.subjectId === 'punjabi-qualifying' ? "PAPER A" : "PAPER B" 
+          };
+       }
+    }
     
-    let cumulative = 0
-    for (const section of activePattern.sections) {
-      cumulative += section.count
-      if (currentIdx < cumulative) {
-        return { 
-          name: section.name.toUpperCase(), 
-          paper: section.name.includes("Qualifying") || section.name.includes("Paper A") || section.name.toLowerCase().includes("punjabi") ? "PAPER A" : "PAPER B" 
+    // Fallback to Exam Pattern Mapping
+    if (activePattern && questions.length > 0) {
+      let cumulative = 0
+      for (const section of activePattern.sections) {
+        cumulative += section.count
+        if (currentIdx < cumulative) {
+          return { 
+            name: section.name.toUpperCase(), 
+            paper: section.name.includes("Qualifying") || section.name.includes("Paper A") || section.name.toLowerCase().includes("punjabi") ? "PAPER A" : "PAPER B" 
+          }
         }
       }
     }
-    return { name: "General Assessment", paper: "PAPER B" }
-  }, [activePattern, currentIdx, questions.length])
+    
+    // Default Legacy Fallback
+    return { name: "GENERAL ASSESSMENT", paper: "PAPER B" }
+  }, [activePattern, currentIdx, questions, subjects])
 
   const submitMock = useCallback(async () => {
     if (isSubmitting || questions.length === 0 || !user || !db) return
@@ -145,7 +160,7 @@ export default function MockAttemptPage() {
 
   const q = questions[currentIdx]
   const regKey = mock?.examType === 'central' ? 'Hi' : 'Pa'
-  const isPunjabiOnlyNode = currentSection.paper === "PAPER A" || q?.subjectId === "punjabi-qualifying" || currentSection.name.toLowerCase().includes("punjabi");
+  const isPunjabiOnlyNode = q?.subjectId === "punjabi-qualifying" || currentSection.name.toLowerCase().includes("punjabi");
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-white text-[#0F172A]">
