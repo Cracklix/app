@@ -1,7 +1,8 @@
+
 'use client';
 
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { LayoutDashboard, Database, ClipboardList, TrendingUp, Settings, Users, LogOut, Bell, ShieldCheck, GraduationCap, Zap, Newspaper, AlertCircle, AlertTriangle, FileText, Activity, ShieldAlert } from "lucide-react"
+import { LayoutDashboard, Database, ClipboardList, TrendingUp, Settings, Users, LogOut, Bell, ShieldCheck, GraduationCap, Zap, Newspaper, AlertCircle, AlertTriangle, FileText, Activity, ShieldAlert, HeartPulse, HelpCircle } from "lucide-react"
 import Link from "next/link"
 import Logo from "@/components/brand/Logo"
 import { useUser, useAuth } from "@/firebase"
@@ -51,7 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <AdminNavItem icon={<Zap className="text-primary fill-primary/20" />} label="Bulk Import" href="/admin/questions/bulk" active={pathname === "/admin/questions/bulk"} />
                   <AdminNavItem icon={<ClipboardList />} label="Mock Builder" href="/admin/mocks" active={pathname === "/admin/mocks"} />
                   <AdminNavItem icon={<ShieldAlert className="text-rose-500" />} label="Integrity QA" href="/admin/qa" active={pathname === "/admin/qa"} />
-                  <AdminNavItem icon={<AlertTriangle className="text-rose-400" />} label="Error Reports" href="/admin/reports" active={pathname === "/admin/reports"} />
+                  <AdminNavItem icon={<AlertTriangle className="text-rose-400" />} label="Audit Flags" href="/admin/reports" active={pathname === "/admin/reports"} />
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
@@ -72,6 +73,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <SidebarGroupContent>
                 <SidebarMenu>
                   <AdminNavItem icon={<LayoutDashboard />} label="Command Center" href="/admin" active={pathname === "/admin"} />
+                  <AdminNavItem icon={<HeartPulse className="text-rose-400" />} label="System Health" href="/admin/health" active={pathname === "/admin/health"} />
+                  <AdminNavItem icon={<HelpCircle className="text-blue-400" />} label="Support Hub" href="/admin/support" active={pathname === "/admin/support"} />
                   <AdminNavItem icon={<GraduationCap />} label="Exams & Boards" href="/admin/exams" active={pathname === "/admin/exams"} />
                   <AdminNavItem icon={<Users />} label="Aspirant Registry" href="/admin/users" active={pathname === "/admin/users"} />
                   <AdminNavItem icon={<Activity />} label="Audit Logs" href="/admin/audit-logs" active={pathname === "/admin/audit-logs"} />

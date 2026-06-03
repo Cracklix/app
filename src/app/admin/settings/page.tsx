@@ -9,14 +9,14 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import { Globe, Shield, Layout, Bell, Save, RefreshCw, Smartphone, TrendingUp, Zap } from "lucide-react"
+import { Globe, Shield, Layout, Bell, Save, RefreshCw, Smartphone, TrendingUp, Zap, CalendarDays } from "lucide-react"
 import { useDoc, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * @fileOverview Final Enterprise CMS (Phase 99).
- * Full control over platform-wide announcements, logic, and revenue ready status.
+ * @fileOverview Final Enterprise CMS (Phase 113).
+ * Full control over platform-wide announcements, logic, and Exam Season Mode.
  */
 
 export default function AdminSettings() {
@@ -36,7 +36,9 @@ export default function AdminSettings() {
     platformName: "Cracklix",
     revenueReady: false,
     negativeMarking: true,
-    aiRationalization: true
+    aiRationalization: true,
+    examSeasonMode: false,
+    highlightBoard: "Punjab Police"
   });
 
   useEffect(() => {
@@ -68,6 +70,7 @@ export default function AdminSettings() {
         <TabsList className="bg-white/5 border border-white/5 p-1.5 h-16 rounded-2xl">
           <TabsTrigger value="homepage" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2"><Layout className="h-4 w-4" /> Global CMS</TabsTrigger>
           <TabsTrigger value="logic" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2"><Shield className="h-4 w-4" /> Logic Engines</TabsTrigger>
+          <TabsTrigger value="seasonal" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2"><CalendarDays className="h-4 w-4" /> Seasonal</TabsTrigger>
           <TabsTrigger value="revenue" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2"><Smartphone className="h-4 w-4" /> Monetization</TabsTrigger>
         </TabsList>
 
@@ -95,6 +98,22 @@ export default function AdminSettings() {
              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 <ConfigCard icon={<Shield className="text-rose-500" />} label="Negative Marking" desc="Apply -1.0 penalty for mismatched audit choices." checked={formData.negativeMarking} onChange={(v: boolean) => setFormData({...formData, negativeMarking: v})} />
                 <ConfigCard icon={<Zap className="text-emerald-500" />} label="AI Tutors" desc="Generate Gemini rationalizations for wrong attempts." checked={formData.aiRationalization} onChange={(v: boolean) => setFormData({...formData, aiRationalization: v})} />
+             </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="seasonal">
+          <Card className="border-none bg-card/50 shadow-3xl rounded-[3rem] p-12 space-y-10">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <ConfigCard icon={<CalendarDays className="text-orange-500" />} label="Exam Season Mode" desc="Enable high-priority UI highlights for active boards." checked={formData.examSeasonMode} onChange={(v: boolean) => setFormData({...formData, examSeasonMode: v})} />
+                <div className="space-y-6 p-8 bg-white/5 rounded-[2rem] border border-white/5">
+                   <Label className="text-[10px] font-black uppercase text-slate-500">Seasonal Highlight Board</Label>
+                   <select value={formData.highlightBoard} onChange={e => setFormData({...formData, highlightBoard: e.target.value})} className="w-full h-14 bg-background rounded-xl border-none text-sm font-bold px-4 outline-none">
+                      {["PSSSB", "Punjab Police", "PPSC", "Education", "High Court"].map(b => (
+                         <option key={b} value={b} className="bg-[#0F172A]">{b}</option>
+                      ))}
+                   </select>
+                </div>
              </div>
           </Card>
         </TabsContent>
