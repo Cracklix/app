@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -24,13 +25,16 @@ import {
   Plus,
   Trash2,
   BookOpen,
-  LayoutGrid
+  LayoutGrid,
+  ExternalLink,
+  Edit
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
+import Link from "next/link"
 
 export default function MockBuilderPage() {
   return (
@@ -251,11 +255,46 @@ function MockBuilderContent() {
         </div>
 
         <div className="lg:col-span-8">
-           <Tabs defaultValue="blueprint" className="space-y-8">
+           <Tabs defaultValue={isEditing ? "linked" : "blueprint"} className="space-y-8">
               <TabsList className="bg-slate-100 border border-slate-200 rounded-2xl p-1.5 h-16 w-fit shadow-xl">
+                 {isEditing && (
+                    <TabsTrigger value="linked" className="rounded-xl h-full px-8 font-black uppercase text-[10px] gap-3 data-[state=active]:bg-primary data-[state=active]:text-white"><LayoutGrid className="h-4 w-4" /> Linked Questions ({selectedQuestions.length})</TabsTrigger>
+                 )}
                  <TabsTrigger value="blueprint" className="rounded-xl h-full px-8 font-black uppercase text-[10px] gap-3 data-[state=active]:bg-primary data-[state=active]:text-white"><Sparkles className="h-4 w-4" /> Smart Blueprint</TabsTrigger>
                  <TabsTrigger value="manual" className="rounded-xl h-full px-8 font-black uppercase text-[10px] gap-3 data-[state=active]:bg-primary data-[state=active]:text-white"><Database className="h-4 w-4" /> Manual Selector</TabsTrigger>
               </TabsList>
+
+              <TabsContent value="linked" className="space-y-6">
+                 <div className="grid grid-cols-1 gap-4 max-h-[700px] overflow-y-auto pr-3 custom-scrollbar">
+                    {selectedQuestions.map((q, idx) => (
+                       <div key={q.id} className="p-8 rounded-[2rem] border border-slate-100 bg-white flex items-center justify-between group hover:border-primary/30 transition-all shadow-xl">
+                          <div className="flex items-center gap-6 flex-1">
+                             <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center font-black text-xs text-slate-400">
+                                {idx + 1}
+                             </div>
+                             <div className="space-y-2 text-left">
+                                <p className="font-bold text-[#0F172A] line-clamp-1">{q.questionEn}</p>
+                                <div className="flex gap-4">
+                                   <Badge variant="outline" className="text-[9px] font-black uppercase border-slate-100 text-slate-400 tracking-widest">{q.subjectId || 'GK'}</Badge>
+                                   <Badge className="text-[9px] font-black uppercase tracking-widest border-none bg-emerald-50 text-emerald-600">KEY: {q.correctAnswer}</Badge>
+                                </div>
+                             </div>
+                          </div>
+                          <div className="flex gap-2">
+                             <Button asChild variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-primary hover:bg-primary/5">
+                                <Link href={`/admin/questions/add?id=${q.id}`} target="_blank"><Edit className="h-5 w-5" /></Link>
+                             </Button>
+                             <Button onClick={() => setSelectedQuestions(selectedQuestions.filter(s => s.id !== q.id))} variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-rose-400 hover:bg-rose-50">
+                                <Trash2 className="h-5 w-5" />
+                             </Button>
+                          </div>
+                       </div>
+                    ))}
+                    {selectedQuestions.length === 0 && (
+                       <div className="py-40 text-center opacity-30 italic">No questions linked to this series.</div>
+                    )}
+                 </div>
+              </TabsContent>
 
               <TabsContent value="blueprint" className="space-y-6">
                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-12">
