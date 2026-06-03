@@ -25,14 +25,14 @@ export function parseBulkQuestions(
   const lang = metadata.targetLang;
   
   let detectedTitle = "";
-  let detectedDuration = 0;
+  let detectedDuration = 120;
   let detectedTotal = 0;
 
   const isQuestionStart = (line: string) => /^(Q\d+|Question\s*\d+|Q\.\s*\d+|\d+)[\.\:\)]/i.test(line.trim());
   const isOption = (line: string) => /^[A-D][\.\:\)]/i.test(line.trim());
-  const isAnswer = (line: string) => /^(Answer|Key|Ans|Correct|Correct Answer)[\:\-]/i.test(line.trim());
-  const isExplanation = (line: string) => /^(Explanation|Solution|Rationale|Details|Explanation\/Solution)[\:\-]/i.test(line.trim());
-  const isSubject = (line: string) => /^(Subject|S\:|PART\-[A-Z]|Section)[\:\-]/i.test(line.trim());
+  const isAnswer = (line: string) => /^(Answer|Key|Ans|Correct|Correct Answer)[\:\-\s]/i.test(line.trim());
+  const isExplanation = (line: string) => /^(Explanation|Solution|Rationale|Details|Explanation\/Solution)[\:\-\s]/i.test(line.trim());
+  const isSubject = (line: string) => /^(Subject|S\:|PART\-[A-Z]|Section)[\:\-\s]/i.test(line.trim());
 
   // Subject ID mapping helper
   const mapSubject = (val: string): string => {
@@ -40,7 +40,7 @@ export function parseBulkQuestions(
     if (cleaned.includes('punjabi')) return 'punjabi-qualifying';
     if (cleaned.includes('gk') || cleaned.includes('history')) return 'punjab-history';
     if (cleaned.includes('polity') || cleaned.includes('current')) return 'gk-ca';
-    if (cleaned.includes('math') || cleaned.includes('aptitude')) return 'math';
+    if (cleaned.includes('math') || cleaned.includes('aptitude') || cleaned.includes('quantitative')) return 'math';
     if (cleaned.includes('reasoning')) return 'reasoning';
     if (cleaned.includes('english')) return 'english';
     if (cleaned.includes('computer') || cleaned.includes('it')) return 'ict';
@@ -53,12 +53,12 @@ export function parseBulkQuestions(
     const trimmed = line.trim();
     if (!trimmed) return;
 
-    // First 10 lines: Look for Mock Metadata
-    if (idx < 15) {
-      if (trimmed.toUpperCase().includes('MOCK TEST') && !detectedTitle) {
+    // Look for Mock Metadata in the first 20 lines
+    if (idx < 20) {
+      if ((trimmed.toUpperCase().includes('MOCK TEST') || trimmed.toUpperCase().includes('EXAM')) && !detectedTitle) {
         detectedTitle = trimmed;
       }
-      if (trimmed.toLowerCase().includes('time allowed')) {
+      if (trimmed.toLowerCase().includes('time allowed') || trimmed.toLowerCase().includes('minutes')) {
         const match = trimmed.match(/\d+/);
         if (match) detectedDuration = parseInt(match[0]);
       }
@@ -69,8 +69,8 @@ export function parseBulkQuestions(
     }
 
     if (isSubject(trimmed)) {
-      const subjectName = trimmed.replace(/^(Subject|S\:|PART\-[A-Z]|Section)[\:\-]\s*/i, '');
-      activeSubjectId = mapSubject(subjectName);
+      const subjectName = trimmed.replace(/^(Subject|S\:|PART\-[A-Z]|Section)[\:\-\s]*/i, '');
+      if (subjectName) activeSubjectId = mapSubject(subjectName);
       return;
     }
 
@@ -79,9 +79,10 @@ export function parseBulkQuestions(
       currentQuestion = {
         boardId: metadata.boardId,
         examId: metadata.examId,
-        subjectId: activeSubjectId,
+        subjectId: activeSubjectId || 'gk-ca',
         difficulty: metadata.difficulty,
         correctAnswer: 'A',
+        status: 'PUBLISHED',
         createdAt: new Date().toISOString()
       };
       currentQuestion[`question${lang}`] = trimmed.replace(/^(Q\d+|Question\s*\d+|Q\.\s*\d+|\d+)[\.\:\)]\s*/i, '');
@@ -93,11 +94,15 @@ export function parseBulkQuestions(
         const match = trimmed.match(/[A-D]/i);
         if (match) currentQuestion.correctAnswer = match[0].toUpperCase();
       } else if (isExplanation(trimmed)) {
-        currentQuestion[`explanation${lang}`] = trimmed.replace(/^(Explanation|Solution|Rationale|Details|Explanation\/Solution)[\:\-]\s*/i, '');
+        currentQuestion[`explanation${lang}`] = trimmed.replace(/^(Explanation|Solution|Rationale|Details|Explanation\/Solution)[\:\-\s]*/i, '');
       } else {
-        // Append to current question text if no prefix matches
-        if (!currentQuestion[`question${lang}`]) currentQuestion[`question${lang}`] = "";
-        currentQuestion[`question${lang}`] += ' ' + trimmed;
+        // Append to question or last option/explanation if it spans multiple lines
+        if (currentQuestion[`explanation${lang}`]) {
+           currentQuestion[`explanation${lang}`] += ' ' + trimmed;
+        } else {
+           if (!currentQuestion[`question${lang}`]) currentQuestion[`question${lang}`] = "";
+           currentQuestion[`question${lang}`] += ' ' + trimmed;
+        }
       }
     }
   });
@@ -107,7 +112,7 @@ export function parseBulkQuestions(
   return {
     questions: questions.filter(q => q[`question${lang}`] && q[`optionA${lang}`]),
     mockMetadata: {
-      title: detectedTitle,
+      title: detectedTitle || `Mock ${new Date().toLocaleDateString()}`,
       duration: detectedDuration,
       totalQuestions: detectedTotal || questions.length
     }

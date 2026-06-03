@@ -18,7 +18,7 @@ import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
  * @fileOverview Final Mock Extraction Node.
- * Features: Direct Mock Deployment and MCQ Bank Isolation.
+ * Features: Direct Mock Deployment using detected metadata (Title, Time, Subjects).
  */
 
 export default function BulkImportPage() {
@@ -56,9 +56,9 @@ export default function BulkImportPage() {
     setDetectedMock(results.mockMetadata)
     
     if (results.questions.length > 0) {
-      toast({ title: "Extraction Complete", description: `Structured ${results.questions.length} ${targetLang} nodes with logic mapping.` })
+      toast({ title: "Extraction Complete", description: `Structured ${results.questions.length} ${targetLang} nodes. Title & Time detected.` })
     } else {
-      toast({ variant: "destructive", title: "Extraction Failed", description: "Invalid format detected." })
+      toast({ variant: "destructive", title: "Extraction Failed", description: "No questions detected. Check format." })
     }
   }
 
@@ -72,16 +72,16 @@ export default function BulkImportPage() {
       batch.set(newRef, {
         ...q,
         id: newRef.id,
-        isStandalone: true, // Show in general bank
+        isStandalone: true, 
         createdAt: serverTimestamp(),
         status: "PUBLISHED",
-        author: "Arsh Grewal Management"
+        author: "Institutional Registry"
       })
     })
 
     try {
       await batch.commit()
-      toast({ title: "Repository Synced", description: `${parsedQuestions.length} items added to General MCQ Bank.` })
+      toast({ title: "Bank Synced", description: `${parsedQuestions.length} standalone items added.` })
       router.push("/admin/questions")
     } catch (e) {
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: '/questions', operation: 'write' }));
@@ -107,18 +107,19 @@ export default function BulkImportPage() {
       batch.set(newRef, {
         ...q,
         id: newRef.id,
-        isStandalone: false, // HIDDEN from general bank to avoid repeats
+        isStandalone: false, // Hidden from general bank to prevent repeats
         createdAt: serverTimestamp(),
         status: "PUBLISHED",
-        author: "Arsh Grewal Management"
+        author: "Mock Direct Deployment"
       })
     })
 
     const mockId = `mock-${Date.now()}`
     const mockRef = doc(db, "mocks", mockId)
-    batch.set(mockRef, {
+    
+    const mockPayload = {
       id: mockId,
-      title: detectedMock?.title || `New ${metadata.mockType} Series`,
+      title: detectedMock?.title || `${metadata.boardId} ${metadata.mockType} Series`,
       boardId: metadata.boardId,
       examId: metadata.examId,
       mockType: metadata.mockType,
@@ -128,12 +129,15 @@ export default function BulkImportPage() {
       published: true,
       status: "PUBLISHED",
       createdAt: serverTimestamp(),
-      author: "Direct Extraction Engine"
-    })
+      updatedAt: serverTimestamp(),
+      author: "Automatic Publisher"
+    }
+
+    batch.set(mockRef, mockPayload)
 
     try {
       await batch.commit()
-      toast({ title: "Series Deployed", description: `High-fidelity mock series live with ${parsedQuestions.length} hidden questions.` })
+      toast({ title: "Series Deployed", description: `"${mockPayload.title}" is now live with ${parsedQuestions.length} questions.` })
       router.push("/admin/mocks")
     } catch (e) {
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: mockRef.path, operation: 'write' }));
@@ -151,7 +155,7 @@ export default function BulkImportPage() {
           </Button>
           <div className="text-left">
             <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Direct Mock Publisher</h1>
-            <p className="text-slate-500 font-medium">Extract, categorize, and deploy high-fidelity papers in one node.</p>
+            <p className="text-slate-500 font-medium">Auto-detects Title, Time, and Subjects from your paste.</p>
           </div>
         </div>
       </div>
@@ -162,12 +166,12 @@ export default function BulkImportPage() {
             <div className="h-2 w-full bg-primary" />
             <CardHeader className="p-10 pb-4">
               <CardTitle className="font-headline font-black text-2xl uppercase">Test Deployment Node</CardTitle>
-              <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Questions in mocks are hidden from General Bank to prevent repeats.</CardDescription>
+              <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Pasted data will automatically determine the mock structure.</CardDescription>
             </CardHeader>
             <CardContent className="p-10 pt-4 space-y-10">
               <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-3">
-                  <p className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Layers className="h-3 w-3" /> Series Category</p>
+                  <p className="text-[10px] font-black uppercase text-slate-500 ml-1">Series Category</p>
                   <Select value={metadata.mockType} onValueChange={(v) => setMetadata({...metadata, mockType: v})}>
                     <SelectTrigger className="rounded-xl bg-slate-50 border-slate-100 shadow-inner h-12 font-bold text-[#0F172A]"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -191,7 +195,7 @@ export default function BulkImportPage() {
 
               <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-3">
-                   <p className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Rocket className="h-3 w-3" /> Target Exam Hub</p>
+                   <p className="text-[10px] font-black uppercase text-slate-500 ml-1">Target Exam Hub</p>
                    <Select value={metadata.examId} onValueChange={val => setMetadata({...metadata, examId: val})}>
                      <SelectTrigger className="rounded-xl bg-slate-50 border-slate-100 shadow-inner h-12 font-bold text-[#0F172A]" disabled={!metadata.boardId}><SelectValue placeholder="Select Hub" /></SelectTrigger>
                      <SelectContent className="max-h-[300px]">
@@ -200,7 +204,7 @@ export default function BulkImportPage() {
                    </Select>
                 </div>
                 <div className="space-y-3">
-                  <p className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Languages className="h-3 w-3" /> Extraction Language</p>
+                  <p className="text-[10px] font-black uppercase text-slate-500 ml-1">Extraction Language</p>
                   <Select value={targetLang} onValueChange={(v: any) => setTargetLang(v)}>
                     <SelectTrigger className="rounded-xl bg-slate-50 border-slate-100 shadow-inner h-12 font-bold text-[#0F172A]"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -213,14 +217,14 @@ export default function BulkImportPage() {
               </div>
 
               <Textarea 
-                placeholder="Paste your 100-150 question paper here..."
+                placeholder="Paste your paper here (e.g., MOCK TEST 01... Time Allowed: 150 Mins... Q1. Text... Answer: A...)"
                 className="min-h-[450px] rounded-[2rem] bg-slate-50 border-slate-100 p-8 text-sm font-mono leading-relaxed shadow-inner text-[#0F172A]"
                 value={rawText}
                 onChange={e => setRawText(e.target.value)}
               />
               
               <Button onClick={handleParse} className="w-full h-20 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.2em] gap-3 rounded-2xl shadow-xl transition-all">
-                <Zap className="h-5 w-5 text-primary" /> Run Multi-Subject Engine
+                <Zap className="h-5 w-5 text-primary" /> Parse Institutional Data
               </Button>
             </CardContent>
           </Card>
@@ -230,7 +234,7 @@ export default function BulkImportPage() {
           <Card className="border-slate-100 bg-white shadow-2xl rounded-[3rem] h-full flex flex-col overflow-hidden">
             <CardHeader className="p-10 bg-slate-50/50 border-b border-slate-50">
               <CardTitle className="font-headline font-black text-2xl uppercase flex items-center gap-3 text-[#0F172A]">
-                <Database className="h-6 w-6 text-primary" /> Staging Buffer
+                <Database className="h-6 w-6 text-primary" /> Deployment Buffer
               </CardTitle>
               <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">{parsedQuestions.length} Items Validated.</CardDescription>
             </CardHeader>
@@ -252,7 +256,7 @@ export default function BulkImportPage() {
               {parsedQuestions.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-slate-300 opacity-20 py-40">
                   <ClipboardList className="h-20 w-20 mb-6" />
-                  <p className="font-black uppercase tracking-[0.3em] text-sm">Awaiting Logic Input</p>
+                  <p className="font-black uppercase tracking-[0.3em] text-sm">Awaiting Institutional Input</p>
                 </div>
               ) : (
                 parsedQuestions.map((q, idx) => (
@@ -262,6 +266,9 @@ export default function BulkImportPage() {
                        <span className="text-[11px] font-black text-[#0F172A] font-mono">KEY: {q.correctAnswer}</span>
                     </div>
                     <p className="text-sm font-bold leading-relaxed text-slate-600 line-clamp-3">{(q as any)[`question${targetLang}`]}</p>
+                    {q[`explanation${targetLang}`] && (
+                       <p className="text-[11px] text-emerald-600 font-medium italic border-t border-slate-200 pt-3">Rationale included.</p>
+                    )}
                   </div>
                 ))
               )}
@@ -273,7 +280,7 @@ export default function BulkImportPage() {
                     onClick={handleDirectDeployMock}
                     disabled={isImporting}
                   >
-                    <Rocket className="h-5 w-5 text-primary" /> Deploy as Mock Series
+                    <Rocket className="h-5 w-5 text-primary" /> Deploy Series Now
                   </Button>
                   <Button 
                     variant="outline"
@@ -281,7 +288,7 @@ export default function BulkImportPage() {
                     onClick={handleImportToBank}
                     disabled={isImporting}
                   >
-                    Add to General MCQ Bank
+                    Transfer to Standalone Bank
                   </Button>
                </div>
             )}
