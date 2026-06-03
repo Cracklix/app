@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -23,7 +22,11 @@ const healthData = [
  */
 
 export default function PlatformHealth() {
-  const [lastSync, setLastSync] = useState(new Date().toLocaleTimeString());
+  const [lastSync, setLastSync] = useState("");
+
+  useEffect(() => {
+    setLastSync(new Date().toLocaleTimeString());
+  }, []);
 
   const handleRefresh = () => {
     setLastSync(new Date().toLocaleTimeString());

@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -46,14 +45,6 @@ export default function AdminDashboard() {
   ];
 
   const avgProgress = Math.round(devProgress.reduce((acc, p) => acc + p.val, 0) / devProgress.length);
-
-  const intelligence = useMemo(() => {
-    if (!questions) return { lowAccuracy: [] }
-    const lowAccuracy = questions
-      .filter((q: any) => q.attempts > 5 && (q.correctAttempts / q.attempts) < 0.4)
-      .slice(0, 3)
-    return { lowAccuracy }
-  }, [questions])
 
   return (
     <div className="space-y-12 pb-20">
