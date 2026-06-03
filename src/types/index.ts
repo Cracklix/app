@@ -6,6 +6,26 @@ export type ContentStatus = 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED';
 export type ExamType = 'punjab' | 'central';
 export type SubscriptionTier = 'Free' | 'Silver' | 'Gold' | 'Premium';
 
+export type QuestionType = 
+  | 'MCQ' 
+  | 'BILINGUAL_MCQ' 
+  | 'PASSAGE' 
+  | 'DI_TABLE' 
+  | 'DI_CHART' 
+  | 'REASONING_DIAGRAM' 
+  | 'MATCHING' 
+  | 'ASSERTION_REASON';
+
+export type DiagramType = 
+  | 'none' 
+  | 'image' 
+  | 'table' 
+  | 'pieChart' 
+  | 'barGraph' 
+  | 'lineGraph' 
+  | 'vennDiagram' 
+  | 'seatingArrangement';
+
 export interface Board {
   id: string;
   name: string;
@@ -48,12 +68,22 @@ export interface Question {
   subjectId: string;
   difficulty: Difficulty;
   topic?: string;
+  subtopic?: string;
   status: ContentStatus;
-  paper?: string;
-  section?: string;
+  questionType: QuestionType;
+  
+  // Core Text
   questionEn: string;
   questionPa: string;
   questionHi: string;
+  
+  // Metadata Text
+  instructionEn?: string;
+  instructionPa?: string;
+  passageEn?: string;
+  passagePa?: string;
+  
+  // Options
   optionAEn: string;
   optionBEn: string;
   optionCEn: string;
@@ -62,17 +92,33 @@ export interface Question {
   optionBPa: string;
   optionCPa: string;
   optionDPa: string;
-  optionAHi: string;
-  optionBHi: string;
-  optionCHi: string;
-  optionDHi: string;
+  
+  // Logic
   correctAnswer: 'A' | 'B' | 'C' | 'D';
   explanationEn: string;
   explanationPa: string;
-  explanationHi: string;
+  
+  // Complex Data
+  diagramType: DiagramType;
+  tableData?: {
+    headers: string[];
+    rows: string[][];
+  };
+  chartConfig?: {
+    type: 'bar' | 'pie' | 'line';
+    labels: string[];
+    values: number[];
+  };
+  diagramConfig?: any; // For Venn, Seating, etc.
+  
+  imageUrl?: string;
+  imageAlt?: string;
+
   createdAt: any;
   updatedAt?: any;
   isStandalone?: boolean;
+  marks?: number;
+  negativeMarks?: number;
 }
 
 export interface MockTest {

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo, useCallback } from "react"
@@ -6,6 +7,7 @@ import { useDoc, useFirestore, useUser, useCollection } from "@/firebase"
 import { doc, getDoc, setDoc, serverTimestamp, collection, addDoc } from "firebase/firestore"
 import Timer from "@/components/mocks/Timer"
 import QuestionPalette from "@/components/mocks/QuestionPalette"
+import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
@@ -142,9 +144,7 @@ export default function MockAttemptPage() {
   )
 
   const q = questions[currentIdx]
-  const regLabel = mock?.examType === 'central' ? 'हिन्दी' : 'ਪੰਜਾਬੀ'
   const regKey = mock?.examType === 'central' ? 'Hi' : 'Pa'
-
   const isPunjabiOnlyNode = currentSection.paper === "PAPER A" || q?.subjectId === "punjabi-qualifying" || currentSection.name.toLowerCase().includes("punjabi");
 
   return (
@@ -152,7 +152,7 @@ export default function MockAttemptPage() {
       <header className="h-14 border-b flex items-center justify-between px-4 bg-[#0B1528] text-white shrink-0 z-[60]">
         <div className="flex items-center gap-1.5 bg-white/5 p-1 rounded-lg">
            <LangTab label="EN" active={language === 'en'} onClick={() => setLanguage('en')} />
-           <LangTab label={regLabel} active={language === 'reg'} onClick={() => setLanguage('reg')} />
+           <LangTab label={regKey === 'Hi' ? 'हिन्दी' : 'ਪੰਜਾਬੀ'} active={language === 'reg'} onClick={() => setLanguage('reg')} />
            <LangTab label="BI" active={language === 'bilingual'} onClick={() => setLanguage('bilingual')} />
         </div>
         
@@ -162,8 +162,7 @@ export default function MockAttemptPage() {
             {isPaused ? <PlayCircle className="h-5 w-5" /> : <PauseCircle className="h-5 w-5" />}
           </Button>
           <Button onClick={submitMock} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[10px] h-9 px-4 sm:px-6 rounded-xl shadow-lg">
-             <span className="hidden sm:inline">Finish Audit</span>
-             <span className="sm:hidden">Finish</span>
+             Finish Audit
           </Button>
         </div>
       </header>
@@ -182,7 +181,6 @@ export default function MockAttemptPage() {
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Q {currentIdx + 1} / {questions.length}</span>
              </div>
 
-             {/* Mobile Palette Trigger */}
              <Sheet>
                <SheetTrigger asChild>
                  <Button variant="outline" size="sm" className="lg:hidden rounded-lg h-9 px-3 gap-2 font-black text-[10px] uppercase border-slate-200">
@@ -190,7 +188,7 @@ export default function MockAttemptPage() {
                  </Button>
                </SheetTrigger>
                <SheetContent side="right" className="p-0 border-none w-[300px]">
-                  <div className="p-6 h-full overflow-y-auto bg-white pt-16">
+                  <div className="p-6 h-full overflow-y-auto bg-white pt-16 text-left">
                      <QuestionPalette 
                         totalQuestions={questions.length} currentIndex={currentIdx} 
                         answeredIndices={Object.keys(answers).map(Number)} 
@@ -203,28 +201,14 @@ export default function MockAttemptPage() {
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar">
-             <div className="max-w-4xl mx-auto space-y-10">
-                <div className="space-y-6 text-left">
-                   {isPunjabiOnlyNode ? (
-                      <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">{q?.[`question${regKey}`] || q?.questionEn}</p>
-                   ) : (
-                      <>
-                        {language === 'en' && <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">{q?.questionEn}</p>}
-                        {language === 'reg' && <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">{q?.[`question${regKey}`] || q?.questionEn}</p>}
-                        {language === 'bilingual' && (
-                            <div className="space-y-6">
-                              <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">{q?.questionEn}</p>
-                              {(q?.[`question${regKey}`]?.trim() !== q?.questionEn?.trim()) && q?.[`question${regKey}`] && (
-                                  <div className="pt-6 border-t border-slate-200">
-                                    <p className="text-xl md:text-2xl font-bold leading-snug text-[#0B1528]">{q?.[`question${regKey}`]}</p>
-                                  </div>
-                              )}
-                            </div>
-                        )}
-                      </>
-                   )}
-                </div>
+             <div className="max-w-4xl mx-auto space-y-12">
+                {/* Unified Question Renderer */}
+                <QuestionRenderer 
+                   language={isPunjabiOnlyNode ? 'pa' : (language === 'reg' ? 'pa' : 'en')}
+                   question={q}
+                />
 
+                {/* Option Grid */}
                 <RadioGroup 
                   value={answers[currentIdx]?.toString() || ""} 
                   onValueChange={(v) => setAnswers(prev => ({ ...prev, [currentIdx]: parseInt(v) }))} 
@@ -241,7 +225,7 @@ export default function MockAttemptPage() {
                         isSelected ? 'border-primary ring-2 ring-primary/10 bg-primary/[0.01]' : 'border-slate-200'
                       )}>
                          <RadioGroupItem value={i.toString()} id={`opt-${i}`} className="text-primary" />
-                         <Label htmlFor={`opt-${i}`} className="flex-1 cursor-pointer select-none text-base md:text-lg font-bold text-[#0B1528] flex flex-col gap-1">
+                         <Label htmlFor={`opt-${i}`} className="flex-1 cursor-pointer select-none text-base md:text-lg font-bold text-[#0B1528] flex flex-col gap-1 text-left">
                             {isPunjabiOnlyNode ? (
                                <span className="leading-tight">{optPa || optEn}</span>
                             ) : (
@@ -249,7 +233,7 @@ export default function MockAttemptPage() {
                                   {language === 'bilingual' ? (
                                     <>
                                         <span className="leading-tight">{optEn}</span>
-                                        {optPa?.trim() !== optEn?.trim() && optPa && <span className="leading-tight opacity-70 border-t border-slate-50 pt-1 mt-1 text-sm md:text-base font-medium">{optPa}</span>}
+                                        {optPa && optPa !== optEn && <span className="leading-tight opacity-70 border-t border-slate-50 pt-1 mt-1 text-sm md:text-base font-medium">{optPa}</span>}
                                     </>
                                   ) : (
                                     <span>{language === 'en' ? optEn : (optPa || optEn)}</span>
@@ -268,12 +252,12 @@ export default function MockAttemptPage() {
           <footer className="h-20 border-t border-slate-200 bg-white px-4 sm:px-8 flex items-center justify-between shrink-0 z-50 shadow-inner">
              <div className="flex gap-2 sm:gap-3">
                 <Button variant="outline" className="h-11 sm:h-12 px-3 sm:px-6 text-[10px] font-black uppercase tracking-widest rounded-xl" onClick={() => currentIdx > 0 && setCurrentIdx(currentIdx - 1)} disabled={currentIdx === 0}>
-                   <span className="sm:hidden"><ChevronLeft className="h-4 w-4" /></span>
                    <span className="hidden sm:inline">Previous</span>
+                   <span className="sm:hidden"><ChevronLeft className="h-4 w-4" /></span>
                 </Button>
                 <Button variant="ghost" className="h-11 sm:h-12 px-3 sm:px-6 text-[10px] font-black uppercase tracking-widest text-slate-400 rounded-xl" onClick={() => setAnswers(p => { const n={...p}; delete n[currentIdx]; return n; })}>
-                   <span className="sm:hidden"><Trash2 className="h-4 w-4" /></span>
                    <span className="hidden sm:inline">Clear</span>
+                   <span className="sm:hidden"><Trash2 className="h-4 w-4" /></span>
                 </Button>
              </div>
              
@@ -290,7 +274,7 @@ export default function MockAttemptPage() {
           </footer>
         </div>
 
-        <aside className="w-[320px] border-l border-slate-200 bg-white hidden lg:flex flex-col shrink-0">
+        <aside className="w-[320px] border-l border-slate-200 bg-white hidden lg:flex flex-col shrink-0 text-left">
            <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
               <QuestionPalette 
                 totalQuestions={questions.length} currentIndex={currentIdx} 
