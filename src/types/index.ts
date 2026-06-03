@@ -4,6 +4,7 @@ export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'CONTENT_MANAGER' | 'STUDENT';
 export type MockType = 'FULL' | 'SUBJECT' | 'SECTIONAL' | 'PYQ';
 export type ContentStatus = 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED';
 export type ExamType = 'punjab' | 'central';
+export type SubscriptionTier = 'Free' | 'Silver' | 'Gold' | 'Premium';
 
 export interface Board {
   id: string;
@@ -36,35 +37,25 @@ export interface Question {
   status: ContentStatus;
   paper?: string;
   section?: string;
-
-  // Trilingual Content
   questionEn: string;
   questionPa: string;
   questionHi: string;
-
-  // Options Mapping - English
   optionAEn: string;
   optionBEn: string;
   optionCEn: string;
   optionDEn: string;
-
-  // Options Mapping - Punjabi
   optionAPa: string;
   optionBPa: string;
   optionCPa: string;
   optionDPa: string;
-
-  // Options Mapping - Hindi
   optionAHi: string;
   optionBHi: string;
   optionCHi: string;
   optionDHi: string;
-
   correctAnswer: 'A' | 'B' | 'C' | 'D';
   explanationEn: string;
   explanationPa: string;
   explanationHi: string;
-
   createdAt: any;
   updatedAt?: any;
   isStandalone?: boolean;
@@ -82,6 +73,7 @@ export interface MockTest {
   questionIds: string[];
   difficulty: string;
   published: boolean;
+  isPremium?: boolean;
   status: ContentStatus;
   createdAt: any;
   updatedAt?: any;
@@ -97,6 +89,16 @@ export interface UserProfile {
   state: 'Punjab';
   targetExam: string;
   createdAt: any;
-  status: 'Pro' | 'Free';
+  status: SubscriptionTier;
   subscriptions?: string[]; 
+}
+
+export interface Plan {
+  id: string;
+  name: string;
+  price: number;
+  durationDays: number;
+  features: string[];
+  recommended?: boolean;
+  tier: SubscriptionTier;
 }

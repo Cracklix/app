@@ -21,26 +21,35 @@ import {
   Info,
   Layers,
   Award,
-  Lock
+  Lock,
+  Zap,
+  Sparkles
 } from "lucide-react"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
  * @fileOverview Mock Overview & Instructions Page.
- * Acts as a professional bridge before the aspirants enter the secure CBT engine.
+ * Phase 156: Monetization Pass Check Integrated.
  */
 
 export default function MockOverviewPage() {
   const params = useParams()
   const router = useRouter()
   const db = useFirestore()
+  const { user, profile } = useUser()
   const mockId = params.id as string
   
   const { data: mock, loading } = useDoc<any>(useMemo(() => (db ? doc(db, "mocks", mockId) : null), [db, mockId]))
 
+  const isLocked = useMemo(() => {
+    if (!mock?.isPremium) return false;
+    if (profile?.status === 'Gold' || profile?.status === 'Premium') return false;
+    return true;
+  }, [mock, profile])
+
   if (loading) return <div className="h-screen flex items-center justify-center bg-white"><Skeleton className="h-20 w-20 rounded-full" /></div>
-  if (!mock) return <div className="h-screen flex items-center justify-center text-slate-400 font-bold uppercase tracking-widest">Assesment vertical not found.</div>
+  if (!mock) return <div className="h-screen flex items-center justify-center text-slate-400 font-bold uppercase tracking-widest">Assessment vertical not found.</div>
 
   return (
     <div className="min-h-screen bg-slate-50/50 flex flex-col font-body">
@@ -68,6 +77,7 @@ export default function MockOverviewPage() {
                     <Badge variant="outline" className="border-slate-200 text-slate-400 px-4 py-1.5 rounded-xl font-black uppercase text-[10px] tracking-widest">
                        {mock.mockType || "Full Length"}
                     </Badge>
+                    {mock.isPremium && <Badge className="bg-amber-100 text-amber-600 border-none px-4 py-1.5 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2"><Sparkles className="h-3 w-3" /> Premium Node</Badge>}
                  </div>
               </div>
               <div className="flex gap-6 items-center">
@@ -76,11 +86,19 @@ export default function MockOverviewPage() {
                     <p className="text-2xl font-black text-[#0F172A]">1,250+</p>
                  </div>
                  <div className="h-12 w-px bg-slate-200 mx-2" />
-                 <Button asChild className="h-20 px-12 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.3em] text-xs rounded-[2rem] shadow-3xl shadow-slate-400 gap-4 group">
-                    <Link href={`/mocks/${mockId}/attempt`}>
-                       Initialize Engine <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
-                    </Link>
-                 </Button>
+                 {isLocked ? (
+                    <Button asChild className="h-20 px-12 bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-[0.3em] text-xs rounded-[2rem] shadow-3xl shadow-amber-900/20 gap-4 group">
+                      <Link href="/pricing">
+                        <Lock className="h-5 w-5" /> Upgrade to Attempt
+                      </Link>
+                    </Button>
+                 ) : (
+                    <Button asChild className="h-20 px-12 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.3em] text-xs rounded-[2rem] shadow-3xl shadow-slate-400 gap-4 group">
+                      <Link href={`/mocks/${mockId}/attempt`}>
+                        Initialize Engine <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
+                      </Link>
+                    </Button>
+                 )}
               </div>
            </div>
         </div>
@@ -93,6 +111,19 @@ export default function MockOverviewPage() {
                     <CardDescription className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-1">Verified Audit Guidelines for CBT 2026</CardDescription>
                  </CardHeader>
                  <CardContent className="p-12 space-y-12">
+                    {isLocked && (
+                       <div className="p-10 bg-amber-50 border border-amber-100 rounded-[2.5rem] text-center space-y-6">
+                          <Lock className="h-12 w-12 text-amber-500 mx-auto" />
+                          <div className="space-y-2">
+                             <h4 className="text-xl font-headline font-black text-amber-800 uppercase">Premium Series Locked</h4>
+                             <p className="text-sm font-medium text-amber-700">This high-fidelity series is reserved for Gold and Premium Pass holders. Gain access to verified patterns and AI tutors.</p>
+                          </div>
+                          <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white rounded-xl px-10 font-black uppercase text-[10px] tracking-widest">
+                             <Link href="/pricing">View All Passes</Link>
+                          </Button>
+                       </div>
+                    )}
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                        <InstructionCard icon={<Clock className="text-primary" />} title="Duration" value={`${mock.duration || 150} Minutes`} desc="Fixed timer as per official notification." />
                        <InstructionCard icon={<BookOpen className="text-blue-500" />} title="Structure" value={`${mock.totalQuestions || 150} Questions`} desc="50 Qs (Paper A - Qualifying) + 100 Qs (Paper B)." />
@@ -116,7 +147,7 @@ export default function MockOverviewPage() {
            </div>
 
            <div className="lg:col-span-4 space-y-10">
-              <Card className="border-none shadow-3xl shadow-slate-900/10 rounded-[3.5rem] bg-[#0F172A] text-white p-12 overflow-hidden relative">
+              <Card className="border-none shadow-3xl shadow-slate-900/10 rounded-[3.5rem] bg-[#0F172A] text-white p-12 overflow-hidden relative text-left">
                  <div className="absolute top-0 right-0 p-8 opacity-5"><Lock className="h-40 w-40 rotate-12" /></div>
                  <div className="relative z-10 space-y-8">
                     <div className="space-y-2">
@@ -159,11 +190,11 @@ export default function MockOverviewPage() {
 
 function InstructionCard({ icon, title, value, desc }: any) {
    return (
-      <div className="flex gap-6 group">
+      <div className="flex gap-6 group text-left">
          <div className="h-16 w-16 rounded-[1.5rem] bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 group-hover:bg-primary/5 transition-all">
             {icon}
          </div>
-         <div className="space-y-1">
+         <div className="space-y-1 text-left">
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{title}</p>
             <p className="text-xl font-black text-[#0F172A]">{value}</p>
             <p className="text-xs text-slate-500 font-medium leading-relaxed">{desc}</p>
@@ -174,7 +205,7 @@ function InstructionCard({ icon, title, value, desc }: any) {
 
 function GuidelineItem({ text }: { text: string }) {
    return (
-      <li className="flex gap-4 items-start">
+      <li className="flex gap-4 items-start text-left">
          <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
          <span className="text-sm font-bold text-slate-600 leading-relaxed">{text}</span>
       </li>

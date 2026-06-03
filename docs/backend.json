@@ -14,23 +14,37 @@
         "state": { "type": "string", "enum": ["Punjab"] },
         "targetExam": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" },
-        "status": { "type": "string", "enum": ["Pro", "Free"] },
+        "status": { "type": "string", "enum": ["Pro", "Free", "Silver", "Gold", "Premium"] },
         "referralCount": { "type": "number" },
         "subscriptions": { "type": "array", "items": { "type": "string" } }
       },
       "required": ["id", "name", "email", "role"]
     },
-    "ContentReport": {
-      "title": "Content Report",
-      "description": "Aspirant feedback on question accuracy.",
+    "SubscriptionPlan": {
+      "title": "Subscription Plan",
+      "description": "Monetization tiers for the Cracklix platform.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "durationDays": { "type": "number" },
+        "features": { "type": "array", "items": { "type": "string" } },
+        "recommended": { "type": "boolean" }
+      }
+    },
+    "PaymentRecord": {
+      "title": "Payment Record",
+      "description": "Transaction logs for Razorpay/Internal audits.",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
         "userId": { "type": "string" },
-        "questionId": { "type": "string" },
-        "type": { "type": "string", "enum": ["WRONG_ANS", "TYPO", "MISSING_DATA", "OTHER"] },
-        "comment": { "type": "string" },
-        "status": { "type": "string", "enum": ["PENDING", "RESOLVED", "IGNORED"] },
+        "amount": { "type": "number" },
+        "currency": { "type": "string" },
+        "status": { "type": "string" },
+        "planId": { "type": "string" },
+        "gateway": { "type": "string" },
         "timestamp": { "type": "string", "format": "date-time" }
       }
     }
@@ -43,65 +57,28 @@
       "schema": { "$ref": "#/backend/entities/UserProfile" },
       "description": "Student and Admin profiles."
     },
-    "/boards/{boardId}": {
-      "schema": "object",
-      "description": "Recruitment boards."
+    "/plans/{planId}": {
+      "schema": { "$ref": "#/backend/entities/SubscriptionPlan" },
+      "description": "Active subscription tiers."
     },
-    "/exams/{examId}": {
-      "schema": "object",
-      "description": "Official exam verticals (Patwari, SI, etc)."
+    "/payments/{id}": {
+      "schema": { "$ref": "#/backend/entities/PaymentRecord" },
+      "description": "Transaction ledger."
     },
-    "/subjects/{subjectId}": {
-      "schema": "object",
-      "description": "Subject categories for MCQs."
-    },
-    "/mocks/{mockId}": {
-      "schema": "object",
-      "description": "Practice tests."
-    },
-    "/questions/{questionId}": {
-      "schema": "object",
-      "description": "MCQ bank."
-    },
-    "/current_affairs/{id}": {
-      "schema": "object",
-      "description": "Daily Punjab and National analysis articles."
-    },
-    "/notifications/{id}": {
-      "schema": "object",
-      "description": "Official recruitment alerts and gazeete notifications."
-    },
-    "/reports/{reportId}": {
-      "schema": { "$ref": "#/backend/entities/ContentReport" },
-      "description": "Error reports from students."
-    },
-    "/test_sessions/{sessionId}": {
-      "schema": "object",
-      "description": "In-progress mock sessions."
-    },
-    "/results/{resultId}": {
-      "schema": "object",
-      "description": "Completed mock outcomes."
-    },
-    "/settings/{id}": {
-      "schema": "object",
-      "description": "System config."
-    },
-    "/bookmarks/{id}": {
-      "schema": "object",
-      "description": "User saved questions."
-    },
-    "/pyqs/{id}": {
-      "schema": "object",
-      "description": "Previous year paper archives."
-    },
-    "/support_tickets/{id}": {
-      "schema": "object",
-      "description": "Institutional support inquiries."
-    },
-    "/audit_logs/{id}": {
-      "schema": "object",
-      "description": "Admin activity ledger."
-    }
+    "/boards/{boardId}": { "schema": "object", "description": "Recruitment boards." },
+    "/exams/{examId}": { "schema": "object", "description": "Official exam verticals." },
+    "/subjects/{subjectId}": { "schema": "object", "description": "Subject categories." },
+    "/mocks/{mockId}": { "schema": "object", "description": "Practice tests." },
+    "/questions/{questionId}": { "schema": "object", "description": "MCQ bank." },
+    "/current_affairs/{id}": { "schema": "object", "description": "Daily Punjab analysis." },
+    "/notifications/{id}": { "schema": "object", "description": "Official recruitment alerts." },
+    "/reports/{reportId}": { "schema": "object", "description": "Error reports." },
+    "/test_sessions/{sessionId}": { "schema": "object", "description": "In-progress sessions." },
+    "/results/{resultId}": { "schema": "object", "description": "Completed mock outcomes." },
+    "/settings/{id}": { "schema": "object", "description": "System config." },
+    "/bookmarks/{id}": { "schema": "object", "description": "User saved questions." },
+    "/pyqs/{id}": { "schema": "object", "description": "Previous year papers." },
+    "/support_tickets/{id}": { "schema": "object", "description": "Support inquiries." },
+    "/audit_logs/{id}": { "schema": "object", "description": "Admin activity ledger." }
   }
 }
