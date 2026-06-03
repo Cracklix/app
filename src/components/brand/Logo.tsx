@@ -53,9 +53,10 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
           </span>
         </div>
         {showTagline && (
-          <span className={`text-[9px] font-black uppercase tracking-[0.12em] mt-1 line-clamp-1 opacity-60 ${isLightVariant ? 'text-white' : 'text-[#0F172A]'}`}>
-            PUNJAB'S NO. 1 MOCK HUB
-          </span>
+          <div className={`flex flex-col leading-[1.1] mt-0.5 ${isLightVariant ? 'text-white/60' : 'text-slate-400'}`}>
+            <span className="text-[8px] font-black uppercase tracking-[0.1em]">PUNJAB'S NO. 1</span>
+            <span className="text-[8px] font-black uppercase tracking-[0.1em]">MOCK HUB</span>
+          </div>
         )}
       </div>
     </Link>
