@@ -18,63 +18,72 @@ export function parseBulkQuestions(
   rawText: string, 
   metadata: { boardId: string; examId: string; subjectId: string; difficulty: Difficulty }
 ): ParsedResults {
-  // Normalize text: handle line breaks and common dense patterns
-  const normalizedText = rawText.replace(/\r\n/g, '\n').replace(/\n\s*\n/g, '\n');
-  const sections = normalizedText.split(/(?=Q\d+[\.\:\)]|Question\s*\d+[\.\:\)]|Q\.\s*\d+[\.\:\)]|\n\d+[\.\:\)])/i);
+  // 1. Normalize and clean input
+  let cleanedText = rawText.replace(/\r\n/g, '\n');
   
-  const questions: Partial<Question>[] = [];
+  // 2. Identify Sections and Questions
+  // Aggressive splitting by question markers: Q101, Question 101, or a number at start of line
+  // We use lookahead to split even if clumped like "...(Bilingual)Q101."
+  const questionsSplitRegex = /(?=Q\s*\d+[\.\:\)]|Question\s*\d+[\.\:\)]|Q\.\s*\d+[\.\:\)]|(?:\n|^)\s*\d+[\.\:\)])/i;
+  const blocks = cleanedText.split(questionsSplitRegex);
+  
+  const parsedQuestions: Partial<Question>[] = [];
+  let currentActiveSubjectId = metadata.subjectId;
   let detectedTitle = "";
-  let detectedDuration = 120;
-  let activeSubjectId = metadata.subjectId;
+  let detectedDuration = metadata.duration;
 
-  // Detect Global Meta in the first block
-  const firstBlock = sections[0];
-  if (firstBlock && !firstBlock.match(/^(Q\d+|Question|Q\.)/i)) {
-    if (firstBlock.toLowerCase().includes('time allowed') || firstBlock.toLowerCase().includes('minutes')) {
-      const match = firstBlock.match(/\d+/);
-      if (match) detectedDuration = parseInt(match[0]);
-    }
+  // Process first block for global meta (Title/Duration) if it doesn't look like a question
+  const firstBlock = blocks[0]?.trim();
+  if (firstBlock && !firstBlock.match(/^(Q\s*\d+|Question|Q\.)/i)) {
     const lines = firstBlock.split('\n');
     detectedTitle = lines[0].trim();
+    const durationMatch = firstBlock.match(/(\d+)\s*(?:min|minute|minutes)/i);
+    if (durationMatch) detectedDuration = parseInt(durationMatch[1]);
   }
 
-  const enRegex = /[a-zA-Z]{2,}/;
-  const paRegex = /[\u0A00-\u0A7F]/;
+  const enRegex = /[a-zA-Z]{3,}/; // English words usually have at least 3 letters
+  const paRegex = /[\u0A00-\u0A7F]/; // Punjabi Gurmukhi range
 
-  const mapSubject = (val: string): string => {
-    const cleaned = val.toLowerCase();
-    if (cleaned.includes('punjabi')) return 'punjabi-qualifying';
-    if (cleaned.includes('gk') || cleaned.includes('history')) return 'punjab-history';
-    if (cleaned.includes('polity') || cleaned.includes('current')) return 'gk-ca';
-    if (cleaned.includes('math') || cleaned.includes('aptitude') || cleaned.includes('quantitative') || cleaned.includes('arithmetic')) return 'math';
-    if (cleaned.includes('reasoning') || cleaned.includes('mental')) return 'reasoning';
-    if (cleaned.includes('english')) return 'english';
-    if (cleaned.includes('computer') || cleaned.includes('it') || cleaned.includes('ict')) return 'ict';
-    return activeSubjectId || metadata.subjectId || 'gk-ca';
-  };
+  blocks.forEach((block) => {
+    let text = block.trim();
+    if (!text) return;
 
-  sections.forEach((block) => {
-    const trimmedBlock = block.trim();
-    if (!trimmedBlock) return;
-
-    // Check for mid-block Section headers
-    const sectionMatch = trimmedBlock.match(/(?:Section|Subject|PART|S)\s*(\d+|\w+)?\s*[\:\-]\s*([^\nQ]+)/i);
+    // Check for section header in this block
+    const sectionMatch = text.match(/(?:Section|Subject|PART|S)\s*(\d+|\w+)?\s*[\:\-]\s*([^\nQ]+)/i);
     if (sectionMatch) {
-      activeSubjectId = mapSubject(sectionMatch[2]);
+       const sectionName = sectionMatch[2].toLowerCase();
+       if (sectionName.includes('punjabi')) currentActiveSubjectId = 'punjabi-qualifying';
+       else if (sectionName.includes('gk') || sectionName.includes('history')) currentActiveSubjectId = 'punjab-history';
+       else if (sectionName.includes('math') || sectionName.includes('quant')) currentActiveSubjectId = 'math';
+       else if (sectionName.includes('reasoning') || sectionName.includes('mental')) currentActiveSubjectId = 'reasoning';
+       else if (sectionName.includes('it') || sectionName.includes('computer')) currentActiveSubjectId = 'ict';
+       else if (sectionName.includes('english')) currentActiveSubjectId = 'english';
     }
 
-    if (!trimmedBlock.match(/^(Q\d+|Question|Q\.\s*\d+|\d+[\.\:\)])/i)) return;
+    // Skip if not a valid question block
+    if (!text.match(/^(Q\s*\d+|Question|Q\.\s*\d+|\d+[\.\:\)])/i)) return;
 
-    // Split block into major components: Question/Options, Answer, Explanation
-    const parts = trimmedBlock.split(/(?=Correct Answer|Ans|Key|ਸਹੀ ਉੱਤਰ|Explanation|Solution|ਵਿਆਖਿਆ)/i);
-    const mainPart = parts[0];
-    const answerPart = parts.find(p => p.match(/^(Correct Answer|Ans|Key|ਸਹੀ ਉੱਤਰ)/i)) || "";
-    const explanationPart = parts.find(p => p.match(/^(Explanation|Solution|ਵਿਆਖਿਆ)/i)) || "";
+    // Split block into Question, Options, Answer, Explanation
+    const optionSplitRegex = /(?=A[\)\.\:\s\-\/]|B[\)\.\:\s\-\/]|C[\)\.\:\s\-\/]|D[\)\.\:\s\-\/])/;
+    const answerSplitRegex = /(?=Correct Answer|Ans|Key|ਸਹੀ ਉੱਤਰ)/i;
+    const explanationSplitRegex = /(?=Explanation|Solution|ਵਿਆਖਿਆ)/i;
 
-    const currentQuestion: any = {
+    const parts = text.split(answerSplitRegex);
+    const questionAndOptions = parts[0];
+    const rest = parts.slice(1).join(' ');
+
+    const answerAndExplanation = rest.split(explanationSplitRegex);
+    const answerPart = answerAndExplanation[0];
+    const explanationPart = answerAndExplanation.slice(1).join(' ');
+
+    const questionParts = questionAndOptions.split(optionSplitRegex);
+    const rawQuestionText = questionParts[0].replace(/^(Q\s*\d+|Question\s*\d+|Q\.\s*\d+|\d+)[\.\:\)]\s*/i, '').trim();
+    const optionTexts = questionParts.slice(1);
+
+    const question: any = {
       boardId: metadata.boardId,
       examId: metadata.examId,
-      subjectId: activeSubjectId || 'gk-ca',
+      subjectId: currentActiveSubjectId,
       difficulty: metadata.difficulty,
       correctAnswer: 'A',
       status: 'PUBLISHED',
@@ -87,80 +96,81 @@ export function parseBulkQuestions(
       explanationEn: "", explanationPa: ""
     };
 
-    // 1. Extract Question Text (handle dense English/Punjabi stacking)
-    const questionLines = mainPart.split(/(?=A[\)\.\:\s]|B[\)\.\:\s]|C[\)\.\:\s]|D[\)\.\:\s])/);
-    const rawQuestionText = questionLines[0].replace(/^(Q\d+|Question\s*\d+|Q\.\s*\d+|\d+)[\.\:\)]\s*/i, '').trim();
-    
+    // 1. Split Question Text (Handle clumped En/Pa translations)
     if (enRegex.test(rawQuestionText) && paRegex.test(rawQuestionText)) {
-      // Find the boundary between En and Pa
       const firstPaIdx = rawQuestionText.search(/[\u0A00-\u0A7F]/);
       if (firstPaIdx > 0) {
-        currentQuestion.questionEn = rawQuestionText.substring(0, firstPaIdx).trim();
-        currentQuestion.questionPa = rawQuestionText.substring(firstPaIdx).trim();
+        question.questionEn = rawQuestionText.substring(0, firstPaIdx).trim();
+        question.questionPa = rawQuestionText.substring(firstPaIdx).trim();
       } else {
-        currentQuestion.questionEn = rawQuestionText;
+        question.questionEn = rawQuestionText;
+        question.questionPa = rawQuestionText;
       }
     } else if (paRegex.test(rawQuestionText)) {
-      currentQuestion.questionPa = rawQuestionText;
+      question.questionPa = rawQuestionText;
     } else {
-      currentQuestion.questionEn = rawQuestionText;
+      question.questionEn = rawQuestionText;
     }
 
-    // 2. Extract Options (handle dense A) B) C) D) on same line)
-    const optionText = mainPart.substring(mainPart.indexOf(questionLines[0]) + questionLines[0].length);
-    const optionMatches = optionText.split(/(?=[A-D][\)\.\:\s])/);
-    
-    optionMatches.forEach(opt => {
-      const charMatch = opt.trim().match(/^([A-D])[\)\.\:\s]\s*(.*)/i);
+    // 2. Process Options (Handle clumped translations A) En A) Pa)
+    optionTexts.forEach(opt => {
+      const charMatch = opt.trim().match(/^([A-D])[\)\.\:\s\-\/]\s*(.*)/i);
       if (charMatch) {
         const char = charMatch[1].toUpperCase();
-        const text = charMatch[2].trim();
+        const val = charMatch[2].trim();
         
-        if (enRegex.test(text) && paRegex.test(text)) {
-           const splitIdx = text.search(/[\u0A00-\u0A7F]/);
-           currentQuestion[`option${char}En`] = text.substring(0, splitIdx).trim();
-           currentQuestion[`option${char}Pa`] = text.substring(splitIdx).trim();
-        } else if (paRegex.test(text)) {
-           currentQuestion[`option${char}Pa`] = text;
+        const isPa = paRegex.test(val);
+        const isEn = enRegex.test(val);
+
+        if (isPa && isEn) {
+           const splitIdx = val.search(/[\u0A00-\u0A7F]/);
+           question[`option${char}En`] = val.substring(0, splitIdx).trim();
+           question[`option${char}Pa`] = val.substring(splitIdx).trim();
+        } else if (isPa) {
+           if (question[`option${char}Pa`]) question[`option${char}Pa`] += " " + val;
+           else question[`option${char}Pa`] = val;
         } else {
-           currentQuestion[`option${char}En`] = text;
+           if (question[`option${char}En`]) question[`option${char}En`] += " " + val;
+           else question[`option${char}En`] = val;
         }
       }
     });
 
-    // 3. Extract Correct Answer
+    // 3. Process Correct Answer
     const ansMatch = answerPart.match(/[A-D]/i);
-    if (ansMatch) currentQuestion.correctAnswer = ansMatch[0].toUpperCase();
+    if (ansMatch) question.correctAnswer = ansMatch[0].toUpperCase();
 
-    // 4. Extract Explanation
-    const cleanExp = explanationPart.replace(/^(Explanation|Solution|ਵਿਆਖਿਆ)[\:\-\s]*/i, '').trim();
+    // 4. Process Explanation
+    const cleanExp = explanationPart.replace(/^(Explanation|Solution|ਵਿਆਖਿਆ)[\:\-\s\(\w\)]*/i, '').trim();
     if (paRegex.test(cleanExp) && enRegex.test(cleanExp)) {
-      const splitIdx = cleanExp.search(/[\u0A00-\u0A7F]/);
-      currentQuestion.explanationEn = cleanExp.substring(0, splitIdx).trim();
-      currentQuestion.explanationPa = cleanExp.substring(splitIdx).trim();
+       const splitIdx = cleanExp.search(/[\u0A00-\u0A7F]/);
+       question.explanationEn = cleanExp.substring(0, splitIdx).trim();
+       question.explanationPa = cleanExp.substring(splitIdx).trim();
     } else if (paRegex.test(cleanExp)) {
-      currentQuestion.explanationPa = cleanExp;
+       question.explanationPa = cleanExp;
     } else {
-      currentQuestion.explanationEn = cleanExp;
+       question.explanationEn = cleanExp;
     }
 
-    // Final Sanity Fix
-    if (!currentQuestion.questionPa) currentQuestion.questionPa = currentQuestion.questionEn;
+    // Final cleanups (ensure no fields are empty strings if possible)
+    if (!question.questionPa) question.questionPa = question.questionEn;
+    if (!question.questionEn) question.questionEn = question.questionPa;
     ['A','B','C','D'].forEach(c => {
-      if (!currentQuestion[`option${c}Pa`]) currentQuestion[`option${c}Pa`] = currentQuestion[`option${c}En`];
-      if (!currentQuestion[`option${c}En`]) currentQuestion[`option${c}En`] = currentQuestion[`option${c}Pa`];
+       if (!question[`option${c}Pa`]) question[`option${c}Pa`] = question[`option${c}En`];
+       if (!question[`option${c}En`]) question[`option${c}En`] = question[`option${c}Pa`];
     });
-    if (!currentQuestion.explanationPa) currentQuestion.explanationPa = currentQuestion.explanationEn;
+    if (!question.explanationPa) question.explanationPa = question.explanationEn;
+    if (!question.explanationEn) question.explanationEn = question.explanationPa;
 
-    questions.push(currentQuestion);
+    parsedQuestions.push(question);
   });
 
   return {
-    questions,
+    questions: parsedQuestions,
     mockMetadata: {
-      title: detectedTitle || `Institutional Mock ${new Date().toLocaleDateString()}`,
+      title: detectedTitle,
       duration: detectedDuration,
-      totalQuestions: questions.length
+      totalQuestions: parsedQuestions.length
     }
   };
 }

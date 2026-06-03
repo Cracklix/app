@@ -36,7 +36,7 @@ export default function BulkImportPage() {
   const [metadata, setMetadata] = useState({
     boardId: "",
     examId: "",
-    mockType: "FULL",
+    mockType: "FULL" as any,
     subjectId: "",
     difficulty: "medium" as any,
     duration: 120
@@ -67,10 +67,13 @@ export default function BulkImportPage() {
 
   const availableSubjects = useMemo(() => {
     if (activePattern && subjects) {
-      return activePattern.sections.map((sec: any) => ({
-        id: sec.subjectId,
-        name: subjects.find((s: any) => s.id === sec.subjectId)?.name || sec.name
-      }))
+      return activePattern.sections.map((sec: any, idx: number) => {
+        const baseSubject = subjects.find((s: any) => s.id === sec.subjectId);
+        return {
+          id: sec.subjectId,
+          name: `Section ${idx + 1}: ${baseSubject?.name || sec.name} (${sec.count} Qs)`
+        };
+      });
     }
     return subjects || []
   }, [activePattern, subjects])
@@ -225,7 +228,7 @@ export default function BulkImportPage() {
               </div>
 
               <Textarea 
-                placeholder="Paste densely packed text here. Parser will auto-explode bunched options..."
+                placeholder="Paste clumped text here. Parser will split En/Pa and auto-detect Questions/Options."
                 className="min-h-[400px] rounded-[2rem] bg-slate-50 border-slate-100 p-8 text-sm font-mono leading-relaxed shadow-inner"
                 value={rawText}
                 onChange={e => setRawText(e.target.value)}
@@ -254,7 +257,7 @@ export default function BulkImportPage() {
                        <Badge className="bg-primary/10 text-primary border-none text-[9px] font-black uppercase px-4 py-1.5 rounded-xl">{q.subjectId}</Badge>
                        <span className="text-[11px] font-black">KEY: {q.correctAnswer}</span>
                     </div>
-                    <p className="text-sm font-bold leading-relaxed text-slate-600 line-clamp-3">{(q as any)[`question${targetLang}`]}</p>
+                    <p className="text-sm font-bold leading-relaxed text-slate-600 line-clamp-3">{q.questionEn || q.questionPa}</p>
                     <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
                        <span className="text-[9px] font-bold text-slate-400 truncate">A: {q.optionAEn}</span>
                        <span className="text-[9px] font-bold text-slate-400 truncate">B: {q.optionBEn}</span>
