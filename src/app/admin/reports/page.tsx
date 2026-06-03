@@ -13,6 +13,11 @@ import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 
+/**
+ * @fileOverview Phase 105: Institutional Content Audit Node.
+ * Manages aspirant reports on question accuracy and logic.
+ */
+
 export default function AdminReports() {
   const db = useFirestore()
   const { toast } = useToast()

@@ -97,7 +97,7 @@ export interface UserProfile {
   createdAt: any;
   status: 'Pro' | 'Free';
   planId?: string;
-  referralCount?: number;
+  referralCount: number;
 }
 
 export interface ContentReport {

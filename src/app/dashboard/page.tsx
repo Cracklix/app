@@ -30,7 +30,9 @@ import {
   CheckCircle2,
   ListTodo,
   Flame,
-  Lightbulb
+  Lightbulb,
+  UserPlus,
+  MessageSquare
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
@@ -38,8 +40,8 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 
 /**
- * @fileOverview Final Advanced Selection Dashboard (Phase 81-88).
- * Features: Streak System, Daily Fact Feed, Readiness Score, and Target Tracking.
+ * @fileOverview Final Advanced Selection Dashboard (Phase 81-107).
+ * Features: Streak System, Daily Fact Feed, Readiness Score, Referral Tracker, Feedback trigger.
  */
 
 export default function StudentDashboard() {
@@ -114,7 +116,7 @@ export default function StudentDashboard() {
       weakSubject: [...subjectData].reverse().find(s => s.accuracy > 0)?.name || "Baseline Needed",
       selectionProb: Math.min(96, Math.max(30, avgAcc + (avgAcc > 60 ? 12 : -5))),
       readinessScore: readiness > 0 ? readiness : 35,
-      streak: 4 // Hardcoded for MVP, should come from profile
+      streak: 4 
     }
   }, [results])
 
@@ -153,6 +155,25 @@ export default function StudentDashboard() {
                </CardContent>
             </Card>
 
+            {/* Referral Tracker (Phase 104) */}
+            <Card className="border-none bg-[#0F172A] text-white p-10 rounded-[3rem] shadow-3xl space-y-8 relative overflow-hidden group">
+               <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform"><UserPlus className="h-32 w-32 text-primary" /></div>
+               <div className="space-y-1 relative z-10">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-primary">Aspirant Network</p>
+                  <h3 className="text-2xl font-headline font-black">Referral Nodes</h3>
+               </div>
+               <div className="flex items-center gap-6 relative z-10">
+                  <div className="text-6xl font-black text-white leading-none">{profile?.referralCount || 0}</div>
+                  <div className="space-y-1">
+                     <p className="text-xs font-bold text-slate-400 uppercase">Invited Friends</p>
+                     <p className="text-[10px] font-black text-primary uppercase tracking-widest">Invite 5 for Pro Access</p>
+                  </div>
+               </div>
+               <Button className="w-full bg-white text-black hover:bg-slate-100 font-black uppercase text-[10px] tracking-widest rounded-2xl h-14 relative z-10 shadow-2xl">
+                  Share Referral Link
+               </Button>
+            </Card>
+
             {/* Daily Punjab GK Feed (Phase 82) */}
             <Card className="border-none bg-emerald-600 text-white p-10 rounded-[3rem] shadow-3xl relative overflow-hidden">
                <div className="absolute top-0 right-0 p-6 opacity-10"><Lightbulb className="h-32 w-32" /></div>
@@ -166,39 +187,10 @@ export default function StudentDashboard() {
                </div>
             </Card>
 
-            {/* Today's Goal Tracker */}
-            <Card className="border-none bg-white p-10 rounded-[3rem] shadow-3xl space-y-8">
-               <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-primary">Daily Planner</p>
-                     <h3 className="text-2xl font-headline font-black text-[#0F172A]">Today's Goal</h3>
-                  </div>
-                  <ListTodo className="h-6 w-6 text-slate-300" />
-               </div>
-               <div className="space-y-6">
-                  <GoalItem label="Attempt 50 MCQs" current={analytics.total > 0 ? 12 : 0} total={50} />
-                  <GoalItem label="1 Full Mock Series" current={0} total={1} />
-                  <GoalItem label="Review 15 Analysis Cards" current={5} total={15} />
-               </div>
-            </Card>
-
-            {/* Exam Countdown */}
-            <Card className="border-none bg-[#0F172A] text-white p-10 rounded-[3rem] shadow-3xl relative overflow-hidden">
-               <div className="absolute top-0 right-0 p-6 opacity-5 rotate-12"><Timer className="h-32 w-32" /></div>
-               <div className="relative z-10 space-y-6">
-                  <div className="flex items-center gap-3">
-                     <Timer className="h-5 w-5 text-primary" />
-                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Exam Countdown</span>
-                  </div>
-                  <div className="flex items-end gap-3">
-                     <span className="text-7xl font-headline font-black text-primary leading-none">{daysLeft}</span>
-                     <span className="text-lg font-black uppercase tracking-widest mb-2">Days Left</span>
-                  </div>
-                  <p className="text-slate-400 text-xs font-bold uppercase tracking-widest leading-relaxed">
-                     Until official {profile?.targetExam || 'PSSSB Patwari'} 2026 attempt cycle.
-                  </p>
-               </div>
-            </Card>
+            {/* Feedback trigger (Phase 105) */}
+            <Button asChild variant="ghost" className="w-full h-16 rounded-[2.5rem] bg-white border-2 border-dashed border-slate-200 text-slate-400 font-black uppercase text-[10px] tracking-widest gap-3 shadow-inner hover:bg-slate-50 hover:text-primary transition-all">
+               <Link href="/contact"><MessageSquare className="h-4 w-4" /> Share Launch Feedback</Link>
+            </Button>
           </div>
 
           <div className="lg:col-span-8 space-y-12">
@@ -216,6 +208,20 @@ export default function StudentDashboard() {
                  </Button>
                </div>
             </div>
+
+            {lastSession && (
+               <Card className="border-none bg-orange-500 text-white p-10 rounded-[3rem] shadow-3xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 group">
+                  <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:rotate-12 transition-transform"><PlayCircle className="h-32 w-32" /></div>
+                  <div className="space-y-3 relative z-10">
+                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-orange-100">Interrupt Detected</p>
+                     <h3 className="text-3xl font-headline font-black uppercase leading-tight">Resume {lastSession.mockId.split('-')[0]} Audit?</h3>
+                     <p className="text-orange-50 text-sm font-bold opacity-80 uppercase tracking-widest">Saved at Node {lastSession.currentIdx + 1} • {Math.floor(lastSession.remainingTime / 60)}m left</p>
+                  </div>
+                  <Button asChild className="bg-white text-orange-500 hover:bg-orange-50 font-black uppercase text-[10px] tracking-widest px-12 h-16 rounded-[2rem] shadow-2xl relative z-10 shrink-0">
+                     <Link href={`/mocks/${lastSession.mockId}/attempt`}>Continue Audit <ChevronRight className="ml-2 h-4 w-4" /></Link>
+                  </Button>
+               </Card>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                {/* Exam Readiness Score */}
@@ -236,7 +242,7 @@ export default function StudentDashboard() {
                   </div>
                </Card>
 
-               {/* AI Audit Node */}
+               {/* Selection Probability (Phase 61) */}
                <Card className="border-none shadow-3xl shadow-slate-900/10 rounded-[3rem] bg-[#0F172A] text-white p-10 space-y-8 relative overflow-hidden flex flex-col justify-between">
                   <div className="absolute top-0 right-0 p-6 opacity-10"><BrainCircuit className="h-32 w-32 text-primary" /></div>
                   <div className="space-y-6 relative z-10">
@@ -259,9 +265,15 @@ export default function StudentDashboard() {
                         </div>
                      </div>
                   </div>
-                  <Button asChild className="w-full bg-white text-[#0F172A] hover:bg-slate-100 font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl h-16 relative z-10 shadow-2xl">
-                     <Link href="/mocks">Improve Readiness Score</Link>
-                  </Button>
+                  <div className="pt-8 border-t border-white/5 relative z-10">
+                     <div className="flex justify-between items-end mb-4">
+                        <p className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Selection Probability</p>
+                        <p className="text-2xl font-headline font-black text-emerald-500">{analytics.selectionProb}%</p>
+                     </div>
+                     <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] transition-all duration-1000" style={{ width: `${analytics.selectionProb}%` }} />
+                     </div>
+                  </div>
                </Card>
             </div>
 
@@ -310,21 +322,6 @@ function SubjectProgress({ label, value }: { label: string, value: number }) {
          </div>
          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
             <div className={`h-full transition-all duration-1000 ${value > 70 ? 'bg-emerald-500' : 'bg-primary'}`} style={{ width: `${value}%` }} />
-         </div>
-      </div>
-   )
-}
-
-function GoalItem({ label, current, total }: { label: string, current: number, total: number }) {
-   const percent = Math.min(100, (current / total) * 100)
-   return (
-      <div className="space-y-3">
-         <div className="flex justify-between text-[11px] font-bold">
-            <span className="text-slate-500">{label}</span>
-            <span className="text-[#0F172A]">{current}/{total}</span>
-         </div>
-         <div className="h-1 w-full bg-slate-50 rounded-full overflow-hidden">
-            <div className="h-full bg-primary transition-all duration-1000" style={{ width: `${percent}%` }} />
          </div>
       </div>
    )

@@ -3,12 +3,11 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, Database, Users, ShieldCheck, Rocket, Zap, Activity, Target, ShieldAlert, FileWarning, SearchCode, TrendingDown, ClipboardList } from "lucide-react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Plus, Database, Users, ShieldCheck, Rocket, Zap, Activity, Target, ShieldAlert, FileWarning, SearchCode, TrendingDown, ClipboardList, TrendingUp, DollarSign } from "lucide-react"
 import Link from "next/link"
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { seedInitialData } from "@/services/seed-data"
@@ -21,7 +20,7 @@ import { useToast } from "@/hooks/use-toast"
 
 export default function AdminDashboard() {
   const db = useFirestore()
-  const { user } = useUser()
+  const { user, profile } = useUser()
   const { toast } = useToast()
 
   const { data: users } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]))
@@ -56,10 +55,10 @@ export default function AdminDashboard() {
         <div>
            <div className="flex items-center gap-3 mb-2">
               <ShieldCheck className="h-5 w-5 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Institutional Governance System</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Founder Oversight Node</span>
            </div>
           <h1 className="text-5xl font-headline font-black text-primary uppercase tracking-tight">Command Center</h1>
-          <p className="text-muted-foreground mt-2 text-lg">Scale Oversight: {users?.length || 0} Registered Aspirant Nodes.</p>
+          <p className="text-muted-foreground mt-2 text-lg">System Scale: {users?.length || 0} Registered Aspirants.</p>
         </div>
         <div className="flex gap-4">
            {isFounder && (
@@ -74,19 +73,40 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-         <StatCard label="Total Aspirants" value={users?.length || 0} icon={<Users />} />
-         <StatCard label="MCQ Bank" value={questions?.length || 0} icon={<Database />} />
+         <StatCard label="Active Nodes" value={users?.length || 0} icon={<Users />} />
+         <StatCard label="MCQ Buffer" value={questions?.length || 0} icon={<Database />} />
          <StatCard label="Live Series" value={mocks?.filter((m:any) => m.published).length || 0} icon={<ClipboardList />} />
          <StatCard label="Audit Flags" value={reports?.filter((r:any) => r.status === 'PENDING').length || 0} icon={<ShieldAlert />} color="text-rose-500" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
          <div className="lg:col-span-8 space-y-10">
+            {/* Launch KPIs for Arsh Grewal */}
             <Card className="border-none shadow-3xl bg-card/50 rounded-[3rem] overflow-hidden">
                <CardHeader className="p-12 border-b border-white/5 bg-primary/5">
                   <div className="flex items-center justify-between">
                      <div className="space-y-1">
-                        <CardTitle className="text-2xl font-headline font-black uppercase">Exam Intelligence</CardTitle>
+                        <CardTitle className="text-2xl font-headline font-black uppercase">Launch KPIs (Phase 107)</CardTitle>
+                        <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Arsh Grewal: Operational Growth Monitor</CardDescription>
+                     </div>
+                     <TrendingUp className="h-10 w-10 text-primary opacity-20" />
+                  </div>
+               </CardHeader>
+               <CardContent className="p-12">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <KPIItem label="User Acquisition" current={users?.length || 0} target={100} unit="Nodes" />
+                     <KPIItem label="Engagement (Attempts)" current={questions?.reduce((acc: any, q: any) => acc + (q.attempts || 0), 0)} target={1000} unit="Audits" />
+                     <KPIItem label="Content Depth" current={questions?.length || 0} target={1000} unit="MCQs" />
+                     <KPIItem label="System Health" current={100 - (reports?.filter((r:any) => r.status === 'PENDING').length || 0)} target={100} unit="%" />
+                  </div>
+               </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-3xl bg-card/50 rounded-[3rem] overflow-hidden">
+               <CardHeader className="p-12 border-b border-white/5 bg-primary/5">
+                  <div className="flex items-center justify-between">
+                     <div className="space-y-1">
+                        <CardTitle className="text-2xl font-headline font-black uppercase">Logic Integrity Mapping</CardTitle>
                         <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Deep analysis of logic failure points</CardDescription>
                      </div>
                      <SearchCode className="h-10 w-10 text-primary opacity-20" />
@@ -101,7 +121,7 @@ export default function AdminDashboard() {
                         <div key={q.id} className="p-8 bg-white/5 rounded-[2rem] border border-white/5 flex items-center justify-between group hover:border-rose-500/30 transition-all">
                            <div className="space-y-2">
                               <p className="font-bold text-slate-100 line-clamp-1">{q.questionEn}</p>
-                              <p className="text-[10px] font-black uppercase text-slate-500 tracking-widest">{q.subjectId} • {q.boardId}</p>
+                              <p className="text-[9px] font-black uppercase text-slate-500 tracking-widest">{q.subjectId} • {q.boardId}</p>
                            </div>
                            <div className="text-right">
                               <p className="text-2xl font-headline font-black text-rose-500 leading-none">
@@ -128,13 +148,26 @@ export default function AdminDashboard() {
                </div>
                <div className="space-y-6">
                   <LaunchItem label="Institutional Repo Initialized" status={launchReady.initialalized ? 'PASS' : 'PENDING'} />
-                  <LaunchItem label="Content Bank (>5000 Items)" status={launchReady.questions ? 'PASS' : 'BUILDING'} />
+                  <LaunchItem label="Content Bank (>1000 Items)" status={launchReady.questions ? 'PASS' : 'BUILDING'} />
                   <LaunchItem label="Official Mock Blueprint" status={launchReady.mocks ? 'PASS' : 'PENDING'} />
-                  <LaunchItem label="Legal & Privacy Compliant" status="PASS" />
+                  <LaunchItem label="Revenue Gateways (Phase 100)" status={globalSettings?.revenueReady ? 'PASS' : 'LOCKED'} />
                </div>
                <Button className="w-full h-16 bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-[0.2em] rounded-2xl shadow-3xl transition-all active:scale-95">
                   Initialize Global Broadcast
                </Button>
+            </Card>
+
+            <Card className="border-none bg-emerald-950/20 border border-emerald-500/10 rounded-[3rem] p-10 space-y-6 shadow-2xl">
+               <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                     <DollarSign className="h-6 w-6" />
+                  </div>
+                  <h4 className="font-headline font-black text-lg text-white uppercase">Growth Capital</h4>
+               </div>
+               <div className="space-y-1">
+                  <p className="text-3xl font-black text-emerald-500 tracking-tighter">₹0.00</p>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Beta Cycle Revenue</p>
+               </div>
             </Card>
          </div>
       </div>
@@ -162,9 +195,24 @@ function LaunchItem({ label, status }: any) {
    return (
       <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
          <span className="text-xs font-bold text-slate-400">{label}</span>
-         <Badge className={`border-none text-[9px] font-black px-3 py-1 ${status === 'PASS' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}`}>
+         <Badge className={`border-none text-[9px] font-black px-3 py-1 ${status === 'PASS' ? 'bg-emerald-500/10 text-emerald-500' : status === 'LOCKED' ? 'bg-slate-500/10 text-slate-400' : 'bg-rose-500/10 text-rose-500'}`}>
             {status}
          </Badge>
+      </div>
+   )
+}
+
+function KPIItem({ label, current, target, unit }: any) {
+   const progress = Math.min(100, (current / target) * 100)
+   return (
+      <div className="space-y-3">
+         <div className="flex justify-between items-end">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</span>
+            <span className="text-xs font-black text-slate-200">{current} / {target} {unit}</span>
+         </div>
+         <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+            <div className="h-full bg-primary shadow-2xl transition-all duration-1000" style={{ width: `${progress}%` }} />
+         </div>
       </div>
    )
 }
