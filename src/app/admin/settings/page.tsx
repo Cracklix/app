@@ -48,7 +48,7 @@ export default function AdminSettings() {
     if (!db) return;
     const payload = { ...formData, updatedAt: serverTimestamp() };
     setDoc(doc(db, 'settings', 'global'), payload, { merge: true })
-      .then(() => toast({ title: "System Synced", description: "Full CMS configuration is now live." }))
+      .then(() => toast({ title: "System Synced", description: "Institutional configuration is now live." }))
   };
 
   if (loading) return <div className="h-screen flex items-center justify-center bg-[#0F172A]"><RefreshCw className="h-10 w-10 text-primary animate-spin" /></div>
@@ -67,10 +67,10 @@ export default function AdminSettings() {
 
       <Tabs defaultValue="homepage" className="space-y-8">
         <TabsList className="bg-white/5 border border-white/5 p-1.5 h-16 rounded-2xl">
-          <TabsTrigger value="homepage" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2"><Layout className="h-4 w-4" /> Global CMS</TabsTrigger>
-          <TabsTrigger value="logic" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2"><Shield className="h-4 w-4" /> Logic Engines</TabsTrigger>
-          <TabsTrigger value="seasonal" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2"><CalendarDays className="h-4 w-4" /> Seasonal</TabsTrigger>
-          <TabsTrigger value="revenue" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2"><Smartphone className="h-4 w-4" /> Monetization</TabsTrigger>
+          <TabsTrigger value="homepage" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full"><Layout className="h-4 w-4" /> Global CMS</TabsTrigger>
+          <TabsTrigger value="logic" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full"><Shield className="h-4 w-4" /> Logic Engines</TabsTrigger>
+          <TabsTrigger value="seasonal" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full"><CalendarDays className="h-4 w-4" /> Seasonal</TabsTrigger>
+          <TabsTrigger value="revenue" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full"><Smartphone className="h-4 w-4" /> Monetization</TabsTrigger>
         </TabsList>
 
         <TabsContent value="homepage">

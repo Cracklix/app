@@ -17,7 +17,7 @@ const healthData = [
 ]
 
 /**
- * @fileOverview Phase 110: Platform Health Dashboard.
+ * @fileOverview Final Operational Node Monitor (Phase 110).
  * Real-time monitoring of system latency, database node activity, and operational stability.
  */
 

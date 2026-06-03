@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Phase 109: Institutional Support Center.
+ * @fileOverview Institutional Support Center (Phase 109).
  * Handles aspirant inquiries, technical tickets, and feedback nodes.
  */
 
@@ -21,12 +21,12 @@ export default function SupportHub() {
   const db = useFirestore()
   const { toast } = useToast()
   
-  // Note: Assuming a 'support_tickets' collection would be used for general contact form messages
+  // Note: Standard institutional messages are stored in 'support_tickets'
   const { data: tickets, loading } = useCollection<any>(useMemo(() => (db ? query(collection(db, "support_tickets"), orderBy("timestamp", "desc")) : null), [db]))
 
   const handleResolve = async (id: string) => {
     await updateDoc(doc(db!, "support_tickets", id), { status: 'RESOLVED' })
-    toast({ title: "Inquiry Closed", description: "Node marked as resolved." })
+    toast({ title: "Inquiry Closed", description: "Support node marked as resolved." })
   }
 
   return (
@@ -41,7 +41,7 @@ export default function SupportHub() {
           <p className="text-muted-foreground mt-2 text-lg">Manage institutional inquiries and technical support requests.</p>
         </div>
         <div className="flex gap-4">
-           <Card className="border-none bg-white/5 rounded-2xl px-8 py-4 flex items-center gap-4">
+           <Card className="border-none bg-white/5 rounded-2xl px-8 py-4 flex items-center gap-4 shadow-xl">
               <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
                  <MessageSquare className="h-5 w-5" />
               </div>
@@ -118,7 +118,7 @@ export default function SupportHub() {
                    <TableCell colSpan={4} className="h-80 text-center">
                       <div className="flex flex-col items-center justify-center opacity-10 space-y-6">
                          <MessageSquare className="h-24 w-24" />
-                         <p className="font-black font-headline text-2xl uppercase tracking-[0.2em]">Operational Queue Empty</p>
+                         <p className="font-black font-headline text-2xl uppercase tracking-[0.2em]">Support Queue Empty</p>
                       </div>
                    </TableCell>
                 </TableRow>

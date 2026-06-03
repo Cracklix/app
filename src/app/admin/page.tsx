@@ -32,16 +32,16 @@ export default function AdminDashboard() {
   const isFounder = user?.email === 'arshdeepgrewal1122@gmail.com';
 
   const devProgress = [
-    { label: "Auth & Security", val: 100 },
-    { label: "Role Management", val: 100 },
-    { label: "Question Bank", val: 95 },
+    { label: "Auth & Roles", val: 100 },
     { label: "Bulk Parser", val: 100 },
-    { label: "Mock Builder", val: 95 },
-    { label: "CBT Engine", val: 100 },
+    { label: "Attempt Engine", val: 100 },
     { label: "Results Logic", val: 100 },
-    { label: "Analysis Feed", val: 90 },
-    { label: "Exam Gazette", val: 90 },
+    { label: "Question Bank", val: 95 },
+    { label: "Mock Builder", val: 95 },
+    { label: "Current Affairs", val: 90 },
+    { label: "Notifications", val: 90 },
     { label: "PYQ Archives", val: 90 },
+    { label: "Analytics Engine", val: 85 },
   ];
 
   const avgProgress = Math.round(devProgress.reduce((acc, p) => acc + p.val, 0) / devProgress.length);
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
                   <div className="divide-y divide-white/5">
                      <TaskItem label="Audit Pending Question Reports" count={reports?.filter((r:any) => r.status === 'PENDING').length || 0} href="/admin/reports" />
                      <TaskItem label="Publish Today's Analysis Feed" count={0} href="/admin/current-affairs" />
-                     <TaskItem label="Check Official Board Gazzette" count={0} href="/admin/notifications" />
+                     <TaskItem label="Check Official Board Gazette" count={0} href="/admin/notifications" />
                      <TaskItem label="Verify New Mock Assemblies" count={mocks?.filter((m:any) => !m.published).length || 0} href="/admin/mocks" />
                   </div>
                </CardContent>
@@ -130,7 +130,7 @@ export default function AdminDashboard() {
                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">System Stability Audit</p>
                </div>
                <div className="space-y-6">
-                  <LaunchItem label="Institutional Repo Initialized" status="PASS" />
+                  <LaunchItem label="Institutional Repo Initialized" status={questions?.length > 0 ? 'PASS' : 'PENDING'} />
                   <LaunchItem label="Security Rules Hardened" status="PASS" />
                   <LaunchItem label="Bilingual Engine Verified" status="PASS" />
                   <LaunchItem label="Revenue Ready Status" status={globalSettings?.revenueReady ? 'PASS' : 'LOCKED'} />
