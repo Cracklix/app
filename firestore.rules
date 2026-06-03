@@ -5,10 +5,10 @@ service cloud.firestore {
     
     /**
      * @fileOverview Institutional Security Rules (Phase 162).
-     * DEV MODE: 14 Collection Rules structured with explicit read, list, and write access.
+     * 14 Core Collection Rules structured with explicit access.
      * Updated to resolve persistent list errors for mocks and test_sessions.
      * 
-     * DEPLOYMENT_AUDIT_ID: 2026-06-03T13:45:00Z
+     * DEPLOYMENT_AUDIT_ID: 2026-06-03T15:45:00Z
      */
     
     match /{document=**} {

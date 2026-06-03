@@ -63,7 +63,7 @@ export default function AdminDashboard() {
   }, [users, questions, mocks]);
 
   return (
-    <div className="space-y-12 pb-20">
+    <div className="space-y-12 pb-20 pt-4">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
         <div>
            <div className="flex items-center gap-3 mb-2">
@@ -204,15 +204,19 @@ export default function AdminDashboard() {
 }
 
 function StatCard({ label, value, icon, color }: any) {
+   const isLongValue = typeof value === 'string' && value.length > 8;
+   
    return (
-      <Card className="border-none shadow-2xl bg-card/50 p-10 rounded-[3rem] group hover:translate-y-[-4px] transition-all">
-         <div className="flex items-center gap-6">
-            <div className="h-14 w-14 rounded-2xl bg-white/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+      <Card className="border-none shadow-2xl bg-card/50 p-8 rounded-[3rem] group hover:translate-y-[-4px] transition-all overflow-hidden">
+         <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shrink-0">
                {icon}
             </div>
-            <div>
-               <p className={`text-4xl font-headline font-black tracking-tighter ${color || 'text-white'}`}>{value}</p>
-               <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mt-1">{label}</p>
+            <div className="min-w-0">
+               <p className={`font-headline font-black tracking-tighter truncate ${isLongValue ? 'text-2xl' : 'text-4xl'} ${color || 'text-white'}`}>
+                 {value}
+               </p>
+               <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mt-1 truncate">{label}</p>
             </div>
          </div>
       </Card>
