@@ -1,4 +1,3 @@
-
 "use client"
 
 import Navbar from "@/components/layout/Navbar"
@@ -32,7 +31,7 @@ export default function ContactPage() {
       <main className="container mx-auto px-6 py-24 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-20">
           
-          <div className="lg:col-span-5 space-y-12">
+          <div className="lg:col-span-5 space-y-12 text-left">
             <div className="space-y-6">
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center">
                  <MessageSquare className="h-7 w-7 text-primary" />
@@ -47,8 +46,10 @@ export default function ContactPage() {
 
             <div className="space-y-10">
                <ContactInfo icon={<Mail />} label="Email Node" value="arshdeepgrewal1122@gmail.com" />
-               <ContactInfo icon={<Phone />} label="Institutional Line" value="+91 98881 88602" />
-               <ContactInfo icon={<MapPin />} label="HQs Node" value="Phase 7, Mohali, Punjab" />
+               <a href="https://wa.me/919888188602" target="_blank" className="block group">
+                 <ContactInfo icon={<Phone />} label="Institutional WhatsApp" value="+91 98881 88602" />
+               </a>
+               <ContactInfo icon={<MapPin />} label="HQs Node" value="Shergarh, Bathinda, Punjab" />
             </div>
 
             <div className="pt-12 border-t border-slate-100 flex items-center gap-4 text-emerald-600">
@@ -62,17 +63,17 @@ export default function ContactPage() {
                <div className="h-2 w-full bg-primary" />
                <CardContent className="p-16">
                   <form onSubmit={handleSubmit} className="space-y-8">
-                     <div className="grid grid-cols-2 gap-8">
-                        <div className="space-y-3">
+                     <div className="grid grid-cols-2 gap-8 text-left">
+                        <div className="space-y-3 text-left">
                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Full Identity</label>
                            <Input required placeholder="Arsh Grewal" className="h-14 rounded-xl border-slate-100 bg-slate-50/50 font-bold" />
                         </div>
-                        <div className="space-y-3">
+                        <div className="space-y-3 text-left">
                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Contact String</label>
                            <Input required type="email" placeholder="name@domain.com" className="h-14 rounded-xl border-slate-100 bg-slate-50/50 font-bold" />
                         </div>
                      </div>
-                     <div className="space-y-3">
+                     <div className="space-y-3 text-left">
                         <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Message Context</label>
                         <Textarea required placeholder="Describe your inquiry or technical issue..." className="min-h-[200px] rounded-2xl border-slate-100 bg-slate-50/50 p-6 leading-relaxed font-medium" />
                      </div>
@@ -96,9 +97,9 @@ function ContactInfo({ icon, label, value }: any) {
       <div className="h-16 w-16 rounded-[1.5rem] bg-white shadow-xl shadow-slate-200/50 flex items-center justify-center shrink-0 border border-slate-50 text-slate-300 group-hover:bg-primary/5 group-hover:text-primary transition-all">
         {icon}
       </div>
-      <div>
+      <div className="text-left">
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">{label}</p>
-        <p className="text-xl font-bold text-[#0F172A]">{value}</p>
+        <p className="text-xl font-bold text-[#0F172A] group-hover:text-primary transition-colors">{value}</p>
       </div>
     </div>
   )

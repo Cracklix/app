@@ -2,32 +2,14 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     /**
-     * @fileOverview TOTAL AUTHORITY NODE (SYNC 700).
-     * This rule set grants global access to all 16 institutional collections.
+     * @fileOverview TOTAL AUTHORITY NODE (SYNC 900).
+     * Unified Global Access to resolve persistent list/read permission errors.
      * 
-     * DEPLOYMENT_ID: 2026-06-03T19:15:00Z
+     * DEPLOYMENT_ID: 2026-06-03T20:45:00Z
      */
     
     match /{document=**} {
       allow read, write: if true;
     }
-
-    // Explicit Paths for Audit Node Visibility & List Operations
-    match /users/{id} { allow read, write: if true; }
-    match /boards/{id} { allow read, write: if true; }
-    match /exams/{id} { allow read, write: if true; }
-    match /subjects/{id} { allow read, write: if true; }
-    match /mocks/{id} { allow read, write: if true; }
-    match /questions/{id} { allow read, write: if true; }
-    match /current_affairs/{id} { allow read, write: if true; }
-    match /notifications/{id} { allow read, write: if true; }
-    match /reports/{id} { allow read, write: if true; }
-    match /test_sessions/{id} { allow read, write: if true; }
-    match /results/{id} { allow read, write: if true; }
-    match /settings/{id} { allow read, write: if true; }
-    match /bookmarks/{id} { allow read, write: if true; }
-    match /pyqs/{id} { allow read, write: if true; }
-    match /support_tickets/{id} { allow read, write: if true; }
-    match /audit_logs/{id} { allow read, write: if true; }
   }
 }

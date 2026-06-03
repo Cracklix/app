@@ -36,7 +36,7 @@ export default function PlatformHealth() {
   return (
     <div className="space-y-12 pb-20 text-[#0F172A]">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-        <div>
+        <div className="text-left">
            <div className="flex items-center gap-3 mb-2">
               <HeartPulse className="h-6 w-6 text-rose-500" />
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Platform Stability Monitor</span>
@@ -64,7 +64,7 @@ export default function PlatformHealth() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
          <Card className="border-slate-100 shadow-3xl bg-white rounded-[3rem] overflow-hidden">
-            <CardHeader className="p-10 border-b border-slate-50 bg-slate-50/50">
+            <CardHeader className="p-10 border-b border-slate-50 bg-slate-50/50 text-left">
                <CardTitle className="text-2xl font-headline font-black uppercase text-[#0F172A]">Database Read Volume</CardTitle>
                <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Institutional extraction nodes per 24h cycle</CardDescription>
             </CardHeader>
@@ -90,7 +90,7 @@ export default function PlatformHealth() {
          </Card>
 
          <Card className="border-slate-100 shadow-3xl bg-white rounded-[3rem] overflow-hidden">
-            <CardHeader className="p-10 border-b border-slate-50 bg-slate-50/50">
+            <CardHeader className="p-10 border-b border-slate-50 bg-slate-50/50 text-left">
                <CardTitle className="text-2xl font-headline font-black uppercase text-[#0F172A]">System Latency (ms)</CardTitle>
                <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Real-time response trail for CBT engine</CardDescription>
             </CardHeader>
@@ -118,7 +118,7 @@ export default function PlatformHealth() {
       <div className="bg-emerald-50 border border-emerald-100 rounded-[3.5rem] p-12 text-center space-y-4 shadow-sm">
          <ShieldCheck className="h-12 w-12 text-emerald-600 mx-auto mb-4 opacity-50" />
          <h4 className="text-3xl font-headline font-black uppercase text-[#0F172A]">Institutional Security High</h4>
-         <p className="text-slate-500 max-w-xl mx-auto font-medium">Zero anomalies detected in the last 72 hours. All extraction nodes are operating within official performance parameters.</p>
+         <p className="text-slate-500 max-w-xl mx-auto font-medium text-center">Zero anomalies detected in the last 72 hours. All extraction nodes are operating within official performance parameters.</p>
       </div>
     </div>
   )
