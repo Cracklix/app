@@ -15,10 +15,14 @@ import {
   Languages,
   Loader2,
   Trash2,
-  Target
+  Target,
+  LayoutGrid,
+  ChevronRight,
+  ChevronLeft
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 type LangMode = 'en' | 'reg' | 'bilingual'
 
@@ -154,26 +158,48 @@ export default function MockAttemptPage() {
         
         <div className="flex items-center gap-3">
           <Timer onTimeUp={submitMock} initialSeconds={(mock?.duration || 120) * 60} onTick={setRemainingTime} isPaused={isPaused} />
-          <Button variant="ghost" size="icon" onClick={() => setIsPaused(!isPaused)} className="h-9 w-9 text-slate-400 hover:text-white">
+          <Button variant="ghost" size="icon" onClick={() => setIsPaused(!isPaused)} className="h-9 w-9 text-slate-400 hover:text-white hidden sm:flex">
             {isPaused ? <PlayCircle className="h-5 w-5" /> : <PauseCircle className="h-5 w-5" />}
           </Button>
-          <Button onClick={submitMock} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[10px] h-9 px-6 rounded-xl shadow-lg">Finish Audit</Button>
+          <Button onClick={submitMock} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[10px] h-9 px-4 sm:px-6 rounded-xl shadow-lg">
+             <span className="hidden sm:inline">Finish Audit</span>
+             <span className="sm:hidden">Finish</span>
+          </Button>
         </div>
       </header>
 
       <main className="flex flex-1 overflow-hidden">
         <div className="flex-1 flex flex-col overflow-hidden bg-[#F8FAFC]">
-          <div className="px-6 py-3 border-b border-slate-200 bg-white flex items-center justify-between shrink-0 shadow-sm">
+          <div className="px-4 sm:px-6 py-3 border-b border-slate-200 bg-white flex items-center justify-between shrink-0 shadow-sm">
              <div className="flex items-center gap-4 text-left">
                 <div className="space-y-0.5">
                    <p className="text-[9px] font-black text-orange-600 uppercase tracking-widest">{currentSection.paper}</p>
-                   <h2 className="text-xs font-black text-slate-800 uppercase flex items-center gap-2">
+                   <h2 className="text-[11px] sm:text-xs font-black text-slate-800 uppercase flex items-center gap-2">
                      <Target className="h-3 w-3 text-primary" /> {currentSection.name}
                    </h2>
                 </div>
                 <div className="h-8 w-px bg-slate-100" />
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Question {currentIdx + 1} / {questions.length}</span>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Q {currentIdx + 1} / {questions.length}</span>
              </div>
+
+             {/* Mobile Palette Trigger */}
+             <Sheet>
+               <SheetTrigger asChild>
+                 <Button variant="outline" size="sm" className="lg:hidden rounded-lg h-9 px-3 gap-2 font-black text-[10px] uppercase border-slate-200">
+                    <LayoutGrid className="h-3.5 w-3.5" /> Map
+                 </Button>
+               </SheetTrigger>
+               <SheetContent side="right" className="p-0 border-none w-[300px]">
+                  <div className="p-6 h-full overflow-y-auto bg-white pt-16">
+                     <QuestionPalette 
+                        totalQuestions={questions.length} currentIndex={currentIdx} 
+                        answeredIndices={Object.keys(answers).map(Number)} 
+                        flaggedIndices={flagged} visitedIndices={visited}
+                        onSelect={(idx) => { setCurrentIdx(idx); if (!visited.includes(idx)) setVisited(p => [...p, idx]); }} 
+                      />
+                  </div>
+               </SheetContent>
+             </Sheet>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar">
@@ -223,7 +249,7 @@ export default function MockAttemptPage() {
                                   {language === 'bilingual' ? (
                                     <>
                                         <span className="leading-tight">{optEn}</span>
-                                        {optPa?.trim() !== optEn?.trim() && optPa && <span className="leading-tight opacity-70 border-t border-slate-50 pt-1 mt-1">{optPa}</span>}
+                                        {optPa?.trim() !== optEn?.trim() && optPa && <span className="leading-tight opacity-70 border-t border-slate-50 pt-1 mt-1 text-sm md:text-base font-medium">{optPa}</span>}
                                     </>
                                   ) : (
                                     <span>{language === 'en' ? optEn : (optPa || optEn)}</span>
@@ -231,7 +257,7 @@ export default function MockAttemptPage() {
                                </>
                             )}
                          </Label>
-                         <span className="text-xs font-black text-slate-300">{k}</span>
+                         <span className="text-xs font-black text-slate-300 hidden sm:inline">{k}</span>
                       </div>
                     )
                   })}
@@ -239,15 +265,27 @@ export default function MockAttemptPage() {
              </div>
           </div>
 
-          <footer className="h-20 border-t border-slate-200 bg-white px-8 flex items-center justify-between shrink-0 z-50 shadow-inner">
-             <div className="flex gap-3">
-                <Button variant="outline" className="h-12 px-6 text-[10px] font-black uppercase tracking-widest rounded-xl" onClick={() => currentIdx > 0 && setCurrentIdx(currentIdx - 1)} disabled={currentIdx === 0}>Previous</Button>
-                <Button variant="ghost" className="h-12 px-6 text-[10px] font-black uppercase tracking-widest text-slate-400 rounded-xl" onClick={() => setAnswers(p => { const n={...p}; delete n[currentIdx]; return n; })}><Trash2 className="h-4 w-4 mr-2" /> Clear</Button>
+          <footer className="h-20 border-t border-slate-200 bg-white px-4 sm:px-8 flex items-center justify-between shrink-0 z-50 shadow-inner">
+             <div className="flex gap-2 sm:gap-3">
+                <Button variant="outline" className="h-11 sm:h-12 px-3 sm:px-6 text-[10px] font-black uppercase tracking-widest rounded-xl" onClick={() => currentIdx > 0 && setCurrentIdx(currentIdx - 1)} disabled={currentIdx === 0}>
+                   <span className="sm:hidden"><ChevronLeft className="h-4 w-4" /></span>
+                   <span className="hidden sm:inline">Previous</span>
+                </Button>
+                <Button variant="ghost" className="h-11 sm:h-12 px-3 sm:px-6 text-[10px] font-black uppercase tracking-widest text-slate-400 rounded-xl" onClick={() => setAnswers(p => { const n={...p}; delete n[currentIdx]; return n; })}>
+                   <span className="sm:hidden"><Trash2 className="h-4 w-4" /></span>
+                   <span className="hidden sm:inline">Clear</span>
+                </Button>
              </div>
              
-             <div className="flex items-center gap-3">
-                <Button variant="outline" className={cn("h-12 px-6 text-[10px] font-black uppercase tracking-widest rounded-xl", flagged.includes(currentIdx) ? "bg-amber-500 border-amber-500 text-white" : "text-amber-600")} onClick={() => { if(!flagged.includes(currentIdx)) setFlagged(p=>[...p, currentIdx]); if(currentIdx < questions.length-1) { const next = currentIdx + 1; setCurrentIdx(next); if(!visited.includes(next)) setVisited(v=>[...v, next])} }}>Review & Next</Button>
-                <Button className="bg-[#0B1528] hover:bg-black text-white h-12 px-10 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl" onClick={() => { if(currentIdx < questions.length-1) { const next = currentIdx + 1; setCurrentIdx(next); if(!visited.includes(next)) setVisited(v=>[...v, next])} else { toast({ title: "End of Series", description: "Review your answers and finish audit." }) } }}>Save & Next</Button>
+             <div className="flex items-center gap-2 sm:gap-3">
+                <Button variant="outline" className={cn("h-11 sm:h-12 px-3 sm:px-6 text-[10px] font-black uppercase tracking-widest rounded-xl", flagged.includes(currentIdx) ? "bg-amber-500 border-amber-500 text-white" : "text-amber-600")} onClick={() => { if(!flagged.includes(currentIdx)) setFlagged(p=>[...p, currentIdx]); if(currentIdx < questions.length-1) { const next = currentIdx + 1; setCurrentIdx(next); if(!visited.includes(next)) setVisited(v=>[...v, next])} }}>
+                   <span className="hidden sm:inline">Review & Next</span>
+                   <span className="sm:hidden">Review</span>
+                </Button>
+                <Button className="bg-[#0B1528] hover:bg-black text-white h-11 sm:h-12 px-5 sm:px-10 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl" onClick={() => { if(currentIdx < questions.length-1) { const next = currentIdx + 1; setCurrentIdx(next); if(!visited.includes(next)) setVisited(v=>[...v, next])} else { toast({ title: "End of Series", description: "Review your answers and finish audit." }) } }}>
+                   <span className="hidden sm:inline">Save & Next</span>
+                   <span className="sm:hidden">Next <ChevronRight className="ml-1 h-4 w-4" /></span>
+                </Button>
              </div>
           </footer>
         </div>
