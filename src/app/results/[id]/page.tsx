@@ -7,15 +7,16 @@ import Navbar from "@/components/layout/Navbar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, XCircle, HelpCircle, Trophy, Target, Zap, LayoutDashboard, Loader2, TrendingUp, BarChart3 } from "lucide-react"
+import { CheckCircle2, XCircle, HelpCircle, Trophy, Target, Zap, LayoutDashboard, Loader2, TrendingUp, BarChart3, Star, MessageSquare } from "lucide-react"
 import { useFirestore, useUser, useCollection } from "@/firebase"
-import { collection, query, where, orderBy, limit } from "firebase/firestore"
+import { collection, query, where, orderBy, limit, doc, updateDoc } from "firebase/firestore"
 import Link from "next/link"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, Tooltip } from "recharts"
+import { useToast } from "@/hooks/use-toast"
 
 /**
  * @fileOverview Final Audit-Grade Results Portal.
- * Features: Sectional Accuracy Charts, Selection Probability, Rank Benchmarks.
+ * Phase 132: Integrated User Feedback & Rating Engine.
  */
 
 export default function ResultPage() {
@@ -23,6 +24,10 @@ export default function ResultPage() {
   const mockId = params.id as string
   const db = useFirestore()
   const { user } = useUser()
+  const { toast } = useToast()
+
+  const [rating, setRating] = useState(0)
+  const [feedbackSent, setFeedbackSent] = useState(false)
 
   const resultsQuery = useMemo(() => {
     if (!db || !user || !mockId) return null
@@ -45,6 +50,14 @@ export default function ResultPage() {
       accuracy: Math.round((stats.correct / (stats.attempted || 1)) * 100)
     }))
   }, [sessionData])
+
+  const handleRateMock = async (val: number) => {
+    if (!db || !sessionData?.id) return
+    setRating(val)
+    await updateDoc(doc(db, "results", sessionData.id), { rating: val })
+    toast({ title: "Feedback Recorded", description: "Your input helps refine institutional accuracy." })
+    setFeedbackSent(true)
+  }
 
   if (loading) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-4">
@@ -108,6 +121,28 @@ export default function ResultPage() {
                         </ResponsiveContainer>
                      </div>
                   </div>
+
+                  {/* Feedback Engine (Phase 132) */}
+                  {!feedbackSent && (
+                    <div className="mt-16 p-10 rounded-[2.5rem] bg-[#0F172A] text-white space-y-8 text-center relative overflow-hidden group">
+                       <div className="absolute top-0 right-0 p-8 opacity-5 rotate-12"><Star className="h-24 w-24" /></div>
+                       <div className="space-y-2 relative z-10">
+                          <h4 className="text-2xl font-headline font-black uppercase">Institutional Validation</h4>
+                          <p className="text-slate-400 text-sm font-medium">How would you rate the quality and difficulty of this mock?</p>
+                       </div>
+                       <div className="flex justify-center gap-4 relative z-10">
+                          {[1,2,3,4,5].map((val) => (
+                             <button 
+                                key={val} 
+                                onClick={() => handleRateMock(val)}
+                                className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:text-white transition-all text-xl font-black"
+                             >
+                                {val}
+                             </button>
+                          ))}
+                       </div>
+                    </div>
+                  )}
                </CardContent>
             </Card>
           </div>

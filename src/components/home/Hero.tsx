@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from "next/image";
@@ -11,7 +12,7 @@ import { useMemo } from 'react';
 
 /**
  * @fileOverview Final Dynamic Hero Module.
- * Integrates with Site Settings CMS for non-technical management.
+ * Phase 130: Strengthened Punjab Authority Positioning.
  */
 
 export default function Hero() {
@@ -20,9 +21,9 @@ export default function Hero() {
   const { data: settings } = useDoc(settingsRef);
 
   const content = {
-    line1: settings?.heroLine1 || "Prepare Smarter.",
-    line2: settings?.heroLine2 || "Score Higher.",
-    description: settings?.heroDescription || "Punjab's most trusted platform for Government Exam preparation. Join 15,000+ aspirants today.",
+    line1: settings?.heroLine1 || "Punjab's No. 1",
+    line2: settings?.heroLine2 || "Dedicated Authority.",
+    description: settings?.heroDescription || "The only high-fidelity platform specialized exclusively for Punjab Government Exam preparation. Join 15,000+ aspirants today.",
     imageUrl: settings?.heroImageUrl || "https://picsum.photos/seed/amritsar/1200/800"
   };
 
@@ -46,7 +47,7 @@ export default function Hero() {
           >
             <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm">
               <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">#1 Punjab Mock Test Hub</span>
+              <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Verified Punjab Pattern Check</span>
             </div>
 
             <h1 className="text-6xl lg:text-8xl font-black leading-[0.95] tracking-tight text-white font-headline">
@@ -57,26 +58,26 @@ export default function Hero() {
             </h1>
 
             <p className="text-xl text-slate-400 leading-relaxed max-w-xl">
-              {content.description} Trust Cracklix for high-fidelity mocks and AI-powered performance analysis.
+              {content.description} Master PSSSB, PPSC, and Punjab Police mocks with institutional precision.
             </p>
 
             <div className="flex flex-wrap gap-5">
               <Button asChild className="h-16 px-10 bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-xs rounded-2xl gap-3 shadow-2xl shadow-primary/20">
-                <Link href="/mocks">Start Free Mock <ArrowRight className="h-5 w-5" /></Link>
+                <Link href="/mocks">Start Practice <ArrowRight className="h-5 w-5" /></Link>
               </Button>
               <Button variant="outline" asChild className="h-16 px-10 border-white/10 text-white hover:bg-white/5 rounded-2xl font-black uppercase tracking-widest text-xs">
-                <Link href="/exams">Explore Exams</Link>
+                <Link href="/exams">Explore Hubs</Link>
               </Button>
             </div>
 
             <div className="flex items-center gap-8 pt-8 border-t border-white/5">
                <div className="flex flex-col">
                   <span className="text-2xl font-black text-white">1,200+</span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Patwari Mocks</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Patwari Nodes</span>
                </div>
                <div className="flex flex-col">
                   <span className="text-2xl font-black text-white">3,500+</span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Police MCQs</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Police MCQ Nodes</span>
                </div>
             </div>
           </motion.div>
@@ -105,8 +106,8 @@ export default function Hero() {
                           <TrendingUp className="h-6 w-6 text-primary" />
                        </div>
                        <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Student Success</p>
-                          <p className="text-lg font-black text-white">94.2% Avg. Accuracy</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Punjab Success Rate</p>
+                          <p className="text-lg font-black text-white">94.2% Accuracy Node</p>
                        </div>
                     </div>
                  </div>

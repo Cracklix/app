@@ -39,8 +39,8 @@ import Link from "next/link";
 import Image from "next/image";
 
 /**
- * @fileOverview Final Homepage Module (Phase 116-125).
- * Features: Institutional Trust Bar, Success Alumni, and Alert Hub.
+ * @fileOverview Final Homepage Module (Phase 130).
+ * Focuses on Punjab Authority Positioning & Real Institutional Trust.
  */
 
 export default function HomePage() {
@@ -61,14 +61,15 @@ export default function HomePage() {
       <Navbar />
       <Hero />
 
-      {/* Institutional Trust Bar (Phase 118) */}
-      <section className="bg-[#08152D] border-y border-white/5 py-12">
-         <div className="container mx-auto px-6 max-w-7xl">
+      {/* Authority Trust Bar (Phase 130) */}
+      <section className="bg-[#08152D] border-y border-white/5 py-12 relative overflow-hidden">
+         <div className="absolute top-0 right-0 p-20 opacity-5 rotate-45"><ShieldCheck className="h-64 w-64 text-white" /></div>
+         <div className="container mx-auto px-6 max-w-7xl relative z-10">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center items-center">
-               <TrustMetric icon={<BookOpen className="text-primary" />} label="Practice MCQs" value={`${questions?.length || '10,000'}+`} />
-               <TrustMetric icon={<ClipboardList className="text-blue-400" />} label="Mock Series" value={`${mocks?.length || '500'}+`} />
-               <TrustMetric icon={<Users className="text-emerald-400" />} label="Registered Aspirants" value={`${users?.length || '15,000'}+`} />
-               <TrustMetric icon={<ShieldCheck className="text-amber-400" />} label="Official Patterns" value="2026 Ready" />
+               <TrustMetric icon={<BookOpen className="text-primary" />} label="Punjab Verified MCQs" value={`${questions?.length || '10,000'}+`} />
+               <TrustMetric icon={<ClipboardList className="text-blue-400" />} label="Institutional Mocks" value={`${mocks?.length || '500'}+`} />
+               <TrustMetric icon={<Users className="text-emerald-400" />} label="Active Aspirant Nodes" value={`${users?.length || '15,000'}+`} />
+               <TrustMetric icon={<ShieldCheck className="text-amber-400" />} label="2026 Board Patterns" value="Verified" />
             </div>
          </div>
       </section>
@@ -86,13 +87,13 @@ export default function HomePage() {
                         <div className="space-y-4 text-center md:text-left">
                            <div className="flex items-center justify-center md:justify-start gap-3">
                               <CalendarDays className="h-5 w-5 text-primary" />
-                              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Exam Calendar 2026</span>
+                              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Board Calendar 2026</span>
                            </div>
-                           <h3 className="text-3xl font-headline font-black text-[#0F172A] uppercase leading-tight">Sync Your <br/> Preparation Schedule</h3>
-                           <p className="text-slate-500 font-medium">Track application deadlines and official board exam dates for all Punjab verticals.</p>
+                           <h3 className="text-3xl font-headline font-black text-[#0F172A] uppercase leading-tight">Punjab Recruitment <br/> Schedule Audit</h3>
+                           <p className="text-slate-500 font-medium">Track official PSSSB/PPSC deadlines and state-approved exam dates.</p>
                         </div>
                         <Button asChild className="h-16 px-12 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-widest text-xs rounded-2xl gap-3 shadow-2xl group">
-                           <Link href="/exam-calendar">Open Full Calendar <ChevronRight className="h-4 w-4 group-hover:translate-x-2 transition-transform" /></Link>
+                           <Link href="/exam-calendar">Open Hub Calendar <ChevronRight className="h-4 w-4 group-hover:translate-x-2 transition-transform" /></Link>
                         </Button>
                      </div>
                   </div>
@@ -107,11 +108,11 @@ export default function HomePage() {
                            <div className="h-14 w-14 bg-primary rounded-2xl flex items-center justify-center shadow-2xl"><BrainCircuit className="h-7 w-7 text-white" /></div>
                            <div className="space-y-0.5">
                               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Aspirant Mastery</span>
-                              <h4 className="text-xl font-headline font-black leading-tight uppercase">Daily Challenge</h4>
+                              <h4 className="text-xl font-headline font-black leading-tight uppercase">Daily Fact Node</h4>
                            </div>
                         </div>
                         <div className="p-8 bg-white/5 rounded-[2rem] border border-white/5 shadow-inner">
-                           <p className="text-slate-300 text-lg leading-relaxed font-medium italic">"The Battle of Aliwal was fought between Sikhs and British in which year?"</p>
+                           <p className="text-slate-300 text-lg leading-relaxed font-medium italic">"Punjab became a part of the British Empire in March 1849 following the Second Anglo-Sikh War."</p>
                         </div>
                         <Button asChild className="w-full bg-white text-[#0F172A] hover:bg-slate-100 h-16 rounded-2xl font-black uppercase tracking-widest text-xs shadow-3xl">
                            <Link href="/dashboard">Attempt & Earn XP</Link>
@@ -123,12 +124,12 @@ export default function HomePage() {
                   <Card className="rounded-[3rem] border-none shadow-2xl bg-white p-12 overflow-hidden relative">
                      <div className="absolute top-0 right-0 p-8 opacity-5"><Bell className="h-24 w-24" /></div>
                      <div className="flex items-center justify-between mb-10 relative z-10">
-                        <h3 className="font-headline font-black text-2xl flex items-center gap-4">
-                           <Bell className="h-6 w-6 text-primary" /> Official Feed
+                        <h3 className="font-headline font-black text-2xl flex items-center gap-4 text-[#0F172A]">
+                           <Bell className="h-6 w-6 text-primary" /> Official Gazette
                         </h3>
                         <div className="flex items-center gap-2">
                            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                           <span className="text-[10px] font-black uppercase text-emerald-600 tracking-widest">Live</span>
+                           <span className="text-[10px] font-black uppercase text-emerald-600 tracking-widest">Active</span>
                         </div>
                      </div>
                      <div className="space-y-8 relative z-10">
@@ -151,11 +152,11 @@ export default function HomePage() {
                         )) : (
                           <div className="py-10 text-center space-y-4 opacity-30 italic">
                              <Bell className="h-10 w-10 mx-auto" />
-                             <p className="text-xs uppercase font-black tracking-widest">Syncing with board feeds...</p>
+                             <p className="text-xs uppercase font-black tracking-widest text-[#0F172A]">Syncing official feeds...</p>
                           </div>
                         )}
                         <Button asChild variant="ghost" className="w-full pt-8 text-[11px] font-black uppercase tracking-[0.2em] text-primary hover:bg-primary/5 rounded-2xl border-2 border-dashed border-primary/10 h-20">
-                           <Link href="/notifications">Full Recruitment Gazette <ChevronRight className="ml-2 h-4 w-4" /></Link>
+                           <Link href="/notifications">Full Authority Gazette <ChevronRight className="ml-2 h-4 w-4" /></Link>
                         </Button>
                      </div>
                   </Card>
@@ -164,14 +165,14 @@ export default function HomePage() {
          </div>
       </section>
 
-      {/* Success Alumni Section (Phase 119) */}
+      {/* Hall of Rankers (Phase 119) */}
       <section className="py-32 bg-white">
          <div className="container mx-auto px-6 max-w-7xl">
             <div className="text-center space-y-6 mb-24">
-               <Badge className="bg-primary/10 text-primary border-none px-8 py-2.5 rounded-full font-black uppercase tracking-[0.3em] text-[11px]">Institutional Alumni</Badge>
-               <h2 className="text-6xl md:text-8xl font-headline font-black text-[#0F172A] uppercase leading-[0.9] tracking-tight">Hall Of <br/><span className="text-primary">Rankers</span></h2>
+               <Badge className="bg-primary/10 text-primary border-none px-8 py-2.5 rounded-full font-black uppercase tracking-[0.3em] text-[11px]">Hall of Rankers</Badge>
+               <h2 className="text-6xl md:text-8xl font-headline font-black text-[#0F172A] uppercase leading-[0.9] tracking-tight">Success <br/><span className="text-primary">Alumni</span></h2>
                <p className="text-slate-500 font-medium max-w-2xl mx-auto text-xl italic mt-8 leading-relaxed">
-                  Join hundreds of aspirants who cleared Punjab Government exams with institutional grade mocks.
+                  Join the elite group of aspirants who mastered the Punjab preparation curve with Cracklix institutional grade mocks.
                </p>
             </div>
 
@@ -184,7 +185,7 @@ export default function HomePage() {
 
             <div className="mt-20 text-center">
                <Button asChild variant="ghost" className="text-primary font-black uppercase tracking-[0.3em] text-xs gap-3 rounded-2xl h-16 px-12 border-2 border-dashed border-primary/10 hover:bg-primary/5 transition-all">
-                  <Link href="/success-stories">View All Success Stories <ArrowRight className="h-5 w-5" /></Link>
+                  <Link href="/success-stories">View All Journey Nodes <ArrowRight className="h-5 w-5" /></Link>
                </Button>
             </div>
          </div>
