@@ -3,12 +3,11 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, Database, Users, ShieldCheck, Rocket, Zap, Activity, Target, ShieldAlert, FileWarning, SearchCode, TrendingDown, ClipboardList, TrendingUp, DollarSign, ListChecks, CheckCircle2, AlertCircle, Scale, CalendarDays, Megaphone } from "lucide-react"
+import { Plus, Database, Users, ShieldCheck, Rocket, Zap, Activity, ShieldAlert, Scale, Megaphone, ClipboardList, TrendingUp, DollarSign } from "lucide-react"
 import Link from "next/link"
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
 import { useMemo } from "react"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { seedInitialData } from "@/services/seed-data"
 import { useToast } from "@/hooks/use-toast"

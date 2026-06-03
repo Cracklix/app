@@ -15,9 +15,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
-  Calendar, 
-  FileText, 
-  Bell, 
+  CalendarDays, 
   ChevronRight, 
   Trophy, 
   Zap, 
@@ -29,13 +27,13 @@ import {
   Landmark, 
   BrainCircuit, 
   Sparkles, 
-  CalendarDays, 
   Timer, 
   Scale, 
   BookOpen, 
   ClipboardList,
   Users,
-  ArrowRight
+  ArrowRight,
+  Bell
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -67,7 +65,7 @@ export default function HomePage() {
       <section className="bg-[#08152D] border-y border-white/5 py-12">
          <div className="container mx-auto px-6 max-w-7xl">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center items-center">
-               <TrustMetric icon={<BookOpen />} label="Practice MCQs" value={`${questions?.length || '10,000'}+`} />
+               <TrustMetric icon={<BookOpen className="text-primary" />} label="Practice MCQs" value={`${questions?.length || '10,000'}+`} />
                <TrustMetric icon={<ClipboardList className="text-blue-400" />} label="Mock Series" value={`${mocks?.length || '500'}+`} />
                <TrustMetric icon={<Users className="text-emerald-400" />} label="Registered Aspirants" value={`${users?.length || '15,000'}+`} />
                <TrustMetric icon={<ShieldCheck className="text-amber-400" />} label="Official Patterns" value="2026 Ready" />
@@ -202,8 +200,8 @@ export default function HomePage() {
 
 function TrustMetric({ icon, label, value }: any) {
    return (
-      <div className="space-y-3">
-         <div className="flex justify-center text-primary group-hover:scale-110 transition-transform">{icon}</div>
+      <div className="space-y-3 group">
+         <div className="flex justify-center transition-transform group-hover:scale-110">{icon}</div>
          <p className="text-4xl font-headline font-black text-white tracking-tight">{value}</p>
          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</p>
       </div>

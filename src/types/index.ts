@@ -1,6 +1,6 @@
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
-export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'CONTENT_MANAGER' | 'QUESTION_REVIEWER' | 'SUPPORT_AGENT' | 'EDITOR' | 'MARKETING_MANAGER' | 'STUDENT';
+export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'CONTENT_MANAGER' | 'QUESTION_REVIEWER' | 'SUPPORT_AGENT' | 'CURRENT_AFFAIRS_EDITOR' | 'MARKETING_MANAGER' | 'STUDENT';
 export type MockType = 'FULL' | 'SUBJECT' | 'SECTIONAL' | 'PYQ';
 export type ContentStatus = 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED';
 

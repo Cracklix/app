@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Trophy, Quote, Star, GraduationCap, ShieldCheck, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 const STORIES = [
   {

@@ -27,7 +27,6 @@ import {
   Zap,
   Clock,
   Sparkles,
-  TrophyIcon,
   Bell
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -108,7 +107,7 @@ export default function ProfilePage() {
               <Avatar className="h-44 w-44 border-[10px] border-white shadow-3xl rounded-[3rem] transition-transform duration-500 group-hover:scale-105">
                 <AvatarImage src={user?.photoURL || `https://i.pravatar.cc/150?u=${user?.uid}`} />
                 <AvatarFallback className="bg-slate-100 text-slate-400 text-4xl font-black">
-                  {profile.name?.split(' ').map(n => n[0]).join('')}
+                  {profile.name?.split(' ').map(n => n[0]).join('') || 'U'}
                 </AvatarFallback>
               </Avatar>
               <div className="absolute bottom-4 right-4 h-10 w-10 bg-emerald-500 rounded-2xl border-4 border-white flex items-center justify-center shadow-2xl">
@@ -143,7 +142,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
               <MetricCard icon={<ClipboardList className="text-blue-500" />} label="Series Attempted" value={stats.total} footer="Lifetime Analytics" />
               <MetricCard icon={<Target className="text-primary" />} label="Accuracy Level" value={`${stats.avgAccuracy}%`} footer="Institutional Avg: 64%" />
-              <MetricCard icon={<TrophyIcon className="text-emerald-500" />} label="Punjab Ranking" value={stats.rank} footer="Monthly Benchmark" />
+              <MetricCard icon={<Trophy className="text-emerald-500" />} label="Punjab Ranking" value={stats.rank} footer="Monthly Benchmark" />
             </div>
 
             {/* Exam Alert Subscription (Phase 120) */}
