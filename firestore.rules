@@ -19,28 +19,29 @@ service cloud.firestore {
     }
 
     function isContentTeam() {
-      return isAdmin() || (isAuthenticated() && getUserData().role in ['CONTENT_MANAGER', 'QUESTION_REVIEWER']);
+      return isAdmin() || (isAuthenticated() && getUserData().role in ['CONTENT_MANAGER', 'QUESTION_REVIEWER', 'CURRENT_AFFAIRS_EDITOR']);
     }
 
     function isSupport() {
-      return isAdmin() || (isAuthenticated() && getUserData().role == 'SUPPORT_AGENT');
+      return isAdmin() || (isAuthenticated() && getUserData().role in ['SUPPORT_AGENT', 'QUESTION_REVIEWER']);
     }
 
-    // --- Enterprise Data Rules ---
+    // --- Publicly Readable Institutional Data ---
+    // These collections are accessible by anyone for browsing the catalog and analysis.
     match /boards/{id} { allow read: if true; allow write: if isAdmin(); }
     match /exams/{id} { allow read: if true; allow write: if isAdmin(); }
     match /subjects/{id} { allow read: if true; allow write: if isContentTeam(); }
-    
+    match /mocks/{id} { allow read: if true; allow write: if isContentTeam(); }
+    match /current_affairs/{id} { allow read: if true; allow write: if isContentTeam(); }
+    match /notifications/{id} { allow read: if true; allow write: if isContentTeam(); }
+    match /pyqs/{id} { allow read: if true; allow write: if isContentTeam(); }
+    match /settings/{id} { allow read: if true; allow write: if isAdmin(); }
+
+    // --- Authenticated Student Data ---
     match /questions/{id} { 
       allow read: if isAuthenticated(); 
       allow create: if isContentTeam();
       allow update: if isContentTeam();
-      allow delete: if isAdmin();
-    }
-
-    match /mocks/{id} { 
-      allow read: if true; 
-      allow create, update: if isContentTeam();
       allow delete: if isAdmin();
     }
 
@@ -51,16 +52,36 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    match /settings/{id} { allow read: if true; allow write: if isAdmin(); }
-    match /current_affairs/{id} { allow read: if true; allow write: if isContentTeam(); }
-    match /notifications/{id} { allow read: if true; allow write: if isContentTeam(); }
-    match /pyqs/{id} { allow read: if true; allow write: if isContentTeam(); }
-    match /reports/{id} { allow create: if isAuthenticated(); allow read, update: if isSupport(); }
-    match /audit_logs/{id} { allow read: if isAdmin(); allow create: if isContentTeam(); }
-    match /bookmarks/{id} { allow read, write: if isAuthenticated() && request.resource.data.userId == request.auth.uid; }
-    match /test_sessions/{id} { allow read, write: if isAuthenticated() && (id.startsWith(request.auth.uid) || isAdmin()); }
-    match /results/{id} { allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin()); allow create: if isAuthenticated(); }
+    match /reports/{id} { 
+      allow create: if isAuthenticated(); 
+      allow read, update: if isSupport() || isAdmin(); 
+      allow delete: if isAdmin();
+    }
 
+    match /bookmarks/{id} { 
+      allow read, write: if isAuthenticated() && request.resource.data.userId == request.auth.uid; 
+    }
+
+    match /test_sessions/{id} { 
+      allow read, write: if isAuthenticated() && (id.startsWith(request.auth.uid) || isAdmin()); 
+    }
+
+    match /results/{id} { 
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin()); 
+      allow create: if isAuthenticated(); 
+    }
+    
+    match /support_tickets/{id} {
+      allow create: if true;
+      allow read, update, delete: if isSupport() || isAdmin();
+    }
+
+    match /audit_logs/{id} { 
+      allow read: if isAdmin(); 
+      allow create: if isContentTeam() || isSupport(); 
+    }
+
+    // Global admin fallback for the founder
     match /{document=**} {
       allow read, write: if request.auth.token.email == 'arshdeepgrewal1122@gmail.com';
     }

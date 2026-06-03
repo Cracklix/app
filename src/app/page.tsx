@@ -15,22 +15,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
-  CalendarDays, 
-  ChevronRight, 
   Trophy, 
   Zap, 
   ShieldCheck, 
-  TrendingUp, 
-  BrainCircuit, 
   Sparkles, 
   BookOpen, 
   ClipboardList,
   Users,
   ArrowRight,
-  Bell,
   PlayCircle,
   Timer,
-  CheckCircle2
+  BrainCircuit,
+  ChevronRight,
+  Bell
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -56,8 +53,6 @@ export default function HomePage() {
   }, [db, user])
   const { data: activeSessions } = useCollection<any>(sessionQuery)
   const lastSession = activeSessions?.[0]
-
-  const { data: usersCount } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]));
 
   return (
     <main className="min-h-screen bg-white">
@@ -102,7 +97,7 @@ export default function HomePage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center items-center">
                <TrustMetric icon={<BookOpen className="text-primary" />} label="Punjab Verified MCQs" value="10,000+" />
                <TrustMetric icon={<ClipboardList className="text-blue-400" />} label="Institutional Mocks" value="500+" />
-               <TrustMetric icon={<Users className="text-emerald-400" />} label="Active Aspirant Nodes" value={`${usersCount?.length || '15,000'}+`} />
+               <TrustMetric icon={<Users className="text-emerald-400" />} label="Active Aspirant Nodes" value="15,000+" />
                <TrustMetric icon={<ShieldCheck className="text-amber-400" />} label="2026 Board Patterns" value="Verified" />
             </div>
          </div>
