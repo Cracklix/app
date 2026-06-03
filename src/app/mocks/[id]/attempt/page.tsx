@@ -22,7 +22,8 @@ import {
   Monitor,
   CheckCircle2,
   Trash2,
-  Settings
+  Settings,
+  Languages
 } from "lucide-react"
 import {
   AlertDialog,
@@ -48,6 +49,18 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 
 type LangMode = 'en' | 'pa' | 'bilingual'
+
+const SUBJECT_MAP: Record<string, string> = {
+  'punjabi-qualifying': 'Mandatory Punjabi',
+  'punjab-history': 'Punjab History & Culture',
+  'gk-ca': 'General Knowledge & Current Affairs',
+  'reasoning': 'Logical Reasoning',
+  'math': 'Numerical Ability',
+  'ict': 'ICT (Computers)',
+  'english': 'General English',
+  'cdp': 'Child Development',
+  'accounts': 'Financial Accounting'
+};
 
 export default function MockAttemptPage() {
   const params = useParams()
@@ -161,7 +174,7 @@ export default function MockAttemptPage() {
     let correctCount = 0
 
     questions.forEach((q, idx) => {
-      const subj = q.section || q.subjectId || "General Awareness"
+      const subj = q.subjectId || "General Test"
       if (!subjectStats[subj]) subjectStats[subj] = { total: 0, correct: 0, attempted: 0 }
       subjectStats[subj].total++
       if (answers[idx] !== undefined) {
@@ -216,13 +229,14 @@ export default function MockAttemptPage() {
   if (mockLoading || loadingQuestions) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-6">
        <Loader2 className="h-10 w-10 text-primary animate-spin" />
-       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Initializing Secure Hub...</p>
+       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Initializing Secure CBT Hub...</p>
     </div>
   )
 
   const q = questions[currentIdx]
   const activePaper = q?.paper || (currentIdx < 50 ? "PAPER A: PUNJABI QUALIFYING" : "PAPER B: MAIN EXAM");
-  const activeSection = q?.section || q?.subjectId || "General Test";
+  const rawSubject = q?.section || q?.subjectId || "General Test";
+  const activeSection = SUBJECT_MAP[rawSubject] || rawSubject;
 
   const renderOptionContent = (key: string) => {
     const en = q[`option${key}En`];
@@ -232,17 +246,17 @@ export default function MockAttemptPage() {
     if (language === 'bilingual') {
       return (
         <div className="flex flex-col text-left py-0.5">
-          <span className="text-[13px] text-slate-500 font-medium leading-tight">{en}</span>
+          <span className="text-[12px] text-slate-500 font-medium leading-tight">{en}</span>
           {hasValidPa ? (
-            <span className="text-[15px] text-[#0B1528] font-bold block mt-0.5">{pa}</span>
+            <span className="text-[14px] text-[#0B1528] font-bold block mt-0.5">{pa}</span>
           ) : (
             <span className="text-[10px] text-rose-500 italic block mt-0.5">(Pa Translation Pending)</span>
           )}
         </div>
       );
     }
-    if (language === 'pa') return <span className="text-[15px] font-bold text-[#0B1528]">{pa || en}</span>;
-    return <span className="text-[15px] font-medium text-slate-700">{en}</span>;
+    if (language === 'pa') return <span className="text-[14px] font-bold text-[#0B1528]">{pa || en}</span>;
+    return <span className="text-[14px] font-medium text-slate-700">{en}</span>;
   }
 
   return (
@@ -314,17 +328,17 @@ export default function MockAttemptPage() {
              </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
-             <div className="max-w-4xl mx-auto space-y-8">
+          <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar">
+             <div className="max-w-4xl mx-auto space-y-6">
                 <div className="space-y-4 text-left">
                    {(language === 'en' || language === 'bilingual') && (
-                      <p className="text-lg md:text-xl lg:text-2xl font-bold leading-relaxed text-[#0B1528] whitespace-pre-line antialiased">
+                      <p className="text-base md:text-xl font-bold leading-relaxed text-[#0B1528] whitespace-pre-line antialiased">
                          {q.questionEn}
                       </p>
                    )}
-                   {language === 'bilingual' && <div className="h-px w-16 bg-slate-100 my-2" />}
+                   {language === 'bilingual' && <div className="h-px w-12 bg-slate-100 my-2" />}
                    {(language === 'pa' || language === 'bilingual') && (
-                      <p className="text-lg md:text-xl lg:text-2xl font-bold leading-relaxed text-[#0B1528] whitespace-pre-line antialiased">
+                      <p className="text-base md:text-xl font-bold leading-relaxed text-[#0B1528] whitespace-pre-line antialiased">
                          {q.questionPa || q.questionEn}
                       </p>
                    )}
@@ -333,13 +347,13 @@ export default function MockAttemptPage() {
                 <RadioGroup 
                   value={answers[currentIdx]?.toString() || ""} 
                   onValueChange={(val) => setAnswers(prev => ({ ...prev, [currentIdx]: parseInt(val) }))} 
-                  className="grid grid-cols-1 gap-3"
+                  className="grid grid-cols-1 gap-2.5"
                 >
                   {['A', 'B', 'C', 'D'].map((key, i) => {
                     const isSelected = answers[currentIdx] === i
                     return (
                       <div key={i} onClick={() => setAnswers(prev => ({ ...prev, [currentIdx]: i }))} className={cn(
-                        "flex items-center space-x-4 p-3.5 border-2 rounded-xl transition-all cursor-pointer bg-white shadow-sm hover:shadow-md",
+                        "flex items-center space-x-3 p-2.5 border-2 rounded-xl transition-all cursor-pointer bg-white shadow-sm hover:shadow-md",
                         isSelected ? 'border-primary ring-4 ring-primary/5' : 'border-slate-50'
                       )}>
                          <RadioGroupItem value={i.toString()} id={`opt-${i}`} className="text-primary border-slate-200 shrink-0 h-4 w-4" />
@@ -347,7 +361,7 @@ export default function MockAttemptPage() {
                             {renderOptionContent(key)}
                          </Label>
                          <div className={cn(
-                          "h-8 w-8 shrink-0 rounded-lg flex items-center justify-center text-[10px] font-black transition-all",
+                          "h-6 w-6 shrink-0 rounded-lg flex items-center justify-center text-[10px] font-black transition-all",
                           isSelected ? 'bg-primary text-white shadow-lg' : 'bg-slate-50 text-slate-400'
                         )}>{key}</div>
                       </div>
@@ -357,13 +371,13 @@ export default function MockAttemptPage() {
              </div>
           </div>
 
-          <footer className="h-16 border-t border-slate-200 bg-white px-3 md:px-6 flex items-center justify-between shrink-0 z-50 shadow-inner">
+          <footer className="h-14 border-t border-slate-200 bg-white px-3 md:px-6 flex items-center justify-between shrink-0 z-50 shadow-inner">
              <div className="flex gap-2">
-                <Button variant="outline" className="rounded-xl h-10 px-4 font-black uppercase text-[9px] tracking-widest border-slate-200 hidden md:flex" onClick={handlePrev} disabled={currentIdx === 0}>Previous</Button>
-                <Button variant="outline" className="rounded-xl h-10 px-4 font-black uppercase text-[9px] tracking-widest border-slate-200 text-slate-400 hover:bg-slate-50" onClick={clearResponse}>Clear</Button>
+                <Button variant="outline" className="rounded-xl h-9 px-4 font-black uppercase text-[9px] tracking-widest border-slate-200 hidden md:flex" onClick={handlePrev} disabled={currentIdx === 0}>Previous</Button>
+                <Button variant="outline" className="rounded-xl h-9 px-4 font-black uppercase text-[9px] tracking-widest border-slate-200 text-slate-400 hover:bg-slate-50" onClick={clearResponse}>Clear</Button>
                 <Button 
                   variant="outline" 
-                  className={cn("rounded-xl h-10 px-4 font-black uppercase text-[9px] tracking-widest transition-all", flagged.includes(currentIdx) ? "bg-amber-500 border-amber-500 text-white" : "border-slate-200 text-amber-600")} 
+                  className={cn("rounded-xl h-9 px-4 font-black uppercase text-[9px] tracking-widest transition-all", flagged.includes(currentIdx) ? "bg-amber-500 border-amber-500 text-white" : "border-slate-200 text-amber-600")} 
                   onClick={markForReview}
                 >
                    Review & Next
@@ -373,7 +387,7 @@ export default function MockAttemptPage() {
              <div className="flex items-center gap-3">
                 <Sheet>
                    <SheetTrigger asChild>
-                      <Button variant="ghost" className="h-10 px-4 rounded-xl text-slate-400 font-black uppercase text-[9px] tracking-widest gap-2 hover:bg-slate-50 lg:hidden border border-slate-100">
+                      <Button variant="ghost" className="h-9 px-4 rounded-xl text-slate-400 font-black uppercase text-[9px] tracking-widest gap-2 hover:bg-slate-50 lg:hidden border border-slate-100">
                          <LayoutGrid className="h-4 w-4" /> Palette
                       </Button>
                    </SheetTrigger>
@@ -394,14 +408,14 @@ export default function MockAttemptPage() {
                       </div>
                    </SheetContent>
                 </Sheet>
-                <Button className="bg-[#0B1528] hover:bg-black text-white h-11 px-8 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl" onClick={handleNext}>
-                  {currentIdx === questions.length - 1 ? 'End Review' : 'Save & Next'}
+                <Button className="bg-[#0B1528] hover:bg-black text-white h-10 px-8 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl" onClick={handleNext}>
+                  {currentIdx === questions.length - 1 ? 'Finalize' : 'Save & Next'}
                 </Button>
              </div>
           </footer>
         </div>
 
-        <aside className="w-[320px] border-l border-slate-200 bg-white p-6 hidden lg:flex flex-col overflow-hidden">
+        <aside className="w-[300px] border-l border-slate-200 bg-white p-5 hidden lg:flex flex-col overflow-hidden">
            <div className="flex-1 overflow-y-auto custom-scrollbar">
               <QuestionPalette 
                 totalQuestions={questions.length} 

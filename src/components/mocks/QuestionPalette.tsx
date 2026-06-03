@@ -16,8 +16,8 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Refined Dense Exam Palette.
- * Ensures 25 nodes are visible in a compact grid without internal scrolling.
+ * @fileOverview Refined Dense Exam Palette (Final Audit Grid).
+ * Strictly showing 25 numbers in a single view with state mapping.
  */
 
 export default function QuestionPalette({
@@ -49,7 +49,7 @@ export default function QuestionPalette({
   }), [totalQuestions, answeredIndices, flaggedIndices, visitedIndices])
 
   return (
-    <div className="space-y-6 flex flex-col h-full text-left overflow-hidden">
+    <div className="space-y-4 flex flex-col h-full text-left overflow-hidden">
       {/* Live Stats Summary - Compact Grid */}
       <div className="grid grid-cols-2 gap-2 shrink-0">
          <SummaryNode count={summary.answered} label="Ans" color="bg-emerald-600" />
@@ -58,30 +58,30 @@ export default function QuestionPalette({
          <SummaryNode count={summary.notAnswered} label="NA" color="bg-rose-500" />
       </div>
 
-      <div className="space-y-4 flex-1 flex flex-col">
+      <div className="space-y-3 flex-1 flex flex-col">
          {/* Navigation Range Selector */}
-         <div className="flex items-center justify-between bg-slate-50 p-1.5 rounded-xl border border-slate-100 shrink-0">
+         <div className="flex items-center justify-between bg-slate-50 p-1 rounded-lg border border-slate-100 shrink-0">
             <button 
                onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
                disabled={currentPage === 0}
-               className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-white disabled:opacity-20 transition-all shadow-sm border border-transparent hover:border-slate-200"
+               className="h-6 w-6 rounded flex items-center justify-center hover:bg-white disabled:opacity-10"
             >
-               <ChevronLeft className="h-4 w-4" />
+               <ChevronLeft className="h-3 w-3" />
             </button>
-            <p className="text-[9px] font-black uppercase text-[#0B1528] tracking-[0.2em]">
-               Questions {startIdx + 1} - {endIdx}
+            <p className="text-[9px] font-black uppercase text-[#0B1528] tracking-widest">
+               {startIdx + 1} - {endIdx}
             </p>
             <button 
                onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
                disabled={currentPage === totalPages - 1}
-               className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-white disabled:opacity-20 transition-all shadow-sm border border-transparent hover:border-slate-200"
+               className="h-6 w-6 rounded flex items-center justify-center hover:bg-white disabled:opacity-10"
             >
-               <ChevronRight className="h-4 w-4" />
+               <ChevronRight className="h-3 w-3" />
             </button>
          </div>
 
          {/* 5x5 Grid for exactly 25 items */}
-         <div className="grid grid-cols-5 gap-2 pb-4">
+         <div className="grid grid-cols-5 gap-1.5">
             {currentRange.map((idx) => {
                const isCurrent = currentIndex === idx
                const isAnswered = answeredIndices.includes(idx)
@@ -94,7 +94,7 @@ export default function QuestionPalette({
                      key={idx}
                      onClick={() => onSelect(idx)}
                      className={cn(
-                        "h-9 w-9 md:h-10 md:w-10 rounded-lg text-[10px] font-black transition-all border flex items-center justify-center relative",
+                        "h-9 w-9 rounded-md text-[10px] font-black transition-all border flex items-center justify-center",
                         isCurrent ? "bg-blue-600 border-blue-600 text-white z-10 shadow-lg scale-105" : "border-transparent",
                         !isCurrent && isBoth && "bg-purple-600 text-white",
                         !isCurrent && isAnswered && !isFlagged && "bg-emerald-600 text-white",
@@ -109,8 +109,8 @@ export default function QuestionPalette({
             })}
          </div>
 
-         {/* Official Legend - Compact */}
-         <div className="pt-4 border-t border-slate-100 grid grid-cols-1 gap-2">
+         {/* Legend - Compact */}
+         <div className="pt-3 border-t border-slate-100 space-y-1.5">
             <LegendRow color="bg-emerald-600" label="Answered" />
             <LegendRow color="bg-rose-500" label="Not Answered" />
             <LegendRow color="bg-amber-500" label="Marked for Review" />
@@ -124,11 +124,11 @@ export default function QuestionPalette({
 
 function SummaryNode({ count, label, color, textColor, className }: any) {
   return (
-    <div className={cn("p-2 rounded-xl bg-white border border-slate-100 flex items-center gap-2 shadow-sm", className)}>
-       <div className={cn("h-6 w-6 rounded-md flex items-center justify-center text-[10px] font-black text-white", color, textColor)}>
+    <div className={cn("p-1.5 rounded-lg bg-white border border-slate-100 flex items-center gap-2 shadow-sm", className)}>
+       <div className={cn("h-5 w-5 rounded flex items-center justify-center text-[9px] font-black text-white", color, textColor)}>
           {count}
        </div>
-       <span className="text-[8px] font-black uppercase text-slate-400 tracking-wider">{label}</span>
+       <span className="text-[7px] font-black uppercase text-slate-400 tracking-wider">{label}</span>
     </div>
   )
 }
@@ -136,8 +136,8 @@ function SummaryNode({ count, label, color, textColor, className }: any) {
 function LegendRow({ color, label }: any) {
   return (
     <div className="flex items-center gap-2">
-       <div className={cn("h-3 w-3 rounded shadow-sm shrink-0", color)} />
-       <span className="text-[9px] font-bold uppercase text-slate-500 tracking-wider">{label}</span>
+       <div className={cn("h-2.5 w-2.5 rounded shrink-0", color)} />
+       <span className="text-[8px] font-bold uppercase text-slate-500 tracking-wider">{label}</span>
     </div>
   )
 }
