@@ -16,7 +16,7 @@ interface QuestionPaletteProps {
 
 /**
  * @fileOverview Final Paginated Audit Map.
- * Optimized: Perfectly aligned grid nodes to prevent "half-cut" visual errors.
+ * Updated: Replaced "NODES" with "QUESTIONS" and optimized 5x5 grid alignment.
  */
 
 export default function QuestionPalette({
@@ -102,7 +102,7 @@ export default function QuestionPalette({
                )
             })}
          </div>
-         <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest text-center">Nodes {startIdx + 1} — {endIdx}</p>
+         <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest text-center">QUESTIONS {startIdx + 1} — {endIdx}</p>
       </div>
     </div>
   )

@@ -35,7 +35,7 @@ type LangMode = 'en' | 'reg' | 'bilingual'
 
 /**
  * @fileOverview Final Testbook-Style CBT Engine.
- * Fixed: Bilingual duplication check and dynamic metadata section mapping.
+ * Fixed: Bilingual duplication check with trim() and paper-specific subheaders.
  */
 
 export default function MockAttemptPage() {
@@ -169,11 +169,17 @@ export default function MockAttemptPage() {
     'english': 'General English'
   }
 
-  const activePaper = q?.paper || (currentIdx < 50 ? "PAPER A: PUNJABI QUALIFYING" : "PAPER B: MAIN EXAM")
-  const activeSection = subjectNames[q?.subjectId] || q?.section || "General Assessment"
+  // Paper A logic for subheader fixes
+  const isPaperA = currentIdx < 50;
+  const activePaper = q?.paper || (isPaperA ? "PAPER A: PUNJABI QUALIFYING" : "PAPER B: MAIN EXAM")
+  const activeSection = isPaperA ? "Punjabi Language & Grammar" : (subjectNames[q?.subjectId] || q?.section || "General Assessment")
 
-  // Duplication Check: Don't show English if it's missing or identical to regional text
-  const showEn = (language === 'en' || language === 'bilingual') && q?.questionEn && q?.questionEn !== q?.[`question${regKey}`]
+  // Duplication Check: Strictly hide EN if identical to REG (trimmed)
+  const qEnTrim = (q?.questionEn || "").trim()
+  const qRegTrim = (q?.[`question${regKey}`] || "").trim()
+  const hasDistinctTranslation = qEnTrim && qRegTrim && qEnTrim !== qRegTrim
+
+  const showEn = (language === 'en' || (language === 'bilingual' && hasDistinctTranslation)) && qEnTrim
   const showReg = (language === 'reg' || language === 'bilingual')
 
   return (
@@ -237,7 +243,7 @@ export default function MockAttemptPage() {
                     const isSelected = answers[currentIdx] === i
                     const optEn = q?.[`option${k}En`]
                     const optReg = q?.[`option${k}${regKey}`]
-                    const hasValidTranslation = optReg && optReg !== optEn
+                    const hasValidTranslation = optReg && optReg.trim() !== (optEn || "").trim()
 
                     return (
                       <div key={i} onClick={() => setAnswers(prev => ({ ...prev, [currentIdx]: i }))} className={cn(
