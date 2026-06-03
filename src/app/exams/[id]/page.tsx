@@ -1,4 +1,3 @@
-
 "use client"
 
 import Navbar from "@/components/layout/Navbar"
@@ -29,14 +28,13 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/tabs"
 import { useMemo, useState } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Progress } from "@/components/ui/progress"
 
 /**
- * @fileOverview Phase 76-77: Augmented Exam Hub.
- * Features: Cutoff Database, Syllabus Tracker, and Institutional Success Benchmarks.
+ * @fileOverview Phase 137: Institutional Exam Hub with Cutoff DB and Syllabus Tracker.
  */
 
 const SYLLABUS = [
@@ -61,7 +59,7 @@ export default function ExamHubPage() {
   const { data: exam, loading } = useDoc<any>(useMemo(() => (db ? doc(db, "exams", examId) : null), [db, examId]))
   const { data: board } = useDoc<any>(useMemo(() => (db && exam ? doc(db, "boards", exam.boardId) : null), [db, exam]))
   
-  const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("examId", "==", examId)) : null), [db, examId])
+  const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("examId", "==", examId), where("published", "==", true)) : null), [db, examId])
   const { data: mocks } = useCollection<any>(mocksQuery)
 
   const [completedTopics, setCompletedTopics] = useState([0, 3])

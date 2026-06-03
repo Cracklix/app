@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 
 import Link from "next/link";
 import Logo from "@/components/brand/Logo";
@@ -8,6 +7,11 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { useMemo } from "react";
 
+/**
+ * @fileOverview Final Institutional Footer Node (Phase 144).
+ * Positions Arsh Grewal Management as the exclusive Punjab Authority.
+ */
+
 export default function Footer() {
   const db = useFirestore();
   const settingsRef = useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]);
@@ -15,7 +19,7 @@ export default function Footer() {
 
   const content = {
     footerText: settings?.footerText || "Punjab's most advanced government exam portal. Designed for aspirants, built with integrity.",
-    email: settings?.supportEmail || "cracklixhelp@gmail.com",
+    email: settings?.supportEmail || "arshdeepgrewal1122@gmail.com",
     phone: settings?.supportPhone || "+91 98881 88602",
     fb: settings?.facebookUrl || "#",
     ig: settings?.instagramUrl || "#",

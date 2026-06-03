@@ -11,6 +11,11 @@ import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection } from "firebase/firestore"
 
+/**
+ * @fileOverview Phase 136: Punjab AI Search.
+ * Unified search for Mocks, Questions, PYQs, and Current Affairs.
+ */
+
 export default function SearchPage() {
   const db = useFirestore()
   const [query, setQuery] = useState("")

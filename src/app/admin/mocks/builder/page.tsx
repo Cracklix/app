@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/tabs"
 import { 
   ChevronLeft, 
   Database, 
@@ -29,7 +29,7 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Phase 55: Smart Mock Builder with Strict Validation.
+ * @fileOverview Phase 138: Smart Mock Assembler with One-Click Generation.
  * Features: Blueprint-driven Auto-Assembly & Structural Content Audit.
  */
 
@@ -270,7 +270,7 @@ export default function MockBuilderPage() {
         <div className="lg:col-span-8">
            <Tabs defaultValue="manual" className="space-y-8">
               <TabsList className="bg-white/5 border border-white/5 rounded-2xl p-1.5 h-16 w-fit shadow-xl">
-                 <TabsTrigger value="smart" className="rounded-xl h-full px-8 font-black uppercase text-[10px] gap-3 data-[state=active]:bg-primary data-[state=active]:text-white"><Sparkles className="h-4 w-4" /> Auto Assembler</TabsTrigger>
+                 <TabsTrigger value="smart" className="rounded-xl h-full px-8 font-black uppercase text-[10px] gap-3 data-[state=active]:bg-primary data-[state=active]:text-white"><Sparkles className="h-4 w-4" /> One-Click Assembler</TabsTrigger>
                  <TabsTrigger value="manual" className="rounded-xl h-full px-8 font-black uppercase text-[10px] gap-3 data-[state=active]:bg-primary data-[state=active]:text-white"><Database className="h-4 w-4" /> Library Selector</TabsTrigger>
               </TabsList>
 

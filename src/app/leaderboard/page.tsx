@@ -13,6 +13,10 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
+/**
+ * @fileOverview Phase 139: Live Achievement Podium with regional filtering.
+ */
+
 export default function LeaderboardPage() {
   const db = useFirestore()
   const [boardFilter, setBoardFilter] = useState("Overall")
@@ -77,7 +81,7 @@ export default function LeaderboardPage() {
              ))}
           </div>
 
-          {/* Podium */}
+          {/* Podium (Phase 139) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end pt-12">
              <PodiumCard rank={2} name="Amritpal Singh" score="2450" accuracy="92%" />
              <PodiumCard rank={1} name="Harmanjit Kaur" score="2890" accuracy="96%" isMain />

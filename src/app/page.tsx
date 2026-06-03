@@ -1,4 +1,3 @@
-
 "use client"
 
 import Navbar from "@/components/layout/Navbar";
@@ -55,7 +54,7 @@ export default function HomePage() {
       <Navbar />
       <Hero />
 
-      {/* Authority Trust Bar (Phase 130) */}
+      {/* Authority Trust Bar (Phase 118) */}
       <section className="bg-[#08152D] border-y border-white/5 py-12 relative overflow-hidden">
          <div className="absolute top-0 right-0 p-20 opacity-5 rotate-45"><ShieldCheck className="h-64 w-64 text-white" /></div>
          <div className="container mx-auto px-6 max-w-7xl relative z-10">
