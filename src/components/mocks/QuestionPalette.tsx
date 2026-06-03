@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
@@ -23,9 +23,16 @@ export default function QuestionPalette({
   const PAGE_SIZE = 25
   const totalPages = Math.ceil(totalQuestions / PAGE_SIZE)
   
-  // Automatically sync page with current index
-  const initialPage = Math.floor(currentIndex / PAGE_SIZE)
-  const [currentPage, setCurrentPage] = useState(initialPage)
+  // State for internal pagination of the palette
+  const [currentPage, setCurrentPage] = useState(0)
+
+  // Sync palette page with the active question being viewed
+  useEffect(() => {
+    const targetPage = Math.floor(currentIndex / PAGE_SIZE)
+    if (targetPage !== currentPage) {
+      setCurrentPage(targetPage)
+    }
+  }, [currentIndex, currentPage])
 
   const startIdx = currentPage * PAGE_SIZE
   const endIdx = Math.min(startIdx + PAGE_SIZE, totalQuestions)
@@ -43,7 +50,7 @@ export default function QuestionPalette({
             </span>
          </div>
 
-         {/* Pagination Controls - Institutional Style */}
+         {/* Pagination Controls - Institutional Style (Mirroring Testbook) */}
          <div className="flex items-center justify-between bg-slate-50 p-1.5 rounded-xl border border-slate-100">
             <button 
                onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
@@ -54,7 +61,7 @@ export default function QuestionPalette({
             </button>
             <div className="flex-1 text-center">
                <p className="text-[9px] font-black uppercase tracking-widest text-[#0F172A]">
-                  Node Range {startIdx + 1} — {endIdx}
+                  Qs {startIdx + 1} — {endIdx}
                </p>
             </div>
             <button 
@@ -67,7 +74,7 @@ export default function QuestionPalette({
          </div>
       </div>
       
-      {/* Dense 5-column grid for high node visibility */}
+      {/* Dense 5-column grid for high node visibility - Max 25 per page */}
       <div className="grid grid-cols-5 gap-2.5">
         {currentQuestions.map((idx) => {
           const isCurrent = currentIndex === idx

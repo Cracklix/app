@@ -46,8 +46,8 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Final Official Punjab CBT Engine.
- * Optimized for English-Punjabi pairing. Centered Bilingual Toggle. 
- * Standardized font sizes/colors for both languages (Institutional Navy).
+ * Optimized for English-Punjabi pairing. 
+ * Features Paginated Palette (25 nodes per view).
  */
 
 type LangMode = 'english' | 'punjabi' | 'hindi'
@@ -68,8 +68,8 @@ export default function MockAttemptPage() {
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [flagged, setFlagged] = useState<number[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [language, setLanguage] = useState<LangMode>('punjabi') // Standard state exams default to regional
-  const [isBilingual, setIsBilingual] = useState(true) // Always true by default for Punjab Exams
+  const [language, setLanguage] = useState<LangMode>('punjabi') 
+  const [isBilingual, setIsBilingual] = useState(true) 
   const [remainingTime, setRemainingTime] = useState(0)
   const [sessionRecovered, setSessionRecovered] = useState(false)
 
@@ -197,14 +197,14 @@ export default function MockAttemptPage() {
   const q = questions[currentIdx]
 
   const getQuestionText = (target: LangMode) => {
-    if (target === 'english') return q.questionEn
+    if (target === 'english') return q.questionEn || "Content not available in English"
     if (target === 'punjabi') return q.questionPa || q.questionEn
     if (target === 'hindi') return q.questionHi || q.questionEn
     return q.questionEn
   }
 
   const getOptionText = (opt: 'A'|'B'|'C'|'D', target: LangMode) => {
-    if (target === 'english') return q[`option${opt}En`]
+    if (target === 'english') return q[`option${opt}En`] || "N/A"
     if (target === 'punjabi') return q[`option${opt}Pa`] || q[`option${opt}En`]
     if (target === 'hindi') return q[`option${opt}Hi`] || q[`option${opt}En`]
     return q[`option${opt}En`]
@@ -212,7 +212,6 @@ export default function MockAttemptPage() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-white text-[#0F172A]">
-      {/* Optimized Header with Institutional Language Toggles */}
       <header className="h-14 border-b flex items-center justify-between px-4 md:px-8 bg-[#0B1528] text-white shrink-0 z-50">
         <div className="flex items-center gap-3">
           <ShieldCheck className="h-4 w-4 text-primary" />
@@ -267,7 +266,6 @@ export default function MockAttemptPage() {
         </div>
       </header>
 
-      {/* Progress Node */}
       <div className="h-1 w-full bg-slate-100 shrink-0">
          <div className="h-full bg-primary transition-all duration-500" style={{ width: `${((currentIdx + 1) / questions.length) * 100}%` }} />
       </div>
@@ -275,7 +273,6 @@ export default function MockAttemptPage() {
       <main className="flex flex-1 overflow-hidden relative">
         <div className="flex-1 flex flex-col overflow-hidden bg-slate-50/30">
           
-          {/* Question Meta Area */}
           <div className="px-4 py-2 md:px-8 border-b border-slate-100 bg-white flex items-center justify-between shrink-0">
              <div className="flex items-center gap-3">
                 <Badge className="bg-[#0F172A] text-white border-none px-2.5 py-0.5 rounded-lg font-black text-[9px] uppercase tracking-widest">Q {currentIdx + 1}</Badge>
@@ -307,11 +304,8 @@ export default function MockAttemptPage() {
              </div>
           </div>
 
-          {/* Question Content Area - Identical Styling for Bilingual pairing */}
           <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
              <div className="max-w-4xl mx-auto space-y-4 md:space-y-6">
-                
-                {/* Official Bilingual Stacking: Both use 2xl, Navy, Bold */}
                 <div className="space-y-8 text-left">
                    {isBilingual ? (
                       <>
@@ -338,7 +332,6 @@ export default function MockAttemptPage() {
                    )}
                 </div>
 
-                {/* Options Grid - Mobile Optimized Vertical Stack */}
                 <RadioGroup 
                   value={answers[currentIdx]?.toString() || ""} 
                   onValueChange={(val) => setAnswers(prev => ({ ...prev, [currentIdx]: parseInt(val) }))} 
@@ -373,7 +366,6 @@ export default function MockAttemptPage() {
              </div>
           </div>
 
-          {/* Fixed Footer Controller */}
           <footer className="h-16 border-t border-slate-100 bg-white px-4 md:px-8 flex items-center justify-between shrink-0 shadow-2xl">
              <div className="flex gap-2">
                 <Button variant="outline" size="lg" className="rounded-xl h-10 md:h-12 px-5 font-black uppercase text-[10px] border-slate-100" onClick={() => currentIdx > 0 && setCurrentIdx(currentIdx - 1)} disabled={currentIdx === 0}><ChevronLeft className="h-4 w-4 mr-1" /> Previous</Button>
@@ -398,12 +390,15 @@ export default function MockAttemptPage() {
                       </div>
                    </SheetContent>
                 </Sheet>
-                <Button className="flex-1 md:flex-none bg-[#0F172A] hover:bg-black text-white h-10 md:h-12 px-8 md:px-12 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl" onClick={() => currentIdx < questions.length - 1 && setCurrentIdx(currentIdx + 1)} disabled={currentIdx === questions.length - 1}>Save & Next <ChevronRight className="h-4 w-4 ml-1" /></Button>
+                <Button className="flex-1 md:flex-none bg-[#0F172A] hover:bg-black text-white h-10 md:h-12 px-8 md:px-12 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl" onClick={() => {
+                   if (currentIdx < questions.length - 1) {
+                      setCurrentIdx(currentIdx + 1)
+                   }
+                }}>Save & Next <ChevronRight className="h-4 w-4 ml-1" /></Button>
              </div>
           </footer>
         </div>
 
-        {/* Sidebar Palette (Desktop Only) */}
         <aside className="w-80 border-l border-slate-100 bg-white p-8 hidden xl:block overflow-y-auto custom-scrollbar">
            <QuestionPalette totalQuestions={questions.length} currentIndex={currentIdx} answeredIndices={Object.keys(answers).map(Number)} flaggedIndices={flagged} onSelect={setCurrentIdx} />
            <div className="mt-12 p-8 bg-[#0F172A] rounded-[2rem] space-y-4 text-left shadow-2xl relative overflow-hidden">
