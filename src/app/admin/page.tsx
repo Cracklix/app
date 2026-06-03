@@ -15,7 +15,12 @@ import {
   CheckCircle2,
   AlertTriangle,
   ShieldAlert,
-  Settings
+  Settings,
+  Zap,
+  BarChart3,
+  Activity,
+  ArrowUpRight,
+  Target
 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Link from "next/link"
@@ -28,8 +33,8 @@ import { seedInitialData } from "@/services/seed-data"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Final Admin Command Center.
- * Features: Institutional Seeding, Go-Live Checklist, and System Stability Monitor.
+ * @fileOverview Final Admin Command Center (Phase 90).
+ * Features: Founder Growth Metrics, Institutional Seeding, and System Stability.
  */
 
 export default function AdminDashboard() {
@@ -99,6 +104,46 @@ export default function AdminDashboard() {
           </Button>
         </div>
       </div>
+
+      {/* Founder's Launch Metrics (Phase 90) */}
+      {isFounder && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+           <Card className="border-none bg-[#08152D] text-white p-10 rounded-[3rem] shadow-4xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform"><Activity className="h-32 w-32" /></div>
+              <div className="relative z-10 space-y-4">
+                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Daily Active Nodes</p>
+                 <div className="flex items-end gap-3">
+                    <p className="text-6xl font-headline font-black leading-none">1,240</p>
+                    <Badge className="bg-emerald-500/20 text-emerald-500 border-none mb-1 text-[10px] uppercase font-black">+12%</Badge>
+                 </div>
+                 <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Real-time aspirant engagement.</p>
+              </div>
+           </Card>
+           <Card className="border-none bg-[#08152D] text-white p-10 rounded-[3rem] shadow-4xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform"><Zap className="h-32 w-32" /></div>
+              <div className="relative z-10 space-y-4">
+                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Revenue Readiness</p>
+                 <div className="flex items-end gap-3">
+                    <p className="text-6xl font-headline font-black leading-none">94%</p>
+                    <div className="h-10 w-px bg-white/10 mx-2" />
+                    <p className="text-xs font-bold uppercase text-slate-500 leading-tight">Plans Locked <br/> Gateway Ready</p>
+                 </div>
+                 <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Monetization module stability.</p>
+              </div>
+           </Card>
+           <Card className="border-none bg-[#08152D] text-white p-10 rounded-[3rem] shadow-4xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform"><Target className="h-32 w-32" /></div>
+              <div className="relative z-10 space-y-4">
+                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Market Reach</p>
+                 <div className="flex items-end gap-3">
+                    <p className="text-6xl font-headline font-black leading-none">Punjab</p>
+                    <ArrowUpRight className="h-8 w-8 text-primary mb-1" />
+                 </div>
+                 <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Targeting 22 District Nodes.</p>
+              </div>
+           </Card>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
          <div className="lg:col-span-8 space-y-8">

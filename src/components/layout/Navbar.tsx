@@ -2,7 +2,7 @@
 'use client';
 
 import Link from "next/link";
-import { Menu, X, User, LogOut, ShieldCheck, ChevronDown, Bell, LayoutDashboard, Search, Trophy, Bookmark, Megaphone, CalendarDays } from "lucide-react";
+import { Menu, X, User, LogOut, ShieldCheck, ChevronDown, Bell, LayoutDashboard, Search, Trophy, Bookmark, Megaphone, CalendarDays, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
 import { useState, useMemo } from "react";
@@ -23,7 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Refined Navbar with Phase 75 Exam Calendar integration.
+ * @fileOverview Refined Navbar with Phase 85 Notes integration.
  */
 
 export default function Navbar() {
@@ -45,8 +45,8 @@ export default function Navbar() {
   const links = [
     { label: "Exams", href: "/exams" },
     { label: "Mocks", href: "/mocks" },
-    { label: "Calendar", href: "/exam-calendar", icon: <CalendarDays className="h-4 w-4" /> },
-    { label: "Analysis", href: "/current-affairs" },
+    { label: "Notes", href: "/notes", icon: <Zap className="h-4 w-4 text-emerald-500" /> },
+    { label: "Calendar", href: "/exam-calendar" },
   ];
 
   const isFounder = user?.email === 'arshdeepgrewal1122@gmail.com';
@@ -112,6 +112,7 @@ export default function Navbar() {
                     <DropdownMenuLabel className="font-headline font-bold px-4 py-3 text-slate-400 text-[10px] uppercase tracking-widest">Account Hub</DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-white/5 mb-2" />
                     <DropdownNavItem href="/dashboard" icon={<LayoutDashboard />} label="Performance Engine" />
+                    <DropdownNavItem href="/notes" icon={<Zap className="text-emerald-500" />} label="Notes Library" />
                     <DropdownNavItem href="/exam-calendar" icon={<CalendarDays className="text-primary" />} label="Recruitment Tracker" />
                     <DropdownNavItem href="/leaderboard" icon={<Trophy className="text-amber-500" />} label="Punjab Hall of Fame" />
                     <DropdownNavItem href="/bookmarks" icon={<Bookmark className="text-primary" />} label="Study Repository" />

@@ -9,9 +9,14 @@ import { collection, query, orderBy, where } from "firebase/firestore"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Clock, BookOpen, Trophy, ArrowRight, Filter, ShieldCheck, Zap, Layers } from "lucide-react"
+import { Clock, BookOpen, Trophy, ArrowRight, Filter, ShieldCheck, Zap, Layers, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
+
+/**
+ * @fileOverview Final Mock Hub (Phase 87).
+ * Features: Practice Mode Trigger and Institutional Series.
+ */
 
 export default function MocksPage() {
   const db = useFirestore()
@@ -37,6 +42,10 @@ export default function MocksPage() {
             <p className="text-slate-500 font-medium text-lg">High-fidelity full length and sectional assessments for Punjab Govt exams.</p>
           </div>
           <div className="flex gap-4">
+             {/* Practice Mode Trigger (Phase 87) */}
+             <Button className="rounded-2xl h-14 px-10 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[10px] tracking-widest gap-3 shadow-xl shadow-emerald-900/20">
+                <Sparkles className="h-5 w-5" /> Quick Practice
+             </Button>
              <Button variant="outline" className="rounded-2xl h-14 px-8 border-slate-200 bg-white font-bold gap-3 shadow-sm">
                 <Filter className="h-5 w-5 text-slate-400" /> All Boards
              </Button>
