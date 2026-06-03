@@ -4,11 +4,10 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     /**
-     * @fileOverview Institutional Security Rules (Phase 182).
+     * @fileOverview Institutional Security Rules (Phase 185).
      * 14 Core Collection Rules structured with explicit access.
-     * Standardized for high-fidelity auditing in Firebase Console.
      * 
-     * DEPLOYMENT_AUDIT_ID: 2026-06-03T16:20:00Z
+     * DEPLOYMENT_AUDIT_ID: 2026-06-03T16:35:00Z
      */
     
     // Global Access Node (Development Cycle)
@@ -17,6 +16,8 @@ service cloud.firestore {
     }
 
     // Explicit collection matches for high-fidelity auditing and listing
+    // This allows the Admin Portal and Dashboard to query these collections without restriction
+    
     match /mocks/{id} {
       allow read, list, write: if true;
     }
