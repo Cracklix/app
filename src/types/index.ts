@@ -1,6 +1,6 @@
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
-export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'CONTENT_MANAGER' | 'QUESTION_REVIEWER' | 'SUPPORT_AGENT' | 'STUDENT';
+export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'CONTENT_MANAGER' | 'QUESTION_REVIEWER' | 'SUPPORT_AGENT' | 'EDITOR' | 'MARKETING_MANAGER' | 'STUDENT';
 export type MockType = 'FULL' | 'SUBJECT' | 'SECTIONAL' | 'PYQ';
 export type ContentStatus = 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED';
 
@@ -21,6 +21,8 @@ export interface Exam {
   totalMocks: number;
   activeQuestions: number;
   duration?: number;
+  syllabus?: { topic: string; weight: string; status: string }[];
+  pattern?: string;
 }
 
 export interface Subject {
@@ -98,6 +100,7 @@ export interface UserProfile {
   status: 'Pro' | 'Free';
   planId?: string;
   referralCount: number;
+  subscriptions?: string[]; // Array of board IDs subscribed for alerts
 }
 
 export interface ContentReport {

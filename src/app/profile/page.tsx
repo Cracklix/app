@@ -1,15 +1,17 @@
 
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useCollection, useFirestore } from "@/firebase"
-import { collection, query, where, orderBy } from "firebase/firestore"
+import { collection, query, where, orderBy, doc, updateDoc } from "firebase/firestore"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 import { 
   User, 
   Mail, 
@@ -25,16 +27,24 @@ import {
   Zap,
   Clock,
   Sparkles,
-  TrophyIcon
+  TrophyIcon,
+  Bell
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { useToast } from "@/hooks/use-toast"
+
+/**
+ * @fileOverview Final Aspirant Profile Node (Phase 120).
+ * Features: Exam Alert Subscriptions and Membership Status.
+ */
 
 export default function ProfilePage() {
   const { user, profile, loading } = useUser()
   const db = useFirestore()
   const router = useRouter()
+  const { toast } = useToast()
 
   useEffect(() => {
     if (!loading && !user) {
@@ -60,6 +70,17 @@ export default function ProfilePage() {
     const bestScore = Math.max(...results.map((r: any) => r.score || 0))
     return { total, avgAccuracy, bestScore, rank: "Top 12%" }
   }, [results])
+
+  const handleToggleSub = async (boardId: string) => {
+    if (!db || !user || !profile) return
+    const currentSubs = profile.subscriptions || []
+    const nextSubs = currentSubs.includes(boardId) 
+      ? currentSubs.filter(s => s !== boardId) 
+      : [...currentSubs, boardId]
+    
+    await updateDoc(doc(db, "users", user.uid), { subscriptions: nextSubs })
+    toast({ title: "Alert Settings Synced", description: `${boardId} alerts updated.` })
+  }
 
   if (loading) {
     return <div className="min-h-screen bg-white flex items-center justify-center"><Sparkles className="h-12 w-12 text-primary animate-pulse" /></div>
@@ -125,6 +146,31 @@ export default function ProfilePage() {
               <MetricCard icon={<TrophyIcon className="text-emerald-500" />} label="Punjab Ranking" value={stats.rank} footer="Monthly Benchmark" />
             </div>
 
+            {/* Exam Alert Subscription (Phase 120) */}
+            <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3.5rem] bg-white overflow-hidden">
+               <CardHeader className="p-12 border-b border-slate-50">
+                  <div className="flex items-center gap-4">
+                     <Bell className="h-6 w-6 text-primary" />
+                     <CardTitle className="font-headline text-2xl font-black text-[#0F172A] uppercase">Exam Alert Subscriptions</CardTitle>
+                  </div>
+                  <CardDescription className="text-slate-400 font-medium">Receive high-priority recruitment notifications for specific boards.</CardDescription>
+               </CardHeader>
+               <CardContent className="p-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {['PSSSB', 'PPSC', 'Punjab Police', 'Education', 'High Court'].map(board => (
+                     <div key={board} className="flex items-center justify-between p-6 bg-slate-50 rounded-[2rem] border border-slate-100 group hover:border-primary/20 transition-all">
+                        <div className="space-y-1">
+                           <p className="font-black text-xs uppercase tracking-widest text-[#0F172A]">{board} Vertical</p>
+                           <p className="text-[10px] text-slate-400 uppercase font-bold">Official Alerts & Results</p>
+                        </div>
+                        <Switch 
+                           checked={(profile.subscriptions || []).includes(board)} 
+                           onCheckedChange={() => handleToggleSub(board)} 
+                        />
+                     </div>
+                  ))}
+               </CardContent>
+            </Card>
+
             <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3.5rem] overflow-hidden bg-white">
                <CardHeader className="p-12 border-b border-slate-50">
                   <div className="flex items-center justify-between">
@@ -133,7 +179,7 @@ export default function ProfilePage() {
                       <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Deep audit of your high-fidelity results</CardDescription>
                     </div>
                     <Button variant="ghost" className="text-primary font-black text-[10px] uppercase tracking-[0.2em] gap-3 hover:bg-primary/5 rounded-xl h-12 px-6">
-                       View Complete Registry <ChevronRight className="h-4 w-4" />
+                       View Registry <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
                </CardHeader>
@@ -155,21 +201,12 @@ export default function ProfilePage() {
                                  </p>
                               </div>
                            </div>
-                           <div className="text-right space-y-1">
-                              <p className="text-3xl font-headline font-black text-[#0F172A] leading-none">{r.score}<span className="text-slate-300 text-lg">/{r.totalQuestions}</span></p>
-                              <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${r.accuracy > 70 ? 'text-emerald-500' : 'text-orange-500'}`}>
-                                {r.accuracy}% Precision
-                              </p>
-                           </div>
                         </div>
                       ))
                     ) : (
                       <div className="p-24 text-center text-slate-300 space-y-6">
                         <ClipboardList className="h-20 w-20 mx-auto opacity-10" />
                         <p className="font-black font-headline uppercase text-xl text-slate-400">No Attempts Recorded</p>
-                        <Button asChild className="bg-primary text-white font-black uppercase tracking-widest text-[10px] h-12 rounded-xl px-10 shadow-2xl">
-                          <Link href="/mocks">Launch Your First Mock</Link>
-                        </Button>
                       </div>
                     )}
                   </div>
@@ -187,21 +224,6 @@ export default function ProfilePage() {
                  <AccountInfo icon={<Calendar className="h-5 w-5" />} label="Platform Registry" value={new Date(profile.createdAt).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })} />
                  <AccountInfo icon={<ShieldCheck className="h-5 w-5" />} label="Security Group" value={`${profile.status} Access`} />
                </div>
-
-               <div className="pt-10 border-t border-slate-50 space-y-6">
-                  <div className="bg-[#0F172A] rounded-[2rem] p-8 text-white relative overflow-hidden group">
-                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform"><Trophy className="h-24 w-24" /></div>
-                     <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-2">Prep Milestone</p>
-                     <p className="text-lg font-black leading-tight">Master {profile.targetExam} 2026 Curriculum</p>
-                     <div className="mt-6 h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-primary shadow-2xl shadow-primary/40 transition-all duration-1000" style={{ width: '35%' }} />
-                     </div>
-                     <div className="flex justify-between items-center mt-4">
-                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Confidence Level: 35%</p>
-                        <p className="text-[9px] font-black text-primary uppercase tracking-widest">Aspirant Lvl 4</p>
-                     </div>
-                  </div>
-               </div>
             </Card>
 
             <Card className="border-none bg-primary text-white shadow-3xl rounded-[3.5rem] p-12 overflow-hidden relative group cursor-pointer">
@@ -211,7 +233,7 @@ export default function ProfilePage() {
                <div className="relative z-10 space-y-6">
                   <Badge className="bg-white text-primary border-none uppercase text-[10px] font-black px-6 py-2 rounded-2xl shadow-xl">Upgrade To Pro</Badge>
                   <h4 className="text-3xl font-headline font-black leading-tight">Access 500+ <br/>Premium Series</h4>
-                  <p className="text-white/80 text-base leading-relaxed font-medium">Unlock AI rationalizations, sectional deep-dives, and Arsh Grewal's strategic analysis.</p>
+                  <p className="text-white/80 text-base leading-relaxed font-medium">Unlock AI rationalizations and Arsh Grewal's strategic analysis.</p>
                   <Button className="w-full bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-[0.2em] h-16 rounded-[1.5rem] mt-6 shadow-2xl">
                     Unlock Portal
                   </Button>

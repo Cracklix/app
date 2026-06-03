@@ -1,8 +1,9 @@
+
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, Database, Users, ShieldCheck, Rocket, Zap, Activity, Target, ShieldAlert, FileWarning, SearchCode, TrendingDown, ClipboardList, TrendingUp, DollarSign, ListChecks, CheckCircle2, AlertCircle } from "lucide-react"
+import { Plus, Database, Users, ShieldCheck, Rocket, Zap, Activity, Target, ShieldAlert, FileWarning, SearchCode, TrendingDown, ClipboardList, TrendingUp, DollarSign, ListChecks, CheckCircle2, AlertCircle, Scale, CalendarDays, Megaphone } from "lucide-react"
 import Link from "next/link"
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase"
 import { collection, doc } from "firebase/firestore"
@@ -14,8 +15,8 @@ import { useToast } from "@/hooks/use-toast"
 import { Progress } from "@/components/ui/progress"
 
 /**
- * @fileOverview Final Admin Command Center (Phase 115 - Operations Node).
- * Features: Development Progress Tracker, Operational To-Do, and Launch KPIs.
+ * @fileOverview Final Admin Command Center (Phase 116-125).
+ * Features: Launch Governance, Content SLAs, and Completion Criteria Monitor.
  */
 
 export default function AdminDashboard() {
@@ -32,16 +33,20 @@ export default function AdminDashboard() {
   const isFounder = user?.email === 'arshdeepgrewal1122@gmail.com';
 
   const devProgress = [
-    { label: "Auth & Roles", val: 100 },
-    { label: "Bulk Parser", val: 100 },
-    { label: "Attempt Engine", val: 100 },
-    { label: "Results Logic", val: 100 },
-    { label: "Question Bank", val: 95 },
-    { label: "Mock Builder", val: 95 },
-    { label: "Current Affairs", val: 90 },
-    { label: "Notifications", val: 90 },
-    { label: "PYQ Archives", val: 90 },
-    { label: "Analytics Engine", val: 85 },
+    { label: "Auth & Governance", val: 100 },
+    { label: "Bulk Extraction", val: 100 },
+    { label: "Audit Workflows", val: 100 },
+    { label: "Results Intelligence", val: 100 },
+    { label: "Exam Hub v1.0", val: 95 },
+    { label: "Mock Architect", val: 95 },
+    { label: "Trust Bar v1.0", val: 90 },
+    { label: "Alert Gazette", val: 90 },
+  ];
+
+  const slaProgress = [
+    { label: "Daily Questions (Target 50)", val: 12, max: 50 },
+    { label: "Daily Analysis (Target 5)", val: 2, max: 5 },
+    { label: "Weekly Mocks (Target 10)", val: 4, max: 10 },
   ];
 
   const avgProgress = Math.round(devProgress.reduce((acc, p) => acc + p.val, 0) / devProgress.length);
@@ -52,15 +57,15 @@ export default function AdminDashboard() {
         <div>
            <div className="flex items-center gap-3 mb-2">
               <ShieldCheck className="h-5 w-5 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Founder Oversight Node</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Launch Governance Node</span>
            </div>
           <h1 className="text-5xl font-headline font-black text-primary uppercase tracking-tight">Command Center</h1>
-          <p className="text-muted-foreground mt-2 text-lg">System Scale: {users?.length || 0} Registered Aspirants.</p>
+          <p className="text-muted-foreground mt-2 text-lg">Platform Node: {users?.length || 0} Registered Aspirants.</p>
         </div>
         <div className="flex gap-4">
            {isFounder && (
              <Button onClick={() => seedInitialData(db!)} className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black h-14 px-8 text-xs uppercase tracking-widest gap-3 shadow-xl transition-all active:scale-95">
-               <Rocket className="h-4 w-4" /> Global Repo Sync
+               <Rocket className="h-4 w-4" /> Initialize Global Repo
              </Button>
            )}
            <Button asChild className="bg-primary hover:bg-primary/90 rounded-2xl h-14 px-10 font-black shadow-2xl uppercase tracking-widest text-xs">
@@ -70,23 +75,23 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-         <StatCard label="Active Nodes" value={users?.length || 0} icon={<Users />} />
-         <StatCard label="MCQ Buffer" value={questions?.length || 0} icon={<Database />} />
-         <StatCard label="Live Series" value={mocks?.filter((m:any) => m.published).length || 0} icon={<ClipboardList />} />
+         <StatCard label="Aspirant Nodes" value={users?.length || 0} icon={<Users />} />
+         <StatCard label="Verified MCQs" value={questions?.length || 0} icon={<Database />} />
+         <StatCard label="Active Series" value={mocks?.filter((m:any) => m.published).length || 0} icon={<ClipboardList />} />
          <StatCard label="Audit Flags" value={reports?.filter((r:any) => r.status === 'PENDING').length || 0} icon={<ShieldAlert />} color="text-rose-500" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
          <div className="lg:col-span-8 space-y-10">
-            {/* Development Progress Tracker (Phase 115) */}
+            {/* Completion Criteria Monitor (Phase 125) */}
             <Card className="border-none shadow-3xl bg-card/50 rounded-[3rem] overflow-hidden">
                <CardHeader className="p-12 border-b border-white/5 bg-primary/5">
                   <div className="flex items-center justify-between">
                      <div className="space-y-1">
-                        <CardTitle className="text-2xl font-headline font-black uppercase">Build Integrity ({avgProgress}%)</CardTitle>
-                        <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Cracklix 1.0 Release Management</CardDescription>
+                        <CardTitle className="text-2xl font-headline font-black uppercase">v1.0 Success Criteria ({avgProgress}%)</CardTitle>
+                        <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Institutional Governance & Readiness</CardDescription>
                      </div>
-                     <ListChecks className="h-10 w-10 text-primary opacity-20" />
+                     <Scale className="h-10 w-10 text-primary opacity-20" />
                   </div>
                </CardHeader>
                <CardContent className="p-12">
@@ -104,19 +109,24 @@ export default function AdminDashboard() {
                </CardContent>
             </Card>
 
-            {/* Operational Tasks (Phase 108) */}
-            <Card className="border-none shadow-3xl bg-card/50 rounded-[3rem] overflow-hidden">
+            {/* Content SLA Tracking (Phase 117) */}
+            <Card className="border-none shadow-3xl bg-[#0F172A] text-white rounded-[3rem] overflow-hidden">
                <CardHeader className="p-12 border-b border-white/5">
-                  <CardTitle className="text-2xl font-headline font-black uppercase">Daily Operations</CardTitle>
-                  <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Recurring institutional maintenance tasks</CardDescription>
-               </CardHeader>
-               <CardContent className="p-0">
-                  <div className="divide-y divide-white/5">
-                     <TaskItem label="Audit Pending Question Reports" count={reports?.filter((r:any) => r.status === 'PENDING').length || 0} href="/admin/reports" />
-                     <TaskItem label="Publish Today's Analysis Feed" count={0} href="/admin/current-affairs" />
-                     <TaskItem label="Check Official Board Gazette" count={0} href="/admin/notifications" />
-                     <TaskItem label="Verify New Mock Assemblies" count={mocks?.filter((m:any) => !m.published).length || 0} href="/admin/mocks" />
+                  <div className="flex items-center gap-4">
+                     <Megaphone className="h-6 w-6 text-primary" />
+                     <CardTitle className="text-2xl font-headline font-black uppercase">Content SLA Engine</CardTitle>
                   </div>
+               </CardHeader>
+               <CardContent className="p-12 space-y-10">
+                  {slaProgress.map((s) => (
+                     <div key={s.label} className="space-y-4">
+                        <div className="flex justify-between items-center">
+                           <span className="text-xs font-bold text-slate-400">{s.label}</span>
+                           <Badge variant="outline" className="border-white/10 text-primary font-black">{s.val} / {s.max}</Badge>
+                        </div>
+                        <Progress value={(s.val / s.max) * 100} className="h-2 bg-white/5" />
+                     </div>
+                  ))}
                </CardContent>
             </Card>
          </div>
@@ -127,13 +137,13 @@ export default function AdminDashboard() {
                   <h3 className="text-2xl font-headline font-black text-white uppercase flex items-center gap-4">
                      <Rocket className="h-6 w-6 text-primary" /> 1.0 Launch Ready
                   </h3>
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">System Stability Audit</p>
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Aspirant Success Audit</p>
                </div>
                <div className="space-y-6">
-                  <LaunchItem label="Institutional Repo Initialized" status={questions?.length > 0 ? 'PASS' : 'PENDING'} />
-                  <LaunchItem label="Security Rules Hardened" status="PASS" />
-                  <LaunchItem label="Bilingual Engine Verified" status="PASS" />
-                  <LaunchItem label="Revenue Ready Status" status={globalSettings?.revenueReady ? 'PASS' : 'LOCKED'} />
+                  <LaunchItem label="Trust Bar Online" status="PASS" />
+                  <LaunchItem label="Success Registry Active" status="PASS" />
+                  <LaunchItem label="Bilingual Engine Hardened" status="PASS" />
+                  <LaunchItem label="Revenue Ready Node" status={globalSettings?.revenueReady ? 'PASS' : 'LOCKED'} />
                </div>
                <Button className="w-full h-16 bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-[0.2em] rounded-2xl shadow-3xl transition-all active:scale-95">
                   Trigger Beta Launch
@@ -145,11 +155,11 @@ export default function AdminDashboard() {
                   <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                      <DollarSign className="h-6 w-6" />
                   </div>
-                  <h4 className="font-headline font-black text-lg text-white uppercase">Growth Mode</h4>
+                  <h4 className="font-headline font-black text-lg text-white uppercase">Revenue Node</h4>
                </div>
                <div className="space-y-1">
                   <p className="text-3xl font-black text-emerald-500 tracking-tighter">₹0.00</p>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Lifetime Repository Revenue</p>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Institutional Yield</p>
                </div>
             </Card>
          </div>
@@ -182,20 +192,5 @@ function LaunchItem({ label, status }: any) {
             {status}
          </Badge>
       </div>
-   )
-}
-
-function TaskItem({ label, count, href }: { label: string, count: number, href: string }) {
-   return (
-      <Link href={href}>
-         <div className="p-8 flex items-center justify-between hover:bg-white/5 transition-colors group">
-            <div className="flex items-center gap-4">
-               <div className={`h-2 w-2 rounded-full ${count > 0 ? 'bg-orange-500' : 'bg-emerald-500'}`} />
-               <span className="font-bold text-slate-200 group-hover:text-primary transition-colors">{label}</span>
-            </div>
-            {count > 0 && <Badge className="bg-orange-500 text-white border-none font-black">{count}</Badge>}
-            {count === 0 && <CheckCircle2 className="h-5 w-5 text-emerald-500 opacity-20" />}
-         </div>
-      </Link>
    )
 }
