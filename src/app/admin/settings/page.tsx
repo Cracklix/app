@@ -16,8 +16,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Final Enterprise CMS (Phase 164).
- * High-contrast visibility audit applied for terminal-style rules preview.
+ * @fileOverview Final Enterprise CMS (Phase 165).
+ * Visibility Audit: Replaced invisible dark text with white/slate-200.
  */
 
 export default function AdminSettings() {
@@ -90,18 +90,18 @@ service cloud.firestore {
     }, 1500);
   };
 
-  if (loading) return <div className="h-screen flex items-center justify-center bg-white"><RefreshCw className="h-10 w-10 text-primary animate-spin" /></div>
+  if (loading) return <div className="h-screen flex items-center justify-center bg-[#0F172A]"><RefreshCw className="h-10 w-10 text-primary animate-spin" /></div>
 
   return (
-    <div className="space-y-12 pb-20">
+    <div className="space-y-12 pb-20 text-white">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
         <div>
            <div className="flex items-center gap-3 mb-2">
               <ShieldCheck className="h-5 w-5 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">System Configuration Node</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">System Configuration Node</span>
            </div>
-          <h1 className="text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tight">System Portal</h1>
-          <p className="text-muted-foreground mt-2 text-lg text-slate-500">Enterprise Control: CMS, Security, and Logic Engines.</p>
+          <h1 className="text-5xl font-headline font-black text-white uppercase tracking-tight">System Portal</h1>
+          <p className="text-slate-400 mt-2 text-lg">Enterprise Control: CMS, Security, and Logic Engines.</p>
         </div>
         <Button onClick={handleSave} className="bg-primary hover:bg-primary/90 h-16 px-12 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl gap-3">
           <Save className="h-5 w-5" /> Commit Platform Changes
@@ -109,34 +109,34 @@ service cloud.firestore {
       </div>
 
       <Tabs defaultValue="homepage" className="space-y-8">
-        <TabsList className="bg-slate-100 border border-slate-200 p-1.5 h-16 rounded-2xl overflow-x-auto overflow-y-hidden custom-scrollbar">
-          <TabsTrigger value="homepage" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-[#0F172A]"><Layout className="h-4 w-4" /> Global CMS</TabsTrigger>
-          <TabsTrigger value="logic" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-[#0F172A]"><Shield className="h-4 w-4" /> Logic Engines</TabsTrigger>
+        <TabsList className="bg-white/5 border border-white/5 p-1.5 h-16 rounded-2xl overflow-x-auto overflow-y-hidden custom-scrollbar">
+          <TabsTrigger value="homepage" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-white"><Layout className="h-4 w-4" /> Global CMS</TabsTrigger>
+          <TabsTrigger value="logic" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-white"><Shield className="h-4 w-4" /> Logic Engines</TabsTrigger>
           <TabsTrigger value="security" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full whitespace-nowrap text-rose-500 data-[state=active]:bg-rose-500 data-[state=active]:text-white"><Lock className="h-4 w-4" /> Security Node</TabsTrigger>
-          <TabsTrigger value="seasonal" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full whitespace-nowrap data-[state=active]:bg-white data-[state=active]:text-[#0F172A]"><CalendarDays className="h-4 w-4" /> Seasonal</TabsTrigger>
+          <TabsTrigger value="seasonal" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-white"><CalendarDays className="h-4 w-4" /> Seasonal</TabsTrigger>
         </TabsList>
 
         <TabsContent value="homepage">
-          <Card className="border-slate-200 bg-white shadow-xl rounded-[3rem] p-12 space-y-10">
+          <Card className="border-white/5 bg-card shadow-xl rounded-[3rem] p-12 space-y-10">
              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 <div className="space-y-6">
-                   <Label className="text-[10px] font-black uppercase text-slate-500">Marquee Announcement</Label>
-                   <Input value={formData.announcement} onChange={e => setFormData({...formData, announcement: e.target.value})} className="h-16 rounded-2xl bg-slate-50 border-slate-200 text-lg font-bold text-slate-900" />
+                   <Label className="text-[10px] font-black uppercase text-slate-400">Marquee Announcement</Label>
+                   <Input value={formData.announcement} onChange={e => setFormData({...formData, announcement: e.target.value})} className="h-16 rounded-2xl bg-white/5 border-white/5 text-lg font-bold text-white" />
                    <div className="flex items-center justify-between p-6 bg-primary/5 rounded-2xl border border-primary/10">
                       <span className="text-xs font-black uppercase text-primary">Enable Marquee</span>
                       <Switch checked={formData.showAnnouncement} onCheckedChange={val => setFormData({...formData, showAnnouncement: val})} />
                    </div>
                 </div>
                 <div className="space-y-6">
-                   <Label className="text-[10px] font-black uppercase text-slate-500">Platform Identity</Label>
-                   <Input value={formData.platformName} onChange={e => setFormData({...formData, platformName: e.target.value})} className="h-16 rounded-2xl bg-slate-50 border-slate-200 text-xl font-black text-slate-900" />
+                   <Label className="text-[10px] font-black uppercase text-slate-400">Platform Identity</Label>
+                   <Input value={formData.platformName} onChange={e => setFormData({...formData, platformName: e.target.value})} className="h-16 rounded-2xl bg-white/5 border-white/5 text-xl font-black text-white" />
                 </div>
              </div>
           </Card>
         </TabsContent>
 
         <TabsContent value="logic">
-          <Card className="border-slate-200 bg-white shadow-xl rounded-[3rem] p-12">
+          <Card className="border-white/5 bg-card shadow-xl rounded-[3rem] p-12">
              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 <ConfigCard icon={<Shield className="text-rose-500" />} label="Negative Marking" desc="Apply -1.0 penalty for mismatched choices." checked={formData.negativeMarking} onChange={(v: boolean) => setFormData({...formData, negativeMarking: v})} />
                 <ConfigCard icon={<Zap className="text-emerald-500" />} label="AI Tutors" desc="Generate Gemini rationalizations for attempts." checked={formData.aiRationalization} onChange={(v: boolean) => setFormData({...formData, aiRationalization: v})} />
@@ -146,14 +146,14 @@ service cloud.firestore {
 
         <TabsContent value="security">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-             <Card className="lg:col-span-7 border-slate-200 bg-white shadow-xl rounded-[3.5rem] overflow-hidden">
-                <CardHeader className="p-12 border-b border-slate-100 bg-slate-50">
+             <Card className="lg:col-span-7 border-white/5 bg-card shadow-xl rounded-[3.5rem] overflow-hidden">
+                <CardHeader className="p-12 border-b border-white/5 bg-white/5">
                    <div className="flex items-center gap-4">
                       <div className="h-12 w-12 rounded-2xl bg-rose-500 flex items-center justify-center text-white shadow-xl">
                          <FileCode className="h-6 w-6" />
                       </div>
                       <div>
-                         <CardTitle className="text-2xl font-headline font-black uppercase text-slate-900">Institutional Rules Audit</CardTitle>
+                         <CardTitle className="text-2xl font-headline font-black uppercase text-white">Institutional Rules Audit</CardTitle>
                          <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-rose-500">14 Active Rules Structured for Deployment.</CardDescription>
                       </div>
                    </div>
@@ -179,24 +179,24 @@ service cloud.firestore {
              </Card>
 
              <div className="lg:col-span-5 space-y-8">
-                <Card className="border-slate-200 bg-white p-10 rounded-[3rem] space-y-6 shadow-xl">
-                   <h3 className="font-headline font-black text-xl uppercase text-[#0F172A] flex items-center gap-3">
+                <Card className="border-white/5 bg-card p-10 rounded-[3rem] space-y-6 shadow-xl">
+                   <h3 className="font-headline font-black text-xl uppercase text-white flex items-center gap-3">
                       <ShieldCheck className="h-6 w-6 text-emerald-500" /> Operational Status
                    </h3>
                    <div className="space-y-4">
                       <StatusRow label="Rules Count" value="14 Collections" />
-                      <StatusRow label="Access Mode" value="Dev Permissive" color="text-emerald-600" />
-                      <StatusRow label="Sync Status" value="Online" color="text-emerald-600" />
+                      <StatusRow label="Access Mode" value="Dev Permissive" color="text-emerald-400" />
+                      <StatusRow label="Sync Status" value="Online" color="text-emerald-400" />
                    </div>
                 </Card>
 
-                <Card className="border-amber-100 bg-amber-50 p-10 rounded-[3rem] space-y-4 shadow-sm">
-                   <div className="h-12 w-12 bg-amber-200 rounded-2xl flex items-center justify-center text-amber-700">
+                <Card className="border-amber-500/10 bg-amber-500/5 p-10 rounded-[3rem] space-y-4 shadow-sm">
+                   <div className="h-12 w-12 bg-amber-500/20 rounded-2xl flex items-center justify-center text-amber-500">
                       <Lock className="h-6 w-6" />
                    </div>
-                   <p className="text-sm font-black text-amber-800 uppercase">Warning: Deployment Mode</p>
-                   <p className="text-xs text-amber-700 leading-relaxed font-medium">
-                      Pushing these rules will overwrite current Firestore access. Ensure all institutional collections match the <span className="text-slate-900 font-black">backend.json</span> blueprint.
+                   <p className="text-sm font-black text-amber-500 uppercase">Warning: Deployment Mode</p>
+                   <p className="text-xs text-amber-200 leading-relaxed font-medium">
+                      Pushing these rules will overwrite current Firestore access. Ensure all institutional collections match the <span className="text-white font-black">backend.json</span> blueprint.
                    </p>
                 </Card>
              </div>
@@ -209,12 +209,12 @@ service cloud.firestore {
 
 function ConfigCard({ icon, label, desc, checked, onChange }: any) {
   return (
-    <div className="flex items-center justify-between p-8 bg-slate-50 rounded-[2rem] border border-slate-100 group hover:border-primary/20 transition-all">
+    <div className="flex items-center justify-between p-8 bg-white/5 rounded-[2rem] border border-white/5 group hover:border-primary/20 transition-all">
        <div className="flex items-center gap-6">
-          <div className="h-14 w-14 rounded-2xl bg-white border border-slate-100 flex items-center justify-center shadow-sm">{icon}</div>
+          <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center shadow-sm">{icon}</div>
           <div className="space-y-1">
-             <p className="font-black text-xs uppercase tracking-widest text-[#0F172A]">{label}</p>
-             <p className="text-[10px] text-slate-500 uppercase font-bold">{desc}</p>
+             <p className="font-black text-xs uppercase tracking-widest text-white">{label}</p>
+             <p className="text-[10px] text-slate-400 uppercase font-bold">{desc}</p>
           </div>
        </div>
        <Switch checked={checked} onCheckedChange={onChange} />
@@ -224,9 +224,9 @@ function ConfigCard({ icon, label, desc, checked, onChange }: any) {
 
 function StatusRow({ label, value, color }: any) {
    return (
-      <div className="flex justify-between items-center py-4 border-b border-slate-100 last:border-0">
-         <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">{label}</span>
-         <span className={`text-[11px] font-black uppercase ${color || 'text-slate-900'}`}>{value}</span>
+      <div className="flex justify-between items-center py-4 border-b border-white/5 last:border-0">
+         <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{label}</span>
+         <span className={`text-[11px] font-black uppercase ${color || 'text-white'}`}>{value}</span>
       </div>
    )
 }
