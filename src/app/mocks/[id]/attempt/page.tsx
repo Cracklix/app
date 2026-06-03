@@ -11,16 +11,12 @@ import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { 
-  ChevronLeft, 
-  ChevronRight, 
   PauseCircle, 
   PlayCircle,
   LayoutGrid,
-  CheckCircle2,
   Languages,
   Loader2,
   Trash2,
-  Zap,
   Monitor
 } from "lucide-react"
 import {
@@ -34,8 +30,8 @@ import { cn } from "@/lib/utils"
 type LangMode = 'en' | 'reg' | 'bilingual'
 
 /**
- * @fileOverview Final Testbook-Style CBT Engine (Phase 162).
- * Fixed: Consolidated Paper A headers, unified bilingual colors, and stabilized Timer/Palette.
+ * @fileOverview Final Testbook-Style CBT Engine.
+ * Features: Fixed state warnings, auto-paginating palette, and strictly locked Paper A metadata.
  */
 
 export default function MockAttemptPage() {
@@ -143,7 +139,7 @@ export default function MockAttemptPage() {
       toast({ title: "Submission Success", description: "Mock finalized successfully." })
       router.push(`/results/${mockId}`)
     } catch (e) {
-      toast({ variant: "destructive", title: "Audit Failed", description: "Submission failed. Check network." })
+      toast({ variant: "destructive", title: "Audit Failed", description: "Submission failed." })
       setIsSubmitting(false)
     }
   }, [isSubmitting, questions, answers, mock, user, db, router, mockId, toast])
@@ -162,20 +158,9 @@ export default function MockAttemptPage() {
   // Correct Paper A Logic: Ensure questions 1-50 are strictly labeled as Punjabi Language
   const isPaperA = currentIdx < 50;
   const activePaper = isPaperA ? "PAPER A: PUNJABI QUALIFYING" : (q?.paper || "PAPER B: MAIN EXAM")
-  
-  const subjectNames: Record<string, string> = {
-    'punjabi-qualifying': 'Punjabi Language & Grammar',
-    'punjab-history': 'Punjab History & Culture',
-    'gk-ca': 'General Knowledge & Current Affairs',
-    'reasoning': 'Logical Reasoning',
-    'math': 'Numerical Ability',
-    'ict': 'Computers / IT',
-    'english': 'General English'
-  }
+  const activeSection = isPaperA ? "Punjabi Language & Grammar" : (q?.section || "General Assessment")
 
-  const activeSection = isPaperA ? "Punjabi Language & Grammar" : (subjectNames[q?.subjectId] || q?.section || "General Assessment")
-
-  // Duplicate Check: Prevents redundant blocks if translations match
+  // Strict Duplication Check
   const qEnTrim = (q?.questionEn || "").trim()
   const qRegTrim = (q?.[`question${regKey}`] || "").trim()
   const hasDistinctTranslation = qEnTrim && qRegTrim && qEnTrim !== qRegTrim
@@ -255,8 +240,8 @@ export default function MockAttemptPage() {
                          <Label htmlFor={`opt-${i}`} className="flex-1 cursor-pointer select-none text-sm md:text-base font-bold text-[#0B1528] flex flex-col gap-0.5">
                             {language === 'bilingual' ? (
                                <>
-                                  <span className="text-[11px] text-[#0B1528] font-bold opacity-70">{optEn}</span>
-                                  {hasValidTranslation && <span className="leading-tight">{optReg}</span>}
+                                  <span className="leading-tight">{optEn}</span>
+                                  {hasValidTranslation && <span className="leading-tight pt-1 opacity-80">{optReg}</span>}
                                </>
                             ) : (
                                <span>{language === 'en' ? optEn : optReg || optEn}</span>

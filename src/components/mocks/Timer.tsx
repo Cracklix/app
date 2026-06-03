@@ -14,7 +14,7 @@ interface TimerProps {
 
 /**
  * @fileOverview Institutional Timer Node.
- * Fixed: Moved onTick out of state updater to prevent React render warnings.
+ * Fixed: Moved onTick call to a standalone useEffect to avoid "update during render" warning.
  */
 
 export default function Timer({ onTimeUp, initialSeconds, onTick, isPaused }: TimerProps) {
@@ -22,11 +22,12 @@ export default function Timer({ onTimeUp, initialSeconds, onTick, isPaused }: Ti
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const hasSubmitted = useRef(false)
 
+  // Reset timer if initialSeconds changes
   useEffect(() => {
     setTimeLeft(initialSeconds)
   }, [initialSeconds])
 
-  // Synchronize parent state via onTick callback safely
+  // Synchronize parent state via onTick callback safely (avoiding warning)
   useEffect(() => {
     if (onTick && !isPaused) {
       onTick(timeLeft)
