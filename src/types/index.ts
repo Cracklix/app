@@ -97,4 +97,15 @@ export interface UserProfile {
   createdAt: any;
   status: 'Pro' | 'Free';
   planId?: string;
+  referralCount?: number;
+}
+
+export interface ContentReport {
+  id: string;
+  userId: string;
+  questionId: string;
+  type: 'WRONG_ANS' | 'TYPO' | 'MISSING_DATA' | 'OTHER';
+  comment: string;
+  status: 'PENDING' | 'RESOLVED' | 'IGNORED';
+  timestamp: any;
 }

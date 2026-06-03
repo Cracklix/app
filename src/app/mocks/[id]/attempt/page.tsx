@@ -10,7 +10,7 @@ import QuestionPalette from "@/components/mocks/QuestionPalette"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import { ChevronLeft, ChevronRight, Flag, ShieldCheck, Trash2, Languages, Loader2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, Flag, ShieldCheck, Trash2, Languages, Loader2, AlertTriangle, MessageSquare } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,13 +22,24 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 /**
- * @fileOverview Institutional CBT Engine with Resume Capability.
- * Features: 10s Heartbeat Sync, Session Recovery, Bilingual Toggle, Audit Trace.
+ * @fileOverview Institutional CBT Engine with Resume Capability and Feedback Loop.
+ * Features: 10s Heartbeat Sync, Session Recovery, Bilingual Toggle, Audit Trace, Report Question.
  */
 
 export default function MockAttemptPage() {
@@ -51,6 +62,10 @@ export default function MockAttemptPage() {
   const [remainingTime, setRemainingTime] = useState(0)
   const [sessionRecovered, setSessionRecovered] = useState(false)
 
+  // Report Logic
+  const [reportData, setReportData] = useState({ type: "WRONG_ANS", comment: "" })
+  const [isReporting, setIsReporting] = useState(false)
+
   // 1. Load Question Data
   useEffect(() => {
     async function fetchQuestions() {
@@ -60,7 +75,7 @@ export default function MockAttemptPage() {
         const qData: any[] = []
         const fetchPromises = mockConfig.questionIds.map((id: string) => getDoc(doc(db, "questions", id)))
         const snapshots = await Promise.all(fetchPromises)
-        snapshots.forEach(snap => { if (snap.exists()) qData.push(snap.data()) })
+        snapshots.forEach(snap => { if (snap.exists()) qData.push({ ...snap.data(), id: snap.id }) })
         setQuestions(qData)
         if (!sessionRecovered) setRemainingTime((mockConfig.duration || 120) * 60)
       } catch (e) {
@@ -89,7 +104,7 @@ export default function MockAttemptPage() {
         }
       }
     })
-  }, [db, user, mockId])
+  }, [db, user, mockId, toast])
 
   // 3. Heartbeat Sync (Every 10s)
   useEffect(() => {
@@ -136,6 +151,23 @@ export default function MockAttemptPage() {
       router.push(`/results/${mockId}`)
     })
   }, [isSubmitting, questions, answers, mockId, mockConfig, user, db, router])
+
+  const handleReport = () => {
+    if (!db || !user || !questions[currentIdx]) return
+    setIsReporting(true)
+    const reportRef = doc(collection(db, "reports"))
+    setDoc(reportRef, {
+      ...reportData,
+      id: reportRef.id,
+      userId: user.uid,
+      questionId: questions[currentIdx].id,
+      status: 'PENDING',
+      timestamp: serverTimestamp()
+    }).then(() => {
+      toast({ title: "Feedback Logged", description: "Arsh Grewal Management will audit this question." })
+      setReportData({ type: "WRONG_ANS", comment: "" })
+    }).finally(() => setIsReporting(false))
+  }
 
   if (mockLoading || loadingQuestions) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-6">
@@ -184,9 +216,47 @@ export default function MockAttemptPage() {
           </div>
 
           <div className="max-w-4xl mx-auto space-y-12">
-            <div className="flex items-center gap-3">
-              <Badge className="bg-primary/10 text-primary border-none px-4 py-1.5 rounded-lg font-black uppercase text-[10px]">MCQ {currentIdx + 1}</Badge>
-              <Badge variant="outline" className="text-[10px] font-bold border-slate-200 uppercase">{q?.subjectId || "GK"}</Badge>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Badge className="bg-primary/10 text-primary border-none px-4 py-1.5 rounded-lg font-black uppercase text-[10px]">MCQ {currentIdx + 1}</Badge>
+                <Badge variant="outline" className="text-[10px] font-bold border-slate-200 uppercase">{q?.subjectId || "GK"}</Badge>
+              </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-slate-400 hover:text-rose-500 gap-2 text-[10px] font-black uppercase tracking-widest">
+                    <AlertTriangle className="h-3.5 w-3.5" /> Report Issue
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="rounded-[2rem] bg-[#0F172A] text-white border-white/10 p-10">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-black uppercase">Audit Feedback</DialogTitle>
+                    <DialogDescription className="text-slate-400">Help us maintain institutional accuracy. What is wrong with this question?</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-6 py-6">
+                    <div className="space-y-2">
+                       <Label className="text-[10px] font-black uppercase text-slate-500">Issue Type</Label>
+                       <Select value={reportData.type} onValueChange={(v) => setReportData({...reportData, type: v})}>
+                         <SelectTrigger className="bg-white/5 border-white/10 rounded-xl h-12"><SelectValue /></SelectTrigger>
+                         <SelectContent>
+                           <SelectItem value="WRONG_ANS">Incorrect Answer Key</SelectItem>
+                           <SelectItem value="TYPO">Typo / Language Error</SelectItem>
+                           <SelectItem value="MISSING_DATA">Missing Options/Images</SelectItem>
+                           <SelectItem value="OTHER">Other Issue</SelectItem>
+                         </SelectContent>
+                       </Select>
+                    </div>
+                    <div className="space-y-2">
+                       <Label className="text-[10px] font-black uppercase text-slate-500">Comments</Label>
+                       <Textarea value={reportData.comment} onChange={(e) => setReportData({...reportData, comment: e.target.value})} className="bg-white/5 border-white/10 rounded-xl min-h-[100px]" placeholder="Provide details..." />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={handleReport} disabled={isReporting} className="w-full bg-primary hover:bg-primary/90 rounded-xl h-12 font-black uppercase text-xs">
+                      Submit Audit Report
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
 
             <h2 className="text-2xl sm:text-3xl font-bold leading-relaxed text-[#0F172A]">

@@ -10,110 +10,27 @@
         "name": { "type": "string" },
         "email": { "type": "string", "format": "email" },
         "phone": { "type": "string" },
-        "role": { "type": "string", "enum": ["SUPER_ADMIN", "ADMIN", "STUDENT"] },
+        "role": { "type": "string", "enum": ["SUPER_ADMIN", "ADMIN", "CONTENT_MANAGER", "STUDENT"] },
         "state": { "type": "string", "enum": ["Punjab"] },
         "targetExam": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" },
         "status": { "type": "string", "enum": ["Pro", "Free"] },
-        "planId": { "type": "string" }
+        "referralCount": { "type": "number" }
       },
       "required": ["id", "name", "email", "role"]
     },
-    "Board": {
-      "title": "Recruitment Board",
-      "description": "Official government boards (e.g., PSSSB, PPSC).",
+    "ContentReport": {
+      "title": "Content Report",
+      "description": "Aspirant feedback on question accuracy.",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
-        "name": { "type": "string" },
-        "abbreviation": { "type": "string" },
-        "description": { "type": "string" },
-        "iconUrl": { "type": "string" }
-      }
-    },
-    "Exam": {
-      "title": "Exam Category",
-      "description": "Specific recruitment exams like Patwari or Constable.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "boardId": { "type": "string" },
-        "name": { "type": "string" },
-        "category": { "type": "string" },
-        "description": { "type": "string" },
-        "totalMocks": { "type": "number" },
-        "activeQuestions": { "type": "number" }
-      }
-    },
-    "Subject": {
-      "title": "Subject",
-      "description": "Study subjects like Punjab GK, Reasoning, etc.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "description": { "type": "string" }
-      }
-    },
-    "MockTest": {
-      "title": "Mock Test",
-      "description": "A full-length or sectional practice test.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "seriesId": { "type": "string" },
-        "examId": { "type": "string" },
-        "title": { "type": "string" },
-        "duration": { "type": "number" },
-        "totalQuestions": { "type": "number" },
-        "questionIds": { "type": "array", "items": { "type": "string" } },
-        "attempts": { "type": "number" },
-        "difficulty": { "type": "string" },
-        "type": { "type": "string" },
-        "language": { "type": "string" }
-      }
-    },
-    "Series": {
-      "title": "Mock Series",
-      "description": "A group of mock tests (e.g., PSSSB Clerk 2026 Series).",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "title": { "type": "string" },
-        "examId": { "type": "string" },
-        "boardId": { "type": "string" },
-        "description": { "type": "string" },
-        "isPremium": { "type": "boolean" }
-      }
-    },
-    "Question": {
-      "title": "Question Bank",
-      "description": "Individual MCQ with bilingual support.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "subjectId": { "type": "string" },
-        "boardId": { "type": "string" },
-        "examId": { "type": "string" },
-        "text": { "type": "string" },
-        "options": { "type": "array", "items": { "type": "string" } },
-        "correctAnswer": { "type": "number" },
-        "explanation": { "type": "string" },
-        "difficulty": { "type": "string", "enum": ["Easy", "Medium", "Hard"] },
-        "topic": { "type": "string" },
-        "createdAt": { "type": "string", "format": "date-time" }
-      }
-    },
-    "Plan": {
-      "title": "Subscription Plan",
-      "description": "Platform membership tiers.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "price": { "type": "number" },
-        "durationDays": { "type": "number" },
-        "features": { "type": "array", "items": { "type": "string" } }
+        "userId": { "type": "string" },
+        "questionId": { "type": "string" },
+        "type": { "type": "string", "enum": ["WRONG_ANS", "TYPO", "MISSING_DATA", "OTHER"] },
+        "comment": { "type": "string" },
+        "status": { "type": "string", "enum": ["PENDING", "RESOLVED", "IGNORED"] },
+        "timestamp": { "type": "string", "format": "date-time" }
       }
     }
   },
@@ -126,32 +43,32 @@
       "description": "Student and Admin profiles."
     },
     "/boards/{boardId}": {
-      "schema": { "$ref": "#/backend/entities/Board" },
+      "schema": "object",
       "description": "Recruitment boards."
     },
-    "/exams/{examId}": {
-      "schema": { "$ref": "#/backend/entities/Exam" },
-      "description": "Exam categories."
-    },
-    "/series/{seriesId}": {
-      "schema": { "$ref": "#/backend/entities/Series" },
-      "description": "Mock test collections."
-    },
     "/mocks/{mockId}": {
-      "schema": { "$ref": "#/backend/entities/MockTest" },
-      "description": "Individual mock tests."
+      "schema": "object",
+      "description": "Practice tests."
     },
     "/questions/{questionId}": {
-      "schema": { "$ref": "#/backend/entities/Question" },
-      "description": "Global question bank."
-    },
-    "/plans/{planId}": {
-      "schema": { "$ref": "#/backend/entities/Plan" },
-      "description": "Subscription definitions."
-    },
-    "/bookmarks/{bookmarkId}": {
       "schema": "object",
-      "description": "Saved aspirant resources."
+      "description": "MCQ bank."
+    },
+    "/reports/{reportId}": {
+      "schema": { "$ref": "#/backend/entities/ContentReport" },
+      "description": "Error reports from students."
+    },
+    "/test_sessions/{sessionId}": {
+      "schema": "object",
+      "description": "In-progress mock sessions."
+    },
+    "/results/{resultId}": {
+      "schema": "object",
+      "description": "Completed mock outcomes."
+    },
+    "/settings/{id}": {
+      "schema": "object",
+      "description": "System config."
     }
   }
 }
