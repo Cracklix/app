@@ -43,10 +43,10 @@ export default function QuestionPalette({
       <div className="flex flex-col gap-4">
          <div className="flex items-center justify-between">
             <h3 className="font-headline font-black text-[10px] uppercase tracking-[0.2em] text-slate-400">
-               Audit Palette
+               Audit Trails
             </h3>
             <span className="text-[9px] font-black text-primary px-3 py-1 bg-primary/5 rounded-lg border border-primary/10">
-               {answeredIndices.length} / {totalQuestions}
+               {answeredIndices.length} / {totalQuestions} Answered
             </span>
          </div>
 
@@ -61,7 +61,7 @@ export default function QuestionPalette({
             </button>
             <div className="flex-1 text-center">
                <p className="text-[9px] font-black uppercase tracking-widest text-[#0F172A]">
-                  Qs {startIdx + 1} — {endIdx}
+                  Questions {startIdx + 1} — {endIdx}
                </p>
             </div>
             <button 
@@ -100,10 +100,10 @@ export default function QuestionPalette({
       </div>
 
       <div className="pt-6 border-t border-slate-100 grid grid-cols-2 gap-y-3 gap-x-4">
-        <LegendItem variant="current" label="Current" />
-        <LegendItem variant="answered" label="Answered" />
+        <LegendItem variant="current" label="Active" />
+        <LegendItem variant="answered" label="Attempted" />
         <LegendItem variant="flagged" label="Review" />
-        <LegendItem variant="remaining" label="Not Visited" />
+        <LegendItem variant="remaining" label="Pending" />
       </div>
     </div>
   )

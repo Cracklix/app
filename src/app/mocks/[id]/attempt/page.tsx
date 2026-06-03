@@ -52,6 +52,18 @@ import { cn } from "@/lib/utils"
 
 type LangMode = 'english' | 'punjabi' | 'hindi'
 
+const SUBJECT_MAP: Record<string, string> = {
+  'punjabi-qualifying': 'Mandatory Punjabi',
+  'punjab-history': 'Punjab History & Culture',
+  'gk-ca': 'General Knowledge & CA',
+  'reasoning': 'Reasoning & Mental Ability',
+  'math': 'Numerical Ability',
+  'ict': 'ICT (Computers)',
+  'english': 'General English',
+  'cdp': 'Child Development',
+  'accounts': 'Financial Accounting'
+};
+
 export default function MockAttemptPage() {
   const params = useParams()
   const router = useRouter()
@@ -169,7 +181,7 @@ export default function MockAttemptPage() {
       questionText: q.questionEn, subjectId: q.subjectId,
       timestamp: new Date().toISOString(), createdAt: serverTimestamp()
     }).then(() => {
-      toast({ title: "Saved", description: "MCQ added to repository." })
+      toast({ title: "Saved", description: "Question added to your repository." })
     }).finally(() => setIsBookmarking(false))
   }
 
@@ -195,6 +207,8 @@ export default function MockAttemptPage() {
   )
 
   const q = questions[currentIdx]
+  const currentPaper = (currentIdx + 1) <= 50 ? "PAPER A: PUNJABI QUALIFYING" : "PAPER B: MAIN EXAM";
+  const subjectName = SUBJECT_MAP[q?.subjectId] || q?.subjectId || "General Awareness";
 
   const getQuestionText = (target: LangMode) => {
     if (target === 'english') return q.questionEn || "Content not available in English"
@@ -254,7 +268,7 @@ export default function MockAttemptPage() {
             <AlertDialogTrigger asChild><Button size="sm" className="bg-emerald-600 h-9 hover:bg-emerald-700 text-white font-black uppercase text-[9px] px-4 rounded-lg shadow-lg">Submit</Button></AlertDialogTrigger>
             <AlertDialogContent className="rounded-3xl p-10 max-w-sm mx-auto">
               <AlertDialogHeader className="text-left">
-                <AlertDialogTitle className="text-2xl font-black uppercase">End Audit?</AlertDialogTitle>
+                <AlertDialogTitle className="text-2xl font-black uppercase">End Assessment?</AlertDialogTitle>
                 <AlertDialogDescription className="py-4 text-sm font-medium text-slate-500">You have answered {Object.keys(answers).length} of {questions.length} questions.</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter className="flex gap-2">
@@ -276,7 +290,9 @@ export default function MockAttemptPage() {
           <div className="px-4 py-2 md:px-8 border-b border-slate-100 bg-white flex items-center justify-between shrink-0">
              <div className="flex items-center gap-3">
                 <Badge className="bg-[#0F172A] text-white border-none px-2.5 py-0.5 rounded-lg font-black text-[9px] uppercase tracking-widest">Q {currentIdx + 1}</Badge>
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{q?.subjectId || "Syllabus"}</span>
+                <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{currentPaper}</span>
+                <div className="h-3 w-px bg-slate-200 mx-1 hidden sm:block" />
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest hidden sm:inline">{subjectName}</span>
              </div>
              <div className="flex items-center gap-3">
                 <button onClick={handleBookmark} disabled={isBookmarking} className="text-slate-300 hover:text-primary transition-colors"><Bookmark className={cn("h-4 w-4", isBookmarking && "animate-pulse")} /></button>
@@ -284,21 +300,21 @@ export default function MockAttemptPage() {
                    <DialogTrigger asChild><button className="text-slate-300 hover:text-rose-500 transition-colors"><AlertTriangle className="h-4 w-4" /></button></DialogTrigger>
                    <DialogContent className="rounded-3xl p-8 max-w-sm">
                       <DialogHeader className="text-left space-y-2">
-                        <DialogTitle className="text-xl font-black uppercase">Audit Flag</DialogTitle>
-                        <DialogDescription className="text-xs">Maintain institutional accuracy.</DialogDescription>
+                        <DialogTitle className="text-xl font-black uppercase">Report Issue</DialogTitle>
+                        <DialogDescription className="text-xs">Help us maintain institutional accuracy.</DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4 py-4">
                          <Select value={reportData.type} onValueChange={(v) => setReportData({...reportData, type: v})}>
                             <SelectTrigger className="h-12 rounded-xl text-xs font-bold"><SelectValue /></SelectTrigger>
                             <SelectContent>
                                <SelectItem value="WRONG_ANS">Incorrect Answer</SelectItem>
-                               <SelectItem value="TYPO">Trilingual Error</SelectItem>
+                               <SelectItem value="TYPO">Spelling/Text Error</SelectItem>
                                <SelectItem value="MISSING_DATA">Data Missing</SelectItem>
                             </SelectContent>
                          </Select>
-                         <Textarea value={reportData.comment} onChange={(e) => setReportData({...reportData, comment: e.target.value})} className="rounded-xl h-24 text-xs" placeholder="Audit comment..." />
+                         <Textarea value={reportData.comment} onChange={(e) => setReportData({...reportData, comment: e.target.value})} className="rounded-xl h-24 text-xs" placeholder="Describe the error..." />
                       </div>
-                      <Button onClick={handleReport} className="w-full h-12 rounded-xl font-black uppercase text-[10px]">Log Report</Button>
+                      <Button onClick={handleReport} className="w-full h-12 rounded-xl font-black uppercase text-[10px]">Send Report</Button>
                    </DialogContent>
                 </Dialog>
              </div>
@@ -383,7 +399,7 @@ export default function MockAttemptPage() {
                    </SheetTrigger>
                    <SheetContent side="bottom" className="rounded-t-[3.5rem] h-[65vh] px-10 pt-12">
                       <SheetHeader className="mb-10">
-                         <SheetTitle className="text-2xl font-black uppercase tracking-tight text-center">Institutional Audit Trail</SheetTitle>
+                         <SheetTitle className="text-2xl font-black uppercase tracking-tight text-center">Question Palette</SheetTitle>
                       </SheetHeader>
                       <div className="overflow-y-auto max-h-full pb-20 custom-scrollbar">
                          <QuestionPalette totalQuestions={questions.length} currentIndex={currentIdx} answeredIndices={Object.keys(answers).map(Number)} flaggedIndices={flagged} onSelect={(idx) => { setCurrentIdx(idx); }} />
@@ -405,7 +421,7 @@ export default function MockAttemptPage() {
               <div className="absolute top-0 right-0 p-4 opacity-5"><ShieldCheck className="h-20 w-20 text-white" /></div>
               <ShieldCheck className="h-6 w-6 text-primary relative z-10" />
               <p className="text-[10px] text-slate-400 font-black leading-relaxed uppercase tracking-widest relative z-10">
-                Institutional Integrity monitors active attempt trails. All audit nodes are synchronized with the central repository.
+                Institutional Integrity monitors active attempts. Progress is synchronized with the central repository.
               </p>
            </div>
         </aside>
