@@ -1,48 +1,52 @@
-
 "use client"
 
 import { useMemo } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, orderBy, where } from "firebase/firestore"
+import { collection, query, orderBy } from "firebase/firestore"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Clock, BookOpen, Trophy, ArrowRight, Filter, ShieldCheck, Zap, Layers, Sparkles } from "lucide-react"
+import { Clock, BookOpen, Trophy, ArrowRight, Filter, ShieldCheck, Zap, Layers, Sparkles, AlertCircle } from "lucide-react"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Final Mock Hub (Phase 87).
- * Features: Practice Mode Trigger and Institutional Series.
+ * @fileOverview Final Mock Hub (Optimized).
+ * Fix: Simplified query to resolve infinite loading and handle composite index issues.
  */
 
 export default function MocksPage() {
   const db = useFirestore()
   
+  // Simplified query to avoid index requirements
   const mocksQuery = useMemo(() => {
     if (!db) return null
-    return query(collection(db, "mocks"), where("published", "==", true), orderBy("createdAt", "desc"))
+    return query(collection(db, "mocks"), orderBy("createdAt", "desc"))
   }, [db])
 
-  const { data: mocks, loading } = useCollection<any>(mocksQuery)
+  const { data: allMocks, loading, error } = useCollection<any>(mocksQuery)
+
+  const mocks = useMemo(() => {
+    if (!allMocks) return []
+    return allMocks.filter(m => m.published === true)
+  }, [allMocks])
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50/30">
       <Navbar />
       <main className="container mx-auto px-6 py-12 max-w-7xl">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-16">
-          <div className="space-y-2">
+          <div className="space-y-2 text-left">
             <div className="flex items-center gap-3">
                <ShieldCheck className="h-5 w-5 text-primary" />
                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Institutional Practice Hub</span>
             </div>
             <h1 className="text-5xl md:text-6xl font-headline font-black text-[#0F172A] uppercase tracking-tight">Mock <span className="text-primary">Series</span></h1>
-            <p className="text-slate-500 font-medium text-lg">High-fidelity full length and sectional assessments for Punjab Govt exams.</p>
+            <p className="text-slate-500 font-medium text-lg">High-fidelity assessments for Punjab Govt exams.</p>
           </div>
           <div className="flex gap-4">
-             {/* Practice Mode Trigger (Phase 87) */}
              <Button className="rounded-2xl h-14 px-10 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[10px] tracking-widest gap-3 shadow-xl shadow-emerald-900/20">
                 <Sparkles className="h-5 w-5" /> Quick Practice
              </Button>
@@ -52,10 +56,17 @@ export default function MocksPage() {
           </div>
         </div>
 
+        {error && (
+           <div className="mb-10 p-6 bg-rose-50 border border-rose-100 rounded-3xl flex items-center gap-4 text-rose-600">
+              <AlertCircle className="h-6 w-6" />
+              <p className="font-bold text-sm">Failed to sync with cloud repository. Please refresh or check connection.</p>
+           </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {loading ? (
             Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-[400px] w-full rounded-[3rem]" />
+              <Skeleton key={i} className="h-[350px] w-full rounded-[3rem]" />
             ))
           ) : mocks && mocks.length > 0 ? (
             mocks.map((mock: any) => (
@@ -69,7 +80,7 @@ export default function MocksPage() {
                     {mock.mockType || 'Full Mock'}
                   </span>
                 </div>
-                <CardHeader className="p-10 pb-6">
+                <CardHeader className="p-10 pb-6 text-left">
                   <CardTitle className="font-headline text-2xl font-black text-[#0F172A] group-hover:text-primary transition-colors leading-tight">
                     {mock.title}
                   </CardTitle>
@@ -85,17 +96,6 @@ export default function MocksPage() {
                       <span className="text-sm font-bold">{mock.totalQuestions} MCQs</span>
                     </div>
                   </div>
-                  <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                     <div className="flex items-center gap-3">
-                        <Layers className="h-4 w-4 text-primary" />
-                        <span className="text-[10px] font-black uppercase text-slate-400">Difficulty</span>
-                     </div>
-                     <Badge variant="outline" className={`border-none font-black text-[10px] uppercase tracking-widest ${
-                       mock.difficulty === 'hard' ? 'text-rose-500' : 'text-emerald-500'
-                     }`}>
-                        {mock.difficulty || 'Medium'}
-                     </Badge>
-                  </div>
                 </CardContent>
                 <CardFooter className="p-10 pt-0">
                   <Button asChild className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.2em] text-xs rounded-2xl gap-3 shadow-3xl shadow-slate-300">
@@ -110,8 +110,8 @@ export default function MocksPage() {
             <div className="col-span-full py-40 text-center space-y-6 bg-white/50 rounded-[4rem] border-2 border-dashed border-slate-200">
                <ShieldCheck className="h-20 w-20 text-slate-200 mx-auto" />
                <div className="space-y-1">
-                  <p className="font-headline font-black text-2xl text-slate-300 uppercase">No Series Live</p>
-                  <p className="text-slate-400 font-medium">Verified mock tests are being audited by the content engine.</p>
+                  <p className="font-headline font-black text-2xl text-slate-300 uppercase">No Series Found</p>
+                  <p className="text-slate-400 font-medium">Verify your uploads in the Command Center.</p>
                </div>
             </div>
           )}

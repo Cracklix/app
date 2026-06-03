@@ -1,4 +1,3 @@
-
 'use client';
 
 import { motion } from "framer-motion";
@@ -8,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Clock, BookOpen, ShieldCheck, ArrowRight, Zap } from "lucide-react";
 import Link from "next/link";
 import { useCollection, useFirestore } from "@/firebase";
-import { collection, query, orderBy, limit, where } from "firebase/firestore";
+import { collection, query, orderBy, limit } from "firebase/firestore";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -17,15 +16,15 @@ export default function LatestMocks() {
   
   const mocksQuery = useMemo(() => {
     if (!db) return null;
-    return query(
-      collection(db, "mocks"), 
-      where("published", "==", true),
-      orderBy("createdAt", "desc"), 
-      limit(5)
-    );
+    return query(collection(db, "mocks"), orderBy("createdAt", "desc"), limit(10));
   }, [db]);
 
-  const { data: mocks, loading } = useCollection<any>(mocksQuery);
+  const { data: allMocks, loading } = useCollection<any>(mocksQuery);
+
+  const mocks = useMemo(() => {
+    if (!allMocks) return [];
+    return allMocks.filter(m => m.published === true).slice(0, 5);
+  }, [allMocks]);
 
   return (
     <section className="py-32 bg-white">
@@ -35,7 +34,7 @@ export default function LatestMocks() {
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="space-y-2"
+            className="space-y-2 text-left"
           >
             <div className="flex items-center gap-3">
                <Zap className="h-5 w-5 text-primary" />
@@ -88,11 +87,6 @@ export default function LatestMocks() {
                       <div className="flex items-center justify-between text-[10px] text-slate-400 uppercase font-black tracking-widest px-1">
                          <span className="flex items-center gap-2"><BookOpen className="h-4 w-4" /> {mock.totalQuestions}</span>
                          <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> {mock.duration}m</span>
-                      </div>
-                      <div className="flex justify-center">
-                         <Badge variant="outline" className="text-[10px] uppercase font-black px-5 py-1 rounded-xl border-slate-100 text-slate-300 group-hover:text-primary group-hover:border-primary/20 transition-colors">
-                           {mock.difficulty || 'Medium'}
-                         </Badge>
                       </div>
                     </div>
 
