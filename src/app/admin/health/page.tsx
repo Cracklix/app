@@ -2,7 +2,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { HeartPulse, Database, Zap, Activity, Clock, ShieldCheck, Search, HardDrive, RefreshCw } from "lucide-react"
+import { HeartPulse, Zap, Activity, ShieldCheck, HardDrive, RefreshCw } from "lucide-react"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
@@ -130,7 +130,7 @@ function HealthCard({ label, value, status, icon, color }: any) {
       <Card className="border-slate-100 shadow-xl bg-white p-10 rounded-[2.5rem] relative overflow-hidden group">
          <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform">{icon}</div>
          <div className="space-y-4 relative z-10 text-left">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{label}</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">{label}</p>
             <p className="text-4xl font-headline font-black text-[#0F172A]">{value}</p>
             <Badge className={`border-none text-[8px] font-black px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-600 uppercase tracking-widest`}>
                {status}
