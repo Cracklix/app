@@ -1,8 +1,10 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import MobileNav from '@/components/layout/MobileNav';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,10 +26,12 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover" />
       </head>
-      <body className={`${inter.variable} font-body antialiased bg-white text-[#0F172A] min-h-screen`}>
+      <body className={`${inter.variable} font-body antialiased bg-white text-[#0F172A] min-h-screen pb-20 md:pb-0`}>
         <FirebaseClientProvider>
           {children}
+          <MobileNav />
           <Toaster />
         </FirebaseClientProvider>
       </body>

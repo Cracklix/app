@@ -2,7 +2,7 @@
 'use client';
 
 import Link from "next/link";
-import { Menu, X, User, LogOut, ShieldCheck, ChevronDown, Bell, LayoutDashboard, Search, Trophy, Bookmark, Megaphone, CalendarDays, Zap, CreditCard } from "lucide-react";
+import { Menu, User, LayoutDashboard, Search, Trophy, Bookmark, Megaphone, CalendarDays, Zap, CreditCard, ChevronDown, LogOut, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
 import { useState, useMemo } from "react";
@@ -21,13 +21,16 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { doc } from "firebase/firestore";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import MobileSidebar from "./MobileSidebar";
 
 /**
- * @fileOverview Refined Navbar with Monetization integration.
+ * @fileOverview Institutional Top Navbar.
+ * Integrates Logo, Search, and Hamburger Drawer for mobile scaling.
  */
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user, profile, loading } = useUser();
   const auth = useAuth();
   const db = useFirestore();
@@ -45,9 +48,8 @@ export default function Navbar() {
   const links = [
     { label: "Exams", href: "/exams" },
     { label: "Mocks", href: "/mocks" },
+    { label: "Pass", href: "/pass", icon: <CreditCard className="h-4 w-4 text-primary" /> },
     { label: "Notes", href: "/notes", icon: <Zap className="h-4 w-4 text-emerald-500" /> },
-    { label: "Calendar", href: "/exam-calendar" },
-    { label: "Pricing", href: "/pricing", icon: <CreditCard className="h-4 w-4 text-primary" /> },
   ];
 
   const isFounder = user?.email === 'arshdeepgrewal1122@gmail.com';
@@ -56,26 +58,40 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-[1000] w-full">
       {settings?.showAnnouncement && (
-        <div className="bg-primary text-white py-2.5 px-6 flex items-center justify-center gap-3 overflow-hidden shadow-2xl relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_2.5s_infinite] pointer-events-none" />
-          <Megaphone className="h-4 w-4 shrink-0 animate-bounce" />
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] whitespace-nowrap">
+        <div className="bg-[#F97316] text-white py-2 px-6 flex items-center justify-center gap-3 overflow-hidden shadow-2xl relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-[shimmer_3s_infinite] pointer-events-none" />
+          <Megaphone className="h-3 w-3 shrink-0 animate-bounce" />
+          <p className="text-[9px] font-black uppercase tracking-[0.3em] whitespace-nowrap">
             {settings.announcement}
           </p>
         </div>
       )}
 
-      <nav className="w-full bg-[#0B1528] border-b border-white/5 py-4 shadow-2xl backdrop-blur-md bg-opacity-95">
+      <nav className="w-full bg-[#0B1528] border-b border-white/5 py-3 shadow-2xl backdrop-blur-md bg-opacity-95">
         <div className="container mx-auto max-w-[95%] lg:max-w-[90%] flex items-center justify-between px-4">
-          <div className="flex items-center gap-12">
-            <Logo variant="light" />
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4">
+               {/* Mobile Sidebar Trigger */}
+               <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+                 <SheetTrigger asChild>
+                   <button className="lg:hidden text-white p-2 hover:bg-white/5 rounded-xl transition-colors">
+                     <Menu className="h-6 w-6" />
+                   </button>
+                 </SheetTrigger>
+                 <SheetContent side="left" className="p-0 border-none w-[280px] max-w-[80vw]">
+                   <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
+                 </SheetContent>
+               </Sheet>
+               
+               <Logo variant="light" className="scale-90" />
+            </div>
 
             <div className="hidden lg:flex items-center gap-[30px] text-[14px] font-bold uppercase tracking-widest text-[#7A8B9E]">
               {links.map(link => (
                 <Link 
                   key={link.label} 
                   href={link.href} 
-                  className={`transition-colors hover:text-primary flex items-center gap-2 ${pathname === link.href ? 'text-white' : ''}`}
+                  className={`transition-colors hover:text-[#F97316] flex items-center gap-2 ${pathname === link.href ? 'text-white' : ''}`}
                 >
                   {link.icon}
                   {link.label}
@@ -84,7 +100,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex items-center gap-2 sm:gap-6">
             <Link href="/search" className="text-slate-400 hover:text-white transition-colors p-2">
               <Search className="h-5 w-5" />
             </Link>
@@ -96,28 +112,20 @@ export default function Navbar() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-10 flex items-center gap-2 px-2 hover:bg-white/5 rounded-xl border border-white/5">
-                      <Avatar className="h-8 w-8 border border-white/10">
+                      <Avatar className="h-8 w-8 border border-white/10 rounded-lg">
                         <AvatarImage src={user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`} />
-                        <AvatarFallback className="bg-primary/20 text-primary font-black text-xs">
-                          {profile?.name?.split(' ').map(n => n[0]).join('') || 'U'}
+                        <AvatarFallback className="bg-primary/20 text-primary font-black text-xs uppercase">
+                          {profile?.name?.[0] || 'U'}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="hidden md:flex flex-col items-start leading-none text-left">
-                        <p className="text-xs font-bold text-white truncate max-w-[100px]">{profile?.name || 'User'}</p>
-                        <p className="text-[9px] text-[#7A8B9E] uppercase font-black tracking-widest mt-0.5">{profile?.status || 'Free'}</p>
-                      </div>
-                      <ChevronDown className="h-3.5 w-3.5 text-[#7A8B9E]" />
+                      <ChevronDown className="h-3.5 w-3.5 text-[#7A8B9E] hidden sm:block" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-64 bg-[#0F172A] border-white/10 text-white rounded-[2rem] p-3 shadow-4xl" align="end">
-                    <DropdownMenuLabel className="font-headline font-bold px-4 py-3 text-slate-400 text-[10px] uppercase tracking-widest">Account Hub</DropdownMenuLabel>
+                    <DropdownMenuLabel className="font-headline font-bold px-4 py-3 text-slate-400 text-[10px] uppercase tracking-widest">Aspirant Account</DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-white/5 mb-2" />
                     <DropdownNavItem href="/dashboard" icon={<LayoutDashboard />} label="Performance Engine" />
-                    <DropdownNavItem href="/pricing" icon={<CreditCard className="text-primary" />} label="Manage Pass" />
-                    <DropdownNavItem href="/notes" icon={<Zap className="text-emerald-500" />} label="Notes Library" />
-                    <DropdownNavItem href="/exam-calendar" icon={<CalendarDays className="text-primary" />} label="Recruitment Tracker" />
-                    <DropdownNavItem href="/leaderboard" icon={<Trophy className="text-amber-500" />} label="Punjab Hall of Fame" />
-                    <DropdownNavItem href="/bookmarks" icon={<Bookmark className="text-primary" />} label="Study Repository" />
+                    <DropdownNavItem href="/pass" icon={<CreditCard className="text-primary" />} label="Manage Pass" />
                     {isAdmin && (
                       <>
                         <DropdownMenuSeparator className="bg-white/5 my-2" />
@@ -126,57 +134,18 @@ export default function Navbar() {
                     )}
                     <DropdownMenuSeparator className="bg-white/5 my-2" />
                     <DropdownMenuItem onClick={handleLogout} className="focus:bg-destructive/10 focus:text-destructive rounded-xl px-4 py-3 cursor-pointer transition-colors text-destructive/80 font-bold">
-                      <LogOut className="h-4 w-4 mr-3" /> Logout Portal
+                      <LogOut className="h-4 w-4 mr-3" /> Terminate Session
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
             ) : (
-              <Button asChild className="bg-primary hover:bg-primary/90 text-white font-bold px-8 py-2.5 rounded-xl h-auto border-none transition-all hover:-translate-y-0.5 shadow-xl shadow-primary/20">
-                <Link href="/login">Initialize Profile</Link>
+              <Button asChild className="bg-[#F97316] hover:bg-[#EA580C] text-white font-black px-6 py-2 rounded-xl h-9 uppercase text-[10px] tracking-widest border-none transition-all shadow-xl shadow-orange-900/20">
+                <Link href="/login">Sign In</Link>
               </Button>
             )}
-            
-            <button 
-              className="lg:hidden text-white p-2"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
           </div>
         </div>
-
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="absolute top-full left-0 w-full bg-[#0B1528] border-b border-white/10 lg:hidden flex flex-col p-6 gap-6 shadow-4xl text-left"
-            >
-              {links.map(link => (
-                <Link 
-                  key={link.label} 
-                  href={link.href} 
-                  className={`text-lg font-bold uppercase tracking-widest text-left ${pathname === link.href ? 'text-primary' : 'text-[#7A8B9E]'}`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <DropdownMenuSeparator className="bg-white/5" />
-              {user ? (
-                 <Button onClick={handleLogout} variant="destructive" className="w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] text-xs">
-                   <LogOut className="h-4 w-4 mr-2" /> Termination Session
-                 </Button>
-              ) : (
-                <Button asChild className="bg-primary text-white font-black w-full h-14 rounded-2xl uppercase tracking-widest text-xs">
-                  <Link href="/login" onClick={() => setIsOpen(false)}>Initialize Entry</Link>
-                </Button>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
       </nav>
     </div>
   );
