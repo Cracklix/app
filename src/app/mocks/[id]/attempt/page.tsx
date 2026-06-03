@@ -160,13 +160,10 @@ export default function MockAttemptPage() {
   const activePaper = isPaperA ? "PAPER A: PUNJABI QUALIFYING" : (q?.paper || "PAPER B: MAIN EXAM")
   const activeSection = isPaperA ? "Punjabi Language & Grammar" : (q?.section || "General Assessment")
 
-  // Strict Duplication Check
-  const qEnTrim = (q?.questionEn || "").trim()
-  const qRegTrim = (q?.[`question${regKey}`] || "").trim()
-  const hasDistinctTranslation = qEnTrim && qRegTrim && qEnTrim !== qRegTrim
-
-  const showEn = (language === 'en' || (language === 'bilingual' && hasDistinctTranslation)) && qEnTrim
-  const showReg = (language === 'reg' || language === 'bilingual')
+  // Strict Duplication Check: If En and Pa are same, only show one block
+  const qEnVal = (q?.questionEn || "").trim()
+  const qPaVal = (q?.[`question${regKey}`] || "").trim()
+  const isDuplicate = qEnVal === qPaVal
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-white text-[#0F172A]">
@@ -205,18 +202,13 @@ export default function MockAttemptPage() {
           <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
              <div className="max-w-4xl mx-auto space-y-6">
                 <div className="space-y-4 text-left">
-                   {showEn && (
-                      <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528] antialiased whitespace-pre-line">
-                         {q?.questionEn}
-                      </p>
-                   )}
-                   {showReg && (
-                      <p className={cn(
-                        "text-lg md:text-xl font-bold leading-snug text-[#0B1528] antialiased whitespace-pre-line",
-                        language === 'bilingual' && showEn ? 'border-t border-slate-100 pt-3' : ''
-                      )}>
-                         {q?.[`question${regKey}`] || q?.questionEn}
-                      </p>
+                   {language === 'en' && <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528]">{q?.questionEn}</p>}
+                   {language === 'reg' && <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528]">{qPaVal || q?.questionEn}</p>}
+                   {language === 'bilingual' && (
+                      <div className="space-y-3">
+                         <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528]">{q?.questionEn}</p>
+                         {!isDuplicate && <p className="text-lg md:text-xl font-bold leading-snug text-[#0B1528] border-t border-slate-100 pt-3">{qPaVal}</p>}
+                      </div>
                    )}
                 </div>
 
@@ -228,8 +220,8 @@ export default function MockAttemptPage() {
                   {['A', 'B', 'C', 'D'].map((k, i) => {
                     const isSelected = answers[currentIdx] === i
                     const optEn = (q?.[`option${k}En`] || "").trim()
-                    const optReg = (q?.[`option${k}${regKey}`] || "").trim()
-                    const hasValidTranslation = optReg && optReg !== optEn
+                    const optPa = (q?.[`option${k}${regKey}`] || "").trim()
+                    const isOptDuplicate = optEn === optPa
 
                     return (
                       <div key={i} onClick={() => setAnswers(prev => ({ ...prev, [currentIdx]: i }))} className={cn(
@@ -241,10 +233,10 @@ export default function MockAttemptPage() {
                             {language === 'bilingual' ? (
                                <>
                                   <span className="leading-tight">{optEn}</span>
-                                  {hasValidTranslation && <span className="leading-tight pt-1 opacity-80">{optReg}</span>}
+                                  {!isOptDuplicate && <span className="leading-tight pt-1 opacity-80">{optPa}</span>}
                                </>
                             ) : (
-                               <span>{language === 'en' ? optEn : optReg || optEn}</span>
+                               <span>{language === 'en' ? optEn : optPa || optEn}</span>
                             )}
                          </Label>
                          <span className="text-[10px] font-black text-slate-300">{k}</span>
