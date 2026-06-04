@@ -6,15 +6,13 @@ export type SubscriptionTier = 'Free' | 'Silver' | 'Gold' | 'Premium';
 
 export type QuestionType = 
   | 'MCQ' 
-  | 'BILINGUAL_MCQ' 
   | 'IMAGE_MCQ'
   | 'MATCHING'
   | 'ASSERTION_REASON'
-  | 'TABLE_MCQ'
-  | 'PASSAGE'
-  | 'PASSAGE_QUESTION'
   | 'DI_SET'
   | 'DI_QUESTION'
+  | 'PASSAGE'
+  | 'PASSAGE_QUESTION'
   | 'CURRENT_AFFAIRS';
 
 export type DiagramType = 
@@ -42,37 +40,39 @@ export interface Question {
   subjectId: string;
   chapterId: string;
   difficulty: Difficulty;
-  mockType?: MockType;
   status: ContentStatus;
   questionType: QuestionType;
   diagramType: DiagramType;
 
-  // Context IDs for Sets
-  parentSetId?: string;
+  // Context IDs for Linked Sets
+  diSetId?: string;
   passageId?: string;
 
-  // Primary Content
-  instructionEn?: string;
-  instructionPa?: string;
-  passageEn?: string;
-  passagePa?: string;
-  
+  // Primary Content (English)
   questionEn: string;
-  questionPa: string;
-
   optionAEn: string;
-  optionAPa: string;
   optionBEn: string;
-  optionBPa: string;
   optionCEn: string;
-  optionCPa: string;
   optionDEn: string;
+  explanationEn: string;
+  instructionEn?: string;
+  passageEn?: string;
+  titleEn?: string;
+  descriptionEn?: string;
+  
+  // Primary Content (Punjabi)
+  questionPa: string;
+  optionAPa: string;
+  optionBPa: string;
+  optionCPa: string;
   optionDPa: string;
+  explanationPa: string;
+  instructionPa?: string;
+  passagePa?: string;
+  titlePa?: string;
+  descriptionPa?: string;
 
   correctAnswer: 'A' | 'B' | 'C' | 'D';
-
-  explanationEn: string;
-  explanationPa: string;
 
   // Visual/Complex Data
   imageUrl?: string;

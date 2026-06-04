@@ -1,10 +1,9 @@
 /**
- * @fileOverview Institutional Hybrid Ingestion Engine.
+ * @fileOverview Institutional Ultimate Hybrid Ingestion Engine.
  * Supports: 
- * 1. Simple Format (Q1. Text, A., B., C., D., Answer: B, Explanation: ...)
- * 2. Tagged Format (QUESTION_TYPE: MCQ, QUESTION_EN: ..., etc.)
- * 
- * Logic: All optional fields return null instead of undefined to satisfy Firestore.
+ * 1. Simple Format (Q1. Text, A., B., C., D., Answer: B)
+ * 2. High-Fidelity Tagged Format (QUESTION_TYPE: ..., QUESTION_EN: ..., etc.)
+ * 3. Contextual Sets (DI_SET, PASSAGE)
  */
 
 import { Question, Difficulty, ContentStatus, QuestionType, DiagramType } from "@/types";
@@ -31,18 +30,18 @@ export function parseBulkQuestions(
   
   const text = rawText.replace(/\r\n/g, '\n').trim();
   
-  // Split by specific markers or new question indicators
-  const blocks = text.split(/(?:={3,}|QUESTION_TYPE:|(?=\nQ\d+\.)|(?=\n\d+\.))/i)
+  // Split by specific markers
+  const blocks = text.split(/(?:={3,}|(?=\nQUESTION_TYPE:)|(?=\nQ\d+\.)|(?=\n\d+\.))/i)
     .map(b => b.trim())
     .filter(b => b.length > 5);
 
   if (blocks.length === 0) {
-    return { questions: [], errors: ["No valid content blocks detected."], confidence: 0 };
+    return { questions: [], errors: ["No valid content blocks detected. Check delimiters (===)."], confidence: 0 };
   }
 
   blocks.forEach((block, index) => {
     try {
-      const isTaggedFormat = block.toUpperCase().includes('QUESTION_EN:') || block.toUpperCase().includes('QUESTION_TYPE:');
+      const isTaggedFormat = block.toUpperCase().includes('QUESTION_TYPE:') || block.toUpperCase().includes('QUESTION_EN:');
       
       let parsed: Partial<Question>;
 
@@ -52,8 +51,9 @@ export function parseBulkQuestions(
         parsed = parseSimpleBlock(block, metadata);
       }
 
-      if (!parsed.questionEn) {
-        throw new Error("Could not identify question text. Check format.");
+      // Final validation
+      if (!parsed.questionEn && parsed.questionType !== 'DI_SET' && parsed.questionType !== 'PASSAGE') {
+        throw new Error("Could not identify question statement (QUESTION_EN missing).");
       }
 
       questions.push({
@@ -75,40 +75,62 @@ function parseTaggedBlock(block: string, metadata: any): Partial<Question> {
   const getTag = (tag: string) => {
     const regex = new RegExp(`${tag}:?\\s*([\\s\\S]*?)(?=\\n[A-Z_\\d\\s]+:?|$)`, 'i');
     const match = block.match(regex);
-    return match ? match[1].trim() : "";
+    return match ? match[1].trim() : null;
   };
 
   const qType = (getTag("QUESTION_TYPE") || "MCQ").toUpperCase() as QuestionType;
   const ansRaw = getTag("ANSWER") || getTag("CORRECT_ANSWER");
-  const correctAnswer = (ansRaw.match(/[A-D]/i)?.[0].toUpperCase() || "A") as 'A' | 'B' | 'C' | 'D';
+  const correctAnswer = (ansRaw?.match(/[A-D]/i)?.[0].toUpperCase() || "A") as 'A' | 'B' | 'C' | 'D';
 
-  const qEn = getTag("QUESTION_EN") || getTag("TITLE");
-  const qPa = getTag("QUESTION_PA") || qEn;
+  const tableDataRaw = getTag("TABLE_DATA");
+  let tableData = null;
+  if (tableDataRaw) {
+    const lines = tableDataRaw.split('\n').filter(l => l.includes('|'));
+    if (lines.length > 0) {
+      const headers = lines[0].split('|').map(h => h.trim());
+      const rows = lines.slice(1).map(r => r.split('|').map(c => c.trim()));
+      tableData = { headers, rows };
+    }
+  }
 
   return {
     ...metadata,
     questionType: qType,
-    diagramType: getTag("IMAGE_URL") ? 'image' : getTag("TABLE_DATA") ? 'table' : 'none',
-    questionEn: qEn,
-    questionPa: qPa,
+    diagramType: getTag("IMAGE_URL") ? 'image' : tableData ? 'table' : 'none',
+    diSetId: getTag("DI_SET_ID"),
+    passageId: getTag("PASSAGE_ID"),
+    
+    questionEn: getTag("QUESTION_EN") || getTag("TITLE"),
+    questionPa: getTag("QUESTION_PA") || getTag("QUESTION_EN") || "",
+    
     optionAEn: getTag("OPTION_A_EN") || "Option A",
-    optionAPa: getTag("OPTION_A_PA") || getTag("OPTION_A_EN") || "ਵਿਕਲਪ A",
+    optionAPa: getTag("OPTION_A_PA") || getTag("OPTION_A_EN") || "",
     optionBEn: getTag("OPTION_B_EN") || "Option B",
-    optionBPa: getTag("OPTION_B_PA") || getTag("OPTION_B_EN") || "ਵਿਕਲਪ B",
+    optionBPa: getTag("OPTION_B_PA") || getTag("OPTION_B_EN") || "",
     optionCEn: getTag("OPTION_C_EN") || "Option C",
-    optionCPa: getTag("OPTION_C_PA") || getTag("OPTION_C_EN") || "ਵਿਕਲਪ C",
+    optionCPa: getTag("OPTION_C_PA") || getTag("OPTION_C_EN") || "",
     optionDEn: getTag("OPTION_D_EN") || "Option D",
-    optionDPa: getTag("OPTION_D_PA") || getTag("OPTION_D_EN") || "ਵਿਕਲਪ D",
+    optionDPa: getTag("OPTION_D_PA") || getTag("OPTION_D_EN") || "",
+    
     correctAnswer,
-    explanationEn: getTag("EXPLANATION_EN") || "Rationale provided.",
-    explanationPa: getTag("EXPLANATION_PA") || getTag("EXPLANATION_EN") || "ਵਿਆਖਿਆ.",
-    imageUrl: getTag("IMAGE_URL") || null,
-    passageEn: getTag("PASSAGE_EN") || null,
-    passagePa: getTag("PASSAGE_PA") || null,
-    instructionEn: getTag("INSTRUCTION_EN") || null,
-    instructionPa: getTag("INSTRUCTION_PA") || null,
-    tableData: null,
-    chartConfig: null
+    explanationEn: getTag("EXPLANATION_EN") || "Solution registry pending.",
+    explanationPa: getTag("EXPLANATION_PA") || getTag("EXPLANATION_EN") || "",
+    
+    imageUrl: getTag("IMAGE_URL"),
+    passageEn: getTag("PASSAGE_EN"),
+    passagePa: getTag("PASSAGE_PA"),
+    instructionEn: getTag("INSTRUCTION_EN"),
+    instructionPa: getTag("INSTRUCTION_PA"),
+    
+    titleEn: getTag("TITLE_EN") || getTag("TITLE"),
+    titlePa: getTag("TITLE_PA"),
+    descriptionEn: getTag("DESCRIPTION_EN") || getTag("DESCRIPTION"),
+    descriptionPa: getTag("DESCRIPTION_PA"),
+    
+    tableData,
+    date: getTag("DATE"),
+    category: getTag("CATEGORY"),
+    year: parseInt(getTag("YEAR") || "2026")
   };
 }
 
@@ -120,15 +142,15 @@ function parseSimpleBlock(block: string, metadata: any): Partial<Question> {
   
   const findPart = (prefix: string) => {
     return parts.find(p => p.trim().toLowerCase().startsWith(prefix.toLowerCase()))
-      ?.replace(new RegExp(`^${prefix}[\\.\\)]?\\s*`, 'i'), '').trim() || "";
+      ?.replace(new RegExp(`^${prefix}[\\.\\)]?\\s*`, 'i'), '').trim() || null;
   };
 
-  const optA = findPart("A");
-  const optB = findPart("B");
-  const optC = findPart("C");
-  const optD = findPart("D");
-  const ans = findPart("Answer");
-  const exp = findPart("Explanation");
+  const optA = findPart("A") || "Option A";
+  const optB = findPart("B") || "Option B";
+  const optC = findPart("C") || "Option C";
+  const optD = findPart("D") || "Option D";
+  const ans = findPart("Answer") || "A";
+  const exp = findPart("Explanation") || "Rationale provided.";
 
   const correctAnswer = (ans.match(/[A-D]/i)?.[0].toUpperCase() || "A") as 'A' | 'B' | 'C' | 'D';
 
@@ -137,24 +159,19 @@ function parseSimpleBlock(block: string, metadata: any): Partial<Question> {
     questionType: 'MCQ',
     diagramType: 'none',
     questionEn,
-    questionPa: questionEn,
-    optionAEn: optA || "Option A",
-    optionAPa: optA || "ਵਿਕਲਪ A",
-    optionBEn: optB || "Option B",
-    optionBPa: optB || "ਵਿਕਲਪ B",
-    optionCEn: optC || "Option C",
-    optionCPa: optC || "ਵਿਕਲਪ C",
-    optionDEn: optD || "Option D",
-    optionDPa: optD || "ਵਿਕਲਪ D",
+    questionPa: questionEn, // Fallback
+    optionAEn: optA,
+    optionAPa: optA,
+    optionBEn: optB,
+    optionBPa: optB,
+    optionCEn: optC,
+    optionCPa: optC,
+    optionDEn: optD,
+    optionDPa: optD,
     correctAnswer,
-    explanationEn: exp || "Rationale provided.",
-    explanationPa: exp || "ਵਿਆਖਿਆ.",
+    explanationEn: exp,
+    explanationPa: exp,
     imageUrl: null,
-    passageEn: null,
-    passagePa: null,
-    instructionEn: null,
-    instructionPa: null,
-    tableData: null,
-    chartConfig: null
+    tableData: null
   };
 }

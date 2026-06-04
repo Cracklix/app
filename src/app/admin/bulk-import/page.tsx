@@ -21,18 +21,20 @@ import {
   Copy,
   Save,
   FileCode,
-  DatabaseBackup
+  DatabaseBackup,
+  CheckCircle2,
+  Rocket
 } from "lucide-react"
 import { useFirestore, useCollection } from "@/firebase"
 import { collection, doc, writeBatch, serverTimestamp } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { parseBulkQuestions } from "@/lib/parser"
 import { Difficulty, Question, ContentStatus } from "@/types"
+import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Hybrid Bank Ingestion Node.
- * Supports Simple (Q1, A, B, C, D) and Tagged formats automatically.
- * Fixed: Robust payload sanitization to remove 'undefined' fields while preserving serverTimestamp.
+ * @fileOverview Institutional Ultimate Bulk Ingestion Hub.
+ * Features Structure & Audit (Preview) + Institutional Save (Commit).
  */
 
 export default function BulkImportPage() {
@@ -71,9 +73,9 @@ export default function BulkImportPage() {
     setConfidence(conf)
 
     if (errors.length > 0) {
-      toast({ variant: "destructive", title: "Partial Format Mismatch", description: `Parsed ${questions.length} blocks, but found ${errors.length} errors.` })
+      toast({ variant: "destructive", title: "Audit Warnings", description: `Parsed ${questions.length} blocks, but found ${errors.length} errors.` })
     } else {
-      toast({ title: "Audit Complete", description: `${questions.length} nodes structured with ${conf}% confidence.` })
+      toast({ title: "Structure Validated", description: `${questions.length} nodes ready for bank sync.` })
     }
   }
 
@@ -86,7 +88,7 @@ export default function BulkImportPage() {
     parsedQuestions.forEach(q => {
       const qRef = doc(collection(db, "questions"))
       
-      // Sanitization: Remove 'undefined' properties while preserving FieldValues
+      // Strict Payload Sanitization
       const payload: any = {
         ...q,
         id: qRef.id,
@@ -96,19 +98,23 @@ export default function BulkImportPage() {
         status: metadata.status
       };
 
-      // Strict cleanup of undefined values which Firestore rejects
-      Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
+      // Purge undefined values which Firestore rejects
+      Object.keys(payload).forEach(key => {
+         if (payload[key] === undefined) {
+            payload[key] = null;
+         }
+      });
 
       batch.set(qRef, payload)
     })
 
     try {
       await batch.commit()
-      toast({ title: "Bank Sync Success", description: `${parsedQuestions.length} nodes successfully added to global registry.` })
+      toast({ title: "Bank Sync Success", description: `${parsedQuestions.length} reusable nodes successfully committed.` })
       router.push("/admin/questions")
     } catch (e: any) {
       console.error("Firestore Write Error:", e)
-      toast({ variant: "destructive", title: "Sync Failed", description: e.message || "Database rejected the transaction." })
+      toast({ variant: "destructive", title: "Sync Failed", description: e.message || "Database transaction rejected." })
     } finally {
       setIsSyncing(false)
     }
@@ -121,9 +127,9 @@ export default function BulkImportPage() {
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl border bg-white h-12 w-12 shadow-sm">
             <ChevronLeft className="h-6 w-6" />
           </Button>
-          <div>
-            <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Atomic Ingestion Hub</h1>
-            <p className="text-slate-500 font-medium text-left">Inject metadata and structure your reusable question bank.</p>
+          <div className="text-left">
+            <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Institutional Ingestion</h1>
+            <p className="text-slate-500 font-medium text-left">Structure raw text into atomic reusable bank nodes.</p>
           </div>
         </div>
         <div className="flex gap-4">
@@ -131,7 +137,7 @@ export default function BulkImportPage() {
               <DatabaseBackup className="h-5 w-5" /> Reset Buffer
            </Button>
            <Button onClick={handleSaveToBank} disabled={isSyncing || parsedQuestions.length === 0} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl h-16 px-12 gap-3 shadow-3xl shadow-emerald-900/20">
-              {isSyncing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />} Commit to Question Bank
+              {isSyncing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Rocket className="h-5 w-5" />} Commit to Question Bank
            </Button>
         </div>
       </div>
@@ -167,27 +173,15 @@ export default function BulkImportPage() {
                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Topic / Chapter</Label>
                    <Input value={metadata.chapterId} onChange={e => setMetadata({...metadata, chapterId: e.target.value})} placeholder="e.g. Percentage" className="h-12 bg-slate-50 border-none rounded-xl font-bold" />
                 </div>
-
-                <div className="space-y-2">
-                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Difficulty Baseline</Label>
-                   <Select value={metadata.difficulty} onValueChange={(v: Difficulty) => setMetadata({...metadata, difficulty: v})}>
-                      <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none font-bold text-[#0F172A]"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                         <SelectItem value="Easy">Easy</SelectItem>
-                         <SelectItem value="Medium">Medium</SelectItem>
-                         <SelectItem value="Hard">Hard</SelectItem>
-                      </SelectContent>
-                   </Select>
-                </div>
               </div>
 
               <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2"><FileCode className="h-3 w-3" /> PROTOCOL MODES</p>
                  <ul className="text-[9px] font-bold text-slate-600 space-y-3">
                     <li>• <span className="text-primary">SIMPLE MODE:</span> Q1. Question text &gt; A. Option A &gt; Answer: B</li>
-                    <li>• <span className="text-primary">TAGGED MODE:</span> QUESTION_EN: &gt; OPTION_A_EN: &gt; ANSWER:</li>
-                    <li>• <span className="text-primary">IMAGE MODE:</span> IMAGE_URL: [Link] &gt; QUESTION_EN: ...</li>
-                    <li>• Use <span className="font-black text-[#0F172A]">===</span> between questions.</li>
+                    <li>• <span className="text-primary">TAGGED MODE:</span> QUESTION_TYPE: MCQ &gt; QUESTION_EN: ...</li>
+                    <li>• <span className="text-primary">DI MODE:</span> DI_SET_ID: DI01 &gt; IMAGE_URL: [Link]</li>
+                    <li>• Use <span className="font-black text-[#0F172A]">===</span> between blocks.</li>
                  </ul>
               </div>
             </CardContent>
@@ -200,7 +194,7 @@ export default function BulkImportPage() {
               <Textarea 
                 value={rawText}
                 onChange={e => setRawText(e.target.value)}
-                placeholder="Paste Q1. A. B. C. D. Answer: format or Tagged format here..."
+                placeholder="Paste TAGGED content here (QUESTION_EN, QUESTION_PA, OPTION_A_EN...)"
                 className="min-h-[500px] rounded-[3.5rem] bg-white border-none p-12 text-sm font-mono shadow-4xl custom-scrollbar text-[#0F172A]"
               />
               <Button onClick={handleAnalyze} className="w-full h-20 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.3em] rounded-[2.5rem] shadow-4xl mt-6 gap-4">
@@ -210,50 +204,26 @@ export default function BulkImportPage() {
 
            {parsedQuestions.length > 0 && (
              <Card className="border-none shadow-4xl rounded-[4rem] bg-white overflow-hidden text-left">
-                <CardHeader className="p-16 border-b border-slate-50 bg-slate-50/30 flex flex-row justify-between items-center">
+                <CardHeader className="p-12 border-b border-slate-50 bg-slate-50/30 flex flex-row justify-between items-center">
                    <div className="space-y-2 text-left">
                       <CardTitle className="font-headline font-black text-3xl uppercase">Extraction Matrix ({parsedQuestions.length})</CardTitle>
-                      <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest text-left">Confidence: {confidence}% • Mode: Hybrid</p>
+                      <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest text-left">Confidence: {confidence}% • Schema: Production v2</p>
                    </div>
                    <Badge className="bg-emerald-100 text-emerald-600 border-none font-black px-6 py-2 rounded-xl text-xs uppercase tracking-widest">VALIDATED NODES</Badge>
                 </CardHeader>
-                <CardContent className="p-0">
-                   <Table>
-                      <TableHeader className="bg-slate-50">
-                         <TableRow className="h-20 border-slate-50">
-                            <TableHead className="px-12 text-[10px] font-black uppercase text-left">Node</TableHead>
-                            <TableHead className="text-[10px] font-black uppercase text-left">Statement Summary</TableHead>
-                            <TableHead className="text-center text-[10px] font-black uppercase">Logic</TableHead>
-                            <TableHead className="text-right px-12 text-[10px] font-black uppercase">Audit</TableHead>
-                         </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                         {parsedQuestions.map((q, idx) => (
-                           <TableRow key={idx} className="group hover:bg-slate-50/50 border-slate-50 transition-colors">
-                              <TableCell className="px-12 py-10 font-black text-slate-300 text-left">#{idx + 1}</TableCell>
-                              <TableCell className="py-10 max-w-lg text-left">
-                                 <div className="space-y-2">
-                                    <p className="font-bold text-[#0F172A] line-clamp-1">{q.questionEn}</p>
-                                    <Badge className="bg-slate-100 text-slate-500 border-none text-[8px] font-black uppercase px-2">{q.questionType}</Badge>
-                                 </div>
-                              </TableCell>
-                              <TableCell className="text-center">
-                                 <div className="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-600 font-black text-sm flex items-center justify-center mx-auto border border-emerald-100">{q.correctAnswer}</div>
-                              </TableCell>
-                              <TableCell className="text-right px-12">
-                                 <div className="flex justify-end gap-3 opacity-20 group-hover:opacity-100 transition-opacity">
-                                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl" onClick={() => {
-                                       const dup = [...parsedQuestions];
-                                       dup.splice(idx, 0, {...q});
-                                       setParsedQuestions(dup);
-                                    }}><Copy className="h-5 w-5" /></Button>
-                                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-rose-500" onClick={() => setParsedQuestions(parsedQuestions.filter((_, i) => i !== idx))}><Trash2 className="h-5 w-5" /></Button>
-                                 </div>
-                              </TableCell>
-                           </TableRow>
-                         ))}
-                      </TableBody>
-                   </Table>
+                <CardContent className="p-12 space-y-12 max-h-[800px] overflow-y-auto custom-scrollbar">
+                   {parsedQuestions.map((q, idx) => (
+                      <div key={idx} className="p-10 bg-slate-50/50 rounded-[3rem] border border-slate-100 space-y-8">
+                         <div className="flex items-center justify-between">
+                            <Badge className="bg-primary text-white border-none text-[10px] font-black uppercase px-4 py-1 rounded-lg">Audit Node #{idx+1}</Badge>
+                            <div className="flex gap-4">
+                               <Badge variant="outline" className="text-[9px] font-black uppercase border-slate-200">{q.questionType}</Badge>
+                               <Button variant="ghost" size="icon" className="h-10 w-10 text-rose-500" onClick={() => setParsedQuestions(parsedQuestions.filter((_, i) => i !== idx))}><Trash2 className="h-4 w-4" /></Button>
+                            </div>
+                         </div>
+                         <QuestionRenderer question={q} language="bilingual" />
+                      </div>
+                   ))}
                 </CardContent>
              </Card>
            )}

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Search, Edit, Trash2, Database, Filter } from "lucide-react"
+import { Plus, Search, Edit, Trash2, Database, Filter, Eye, Image as ImageIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, deleteDoc, doc, where } from "firebase/firestore"
@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 /**
  * @fileOverview Institutional Asset Ledger (Global Bank).
- * Standardized to production schema for 100% data visibility.
+ * Features structured previews and type filtering.
  */
 
 export default function QuestionBank() {
@@ -40,7 +40,7 @@ export default function QuestionBank() {
     if (!allQuestions) return []
     return allQuestions
       .filter(q => {
-        const matchesSearch = (q.questionEn || "").toLowerCase().includes(searchTerm.toLowerCase())
+        const matchesSearch = (q.questionEn || q.titleEn || "").toLowerCase().includes(searchTerm.toLowerCase())
         const matchesSub = subjectFilter === "all" || q.subjectId === subjectFilter
         const matchesBoard = boardFilter === "all" || q.boardId === boardFilter
         return matchesSearch && matchesSub && matchesBoard
@@ -63,7 +63,7 @@ export default function QuestionBank() {
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Atomic Asset Registry</span>
           </div>
           <h1 className="text-5xl font-black font-headline text-primary uppercase tracking-tight">Question Bank</h1>
-          <p className="text-muted-foreground mt-2 text-lg">Managing {allQuestions?.length || 0} reusable institutional nodes.</p>
+          <p className="text-muted-foreground mt-2 text-lg">Managing {allQuestions?.length || 0} structured reusable nodes.</p>
         </div>
         <div className="flex gap-4">
            <Button asChild variant="outline" className="h-14 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 shadow-sm bg-white">
@@ -80,7 +80,7 @@ export default function QuestionBank() {
           <div className="flex flex-col lg:flex-row gap-8 items-center justify-between">
             <div className="relative w-full lg:w-[45%]">
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-              <Input className="pl-14 h-16 rounded-[1.5rem] bg-white border-none shadow-inner" placeholder="Search atomic bank..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+              <Input className="pl-14 h-16 rounded-[1.5rem] bg-white border-none shadow-inner" placeholder="Search structured bank..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
             </div>
             <div className="flex flex-wrap gap-4">
               <Select value={subjectFilter} onValueChange={setSubjectFilter}>
@@ -98,9 +98,9 @@ export default function QuestionBank() {
           <Table>
             <TableHeader className="bg-slate-50/50">
               <TableRow className="border-white/5 h-16">
-                <TableHead className="px-10 text-[10px] font-black uppercase text-slate-500">Node Logic</TableHead>
+                <TableHead className="px-10 text-[10px] font-black uppercase text-slate-500">Node Strategy</TableHead>
                 <TableHead className="text-[10px] font-black uppercase text-slate-500">Context</TableHead>
-                <TableHead className="text-center text-[10px] font-black uppercase text-slate-500">Correct</TableHead>
+                <TableHead className="text-center text-[10px] font-black uppercase text-slate-500">Visuals</TableHead>
                 <TableHead className="text-right px-10 text-[10px] font-black uppercase text-slate-500">Audit</TableHead>
               </TableRow>
             </TableHeader>
@@ -112,33 +112,43 @@ export default function QuestionBank() {
               ) : filteredQuestions.length > 0 ? filteredQuestions.map((q: any) => (
                 <TableRow key={q.id} className="hover:bg-slate-50 border-white/5 transition-colors group">
                   <TableCell className="px-10 py-8 max-w-lg text-left">
-                    <p className="font-bold text-[#0F172A] line-clamp-1">{q.questionEn}</p>
+                    <p className="font-bold text-[#0F172A] line-clamp-1">{q.questionEn || q.titleEn}</p>
                     <div className="flex items-center gap-4 mt-2">
-                       <code className="text-[9px] font-mono text-slate-500 uppercase">ID: {q.id.slice(-8)}</code>
-                       <Badge className="bg-slate-100 text-slate-500 border-none text-[8px] font-black uppercase">{q.questionType}</Badge>
+                       <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase px-2">{q.questionType}</Badge>
+                       <code className="text-[9px] font-mono text-slate-400">UUID: {q.id.slice(-8)}</code>
                     </div>
                   </TableCell>
                   <TableCell className="text-left">
                      <div className="space-y-1">
-                        <p className="text-[10px] font-black text-primary uppercase tracking-widest">{q.boardId}</p>
+                        <p className="text-[10px] font-black text-slate-700 uppercase tracking-widest">{q.boardId}</p>
                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{q.subjectId} • {q.chapterId || 'General'}</p>
                      </div>
                   </TableCell>
                   <TableCell className="text-center">
-                     <div className="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-black text-sm mx-auto shadow-inner">{q.correctAnswer}</div>
+                     {q.imageUrl ? (
+                       <div className="h-12 w-12 rounded-xl border border-slate-200 overflow-hidden mx-auto bg-white shadow-sm flex items-center justify-center">
+                          <img src={q.imageUrl} className="max-h-full max-w-full object-contain" />
+                       </div>
+                     ) : q.tableData ? (
+                        <div className="h-10 w-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mx-auto border border-blue-100">
+                           <Database className="h-4 w-4" />
+                        </div>
+                     ) : (
+                        <span className="text-slate-200">—</span>
+                     )}
                   </TableCell>
                   <TableCell className="text-right px-10">
                     <div className="flex justify-end gap-3 opacity-20 group-hover:opacity-100 transition-opacity">
-                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-white shadow-sm border border-transparent hover:border-slate-100" asChild>
+                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-white shadow-sm" asChild>
                         <Link href={`/admin/questions/add?id=${q.id}`}><Edit className="h-4 w-4" /></Link>
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-rose-50 hover:text-rose-500 shadow-sm border border-transparent hover:border-rose-100" onClick={() => handleDelete(q.id)}><Trash2 className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-rose-50 text-rose-500 shadow-sm" onClick={() => handleDelete(q.id)}><Trash2 className="h-4 w-4" /></Button>
                     </div>
                   </TableCell>
                 </TableRow>
               )) : (
                 <TableRow>
-                   <TableCell colSpan={4} className="h-40 text-center opacity-30 italic text-slate-400 font-bold uppercase text-xs">No questions found in registry.</TableCell>
+                   <TableCell colSpan={4} className="h-40 text-center opacity-30 italic text-slate-400 font-bold uppercase text-xs">No reusable nodes found in repository.</TableCell>
                 </TableRow>
               )}
             </TableBody>

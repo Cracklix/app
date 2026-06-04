@@ -4,18 +4,8 @@ import React from 'react';
 import { Question } from '@/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { CheckCircle2 } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-} from 'recharts';
+import { CheckCircle2, AlertTriangle, Info, Image as ImageIcon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface QuestionRendererProps {
   question: Partial<Question>;
@@ -24,134 +14,124 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview Refined Question Renderer.
- * Optimized for Testbook-style high-density layout.
- * Color: Absolute Black (#000000).
- * Logic: Standard img tag used for diagrams to support external user links without domain lock.
+ * @fileOverview Institutional Ultimate Question Renderer.
+ * optimized for High-Density Bilingual rendering and Parent-Child DI logic.
  */
 
 export default function QuestionRenderer({ question, language, showSolution = false }: QuestionRendererProps) {
-  const showEn = language === 'en';
+  const showEn = language === 'en' || language === 'bilingual';
   const showPa = language === 'pa' || language === 'bilingual';
   
-  const diagramType = question.diagramType || 'none';
-  const hasContext = !!(question.instructionEn || question.instructionPa || question.passageEn || question.passagePa);
+  // Validation Warning
+  const isMissingPa = !question.questionPa || question.questionPa === question.questionEn;
 
   return (
     <div className="w-full text-left font-body animate-in fade-in duration-300">
-      {/* 1. Context Container (Ultra-Compact) */}
-      {hasContext && (
-        <div className="bg-slate-50 border border-slate-100 p-3 rounded-xl mb-4 space-y-2">
-           {(question.instructionEn || question.instructionPa) && (
-             <div className="space-y-1">
-                {showEn && question.instructionEn && <p className="text-[12px] font-bold text-black leading-tight">{question.instructionEn}</p>}
-                {showPa && question.instructionPa && <p className="text-[12px] font-bold text-black leading-tight">{question.instructionPa}</p>}
-             </div>
-           )}
+      
+      {/* 1. Institutional Context Node (Parent DI/Passage) */}
+      {(question.passageEn || question.passagePa || question.imageUrl || question.tableData) && (
+        <div className="bg-slate-50 border border-slate-200 rounded-[2rem] p-6 md:p-8 mb-6 shadow-inner space-y-6">
+           <div className="flex items-center gap-3 mb-2">
+              <Info className="h-4 w-4 text-primary" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Context Node / Reference</span>
+           </div>
 
-           {(question.passageEn || question.passagePa) && (
-             <div className="space-y-2 border-t border-slate-200 pt-2">
-                {showEn && question.passageEn && <div className="text-sm leading-snug text-black font-medium whitespace-pre-wrap">{question.passageEn}</div>}
-                {showPa && question.passagePa && <div className="text-sm leading-snug text-black font-medium whitespace-pre-wrap">{question.passagePa}</div>}
-             </div>
-           )}
-        </div>
-      )}
-
-      {/* 2. Visual Node */}
-      {(question.imageUrl || question.tableData || question.chartConfig) && (
-        <div className="mb-4">
+           {/* Image Render */}
            {question.imageUrl && (
-             <div className="relative w-full rounded-lg overflow-hidden border border-slate-100 bg-white min-h-[200px] flex items-center justify-center">
-               <img 
-                 src={question.imageUrl} 
-                 alt="Diagram" 
-                 className="max-w-full max-h-[500px] object-contain p-2" 
-                 onError={(e) => {
-                   (e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=Invalid+Image+URL';
-                 }}
-               />
+             <div className="w-full rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-xl flex items-center justify-center min-h-[250px]">
+                <img 
+                  src={question.imageUrl} 
+                  alt="DI Diagram" 
+                  className="max-w-full max-h-[600px] object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=Diagram+Load+Failed';
+                  }}
+                />
              </div>
            )}
 
+           {/* Table Render */}
            {question.tableData && (
-             <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
-               <Table>
-                 <TableHeader className="bg-slate-50">
-                   <TableRow className="h-8">
-                     {question.tableData.headers?.map((header: string, i: number) => (
-                       <TableHead key={i} className="text-center font-black uppercase text-[10px] text-black px-2">{header}</TableHead>
-                     ))}
-                   </TableRow>
-                 </TableHeader>
-                 <TableBody>
-                   {question.tableData.rows?.map((row: any[], i: number) => (
-                     <TableRow key={i} className="h-8">
-                       {row.map((cell, j) => (
-                         <TableCell key={j} className="text-center font-bold text-black border-r border-slate-50 last:border-0 py-1 text-[11px] px-2">{cell}</TableCell>
-                       ))}
-                     </TableRow>
-                   ))}
-                 </TableBody>
-               </Table>
+             <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
+                <Table>
+                  <TableHeader className="bg-slate-100">
+                    <TableRow className="h-10">
+                      {question.tableData.headers?.map((header: string, i: number) => (
+                        <TableHead key={i} className="text-center font-black uppercase text-[11px] text-[#0F172A] px-4">{header}</TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {question.tableData.rows?.map((row: any[], i: number) => (
+                      <TableRow key={i} className="h-10 hover:bg-slate-50 transition-colors">
+                        {row.map((cell, j) => (
+                          <TableCell key={j} className="text-center font-bold text-[#0F172A] border-r border-slate-100 last:border-0 py-2 text-[13px]">{cell}</TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
              </div>
            )}
 
-           {question.chartConfig && (
-              <div className="h-[180px] w-full bg-white p-2 rounded-lg border border-slate-100">
-                 <ResponsiveContainer width="100%" height="100%">
-                    {diagramType === 'barGraph' ? (
-                       <BarChart data={question.chartConfig.data}>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                          <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#000', fontSize: 10}} />
-                          <YAxis axisLine={false} tickLine={false} tick={{fill: '#000', fontSize: 10}} />
-                          <Tooltip />
-                          <Bar dataKey="value" fill="#000" radius={[2, 2, 0, 0]} />
-                       </BarChart>
-                    ) : (
-                       <LineChart data={question.chartConfig.data}>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                          <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#000' }} />
-                          <YAxis tick={{ fontSize: 10, fill: '#000' }} />
-                          <Tooltip />
-                          <Line type="monotone" dataKey="value" stroke="#000" strokeWidth={2} />
-                       </LineChart>
-                    )}
-                 </ResponsiveContainer>
-              </div>
+           {/* Passage Text */}
+           {(question.passageEn || question.passagePa) && (
+             <div className="space-y-4">
+                {showEn && question.passageEn && (
+                  <div className="text-[15px] leading-relaxed text-black font-medium whitespace-pre-wrap">
+                    {question.passageEn}
+                  </div>
+                )}
+                {showPa && question.passagePa && (
+                  <div className="text-[15px] leading-relaxed text-black font-medium whitespace-pre-wrap border-t border-slate-100 pt-4">
+                    {question.passagePa}
+                  </div>
+                )}
+             </div>
            )}
         </div>
       )}
 
-      {/* 3. Question Statement (Absolute Black & Dense) */}
-      <div className="space-y-2 mb-6">
+      {/* 2. Language Gated Question Statement */}
+      <div className="space-y-4 mb-8">
         {showEn && question.questionEn && (
-           <div className="text-[16px] md:text-[18px] font-bold leading-snug text-black tracking-tight whitespace-pre-wrap">
+           <div className="text-[17px] md:text-[20px] font-black leading-snug text-black tracking-tight whitespace-pre-wrap">
               {question.questionEn}
            </div>
         )}
+        
         {showPa && question.questionPa && (
-           <div className="text-[16px] md:text-[18px] font-bold leading-snug text-black tracking-tight whitespace-pre-wrap">
+           <div className={cn(
+             "text-[17px] md:text-[20px] font-black leading-snug text-black tracking-tight whitespace-pre-wrap",
+             language === 'bilingual' ? "pt-2 border-t border-slate-100" : ""
+           )}>
               {question.questionPa}
            </div>
         )}
+
+        {/* Translation Audit Badge (Admin View) */}
+        {language === 'pa' && isMissingPa && (
+          <Badge variant="destructive" className="bg-rose-50 text-rose-600 border-rose-100 text-[9px] font-black uppercase">
+            <AlertTriangle className="h-3 w-3 mr-1" /> Punjabi Translation Missing
+          </Badge>
+        )}
       </div>
 
-      {/* 4. Solution Review Hub */}
+      {/* 3. Solution Review Hub */}
       {showSolution && (
-        <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100 space-y-3">
+        <div className="mt-10 p-6 bg-emerald-50 rounded-2xl border border-emerald-100 space-y-4 shadow-sm animate-in slide-in-from-bottom-2">
            <div className="flex items-center gap-3">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-              <h4 className="text-[14px] text-black font-black uppercase">Correct Option: {question.correctAnswer}</h4>
+              <CheckCircle2 className="h-6 w-6 text-emerald-600" />
+              <h4 className="text-[15px] text-[#0F172A] font-black uppercase">Verified Audit Key: Option {question.correctAnswer}</h4>
            </div>
-           <div className="pt-2 border-t border-emerald-100/60">
+           <div className="pt-4 border-t border-emerald-100/60 space-y-4">
               {showEn && question.explanationEn && (
-                <div className="text-sm text-black leading-relaxed font-medium whitespace-pre-wrap">
+                <div className="text-[14px] text-slate-700 leading-relaxed font-bold whitespace-pre-wrap">
                   {question.explanationEn}
                 </div>
               )}
               {showPa && question.explanationPa && (
-                <div className="text-sm text-black leading-relaxed font-medium whitespace-pre-wrap">
+                <div className="text-[14px] text-slate-700 leading-relaxed font-bold whitespace-pre-wrap border-t border-emerald-100/30 pt-4">
                   {question.explanationPa}
                 </div>
               )}
