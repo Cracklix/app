@@ -36,7 +36,7 @@ import { Difficulty, MockType, Question, ContentStatus, MockSection } from "@/ty
 /**
  * @fileOverview Enterprise Bulk Import & Publishing Hub.
  * Features: Multi-section builder for Full Mocks, Direct Deployment, and Metadata Injection.
- * Fixed: Section Builder UI adjusted for better visibility.
+ * Fixed: Section Builder UI adjusted for better visibility of numeric inputs.
  */
 
 export default function BulkImportPage() {
@@ -238,7 +238,7 @@ export default function BulkImportPage() {
               </div>
 
               {/* Dynamic Type Configuration */}
-              <div className="p-4 md:p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 space-y-6">
+              <div className="p-4 md:p-6 bg-slate-50 rounded-[2.5rem] border border-slate-100 space-y-6">
                  {metadata.mockType === 'FULL' ? (
                     <div className="space-y-6">
                        <div className="flex justify-between items-center mb-2">
@@ -247,35 +247,35 @@ export default function BulkImportPage() {
                        </div>
                        <div className="space-y-4 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar">
                           {sections.map((sec, idx) => (
-                             <div key={sec.id} className="p-5 bg-white rounded-2xl border border-slate-200 space-y-5 shadow-sm relative group">
+                             <div key={sec.id} className="p-4 bg-white rounded-2xl border border-slate-200 space-y-4 shadow-sm relative group">
                                 <Button variant="ghost" size="icon" onClick={() => setSections(sections.filter(s => s.id !== sec.id))} className="absolute top-2 right-2 h-8 w-8 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"><Trash2 className="h-4 w-4" /></Button>
                                 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                   <div className="space-y-2">
+                                <div className="grid grid-cols-1 gap-4">
+                                   <div className="space-y-1.5">
                                       <Label className="text-[10px] font-black uppercase text-slate-500 tracking-tight">Section Name</Label>
-                                      <Input value={sec.name} onChange={e => updateSection(sec.id, 'name', e.target.value)} className="h-10 rounded-xl bg-slate-50 border-none text-xs font-bold text-[#0F172A]" />
+                                      <Input value={sec.name} onChange={e => updateSection(sec.id, 'name', e.target.value)} className="h-9 rounded-xl bg-slate-50 border-none text-xs font-bold text-[#0F172A]" />
                                    </div>
-                                   <div className="space-y-2">
+                                   <div className="space-y-1.5">
                                       <Label className="text-[10px] font-black uppercase text-slate-500 tracking-tight">Focus Subject</Label>
                                       <Select value={sec.subjectId} onValueChange={v => updateSection(sec.id, 'subjectId', v)}>
-                                         <SelectTrigger className="h-10 rounded-xl bg-slate-50 border-none text-xs font-bold text-[#0F172A]"><SelectValue placeholder="Select" /></SelectTrigger>
+                                         <SelectTrigger className="h-9 rounded-xl bg-slate-50 border-none text-xs font-bold text-[#0F172A]"><SelectValue placeholder="Select" /></SelectTrigger>
                                          <SelectContent>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                                       </Select>
                                    </div>
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-50">
-                                   <div className="space-y-2 text-center">
-                                      <Label className="text-[9px] font-black uppercase text-slate-400">Questions</Label>
-                                      <Input type="number" value={sec.questionCount.toString()} onChange={e => updateSection(sec.id, 'questionCount', parseInt(e.target.value) || 0)} className="h-10 rounded-xl bg-slate-50 border-none text-xs font-black text-center text-emerald-600" />
+                                <div className="grid grid-cols-3 gap-3 pt-3 border-t border-slate-50">
+                                   <div className="space-y-1 text-center">
+                                      <Label className="text-[8px] font-black uppercase text-slate-400">QS</Label>
+                                      <Input type="number" value={sec.questionCount.toString()} onChange={e => updateSection(sec.id, 'questionCount', parseInt(e.target.value) || 0)} className="h-8 rounded-lg bg-slate-50 border-none text-[10px] font-black text-center text-emerald-600 px-1" />
                                    </div>
-                                   <div className="space-y-2 text-center">
-                                      <Label className="text-[9px] font-black uppercase text-slate-400">Duration (M)</Label>
-                                      <Input type="number" value={sec.duration.toString()} onChange={e => updateSection(sec.id, 'duration', parseInt(e.target.value) || 0)} className="h-10 rounded-xl bg-slate-50 border-none text-xs font-black text-center text-primary" />
+                                   <div className="space-y-1 text-center">
+                                      <Label className="text-[8px] font-black uppercase text-slate-400">MINS</Label>
+                                      <Input type="number" value={sec.duration.toString()} onChange={e => updateSection(sec.id, 'duration', parseInt(e.target.value) || 0)} className="h-8 rounded-lg bg-slate-50 border-none text-[10px] font-black text-center text-primary px-1" />
                                    </div>
-                                   <div className="space-y-2 text-center">
-                                      <Label className="text-[9px] font-black uppercase text-slate-400">Marks/Q</Label>
-                                      <Input type="number" value={sec.marksPerQuestion.toString()} onChange={e => updateSection(sec.id, 'marksPerQuestion', parseFloat(e.target.value) || 0)} className="h-10 rounded-xl bg-slate-50 border-none text-xs font-black text-center text-blue-600" />
+                                   <div className="space-y-1 text-center">
+                                      <Label className="text-[8px] font-black uppercase text-slate-400">MARKS</Label>
+                                      <Input type="number" value={sec.marksPerQuestion.toString()} onChange={e => updateSection(sec.id, 'marksPerQuestion', parseFloat(e.target.value) || 0)} className="h-8 rounded-lg bg-slate-50 border-none text-[10px] font-black text-center text-blue-600 px-1" />
                                    </div>
                                 </div>
                              </div>

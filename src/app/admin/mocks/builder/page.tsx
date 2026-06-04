@@ -211,7 +211,7 @@ function MockBuilderContent() {
               </div>
 
               {/* Dynamic Metadata based on Type */}
-              <div className="p-6 md:p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100">
+              <div className="p-6 md:p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100">
                  {mockData.mockType === 'FULL' ? (
                     <div className="space-y-8">
                        <div className="flex justify-between items-center">
@@ -220,35 +220,35 @@ function MockBuilderContent() {
                        </div>
                        <div className="space-y-5">
                           {(mockData.sections || []).map((sec: any, idx: number) => (
-                             <div key={sec.id} className="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm relative group space-y-5">
+                             <div key={sec.id} className="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm relative group space-y-4">
                                 <Button variant="ghost" size="icon" onClick={() => removeSection(sec.id)} className="absolute top-2 right-2 h-8 w-8 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"><Trash2 className="h-4 w-4" /></Button>
                                 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                   <div className="space-y-2">
+                                <div className="grid grid-cols-1 gap-4">
+                                   <div className="space-y-1.5">
                                       <Label className="text-[10px] font-black uppercase text-slate-500 tracking-tight">Section Name</Label>
-                                      <Input value={sec.name} onChange={e => updateSection(idx, 'name', e.target.value)} className="h-10 rounded-xl bg-slate-50 border-none text-xs font-bold text-[#0F172A]" />
+                                      <Input value={sec.name} onChange={e => updateSection(idx, 'name', e.target.value)} className="h-9 rounded-xl bg-slate-50 border-none text-xs font-bold text-[#0F172A]" />
                                    </div>
-                                   <div className="space-y-2">
+                                   <div className="space-y-1.5">
                                       <Label className="text-[10px] font-black uppercase text-slate-500 tracking-tight">Focus Subject</Label>
                                       <Select value={sec.subjectId} onValueChange={v => updateSection(idx, 'subjectId', v)}>
-                                         <SelectTrigger className="h-10 rounded-xl bg-slate-50 border-none text-xs font-bold text-[#0F172A]"><SelectValue /></SelectTrigger>
+                                         <SelectTrigger className="h-9 rounded-xl bg-slate-50 border-none text-xs font-bold text-[#0F172A]"><SelectValue placeholder="Select" /></SelectTrigger>
                                          <SelectContent>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                                       </Select>
                                    </div>
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-50">
-                                   <div className="space-y-2 text-center">
-                                      <Label className="text-[9px] font-black uppercase text-slate-400">Questions</Label>
-                                      <Input type="number" value={sec.questionCount} onChange={e => updateSection(idx, 'questionCount', e.target.value)} className="h-10 rounded-xl bg-slate-50 border-none text-xs font-black text-center text-emerald-600" />
+                                <div className="grid grid-cols-3 gap-3 pt-3 border-t border-slate-50">
+                                   <div className="space-y-1 text-center">
+                                      <Label className="text-[8px] font-black uppercase text-slate-400">QS</Label>
+                                      <Input type="number" value={sec.questionCount} onChange={e => updateSection(idx, 'questionCount', e.target.value)} className="h-8 rounded-lg bg-slate-50 border-none text-[10px] font-black text-center text-emerald-600 px-1" />
                                    </div>
-                                   <div className="space-y-2 text-center">
-                                      <Label className="text-[9px] font-black uppercase text-slate-400">Duration (M)</Label>
-                                      <Input type="number" value={sec.duration} onChange={e => updateSection(idx, 'duration', e.target.value)} className="h-10 rounded-xl bg-slate-50 border-none text-xs font-black text-center text-primary" />
+                                   <div className="space-y-1 text-center">
+                                      <Label className="text-[8px] font-black uppercase text-slate-400">MINS</Label>
+                                      <Input type="number" value={sec.duration} onChange={e => updateSection(idx, 'duration', e.target.value)} className="h-8 rounded-lg bg-slate-50 border-none text-[10px] font-black text-center text-primary px-1" />
                                    </div>
-                                   <div className="space-y-2 text-center">
-                                      <Label className="text-[9px] font-black uppercase text-slate-400">Marks/Q</Label>
-                                      <Input type="number" value={sec.marksPerQuestion} onChange={e => updateSection(idx, 'marksPerQuestion', e.target.value)} className="h-10 rounded-xl bg-slate-50 border-none text-xs font-black text-center text-blue-600" />
+                                   <div className="space-y-1 text-center">
+                                      <Label className="text-[8px] font-black uppercase text-slate-400">MARKS</Label>
+                                      <Input type="number" value={sec.marksPerQuestion} onChange={e => updateSection(idx, 'marksPerQuestion', e.target.value)} className="h-8 rounded-lg bg-slate-50 border-none text-[10px] font-black text-center text-blue-600 px-1" />
                                    </div>
                                 </div>
                              </div>
