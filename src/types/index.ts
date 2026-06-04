@@ -24,11 +24,12 @@ export type DiagramType =
   | 'map';
 
 export interface MockSection {
+  id: string;
   name: string;
-  questionCount: number;
-  timeLimit?: number;
-  marksPerQuestion: number;
   subjectId: string;
+  questionCount: number;
+  duration: number; // in minutes
+  marksPerQuestion: number;
 }
 
 export interface Question {
@@ -86,6 +87,13 @@ export interface MockTest {
   language?: string;
   sections?: MockSection[];
   
+  // Type specific metadata
+  subjectId?: string;
+  chapterId?: string;
+  year?: number;
+  caCategory?: string;
+  paperName?: string;
+
   createdAt: any;
   updatedAt: any;
 }

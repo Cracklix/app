@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -26,7 +25,9 @@ import {
   Calendar,
   BookOpen,
   Layout,
-  Lock
+  Lock,
+  Plus,
+  Trash2
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, where } from "firebase/firestore"
@@ -34,7 +35,7 @@ import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
-import { MockType, CAQuizType } from "@/types"
+import { MockType, CAQuizType, MockSection } from "@/types"
 
 export default function MockBuilderPage() {
   return (
@@ -67,15 +68,14 @@ function MockBuilderContent() {
     duration: 120, 
     difficulty: "Medium", 
     mockType: "FULL" as MockType, 
-    examType: "punjab",
     isPremium: false,
     subjectId: "",
     chapterId: "",
     year: new Date().getFullYear(),
     caCategory: "Punjab",
-    caQuizType: "DAILY" as CAQuizType,
     paperName: "",
-    language: "bilingual"
+    language: "bilingual",
+    sections: [] as MockSection[]
   })
 
   const [selectedQuestions, setSelectedQuestions] = useState<any[]>([])
@@ -94,6 +94,25 @@ function MockBuilderContent() {
     }
   }, [existingMock, questionBank])
 
+  const addSection = () => {
+    const newSections = [...(mockData.sections || []), { id: `sec-${Date.now()}`, name: `Section ${(mockData.sections?.length || 0) + 1}`, subjectId: '', questionCount: 0, duration: 30, marksPerQuestion: 1 }]
+    setMockData({ ...mockData, sections: newSections })
+  }
+
+  const removeSection = (id: string) => {
+    setMockData({ ...mockData, sections: mockData.sections.filter((s: any) => s.id !== id) })
+  }
+
+  const totalQuestions = useMemo(() => {
+    if (mockData.mockType !== 'FULL') return selectedQuestions.length
+    return (mockData.sections || []).reduce((acc: number, s: any) => acc + (parseInt(s.questionCount) || 0), 0)
+  }, [mockData.mockType, mockData.sections, selectedQuestions])
+
+  const totalDuration = useMemo(() => {
+    if (mockData.mockType !== 'FULL') return mockData.duration
+    return (mockData.sections || []).reduce((acc: number, s: any) => acc + (parseInt(s.duration) || 0), 0)
+  }, [mockData.mockType, mockData.sections, mockData.duration])
+
   const handlePublish = () => {
     if (!mockData.title || !mockData.boardId) {
       toast({ variant: "destructive", title: "Audit Failed", description: "Title and Board are mandatory." })
@@ -106,7 +125,8 @@ function MockBuilderContent() {
     const payload = {
       ...mockData,
       id: finalId,
-      totalQuestions: selectedQuestions.length,
+      totalQuestions: totalQuestions,
+      duration: totalDuration,
       questionIds: selectedQuestions.map(q => q.id),
       published: true,
       updatedAt: serverTimestamp(),
@@ -124,17 +144,6 @@ function MockBuilderContent() {
       .finally(() => setIsPublishing(false))
   }
 
-  const filteredBank = useMemo(() => {
-    if (!questionBank) return []
-    return bankSearch.length > 1 
-      ? questionBank.filter(q => 
-          (q.questionEn || "").toLowerCase().includes(bankSearch.toLowerCase()) ||
-          (q.subjectId || "").toLowerCase().includes(bankSearch.toLowerCase()) ||
-          (q.boardId || "").toLowerCase().includes(bankSearch.toLowerCase())
-        )
-      : questionBank.slice(0, 50)
-  }, [bankSearch, questionBank])
-
   return (
     <div className="space-y-10 pb-20 max-w-7xl mx-auto text-[#0F172A]">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 px-4">
@@ -142,50 +151,39 @@ function MockBuilderContent() {
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl h-14 w-14 border border-slate-200 bg-white"><ChevronLeft className="h-7 w-7 text-[#0F172A]" /></Button>
           <div className="text-left">
             <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase">Test Architect</h1>
-            <p className="text-slate-500 mt-1 font-medium">Design Full Mocks, Subject Mastery, PYQs, and CA Quizzes.</p>
+            <p className="text-slate-500 mt-1 font-medium">Design Full Mocks with multi-section support.</p>
           </div>
         </div>
-        <Button className="bg-primary hover:bg-primary/90 gap-3 font-black px-12 h-16 shadow-2xl rounded-2xl uppercase tracking-widest text-[10px]" onClick={handlePublish} disabled={isPublishing}>
-          <ClipboardCheck className="h-5 w-5" /> {isPublishing ? "Syncing..." : "Deploy Test Series"}
-        </Button>
+        <div className="flex gap-4">
+           <Button variant="outline" className="h-16 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest bg-white">Save Draft</Button>
+           <Button className="bg-primary hover:bg-primary/90 gap-3 font-black px-12 h-16 shadow-2xl rounded-2xl uppercase tracking-widest text-[10px]" onClick={handlePublish} disabled={isPublishing}>
+            <ClipboardCheck className="h-5 w-5" /> {isPublishing ? "Syncing..." : "Publish & Go Live"}
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 px-4">
-        <div className="lg:col-span-5 space-y-8 text-left">
+        <div className="lg:col-span-7 space-y-8 text-left">
           <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden">
             <div className="h-2 w-full bg-primary" />
             <CardHeader className="p-10 border-b border-slate-50">
                <CardTitle className="text-xl font-headline font-black uppercase flex items-center gap-3"><Settings2 className="h-5 w-5 text-primary" /> Configuration Hub</CardTitle>
             </CardHeader>
-            <CardContent className="p-10 space-y-8">
+            <CardContent className="p-10 space-y-10">
               <div className="space-y-3">
                 <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Series Title</Label>
                 <Input placeholder="e.g. PSSSB Clerk Full Mock 01" value={mockData.title} onChange={e => setMockData({...mockData, title: e.target.value})} className="rounded-xl h-14 bg-slate-50 border-none font-bold text-lg text-[#0F172A]" />
               </div>
 
-              <div className="flex items-center justify-between p-6 bg-amber-50 rounded-2xl border border-amber-100">
-                 <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600">
-                       <Lock className="h-5 w-5" />
-                    </div>
-                    <div className="space-y-0.5">
-                       <p className="text-xs font-black uppercase text-amber-900">Gated Access</p>
-                       <p className="text-[10px] text-amber-600 font-medium">Requires Cracklix Pass</p>
-                    </div>
-                 </div>
-                 <Switch checked={mockData.isPremium} onCheckedChange={(v) => setMockData({...mockData, isPremium: v})} />
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-8">
                  <div className="space-y-3">
                     <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Mock Type</Label>
                     <Select value={mockData.mockType} onValueChange={(v: MockType) => setMockData({...mockData, mockType: v})}>
                        <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none font-bold text-[#0F172A]"><SelectValue /></SelectTrigger>
                        <SelectContent>
-                          <SelectItem value="FULL">Entire Exam Pattern</SelectItem>
+                          <SelectItem value="FULL">Entire Exam Pattern (Full Mock)</SelectItem>
                           <SelectItem value="SUBJECT">Subject Mastery</SelectItem>
                           <SelectItem value="SECTIONAL">Sectional / Topic</SelectItem>
-                          <SelectItem value="CHAPTER">Chapter / Topic</SelectItem>
                           <SelectItem value="PYQ">Previous Year Paper</SelectItem>
                           <SelectItem value="CA_QUIZ">Current Affairs Quiz</SelectItem>
                        </SelectContent>
@@ -196,102 +194,176 @@ function MockBuilderContent() {
                     <Select value={mockData.difficulty} onValueChange={v => setMockData({...mockData, difficulty: v})}>
                        <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none font-bold text-[#0F172A]"><SelectValue /></SelectTrigger>
                        <SelectContent>
-                          <SelectItem value="Easy">Aspirant (Easy)</SelectItem>
-                          <SelectItem value="Medium">Standard (Medium)</SelectItem>
-                          <SelectItem value="Hard">Advanced (Hard)</SelectItem>
+                          <SelectItem value="Easy">Easy</SelectItem>
+                          <SelectItem value="Medium">Medium</SelectItem>
+                          <SelectItem value="Hard">Hard</SelectItem>
+                          <SelectItem value="Mixed">Mixed</SelectItem>
                        </SelectContent>
                     </Select>
                  </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Authority</Label>
-                  <Select value={mockData.boardId} onValueChange={val => setMockData({...mockData, boardId: val})}>
-                    <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none font-bold text-[#0F172A]"><SelectValue placeholder="Select Board" /></SelectTrigger>
-                    <SelectContent>{boards?.map((b:any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-3">
-                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Language</Label>
-                   <Select value={mockData.language} onValueChange={v => setMockData({...mockData, language: v})}>
-                      <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none font-bold text-[#0F172A]"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                         <SelectItem value="bilingual">Bilingual</SelectItem>
-                         <SelectItem value="en">English Only</SelectItem>
-                         <SelectItem value="pa">Punjabi Only</SelectItem>
-                      </SelectContent>
-                   </Select>
-                </div>
+              {/* Dynamic Metadata based on Type */}
+              <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100">
+                 {mockData.mockType === 'FULL' ? (
+                    <div className="space-y-8">
+                       <div className="flex justify-between items-center">
+                          <h4 className="font-headline font-black text-sm uppercase text-[#0F172A] flex items-center gap-2"><Layers className="h-4 w-4 text-primary" /> Section Builder</h4>
+                          <Button variant="ghost" size="sm" onClick={addSection} className="h-8 rounded-lg bg-white border border-slate-200 font-black uppercase text-[9px]"><Plus className="h-3 w-3 mr-1" /> Add Section</Button>
+                       </div>
+                       <div className="space-y-4">
+                          {mockData.sections?.map((sec: any, idx: number) => (
+                             <div key={sec.id} className="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm relative group">
+                                <Button variant="ghost" size="icon" onClick={() => removeSection(sec.id)} className="absolute top-2 right-2 h-7 w-7 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4" /></Button>
+                                <div className="grid grid-cols-2 gap-4 mb-4">
+                                   <div className="space-y-1">
+                                      <Label className="text-[9px] font-black text-slate-400 uppercase">Section Name</Label>
+                                      <Input value={sec.name} onChange={e => {
+                                         const newSecs = [...mockData.sections];
+                                         newSecs[idx].name = e.target.value;
+                                         setMockData({...mockData, sections: newSecs});
+                                      }} className="h-9 bg-slate-50 border-none rounded-lg text-xs font-bold" />
+                                   </div>
+                                   <div className="space-y-1">
+                                      <Label className="text-[9px] font-black text-slate-400 uppercase">Subject</Label>
+                                      <Select value={sec.subjectId} onValueChange={v => {
+                                         const newSecs = [...mockData.sections];
+                                         newSecs[idx].subjectId = v;
+                                         setMockData({...mockData, sections: newSecs});
+                                      }}>
+                                         <SelectTrigger className="h-9 bg-slate-50 border-none rounded-lg text-xs font-bold"><SelectValue /></SelectTrigger>
+                                         <SelectContent>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+                                      </Select>
+                                   </div>
+                                </div>
+                                <div className="grid grid-cols-3 gap-4">
+                                   <div className="space-y-1 text-center">
+                                      <Label className="text-[9px] font-black text-slate-400 uppercase">Questions</Label>
+                                      <Input type="number" value={sec.questionCount} onChange={e => {
+                                         const newSecs = [...mockData.sections];
+                                         newSecs[idx].questionCount = e.target.value;
+                                         setMockData({...mockData, sections: newSecs});
+                                      }} className="h-9 bg-slate-50 border-none rounded-lg text-xs font-black text-center" />
+                                   </div>
+                                   <div className="space-y-1 text-center">
+                                      <Label className="text-[9px] font-black text-slate-400 uppercase">Duration (m)</Label>
+                                      <Input type="number" value={sec.duration} onChange={e => {
+                                         const newSecs = [...mockData.sections];
+                                         newSecs[idx].duration = e.target.value;
+                                         setMockData({...mockData, sections: newSecs});
+                                      }} className="h-9 bg-slate-50 border-none rounded-lg text-xs font-black text-center" />
+                                   </div>
+                                   <div className="space-y-1 text-center">
+                                      <Label className="text-[9px] font-black text-slate-400 uppercase">Marks/Q</Label>
+                                      <Input type="number" value={sec.marksPerQuestion} onChange={e => {
+                                         const newSecs = [...mockData.sections];
+                                         newSecs[idx].marksPerQuestion = e.target.value;
+                                         setMockData({...mockData, sections: newSecs});
+                                      }} className="h-9 bg-slate-50 border-none rounded-lg text-xs font-black text-center" />
+                                   </div>
+                                </div>
+                             </div>
+                          ))}
+                       </div>
+                    </div>
+                 ) : (
+                    <div className="grid grid-cols-2 gap-6">
+                       <div className="space-y-3">
+                          <Label className="text-[10px] font-black uppercase text-slate-500">Target Subject</Label>
+                          <Select value={mockData.subjectId} onValueChange={v => setMockData({...mockData, subjectId: v})}>
+                             <SelectTrigger className="rounded-xl h-12 bg-white border-none font-bold"><SelectValue /></SelectTrigger>
+                             <SelectContent>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+                          </Select>
+                       </div>
+                       {mockData.mockType === 'SECTIONAL' ? (
+                          <div className="space-y-3">
+                             <Label className="text-[10px] font-black uppercase text-slate-500">Topic / Chapter</Label>
+                             <Input value={mockData.chapterId} onChange={e => setMockData({...mockData, chapterId: e.target.value})} className="rounded-xl h-12 bg-white border-none font-bold" />
+                          </div>
+                       ) : mockData.mockType === 'PYQ' ? (
+                          <div className="space-y-3">
+                             <Label className="text-[10px] font-black uppercase text-slate-500">Exam Year</Label>
+                             <Input type="number" value={mockData.year} onChange={e => setMockData({...mockData, year: parseInt(e.target.value) || 2025})} className="rounded-xl h-12 bg-white border-none font-bold" />
+                          </div>
+                       ) : (
+                          <div className="space-y-3">
+                             <Label className="text-[10px] font-black uppercase text-slate-500">CA Category</Label>
+                             <Select value={mockData.caCategory} onValueChange={v => setMockData({...mockData, caCategory: v})}>
+                                <SelectTrigger className="rounded-xl h-12 bg-white border-none font-bold"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                   <SelectItem value="Punjab">Punjab Focus</SelectItem>
+                                   <SelectItem value="National">National</SelectItem>
+                                   <SelectItem value="International">International</SelectItem>
+                                   <SelectItem value="Economy">Economy</SelectItem>
+                                </SelectContent>
+                             </Select>
+                          </div>
+                       )}
+                    </div>
+                 )}
+                 
+                 <div className="grid grid-cols-2 gap-8 mt-8 pt-8 border-t border-slate-200">
+                    <div className="space-y-3">
+                       <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Manual Duration (Mins)</Label>
+                       <Input disabled={mockData.mockType === 'FULL'} type="number" value={totalDuration} onChange={e => setMockData({...mockData, duration: parseInt(e.target.value) || 0})} className="rounded-xl h-12 bg-white border-none font-black text-lg text-[#0F172A] disabled:bg-slate-100" />
+                    </div>
+                    <div className="space-y-3">
+                       <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Negative Marking</Label>
+                       <Input type="number" step="0.25" value={mockData.negativeMarking} onChange={e => setMockData({...mockData, negativeMarking: parseFloat(e.target.value) || 0})} className="rounded-xl h-12 bg-white border-none font-black text-lg text-rose-500" />
+                    </div>
+                 </div>
               </div>
-
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-3">
-                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Exam Model</Label>
-                   <Select value={mockData.examId} onValueChange={val => setMockData({...mockData, examId: val})}>
-                      <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none font-bold text-[#0F172A]"><SelectValue placeholder="Select Exam" /></SelectTrigger>
-                      <SelectContent>{exams?.filter((e: any) => e.boardId === mockData.boardId).map((e:any) => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent>
-                   </Select>
-                </div>
-                <div className="space-y-3">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Manual Time (Mins)</Label>
-                  <Input type="number" value={mockData.duration} onChange={e => setMockData({...mockData, duration: parseInt(e.target.value) || 0})} className="rounded-xl h-12 bg-slate-50 border-none font-black text-lg text-[#0F172A]" />
-                </div>
-              </div>
-
-              {mockData.mockType === 'PYQ' && (
-                <div className="grid grid-cols-2 gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                   <div className="space-y-3 text-left">
-                      <Label className="text-[10px] font-black uppercase text-primary tracking-widest">Exam Year</Label>
-                      <Input type="number" value={mockData.year} onChange={e => setMockData({...mockData, year: parseInt(e.target.value)})} className="rounded-xl bg-white border-none font-black text-[#0F172A]" />
-                   </div>
-                   <div className="space-y-3 text-left">
-                      <Label className="text-[10px] font-black uppercase text-primary tracking-widest">Shift Name</Label>
-                      <Input placeholder="e.g. Shift 1" value={mockData.paperName} onChange={e => setMockData({...mockData, paperName: e.target.value})} className="rounded-xl bg-white border-none font-bold text-[#0F172A]" />
-                   </div>
-                </div>
-              )}
             </CardContent>
           </Card>
         </div>
 
-        <div className="lg:col-span-7 space-y-8">
-           <Tabs defaultValue="manual" className="space-y-8">
-              <TabsList className="bg-slate-100 rounded-3xl p-1.5 h-16 w-fit shadow-lg">
-                 <TabsTrigger value="manual" className="rounded-2xl h-full px-10 font-black uppercase text-[10px] gap-3 data-[state=active]:bg-[#0F172A] data-[state=active]:text-white"><Target className="h-4 w-4" /> Link Questions ({selectedQuestions.length})</TabsTrigger>
-              </TabsList>
+        <div className="lg:col-span-5 space-y-8">
+           <Card className="border-none shadow-2xl bg-[#0F172A] text-white p-10 rounded-[3rem] overflow-hidden relative">
+              <div className="absolute top-0 right-0 p-8 opacity-5"><Layout className="h-32 w-32 rotate-12" /></div>
+              <div className="relative z-10 space-y-8">
+                 <div className="space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Summary Audit</p>
+                    <h3 className="text-3xl font-headline font-black uppercase">Series Breakdown</h3>
+                 </div>
+                 <div className="grid grid-cols-2 gap-8">
+                    <div className="p-6 bg-white/5 rounded-[2rem] border border-white/10 text-center">
+                       <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Total MCQs</p>
+                       <p className="text-4xl font-headline font-black text-primary mt-1">{totalQuestions}</p>
+                    </div>
+                    <div className="p-6 bg-white/5 rounded-[2rem] border border-white/10 text-center">
+                       <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Time Limit</p>
+                       <p className="text-4xl font-headline font-black text-white mt-1">{totalDuration}m</p>
+                    </div>
+                 </div>
+                 <div className="p-8 bg-primary/10 rounded-[2rem] border border-primary/20 flex items-center gap-6">
+                    <ShieldCheck className="h-10 w-10 text-primary" />
+                    <div className="space-y-1">
+                       <p className="text-[10px] font-black uppercase tracking-widest text-primary">Institutional Access</p>
+                       <p className="text-sm font-medium text-slate-300">This series is set to <strong>Premium</strong> and requires a Gold Pass to attempt.</p>
+                    </div>
+                 </div>
+              </div>
+           </Card>
 
-              <TabsContent value="manual" className="space-y-8">
-                 <div className="relative group">
-                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-slate-400" />
-                    <Input className="pl-16 h-20 rounded-[2.5rem] bg-white border-none shadow-2xl text-xl font-medium text-[#0F172A]" placeholder="Search question bank..." value={bankSearch} onChange={e => setBankSearch(e.target.value)} />
-                 </div>
-                 <div className="grid grid-cols-1 gap-4 max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
-                    {filteredBank.map((q:any) => {
-                      const isAdded = selectedQuestions.find(s => s.id === q.id)
-                      return (
-                        <div key={q.id} className="p-8 rounded-[2.5rem] border border-slate-100 bg-white flex items-center justify-between group hover:border-primary/30 transition-all shadow-xl">
-                           <div className="flex-1 pr-8 text-left space-y-2">
-                             <p className="font-bold text-[#0F172A] line-clamp-2 text-lg leading-tight">{q.questionEn}</p>
-                             <div className="flex items-center gap-4">
-                                <span className="text-[10px] font-black text-primary uppercase tracking-widest">{q.subjectId}</span>
-                                <Badge className="bg-slate-50 text-slate-400 border-none text-[8px]">{q.difficulty}</Badge>
-                                <Badge variant="outline" className="text-[8px] font-black uppercase">{q.boardId}</Badge>
-                             </div>
-                           </div>
-                           <Button 
-                              onClick={() => isAdded ? setSelectedQuestions(selectedQuestions.filter(s => s.id !== q.id)) : setSelectedQuestions([...selectedQuestions, q])} 
-                              variant={isAdded ? "default" : "outline"} 
-                              className={cn("rounded-2xl h-14 px-10 font-black uppercase text-[10px] tracking-widest transition-all", isAdded ? 'bg-emerald-600 border-emerald-600 text-white shadow-xl shadow-emerald-500/20' : 'text-slate-400 border-slate-100')}
-                            >
-                             {isAdded ? <CheckCircle2 className="h-5 w-5 mr-3" /> : ''} {isAdded ? 'Linked' : 'Link MCQ'}
-                           </Button>
-                        </div>
-                      )
-                    })}
-                 </div>
-              </TabsContent>
-           </Tabs>
+           <div className="space-y-4">
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 ml-4">Linked Nodes ({selectedQuestions.length})</h3>
+              <div className="max-h-[500px] overflow-y-auto pr-4 space-y-4 custom-scrollbar">
+                 {selectedQuestions.length === 0 ? (
+                    <div className="p-20 text-center border-2 border-dashed border-slate-200 rounded-[3rem] opacity-30">
+                       <Database className="h-12 w-12 mx-auto mb-4" />
+                       <p className="font-bold text-sm uppercase">No Questions Linked</p>
+                    </div>
+                 ) : selectedQuestions.map((q, i) => (
+                    <div key={q.id} className="p-6 bg-white rounded-3xl border border-slate-100 flex items-center justify-between group hover:border-primary/20 transition-all shadow-sm">
+                       <div className="flex items-center gap-4">
+                          <span className="text-[10px] font-black text-slate-300">#{i + 1}</span>
+                          <p className="font-bold text-[#0F172A] text-sm line-clamp-1">{q.questionEn}</p>
+                       </div>
+                       <Button variant="ghost" size="icon" onClick={() => setSelectedQuestions(selectedQuestions.filter(sq => sq.id !== q.id))} className="h-9 w-9 text-rose-400 hover:bg-rose-50 rounded-xl"><Trash2 className="h-4 w-4" /></Button>
+                    </div>
+                 ))}
+              </div>
+           </div>
         </div>
       </div>
     </div>
