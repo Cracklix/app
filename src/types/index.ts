@@ -1,6 +1,6 @@
 export type Difficulty = 'Easy' | 'Medium' | 'Hard';
 export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'CONTENT_MANAGER' | 'STUDENT';
-export type MockType = 'FULL' | 'SUBJECT' | 'SECTIONAL' | 'PYQ' | 'CA_QUIZ';
+export type MockType = 'FULL' | 'SUBJECT' | 'SECTIONAL' | 'CHAPTER' | 'PYQ' | 'CA_QUIZ';
 export type ContentStatus = 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED';
 export type ExamType = 'punjab' | 'central';
 export type SubscriptionTier = 'Free' | 'Silver' | 'Gold' | 'Premium';
@@ -12,7 +12,6 @@ export type QuestionType =
   | 'PASSAGE' 
   | 'DI_TABLE' 
   | 'DI_CHART' 
-  | 'REASONING_DIAGRAM' 
   | 'MATCHING' 
   | 'ASSERTION_REASON';
 
@@ -23,10 +22,6 @@ export type DiagramType =
   | 'pieChart' 
   | 'barGraph' 
   | 'lineGraph' 
-  | 'vennDiagram' 
-  | 'seatingArrangement'
-  | 'flowchart'
-  | 'logicalDiagram'
   | 'map';
 
 export interface Board {
@@ -46,6 +41,18 @@ export interface Exam {
   totalMocks: number;
   activeQuestions: number;
   duration?: number;
+}
+
+export interface Subject {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface Chapter {
+  id: string;
+  subjectId: string;
+  name: string;
 }
 
 export interface PatternSection {
@@ -69,17 +76,14 @@ export interface Question {
   boardId: string;
   examId: string;
   subjectId: string;
-  topicId?: string;
+  chapterId?: string;
   difficulty: Difficulty;
-  topic?: string;
-  subtopic?: string;
   status: ContentStatus;
   questionType: QuestionType;
   
-  // Core Text
+  // Content Node
   questionEn: string;
   questionPa: string;
-  questionHi?: string;
   
   // Metadata Text
   instructionEn?: string;
@@ -102,8 +106,9 @@ export interface Question {
   explanationEn: string;
   explanationPa: string;
   
-  // Complex Data
-  diagramType?: DiagramType;
+  // Visual/DI Nodes
+  diagramType: DiagramType;
+  imageUrl?: string;
   tableData?: {
     headers: string[];
     rows: string[][];
@@ -113,16 +118,10 @@ export interface Question {
     labels: string[];
     values: number[];
   };
-  diagramConfig?: any; 
-  
-  imageUrl?: string;
-  imageAlt?: string;
 
   createdAt: any;
   updatedAt?: any;
   isStandalone?: boolean;
-  marks?: number;
-  negativeMarks?: number;
 }
 
 export interface MockTest {
@@ -139,17 +138,17 @@ export interface MockTest {
   published: boolean;
   isPremium?: boolean;
   status: ContentStatus;
-  createdAt: any;
-  updatedAt?: any;
-  author?: string;
   
-  // CMS Fields
+  // CMS Metadata
   subjectId?: string;
-  topicId?: string;
+  chapterId?: string;
   year?: number;
+  paperName?: string;
   caCategory?: string;
   caQuizType?: CAQuizType;
-  paperName?: string;
+  
+  createdAt: any;
+  updatedAt?: any;
 }
 
 export interface UserProfile {

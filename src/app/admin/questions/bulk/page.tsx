@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
@@ -13,7 +12,7 @@ import { useFirestore, useCollection } from "@/firebase"
 import { collection, doc, writeBatch, serverTimestamp } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { parseBulkQuestions, ImportFormat } from "@/lib/parser"
-import { Zap, Database, ChevronLeft, Rocket, CheckCircle2, FileWarning, AlertTriangle, LayoutList, Settings2, DatabaseBackup } from "lucide-react"
+import { Zap, Database, ChevronLeft, Rocket, CheckCircle2, FileWarning, AlertTriangle, Settings2, DatabaseBackup } from "lucide-react"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
@@ -28,12 +27,12 @@ export default function BulkImportPage() {
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
 
   const [rawText, setRawText] = useState("")
-  const [importFormat, setImportFormat] = useState<ImportFormat>("BILINGUAL_MCQ")
+  const [importFormat, setImportFormat] = useState<ImportFormat>("BILINGUAL_TAGGED")
   const [metadata, setMetadata] = useState({
     boardId: "",
     examId: "",
     subjectId: "",
-    topicId: "",
+    chapterId: "",
     difficulty: "Medium" as any,
     status: "PUBLISHED" as any
   })
@@ -54,7 +53,7 @@ export default function BulkImportPage() {
     if (results.errors.length > 0) {
       setParseErrors(results.errors)
       setParsedQuestions([])
-      toast({ variant: "destructive", title: "Template Match Failed", description: "Audit failed. Correct markers in the text." })
+      toast({ variant: "destructive", title: "Template Match Failed", description: "Correct block markers and try again." })
     } else {
       setParseErrors([])
       setParsedQuestions(results.questions)
@@ -105,7 +104,7 @@ PUN_EXP: ਪੰਜਾਬੀ ਵਿੱਚ ਵਿਸਤ੍ਰਿਤ ਵਿਆਖ�
             <ChevronLeft className="h-8 w-8 text-[#0F172A]" />
           </Button>
           <div className="text-left">
-            <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Bulk Ingestion</h1>
+            <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Bulk Ingestion Hub</h1>
             <p className="text-slate-500 font-medium">Inject metadata and parse tagged institutional content.</p>
           </div>
         </div>
@@ -133,43 +132,31 @@ PUN_EXP: ਪੰਜਾਬੀ ਵਿੱਚ ਵਿਸਤ੍ਰਿਤ ਵਿਆਖ�
                 <div className="space-y-3">
                   <p className="text-[10px] font-black uppercase text-slate-500 ml-1">Board</p>
                   <Select value={metadata.boardId} onValueChange={val => setMetadata({...metadata, boardId: val})}>
-                    <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm"><SelectValue placeholder="Select Board" /></SelectTrigger>
+                    <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm text-[#0F172A]"><SelectValue placeholder="Select Board" /></SelectTrigger>
                     <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-3">
                    <p className="text-[10px] font-black uppercase text-slate-500 ml-1">Subject</p>
                    <Select value={metadata.subjectId} onValueChange={val => setMetadata({...metadata, subjectId: val})}>
-                     <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm"><SelectValue placeholder="Select Subject" /></SelectTrigger>
+                     <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm text-[#0F172A]"><SelectValue placeholder="Select Subject" /></SelectTrigger>
                      <SelectContent>{subjects?.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                    </Select>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <p className="text-[10px] font-black uppercase text-primary ml-1 flex items-center gap-2"><LayoutList className="h-3 w-3" /> Parser Logic</p>
-                <Select value={importFormat} onValueChange={(val: any) => setImportFormat(val)}>
-                  <SelectTrigger className="rounded-xl bg-primary/5 border-primary/20 h-14 font-black uppercase text-[10px] tracking-widest"><SelectValue placeholder="Select Format" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="BILINGUAL_MCQ">Line-Based / Tagged (ENG_Q/PUN_Q)</SelectItem>
-                    <SelectItem value="OCR_COLUMNAR">OCR Columnar Layout</SelectItem>
-                    <SelectItem value="STANDARD_MCQ">Standard MCQ (Q1, 1.)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-3">
                 <Label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Paste Institutional Content (Batch 10–500)</Label>
                 <Textarea 
                   placeholder={placeholderText}
-                  className="min-h-[500px] rounded-[2.5rem] bg-slate-50 border-none p-10 text-sm font-mono leading-relaxed shadow-inner custom-scrollbar"
+                  className="min-h-[400px] rounded-[2.5rem] bg-slate-50 border-none p-10 text-sm font-mono leading-relaxed shadow-inner custom-scrollbar text-[#0F172A]"
                   value={rawText}
                   onChange={e => setRawText(e.target.value)}
                 />
               </div>
               
-              <Button onClick={handleParse} className="w-full h-24 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.3em] gap-4 rounded-[2rem] shadow-4xl">
-                <Zap className="h-6 w-6 text-primary fill-current" /> Run Ingestion Engine
+              <Button onClick={handleParse} className="w-full h-20 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.3em] gap-4 rounded-[2rem] shadow-4xl">
+                <Zap className="h-6 w-6 text-primary fill-current" /> Structure Nodes
               </Button>
             </CardContent>
           </Card>
@@ -180,14 +167,11 @@ PUN_EXP: ਪੰਜਾਬੀ ਵਿੱਚ ਵਿਸਤ੍ਰਿਤ ਵਿਆਖ�
             <Card className="border-rose-100 bg-rose-50/50 shadow-3xl rounded-[4rem] p-16 space-y-10">
               <div className="flex items-center gap-6 text-rose-600">
                 <FileWarning className="h-16 w-16" />
-                <div>
-                   <h3 className="text-3xl font-headline font-black uppercase">Audit Failed</h3>
-                   <p className="text-sm font-bold uppercase tracking-widest opacity-70">{parseErrors.length} Errors Found</p>
-                </div>
+                <h3 className="text-3xl font-headline font-black uppercase">Ingestion Failed</h3>
               </div>
-              <div className="space-y-4 max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
+              <div className="space-y-4">
                 {parseErrors.map((err, i) => (
-                  <div key={i} className="flex items-start gap-5 p-6 bg-white rounded-3xl border border-rose-100 shadow-xl">
+                  <div key={i} className="flex items-start gap-4 p-6 bg-white rounded-3xl border border-rose-100 shadow-xl">
                     <AlertTriangle className="h-5 w-5 text-rose-500 shrink-0 mt-1" />
                     <p className="text-base font-bold text-rose-900 leading-tight">{err}</p>
                   </div>
@@ -198,7 +182,7 @@ PUN_EXP: ਪੰਜਾਬੀ ਵਿੱਚ ਵਿਸਤ੍ਰਿਤ ਵਿਆਖ�
             <Card className="border-none bg-white shadow-4xl rounded-[4rem] h-full flex flex-col overflow-hidden">
                <CardHeader className="p-16 bg-slate-50/50 border-b border-slate-50">
                   <CardTitle className="font-headline font-black text-3xl uppercase flex items-center gap-4 text-[#0F172A]">
-                    <CheckCircle2 className="h-8 w-8 text-emerald-600" /> Extraction Ready
+                    <CheckCircle2 className="h-8 w-8 text-emerald-600" /> Structure Ready
                   </CardTitle>
                </CardHeader>
                <CardContent className="p-16 flex-1 overflow-y-auto custom-scrollbar space-y-16">
@@ -206,10 +190,6 @@ PUN_EXP: ਪੰਜਾਬੀ ਵਿੱਚ ਵਿਸਤ੍ਰਿਤ ਵਿਆਖ�
                     <div key={idx} className="space-y-10 pb-16 border-b border-slate-100 last:border-0 last:pb-0">
                        <Badge className="bg-primary/10 text-primary border-none text-[11px] font-black uppercase tracking-widest px-4 py-1 rounded-lg">Audit Node {idx + 1}</Badge>
                        <QuestionRenderer language="bilingual" question={q} />
-                       <div className="p-6 bg-emerald-50 rounded-2xl border border-emerald-100">
-                          <p className="text-[10px] font-black uppercase text-emerald-600 tracking-widest">Metadata Verify</p>
-                          <p className="font-bold text-emerald-900 mt-1">Ans: {q.correctAnswer} | Board: {q.boardId} | Subject: {q.subjectId}</p>
-                       </div>
                     </div>
                   ))}
                </CardContent>
