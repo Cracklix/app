@@ -31,6 +31,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 /**
  * @fileOverview Redesigned Mock Overview Page (Phase 160).
  * Replaced technical jargon with "Start Mock" and optimized for mobile visibility.
+ * Fixed: Hard gating logic for premium access.
  */
 
 export default function MockOverviewPage() {
@@ -44,7 +45,8 @@ export default function MockOverviewPage() {
 
   const isLocked = useMemo(() => {
     if (!mock?.isPremium) return false;
-    if (profile?.status === 'Gold' || profile?.status === 'Premium') return false;
+    // Allow access if user has Silver, Gold, or Premium pass
+    if (['Silver', 'Gold', 'Premium'].includes(profile?.status || '')) return false;
     return true;
   }, [mock, profile])
 
@@ -73,6 +75,11 @@ export default function MockOverviewPage() {
                        <ShieldCheck className="h-3.5 w-3.5" />
                        <span className="text-[9px] font-black uppercase tracking-widest">Verified Pattern</span>
                     </div>
+                    {mock.isPremium && (
+                      <Badge className="bg-amber-100 text-amber-600 border-none px-3 py-1 rounded-lg font-black uppercase text-[9px] tracking-widest flex items-center gap-1.5">
+                         <Lock className="h-3 w-3" /> Premium
+                      </Badge>
+                    )}
                  </div>
 
                  <div className="space-y-1">

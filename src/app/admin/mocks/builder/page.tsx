@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -9,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Switch } from "@/components/ui/switch"
 import { 
   ChevronLeft, 
   Database, 
@@ -23,7 +25,8 @@ import {
   Zap,
   Calendar,
   BookOpen,
-  Layout
+  Layout,
+  Lock
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, where } from "firebase/firestore"
@@ -160,6 +163,19 @@ function MockBuilderContent() {
                 <Input placeholder="e.g. PSSSB Clerk Full Mock 01" value={mockData.title} onChange={e => setMockData({...mockData, title: e.target.value})} className="rounded-xl h-14 bg-slate-50 border-none font-bold text-lg text-[#0F172A]" />
               </div>
 
+              <div className="flex items-center justify-between p-6 bg-amber-50 rounded-2xl border border-amber-100">
+                 <div className="flex items-center gap-4">
+                    <div className="h-10 w-10 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600">
+                       <Lock className="h-5 w-5" />
+                    </div>
+                    <div className="space-y-0.5">
+                       <p className="text-xs font-black uppercase text-amber-900">Gated Access</p>
+                       <p className="text-[10px] text-amber-600 font-medium">Requires Cracklix Pass</p>
+                    </div>
+                 </div>
+                 <Switch checked={mockData.isPremium} onCheckedChange={(v) => setMockData({...mockData, isPremium: v})} />
+              </div>
+
               <div className="grid grid-cols-2 gap-6">
                  <div className="space-y-3">
                     <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Mock Type</Label>
@@ -191,7 +207,7 @@ function MockBuilderContent() {
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Authority</Label>
-                  <Select value={mockData.boardId} onValueChange={val => setMetadata({...mockData, boardId: val})}>
+                  <Select value={mockData.boardId} onValueChange={val => setMockData({...mockData, boardId: val})}>
                     <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none font-bold text-[#0F172A]"><SelectValue placeholder="Select Board" /></SelectTrigger>
                     <SelectContent>{boards?.map((b:any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
                   </Select>
@@ -232,33 +248,6 @@ function MockBuilderContent() {
                    <div className="space-y-3 text-left">
                       <Label className="text-[10px] font-black uppercase text-primary tracking-widest">Shift Name</Label>
                       <Input placeholder="e.g. Shift 1" value={mockData.paperName} onChange={e => setMockData({...mockData, paperName: e.target.value})} className="rounded-xl bg-white border-none font-bold text-[#0F172A]" />
-                   </div>
-                </div>
-              )}
-
-              {mockData.mockType === 'CA_QUIZ' && (
-                <div className="space-y-6 p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                   <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                         <Label className="text-[9px] font-black uppercase">Category</Label>
-                         <Select value={mockData.caCategory} onValueChange={v => setMockData({...mockData, caCategory: v})}>
-                            <SelectTrigger className="h-10 bg-white border-none"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                               {["Punjab", "India", "International", "Sports", "Economy", "Schemes"].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                            </SelectContent>
-                         </Select>
-                      </div>
-                      <div className="space-y-2">
-                         <Label className="text-[9px] font-black uppercase">Cycle</Label>
-                         <Select value={mockData.caQuizType} onValueChange={v => setMockData({...mockData, caQuizType: v})}>
-                            <SelectTrigger className="h-10 bg-white border-none"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                               <SelectItem value="DAILY">Daily Quiz</SelectItem>
-                               <SelectItem value="WEEKLY">Weekly Round</SelectItem>
-                               <SelectItem value="MONTHLY">Monthly Audit</SelectItem>
-                            </SelectContent>
-                         </Select>
-                      </div>
                    </div>
                 </div>
               )}
