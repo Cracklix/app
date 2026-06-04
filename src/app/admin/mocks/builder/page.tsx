@@ -27,7 +27,8 @@ import {
   Layout,
   Lock,
   Plus,
-  Trash2
+  Trash2,
+  ShieldCheck
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, where } from "firebase/firestore"
@@ -100,7 +101,13 @@ function MockBuilderContent() {
   }
 
   const removeSection = (id: string) => {
-    setMockData({ ...mockData, sections: mockData.sections.filter((s: any) => s.id !== id) })
+    setMockData({ ...mockData, sections: (mockData.sections || []).filter((s: any) => s.id !== id) })
+  }
+
+  const updateSection = (idx: number, field: keyof MockSection, val: any) => {
+     const newSecs = [...mockData.sections];
+     newSecs[idx] = { ...newSecs[idx], [field]: val };
+     setMockData({...mockData, sections: newSecs});
   }
 
   const totalQuestions = useMemo(() => {
@@ -148,14 +155,14 @@ function MockBuilderContent() {
     <div className="space-y-10 pb-20 max-w-7xl mx-auto text-[#0F172A]">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 px-4">
         <div className="flex items-center gap-6">
-          <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl h-14 w-14 border border-slate-200 bg-white"><ChevronLeft className="h-7 w-7 text-[#0F172A]" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl h-14 w-14 border border-slate-200 bg-white shadow-sm"><ChevronLeft className="h-7 w-7 text-[#0F172A]" /></Button>
           <div className="text-left">
-            <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase">Test Architect</h1>
+            <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Test Architect</h1>
             <p className="text-slate-500 mt-1 font-medium">Design Full Mocks with multi-section support.</p>
           </div>
         </div>
         <div className="flex gap-4">
-           <Button variant="outline" className="h-16 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest bg-white">Save Draft</Button>
+           <Button variant="outline" className="h-16 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest bg-white shadow-sm">Save Draft</Button>
            <Button className="bg-primary hover:bg-primary/90 gap-3 font-black px-12 h-16 shadow-2xl rounded-2xl uppercase tracking-widest text-[10px]" onClick={handlePublish} disabled={isPublishing}>
             <ClipboardCheck className="h-5 w-5" /> {isPublishing ? "Syncing..." : "Publish & Go Live"}
           </Button>
@@ -204,62 +211,44 @@ function MockBuilderContent() {
               </div>
 
               {/* Dynamic Metadata based on Type */}
-              <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100">
+              <div className="p-6 md:p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100">
                  {mockData.mockType === 'FULL' ? (
                     <div className="space-y-8">
                        <div className="flex justify-between items-center">
                           <h4 className="font-headline font-black text-sm uppercase text-[#0F172A] flex items-center gap-2"><Layers className="h-4 w-4 text-primary" /> Section Builder</h4>
                           <Button variant="ghost" size="sm" onClick={addSection} className="h-8 rounded-lg bg-white border border-slate-200 font-black uppercase text-[9px]"><Plus className="h-3 w-3 mr-1" /> Add Section</Button>
                        </div>
-                       <div className="space-y-4">
-                          {mockData.sections?.map((sec: any, idx: number) => (
-                             <div key={sec.id} className="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm relative group">
-                                <Button variant="ghost" size="icon" onClick={() => removeSection(sec.id)} className="absolute top-2 right-2 h-7 w-7 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-4 w-4" /></Button>
-                                <div className="grid grid-cols-2 gap-4 mb-4">
-                                   <div className="space-y-1">
-                                      <Label className="text-[9px] font-black text-slate-400 uppercase">Section Name</Label>
-                                      <Input value={sec.name} onChange={e => {
-                                         const newSecs = [...mockData.sections];
-                                         newSecs[idx].name = e.target.value;
-                                         setMockData({...mockData, sections: newSecs});
-                                      }} className="h-9 bg-slate-50 border-none rounded-lg text-xs font-bold" />
+                       <div className="space-y-5">
+                          {(mockData.sections || []).map((sec: any, idx: number) => (
+                             <div key={sec.id} className="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm relative group space-y-5">
+                                <Button variant="ghost" size="icon" onClick={() => removeSection(sec.id)} className="absolute top-2 right-2 h-8 w-8 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"><Trash2 className="h-4 w-4" /></Button>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                   <div className="space-y-2">
+                                      <Label className="text-[10px] font-black uppercase text-slate-500 tracking-tight">Section Name</Label>
+                                      <Input value={sec.name} onChange={e => updateSection(idx, 'name', e.target.value)} className="h-10 rounded-xl bg-slate-50 border-none text-xs font-bold text-[#0F172A]" />
                                    </div>
-                                   <div className="space-y-1">
-                                      <Label className="text-[9px] font-black text-slate-400 uppercase">Subject</Label>
-                                      <Select value={sec.subjectId} onValueChange={v => {
-                                         const newSecs = [...mockData.sections];
-                                         newSecs[idx].subjectId = v;
-                                         setMockData({...mockData, sections: newSecs});
-                                      }}>
-                                         <SelectTrigger className="h-9 bg-slate-50 border-none rounded-lg text-xs font-bold"><SelectValue /></SelectTrigger>
+                                   <div className="space-y-2">
+                                      <Label className="text-[10px] font-black uppercase text-slate-500 tracking-tight">Focus Subject</Label>
+                                      <Select value={sec.subjectId} onValueChange={v => updateSection(idx, 'subjectId', v)}>
+                                         <SelectTrigger className="h-10 rounded-xl bg-slate-50 border-none text-xs font-bold text-[#0F172A]"><SelectValue /></SelectTrigger>
                                          <SelectContent>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                                       </Select>
                                    </div>
                                 </div>
-                                <div className="grid grid-cols-3 gap-4">
-                                   <div className="space-y-1 text-center">
-                                      <Label className="text-[9px] font-black text-slate-400 uppercase">Questions</Label>
-                                      <Input type="number" value={sec.questionCount} onChange={e => {
-                                         const newSecs = [...mockData.sections];
-                                         newSecs[idx].questionCount = e.target.value;
-                                         setMockData({...mockData, sections: newSecs});
-                                      }} className="h-9 bg-slate-50 border-none rounded-lg text-xs font-black text-center" />
+
+                                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-50">
+                                   <div className="space-y-2 text-center">
+                                      <Label className="text-[9px] font-black uppercase text-slate-400">Questions</Label>
+                                      <Input type="number" value={sec.questionCount} onChange={e => updateSection(idx, 'questionCount', e.target.value)} className="h-10 rounded-xl bg-slate-50 border-none text-xs font-black text-center text-emerald-600" />
                                    </div>
-                                   <div className="space-y-1 text-center">
-                                      <Label className="text-[9px] font-black text-slate-400 uppercase">Duration (m)</Label>
-                                      <Input type="number" value={sec.duration} onChange={e => {
-                                         const newSecs = [...mockData.sections];
-                                         newSecs[idx].duration = e.target.value;
-                                         setMockData({...mockData, sections: newSecs});
-                                      }} className="h-9 bg-slate-50 border-none rounded-lg text-xs font-black text-center" />
+                                   <div className="space-y-2 text-center">
+                                      <Label className="text-[9px] font-black uppercase text-slate-400">Duration (M)</Label>
+                                      <Input type="number" value={sec.duration} onChange={e => updateSection(idx, 'duration', e.target.value)} className="h-10 rounded-xl bg-slate-50 border-none text-xs font-black text-center text-primary" />
                                    </div>
-                                   <div className="space-y-1 text-center">
-                                      <Label className="text-[9px] font-black text-slate-400 uppercase">Marks/Q</Label>
-                                      <Input type="number" value={sec.marksPerQuestion} onChange={e => {
-                                         const newSecs = [...mockData.sections];
-                                         newSecs[idx].marksPerQuestion = e.target.value;
-                                         setMockData({...mockData, sections: newSecs});
-                                      }} className="h-9 bg-slate-50 border-none rounded-lg text-xs font-black text-center" />
+                                   <div className="space-y-2 text-center">
+                                      <Label className="text-[9px] font-black uppercase text-slate-400">Marks/Q</Label>
+                                      <Input type="number" value={sec.marksPerQuestion} onChange={e => updateSection(idx, 'marksPerQuestion', e.target.value)} className="h-10 rounded-xl bg-slate-50 border-none text-xs font-black text-center text-blue-600" />
                                    </div>
                                 </div>
                              </div>
@@ -271,25 +260,25 @@ function MockBuilderContent() {
                        <div className="space-y-3">
                           <Label className="text-[10px] font-black uppercase text-slate-500">Target Subject</Label>
                           <Select value={mockData.subjectId} onValueChange={v => setMockData({...mockData, subjectId: v})}>
-                             <SelectTrigger className="rounded-xl h-12 bg-white border-none font-bold"><SelectValue /></SelectTrigger>
+                             <SelectTrigger className="rounded-xl h-12 bg-white border-none font-bold text-[#0F172A]"><SelectValue /></SelectTrigger>
                              <SelectContent>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                           </Select>
                        </div>
                        {mockData.mockType === 'SECTIONAL' ? (
                           <div className="space-y-3">
                              <Label className="text-[10px] font-black uppercase text-slate-500">Topic / Chapter</Label>
-                             <Input value={mockData.chapterId} onChange={e => setMockData({...mockData, chapterId: e.target.value})} className="rounded-xl h-12 bg-white border-none font-bold" />
+                             <Input value={mockData.chapterId} onChange={e => setMockData({...mockData, chapterId: e.target.value})} className="rounded-xl h-12 bg-white border-none font-bold text-[#0F172A]" />
                           </div>
                        ) : mockData.mockType === 'PYQ' ? (
                           <div className="space-y-3">
                              <Label className="text-[10px] font-black uppercase text-slate-500">Exam Year</Label>
-                             <Input type="number" value={mockData.year} onChange={e => setMockData({...mockData, year: parseInt(e.target.value) || 2025})} className="rounded-xl h-12 bg-white border-none font-bold" />
+                             <Input type="number" value={mockData.year} onChange={e => setMockData({...mockData, year: parseInt(e.target.value) || 2025})} className="rounded-xl h-12 bg-white border-none font-bold text-[#0F172A]" />
                           </div>
                        ) : (
                           <div className="space-y-3">
                              <Label className="text-[10px] font-black uppercase text-slate-500">CA Category</Label>
                              <Select value={mockData.caCategory} onValueChange={v => setMockData({...mockData, caCategory: v})}>
-                                <SelectTrigger className="rounded-xl h-12 bg-white border-none font-bold"><SelectValue /></SelectTrigger>
+                                <SelectTrigger className="rounded-xl h-12 bg-white border-none font-bold text-[#0F172A]"><SelectValue /></SelectTrigger>
                                 <SelectContent>
                                    <SelectItem value="Punjab">Punjab Focus</SelectItem>
                                    <SelectItem value="National">National</SelectItem>
@@ -305,11 +294,11 @@ function MockBuilderContent() {
                  <div className="grid grid-cols-2 gap-8 mt-8 pt-8 border-t border-slate-200">
                     <div className="space-y-3">
                        <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Manual Duration (Mins)</Label>
-                       <Input disabled={mockData.mockType === 'FULL'} type="number" value={totalDuration} onChange={e => setMockData({...mockData, duration: parseInt(e.target.value) || 0})} className="rounded-xl h-12 bg-white border-none font-black text-lg text-[#0F172A] disabled:bg-slate-100" />
+                       <Input disabled={mockData.mockType === 'FULL'} type="number" value={totalDuration} onChange={e => setMockData({...mockData, duration: parseInt(e.target.value) || 0})} className="rounded-xl h-12 bg-white border-none font-black text-lg text-[#0F172A] disabled:bg-slate-100 shadow-inner" />
                     </div>
                     <div className="space-y-3">
                        <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Negative Marking</Label>
-                       <Input type="number" step="0.25" value={mockData.negativeMarking} onChange={e => setMockData({...mockData, negativeMarking: parseFloat(e.target.value) || 0})} className="rounded-xl h-12 bg-white border-none font-black text-lg text-rose-500" />
+                       <Input type="number" step="0.25" value={mockData.negativeMarking} onChange={e => setMockData({...mockData, negativeMarking: parseFloat(e.target.value) || 0})} className="rounded-xl h-12 bg-white border-none font-black text-lg text-rose-500 shadow-inner" />
                     </div>
                  </div>
               </div>
@@ -339,7 +328,7 @@ function MockBuilderContent() {
                     <ShieldCheck className="h-10 w-10 text-primary" />
                     <div className="space-y-1">
                        <p className="text-[10px] font-black uppercase tracking-widest text-primary">Institutional Access</p>
-                       <p className="text-sm font-medium text-slate-300">This series is set to <strong>Premium</strong> and requires a Gold Pass to attempt.</p>
+                       <p className="text-sm font-medium text-slate-300 text-left leading-relaxed">This series is set to <strong>Premium</strong> and requires a Gold Pass to attempt.</p>
                     </div>
                  </div>
               </div>
@@ -359,7 +348,7 @@ function MockBuilderContent() {
                           <span className="text-[10px] font-black text-slate-300">#{i + 1}</span>
                           <p className="font-bold text-[#0F172A] text-sm line-clamp-1">{q.questionEn}</p>
                        </div>
-                       <Button variant="ghost" size="icon" onClick={() => setSelectedQuestions(selectedQuestions.filter(sq => sq.id !== q.id))} className="h-9 w-9 text-rose-400 hover:bg-rose-50 rounded-xl"><Trash2 className="h-4 w-4" /></Button>
+                       <Button variant="ghost" size="icon" onClick={() => setSelectedQuestions(selectedQuestions.filter(sq => sq.id !== q.id))} className="h-9 w-9 text-rose-400 hover:bg-rose-50 rounded-xl transition-colors"><Trash2 className="h-4 w-4" /></Button>
                     </div>
                  ))}
               </div>
