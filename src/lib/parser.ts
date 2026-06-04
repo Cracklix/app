@@ -35,7 +35,8 @@ export function parseBulkQuestions(
   }
 
   const cleanedText = rawText.replace(/\r\n/g, '\n');
-  const blocks = cleanedText.split(/(?=Q\d+[\.\:])/g).filter(b => b.trim().length > 0);
+  // Split by Question marker (Q1, Q.1, 1., etc)
+  const blocks = cleanedText.split(/(?=(?:Q|Question)\s*\d+[\.\:\)]|^\d+[\.\)])/gm).filter(b => b.trim().length > 10);
   
   const parsedQuestions: Partial<Question>[] = [];
   const errors: string[] = [];
@@ -44,7 +45,7 @@ export function parseBulkQuestions(
     const lines = block.split('\n').map(l => l.trim()).filter(l => l.length > 0);
     if (lines.length < 3) return;
 
-    const qNumMatch = lines[0].match(/Q(\d+)/i);
+    const qNumMatch = lines[0].match(/(?:Q|Question)?\s*(\d+)/i);
     const qNum = qNumMatch ? qNumMatch[1] : (index + 1).toString();
 
     let questionEn = "";
@@ -59,28 +60,24 @@ export function parseBulkQuestions(
 
     if (format === 'OCR_COLUMNAR') {
       // Specialized Column-Aware Parsing
-      // Split each line into two columns by multiple spaces
-      const colLines = block.split('\n').filter(l => l.trim());
       const enBuffer: string[] = [];
       const paBuffer: string[] = [];
       const opts: Record<string, {en: string, pa: string}> = { A: {en:'', pa:''}, B: {en:'', pa:''}, C: {en:'', pa:''}, D: {en:'', pa:''} };
 
-      colLines.forEach(line => {
-        // Detect Column Split (usually 5+ spaces)
-        const parts = line.split(/\s{5,}/);
+      lines.forEach(line => {
+        const parts = line.split(/\s{4,}/);
         if (parts.length >= 2) {
           const left = parts[0].trim();
           const right = parts[1].trim();
 
-          // Check for Option Markers
-          const optMatch = left.match(/^([A-D])\.\s+(.*)/i);
+          const optMatch = left.match(/^([A-D])[\.\)]\s+(.*)/i);
           if (optMatch) {
             const letter = optMatch[1].toUpperCase();
             opts[letter].en = optMatch[2];
-            opts[letter].pa = right.replace(/^[A-D]\.\s+/i, '').trim();
-          } else if (left.startsWith('Q')) {
-            enBuffer.push(left.replace(/^Q\d+[\.\:]\s*/i, '').trim());
-            paBuffer.push(right.replace(/^Q\d+[\.\:]\s*/i, '').trim());
+            opts[letter].pa = right.replace(/^[A-D][\.\)]\s+/i, '').trim();
+          } else if (left.match(/^(?:Q|Question)?\s*\d+[\.\:\)]/i)) {
+            enBuffer.push(left.replace(/^(?:Q|Question)?\s*\d+[\.\:\)]\s*/i, '').trim());
+            paBuffer.push(right.replace(/^(?:Q|Question)?\s*\d+[\.\:\)]\s*/i, '').trim());
           } else {
             enBuffer.push(left);
             paBuffer.push(right);
@@ -94,70 +91,46 @@ export function parseBulkQuestions(
       optionBEn = opts.B.en; optionBPa = opts.B.pa;
       optionCEn = opts.C.en; optionCPa = opts.C.pa;
       optionDEn = opts.D.en; optionDPa = opts.D.pa;
-    } else if (format === 'BILINGUAL_MCQ') {
-      // Standard Line-Based Bilingual
-      questionEn = lines[0].replace(/^Q\d+[\.\:]\s*/i, '').trim();
-      questionPa = lines[1] || "";
-
-      const extractPair = (letter: string) => {
-        const marker = `${letter})`;
-        const matches = lines.filter(l => l.startsWith(marker)).map(l => l.replace(new RegExp(`^${letter}\\)\\s*`, 'i'), '').trim());
-        return { en: matches[0] || "", pa: matches[1] || matches[0] || "" };
-      };
-
-      const pairA = extractPair('A'); const pairB = extractPair('B');
-      const pairC = extractPair('C'); const pairD = extractPair('D');
-
-      optionAEn = pairA.en; optionAPa = pairA.pa;
-      optionBEn = pairB.en; optionBPa = pairB.pa;
-      optionCEn = pairC.en; optionCPa = pairC.pa;
-      optionDEn = pairD.en; optionDPa = pairD.pa;
     } else {
-      // Standard English
-      questionEn = lines[0].replace(/^Q\d+[\.\:]\s*/i, '').trim();
-      const findSingle = (letter: string) => {
-        const line = lines.find(l => l.toUpperCase().startsWith(letter.toUpperCase() + ')'));
-        return line ? line.replace(new RegExp(`^${letter}\\)\\s*`, 'i'), '').trim() : "";
+      // Handle standard and bunched layouts (A) ... B) ... on one line)
+      const fullText = lines.join(' ');
+      
+      // Extract Question Statement
+      const statementMatch = fullText.match(/(?:(?:Q|Question)\s*\d+[\.\:\)]|^\d+[\.\)])\s*(.*?)(?=A[\.\)])/i);
+      questionEn = statementMatch ? statementMatch[1].trim() : lines[0].replace(/^(?:Q|Question)?\s*\d+[\.\:\)]\s*/i, '').trim();
+
+      // Extract Options (handles both single line and multiple line)
+      const extractOpt = (letter: string, nextLetter: string | null) => {
+        const regex = new RegExp(`${letter}[\\.\\)]\\s*(.*?)(?=${nextLetter ? nextLetter + '[\\.\\)]' : 'Correct Answer|ਸਹੀ ਉੱਤਰ|Explanation|ਵਿਆਖਿਆ'})`, 'i');
+        const match = fullText.match(regex);
+        return match ? match[1].trim() : "";
       };
-      optionAEn = findSingle('A'); optionBEn = findSingle('B');
-      optionCEn = findSingle('C'); optionDEn = findSingle('D');
+
+      optionAEn = extractOpt('A', 'B');
+      optionBEn = extractOpt('B', 'C');
+      optionCEn = extractOpt('C', 'D');
+      optionDEn = extractOpt('D', null);
+
+      // Default Punjabi to English if missing in standard mode
+      questionPa = questionEn;
+      optionAPa = optionAEn; optionBPa = optionBEn; optionCPa = optionCEn; optionDPa = optionDEn;
     }
 
     // Answer & Rationale Detection
-    const findMarkerContent = (marker: string) => {
-      const idx = lines.findIndex(l => l.toLowerCase().includes(marker.toLowerCase()));
-      if (idx === -1) return "";
-      const line = lines[idx];
-      return line.includes(':') ? line.split(':')[1].trim() : lines[idx + 1] || "";
-    };
+    const ansMatch = block.match(/(?:Correct Answer|ਸਹੀ ਉੱਤਰ)[\.\:\s]*([A-D])/i);
+    ans = ansMatch ? ansMatch[1].toUpperCase() : "";
 
-    const ansFull = findMarkerContent('Correct Answer') || findMarkerContent('ਸਹੀ ਉੱਤਰ');
-    ans = ansFull?.match(/^[A-D]/i)?.[0].toUpperCase() || "";
+    const expMatch = block.match(/(?:Explanation|ਵਿਆਖਿਆ)[\.\:\s]*(.*?)(?=$|Q\d+)/is);
+    expEn = expMatch ? expMatch[1].trim() : "Verified Solution";
 
-    const getBlock = (marker: string) => {
-      const idx = lines.findIndex(l => l.toLowerCase().includes(marker.toLowerCase()));
-      if (idx === -1) return "";
-      const content = [];
-      const headerLine = lines[idx];
-      if (headerLine.includes(':')) content.push(headerLine.split(':')[1].trim());
-      for (let i = idx + 1; i < lines.length; i++) {
-        if (lines[i].match(/Correct Answer|ਸਹੀ ਉੱਤਰ|Explanation|ਵਿਆਖਿਆ|^Q\d+/i)) break;
-        content.push(lines[i]);
-      }
-      return content.join('\n').trim();
-    };
-
-    expEn = getBlock('Explanation (English)');
-    expPa = getBlock('ਵਿਆਖਿਆ (ਪੰਜਾਬੀ)');
-
-    // Institutional Validation
+    // Validation
     const qErrors: string[] = [];
     if (!questionEn) qErrors.push(`Missing Statement`);
     if (!optionAEn) qErrors.push(`Missing Options`);
     if (!ans) qErrors.push(`Missing Correct Answer (A-D)`);
 
     if (qErrors.length > 0) {
-      qErrors.forEach(err => errors.push(`Question ${qNum}: ${err}`));
+      errors.push(`Question ${qNum}: ${qErrors.join(', ')}`);
     } else {
       parsedQuestions.push({
         ...metadata,
@@ -166,23 +139,23 @@ export function parseBulkQuestions(
         optionAEn, optionAPa, optionBEn, optionBPa,
         optionCEn, optionCPa, optionDEn, optionDPa,
         correctAnswer: ans as any,
-        explanationEn: expEn || "Verified Solution",
-        explanationPa: expPa,
+        explanationEn: expEn,
+        explanationPa: expEn,
         status: metadata.status || 'PUBLISHED',
-        questionType: (format === 'BILINGUAL_MCQ' || format === 'OCR_COLUMNAR') ? 'BILINGUAL_MCQ' : 'MCQ',
-        diagramType: format === 'DI_SET' ? 'table' : 'none'
+        questionType: format === 'BILINGUAL_MCQ' || format === 'OCR_COLUMNAR' ? 'BILINGUAL_MCQ' : 'MCQ',
+        diagramType: 'none',
+        isStandalone: true
       });
     }
   });
 
-  return { questions: errors.length > 0 ? [] : parsedQuestions, errors };
+  return { questions: parsedQuestions, errors };
 }
 
 function parseStructuredJson(raw: string, metadata: any): ParsedResults {
   try {
     const data = JSON.parse(raw);
     const questions: Partial<Question>[] = [];
-    // Handle the document.pages.blocks structure from documentation
     if (data.document?.pages) {
       data.document.pages.forEach((page: any) => {
         page.blocks.forEach((block: any) => {
@@ -191,10 +164,13 @@ function parseStructuredJson(raw: string, metadata: any): ParsedResults {
               ...metadata,
               id: `ocr-${block.block_id}-${Date.now()}`,
               questionEn: block.text,
+              questionPa: block.text,
               optionAEn: "Imported via OCR JSON",
+              optionAPa: "Imported via OCR JSON",
               correctAnswer: 'A',
               explanationEn: `Structured OCR Input. Confidence: ${block.confidence}`,
-              status: metadata.status || 'PUBLISHED'
+              status: metadata.status || 'PUBLISHED',
+              isStandalone: true
             });
           }
         });
