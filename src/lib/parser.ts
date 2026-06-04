@@ -20,7 +20,6 @@ export function parseBulkQuestions(
     chapterId: string;
     difficulty: Difficulty;
     status: ContentStatus;
-    mockType?: MockType;
   }
 ): ParsedResults {
   const questions: Partial<Question>[] = [];
