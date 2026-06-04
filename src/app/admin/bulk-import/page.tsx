@@ -21,14 +21,25 @@ import {
   Trash2, 
   Edit,
   Rocket,
+  Zap,
+  Globe,
+  Languages,
+  ShieldCheck,
+  ClipboardCheck,
   Plus
 } from "lucide-react"
 import { useFirestore, useCollection } from "@/firebase"
-import { collection, doc, writeBatch, serverTimestamp } from "firebase/firestore"
+import { collection, doc, writeBatch, serverTimestamp, setDoc } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { parseBulkQuestions } from "@/lib/parser"
-import { Difficulty, MockType, Question } from "@/types"
+import { Difficulty, MockType, Question, ContentStatus } from "@/types"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import QuestionRenderer from "@/components/questions/QuestionRenderer"
+
+/**
+ * @fileOverview Mandatory Production Bulk Import Module.
+ * Integrates Ingestion, Staging, and Direct Mock Publishing.
+ */
 
 export default function BulkImportPage() {
   const router = useRouter()
@@ -36,195 +47,234 @@ export default function BulkImportPage() {
   const { toast } = useToast()
   
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
+  const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
 
-  // Configuration State
-  const [config, setConfig] = useState({
-    board: "",
-    exam: "",
-    subject: "",
-    chapter: "",
+  // 1. Config State
+  const [metadata, setMetadata] = useState({
+    boardId: "",
+    examId: "",
+    subjectId: "",
+    chapterId: "",
     language: "bilingual",
     difficulty: "Medium" as Difficulty,
     mockType: "FULL" as MockType,
+    status: "PUBLISHED" as ContentStatus,
     duration: 120,
     questionCount: 0
   })
 
+  // 2. Buffer State
   const [rawText, setRawText] = useState("")
   const [parsedQuestions, setParsedQuestions] = useState<Partial<Question>[]>([])
   const [parseErrors, setParseErrors] = useState<string[]>([])
-  const [isImporting, setIsImporting] = useState(false)
-  const [showMockCreator, setShowMockMockCreator] = useState(false)
+  const [confidence, setConfidence] = useState(0)
+  
+  // 3. Workflow State
+  const [isSyncing, setIsSyncing] = useState(false)
+  const [showDeployment, setShowDeployment] = useState(false)
+  const [lastImportedIds, setLastImportedIds] = useState<string[]>([])
   const [mockSettings, setMockSettings] = useState({
     title: "",
     passingMarks: 50,
     negativeMarking: 0.25,
     instructions: "Standard Exam Instructions apply.",
-    randomizeQuestions: true,
-    randomizeOptions: false
   })
 
-  const handleParse = () => {
+  const handleAnalyze = () => {
     if (!rawText.trim()) return
-    if (!config.board || !config.subject) {
-      toast({ variant: "destructive", title: "Config Required", description: "Select Board and Subject before parsing." })
+    if (!metadata.boardId || !metadata.subjectId) {
+      toast({ variant: "destructive", title: "Config Required", description: "Select Board and Subject before analysis." })
       return
     }
 
-    const { questions, errors } = parseBulkQuestions(rawText, config)
+    const { questions, errors, confidence: conf } = parseBulkQuestions(rawText, metadata)
     setParsedQuestions(questions)
     setParseErrors(errors)
+    setConfidence(conf)
 
     if (errors.length > 0) {
-      toast({ variant: "destructive", title: "Partial Success", description: `Found ${errors.length} formatting errors.` })
+      toast({ variant: "destructive", title: "Template Mismatch", description: `Found ${errors.length} formatting errors.` })
     } else {
-      toast({ title: "Parsing Complete", description: `${questions.length} nodes successfully structured.` })
+      toast({ title: "Analysis Complete", description: `${questions.length} nodes structured with ${conf}% confidence.` })
     }
   }
 
-  const handleDelete = (idx: number) => {
-    setParsedQuestions(prev => prev.filter((_, i) => i !== idx))
-  }
-
-  const handleSaveToBank = async () => {
+  const handleCommitToBank = async () => {
     if (!db || parsedQuestions.length === 0) return
-    setIsImporting(true)
+    setIsSyncing(true)
 
     const batch = writeBatch(db)
-    const newQuestionIds: string[] = []
+    const ids: string[] = []
 
     parsedQuestions.forEach(q => {
       const qRef = doc(collection(db, "questions"))
       batch.set(qRef, {
         ...q,
+        id: qRef.id,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       })
-      newQuestionIds.push(qRef.id)
+      ids.push(qRef.id)
     })
 
     try {
       await batch.commit()
-      toast({ title: "Inventory Updated", description: `${parsedQuestions.length} questions deployed to bank.` })
-      // Keep IDs for mock creation
-      setRawText("") 
-      // Ask if they want to create a mock
-      setShowMockMockCreator(true)
+      setLastImportedIds(ids)
+      toast({ title: "Inventory Updated", description: `${parsedQuestions.length} nodes successfully synced.` })
+      setShowDeployment(true)
     } catch (e) {
       toast({ variant: "destructive", title: "Sync Failed", description: "Database rejected the batch." })
     } finally {
-      setIsImporting(false)
+      setIsSyncing(false)
     }
   }
 
   const handleDeployMock = async () => {
-    if (!db || parsedQuestions.length === 0) return
-    setIsImporting(true)
+    if (!db || lastImportedIds.length === 0) return
+    setIsSyncing(true)
 
     const mockId = `mock-${Date.now()}`
     const mockRef = doc(db, "mocks", mockId)
     
-    // We need the recently created IDs. Since we don't have them easily after commit without re-fetching,
-    // in a production environment we'd use the array we kept. 
-    // For this simulation, we'll redirect to builder or create a placeholder.
-    
-    toast({ title: "Mock Hub Initialized", description: "Proceed to Builder to link the imported nodes." })
-    router.push("/admin/mocks")
+    const payload = {
+      id: mockId,
+      title: mockSettings.title || `${metadata.boardId} ${metadata.mockType} - ${new Date().toLocaleDateString()}`,
+      boardId: metadata.boardId,
+      examId: metadata.examId,
+      mockType: metadata.mockType,
+      duration: metadata.duration,
+      totalQuestions: lastImportedIds.length,
+      questionIds: lastImportedIds,
+      difficulty: metadata.difficulty,
+      published: true,
+      isPremium: true,
+      passingMarks: mockSettings.passingMarks,
+      negativeMarking: mockSettings.negativeMarking,
+      instructions: mockSettings.instructions,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    }
+
+    try {
+      await setDoc(mockRef, payload)
+      toast({ title: "Test Series Online", description: "The mock is now live for students." })
+      router.push("/admin/mocks")
+    } catch (e) {
+      toast({ variant: "destructive", title: "Deployment Error", description: "Could not publish the mock test." })
+    } finally {
+      setIsSyncing(false)
+    }
   }
 
   return (
-    <div className="space-y-10 pb-24 text-left">
-      <div className="flex items-center justify-between">
+    <div className="space-y-10 pb-24 text-left max-w-[1600px] mx-auto">
+      <div className="flex items-center justify-between px-4">
         <div className="flex items-center gap-6">
-          <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl border bg-white h-12 w-12">
+          <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl border bg-white h-12 w-12 shadow-sm">
             <ChevronLeft className="h-6 w-6" />
           </Button>
           <div>
             <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Bulk Ingestion Hub</h1>
-            <p className="text-slate-500 font-medium">Inject high-volume content directly into the global bank.</p>
+            <p className="text-slate-500 font-medium">Extract and deploy high-volume institutional content.</p>
           </div>
         </div>
         <div className="flex gap-4">
-           <Button variant="outline" className="h-14 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3" onClick={() => { setRawText(""); setParsedQuestions([]); setParseErrors([]); }}>
+           <Button variant="outline" className="h-16 px-10 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 shadow-sm" onClick={() => { setRawText(""); setParsedQuestions([]); setParseErrors([]); }}>
               Reset Buffer
            </Button>
-           <Button onClick={handleSaveToBank} disabled={isImporting || parsedQuestions.length === 0} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl h-14 px-12 gap-3 shadow-xl">
-              {isImporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />} Deploy to Bank
+           <Button onClick={handleCommitToBank} disabled={isSyncing || parsedQuestions.length === 0} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl h-16 px-12 gap-3 shadow-3xl shadow-emerald-900/20">
+              {isSyncing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Database className="h-5 w-5" />} Save to Bank
            </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 px-4">
         {/* Config Panel */}
         <div className="lg:col-span-4 space-y-8">
-          <Card className="border-none bg-white shadow-2xl rounded-[3rem] overflow-hidden">
+          <Card className="border-none bg-white shadow-3xl rounded-[3rem] overflow-hidden">
             <div className="h-2 w-full bg-primary" />
-            <CardHeader className="p-10 pb-6">
-              <CardTitle className="font-headline font-black text-xl uppercase flex items-center gap-4">
-                <Settings2 className="h-6 w-6 text-primary" /> Configuration Protocol
+            <CardHeader className="p-10 pb-4">
+              <CardTitle className="font-headline font-black text-2xl uppercase flex items-center gap-4">
+                <Settings2 className="h-6 w-6 text-primary" /> Configuration Hub
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-10 pt-0 space-y-6">
-              <div className="grid grid-cols-1 gap-6">
+            <CardContent className="p-10 pt-4 space-y-8">
+              <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Recruitment Board</Label>
-                  <Select value={config.board} onValueChange={v => setConfig({...config, board: v})}>
-                    <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none"><SelectValue placeholder="Select Board" /></SelectTrigger>
-                    <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.abbreviation}>{b.abbreviation}</SelectItem>)}</SelectContent>
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Board</Label>
+                  <Select value={metadata.boardId} onValueChange={v => setMetadata({...metadata, boardId: v})}>
+                    <SelectTrigger className="rounded-xl h-14 bg-slate-50 border-none font-bold"><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Subject Mastery</Label>
-                  <Select value={config.subject} onValueChange={v => setConfig({...config, subject: v})}>
-                    <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none"><SelectValue placeholder="Select Subject" /></SelectTrigger>
-                    <SelectContent>{subjects?.map((s: any) => <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>)}</SelectContent>
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Target Exam</Label>
+                  <Select value={metadata.examId} onValueChange={v => setMetadata({...metadata, examId: v})}>
+                    <SelectTrigger className="rounded-xl h-14 bg-slate-50 border-none font-bold"><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectContent>{exams?.filter((e:any) => e.boardId === metadata.boardId).map((e: any) => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                 <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Subject</Label>
+                    <Select value={metadata.subjectId} onValueChange={v => setMetadata({...metadata, subjectId: v})}>
+                       <SelectTrigger className="rounded-xl h-14 bg-slate-50 border-none font-bold"><SelectValue /></SelectTrigger>
+                       <SelectContent>{subjects?.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+                    </Select>
+                 </div>
+                 <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Mock Type</Label>
+                    <Select value={metadata.mockType} onValueChange={(v: any) => setMetadata({...metadata, mockType: v})}>
+                       <SelectTrigger className="rounded-xl h-14 bg-slate-50 border-none font-bold"><SelectValue /></SelectTrigger>
+                       <SelectContent>
+                          <SelectItem value="FULL">Full Mock</SelectItem>
+                          <SelectItem value="SUBJECT">Subject Test</SelectItem>
+                          <SelectItem value="SECTIONAL">Sectional</SelectItem>
+                          <SelectItem value="PYQ">PYQ Archive</SelectItem>
+                       </SelectContent>
+                    </Select>
+                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Chapter / Topic</Label>
-                  <Input placeholder="e.g. Percentage" value={config.chapter} onChange={e => setConfig({...config, chapter: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-none" />
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Duration (Min)</Label>
+                  <Input type="number" value={metadata.duration} onChange={e => setMetadata({...metadata, duration: parseInt(e.target.value)})} className="h-14 rounded-xl bg-slate-50 border-none font-black text-lg" />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Language</Label>
-                    <Select value={config.language} onValueChange={v => setConfig({...config, language: v})}>
-                      <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="english">English</SelectItem>
-                        <SelectItem value="punjabi">Punjabi</SelectItem>
-                        <SelectItem value="bilingual">Bilingual</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Difficulty</Label>
-                    <Select value={config.difficulty} onValueChange={(v: Difficulty) => setConfig({...config, difficulty: v})}>
-                      <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Easy">Easy</SelectItem>
-                        <SelectItem value="Medium">Medium</SelectItem>
-                        <SelectItem value="Hard">Hard</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Difficulty</Label>
+                  <Select value={metadata.difficulty} onValueChange={(v: Difficulty) => setMetadata({...metadata, difficulty: v})}>
+                    <SelectTrigger className="rounded-xl h-14 bg-slate-50 border-none font-bold"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Easy">Easy</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="Hard">Hard</SelectItem>
+                      <SelectItem value="Mixed">Mixed</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-none bg-[#0F172A] text-white p-10 rounded-[3rem] shadow-2xl">
-             <div className="flex items-center gap-4 mb-6">
-                <AlertCircle className="h-6 w-6 text-primary" />
-                <h4 className="font-headline font-black uppercase text-sm tracking-widest">Parser Rules</h4>
+          <Card className="border-none bg-[#0F172A] text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-8 opacity-10"><Globe className="h-32 w-32 rotate-12" /></div>
+             <div className="relative z-10 space-y-6">
+                <div className="flex items-center gap-4">
+                   <Languages className="h-6 w-6 text-primary" />
+                   <h4 className="font-headline font-black uppercase text-sm tracking-widest">Bilingual Protocol</h4>
+                </div>
+                <ul className="space-y-3 text-[11px] font-medium text-slate-400 leading-relaxed">
+                   <li>• Use <code className="text-primary">Q1 EN:</code> and <code className="text-primary">Q1 PA:</code> tags.</li>
+                   <li>• Options must start with <code className="text-primary">A EN:</code>, <code className="text-primary">A PA:</code> etc.</li>
+                   <li>• Use <code className="text-primary">Answer: B</code> for correct audit key.</li>
+                   <li>• Supports <code className="text-primary">Image: [URL]</code> for visual nodes.</li>
+                   <li>• Supports <code className="text-primary">Explanation EN:</code> for solutions.</li>
+                </ul>
              </div>
-             <ul className="space-y-4 text-[11px] font-medium text-slate-400 leading-relaxed">
-                <li>• Use <code className="text-primary">Q1.</code> to start a new question.</li>
-                <li>• Options must start with <code className="text-primary">A. B. C. D.</code></li>
-                <li>• Use <code className="text-primary">Answer: B</code> for correct key.</li>
-                <li>• Supports <code className="text-primary">Q1 EN:</code> and <code className="text-primary">Q1 PA:</code> for bilingual.</li>
-                <li>• Paste up to 1000 items without latency.</li>
-             </ul>
           </Card>
         </div>
 
@@ -235,70 +285,74 @@ export default function BulkImportPage() {
               <Textarea 
                 value={rawText}
                 onChange={e => setRawText(e.target.value)}
-                placeholder="Paste Questions Here..."
-                className="min-h-[600px] rounded-[3rem] bg-white border-slate-100 p-10 text-sm font-mono shadow-inner custom-scrollbar"
+                placeholder="Paste Institutional Content Here..."
+                className="min-h-[600px] rounded-[3rem] bg-white border-none p-12 text-sm font-mono shadow-4xl custom-scrollbar text-[#0F172A]"
               />
-              <Button onClick={handleParse} className="w-full h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.3em] rounded-[2rem] shadow-2xl mt-4">
-                 Analyze & Structure Nodes
+              <Button onClick={handleAnalyze} className="w-full h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.3em] rounded-[2rem] shadow-4xl mt-6 gap-4">
+                 <Zap className="h-6 w-6 fill-current" /> Analyze & Structure Nodes
               </Button>
            </div>
 
            {parsedQuestions.length > 0 && (
-             <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden">
-                <CardHeader className="p-10 border-b border-slate-50 bg-slate-50/30">
-                   <div className="flex justify-between items-center">
-                      <CardTitle className="font-headline font-black text-2xl uppercase">Audit Preview ({parsedQuestions.length})</CardTitle>
-                      <Badge className="bg-emerald-100 text-emerald-600 border-none font-black px-4 py-1">CLEAN STRUCTURE</Badge>
+             <Card className="border-none shadow-4xl rounded-[4rem] bg-white overflow-hidden">
+                <CardHeader className="p-16 border-b border-slate-50 bg-slate-50/30 flex flex-row justify-between items-center">
+                   <div className="space-y-2">
+                      <CardTitle className="font-headline font-black text-3xl uppercase">Audit Preview ({parsedQuestions.length})</CardTitle>
+                      <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Parser Integrity: {confidence}%</p>
                    </div>
+                   <Badge className="bg-emerald-100 text-emerald-600 border-none font-black px-6 py-2 rounded-xl text-xs uppercase tracking-widest">READY FOR BANK</Badge>
                 </CardHeader>
                 <CardContent className="p-0">
                    <Table>
                       <TableHeader className="bg-slate-50">
-                         <TableRow>
-                            <TableHead className="px-10 text-[10px] font-black uppercase">Block</TableHead>
-                            <TableHead className="text-[10px] font-black uppercase">Question Logic</TableHead>
+                         <TableRow className="h-20 border-slate-50">
+                            <TableHead className="px-12 text-[10px] font-black uppercase">Node</TableHead>
+                            <TableHead className="text-[10px] font-black uppercase">Logic Flow</TableHead>
                             <TableHead className="text-center text-[10px] font-black uppercase">Key</TableHead>
-                            <TableHead className="text-right px-10 text-[10px] font-black uppercase">Action</TableHead>
+                            <TableHead className="text-right px-12 text-[10px] font-black uppercase">Action</TableHead>
                          </TableRow>
                       </TableHeader>
                       <TableBody>
-                         {parsedQuestions.slice(0, 50).map((q, idx) => (
-                           <TableRow key={idx} className="group hover:bg-slate-50 transition-colors">
-                              <TableCell className="px-10 font-bold text-slate-400">#{idx + 1}</TableCell>
-                              <TableCell>
-                                 <p className="font-bold text-[#0F172A] line-clamp-1">{q.questionEn}</p>
-                                 <p className="text-[10px] text-slate-400 italic line-clamp-1">{q.questionPa}</p>
+                         {parsedQuestions.map((q, idx) => (
+                           <TableRow key={idx} className="group hover:bg-slate-50/50 border-slate-50 transition-colors">
+                              <TableCell className="px-12 py-10 font-black text-slate-300">#{idx + 1}</TableCell>
+                              <TableCell className="py-10 max-w-lg">
+                                 <div className="space-y-2">
+                                    <p className="font-bold text-[#0F172A] line-clamp-1">{q.questionEn}</p>
+                                    <p className="text-[11px] text-slate-400 italic line-clamp-1 font-medium">{q.questionPa}</p>
+                                 </div>
                               </TableCell>
                               <TableCell className="text-center">
-                                 <Badge variant="outline" className="rounded-lg h-8 w-8 flex items-center justify-center font-black p-0 border-primary text-primary">{q.correctAnswer}</Badge>
+                                 <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center font-black text-primary mx-auto">
+                                    {q.correctAnswer}
+                                 </div>
                               </TableCell>
-                              <TableCell className="text-right px-10">
-                                 <Button variant="ghost" size="icon" className="text-rose-500 hover:bg-rose-50" onClick={() => handleDelete(idx)}>
-                                    <Trash2 className="h-4 w-4" />
-                                 </Button>
+                              <TableCell className="text-right px-12">
+                                 <div className="flex justify-end gap-3 opacity-20 group-hover:opacity-100 transition-opacity">
+                                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-white shadow-sm border-transparent hover:border-slate-100"><Edit className="h-5 w-5" /></Button>
+                                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-rose-500 hover:bg-rose-50"><Trash2 className="h-5 w-5" /></Button>
+                                 </div>
                               </TableCell>
                            </TableRow>
                          ))}
                       </TableBody>
                    </Table>
-                   {parsedQuestions.length > 50 && (
-                     <div className="p-8 text-center text-[10px] font-black uppercase text-slate-400 border-t border-slate-50">
-                        + {parsedQuestions.length - 50} more nodes in buffer
-                     </div>
-                   )}
                 </CardContent>
              </Card>
            )}
 
            {parseErrors.length > 0 && (
-             <Card className="border-rose-100 bg-rose-50 p-10 rounded-[3rem]">
-                <div className="flex items-center gap-4 text-rose-600 mb-6">
-                   <AlertCircle className="h-6 w-6" />
-                   <h4 className="font-headline font-black uppercase tracking-tight">Mismatched Nodes Found</h4>
+             <Card className="border-rose-100 bg-rose-50/50 p-16 rounded-[4rem] shadow-4xl">
+                <div className="flex items-center gap-6 text-rose-600 mb-10">
+                   <AlertCircle className="h-12 w-12" />
+                   <h4 className="font-headline font-black text-3xl uppercase tracking-tight">Audit Mismatches Found</h4>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-4">
                    {parseErrors.map((err, i) => (
-                      <p key={i} className="text-sm font-bold text-rose-900 leading-tight">• {err}</p>
+                      <div key={i} className="p-6 bg-white rounded-3xl border border-rose-100 shadow-xl flex items-start gap-4">
+                         <div className="h-6 w-6 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-black shrink-0 mt-1">!</div>
+                         <p className="text-base font-bold text-rose-900 leading-tight">{err}</p>
+                      </div>
                    ))}
                 </div>
              </Card>
@@ -306,36 +360,43 @@ export default function BulkImportPage() {
         </div>
       </div>
 
-      <Dialog open={showMockCreator} onOpenChange={setShowMockMockCreator}>
-        <DialogContent className="sm:max-w-2xl rounded-[3rem] bg-[#0F172A] text-white border-white/10 p-0 overflow-hidden">
-          <div className="p-10 space-y-10">
-            <div className="text-center space-y-2">
-               <div className="h-16 w-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto text-primary">
-                  <Rocket className="h-8 w-8" />
+      <Dialog open={showDeployment} onOpenChange={setShowDeployment}>
+        <DialogContent className="sm:max-w-2xl rounded-[3.5rem] bg-[#0F172A] text-white border-white/10 p-0 overflow-hidden shadow-4xl">
+          <div className="p-16 space-y-12 text-center">
+            <div className="space-y-4">
+               <div className="h-24 w-24 bg-primary/20 rounded-[2.5rem] flex items-center justify-center mx-auto text-primary shadow-3xl">
+                  <Rocket className="h-12 w-12" />
                </div>
-               <h2 className="text-3xl font-headline font-black uppercase">Deploy Active Mock</h2>
-               <p className="text-slate-400 text-sm font-medium px-10">Create a live practice series using the recently imported nodes.</p>
+               <h2 className="text-4xl font-headline font-black uppercase tracking-tight">Deploy Test Series</h2>
+               <p className="text-slate-400 text-lg font-medium px-10">
+                  {parsedQuestions.length} nodes successfully committed to bank. Package them into a live Practice Series now?
+               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-8">
-               <div className="space-y-2 text-left">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Series Title</Label>
-                  <Input value={mockSettings.title} onChange={e => setMockSettings({...mockSettings, title: e.target.value})} placeholder="e.g. Patwari Full Mock 01" className="h-12 bg-white/5 border-white/10 rounded-xl" />
+            <div className="space-y-8 text-left bg-white/5 p-10 rounded-[3rem] border border-white/5">
+               <div className="space-y-3">
+                  <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">Series Title</Label>
+                  <Input value={mockSettings.title} onChange={e => setMockSettings({...mockSettings, title: e.target.value})} placeholder="e.g. PSSSB Patwari Mock 01" className="h-16 bg-white/5 border-white/10 rounded-2xl font-bold text-lg text-white" />
                </div>
-               <div className="space-y-2 text-left">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Negative Marking</Label>
-                  <Input type="number" step="0.25" value={mockSettings.negativeMarking} onChange={e => setMockSettings({...mockSettings, negativeMarking: parseFloat(e.target.value)})} className="h-12 bg-white/5 border-white/10 rounded-xl" />
+               <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                     <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">Passing Marks (%)</Label>
+                     <Input type="number" value={mockSettings.passingMarks} onChange={e => setMockSettings({...mockSettings, passingMarks: parseInt(e.target.value)})} className="h-14 bg-white/5 border-white/10 rounded-xl font-black text-primary" />
+                  </div>
+                  <div className="space-y-3">
+                     <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">Negative Marking</Label>
+                     <Input type="number" step="0.25" value={mockSettings.negativeMarking} onChange={e => setMockSettings({...mockSettings, negativeMarking: parseFloat(e.target.value)})} className="h-14 bg-white/5 border-white/10 rounded-xl font-black text-rose-500" />
+                  </div>
                </div>
             </div>
 
-            <div className="space-y-2 text-left">
-               <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Exam Instructions</Label>
-               <Textarea value={mockSettings.instructions} onChange={e => setMockSettings({...mockSettings, instructions: e.target.value})} className="bg-white/5 border-white/10 rounded-xl min-h-[100px]" />
-            </div>
-
-            <DialogFooter className="pt-6 border-t border-white/5 flex gap-4">
-               <Button variant="ghost" onClick={() => setShowMockMockCreator(false)} className="text-slate-400 hover:text-white rounded-xl">Skip Deployment</Button>
-               <Button onClick={handleDeployMock} className="bg-primary hover:bg-primary/90 px-12 font-black uppercase text-[10px] tracking-widest rounded-xl h-12 shadow-2xl">Initialize Series</Button>
+            <DialogFooter className="flex flex-col sm:flex-row gap-4">
+               <Button variant="ghost" onClick={() => router.push("/admin/questions")} className="h-16 px-10 rounded-2xl text-slate-400 hover:text-white font-black uppercase text-[10px] tracking-widest">
+                  Skip to Bank
+               </Button>
+               <Button onClick={handleDeployMock} disabled={isSyncing} className="flex-1 h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl shadow-3xl shadow-primary/20 gap-4">
+                  {isSyncing ? <Loader2 className="h-6 w-6 animate-spin" /> : <ClipboardCheck className="h-6 w-6" />} Initialize & Go Live
+               </Button>
             </DialogFooter>
           </div>
         </DialogContent>

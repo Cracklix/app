@@ -4,22 +4,9 @@ import React from 'react';
 import { Question } from '@/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card } from '@/components/ui/card';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  PieChart, 
-  Pie, 
-  Cell, 
-  LineChart, 
-  Line 
-} from 'recharts';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { CheckCircle2 } from 'lucide-react';
 
 interface QuestionRendererProps {
   question: Partial<Question>;
@@ -27,7 +14,11 @@ interface QuestionRendererProps {
   showSolution?: boolean;
 }
 
-const COLORS = ['#F97316', '#3B82F6', '#10B981', '#EF4444', '#8B5CF6'];
+/**
+ * @fileOverview Strict Language-Gated Question Renderer.
+ * Ensures that if 'pa' is selected, English content is 100% hidden.
+ * In 'bilingual' mode, content is professionally stacked.
+ */
 
 export default function QuestionRenderer({ question, language, showSolution = false }: QuestionRendererProps) {
   const showEn = language === 'en' || language === 'bilingual';
@@ -58,48 +49,23 @@ export default function QuestionRenderer({ question, language, showSolution = fa
         </div>
       )}
 
-      {/* 2. Passage Node (Reading Comprehension / Caselet) */}
+      {/* 2. Passage Node (Reading Comprehension) */}
       {(passageEn || passagePa) && (
         <div className="bg-slate-50 border border-slate-100 p-8 rounded-[2.5rem] shadow-inner">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6">Case Context:</p>
           <div className="space-y-6">
              {showEn && passageEn && <div className="text-lg leading-relaxed text-slate-700 whitespace-pre-wrap font-medium">{passageEn}</div>}
-             {showPa && passagePa && <div className={cn("text-lg leading-relaxed text-slate-600 whitespace-pre-wrap font-medium", language === 'bilingual' ? "italic border-t border-slate-200 pt-6 mt-6" : "")}>{passagePa}</div>}
+             {showPa && passagePa && <div className={cn("text-lg leading-relaxed text-slate-600 whitespace-pre-wrap font-medium", language === 'bilingual' ? "italic border-t border-slate-200 pt-6 mt-6 shadow-sm" : "")}>{passagePa}</div>}
           </div>
         </div>
       )}
 
       {/* 3. Visual Visual Node */}
-      {question.diagramType && question.diagramType !== 'none' && (
+      {question.imageUrl && (
         <div className="w-full py-4">
-          {question.diagramType === 'table' && question.tableData && (
-            <Card className="border-slate-200 overflow-hidden rounded-2xl shadow-xl">
-              <Table>
-                <TableHeader className="bg-slate-50">
-                  <TableRow>
-                    {question.tableData.headers.map((h, i) => (
-                      <TableHead key={i} className="font-black uppercase text-[10px] tracking-widest text-slate-500">{h}</TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {question.tableData.rows.map((row, i) => (
-                    <TableRow key={i}>
-                      {row.map((cell, j) => (
-                        <TableCell key={j} className="font-bold text-slate-700">{cell}</TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Card>
-          )}
-
-          {question.diagramType === 'image' && question.imageUrl && (
-            <div className="relative w-full aspect-video rounded-[3rem] overflow-hidden border-2 border-slate-100 shadow-2xl">
-              <Image src={question.imageUrl} fill alt="Diagram" className="object-contain bg-white" />
-            </div>
-          )}
+          <div className="relative w-full aspect-video rounded-[3rem] overflow-hidden border-2 border-slate-100 shadow-2xl">
+            <Image src={question.imageUrl} fill alt="Diagram" className="object-contain bg-white" unoptimized />
+          </div>
         </div>
       )}
 
@@ -111,7 +77,7 @@ export default function QuestionRenderer({ question, language, showSolution = fa
         </div>
         <div className="space-y-4">
            {showEn && questionEn && <p className="text-2xl font-black leading-snug text-[#0B1528] tracking-tight">{questionEn}</p>}
-           {showPa && questionPa && <p className={cn("text-2xl font-bold leading-snug text-slate-600 tracking-tight", language === 'bilingual' ? "italic opacity-70" : "")}>{questionPa}</p>}
+           {showPa && questionPa && <p className={cn("text-2xl font-bold leading-snug text-slate-600 tracking-tight", language === 'bilingual' ? "italic opacity-70 border-t border-slate-100 pt-3" : "")}>{questionPa}</p>}
         </div>
       </div>
 

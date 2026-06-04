@@ -17,11 +17,12 @@ import {
   LayoutDashboard, 
   Loader2, 
   TrendingUp, 
-  ArrowRight, 
   BrainCircuit, 
   ShieldCheck,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  History,
+  Timer
 } from "lucide-react"
 import { useFirestore, useUser, useCollection } from "@/firebase"
 import { collection, query, where, orderBy, limit, doc, getDoc } from "firebase/firestore"
@@ -29,6 +30,11 @@ import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
+
+/**
+ * @fileOverview Institutional Result Engine.
+ * Features Solution Hub with Bilingual Logic and Solution Explanations.
+ */
 
 export default function ResultPage() {
   const params = useParams()
@@ -39,34 +45,49 @@ export default function ResultPage() {
 
   const [expandedQs, setExpandedQs] = useState<Record<number, boolean>>({})
   const [questions, setQuestions] = useState<any[]>([])
+  const [loadingContent, setLoadingContent] = useState(true)
 
   const resultsQuery = useMemo(() => {
     if (!db || !user || !mockId) return null
+    // Simple query to avoid index requirement for first load
     return query(
       collection(db, "results"), 
       where("userId", "==", user.uid),
       where("mockId", "==", mockId),
-      orderBy("createdAt", "desc"),
       limit(1)
     )
   }, [db, user, mockId])
 
   const { data: resultDocs, loading: resultsLoading } = useCollection<any>(resultsQuery)
-  const sessionData = resultDocs?.[0]
+  
+  const sessionData = useMemo(() => {
+    if (!resultDocs) return null
+    return [...resultDocs].sort((a, b) => {
+      const tA = a.createdAt?.seconds || 0
+      const tB = b.createdAt?.seconds || 0
+      return tB - tA
+    })[0]
+  }, [resultDocs])
 
   useEffect(() => {
     async function loadQuestions() {
-      if (!db || !sessionData?.answers) return
-      // We need to fetch the mock first to get question IDs
-      const mockSnap = await getDoc(doc(db, "mocks", mockId))
-      if (mockSnap.exists()) {
-        const qIds = mockSnap.data().questionIds || []
-        const qSnaps = await Promise.all(qIds.map((id: string) => getDoc(doc(db, "questions", id))))
-        setQuestions(qSnaps.map(s => ({ ...s.data(), id: s.id })))
+      if (!db || !sessionData) return
+      setLoadingContent(true)
+      try {
+        const mockSnap = await getDoc(doc(db, "mocks", mockId))
+        if (mockSnap.exists()) {
+          const qIds = mockSnap.data().questionIds || []
+          const qSnaps = await Promise.all(qIds.map((id: string) => getDoc(doc(db, "questions", id))))
+          setQuestions(qSnaps.map(s => ({ ...s.data(), id: s.id })))
+        }
+      } catch (e) {
+        toast({ variant: "destructive", title: "Content Failure", description: "Could not load solution nodes." })
+      } finally {
+        setLoadingContent(false)
       }
     }
     loadQuestions()
-  }, [db, sessionData, mockId])
+  }, [db, sessionData, mockId, toast])
 
   const chartData = useMemo(() => {
     if (!sessionData?.subjectStats) return []
@@ -77,10 +98,10 @@ export default function ResultPage() {
     })).sort((a, b) => b.accuracy - a.accuracy)
   }, [sessionData])
 
-  if (resultsLoading) return (
+  if (resultsLoading || loadingContent) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-4">
        <Loader2 className="h-10 w-10 text-primary animate-spin" />
-       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Analyzing Audit Nodes...</p>
+       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Finalizing Audit Results...</p>
     </div>
   )
 
@@ -118,7 +139,9 @@ export default function ResultPage() {
                   </div>
 
                   <div className="space-y-12">
-                     <h4 className="font-headline font-black text-3xl uppercase tracking-tight border-b border-slate-100 pb-6">Performance Mastery Index</h4>
+                     <h4 className="font-headline font-black text-3xl uppercase tracking-tight border-b border-slate-100 pb-6 flex items-center gap-4">
+                        <TrendingUp className="h-8 w-8 text-primary" /> Section Mastery Index
+                     </h4>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {chartData.map((subj, i) => (
                            <div key={i} className="p-10 bg-slate-50 rounded-[3rem] border border-slate-100 space-y-6 shadow-inner">
@@ -129,7 +152,7 @@ export default function ResultPage() {
                               <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
                                  <div className={cn("h-full", subj.accuracy > 70 ? "bg-emerald-500" : "bg-rose-500")} style={{ width: `${subj.accuracy}%` }} />
                               </div>
-                              <p className="text-[10px] font-black uppercase text-slate-500">Node Score: {subj.score}</p>
+                              <p className="text-[10px] font-black uppercase text-slate-500">Audit Score: {subj.score}</p>
                            </div>
                         ))}
                      </div>
@@ -144,29 +167,48 @@ export default function ResultPage() {
                </h3>
                <div className="space-y-6">
                   {questions.map((q, idx) => {
-                     const isCorrect = sessionData.answers[idx] === ['A','B','C','D'].indexOf(q.correctAnswer);
-                     const isSkipped = sessionData.answers[idx] === undefined;
+                     const studentAnsIdx = sessionData.answers[idx];
+                     const correctAnsIdx = ['A','B','C','D'].indexOf(q.correctAnswer);
+                     const isCorrect = studentAnsIdx === correctAnsIdx;
+                     const isSkipped = studentAnsIdx === undefined;
                      const isExpanded = expandedQs[idx];
 
                      return (
                         <Card key={idx} className="border-none shadow-2xl rounded-[3rem] overflow-hidden bg-white group">
                            <div className={cn("h-1.5 w-full", isCorrect ? "bg-emerald-500" : isSkipped ? "bg-slate-200" : "bg-rose-500")} />
-                           <CardContent className="p-10 space-y-6">
+                           <CardContent className="p-10 space-y-8">
                               <div className="flex items-center justify-between">
                                  <div className="flex items-center gap-4">
                                     <Badge className={cn("border-none px-4 py-1 rounded-xl text-[9px] font-black uppercase", isCorrect ? "bg-emerald-50 text-emerald-600" : isSkipped ? "bg-slate-100 text-slate-400" : "bg-rose-50 text-rose-600")}>
-                                       {isCorrect ? 'Correct Node' : isSkipped ? 'Skipped Node' : 'Mismatched Node'}
+                                       {isCorrect ? 'Correct Audit' : isSkipped ? 'Skipped Node' : 'Mismatched Entry'}
                                     </Badge>
                                     <span className="text-[10px] font-black uppercase text-slate-400">Question {idx + 1}</span>
                                  </div>
-                                 <Button variant="ghost" onClick={() => setExpandedQs(p => ({ ...p, [idx]: !p[isExpanded] }))} className="rounded-xl h-10 w-10 p-0 hover:bg-slate-50">
+                                 <Button variant="ghost" onClick={() => setExpandedQs(p => ({ ...p, [idx]: !p[idx] }))} className="rounded-xl h-12 w-12 p-0 hover:bg-slate-50 border border-slate-100">
                                     {isExpanded ? <ChevronUp /> : <ChevronDown />}
                                  </Button>
                               </div>
 
                               <div className="text-left">
-                                 <QuestionRenderer question={q} language="bilingual" showSolution={true} />
+                                 <QuestionRenderer question={q} language="bilingual" showSolution={isExpanded} />
                               </div>
+
+                              {isExpanded && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-100">
+                                   <div className="space-y-3">
+                                      <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Your Choice</p>
+                                      <div className={cn("p-4 rounded-xl border-2 font-bold", isSkipped ? "border-slate-100 bg-slate-50 text-slate-400" : isCorrect ? "border-emerald-100 bg-emerald-50 text-emerald-700" : "border-rose-100 bg-rose-50 text-rose-700")}>
+                                         {isSkipped ? 'No Attempt Recorded' : `Option ${['A','B','C','D'][studentAnsIdx]}`}
+                                      </div>
+                                   </div>
+                                   <div className="space-y-3">
+                                      <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Correct Audit Key</p>
+                                      <div className="p-4 rounded-xl border-2 border-emerald-500 bg-emerald-600 text-white font-black">
+                                         Option {q.correctAnswer}
+                                      </div>
+                                   </div>
+                                </div>
+                              )}
                            </CardContent>
                         </Card>
                      )
@@ -182,17 +224,18 @@ export default function ResultPage() {
                    <Target className="h-16 w-16 text-primary mx-auto" />
                    <p className="text-[11px] font-black uppercase tracking-[0.4em] text-primary">Selection Probability</p>
                    <h3 className="text-8xl font-headline font-black text-white tracking-tighter leading-none">{Math.min(96, sessionData.accuracy + 8)}%</h3>
-                   <p className="text-slate-400 font-medium text-lg italic px-4">"Your logic in Reasoning vertical is 12% higher than state average."</p>
+                   <p className="text-slate-400 font-medium text-lg italic px-4 leading-relaxed">"Institutional benchmarks indicate your preparation is in the Top 15% of aspirants."</p>
                 </div>
              </Card>
 
              <Card className="border-none shadow-3xl rounded-[3.5rem] bg-white p-16 space-y-10 text-left relative overflow-hidden">
                 <div className="absolute bottom-0 right-0 p-8 opacity-5"><ShieldCheck className="h-32 w-32" /></div>
-                <h4 className="font-headline font-black text-2xl text-[#0F172A] uppercase tracking-tight flex items-center gap-4"><Zap className="h-8 w-8 text-primary" /> Summary Node</h4>
+                <h4 className="font-headline font-black text-2xl text-[#0F172A] uppercase tracking-tight flex items-center gap-4"><Zap className="h-8 w-8 text-primary" /> Audit Summary</h4>
                 <div className="space-y-6 pt-4 border-t border-slate-50">
-                   <SummaryRow label="State Avg Score" value="64.2%" />
-                   <SummaryRow label="Percentile Ranking" value={`${(100 - (sessionData.accuracy/10)).toFixed(1)}%`} />
-                   <SummaryRow label="Audit Status" value="QUALIFIED" color="text-emerald-600" />
+                   <SummaryRow label="Avg. State Score" value="64.2%" />
+                   <SummaryRow label="Time Spent" value={`${Math.floor(sessionData.timeTaken / 60)}m ${sessionData.timeTaken % 60}s`} icon={<Timer className="h-4 w-4" />} />
+                   <SummaryRow label="Attempt Registry" value={new Date(sessionData.timestamp).toLocaleDateString()} icon={<History className="h-4 w-4" />} />
+                   <SummaryRow label="Audit Status" value={sessionData.accuracy > 40 ? "QUALIFIED" : "INCOMPLETE"} color={sessionData.accuracy > 40 ? "text-emerald-600" : "text-rose-600"} />
                 </div>
              </Card>
           </div>
@@ -215,10 +258,13 @@ function ResultNode({ icon, label, value, color }: any) {
   )
 }
 
-function SummaryRow({ label, value, color }: any) {
+function SummaryRow({ label, value, color, icon }: any) {
    return (
       <div className="flex justify-between items-center py-4 border-b border-slate-50 last:border-0">
-         <span className="text-[11px] font-black uppercase text-slate-400 tracking-widest">{label}</span>
+         <div className="flex items-center gap-3">
+            {icon && <span className="text-slate-300">{icon}</span>}
+            <span className="text-[11px] font-black uppercase text-slate-400 tracking-widest">{label}</span>
+         </div>
          <span className={cn("text-lg font-black uppercase tracking-tight", color || "text-[#0F172A]")}>{value}</span>
       </div>
    )

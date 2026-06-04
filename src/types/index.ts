@@ -1,8 +1,7 @@
-export type Difficulty = 'Easy' | 'Medium' | 'Hard';
+export type Difficulty = 'Easy' | 'Medium' | 'Hard' | 'Mixed';
 export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'CONTENT_MANAGER' | 'STUDENT';
 export type MockType = 'FULL' | 'SUBJECT' | 'SECTIONAL' | 'CHAPTER' | 'PYQ' | 'CA_QUIZ';
 export type ContentStatus = 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED';
-export type ExamType = 'punjab' | 'central';
 export type SubscriptionTier = 'Free' | 'Silver' | 'Gold' | 'Premium';
 export type CAQuizType = 'DAILY' | 'WEEKLY' | 'MONTHLY';
 
@@ -24,46 +23,23 @@ export type DiagramType =
   | 'lineGraph' 
   | 'map';
 
-export interface Board {
-  id: string;
+export interface MockSection {
   name: string;
-  abbreviation: string;
-  description: string;
-  iconUrl?: string;
-}
-
-export interface Exam {
-  id: string;
-  boardId: string;
-  name: string;
-  category: string;
-  description: string;
-  totalMocks: number;
-  activeQuestions: number;
-  duration?: number;
-}
-
-export interface Subject {
-  id: string;
-  name: string;
-  description: string;
-}
-
-export interface Chapter {
-  id: string;
+  questionCount: number;
+  timeLimit?: number;
+  marksPerQuestion: number;
   subjectId: string;
-  name: string;
 }
 
 export interface Question {
-  id?: string;
-  board: string;
-  exam: string;
-  subject: string;
-  chapter: string;
-  language: string;
+  id: string;
+  boardId: string;
+  examId: string;
+  subjectId: string;
+  chapterId: string;
   difficulty: Difficulty;
   mockType?: MockType;
+  status: ContentStatus;
 
   questionEn: string;
   questionPa: string;
@@ -86,6 +62,7 @@ export interface Question {
   diagramType?: DiagramType;
   tableData?: any;
   chartConfig?: any;
+  isStandalone?: boolean;
 
   createdAt: any;
   updatedAt: any;
@@ -107,8 +84,7 @@ export interface MockTest {
   negativeMarking?: number;
   instructions?: string;
   language?: string;
-  randomizeQuestions?: boolean;
-  randomizeOptions?: boolean;
+  sections?: MockSection[];
   
   createdAt: any;
   updatedAt: any;
