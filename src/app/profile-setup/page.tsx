@@ -12,7 +12,8 @@ import { useAuth, useFirestore, useUser } from "@/firebase"
 import { doc, setDoc, serverTimestamp } from "firebase/firestore"
 import Logo from "@/components/brand/Logo"
 import { useToast } from "@/hooks/use-toast"
-import { Phone, User as UserIcon, GraduationCap } from "lucide-react"
+import { Phone, User as UserIcon, GraduationCap, Users } from "lucide-react"
+import { Gender } from "@/types"
 
 export default function ProfileSetup() {
   const router = useRouter()
@@ -24,6 +25,7 @@ export default function ProfileSetup() {
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
+    gender: "" as Gender | "",
     targetExam: "",
     state: "Punjab"
   })
@@ -37,11 +39,11 @@ export default function ProfileSetup() {
   }, [user])
 
   const handleSubmit = async () => {
-    if (!user || !formData.name || !formData.targetExam || !formData.phone) {
+    if (!user || !formData.name || !formData.targetExam || !formData.phone || !formData.gender) {
       toast({
         variant: "destructive",
         title: "Incomplete Profile",
-        description: "Please fill in all details to proceed."
+        description: "Please fill in all details, including identity, to proceed."
       })
       return
     }
@@ -54,10 +56,12 @@ export default function ProfileSetup() {
         name: formData.name,
         email: user.email,
         phone: `+91 ${formData.phone}`,
+        gender: formData.gender,
         targetExam: formData.targetExam,
         state: "Punjab",
         createdAt: serverTimestamp(),
-        status: 'Free' // Default status
+        status: 'Free',
+        role: 'STUDENT'
       }, { merge: true })
 
       toast({
@@ -78,14 +82,13 @@ export default function ProfileSetup() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Decorative background */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full" />
       
       <div className="mb-10 z-10">
         <Logo variant="dark" />
       </div>
 
-      <Card className="w-full max-w-lg border-none shadow-2xl rounded-[2rem] overflow-hidden z-10">
+      <Card className="w-full max-w-lg border-none shadow-2xl rounded-[2.5rem] overflow-hidden z-10">
         <div className="h-2 w-full bg-primary" />
         <CardHeader className="text-center pt-10 pb-6">
           <CardTitle className="font-headline font-black text-3xl text-[#0F172A]">Almost There!</CardTitle>
@@ -107,22 +110,38 @@ export default function ProfileSetup() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-xs font-black uppercase tracking-widest text-slate-400">Mobile Number</Label>
-            <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                <Phone className="h-4 w-4 text-slate-400" />
-                <span className="text-slate-500 text-sm font-bold border-r border-slate-200 pr-2">+91</span>
+          <div className="grid grid-cols-2 gap-4">
+             <div className="space-y-2">
+                <Label className="text-xs font-black uppercase tracking-widest text-slate-400">Mobile Number</Label>
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-slate-400" />
+                    <span className="text-slate-500 text-sm font-bold border-r border-slate-200 pr-2">+91</span>
+                  </div>
+                  <Input 
+                    type="tel"
+                    placeholder="98XXX XXXXX" 
+                    className="pl-24 h-12 rounded-xl border-slate-200 bg-slate-50/50"
+                    value={formData.phone}
+                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                    maxLength={10}
+                  />
+                </div>
               </div>
-              <Input 
-                type="tel"
-                placeholder="98XXX XXXXX" 
-                className="pl-24 h-12 rounded-xl border-slate-200 bg-slate-50/50"
-                value={formData.phone}
-                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                maxLength={10}
-              />
-            </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs font-black uppercase tracking-widest text-slate-400">Identity</Label>
+                <Select onValueChange={(val: Gender) => setFormData(prev => ({ ...prev, gender: val }))}>
+                  <SelectTrigger className="h-12 rounded-xl border-slate-200 bg-slate-50/50">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Male">Male Student</SelectItem>
+                    <SelectItem value="Female">Female Student</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -152,7 +171,7 @@ export default function ProfileSetup() {
           <Button 
             className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 rounded-xl mt-4"
             onClick={handleSubmit}
-            disabled={isSubmitting || !formData.name || !formData.targetExam || !formData.phone}
+            disabled={isSubmitting || !formData.name || !formData.targetExam || !formData.phone || !formData.gender}
           >
             {isSubmitting ? "Initialising Journey..." : "Start My Journey"}
           </Button>

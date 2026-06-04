@@ -8,42 +8,24 @@ import { useUser, useCollection, useFirestore } from "@/firebase"
 import { collection, query, where } from "firebase/firestore"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { 
   Trophy, 
   Target, 
   ClipboardList, 
   Zap, 
-  Clock, 
   ChevronRight, 
-  Star,
-  Bookmark,
-  TrendingUp,
-  BarChart3,
-  BrainCircuit,
-  ArrowUpRight,
-  ShieldCheck,
-  Sparkles,
-  PlayCircle,
-  Timer,
-  CheckCircle2,
-  Medal,
-  Award,
-  CreditCard,
-  History,
-  FileText
+  Bookmark, 
+  PlayCircle, 
+  Sparkles, 
+  History, 
+  FileText 
 } from "lucide-react"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-
-/**
- * @fileOverview Final Advanced Selection Dashboard (Phase 156).
- * Redesigned for high information density and "Testbook" mobile aesthetics.
- */
+import StudentAvatar from "@/components/brand/StudentAvatar"
 
 export default function StudentDashboard() {
   const { user, profile, loading } = useUser()
@@ -61,11 +43,10 @@ export default function StudentDashboard() {
 
   const sessionQuery = useMemo(() => {
     if (!db || !user) return null
-    // Removed orderBy to avoid index errors, handling sorting client-side
     return query(collection(db, "test_sessions"), where("userId", "==", user.uid), where("status", "==", "IN_PROGRESS"))
   }, [db, user])
 
-  const { data: allResults, loading: resultsLoading } = useCollection<any>(resultsQuery)
+  const { data: allResults } = useCollection<any>(resultsQuery)
   const { data: activeSessions } = useCollection<any>(sessionQuery)
   
   const results = useMemo(() => {
@@ -91,23 +72,17 @@ export default function StudentDashboard() {
       total: 0, 
       avgAccuracy: 0, 
       rank: "N/A", 
-      selectionProb: 45, 
-      weakSubject: "N/A",
-      readinessScore: 35,
-      streak: 4
+      selectionProb: 45 
     }
     
     const total = results.length
     const avgAcc = Math.round(results.reduce((acc: number, r: any) => acc + (r.accuracy || 0), 0) / total)
-    const readiness = Math.min(100, Math.round(avgAcc * 1.1))
 
     return { 
       total, 
       avgAccuracy: avgAcc, 
       rank: avgAcc > 85 ? "Top 2%" : avgAcc > 70 ? "Top 12%" : "Top 45%", 
-      selectionProb: Math.min(96, Math.max(30, avgAcc + 10)),
-      readinessScore: readiness,
-      streak: 4 
+      selectionProb: Math.min(96, Math.max(30, avgAcc + 10))
     }
   }, [results])
 
@@ -121,10 +96,7 @@ export default function StudentDashboard() {
         {/* Compact Profile Header */}
         <section className="flex items-center justify-between bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100">
           <div className="flex items-center gap-5">
-            <Avatar className="h-16 w-16 border-4 border-slate-50 rounded-2xl shadow-sm">
-              <AvatarImage src={user?.photoURL || ""} />
-              <AvatarFallback className="bg-primary text-white font-black text-xl">{profile?.name?.[0]}</AvatarFallback>
-            </Avatar>
+            <StudentAvatar profile={profile} className="h-16 w-16 border-4 border-slate-50 rounded-2xl shadow-sm" />
             <div className="text-left">
               <h2 className="text-xl font-headline font-black text-[#0F172A] leading-tight">{profile?.name}</h2>
               <div className="flex items-center gap-2 mt-1">
@@ -140,7 +112,7 @@ export default function StudentDashboard() {
           </Button>
         </section>
 
-        {/* Continue Mock Widget - High Priority */}
+        {/* Continue Mock Widget */}
         {lastSession && (
           <section>
             <div className="bg-[#0F172A] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden flex items-center justify-between group cursor-pointer" onClick={() => router.push(`/mocks/${lastSession.mockId}/attempt`)}>
@@ -172,33 +144,6 @@ export default function StudentDashboard() {
               <ActionNode icon={<History />} label="Results" href="/dashboard" color="bg-emerald-600" />
               <ActionNode icon={<FileText />} label="Notes" href="/notes" color="bg-orange-600" />
            </div>
-        </section>
-
-        {/* Performance Insights */}
-        <section>
-          <Card className="border-none bg-white rounded-[2rem] shadow-xl overflow-hidden text-left">
-             <CardContent className="p-8 space-y-6">
-                <div className="flex items-center justify-between">
-                   <div className="flex items-center gap-3">
-                      <BrainCircuit className="h-5 w-5 text-primary" />
-                      <h4 className="font-headline font-black text-sm uppercase tracking-tight">Readiness Audit</h4>
-                   </div>
-                   <Badge className="bg-emerald-50 text-emerald-600 border-none text-[9px] font-black uppercase">Active</Badge>
-                </div>
-                <div className="space-y-4">
-                   <div className="flex justify-between items-end">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Selection Probability</p>
-                      <p className="text-2xl font-headline font-black text-[#0F172A]">{analytics.selectionProb}%</p>
-                   </div>
-                   <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-primary shadow-xl shadow-primary/20 transition-all duration-1000" style={{ width: `${analytics.selectionProb}%` }} />
-                   </div>
-                   <p className="text-[10px] text-slate-500 font-medium leading-relaxed italic">
-                      "Your accuracy in Punjab GK is high, but Numerical Ability needs an additional audit cycle."
-                   </p>
-                </div>
-             </CardContent>
-          </Card>
         </section>
 
         <Footer />

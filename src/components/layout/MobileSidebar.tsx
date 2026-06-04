@@ -1,3 +1,4 @@
+
 'use client';
 
 import { 
@@ -14,22 +15,15 @@ import {
   Trophy,
   Zap,
   GraduationCap,
-  LayoutDashboard,
   BarChart3,
   X,
   Home
 } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@/firebase";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-/**
- * @fileOverview High-Fidelity Mobile Sidebar.
- * Refined Sequence: Profile -> Primary Preparation -> CTA -> Secondary Support -> Footer.
- * Fixed: Top overlap issue using safe-area-inset-top and added prominent Home button.
- */
+import StudentAvatar from "@/components/brand/StudentAvatar";
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const { user, profile } = useUser();
@@ -58,12 +52,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
       {/* Header Profile Section */}
       <div className="p-6 bg-gradient-to-br from-[#0B1528] to-[#0F172A] border-b border-white/5 relative">
         <div className="flex items-center gap-4">
-          <Avatar className="h-14 w-14 border-2 border-[#F97316] rounded-2xl shadow-xl">
-            <AvatarImage src={user?.photoURL || ""} />
-            <AvatarFallback className="bg-primary text-white font-black text-xl">
-              {profile?.name?.[0] || 'A'}
-            </AvatarFallback>
-          </Avatar>
+          <StudentAvatar profile={profile} className="h-14 w-14 border-2 border-[#F97316] rounded-2xl shadow-xl" />
           <div className="min-w-0 flex-1">
             <p className="font-headline font-black text-lg truncate uppercase">{profile?.name || "Aspirant"}</p>
             <div className="flex items-center gap-2">
@@ -119,7 +108,7 @@ function SidebarLink({ item, onClick }: { item: any, onClick: () => void }) {
   return (
     <Link 
       href={item.href} 
-      onClick={onClick}
+      onClick={onClose}
       className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-white/5 transition-all group border border-transparent hover:border-white/5 h-[64px]"
     >
       <div className="flex items-center gap-4">

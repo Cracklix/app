@@ -6,11 +6,10 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Search, MoreVertical, Mail, UserPlus, Filter, Phone, ShieldCheck, UserCog, Trash2 } from "lucide-react"
+import { Search, MoreVertical, UserPlus, Filter, Phone, ShieldCheck, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore, useUser } from "@/firebase"
-import { collection, query, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore"
+import { collection, query, doc, updateDoc } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   DropdownMenu,
@@ -21,12 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useToast } from "@/hooks/use-toast"
-
-/**
- * @fileOverview Institutional Aspirant Registry.
- * Management of student nodes and administrative permissions.
- * Fixed: High-contrast visibility for Name, Email, and Phone.
- */
+import StudentAvatar from "@/components/brand/StudentAvatar"
 
 export default function AspirantsManagement() {
   const db = useFirestore()
@@ -137,10 +131,7 @@ export default function AspirantsManagement() {
                 <TableRow key={aspirant.id} className="border-slate-50 hover:bg-slate-50 transition-colors group">
                   <TableCell className="px-10 py-8">
                     <div className="flex items-center gap-6">
-                      <Avatar className="h-14 w-14 border-2 border-primary/20 rounded-2xl shadow-sm">
-                        <AvatarImage src={`https://i.pravatar.cc/150?u=${aspirant.id}`} />
-                        <AvatarFallback className="font-black text-xs bg-primary/10 text-primary">{aspirant.name?.[0] || 'U'}</AvatarFallback>
-                      </Avatar>
+                      <StudentAvatar profile={aspirant} className="h-14 w-14 border-2 border-primary/20 rounded-2xl shadow-sm" />
                       <div className="space-y-1">
                         <p className="font-black text-[#0F172A] text-lg uppercase tracking-tight leading-none">{aspirant.name}</p>
                         <p className="text-xs font-bold text-slate-500 lowercase mt-1">{aspirant.email}</p>
@@ -177,7 +168,7 @@ export default function AspirantsManagement() {
                     <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100 transition-opacity">
                       <DropdownMenu>
                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl hover:bg-white shadow-sm border border-transparent hover:border-slate-100"><MoreVertical className="h-6 w-6" /></Button>
+                            <button className="h-12 w-12 rounded-2xl hover:bg-white shadow-sm border border-transparent hover:border-slate-100 flex items-center justify-center"><MoreVertical className="h-6 w-6" /></button>
                          </DropdownMenuTrigger>
                          <DropdownMenuContent align="end" className="w-64 bg-[#0F172A] border-white/10 text-white rounded-[2rem] p-3 shadow-4xl">
                             <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-slate-500 px-4 py-2">Institutional Audit</DropdownMenuLabel>

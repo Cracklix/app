@@ -2,7 +2,7 @@
 'use client';
 
 import Link from "next/link";
-import { Menu, Search, Zap, CreditCard, ChevronDown, LogOut, ShieldCheck, Megaphone, LayoutDashboard, LayoutGrid } from "lucide-react";
+import { Menu, Search, Zap, CreditCard, LogOut, ShieldCheck, Megaphone, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
 import { useState, useMemo } from "react";
@@ -17,18 +17,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import StudentAvatar from "@/components/brand/StudentAvatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { doc } from "firebase/firestore";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import MobileSidebar from "./MobileSidebar";
 import { cn } from "@/lib/utils";
-
-/**
- * @fileOverview High-Fidelity Institutional Navbar.
- * Optimized for mobile "Safe Area" and minimal vertical footprint.
- * Features: Professional Dropdown with synchronized icon/text colors.
- */
 
 export default function Navbar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -97,12 +91,7 @@ export default function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="h-9 w-9 p-0 rounded-full overflow-hidden border border-white/10 hover:bg-white/5 bg-[#0F172A] shadow-inner">
-                    <Avatar className="h-full w-full">
-                      <AvatarImage src={user.photoURL || ""} />
-                      <AvatarFallback className="bg-primary/20 text-primary font-black text-xs uppercase">
-                        {profile?.name?.[0] || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
+                    <StudentAvatar profile={profile} className="h-full w-full border-none" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-64 bg-[#0F172A] border-white/10 text-white rounded-[2rem] p-3 shadow-4xl animate-in fade-in zoom-in-95 duration-200" align="end">

@@ -1,8 +1,10 @@
+
 export type Difficulty = 'Easy' | 'Medium' | 'Hard' | 'Mixed';
 export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'CONTENT_MANAGER' | 'STUDENT';
 export type MockType = 'FULL' | 'SUBJECT' | 'SECTIONAL' | 'CHAPTER' | 'PYQ' | 'CA_QUIZ';
 export type ContentStatus = 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED';
 export type SubscriptionTier = 'Free' | 'Silver' | 'Gold' | 'Premium';
+export type Gender = 'Male' | 'Female' | 'Other';
 
 export type QuestionType = 
   | 'MCQ' 
@@ -155,6 +157,7 @@ export interface UserProfile {
   name: string;
   email: string;
   phone: string;
+  gender?: Gender;
   role: UserRole;
   state: 'Punjab';
   targetExam: string;

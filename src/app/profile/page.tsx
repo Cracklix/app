@@ -1,19 +1,16 @@
 
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useCollection, useFirestore } from "@/firebase"
 import { collection, query, where, doc, updateDoc } from "firebase/firestore"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
 import { 
-  User, 
   Mail, 
   Phone, 
   MapPin, 
@@ -23,9 +20,7 @@ import {
   Target, 
   ClipboardList, 
   ShieldCheck,
-  ChevronRight,
   Zap,
-  Clock,
   Sparkles,
   Bell,
   CreditCard
@@ -35,11 +30,7 @@ import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
-
-/**
- * @fileOverview Final Aspirant Profile Node (Phase 120).
- * Features: Membership Status and Pass Management.
- */
+import StudentAvatar from "@/components/brand/StudentAvatar"
 
 export default function ProfilePage() {
   const { user, profile, loading } = useUser()
@@ -114,12 +105,11 @@ export default function ProfilePage() {
 
           <div className="px-16 -mt-20 relative z-10 flex flex-col md:flex-row items-end gap-10">
             <div className="relative group">
-              <Avatar className="h-44 w-44 border-[10px] border-white shadow-3xl rounded-[3rem] transition-transform duration-500 group-hover:scale-105">
-                <AvatarImage src={user?.photoURL || `https://i.pravatar.cc/150?u=${user?.uid}`} />
-                <AvatarFallback className="bg-slate-100 text-slate-400 text-4xl font-black">
-                  {profile.name?.split(' ').map(n => n[0]).join('') || 'U'}
-                </AvatarFallback>
-              </Avatar>
+              <StudentAvatar 
+                profile={profile} 
+                className="h-44 w-44 border-[10px] border-white shadow-3xl rounded-[3rem] transition-transform duration-500 group-hover:scale-105" 
+                iconClassName="h-3/4 w-3/4"
+              />
               <div className="absolute bottom-4 right-4 h-10 w-10 bg-emerald-500 rounded-2xl border-4 border-white flex items-center justify-center shadow-2xl">
                 <div className="h-2.5 w-2.5 bg-white rounded-full animate-ping" />
               </div>
@@ -196,7 +186,7 @@ export default function ProfilePage() {
                       results.slice(0, 5).map((r: any) => (
                         <div key={r.id} className="p-10 flex items-center justify-between hover:bg-slate-50/50 transition-colors group cursor-pointer">
                            <div className="flex items-center gap-8">
-                              <div className="h-16 w-16 rounded-[1.5rem] bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                              <div className="h-16 w-16 rounded-1.5rem] bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                                  <Zap className="h-7 w-7 text-slate-300 group-hover:text-primary transition-colors" />
                               </div>
                               <div className="space-y-1">
