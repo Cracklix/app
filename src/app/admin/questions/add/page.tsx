@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
 import { ChevronLeft, Save, Languages, Layers, Database, Eye, BarChart3 } from "lucide-react"
 import { useFirestore, useDoc, useCollection, useUser } from "@/firebase"
 import { doc, setDoc, serverTimestamp, collection } from "firebase/firestore"
@@ -316,8 +317,9 @@ function QuestionEntryContent() {
              <div className="bg-[#0B1528] px-10 py-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                    <Eye className="h-4 w-4 text-primary" />
-                   <span className="text-[10px] font-black uppercase tracking-widest text-white">Student Preview Node</span>
+                   <span className="text-[10px] font-black uppercase tracking-widest text-white">Student View Node</span>
                 </div>
+                <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase tracking-widest px-3 py-1">Instant Audit</Badge>
              </div>
              <CardContent className="p-10 space-y-10 h-[70vh] overflow-y-auto custom-scrollbar">
                 <QuestionRenderer 
