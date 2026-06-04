@@ -15,7 +15,7 @@ import Image from "next/image"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 /**
- * @fileOverview Final Mock Hub (Modular Overhaul).
+ * @fileOverview Final Mock Hub (Modular Classification).
  * Categorized sections for Full, Subject, Sectional, Chapter, PYQ, and CA.
  */
 

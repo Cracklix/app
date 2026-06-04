@@ -119,6 +119,7 @@ export interface MockTest {
   chapterId?: string;
   year?: number;
   caCategory?: string;
+  caPeriod?: string;
   paperName?: string;
 
   createdAt: any;
