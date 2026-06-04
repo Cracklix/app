@@ -29,7 +29,8 @@ import {
   Languages,
   Calendar,
   Zap,
-  Globe
+  Globe,
+  Layout
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, where, writeBatch, increment, arrayUnion } from "firebase/firestore"
@@ -39,8 +40,8 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { MockType, MockSection, Difficulty } from "@/types"
 
 /**
- * @fileOverview Modular Mock Architect v2.0.
- * Dynamic Classification System + Usage Tracking.
+ * @fileOverview Modular Mock Architect v2.5.
+ * Fixed: Section Builder UI visibility and spacing for high-density mobile-ready layout.
  */
 
 export default function MockBuilderPage() {
@@ -129,7 +130,7 @@ function MockBuilderContent() {
   }
 
   const updateSection = (idx: number, field: keyof MockSection, val: any) => {
-     const newSecs = [...mockData.sections];
+     const newSecs = [...(mockData.sections || [])];
      newSecs[idx] = { ...newSecs[idx], [field]: val };
      setMockData({...mockData, sections: newSecs});
   }
@@ -219,12 +220,13 @@ function MockBuilderContent() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 px-6">
         <div className="lg:col-span-4 space-y-8">
+          {/* Classification Card */}
           <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden text-left">
             <div className="h-2 w-full bg-primary" />
             <CardHeader className="p-10 pb-4">
                <CardTitle className="text-xl font-headline font-black uppercase flex items-center gap-4"><Settings2 className="h-6 w-6 text-primary" /> Classification</CardTitle>
             </CardHeader>
-            <CardContent className="p-10 pt-4 space-y-10">
+            <CardContent className="p-10 pt-4 space-y-8">
               <div className="space-y-3">
                 <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Test Headline</Label>
                 <Input placeholder="e.g. PSSSB Excise Inspector Mock 01" value={mockData.title || ""} onChange={e => setMockData({...mockData, title: e.target.value})} className="rounded-xl h-14 bg-slate-50 border-none font-bold text-lg" />
@@ -275,76 +277,130 @@ function MockBuilderContent() {
                     </Select>
                  </div>
               </div>
-
-              {/* Dynamic Logic Hub */}
-              <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 space-y-6">
-                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2"><Zap className="h-3 w-3 fill-current" /> Category-Specific Logic</p>
-                 
-                 {mockData.mockType === 'PYQ' && (
-                    <div className="space-y-3">
-                       <Label className="text-[10px] font-black uppercase text-slate-400">Official Exam Year</Label>
-                       <Input type="number" value={mockData.year} onChange={e => setMockData({...mockData, year: parseInt(e.target.value)})} className="h-12 bg-white border-none rounded-xl font-black text-lg" />
-                    </div>
-                 )}
-
-                 {mockData.mockType === 'CA_QUIZ' && (
-                    <div className="grid grid-cols-1 gap-6">
-                       <div className="space-y-2">
-                          <Label className="text-[10px] font-black uppercase text-slate-400">CA Category</Label>
-                          <Select value={mockData.caCategory} onValueChange={v => setMockData({...mockData, caCategory: v})}>
-                             <SelectTrigger className="h-12 bg-white border-none rounded-xl font-bold"><SelectValue /></SelectTrigger>
-                             <SelectContent>
-                                <SelectItem value="Punjab">Punjab Current Affairs</SelectItem>
-                                <SelectItem value="National">National / India</SelectItem>
-                                <SelectItem value="International">International</SelectItem>
-                                <SelectItem value="Sports">Sports Analytics</SelectItem>
-                             </SelectContent>
-                          </Select>
-                       </div>
-                       <div className="space-y-2">
-                          <Label className="text-[10px] font-black uppercase text-slate-400">Quiz Period (Month/Year)</Label>
-                          <Input value={mockData.caPeriod} onChange={e => setMockData({...mockData, caPeriod: e.target.value})} placeholder="e.g. October 2026" className="h-12 bg-white border-none rounded-xl font-bold" />
-                       </div>
-                    </div>
-                 )}
-
-                 {(mockData.mockType === 'SUBJECT' || mockData.mockType === 'SECTIONAL' || mockData.mockType === 'CHAPTER') && (
-                    <div className="space-y-6">
-                       <div className="space-y-2">
-                          <Label className="text-[10px] font-black uppercase text-slate-400">Subject Mastery Hub</Label>
-                          <Select value={mockData.subjectId} onValueChange={v => setMockData({...mockData, subjectId: v})}>
-                             <SelectTrigger className="h-12 bg-white border-none rounded-xl font-bold"><SelectValue /></SelectTrigger>
-                             <SelectContent>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
-                          </Select>
-                       </div>
-                       {(mockData.mockType === 'SECTIONAL' || mockData.mockType === 'CHAPTER') && (
-                          <div className="space-y-2">
-                             <Label className="text-[10px] font-black uppercase text-slate-400">Topic / Chapter Tag</Label>
-                             <Input value={mockData.chapterId} onChange={e => setMockData({...mockData, chapterId: e.target.value})} placeholder="e.g. Percentage / Blood Relations" className="h-12 bg-white border-none rounded-xl font-bold" />
-                          </div>
-                       )}
-                    </div>
-                 )}
-
-                 <div className="grid grid-cols-2 gap-6 pt-4 border-t border-slate-200">
-                    <div className="space-y-2">
-                       <Label className="text-[10px] font-black uppercase text-slate-400">Language</Label>
-                       <Select value={mockData.language} onValueChange={v => setMockData({...mockData, language: v})}>
-                          <SelectTrigger className="h-10 bg-white border-none rounded-xl text-xs font-bold"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                             <SelectItem value="Bilingual">Bilingual (EN+PA)</SelectItem>
-                             <SelectItem value="English">English Only</SelectItem>
-                             <SelectItem value="Punjabi">Punjabi Only</SelectItem>
-                          </SelectContent>
-                       </Select>
-                    </div>
-                    <div className="space-y-2">
-                       <Label className="text-[10px] font-black uppercase text-slate-400">Duration (Mins)</Label>
-                       <Input type="number" value={mockData.duration} onChange={e => setMockData({...mockData, duration: parseInt(e.target.value) || 0})} className="h-10 bg-white border-none rounded-xl font-black text-center" />
-                    </div>
-                 </div>
-              </div>
             </CardContent>
+          </Card>
+
+          {/* Section Builder Card - Optimized for Visibility */}
+          {mockData.mockType === 'FULL' && (
+            <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden text-left">
+               <CardHeader className="p-10 pb-4 flex flex-row items-center justify-between">
+                  <CardTitle className="text-xl font-headline font-black uppercase flex items-center gap-4">
+                     <Layers className="h-6 w-6 text-primary" /> Section Builder
+                  </CardTitle>
+                  <Button size="sm" variant="outline" onClick={addSection} className="rounded-xl border-slate-200 font-black uppercase text-[9px] gap-2 h-9 px-4">
+                     <Plus className="h-3.5 w-3.5" /> Add Node
+                  </Button>
+               </CardHeader>
+               <CardContent className="p-10 pt-4 space-y-6 max-h-[600px] overflow-y-auto custom-scrollbar">
+                  {mockData.sections?.map((section: any, idx: number) => (
+                     <div key={section.id} className="p-6 bg-slate-50 rounded-[2.5rem] border border-slate-100 space-y-6 relative group hover:border-primary/20 transition-all">
+                        <Button 
+                           variant="ghost" 
+                           size="icon" 
+                           className="absolute top-4 right-4 h-8 w-8 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl" 
+                           onClick={() => removeSection(section.id)}
+                        >
+                           <Trash2 className="h-4 w-4" />
+                        </Button>
+                        
+                        <div className="space-y-4">
+                           <Input 
+                              value={section.name} 
+                              onChange={e => updateSection(idx, 'name', e.target.value)} 
+                              className="bg-transparent border-none p-0 h-auto font-black text-lg uppercase focus-visible:ring-0 placeholder:text-slate-300" 
+                              placeholder="Section Name (e.g. Quant)" 
+                           />
+                           
+                           <div className="space-y-2">
+                              <Label className="text-[8px] font-black uppercase text-slate-400 ml-1">Focus Subject Hub</Label>
+                              <Select value={section.subjectId} onValueChange={v => updateSection(idx, 'subjectId', v)}>
+                                 <SelectTrigger className="h-10 bg-white border-none rounded-xl text-xs font-bold shadow-sm"><SelectValue placeholder="Select Focus..." /></SelectTrigger>
+                                 <SelectContent>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+                              </Select>
+                           </div>
+
+                           <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                 <Label className="text-[8px] font-black uppercase text-slate-400 ml-1">QS Target</Label>
+                                 <Input 
+                                    type="number" 
+                                    value={section.questionCount} 
+                                    onChange={e => updateSection(idx, 'questionCount', parseInt(e.target.value) || 0)} 
+                                    className="h-10 bg-white border-none rounded-xl font-black text-center shadow-sm" 
+                                 />
+                              </div>
+                              <div className="space-y-2">
+                                 <Label className="text-[8px] font-black uppercase text-slate-400 ml-1">Duration (Mins)</Label>
+                                 <Input 
+                                    type="number" 
+                                    value={section.duration} 
+                                    onChange={e => updateSection(idx, 'duration', parseInt(e.target.value) || 0)} 
+                                    className="h-10 bg-white border-none rounded-xl font-black text-center shadow-sm" 
+                                 />
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  ))}
+                  {(!mockData.sections || mockData.sections.length === 0) && (
+                     <div className="py-20 text-center opacity-20 italic space-y-4">
+                        <Layout className="h-12 w-12 mx-auto" />
+                        <p className="font-headline font-black text-sm uppercase tracking-widest">Blueprint Matrix Empty.</p>
+                     </div>
+                  )}
+               </CardContent>
+            </Card>
+          )}
+
+          {/* Logic Summary Card */}
+          <Card className="border-none shadow-3xl rounded-[3rem] bg-[#0F172A] text-white p-10 space-y-8">
+             <p className="text-[9px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2"><Zap className="h-3 w-3 fill-current" /> Category-Specific Logic</p>
+             
+             {mockData.mockType === 'PYQ' && (
+                <div className="space-y-3">
+                   <Label className="text-[10px] font-black uppercase text-slate-400">Official Exam Year</Label>
+                   <Input type="number" value={mockData.year} onChange={e => setMockData({...mockData, year: parseInt(e.target.value)})} className="h-12 bg-white/5 border-none rounded-xl font-black text-lg" />
+                </div>
+             )}
+
+             {mockData.mockType === 'CA_QUIZ' && (
+                <div className="grid grid-cols-1 gap-6">
+                   <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase text-slate-400">CA Category</Label>
+                      <Select value={mockData.caCategory} onValueChange={v => setMockData({...mockData, caCategory: v})}>
+                         <SelectTrigger className="h-12 bg-white/5 border-none rounded-xl font-bold"><SelectValue /></SelectTrigger>
+                         <SelectContent>
+                            <SelectItem value="Punjab">Punjab Current Affairs</SelectItem>
+                            <SelectItem value="National">National / India</SelectItem>
+                            <SelectItem value="International">International</SelectItem>
+                            <SelectItem value="Sports">Sports Analytics</SelectItem>
+                         </SelectContent>
+                      </Select>
+                   </div>
+                   <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase text-slate-400">Quiz Period (Month/Year)</Label>
+                      <Input value={mockData.caPeriod} onChange={e => setMockData({...mockData, caPeriod: e.target.value})} placeholder="e.g. October 2026" className="h-12 bg-white/5 border-none rounded-xl font-bold" />
+                   </div>
+                </div>
+             )}
+
+             <div className="grid grid-cols-2 gap-6 pt-4 border-t border-white/5">
+                <div className="space-y-2">
+                   <Label className="text-[10px] font-black uppercase text-slate-400">Language</Label>
+                   <Select value={mockData.language} onValueChange={v => setMockData({...mockData, language: v})}>
+                      <SelectTrigger className="h-10 bg-white/5 border-none rounded-xl text-xs font-bold"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                         <SelectItem value="Bilingual">Bilingual (EN+PA)</SelectItem>
+                         <SelectItem value="English">English Only</SelectItem>
+                         <SelectItem value="Punjabi">Punjabi Only</SelectItem>
+                      </SelectContent>
+                   </Select>
+                </div>
+                <div className="space-y-2">
+                   <Label className="text-[10px] font-black uppercase text-slate-400">Duration (Mins)</Label>
+                   <Input type="number" value={mockData.duration} onChange={e => setMockData({...mockData, duration: parseInt(e.target.value) || 0})} className="h-10 bg-white/5 border-none rounded-xl font-black text-center" />
+                </div>
+             </div>
           </Card>
         </div>
 
