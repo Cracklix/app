@@ -3,7 +3,7 @@ export type Difficulty = 'Easy' | 'Medium' | 'Hard' | 'Mixed';
 export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'CONTENT_MANAGER' | 'STUDENT';
 export type MockType = 'FULL' | 'SUBJECT' | 'SECTIONAL' | 'CHAPTER' | 'PYQ' | 'CA_QUIZ';
 export type ContentStatus = 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED';
-export type SubscriptionTier = 'Free' | 'Silver' | 'Gold' | 'Premium';
+export type SubscriptionTier = 'Free' | 'Silver' | 'Gold' | 'Premium' | 'Platinum';
 export type Gender = 'Male' | 'Female' | 'Other';
 
 export type QuestionType = 
@@ -69,12 +69,8 @@ export interface Question {
   status: ContentStatus;
   questionType: QuestionType;
   diagramType: DiagramType;
-
-  // Context IDs for Linked Sets
   diSetId?: string;
   passageId?: string;
-
-  // Primary Content (English)
   questionEn: string;
   optionAEn: string;
   optionBEn: string;
@@ -85,8 +81,6 @@ export interface Question {
   passageEn?: string;
   titleEn?: string;
   descriptionEn?: string;
-  
-  // Primary Content (Punjabi)
   questionPa: string;
   optionAPa: string;
   optionBPa: string;
@@ -97,26 +91,18 @@ export interface Question {
   passagePa?: string;
   titlePa?: string;
   descriptionPa?: string;
-
   correctAnswer: 'A' | 'B' | 'C' | 'D';
-
-  // Visual/Complex Data
   imageUrl?: string;
   tableData?: {
     headers: string[];
     rows: any[][];
   }; 
   chartConfig?: any;
-
-  // Meta for CA/PYQ
   date?: string;
   category?: string;
   year?: number;
-
-  // Usage Tracking (Phase 165)
   usageCount: number;
   usedInMocks: string[];
-
   isStandalone?: boolean;
   createdAt: any;
   updatedAt: any;
@@ -129,6 +115,7 @@ export interface MockTest {
   boardId: string;
   examId: string;
   mockType: MockType;
+  requiredPass: SubscriptionTier;
   duration: number;
   totalQuestions: number;
   questionIds: string[];
@@ -140,14 +127,12 @@ export interface MockTest {
   instructions?: string;
   language?: string;
   sections?: MockSection[];
-  
   subjectId?: string;
   chapterId?: string;
   year?: number;
   caCategory?: string;
   caPeriod?: string;
   paperName?: string;
-
   createdAt: any;
   updatedAt: any;
 }
@@ -164,4 +149,5 @@ export interface UserProfile {
   createdAt: any;
   status: SubscriptionTier;
   subscriptions?: string[]; 
+  passExpiryDate?: string;
 }

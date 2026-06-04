@@ -10,16 +10,17 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ShieldCheck, Lock, CreditCard, ChevronRight, Zap, ArrowLeft, Loader2, Sparkles, AlertCircle, QrCode, Phone, CheckCircle2 } from "lucide-react"
-import { useUser } from "@/firebase"
-import { useEffect, useState, Suspense } from "react"
+import { useUser, useDoc, useFirestore } from "@/firebase"
+import { useEffect, useState, Suspense, useMemo } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { createRazorpayOrder, verifyRazorpayPayment, submitManualPayment } from "@/app/actions/payment"
 import Script from "next/script"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { doc } from "firebase/firestore"
 
 /**
  * @fileOverview Institutional Production Checkout Node.
- * Re-engineered to support Manual UPI/QR verification.
+ * Features Dynamic UPI Configuration from Firestore.
  */
 
 export default function CheckoutPage() {
@@ -35,9 +36,13 @@ function CheckoutContent() {
   const router = useRouter()
   const planId = searchParams.get("plan") || "gold"
   const { user, profile, loading } = useUser()
+  const db = useFirestore()
   const { toast } = useToast()
+  
   const [processing, setProcessing] = useState(false)
   const [utr, setUtr] = useState("")
+
+  const { data: settings } = useDoc<any>(useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]));
 
   useEffect(() => {
     if (!loading && !user) router.push("/login")
@@ -47,8 +52,11 @@ function CheckoutContent() {
     free: { id: 'free', name: "Aspirant Free", price: 0, tier: 'Free' },
     silver: { id: 'silver', name: "Silver Pass", price: 99, tier: 'Silver' },
     gold: { id: 'gold', name: "Gold Pass", price: 199, tier: 'Gold' },
-    premium: { id: 'premium', name: "Elite Pass", price: 499, tier: 'Premium' }
+    premium: { id: 'premium', name: "Elite Pass", price: 499, tier: 'Premium' },
+    platinum: { id: 'platinum', name: "Platinum Pass", price: 999, tier: 'Platinum' }
   }[planId] || { id: 'gold', name: "Gold Pass", price: 199, tier: 'Gold' }
+
+  const upiId = settings?.upiId || "arshdeepgrewal1122@okaxis";
 
   const handleRazorpay = async () => {
     if (!user) return
@@ -126,7 +134,7 @@ function CheckoutContent() {
            </Button>
            <div className="text-left">
               <h1 className="text-4xl font-headline font-black text-[#0F172A] uppercase">Payment Terminal</h1>
-              <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-1 text-left">Gateway & UPI Node</p>
+              <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-1 text-left">Manual & Automatic Nodes</p>
            </div>
         </div>
 
@@ -135,40 +143,36 @@ function CheckoutContent() {
               <Tabs defaultValue="upi" className="w-full">
                  <TabsList className="bg-white border border-slate-200 p-1.5 h-16 rounded-2xl w-full justify-start gap-4 mb-8 shadow-sm">
                     <TabsTrigger value="upi" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white"><QrCode className="h-4 w-4" /> Direct UPI / QR</TabsTrigger>
-                    <TabsTrigger value="card" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white"><CreditCard className="h-4 w-4" /> Cards & Netbanking</TabsTrigger>
+                    <TabsTrigger value="card" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white"><CreditCard className="h-4 w-4" /> Gateway</TabsTrigger>
                  </TabsList>
 
                  <TabsContent value="upi" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3rem] bg-white overflow-hidden">
                        <CardHeader className="p-10 bg-slate-50/50 border-b border-slate-50">
-                          <CardTitle className="font-headline font-black text-xl uppercase text-[#0F172A]">Manual UPI Verification</CardTitle>
-                          <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Scan QR and submit Transaction ID (UTR)</CardDescription>
+                          <CardTitle className="font-headline font-black text-xl uppercase text-[#0F172A]">Direct Audit Payment</CardTitle>
+                          <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Scan QR and submit Transaction UTR</CardDescription>
                        </CardHeader>
                        <CardContent className="p-10 space-y-10">
                           <div className="flex flex-col md:flex-row items-center gap-10">
                              <div className="h-48 w-48 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 flex items-center justify-center p-4 relative group">
-                                {/* Simulated QR Node - In production, replace with actual static QR URL */}
-                                <div className="absolute inset-0 bg-primary/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                   <Zap className="h-8 w-8 text-primary animate-pulse" />
-                                </div>
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=arshdeepgrewal1122@okaxis%26pn=Cracklix%26am=199%26cu=INR" alt="Admin QR" className="w-full h-full object-contain" />
+                                <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${upiId}%26pn=Cracklix%26am=${planData.price}%26cu=INR`} alt="Audit QR" className="w-full h-full object-contain" />
                              </div>
                              <div className="flex-1 space-y-4">
                                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
-                                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Admin UPI ID</p>
-                                   <p className="text-lg font-black text-[#0F172A]">arshdeepgrewal1122@okaxis</p>
+                                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Institutional UPI ID</p>
+                                   <p className="text-lg font-black text-[#0F172A] break-all">{upiId}</p>
                                 </div>
                                 <ul className="space-y-2">
-                                   <li className="flex items-center gap-3 text-[10px] font-bold text-slate-500 uppercase"><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Open any UPI App (GPay/Paytm)</li>
-                                   <li className="flex items-center gap-3 text-[10px] font-bold text-slate-500 uppercase"><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Pay ₹{planData.price} to the ID above</li>
-                                   <li className="flex items-center gap-3 text-[10px] font-bold text-slate-500 uppercase"><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Copy the 12-digit UTR/Ref ID</li>
+                                   <li className="flex items-center gap-3 text-[10px] font-bold text-slate-500 uppercase"><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Pay exactly ₹{planData.price}</li>
+                                   <li className="flex items-center gap-3 text-[10px] font-bold text-slate-500 uppercase"><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Copy 12-digit UTR from GPay/Paytm</li>
+                                   <li className="flex items-center gap-3 text-[10px] font-bold text-slate-500 uppercase"><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Upload screenshot or enter UTR below</li>
                                 </ul>
                              </div>
                           </div>
 
                           <div className="space-y-4 pt-6 border-t border-slate-50">
                              <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Transaction ID (UTR)</Label>
+                                <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">UTR / Transaction Number</Label>
                                 <Input 
                                   value={utr}
                                   onChange={e => setUtr(e.target.value)}
@@ -182,7 +186,7 @@ function CheckoutContent() {
                                 className="w-full h-16 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-xl shadow-primary/20 gap-3"
                              >
                                 {processing ? <Loader2 className="h-5 w-5 animate-spin" /> : <ShieldCheck className="h-5 w-5" />}
-                                Submit for Verification
+                                Submit Transaction for Audit
                              </Button>
                           </div>
                        </CardContent>
@@ -192,27 +196,14 @@ function CheckoutContent() {
                  <TabsContent value="card" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[3rem] bg-white overflow-hidden">
                        <CardHeader className="p-10 bg-slate-50/50 border-b border-slate-50">
-                          <CardTitle className="font-headline font-black text-xl uppercase text-[#0F172A]">Automated Gateway</CardTitle>
+                          <CardTitle className="font-headline font-black text-xl uppercase text-[#0F172A]">Automated Node</CardTitle>
                           <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Debit, Credit, Wallets & Instant UPI</CardDescription>
                        </CardHeader>
                        <CardContent className="p-10 space-y-8">
-                          <div className="p-8 rounded-[2rem] border-2 border-primary bg-primary/5 flex items-center justify-between group cursor-pointer shadow-xl" onClick={handleRazorpay}>
-                             <div className="flex items-center gap-6">
-                                <div className="h-14 w-14 rounded-2xl bg-white flex items-center justify-center shadow-sm">
-                                   <Zap className="h-7 w-7 text-primary fill-current" />
-                                </div>
-                                <div className="text-left">
-                                   <p className="font-black text-[#0F172A] uppercase tracking-tight text-left">Instant Activation</p>
-                                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-left">Verified Razorpay Node</p>
-                                </div>
-                             </div>
-                             <div className="h-6 w-6 rounded-full border-4 border-primary bg-white" />
-                          </div>
-
                           <Button 
                              onClick={handleRazorpay}
                              disabled={processing}
-                             className="w-full h-20 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.2em] text-xs rounded-2xl shadow-3xl shadow-slate-300 gap-4"
+                             className="w-full h-20 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.2em] text-xs rounded-2xl shadow-3xl gap-4"
                           >
                              {processing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Lock className="h-5 w-5" />}
                              Connect Secure Gateway
@@ -221,13 +212,6 @@ function CheckoutContent() {
                     </Card>
                  </TabsContent>
               </Tabs>
-
-              <div className="bg-emerald-50 border border-emerald-100 p-8 rounded-[2.5rem] flex items-center gap-6 shadow-sm">
-                 <ShieldCheck className="h-10 w-10 text-emerald-600 shrink-0" />
-                 <p className="text-sm font-bold text-emerald-800 leading-relaxed italic antialiased text-left">
-                   "Institutional Guarantee: All manual UPI verifications are processed within 120 minutes."
-                 </p>
-              </div>
            </div>
 
            <div className="lg:col-span-5 space-y-8">
@@ -235,7 +219,7 @@ function CheckoutContent() {
                  <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12"><Sparkles className="h-40 w-40" /></div>
                  <div className="relative z-10 space-y-10">
                     <div className="space-y-1 text-center">
-                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Order Node Summary</p>
+                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Order Registry</p>
                        <h3 className="text-4xl font-headline font-black uppercase">{planData.name}</h3>
                     </div>
                     
@@ -244,29 +228,19 @@ function CheckoutContent() {
                           <span>Institutional Fee</span>
                           <span className="text-white font-black">₹{planData.price}</span>
                        </div>
-                       <div className="flex justify-between items-center text-sm font-bold text-slate-400">
-                          <span>Audit Node Tax</span>
-                          <span className="text-emerald-500 font-black">₹0</span>
-                       </div>
                        <div className="flex justify-between items-center pt-6 border-t border-white/5">
-                          <span className="text-xl font-headline font-black uppercase">Grand Total</span>
+                          <span className="text-xl font-headline font-black uppercase">Total Due</span>
                           <span className="text-4xl font-black text-primary tracking-tighter">₹{planData.price}</span>
                        </div>
                     </div>
 
-                    <div className="p-6 bg-white/5 rounded-3xl border border-white/5 space-y-4">
-                       <p className="text-[10px] font-black uppercase text-slate-400 text-center">Plan Privileges</p>
-                       <ul className="space-y-3">
-                          <PlanFeature text="Official Pattern Mocks" />
-                          <PlanFeature text="AI Rationalization Tutor" />
-                          <PlanFeature text="All Punjab Ranking" />
-                          <PlanFeature text="30 Days Global Validity" />
+                    <div className="p-6 bg-white/5 rounded-3xl border border-white/5 space-y-3">
+                       <p className="text-[10px] font-black uppercase text-slate-400 text-center">Pass Features</p>
+                       <ul className="space-y-2">
+                          <li className="flex items-center gap-3 text-[11px] font-bold text-slate-300 uppercase"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> 2026 Exam Patterns</li>
+                          <li className="flex items-center gap-3 text-[11px] font-bold text-slate-300 uppercase"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> AI Rationale Hub</li>
                        </ul>
                     </div>
-
-                    <p className="text-[9px] text-center text-slate-600 font-black uppercase tracking-[0.2em]">
-                       Secured by Institutional Audit Node v1.0
-                    </p>
                  </div>
               </Card>
            </div>
@@ -274,14 +248,5 @@ function CheckoutContent() {
       </main>
       <Footer />
     </div>
-  )
-}
-
-function PlanFeature({ text }: { text: string }) {
-  return (
-    <li className="flex items-center gap-3 text-[11px] font-bold text-slate-300 uppercase">
-       <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-       {text}
-    </li>
   )
 }

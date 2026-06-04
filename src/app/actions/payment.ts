@@ -10,18 +10,21 @@ import {
   setDoc, 
   addDoc, 
   serverTimestamp,
-  updateDoc
+  updateDoc,
+  getDoc
 } from 'firebase/firestore';
 
 /**
- * @fileOverview Secure Payment Server Actions.
- * Handles Razorpay order creation and HMAC-SHA256 signature verification.
+ * @fileOverview Secure Pass Management & Payment Actions.
+ * Handles Manual UPI approval and role-based pass grants.
  */
 
 const PLANS = {
+  free: { amount: 0, name: 'Aspirant Free', tier: 'Free' },
   silver: { amount: 99, name: 'Silver Pass', tier: 'Silver' },
   gold: { amount: 199, name: 'Gold Pass', tier: 'Gold' },
   premium: { amount: 499, name: 'Elite Pass', tier: 'Premium' },
+  platinum: { amount: 999, name: 'Platinum Pass', tier: 'Platinum' },
 };
 
 function getRazorpayInstance() {
@@ -37,7 +40,7 @@ export async function createRazorpayOrder(planId: string) {
 
   const razorpay = getRazorpayInstance();
   const options = {
-    amount: plan.amount * 100, // Razorpay expects paise
+    amount: plan.amount * 100, 
     currency: 'INR',
     receipt: `receipt_${Date.now()}`,
   };
@@ -96,29 +99,31 @@ export async function approvePaymentRequest(requestId: string, adminId: string) 
 
   try {
     const reqRef = doc(db, 'payment_requests', requestId);
-    const snap = await (await import('firebase/firestore')).getDoc(reqRef);
+    const snap = await getDoc(reqRef);
     
     if (!snap.exists()) throw new Error('Request not found');
     const data = snap.data();
 
-    // 1. Update User Status
+    // 1. Calculate Expiry (30 Days)
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 30);
+
+    // 2. Update User Status & Registry
     const userRef = doc(db, 'users', data.userId);
     await updateDoc(userRef, { 
       status: PLANS[data.planId as keyof typeof PLANS].tier,
+      passExpiryDate: expiryDate.toISOString(),
       updatedAt: serverTimestamp()
     });
 
-    // 2. Mark Request as Approved
+    // 3. Mark Request as Approved
     await updateDoc(reqRef, {
       status: 'APPROVED',
       approvedBy: adminId,
       updatedAt: serverTimestamp()
     });
 
-    // 3. Create Subscription Record
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + 30);
-
+    // 4. Create Subscription Record
     await addDoc(collection(db, 'subscriptions'), {
       userId: data.userId,
       planId: data.planId,
@@ -134,6 +139,43 @@ export async function approvePaymentRequest(requestId: string, adminId: string) 
   } catch (e) {
     console.error('Approval Error:', e);
     throw new Error('Failed to approve payment.');
+  }
+}
+
+/**
+ * Grants a specific pass to a user manually (Admin Only)
+ */
+export async function grantUserPass(userId: string, planId: string, durationDays: number, adminId: string) {
+  const { firestore: db } = initializeFirebase();
+  const plan = PLANS[planId as keyof typeof PLANS];
+  if (!plan) throw new Error('Invalid Pass Plan');
+
+  try {
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + durationDays);
+
+    const userRef = doc(db, "users", userId);
+    await updateDoc(userRef, {
+      status: plan.tier,
+      passExpiryDate: expiryDate.toISOString(),
+      updatedAt: serverTimestamp()
+    });
+
+    await addDoc(collection(db, "subscriptions"), {
+      userId,
+      planId,
+      planName: plan.name,
+      status: 'active',
+      startDate: serverTimestamp(),
+      expiryDate: expiryDate.toISOString(),
+      grantedBy: adminId,
+      type: 'FREE_GRANT'
+    });
+
+    return { success: true };
+  } catch (e) {
+    console.error('Grant Pass Error:', e);
+    throw new Error('Could not grant pass to user.');
   }
 }
 
@@ -160,14 +202,15 @@ export async function verifyRazorpayPayment(data: {
   const { firestore: db } = initializeFirebase();
 
   try {
-    const userRef = doc(db, 'users', userId);
-    await setDoc(userRef, { 
-      status: plan.tier, 
-      updatedAt: serverTimestamp() 
-    }, { merge: true });
-
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 30);
+
+    const userRef = doc(db, 'users', userId);
+    await updateDoc(userRef, { 
+      status: plan.tier, 
+      passExpiryDate: expiryDate.toISOString(),
+      updatedAt: serverTimestamp() 
+    });
 
     await addDoc(collection(db, 'subscriptions'), {
       userId,

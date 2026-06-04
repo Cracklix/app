@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo } from "react"
@@ -30,8 +31,8 @@ import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Redesigned Mock Overview Page (Phase 160).
- * Updated: Administrative Quick-Edit Bridge (Phase 170).
+ * @fileOverview Mock Overview Node with Pass Gating.
+ * Optimized for SUPER_ADMIN bypass and tiered unlocking.
  */
 
 export default function MockOverviewPage() {
@@ -43,31 +44,28 @@ export default function MockOverviewPage() {
   
   const { data: mock, loading } = useDoc<any>(useMemo(() => (db ? doc(db, "mocks", mockId) : null), [db, mockId]))
 
-  const isAdmin = useMemo(() => {
+  const isAuthority = useMemo(() => {
     if (!profile) return false;
-    return profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN' || user?.email === 'arshdeepgrewal1122@gmail.com';
+    const isFounder = user?.email === 'arshdeepgrewal1122@gmail.com';
+    return profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN' || isFounder;
   }, [profile, user])
 
-  // Strict Membership Gating Logic
+  // Strict Institutional Gating
   const isLocked = useMemo(() => {
     if (!mock || !profile) return true;
-    
-    // Founder/Super Admin Bypass
-    if (isAdmin) return false;
+    if (isAuthority) return false;
 
-    // Plan-based Permission Check
     const tier = profile.status || 'Free';
-    const type = mock.mockType;
+    const req = mock.requiredPass || 'Free';
 
-    if (type === 'FULL') return tier !== 'Premium';
-    if (type === 'SECTIONAL') return !['Gold', 'Premium'].includes(tier);
-    if (type === 'SUBJECT' || type === 'PYQ' || type === 'CA_QUIZ') return !['Silver', 'Gold', 'Premium'].includes(tier);
-
-    // Free access for 3 daily mocks or specific non-premium nodes
-    if (!mock.isPremium) return false;
+    if (req === 'Free') return false;
+    if (req === 'Silver' && ['Silver', 'Gold', 'Premium', 'Platinum'].includes(tier)) return false;
+    if (req === 'Gold' && ['Gold', 'Premium', 'Platinum'].includes(tier)) return false;
+    if (req === 'Premium' && ['Premium', 'Platinum'].includes(tier)) return false;
+    if (req === 'Platinum' && tier === 'Platinum') return false;
 
     return true;
-  }, [mock, profile, isAdmin])
+  }, [mock, profile, isAuthority])
 
   if (loading) return <div className="h-screen flex items-center justify-center bg-white"><Skeleton className="h-20 w-20 rounded-full" /></div>
   if (!mock) return <div className="h-screen flex items-center justify-center text-slate-400 font-bold uppercase tracking-widest">Mock not found.</div>
@@ -76,18 +74,17 @@ export default function MockOverviewPage() {
     <div className="min-h-screen bg-white flex flex-col font-body">
       <Navbar />
       
-      {/* Admin Blueprint Bridge */}
-      {isAdmin && (
+      {isAuthority && (
          <div className="bg-[#0F172A] border-b border-white/5 py-3 px-6 flex items-center justify-between shadow-2xl relative z-50">
             <div className="flex items-center gap-4">
                <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary shadow-inner">
                   <ShieldAlert className="h-4 w-4" />
                </div>
-               <p className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Institutional Admin Node <span className="text-primary opacity-50 ml-2">Audit Active</span></p>
+               <p className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Authority Bypass Active <span className="text-primary opacity-50 ml-2">Content Auditing</span></p>
             </div>
             <Button asChild size="sm" className="bg-primary hover:bg-orange-600 text-white rounded-xl h-10 px-6 font-black uppercase text-[9px] tracking-widest gap-2 shadow-xl">
                <Link href={`/admin/mocks/builder?id=${mockId}`}>
-                  <Edit className="h-3.5 w-3.5" /> Edit This Blueprint
+                  <Edit className="h-3.5 w-3.5" /> Modify Blueprint
                </Link>
             </Button>
          </div>
@@ -97,7 +94,7 @@ export default function MockOverviewPage() {
         <section className="bg-slate-50 border-b border-slate-100 py-10 md:py-16">
           <div className="container mx-auto px-6 max-w-6xl">
             <Button variant="ghost" onClick={() => router.back()} className="rounded-xl text-slate-400 hover:text-[#0F172A] gap-2 mb-6 p-0 h-auto">
-              <ChevronLeft className="h-4 w-4" /> Back to List
+              <ChevronLeft className="h-4 w-4" /> Back to Registry
             </Button>
             
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
@@ -112,7 +109,7 @@ export default function MockOverviewPage() {
                     </div>
                     {isLocked && (
                       <Badge className="bg-amber-100 text-amber-600 border-none px-3 py-1 rounded-lg font-black uppercase text-[9px] tracking-widest flex items-center gap-1.5">
-                         <Lock className="h-3 w-3" /> Membership Required
+                         <Lock className="h-3 w-3" /> {mock.requiredPass} Pass Required
                       </Badge>
                     )}
                  </div>
@@ -121,16 +118,9 @@ export default function MockOverviewPage() {
                     <h1 className="text-3xl md:text-5xl font-headline font-black text-[#000000] uppercase leading-tight tracking-tight">
                       {mock.title}
                     </h1>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                      Institutional Audit Version 2.4 • Updated: {new Date().toLocaleDateString('en-GB')}
-                    </p>
                  </div>
 
                  <div className="flex flex-wrap items-center gap-6 pt-2">
-                    <div className="flex items-center gap-2 text-slate-500">
-                       <Users className="h-4 w-4 text-primary" />
-                       <span className="text-xs font-bold">1,250+ Attempts</span>
-                    </div>
                     <div className="flex items-center gap-2 text-slate-500">
                        <Clock className="h-4 w-4 text-primary" />
                        <span className="text-xs font-bold">{mock.duration || 120} Mins</span>
@@ -146,13 +136,13 @@ export default function MockOverviewPage() {
                  {isLocked ? (
                     <Button asChild className="w-full h-16 md:h-20 md:px-12 bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-2xl shadow-amber-900/20 gap-4">
                       <Link href="/pass">
-                        <Lock className="h-5 w-5" /> Get Pass to Unlock
+                        <Lock className="h-5 w-5" /> Get {mock.requiredPass} Pass
                       </Link>
                     </Button>
                  ) : (
                     <Button asChild className="w-full h-16 md:h-20 md:px-12 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-2xl shadow-slate-300 gap-4 group">
                       <Link href={`/mocks/${mockId}/attempt`}>
-                        Start Mock <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                        Start Practice <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                       </Link>
                     </Button>
                  )}
@@ -162,65 +152,17 @@ export default function MockOverviewPage() {
         </section>
 
         <div className="container mx-auto px-6 py-12 max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-             <div className="lg:col-span-8 space-y-12">
-                <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[2.5rem] bg-white overflow-hidden">
-                   <CardHeader className="p-10 border-b border-slate-50 text-left">
-                      <CardTitle className="font-headline text-2xl font-black text-[#000000] uppercase">Test Instructions</CardTitle>
-                      <CardDescription className="text-slate-400 font-bold uppercase tracking-widest text-[9px] mt-1">Please read carefully before starting the exam.</CardDescription>
-                   </CardHeader>
-                   <CardContent className="p-10 space-y-12">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                         <InstructionCard icon={<Clock className="text-primary" />} title="Duration" value={`${mock.duration || 120} Minutes`} desc="Fixed time limit as per official board rules." />
-                         <InstructionCard icon={<BookOpen className="text-blue-500" />} title="Questions" value={`${mock.totalQuestions || 150} MCQs`} desc="Includes mandatory Punjabi qualifying section." />
-                         <InstructionCard icon={<Award className="text-emerald-500" />} title="Marking" value="1.0 Mark Correct" desc="Standard marking for all technical & non-technical nodes." />
-                         <InstructionCard icon={<AlertTriangle className="text-rose-500" />} title="Negative" value="-0.25 Penalty" desc="Applied for every mismatched audit choice." />
-                      </div>
-
-                      <div className="bg-slate-50 rounded-3xl p-8 space-y-6">
-                         <h4 className="font-black text-[10px] uppercase tracking-[0.2em] text-[#0F172A] flex items-center gap-3">
-                            <Info className="h-4 w-4 text-primary" /> Exam Protocol
-                         </h4>
-                         <ul className="space-y-4">
-                            <GuidelineItem text="Paper A (Questions 1-50) is mandatory. You must score 50% to qualify for Paper B evaluation." />
-                            <GuidelineItem text="The clock will start the moment you click 'Start Mock'." />
-                            <GuidelineItem text="Use the 'Bilingual Toggle' to switch between English and Punjabi languages." />
-                            <GuidelineItem text="Do not refresh the page during the exam. All progress will be saved locally." />
-                         </ul>
-                      </div>
-                   </CardContent>
-                </Card>
-             </div>
-
-             <div className="lg:col-span-4 space-y-10">
-                <Card className="border-none shadow-3xl shadow-slate-900/10 rounded-[2.5rem] bg-[#0F172A] text-white p-10 overflow-hidden relative text-left">
-                   <div className="absolute top-0 right-0 p-6 opacity-5"><Layers className="h-32 w-32 rotate-12" /></div>
-                   <div className="relative z-10 space-y-6">
-                      <div className="space-y-1">
-                         <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary">Board Analysis</p>
-                         <h3 className="text-2xl font-headline font-black uppercase">Official Patterns</h3>
-                      </div>
-                      <div className="space-y-4 pt-4 border-t border-white/5">
-                        <WeightingItem label="Part A: Punjabi" value="50 Qs" />
-                        <WeightingItem label="Part B: Main Exam" value="100 Qs" />
-                      </div>
-                      <p className="text-slate-400 text-xs font-medium leading-relaxed italic">
-                         "This series is audited to mirror the exact difficulty levels of recent PSSSB and PPSC recruitments."
-                      </p>
-                   </div>
-                </Card>
-
-                <div className="bg-emerald-50 border border-emerald-100 p-8 rounded-[2.5rem] flex items-start gap-4 text-left">
-                   <ShieldCheck className="h-6 w-6 text-emerald-600 shrink-0" />
-                   <div className="space-y-1">
-                      <p className="text-xs font-black text-emerald-800 uppercase tracking-widest">Instant Results</p>
-                      <p className="text-xs text-emerald-700 font-medium leading-relaxed">
-                         Get your All Punjab Rank and subject-wise accuracy analysis immediately after submission.
-                      </p>
-                   </div>
-                </div>
-             </div>
-          </div>
+           <div className="bg-slate-50 rounded-3xl p-10 border border-slate-100 text-left space-y-8">
+              <h3 className="text-xl font-headline font-black uppercase text-[#0F172A] flex items-center gap-4">
+                 <Info className="h-6 w-6 text-primary" /> Institutional Guidelines
+              </h3>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <Guideline text="Ensure stable connectivity throughout the attempt node." />
+                 <Guideline text="Bilingual toggle available inside the CBT engine." />
+                 <Guideline text="Audit results generated instantly after submission." />
+                 <Guideline text={`Required Tier: ${mock.requiredPass || 'Free'} or above.`} />
+              </ul>
+           </div>
         </div>
       </main>
 
@@ -229,35 +171,11 @@ export default function MockOverviewPage() {
   )
 }
 
-function InstructionCard({ icon, title, value, desc }: any) {
-   return (
-      <div className="flex gap-5 group text-left">
-         <div className="h-14 w-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 group-hover:bg-primary/5 transition-all">
-            {icon}
-         </div>
-         <div className="space-y-1 text-left">
-            <p className="text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{title}</p>
-            <p className="text-lg font-black text-[#000000]">{value}</p>
-            <p className="text-[11px] text-slate-500 font-medium leading-tight">{desc}</p>
-         </div>
-      </div>
-   )
-}
-
-function GuidelineItem({ text }: { text: string }) {
+function Guideline({ text }: { text: string }) {
    return (
       <li className="flex gap-4 items-start text-left">
          <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
          <span className="text-sm font-bold text-slate-600 leading-snug">{text}</span>
       </li>
-   )
-}
-
-function WeightingItem({ label, value }: any) {
-   return (
-      <div className="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
-         <span className="text-[10px] font-black uppercase text-slate-400 tracking-tight">{label}</span>
-         <span className="text-xs font-black text-primary">{value}</span>
-      </div>
    )
 }

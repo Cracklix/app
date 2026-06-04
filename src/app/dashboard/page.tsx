@@ -5,7 +5,7 @@ import { useMemo, useState, useEffect } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useCollection, useFirestore } from "@/firebase"
-import { collection, query, where, orderBy, limit } from "firebase/firestore"
+import { collection, query, where, orderBy, limit, doc, updateDoc, serverTimestamp } from "firebase/firestore"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -28,7 +28,8 @@ import {
   ArrowUpRight,
   ShieldCheck,
   Activity,
-  LayoutGrid
+  LayoutGrid,
+  AlertTriangle
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -38,7 +39,7 @@ import { Progress } from "@/components/ui/progress"
 
 /**
  * @fileOverview Final Production-Grade Student Success Hub.
- * Re-engineered for Testbook/Oliveboard high-density information architecture.
+ * Optimized with Auto-Expiry Check and Tier-Based HUD.
  */
 
 export default function StudentDashboard() {
@@ -49,6 +50,20 @@ export default function StudentDashboard() {
   useEffect(() => {
     if (!loading && !user) router.push("/login")
   }, [user, loading, router])
+
+  // Automated Expiry Audit
+  useEffect(() => {
+    if (profile?.passExpiryDate && db && user) {
+       const expiry = new Date(profile.passExpiryDate);
+       const now = new Date();
+       if (now > expiry && profile.status !== 'Free') {
+          updateDoc(doc(db, "users", user.uid), {
+             status: 'Free',
+             updatedAt: serverTimestamp()
+          });
+       }
+    }
+  }, [profile, db, user]);
 
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
@@ -66,10 +81,8 @@ export default function StudentDashboard() {
       hours: "0h",
       stateRank: "N/A"
     }
-    
     const total = results.length
     const avgAcc = Math.round(results.reduce((acc: number, r: any) => acc + (r.accuracy || 0), 0) / total)
-    
     return { 
       total, 
       avgAccuracy: avgAcc, 
@@ -88,8 +101,20 @@ export default function StudentDashboard() {
       
       <main className="container mx-auto px-4 py-8 max-w-6xl space-y-10">
         
-        {/* Success Header Node */}
-        <section className="bg-[#0B1528] text-white p-8 md:p-12 rounded-[3.5rem] shadow-4xl relative overflow-hidden">
+        {/* Pass Expiry Alert */}
+        {profile?.status !== 'Free' && profile?.passExpiryDate && (
+           <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-center justify-between shadow-sm">
+              <div className="flex items-center gap-3">
+                 <AlertTriangle className="h-5 w-5 text-amber-600" />
+                 <p className="text-sm font-bold text-amber-800 uppercase tracking-tight">
+                    {profile.status} Pass active until {new Date(profile.passExpiryDate).toLocaleDateString()}
+                 </p>
+              </div>
+              <Button asChild variant="ghost" size="sm" className="text-amber-600 font-black uppercase text-[10px] tracking-widest"><Link href="/pass">Renew Node</Link></Button>
+           </div>
+        )}
+
+        <section className="bg-[#0B1528] text-white p-8 md:p-12 rounded-[3.5rem] shadow-4xl relative overflow-hidden text-left">
           <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[150%] bg-primary/20 blur-[120px] rounded-full" />
           <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
             <div className="relative group">
@@ -112,15 +137,9 @@ export default function StudentDashboard() {
                  </Badge>
               </div>
             </div>
-            <div className="hidden lg:block h-24 w-px bg-white/5" />
-            <div className="hidden lg:flex flex-col items-center gap-2">
-               <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Institutional Node</span>
-               <p className="text-xl font-headline font-black">ID: {profile?.id?.slice(-8).toUpperCase()}</p>
-            </div>
           </div>
         </section>
 
-        {/* High-Fidelity Quick Stats */}
         <section className="grid grid-cols-2 lg:grid-cols-6 gap-4 md:gap-6">
           <StatCard label="Streak" value={stats.streak} sub="Days" icon={<Flame className="text-orange-500" />} />
           <StatCard label="Accuracy" value={`${stats.avgAccuracy}%`} sub="Precision" icon={<Target className="text-primary" />} />
@@ -132,19 +151,14 @@ export default function StudentDashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <div className="lg:col-span-8 space-y-10">
-            
-            {/* Readiness Engine HUD */}
             <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden text-left">
                <CardHeader className="p-10 border-b border-slate-50 flex flex-row items-center justify-between">
                   <div className="space-y-1">
                     <CardTitle className="font-headline text-2xl font-black text-[#0F172A] uppercase">Exam Readiness Score</CardTitle>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Deep pattern-based audit from last 20 attempts</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Deep pattern-based audit from registry</p>
                   </div>
-                  <Button variant="ghost" asChild className="text-primary font-black uppercase text-[10px] tracking-widest gap-2">
-                    <Link href="/analytics">Deep Audit <ArrowUpRight className="h-4 w-4" /></Link>
-                  </Button>
                </CardHeader>
-               <CardContent className="p-10 space-y-10">
+               <CardContent className="p-10">
                   <div className="flex flex-col md:flex-row items-center gap-12">
                      <div className="relative h-48 w-44 flex items-center justify-center shrink-0">
                         <svg className="w-full h-full rotate-[-90deg]">
@@ -155,23 +169,20 @@ export default function StudentDashboard() {
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
                            <span className="text-5xl font-headline font-black text-[#0F172A]">{stats.readiness}%</span>
-                           <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Global Strength</span>
                         </div>
                      </div>
                      <div className="flex-1 w-full space-y-6">
                         <SubjectReadyNode label="Mental Ability" val={Math.min(100, stats.avgAccuracy + 10)} color="bg-blue-500" />
                         <SubjectReadyNode label="Quant Aptitude" val={Math.min(100, stats.avgAccuracy - 5)} color="bg-primary" />
                         <SubjectReadyNode label="Punjab GK" val={Math.min(100, stats.avgAccuracy + 15)} color="bg-emerald-500" />
-                        <SubjectReadyNode label="Language Hub" val={Math.min(100, stats.avgAccuracy + 2)} color="bg-amber-500" />
                      </div>
                   </div>
                </CardContent>
             </Card>
 
-            {/* Test History Audit */}
             <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden text-left">
                <CardHeader className="p-10 border-b border-slate-50">
-                  <CardTitle className="font-headline text-2xl font-black text-[#0F172A] uppercase">Historical Audit Trail</CardTitle>
+                  <CardTitle className="font-headline text-2xl font-black text-[#0F172A] uppercase">Test History</CardTitle>
                </CardHeader>
                <CardContent className="p-0">
                   <div className="divide-y divide-slate-50">
@@ -181,59 +192,31 @@ export default function StudentDashboard() {
                         results.slice(0, 5).map((r: any) => (
                            <div key={r.id} className="p-8 md:p-10 flex items-center justify-between hover:bg-slate-50 transition-all group cursor-pointer" onClick={() => router.push(`/results/${r.mockId}`)}>
                               <div className="flex items-center gap-6">
-                                 <div className="h-14 w-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-inner">
+                                 <div className="h-14 w-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0">
                                     <Zap className="h-6 w-6 text-primary" />
                                  </div>
                                  <div className="text-left space-y-1">
-                                    <p className="font-black text-[#0B1528] text-lg leading-tight uppercase line-clamp-1">{r.mockTitle}</p>
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Score: {r.score}/{r.totalQuestions} • {new Date(r.timestamp).toLocaleDateString()}</p>
+                                    <p className="font-black text-[#0B1528] text-lg uppercase line-clamp-1">{r.mockTitle}</p>
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase">Score: {r.score}/{r.totalQuestions} • {new Date(r.timestamp).toLocaleDateString()}</p>
                                  </div>
                               </div>
-                              <div className="text-right flex items-center gap-6">
-                                 <div className="hidden md:block">
-                                    <p className={cn("text-xl font-headline font-black", r.accuracy > 70 ? "text-emerald-600" : "text-rose-500")}>{r.accuracy}%</p>
-                                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest text-right">Accuracy</p>
-                                 </div>
-                                 <Button variant="ghost" size="icon" className="rounded-xl h-10 w-10 bg-slate-50 group-hover:bg-primary group-hover:text-white transition-colors"><ChevronRight className="h-4 w-4" /></Button>
-                              </div>
+                              <Button variant="ghost" size="icon" className="rounded-xl h-10 w-10 bg-slate-50 group-hover:bg-primary group-hover:text-white transition-colors"><ChevronRight className="h-4 w-4" /></Button>
                            </div>
                         ))
                      ) : (
                         <div className="p-24 text-center text-slate-300 italic flex flex-col items-center gap-4 opacity-30">
                            <History className="h-12 w-12" />
-                           <p className="font-black uppercase text-sm tracking-widest">No preparation nodes recorded.</p>
+                           <p className="font-black uppercase text-sm tracking-widest">No nodes recorded.</p>
                         </div>
                      )}
                   </div>
-                  <Button asChild variant="ghost" className="w-full h-16 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-primary rounded-none border-t border-slate-50">
-                     <Link href="/analytics">Access Deep Analytics Vault</Link>
-                  </Button>
                </CardContent>
             </Card>
           </div>
 
           <div className="lg:col-span-4 space-y-10 text-left">
-             <Card className="border-none bg-[#0F172A] text-white rounded-[3.5rem] p-12 overflow-hidden relative shadow-4xl group cursor-pointer">
-                <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:scale-110 transition-transform"><Sparkles className="h-40 w-40" /></div>
-                <div className="relative z-10 space-y-8">
-                   <div className="h-16 w-16 bg-primary/20 rounded-[2rem] flex items-center justify-center text-primary shadow-2xl">
-                      <Award className="h-8 w-8" />
-                   </div>
-                   <div className="space-y-2">
-                      <h4 className="text-3xl font-headline font-black uppercase leading-tight">Elite Mastery Achievements</h4>
-                      <p className="text-slate-400 text-sm font-medium">Unlock institutional badges through audit precision.</p>
-                   </div>
-                   <div className="grid grid-cols-4 gap-4">
-                      <AchievementNode active icon="🏅" title="First Audit" />
-                      <AchievementNode active icon="🔥" title="7 Day Consistency" />
-                      <AchievementNode icon="🎯" title="95% Precision" />
-                      <AchievementNode icon="📚" title="Century Club" />
-                   </div>
-                </div>
-             </Card>
-
              <Card className="border-none shadow-3xl rounded-[3.5rem] bg-white p-12 space-y-10 text-left">
-                <h3 className="font-headline font-black text-xs uppercase tracking-[0.3em] text-slate-400">Quick Access Hub</h3>
+                <h3 className="font-headline font-black text-xs uppercase tracking-[0.3em] text-slate-400">Quick Access</h3>
                 <div className="grid grid-cols-2 gap-6">
                    <ActionTile icon={<Bookmark className="text-primary" />} label="Revision Hub" href="/revision" />
                    <ActionTile icon={<TrendingUp className="text-blue-500" />} label="Leaderboard" href="/leaderboard" />
@@ -244,8 +227,8 @@ export default function StudentDashboard() {
 
              <Card className="border-primary/20 bg-primary/5 rounded-[3.5rem] p-12 space-y-6 border shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-6 opacity-[0.03] rotate-12"><ClipboardList className="h-40 w-40" /></div>
-                <h4 className="font-headline font-black text-2xl text-[#0F172A] uppercase leading-tight">Master Elite Mode</h4>
-                <p className="text-slate-600 text-sm font-medium leading-relaxed">Upgrade to unlock AI Rationalization and all 500+ Official Pattern Mocks.</p>
+                <h4 className="font-headline font-black text-2xl text-[#0F172A] uppercase leading-tight text-left">Elite Access Mode</h4>
+                <p className="text-slate-600 text-sm font-medium leading-relaxed text-left">Unlock AI Rationalization and 500+ Official Mocks.</p>
                 <Button asChild className="w-full h-16 bg-primary hover:bg-orange-600 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl">
                    <Link href="/pass">Activate Elite Pass</Link>
                 </Button>
@@ -253,7 +236,6 @@ export default function StudentDashboard() {
           </div>
         </div>
       </main>
-
       <Footer />
     </div>
   )
@@ -287,17 +269,6 @@ function SubjectReadyNode({ label, val, color }: any) {
          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
             <div className={cn("h-full transition-all duration-1000", color)} style={{ width: `${val}%` }} />
          </div>
-      </div>
-   )
-}
-
-function AchievementNode({ icon, active, title }: any) {
-   return (
-      <div className={cn(
-         "h-12 w-12 rounded-xl flex items-center justify-center text-xl transition-all shadow-lg",
-         active ? "bg-white/10 grayscale-0" : "bg-white/5 grayscale opacity-20"
-      )} title={title}>
-         {icon}
       </div>
    )
 }
