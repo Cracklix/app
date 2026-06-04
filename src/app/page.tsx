@@ -10,12 +10,11 @@ import Features from "@/components/home/Features";
 import AppPreview from "@/components/home/AppPreview";
 import Footer from "@/components/layout/Footer";
 import { useCollection, useFirestore, useUser } from "@/firebase";
-import { collection, query, orderBy, limit, where } from "firebase/firestore";
+import { collection, query, limit, where } from "firebase/firestore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
-  Trophy, 
   Zap, 
   ShieldCheck, 
   Sparkles, 
@@ -30,19 +29,29 @@ import {
   Bell
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 
 /**
  * @fileOverview Final Dynamic Homepage Module.
  * Optimized for mobile fold visibility: Hero -> Continue Mock -> Latest Mocks.
+ * Fixed: Removed orderBy to prevent index errors, handling sorting client-side.
  */
 
 export default function HomePage() {
   const db = useFirestore();
   const { user } = useUser();
   
-  const noticeQuery = useMemo(() => (db ? query(collection(db, "notifications"), orderBy("createdAt", "desc"), limit(5)) : null), [db]);
-  const { data: notices } = useCollection<any>(noticeQuery);
+  // Simple query to avoid index requirement
+  const noticeQuery = useMemo(() => (db ? query(collection(db, "notifications"), limit(10)) : null), [db]);
+  const { data: allNotices } = useCollection<any>(noticeQuery);
+
+  const notices = useMemo(() => {
+    if (!allNotices) return []
+    return [...allNotices].sort((a, b) => {
+      const timeA = a.createdAt?.seconds || 0
+      const timeB = b.createdAt?.seconds || 0
+      return timeB - timeA
+    }).slice(0, 5)
+  }, [allNotices])
 
   const sessionQuery = useMemo(() => {
     if (!db || !user) return null
@@ -130,7 +139,6 @@ export default function HomePage() {
                </div>
 
                <div className="lg:col-span-4 space-y-8 pt-16">
-                  {/* Daily mastery challenge and Official Gazette feed cards remain... */}
                   <Card className="rounded-[3rem] border-none bg-[#0F172A] text-white p-12 overflow-hidden relative shadow-4xl group">
                      <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-110 transition-transform"><Sparkles className="h-40 w-40" /></div>
                      <div className="relative z-10 space-y-8">

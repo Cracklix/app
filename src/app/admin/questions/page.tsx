@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Plus, Search, Edit, Trash2, FileText, Database, Layers, CheckCircle2, Clock, AlertCircle, Eye, EyeOff } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, orderBy, deleteDoc, doc, where } from "firebase/firestore"
+import { collection, query, deleteDoc, doc, where } from "firebase/firestore"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/hooks/use-toast"
@@ -19,6 +19,7 @@ import { Switch } from "@/components/ui/switch"
 /**
  * @fileOverview Enterprise Question Bank with Workflow Filtering.
  * Optimized to show only standalone questions (not hidden mock questions).
+ * Fixed: Removed orderBy to prevent index errors, handling sorting client-side.
  */
 
 export default function QuestionBank() {
@@ -30,32 +31,38 @@ export default function QuestionBank() {
   const [boardFilter, setBoardFilter] = useState("all")
   const [showAllAssets, setShowAllAssets] = useState(false)
 
-  // Filter for isStandalone != false to show only general bank questions
+  // Simple query to avoid index requirements
   const qQuery = useMemo(() => {
     if (!db) return null
     if (showAllAssets) {
-       return query(collection(db, "questions"), orderBy("createdAt", "desc"))
+       return query(collection(db, "questions"))
     }
     return query(
       collection(db, "questions"), 
-      where("isStandalone", "!=", false),
-      orderBy("isStandalone"), 
-      orderBy("createdAt", "desc")
+      where("isStandalone", "!=", false)
     )
   }, [db, showAllAssets])
 
-  const { data: questions, loading } = useCollection<any>(qQuery)
+  const { data: allQuestions, loading } = useCollection<any>(qQuery)
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
 
   const filteredQuestions = useMemo(() => {
-    if (!questions) return []
-    return questions.filter(q => {
-      const matchesSearch = (q.questionEn || "").toLowerCase().includes(searchTerm.toLowerCase()) || (q.id || "").toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesStatus = statusFilter === "all" || q.status === statusFilter
-      const matchesBoard = boardFilter === "all" || q.boardId === boardFilter
-      return matchesSearch && matchesStatus && matchesBoard
-    })
-  }, [questions, searchTerm, statusFilter, boardFilter])
+    if (!allQuestions) return []
+    
+    // Client-side sorting & filtering
+    return allQuestions
+      .filter(q => {
+        const matchesSearch = (q.questionEn || "").toLowerCase().includes(searchTerm.toLowerCase()) || (q.id || "").toLowerCase().includes(searchTerm.toLowerCase())
+        const matchesStatus = statusFilter === "all" || q.status === statusFilter
+        const matchesBoard = boardFilter === "all" || q.boardId === boardFilter
+        return matchesSearch && matchesStatus && matchesBoard
+      })
+      .sort((a, b) => {
+        const dateA = a.createdAt?.seconds || 0
+        const dateB = b.createdAt?.seconds || 0
+        return dateB - dateA
+      })
+  }, [allQuestions, searchTerm, statusFilter, boardFilter])
 
   const handleDelete = async (id: string) => {
     if (!confirm("Permanently delete this node from the global bank?")) return
@@ -72,7 +79,7 @@ export default function QuestionBank() {
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Scale Architecture Hub</span>
           </div>
           <h1 className="text-5xl font-black font-headline text-primary uppercase tracking-tight">Enterprise Bank</h1>
-          <p className="text-muted-foreground mt-2 text-lg">Managing {questions?.length || 0} Assets. {showAllAssets ? 'Direct Mock items are visible.' : 'Mock-specific items are hidden.'}</p>
+          <p className="text-muted-foreground mt-2 text-lg">Managing {allQuestions?.length || 0} Assets. {showAllAssets ? 'Direct Mock items are visible.' : 'Mock-specific items are hidden.'}</p>
         </div>
         <div className="flex flex-wrap gap-4 items-center">
            <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-inner mr-4">

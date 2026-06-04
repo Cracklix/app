@@ -5,7 +5,7 @@ import { useMemo, useState } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useCollection, useFirestore } from "@/firebase"
-import { collection, query, where, orderBy, doc, updateDoc } from "firebase/firestore"
+import { collection, query, where, doc, updateDoc } from "firebase/firestore"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -37,6 +37,7 @@ import { useToast } from "@/hooks/use-toast"
 /**
  * @fileOverview Final Aspirant Profile Node (Phase 120).
  * Features: Exam Alert Subscriptions and Membership Status.
+ * Fixed: Removed orderBy on results to avoid index errors.
  */
 
 export default function ProfilePage() {
@@ -55,12 +56,20 @@ export default function ProfilePage() {
     if (!db || !user) return null
     return query(
       collection(db, "results"), 
-      where("userId", "==", user.uid),
-      orderBy("createdAt", "desc")
+      where("userId", "==", user.uid)
     )
   }, [db, user])
 
-  const { data: results, loading: resultsLoading } = useCollection<any>(resultsQuery)
+  const { data: allResults, loading: resultsLoading } = useCollection<any>(resultsQuery)
+
+  const results = useMemo(() => {
+    if (!allResults) return []
+    return [...allResults].sort((a, b) => {
+      const timeA = a.createdAt?.seconds || 0
+      const timeB = b.createdAt?.seconds || 0
+      return timeB - timeA
+    })
+  }, [allResults])
 
   const stats = useMemo(() => {
     if (!results || results.length === 0) return { total: 0, avgAccuracy: 0, bestScore: 0, rank: "N/A" }
