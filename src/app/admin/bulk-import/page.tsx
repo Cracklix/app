@@ -19,7 +19,7 @@ import {
   Settings2, 
   Loader2, 
   Trash2, 
-  Edit,
+  Edit, 
   Rocket,
   Zap,
   Globe,
@@ -275,10 +275,10 @@ export default function BulkImportPage() {
                    <h4 className="font-headline font-black uppercase text-sm tracking-widest">Ingestion Protocol</h4>
                 </div>
                 <ul className="space-y-3 text-[11px] font-medium text-slate-400 leading-relaxed">
-                   <li>• Format 1: Q1. [Text] -> Options A-D -> Answer: [A-D]</li>
-                   <li>• Format 2: Question EN: -> Question PA: -> Answer: [A-D]</li>
-                   <li>• Image Question: Image: [URL] -> Question: [Text]</li>
-                   <li>• Current Affairs: Date: -> Category: -> Question:</li>
+                   <li>• Format 1: Q1. [Text] -&gt; Options A-D -&gt; Answer: [A-D]</li>
+                   <li>• Format 2: Question EN: -&gt; Question PA: -&gt; Answer: [A-D]</li>
+                   <li>• Image Question: Image: [URL] -&gt; Question: [Text]</li>
+                   <li>• Current Affairs: Date: -&gt; Category: -&gt; Question:</li>
                 </ul>
              </div>
           </Card>
