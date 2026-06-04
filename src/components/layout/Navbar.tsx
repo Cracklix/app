@@ -46,30 +46,30 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-[1000] w-full">
       {settings?.showAnnouncement && (
-        <div className="bg-[#F97316] text-white py-1.5 px-4 flex items-center justify-center gap-2 overflow-hidden relative">
-          <Megaphone className="h-2.5 w-2.5 shrink-0" />
-          <p className="text-[8px] font-black uppercase tracking-[0.2em] whitespace-nowrap">
+        <div className="bg-[#F97316] text-white py-1.5 px-4 flex items-center justify-center gap-2 overflow-hidden relative min-h-[24px]">
+          <Megaphone className="h-3 w-3 md:h-2.5 md:w-2.5 shrink-0" />
+          <p className="text-[9px] md:text-[8px] font-black uppercase tracking-[0.2em] whitespace-nowrap overflow-hidden text-ellipsis">
             {settings.announcement}
           </p>
         </div>
       )}
 
-      <nav className="w-full bg-[#0B1528] border-b border-white/5 py-2 md:py-3 shadow-xl backdrop-blur-md bg-opacity-95">
+      <nav className="w-full bg-[#0B1528] border-b border-white/5 py-2.5 md:py-3 shadow-xl backdrop-blur-md bg-opacity-95">
         <div className="container mx-auto max-w-[95%] lg:max-w-[90%] flex items-center justify-between px-2">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
             <div className="flex items-center gap-1 md:gap-4">
                <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
                  <SheetTrigger asChild>
-                   <button className="lg:hidden text-white p-1.5 hover:bg-white/5 rounded-lg transition-colors">
+                   <button className="lg:hidden text-white p-2 hover:bg-white/5 rounded-xl transition-all active:scale-90">
                      <Menu className="h-5 w-5" />
                    </button>
                  </SheetTrigger>
-                 <SheetContent side="left" className="p-0 border-none w-[260px]">
+                 <SheetContent side="left" className="p-0 border-none w-[280px]">
                    <SheetHeader className="sr-only"><SheetTitle>Menu</SheetTitle></SheetHeader>
                    <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
                  </SheetContent>
                </Sheet>
-               <Logo variant="light" className="scale-75 md:scale-90 origin-left" />
+               <Logo variant="light" className="scale-[0.8] md:scale-90 origin-left" />
             </div>
 
             <div className="hidden lg:flex items-center gap-8 text-[12px] font-bold uppercase tracking-widest text-[#7A8B9E]">
@@ -80,8 +80,8 @@ export default function Navbar() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Link href="/search" className="text-slate-400 hover:text-white p-1.5 transition-colors">
+          <div className="flex items-center gap-1.5 md:gap-2">
+            <Link href="/search" className="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-white/5 transition-all">
               <Search className="h-5 w-5" />
             </Link>
 
@@ -90,7 +90,7 @@ export default function Navbar() {
             ) : user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-9 w-9 p-0 rounded-full overflow-hidden border border-white/10 hover:bg-white/5 bg-[#0F172A] shadow-inner">
+                  <Button variant="ghost" className="h-9 w-9 p-0 rounded-full overflow-hidden border border-white/10 hover:bg-white/5 bg-[#0F172A] shadow-inner focus-visible:ring-0">
                     <StudentAvatar profile={profile} className="h-full w-full border-none" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -121,7 +121,7 @@ export default function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button asChild className="bg-[#F97316] hover:bg-orange-600 text-white font-black px-4 py-1.5 rounded-lg h-8 uppercase text-[9px] tracking-widest shadow-lg transition-all active:scale-95">
+              <Button asChild className="bg-[#F97316] hover:bg-orange-600 text-white font-black px-5 py-1.5 rounded-xl h-10 uppercase text-[10px] tracking-widest shadow-lg transition-all active:scale-95">
                 <Link href="/login">Login</Link>
               </Button>
             )}
