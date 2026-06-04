@@ -95,29 +95,37 @@ function QuestionEntryContent() {
     const finalId = questionId || `q-${Date.now()}`
     const questionRef = doc(db, "questions", finalId)
     
-    // Sanitization: Firestore does not accept 'undefined'. Convert to null or remove.
-    const payload = JSON.parse(JSON.stringify({ 
+    // Sanitization: Prepare payload without serverTimestamp first to avoid JSON issues
+    const basePayload: any = { 
       ...formData, 
       id: finalId,
       tableData,
       chartConfig,
-      updatedAt: serverTimestamp(),
-      createdAt: isEditing ? (existingData?.createdAt || serverTimestamp()) : serverTimestamp(),
       author: existingData?.author || profile?.name || "Team Node"
-    }));
+    };
     
     // Cleanup temporary UI fields
-    delete (payload as any).tableDataJson;
-    delete (payload as any).chartConfigJson;
+    delete basePayload.tableDataJson;
+    delete basePayload.chartConfigJson;
 
-    setDoc(questionRef, payload, { merge: true })
+    // Strict cleanup of undefined values
+    Object.keys(basePayload).forEach(key => basePayload[key] === undefined && delete basePayload[key]);
+
+    // Add Firestore FieldValues after cleanup
+    const finalPayload = {
+      ...basePayload,
+      updatedAt: serverTimestamp(),
+      createdAt: isEditing ? (existingData?.createdAt || serverTimestamp()) : serverTimestamp(),
+    };
+
+    setDoc(questionRef, finalPayload, { merge: true })
       .then(() => {
         toast({ title: "Node Synced", description: `MCQ status set to: ${formData.status}` })
         router.push("/admin/questions")
       })
       .catch(async (err) => {
         console.error("Firestore Save Error:", err)
-        errorEmitter.emit("permission-error", new FirestorePermissionError({ path: questionRef.path, operation: 'write', requestResourceData: payload }))
+        errorEmitter.emit("permission-error", new FirestorePermissionError({ path: questionRef.path, operation: 'write', requestResourceData: finalPayload }))
       })
       .finally(() => setIsSaving(false))
   }

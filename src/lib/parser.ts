@@ -4,6 +4,8 @@
  * 1. Simple Format (Q1. Text, A., B., C., D., Answer: B, Explanation: ...)
  * 2. Tagged Format (QUESTION_TYPE: MCQ, QUESTION_EN: ..., etc.)
  * 3. Bilingual Tagged Format
+ * 
+ * Logic: All optional fields return null instead of undefined to satisfy Firestore.
  */
 
 import { Question, Difficulty, ContentStatus, QuestionType, DiagramType } from "@/types";
@@ -105,14 +107,13 @@ function parseTaggedBlock(block: string, metadata: any): Partial<Question> {
     imageUrl: getTag("IMAGE_URL") || null,
     passageEn: getTag("PASSAGE_EN") || null,
     passagePa: getTag("PASSAGE_PA") || null,
+    tableData: null, // Initialized to null for Firestore
+    chartConfig: null
   };
 }
 
 function parseSimpleBlock(block: string, metadata: any): Partial<Question> {
-  // Regex to clean "Q1." or "1." from start
   const cleanBlock = block.replace(/^(?:Q?\d+[\.\)]\s*)/i, '').trim();
-  
-  // Extract sections using split-lookahead
   const parts = cleanBlock.split(/(?=\n[A-D][\.\)]\s*|Answer:\s*|Explanation:\s*)/i);
   
   const questionEn = parts[0]?.trim();
@@ -136,7 +137,7 @@ function parseSimpleBlock(block: string, metadata: any): Partial<Question> {
     questionType: 'MCQ',
     diagramType: 'none',
     questionEn,
-    questionPa: questionEn, // Fallback for bilingual
+    questionPa: questionEn,
     optionAEn: optA || "Option A",
     optionAPa: optA || "ਵਿਕਲਪ A",
     optionBEn: optB || "Option B",
@@ -150,6 +151,8 @@ function parseSimpleBlock(block: string, metadata: any): Partial<Question> {
     explanationPa: exp || "ਵਿਆਖਿਆ.",
     imageUrl: null,
     passageEn: null,
-    passagePa: null
+    passagePa: null,
+    tableData: null,
+    chartConfig: null
   };
 }

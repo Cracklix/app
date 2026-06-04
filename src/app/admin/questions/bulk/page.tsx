@@ -22,7 +22,7 @@ import { MockType } from "@/types"
 
 /**
  * @fileOverview Institutional Bulk Ingestion Hub.
- * Optimized to prevent 'undefined' field errors in WriteBatch.
+ * Optimized to prevent 'undefined' field errors in WriteBatch by using strict object cleanup.
  */
 
 export default function BulkImportPage() {
@@ -60,7 +60,6 @@ export default function BulkImportPage() {
       return
     }
     
-    // Updated parser call logic matching current engine capabilities
     const results = parseBulkQuestions(rawText, {
       ...metadata,
       status: metadata.status || "PUBLISHED",
@@ -87,14 +86,16 @@ export default function BulkImportPage() {
     parsedQuestions.forEach(q => {
       const newRef = doc(collection(db, "questions"))
       
-      // Sanitization: Firestore does not accept 'undefined'. Purge them.
-      const payload = JSON.parse(JSON.stringify({
+      const payload: any = {
         ...q,
         id: newRef.id,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         isStandalone: true
-      }));
+      };
+
+      // Strict cleanup of undefined values
+      Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
 
       batch.set(newRef, payload)
       ids.push(newRef.id)
@@ -118,7 +119,7 @@ export default function BulkImportPage() {
     const mockId = `mock-${Date.now()}`
     const mockRef = doc(db, "mocks", mockId)
     
-    const payload = JSON.parse(JSON.stringify({
+    const payload: any = {
       id: mockId,
       title: `${metadata.boardId} ${metadata.mockType} Series - ${new Date().toLocaleDateString()}`,
       boardId: metadata.boardId,
@@ -132,7 +133,10 @@ export default function BulkImportPage() {
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       isPremium: true
-    }));
+    };
+
+    // Cleanup undefined
+    Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
 
     try {
       await setDoc(mockRef, payload)
@@ -329,7 +333,7 @@ PUN_EXP: ਵਿਆਖਿਆ ਪੰਜਾਬੀ ਵਿੱਚ.`;
                   <p className="text-2xl font-headline font-black text-primary">{metadata.duration} Mins</p>
                </div>
                <div className="space-y-2">
-                  <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Type</span>
+                  <span className="text-[10px) font-black uppercase text-slate-500 tracking-widest">Type</span>
                   <p className="text-2xl font-headline font-black text-white">{metadata.mockType} Mock</p>
                </div>
             </div>

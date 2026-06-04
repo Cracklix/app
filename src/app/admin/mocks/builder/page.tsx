@@ -34,7 +34,7 @@ import { MockType, MockSection } from "@/types"
 
 /**
  * @fileOverview Modular Mock Architect.
- * Optimized to handle 'undefined' properties before Firestore setDoc.
+ * Optimized to handle 'undefined' properties before Firestore setDoc by using strict object cleanup.
  */
 
 export default function MockBuilderPage() {
@@ -138,19 +138,27 @@ function MockBuilderContent() {
     const finalId = mockId || `mock-${Date.now()}`
     const mockRef = doc(db, "mocks", finalId)
     
-    // Sanitization: Firestore does not accept 'undefined'. Purge them.
-    const payload = JSON.parse(JSON.stringify({
+    // Sanitization: Prepare base payload first
+    const basePayload: any = {
       ...mockData,
       id: finalId,
       totalQuestions: totalQuestions,
       duration: totalDuration,
       questionIds: selectedQuestions.map(q => q.id),
       published: true,
+    };
+
+    // Strict cleanup of undefined values
+    Object.keys(basePayload).forEach(key => basePayload[key] === undefined && delete basePayload[key]);
+
+    // Add Firestore FieldValues after cleanup
+    const finalPayload = {
+      ...basePayload,
       updatedAt: serverTimestamp(),
       createdAt: isEditing ? (existingMock?.createdAt || serverTimestamp()) : serverTimestamp(),
-    }));
+    };
 
-    setDoc(mockRef, payload, { merge: true })
+    setDoc(mockRef, finalPayload, { merge: true })
       .then(() => {
         toast({ title: isEditing ? "Blueprint Updated" : "Mock Test Deployed", description: "Series is now live in the student hub." })
         router.push("/admin/mocks")

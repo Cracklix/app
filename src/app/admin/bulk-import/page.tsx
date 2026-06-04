@@ -37,7 +37,7 @@ import { Difficulty, Question, ContentStatus } from "@/types"
 /**
  * @fileOverview Institutional Hybrid Bank Ingestion Node.
  * Supports Simple (Q1, A, B, C, D) and Tagged formats automatically.
- * Fixed: Sanitized payload to remove undefined fields before Firestore WriteBatch.
+ * Fixed: Robust payload sanitization to remove 'undefined' fields while preserving serverTimestamp.
  */
 
 export default function BulkImportPage() {
@@ -91,15 +91,18 @@ export default function BulkImportPage() {
     parsedQuestions.forEach(q => {
       const qRef = doc(collection(db, "questions"))
       
-      // Sanitization: Firestore does not accept 'undefined'. Convert to null or remove.
-      const payload = JSON.parse(JSON.stringify({
+      // Sanitization: Remove 'undefined' properties while preserving FieldValues
+      const payload: any = {
         ...q,
         id: qRef.id,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         isStandalone: true,
         status: metadata.status
-      }));
+      };
+
+      // Strict cleanup of undefined values which Firestore rejects
+      Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
 
       batch.set(qRef, payload)
     })
