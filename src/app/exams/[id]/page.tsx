@@ -12,12 +12,10 @@ import {
   BookOpen, 
   ShieldCheck, 
   ChevronRight,
-  TrendingUp,
-  History,
-  Lock,
-  Zap,
   Layers,
-  FileText
+  FileText,
+  Zap,
+  Target
 } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
@@ -65,10 +63,11 @@ export default function ExamHubPage() {
 
       <main className="container mx-auto px-6 -mt-10 max-w-7xl relative z-20 pb-32">
          <Tabs defaultValue="full" className="space-y-12">
-            <div className="bg-white p-2 rounded-[2rem] shadow-3xl border border-slate-100 flex items-center justify-between">
-               <TabsList className="bg-transparent border-none p-0 flex flex-wrap gap-2 h-auto">
+            <div className="bg-white p-2 rounded-[2rem] shadow-3xl border border-slate-100 flex items-center overflow-x-auto custom-scrollbar">
+               <TabsList className="bg-transparent border-none p-0 flex gap-2 h-auto">
                   <TabsTrigger value="full" className="rounded-xl px-8 h-12 font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-slate-900 data-[state=active]:text-white"><Zap className="h-4 w-4 mr-2" /> Full Mocks</TabsTrigger>
-                  <TabsTrigger value="subject" className="rounded-xl px-8 h-12 font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-slate-900 data-[state=active]:text-white"><Layers className="h-4 w-4 mr-2" /> Subject Tests</TabsTrigger>
+                  <TabsTrigger value="subject" className="rounded-xl px-8 h-12 font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-slate-900 data-[state=active]:text-white"><Layers className="h-4 w-4 mr-2" /> Subject Mastery</TabsTrigger>
+                  <TabsTrigger value="sectional" className="rounded-xl px-8 h-12 font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-slate-900 data-[state=active]:text-white"><Target className="h-4 w-4 mr-2" /> Sectional Puzzles</TabsTrigger>
                   <TabsTrigger value="pyqs" className="rounded-xl px-8 h-12 font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-slate-900 data-[state=active]:text-white"><FileText className="h-4 w-4 mr-2" /> PYQ Archives</TabsTrigger>
                </TabsList>
             </div>
@@ -85,6 +84,13 @@ export default function ExamHubPage() {
                   <MockCard key={mock.id} mock={mock} />
                ))}
                {mocks?.filter((m:any) => m.mockType === 'SUBJECT').length === 0 && <EmptyState label="No Subject Mastery Tests" />}
+            </TabsContent>
+
+            <TabsContent value="sectional" className="grid grid-cols-1 md:grid-cols-2 gap-8">
+               {mocks?.filter((m:any) => m.mockType === 'SECTIONAL').map((mock: any) => (
+                  <MockCard key={mock.id} mock={mock} />
+               ))}
+               {mocks?.filter((m:any) => m.mockType === 'SECTIONAL').length === 0 && <EmptyState label="No Sectional Puzzles Available" />}
             </TabsContent>
 
             <TabsContent value="pyqs" className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -114,6 +120,7 @@ function MockCard({ mock }: { mock: any }) {
                <div className="flex items-center gap-6 mt-2 text-[10px] font-black uppercase text-slate-400 tracking-widest">
                   <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> {mock.duration} Min</span>
                   <span className="flex items-center gap-2"><BookOpen className="h-4 w-4" /> {mock.totalQuestions} MCQs</span>
+                  {mock.mockType === 'PYQ' && <Badge className="bg-emerald-50 text-emerald-600 border-none rounded-lg text-[8px]">PYQ {mock.year}</Badge>}
                </div>
             </div>
          </div>
@@ -128,7 +135,7 @@ function MockCard({ mock }: { mock: any }) {
 function EmptyState({ label }: { label: string }) {
   return (
     <div className="col-span-full p-24 text-center text-slate-300 border-2 border-dashed rounded-[4rem] space-y-4 bg-white/50">
-       <Lock className="h-12 w-12 mx-auto opacity-10" />
+       <ShieldCheck className="h-12 w-12 mx-auto opacity-10" />
        <p className="font-black font-headline text-xl uppercase">{label}</p>
     </div>
   )

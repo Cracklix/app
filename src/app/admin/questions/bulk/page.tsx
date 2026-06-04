@@ -13,14 +13,14 @@ import { useFirestore, useCollection } from "@/firebase"
 import { collection, doc, writeBatch, serverTimestamp } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { parseBulkQuestions, ImportFormat } from "@/lib/parser"
-import { Zap, Database, ChevronLeft, Rocket, ShieldCheck, ClipboardList, Layers, Settings2, Globe, Languages, AlertTriangle, FileWarning, CheckCircle2, LayoutList, DatabaseBackup, Eye, FileCode } from "lucide-react"
+import { Zap, Database, ChevronLeft, Rocket, CheckCircle2, FileWarning, AlertTriangle, LayoutList, Settings2, Eye, DatabaseBackup } from "lucide-react"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Final Content Extraction Engine with OCR support.
- * Supports Columnar OCR and Structured JSON ingestion.
+ * @fileOverview Institutional Content Extraction Engine.
+ * Supports Tagged Bilingual (ENG_Q, PUN_Q) and OCR formats.
  */
 
 export default function BulkImportPage() {
@@ -33,7 +33,7 @@ export default function BulkImportPage() {
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
 
   const [rawText, setRawText] = useState("")
-  const [importFormat, setImportFormat] = useState<ImportFormat>("OCR_COLUMNAR")
+  const [importFormat, setImportFormat] = useState<ImportFormat>("BILINGUAL_MCQ")
   const [metadata, setMetadata] = useState({
     boardId: "",
     examId: "",
@@ -50,7 +50,7 @@ export default function BulkImportPage() {
   const handleParse = () => {
     if (!rawText.trim()) return
     if (!metadata.boardId || !metadata.subjectId) {
-      toast({ variant: "destructive", title: "Audit Blocked", description: "Select Board and Subject before parsing." })
+      toast({ variant: "destructive", title: "Audit Blocked", description: "Select Board and Subject first." })
       return
     }
     
@@ -77,16 +77,14 @@ export default function BulkImportPage() {
       batch.set(newRef, {
         ...q,
         id: newRef.id,
-        isStandalone: true, 
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-        author: "Lead Authority Ingestion"
       })
     })
 
     try {
       await batch.commit()
-      toast({ title: "Bank Updated", description: `${parsedQuestions.length} questions deployed to the global repository.` })
+      toast({ title: "Bank Updated", description: `${parsedQuestions.length} nodes deployed.` })
       router.push("/admin/questions")
     } catch (e) {
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'questions/bulk', operation: 'write' }));
@@ -94,6 +92,15 @@ export default function BulkImportPage() {
       setIsImporting(false)
     }
   }
+
+  const placeholderText = `[BLOCK_ID: Q71]
+ENG_Q: Enter English Question Here?
+PUN_Q: ਪੰਜਾਬੀ ਸਵਾਲ ਇੱਥੇ ਦਰਜ ਕਰੋ?
+ENG_OPT: A. Opt 1 | B. Opt 2 | C. Opt 3 | D. Opt 4
+PUN_OPT: A. ਵਿਕਲਪ 1 | B. ਵਿਕਲਪ 2 | C. ਵਿਕਲਪ 3 | D. ਵਿਕਲਪ 4
+ENG_ANS: B
+ENG_EXP: Detailed explanation here.
+PUN_EXP: ਵਿਸਤ੍ਰਿਤ ਵਿਆਖਿਆ ਇੱਥੇ.`;
 
   return (
     <div className="space-y-10 pb-20 max-w-7xl mx-auto text-[#0F172A]">
@@ -103,8 +110,8 @@ export default function BulkImportPage() {
             <ChevronLeft className="h-8 w-8 text-[#0F172A]" />
           </Button>
           <div className="text-left">
-            <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Institutional Ingestion</h1>
-            <p className="text-slate-500 font-medium">Bulk Ingest with Layout-Aware OCR and Structured JSON support.</p>
+            <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Bulk Ingestion</h1>
+            <p className="text-slate-500 font-medium">Tagged Bilingual (ENG_Q, PUN_Q) and OCR Support.</p>
           </div>
         </div>
         <div className="flex gap-4">
@@ -123,78 +130,51 @@ export default function BulkImportPage() {
             <div className="h-2 w-full bg-primary" />
             <CardHeader className="p-10 pb-4">
               <CardTitle className="font-headline font-black text-2xl uppercase flex items-center gap-4">
-                <Settings2 className="h-6 w-6 text-primary" /> Extraction Protocol
+                <Settings2 className="h-6 w-6 text-primary" /> Protocol
               </CardTitle>
             </CardHeader>
             <CardContent className="p-10 pt-4 space-y-8">
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-3">
-                  <p className="text-[10px] font-black uppercase text-slate-500 ml-1">Board Authority</p>
+                  <p className="text-[10px] font-black uppercase text-slate-500 ml-1">Board</p>
                   <Select value={metadata.boardId} onValueChange={val => setMetadata({...metadata, boardId: val})}>
                     <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm"><SelectValue placeholder="Select Board" /></SelectTrigger>
                     <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-3">
-                   <p className="text-[10px] font-black uppercase text-slate-500 ml-1">Target Exam Hub</p>
-                   <Select value={metadata.examId} onValueChange={val => setMetadata({...metadata, examId: val})}>
-                     <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm" disabled={!metadata.boardId}><SelectValue placeholder="Select Exam" /></SelectTrigger>
-                     <SelectContent>{exams?.filter((e: any) => e.boardId === metadata.boardId).map((e: any) => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent>
-                   </Select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <p className="text-[10px] font-black uppercase text-slate-500 ml-1">Core Subject</p>
-                  <Select value={metadata.subjectId} onValueChange={val => setMetadata({...metadata, subjectId: val})}>
-                    <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm"><SelectValue placeholder="Select Subject" /></SelectTrigger>
-                    <SelectContent>{subjects?.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-3">
-                  <p className="text-[10px] font-black uppercase text-slate-500 ml-1">Topic / Section</p>
-                  <Input placeholder="e.g. Percentage" value={metadata.topicId} onChange={e => setMetadata({...metadata, topicId: e.target.value})} className="h-14 rounded-xl bg-slate-50 border-none font-bold" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <p className="text-[10px] font-black uppercase text-primary ml-1 flex items-center gap-2"><LayoutList className="h-3 w-3" /> Parser Logic</p>
-                  <Select value={importFormat} onValueChange={(val: any) => setImportFormat(val)}>
-                    <SelectTrigger className="rounded-xl bg-primary/5 border-primary/20 h-14 font-black uppercase text-[10px] tracking-widest"><SelectValue placeholder="Select Format" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="OCR_COLUMNAR">OCR Columnar (Preserved TXT)</SelectItem>
-                      <SelectItem value="BILINGUAL_MCQ">Line-Based Bilingual (EN/PA)</SelectItem>
-                      <SelectItem value="STRUCTURED_JSON">Structured JSON (OCR API)</SelectItem>
-                      <SelectItem value="STANDARD_MCQ">Standard MCQ (English Only)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-3">
-                   <p className="text-[10px] font-black uppercase text-slate-500 ml-1">Workflow Status</p>
-                   <Select value={metadata.status} onValueChange={v => setMetadata({...metadata, status: v})}>
-                     <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm"><SelectValue /></SelectTrigger>
-                     <SelectContent>
-                       <SelectItem value="DRAFT">Internal Draft</SelectItem>
-                       <SelectItem value="REVIEW">Audit Queue</SelectItem>
-                       <SelectItem value="PUBLISHED">Go Live Node</SelectItem>
-                     </SelectContent>
+                   <p className="text-[10px] font-black uppercase text-slate-500 ml-1">Subject</p>
+                   <Select value={metadata.subjectId} onValueChange={val => setMetadata({...metadata, subjectId: val})}>
+                     <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm"><SelectValue placeholder="Select Subject" /></SelectTrigger>
+                     <SelectContent>{subjects?.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                    </Select>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Paste Institutional Content (Batch 10–500)</Label>
+                <p className="text-[10px] font-black uppercase text-primary ml-1 flex items-center gap-2"><LayoutList className="h-3 w-3" /> Parser Logic</p>
+                <Select value={importFormat} onValueChange={(val: any) => setImportFormat(val)}>
+                  <SelectTrigger className="rounded-xl bg-primary/5 border-primary/20 h-14 font-black uppercase text-[10px] tracking-widest"><SelectValue placeholder="Select Format" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="BILINGUAL_MCQ">Line-Based / Tagged (ENG_Q/PUN_Q)</SelectItem>
+                    <SelectItem value="OCR_COLUMNAR">OCR Columnar (Layout-Aware)</SelectItem>
+                    <SelectItem value="STANDARD_MCQ">Standard Text (Q1, 1.)</SelectItem>
+                    <SelectItem value="STRUCTURED_JSON">API JSON Format</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Paste Content (Tagged Format Recommended)</Label>
                 <Textarea 
-                  placeholder={importFormat === 'STRUCTURED_JSON' ? '{ "document": { ... } }' : `Paste ${importFormat} content here...`}
+                  placeholder={placeholderText}
                   className="min-h-[500px] rounded-[2.5rem] bg-slate-50 border-none p-10 text-sm font-mono leading-relaxed shadow-inner custom-scrollbar"
                   value={rawText}
                   onChange={e => setRawText(e.target.value)}
                 />
               </div>
               
-              <Button onClick={handleParse} className="w-full h-24 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.3em] gap-4 rounded-[2rem] shadow-4xl transition-all">
+              <Button onClick={handleParse} className="w-full h-24 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.3em] gap-4 rounded-[2rem] shadow-4xl">
                 <Zap className="h-6 w-6 text-primary fill-current" /> Run Ingestion Engine
               </Button>
             </CardContent>
@@ -207,8 +187,8 @@ export default function BulkImportPage() {
               <div className="flex items-center gap-6 text-rose-600">
                 <FileWarning className="h-16 w-16" />
                 <div>
-                   <h3 className="text-3xl font-headline font-black uppercase">Ingestion Failed</h3>
-                   <p className="text-sm font-bold uppercase tracking-widest opacity-70">{parseErrors.length} Schema Violations Detected</p>
+                   <h3 className="text-3xl font-headline font-black uppercase">Audit Failed</h3>
+                   <p className="text-sm font-bold uppercase tracking-widest opacity-70">{parseErrors.length} Errors Found</p>
                 </div>
               </div>
               <div className="space-y-4 max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
@@ -222,34 +202,28 @@ export default function BulkImportPage() {
             </Card>
           ) : parsedQuestions.length > 0 ? (
             <Card className="border-none bg-white shadow-4xl rounded-[4rem] h-full flex flex-col overflow-hidden">
-               <CardHeader className="p-16 bg-slate-50/50 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-8">
-                 <div>
-                    <CardTitle className="font-headline font-black text-3xl uppercase flex items-center gap-4 text-[#0F172A]">
-                      <CheckCircle2 className="h-8 w-8 text-emerald-600" /> Extraction Ready
-                    </CardTitle>
-                    <CardDescription className="text-xs font-black uppercase tracking-[0.3em] text-slate-400 mt-2">{parsedQuestions.length} Institutional Nodes Mapped Successfully.</CardDescription>
-                 </div>
+               <CardHeader className="p-16 bg-slate-50/50 border-b border-slate-50">
+                  <CardTitle className="font-headline font-black text-3xl uppercase flex items-center gap-4 text-[#0F172A]">
+                    <CheckCircle2 className="h-8 w-8 text-emerald-600" /> Extraction Ready
+                  </CardTitle>
                </CardHeader>
                <CardContent className="p-16 flex-1 overflow-y-auto custom-scrollbar space-y-16">
                   {parsedQuestions.map((q, idx) => (
                     <div key={idx} className="space-y-10 pb-16 border-b border-slate-100 last:border-0 last:pb-0">
-                       <div className="flex justify-between items-start">
-                          <div className="flex items-center gap-4">
-                             <Badge className="bg-primary/10 text-primary border-none text-[11px] font-black uppercase tracking-widest px-4 py-1 rounded-lg">Audit Node {idx + 1}</Badge>
-                             <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">• {metadata.subjectId}</span>
-                          </div>
-                          <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-lg">Correct Key: {q.correctAnswer}</span>
-                       </div>
+                       <Badge className="bg-primary/10 text-primary border-none text-[11px] font-black uppercase tracking-widest px-4 py-1 rounded-lg">Audit Node {idx + 1}</Badge>
                        <QuestionRenderer language="bilingual" question={q} />
+                       <div className="p-6 bg-emerald-50 rounded-2xl border border-emerald-100">
+                          <p className="text-[10px] font-black uppercase text-emerald-600 tracking-widest">Logic Output</p>
+                          <p className="font-bold text-emerald-900 mt-1">Answer: {q.correctAnswer}</p>
+                       </div>
                     </div>
                   ))}
                </CardContent>
             </Card>
           ) : (
             <div className="h-full flex flex-col items-center justify-center text-slate-300 opacity-20 py-60">
-              <ClipboardList className="h-32 w-32 mb-8" />
+              <Database className="h-32 w-32 mb-8" />
               <p className="font-headline font-black uppercase tracking-[0.4em] text-xl">Awaiting Ingestion Input</p>
-              <p className="text-sm font-bold uppercase tracking-widest mt-4">Paste OCR or Structured content to begin audit.</p>
             </div>
           )}
         </div>
