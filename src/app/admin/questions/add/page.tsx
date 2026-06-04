@@ -21,6 +21,7 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 /**
  * @fileOverview Enterprise Question Editor Node.
  * Optimized for payload sanitization to prevent 'undefined' field errors.
+ * Fixed: TabsList scrolling to prevent "Classification" being cut off.
  */
 
 export default function QuestionEntryPage() {
@@ -152,13 +153,13 @@ function QuestionEntryContent() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 text-[#0F172A]">
-        <div className="lg:col-span-7 space-y-8 text-left">
+        <div className="lg:col-span-7 space-y-8 text-left overflow-hidden">
           <Tabs defaultValue="content" className="w-full">
-            <TabsList className="bg-slate-100 rounded-2xl p-1.5 h-16 mb-6 overflow-x-auto overflow-y-hidden custom-scrollbar max-w-full">
-              <TabsTrigger value="content" className="rounded-xl px-8 font-black uppercase text-[10px] h-full"><Database className="h-4 w-4 mr-2" /> Basic Content</TabsTrigger>
-              <TabsTrigger value="complex" className="rounded-xl px-8 font-black uppercase text-[10px] h-full"><BarChart3 className="h-4 w-4 mr-2" /> Diagram/Data</TabsTrigger>
-              <TabsTrigger value="punjabi" className="rounded-xl px-8 font-black uppercase text-[10px] h-full"><Languages className="h-4 w-4 mr-2" /> ਪੰਜਾਬੀ</TabsTrigger>
-              <TabsTrigger value="metadata" className="rounded-xl px-8 font-black uppercase text-[10px] h-full"><Layers className="h-4 w-4 mr-2" /> Classification</TabsTrigger>
+            <TabsList className="bg-slate-100 rounded-2xl p-1.5 h-16 mb-6 flex flex-nowrap overflow-x-auto overflow-y-hidden custom-scrollbar max-w-full justify-start items-center">
+              <TabsTrigger value="content" className="rounded-xl px-8 font-black uppercase text-[10px] h-full shrink-0"><Database className="h-4 w-4 mr-2" /> Basic Content</TabsTrigger>
+              <TabsTrigger value="complex" className="rounded-xl px-8 font-black uppercase text-[10px] h-full shrink-0"><BarChart3 className="h-4 w-4 mr-2" /> Diagram/Data</TabsTrigger>
+              <TabsTrigger value="punjabi" className="rounded-xl px-8 font-black uppercase text-[10px] h-full shrink-0"><Languages className="h-4 w-4 mr-2" /> ਪੰਜਾਬੀ</TabsTrigger>
+              <TabsTrigger value="metadata" className="rounded-xl px-8 font-black uppercase text-[10px] h-full shrink-0"><Layers className="h-4 w-4 mr-2" /> Classification</TabsTrigger>
             </TabsList>
 
             <TabsContent value="content" className="space-y-6">

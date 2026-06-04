@@ -1,12 +1,10 @@
-
 'use client';
 
 import React from 'react';
 import { Question } from '@/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { CheckCircle2, LayoutGrid } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -29,18 +27,14 @@ interface QuestionRendererProps {
  * @fileOverview Refined Question Renderer.
  * Optimized for Testbook-style high-density layout.
  * Color: Absolute Black (#000000).
- * Logic: Single language focus to prevent mobile scrolling.
+ * Logic: Standard img tag used for diagrams to support external user links without domain lock.
  */
 
 export default function QuestionRenderer({ question, language, showSolution = false }: QuestionRendererProps) {
-  // Logic: Show English only if 'en' is selected. 
-  // Otherwise show Punjabi if 'pa' or 'bilingual' is selected (respecting state-exam primary focus).
   const showEn = language === 'en';
   const showPa = language === 'pa' || language === 'bilingual';
   
-  const questionType = question.questionType || 'MCQ';
   const diagramType = question.diagramType || 'none';
-
   const hasContext = !!(question.instructionEn || question.instructionPa || question.passageEn || question.passagePa);
 
   return (
@@ -68,13 +62,14 @@ export default function QuestionRenderer({ question, language, showSolution = fa
       {(question.imageUrl || question.tableData || question.chartConfig) && (
         <div className="mb-4">
            {question.imageUrl && (
-             <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-slate-100 bg-white">
-               <Image 
+             <div className="relative w-full rounded-lg overflow-hidden border border-slate-100 bg-white min-h-[200px] flex items-center justify-center">
+               <img 
                  src={question.imageUrl} 
-                 fill 
                  alt="Diagram" 
-                 className="object-contain p-2" 
-                 unoptimized 
+                 className="max-w-full max-h-[500px] object-contain p-2" 
+                 onError={(e) => {
+                   (e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=Invalid+Image+URL';
+                 }}
                />
              </div>
            )}
