@@ -12,23 +12,23 @@ import { useMemo } from 'react';
 
 /**
  * @fileOverview Final Dynamic Hero Module.
- * Phase 130: Strengthened Punjab Authority Positioning.
+ * Optimized for mobile "fold" visibility by reducing vertical padding and asset size.
  */
 
 export default function Hero() {
   const db = useFirestore();
   const settingsRef = useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]);
-  const { data: settings } = useDoc(settingsRef);
+  const { data: settings } = useDoc<any>(settingsRef);
 
   const content = {
     line1: settings?.heroLine1 || "Punjab's No. 1",
     line2: settings?.heroLine2 || "Dedicated Authority.",
-    description: settings?.heroDescription || "The only high-fidelity platform specialized exclusively for Punjab Government Exam preparation. Join 15,000+ aspirants today.",
+    description: settings?.heroDescription || "Specialize exclusively for Punjab Govt preparation. Join 15,000+ aspirants.",
     imageUrl: settings?.heroImageUrl || "https://picsum.photos/seed/amritsar/1200/800"
   };
 
   return (
-    <section className="relative pt-24 pb-32 bg-[#08152D] overflow-hidden border-b border-white/5">
+    <section className="relative pt-12 pb-16 lg:pt-24 lg:pb-32 bg-[#08152D] overflow-hidden border-b border-white/5">
       {/* Punjab Map Watermark */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center">
         <svg viewBox="0 0 100 100" className="w-[80%] h-[80%] fill-white rotate-12">
@@ -37,48 +37,37 @@ export default function Hero() {
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-20 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
           
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="space-y-10"
+            className="space-y-6 lg:space-y-10"
           >
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Verified Punjab Pattern Check</span>
+            <div className="inline-flex items-center gap-3 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm">
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
+              <span className="text-[9px] font-black text-primary uppercase tracking-[0.2em]">Verified Patterns</span>
             </div>
 
-            <h1 className="text-6xl lg:text-8xl font-black leading-[0.95] tracking-tight text-white font-headline">
+            <h1 className="text-4xl lg:text-8xl font-black leading-[0.95] tracking-tight text-white font-headline">
               {content.line1}<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">
                 {content.line2}
               </span>
             </h1>
 
-            <p className="text-xl text-slate-400 leading-relaxed max-w-xl">
-              {content.description} Master PSSSB, PPSC, and Punjab Police mocks with institutional precision.
+            <p className="text-lg lg:text-xl text-slate-400 leading-relaxed max-w-xl">
+              {content.description}
             </p>
 
-            <div className="flex flex-wrap gap-5">
-              <Button asChild className="h-16 px-10 bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-xs rounded-2xl gap-3 shadow-2xl shadow-primary/20">
-                <Link href="/mocks">Start Practice <ArrowRight className="h-5 w-5" /></Link>
+            <div className="flex flex-wrap gap-4">
+              <Button asChild className="h-14 lg:h-16 px-8 lg:px-10 bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl gap-3 shadow-2xl">
+                <Link href="/mocks">Start Practice <ArrowRight className="h-4 w-4" /></Link>
               </Button>
-              <Button variant="outline" asChild className="h-16 px-10 border-white/10 text-white hover:bg-white/5 rounded-2xl font-black uppercase tracking-widest text-xs">
+              <Button variant="outline" asChild className="h-14 lg:h-16 px-8 lg:px-10 border-white/10 text-white hover:bg-white/5 rounded-2xl font-black uppercase tracking-widest text-[10px]">
                 <Link href="/exams">Explore Hubs</Link>
               </Button>
-            </div>
-
-            <div className="flex items-center gap-8 pt-8 border-t border-white/5">
-               <div className="flex flex-col">
-                  <span className="text-2xl font-black text-white">1,200+</span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Patwari Nodes</span>
-               </div>
-               <div className="flex flex-col">
-                  <span className="text-2xl font-black text-white">3,500+</span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Police MCQ Nodes</span>
-               </div>
             </div>
           </motion.div>
 
@@ -86,7 +75,7 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1 }}
-            className="relative"
+            className="relative hidden lg:block"
           >
             <div className="relative aspect-square rounded-[4rem] overflow-hidden border border-white/10 shadow-2xl group">
               <Image 
@@ -97,23 +86,7 @@ export default function Hero() {
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#08152D] via-transparent to-transparent opacity-60" />
-              
-              {/* Floating Performance Widget */}
-              <div className="absolute bottom-10 left-10 right-10 p-6 rounded-[2rem] bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl">
-                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                       <div className="h-12 w-12 rounded-2xl bg-primary/20 flex items-center justify-center">
-                          <TrendingUp className="h-6 w-6 text-primary" />
-                       </div>
-                       <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Punjab Success Rate</p>
-                          <p className="text-lg font-black text-white">94.2% Accuracy Node</p>
-                       </div>
-                    </div>
-                 </div>
-              </div>
             </div>
-
             {/* Shield Badge */}
             <div className="absolute -top-6 -right-6 h-24 w-24 bg-emerald-500 rounded-3xl flex items-center justify-center shadow-2xl rotate-12 border-4 border-white/10">
                <ShieldCheck className="h-10 w-10 text-white" />
