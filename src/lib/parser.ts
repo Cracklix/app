@@ -26,10 +26,11 @@ export function parseBulkQuestions(
   const questions: Partial<Question>[] = [];
   const errors: string[] = [];
   
+  // Normalized text for consistent parsing
   const text = rawText.replace(/\r\n/g, '\n').trim();
   
-  // Use === or [BLOCK_ID or QUESTION_TYPE as separators
-  const blocks = text.split(/(?:={3,}|\[BLOCK_ID:|QUESTION_TYPE:)/i)
+  // Use === or QUESTION_TYPE as primary block separators
+  const blocks = text.split(/(?:={3,}|QUESTION_TYPE:)/i)
     .map(b => b.trim())
     .filter(b => b.length > 0);
 
@@ -39,7 +40,7 @@ export function parseBulkQuestions(
 
   blocks.forEach((block, index) => {
     try {
-      // If we split by QUESTION_TYPE:, we need to put it back for the regex to work
+      // Re-inject tag if split removed it
       const content = block.toUpperCase().includes('QUESTION_EN') ? block : `QUESTION_TYPE: ${block}`;
       
       const getTag = (tag: string) => {
@@ -101,15 +102,20 @@ export function parseBulkQuestions(
       if (imageUrl) dType = 'image';
       if (tableData) dType = 'table';
 
-      // Validation
+      // Advanced Type Mapping
+      let finalQType = qType;
+      if (imageUrl && qType === 'MCQ') finalQType = 'IMAGE_MCQ';
+      if (tableData && qType === 'MCQ') finalQType = 'TABLE_MCQ';
+
+      // Validation Node
       if (!questionEn && !passageEn && !title) {
-        throw new Error("Missing content statement.");
+        throw new Error("Missing content statement. Ensure QUESTION_EN or PASSAGE_EN exists.");
       }
 
       questions.push({
         ...metadata,
         id: `q-${Date.now()}-${index}`,
-        questionType: qType,
+        questionType: finalQType,
         diagramType: dType,
         parentSetId: diSetId || undefined,
         passageId: passageId || undefined,
@@ -131,7 +137,7 @@ export function parseBulkQuestions(
         optionDPa: optDPa || optDEn || "ਵਿਕਲਪ D",
 
         correctAnswer,
-        explanationEn: explanationEn || "Explanation in English",
+        explanationEn: explanationEn || "Strategic Rationale in English",
         explanationPa: explanationPa || explanationEn || "ਵਿਆਖਿਆ ਪੰਜਾਬੀ ਵਿੱਚ",
         
         imageUrl,

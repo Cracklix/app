@@ -3,7 +3,6 @@ export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'CONTENT_MANAGER' | 'STUDENT';
 export type MockType = 'FULL' | 'SUBJECT' | 'SECTIONAL' | 'CHAPTER' | 'PYQ' | 'CA_QUIZ';
 export type ContentStatus = 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED';
 export type SubscriptionTier = 'Free' | 'Silver' | 'Gold' | 'Premium';
-export type CAQuizType = 'DAILY' | 'WEEKLY' | 'MONTHLY';
 
 export type QuestionType = 
   | 'MCQ' 
@@ -77,7 +76,10 @@ export interface Question {
 
   // Visual/Complex Data
   imageUrl?: string;
-  tableData?: any; 
+  tableData?: {
+    headers: string[];
+    rows: any[][];
+  }; 
   chartConfig?: any;
 
   // Meta for CA
