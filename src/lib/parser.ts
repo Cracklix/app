@@ -1,9 +1,12 @@
+
 /**
  * @fileOverview Institutional Multi-Format Ingestion Engine.
  * Extracts questions, options, answers, and images from structured and OCR text.
  */
 
 import { Question, Difficulty, MockType } from "@/types";
+
+export type ImportFormat = "STANDARD_TAGGED" | "BILINGUAL_TAGGED" | "IMAGE_BASED";
 
 export interface ParsedResults {
   questions: Partial<Question>[];
@@ -12,14 +15,17 @@ export interface ParsedResults {
 
 export function parseBulkQuestions(
   rawText: string,
+  importFormat: ImportFormat,
   metadata: {
-    board: string;
-    exam: string;
-    subject: string;
-    chapter: string;
-    language: string;
+    boardId: string;
+    examId: string;
+    subjectId: string;
+    chapterId: string;
     difficulty: Difficulty;
-    mockType: MockType;
+    status: any;
+    languagePreference: any;
+    duration?: number;
+    mockType?: MockType;
   }
 ): ParsedResults {
   const questions: Partial<Question>[] = [];
@@ -28,19 +34,15 @@ export function parseBulkQuestions(
   // Normalize line endings
   const text = rawText.replace(/\r\n/g, '\n').trim();
   
-  // Split by Question markers (Q1., Q1 EN:, Q1 PA:, etc.)
-  // This identifies the start of a new question block
-  const questionBlocks = text.split(/\n(?=Q\d+[:.]?)/i).filter(b => b.trim().length > 0);
+  // Split by [BLOCK_ID: or Q1. style markers
+  const questionBlocks = text.split(/\[BLOCK_ID:.*?\]|Q\d+[:.]/i).filter(b => b.trim().length > 0);
 
   if (questionBlocks.length === 0) {
-    return { questions: [], errors: ["No question markers (e.g., Q1.) detected in the text."] };
+    return { questions: [], errors: ["No valid block markers detected. Use [BLOCK_ID: Q1] or Q1. format."] };
   }
 
   questionBlocks.forEach((block, index) => {
     try {
-      const qNumMatch = block.match(/^Q(\d+)/i);
-      const qNum = qNumMatch ? qNumMatch[1] : (index + 1).toString();
-
       // Extraction logic for Bilingual/Standard formats
       const getField = (startRegex: RegExp, endRegexes: RegExp[]) => {
         const lines = block.split('\n');
@@ -62,51 +64,65 @@ export function parseBulkQuestions(
       };
 
       const markers = [
-        /^Q\d+\s+EN:/i, /^Q\d+\s+PA:/i, /^Q\d+[:.]?/i,
-        /^A\s+EN:/i, /^A\s+PA:/i, /^A[:.]/i,
-        /^B\s+EN:/i, /^B\s+PA:/i, /^B[:.]/i,
-        /^C\s+EN:/i, /^C\s+PA:/i, /^C[:.]/i,
-        /^D\s+EN:/i, /^D\s+PA:/i, /^D[:.]/i,
-        /^Answer[:.]/i, /^ANS[:.]/i,
-        /^Explanation\s+EN:/i, /^Explanation\s+PA:/i, /^Explanation[:.]/i,
-        /^Image[:.]/i
+        /^ENG_Q:/i, /^PUN_Q:/i, /^Q\d+[:.]/i,
+        /^ENG_OPT:/i, /^PUN_OPT:/i, /^A[:.]/i, /^B[:.]/i, /^C[:.]/i, /^D[:.]/i,
+        /^ENG_ANS:/i, /^PUN_ANS:/i, /^Answer[:.]/i, /^ANS[:.]/i,
+        /^ENG_EXP:/i, /^PUN_EXP:/i, /^Explanation[:.]/i,
+        /^Image:/i, /^IMAGE_URL:/i
       ];
 
       // Question Content
-      let questionEn = getField(/^Q\d+\s+EN:/i, markers) || getField(/^Q\d+[:.]/i, markers);
-      let questionPa = getField(/^Q\d+\s+PA:/i, markers);
+      let questionEn = getField(/^ENG_Q:/i, markers) || getField(/^Q\d+[:.]/i, markers) || block.split('\n')[0].trim();
+      let questionPa = getField(/^PUN_Q:/i, markers);
 
-      // Options
-      const optionAEn = getField(/^A\s+EN:/i, markers) || getField(/^A[:.]/i, markers);
-      const optionAPa = getField(/^A\s+PA:/i, markers);
-      const optionBEn = getField(/^B\s+EN:/i, markers) || getField(/^B[:.]/i, markers);
-      const optionBPa = getField(/^B\s+PA:/i, markers);
-      const optionCEn = getField(/^C\s+EN:/i, markers) || getField(/^C[:.]/i, markers);
-      const optionCPa = getField(/^C\s+PA:/i, markers);
-      const optionDEn = getField(/^D\s+EN:/i, markers) || getField(/^D[:.]/i, markers);
-      const optionDPa = getField(/^D\s+PA:/i, markers);
+      // Options Ingestion
+      let optionAEn = "", optionBEn = "", optionCEn = "", optionDEn = "";
+      let optionAPa = "", optionBPa = "", optionCPa = "", optionDPa = "";
+
+      const engOptLine = getField(/^ENG_OPT:/i, markers);
+      if (engOptLine && engOptLine.includes('|')) {
+         const parts = engOptLine.split('|').map(p => p.trim());
+         optionAEn = parts[0]?.replace(/^A\.\s*/i, '') || "";
+         optionBEn = parts[1]?.replace(/^B\.\s*/i, '') || "";
+         optionCEn = parts[2]?.replace(/^C\.\s*/i, '') || "";
+         optionDEn = parts[3]?.replace(/^D\.\s*/i, '') || "";
+      } else {
+         optionAEn = getField(/^A[:.]/i, markers);
+         optionBEn = getField(/^B[:.]/i, markers);
+         optionCEn = getField(/^C[:.]/i, markers);
+         optionDEn = getField(/^D[:.]/i, markers);
+      }
+
+      const punOptLine = getField(/^PUN_OPT:/i, markers);
+      if (punOptLine && punOptLine.includes('|')) {
+         const parts = punOptLine.split('|').map(p => p.trim());
+         optionAPa = parts[0]?.replace(/^A\.\s*/i, '') || "";
+         optionBPa = parts[1]?.replace(/^B\.\s*/i, '') || "";
+         optionCPa = parts[2]?.replace(/^C\.\s*/i, '') || "";
+         optionDPa = parts[3]?.replace(/^D\.\s*/i, '') || "";
+      }
 
       // Answer
-      const answerRaw = getField(/^(Answer|ANS)[:.]/i, markers);
+      const answerRaw = getField(/^(ENG_ANS|Answer|ANS)[:.]/i, markers);
       const correctAnswerMatch = answerRaw.match(/([A-D])/i);
       const correctAnswer = correctAnswerMatch ? correctAnswerMatch[1].toUpperCase() as 'A' | 'B' | 'C' | 'D' : undefined;
 
       // Explanation
-      const explanationEn = getField(/^Explanation\s+EN:/i, markers) || getField(/^Explanation[:.]/i, markers);
-      const explanationPa = getField(/^Explanation\s+PA:/i, markers);
+      const explanationEn = getField(/^ENG_EXP:/i, markers) || getField(/^Explanation[:.]/i, markers);
+      const explanationPa = getField(/^PUN_EXP:/i, markers);
 
       // Image
-      const imageUrl = getField(/^Image[:.]/i, markers);
+      const imageUrl = getField(/^(Image|IMAGE_URL)[:.]/i, markers);
 
-      // Validation
-      if (!questionEn && !questionPa) throw new Error(`Missing question text`);
-      if (!optionAEn && !optionAPa) throw new Error(`Missing Option A`);
-      if (!correctAnswer) throw new Error(`Missing or invalid Answer (Must be A, B, C, or D)`);
+      // Validation Node
+      if (!questionEn && !questionPa) throw new Error(`Empty question statement.`);
+      if (!correctAnswer) throw new Error(`Mismatched or missing correct answer.`);
+      if (!optionAEn && !optionAPa) throw new Error(`Critical: Option A missing.`);
 
       questions.push({
         ...metadata,
         questionEn,
-        questionPa,
+        questionPa: questionPa || questionEn,
         optionAEn,
         optionAPa: optionAPa || optionAEn,
         optionBEn,
@@ -116,13 +132,13 @@ export function parseBulkQuestions(
         optionDEn,
         optionDPa: optionDPa || optionDEn,
         correctAnswer,
-        explanationEn: explanationEn || "Solution verified by Cracklix.",
+        explanationEn: explanationEn || "Verified institutional solution.",
         explanationPa: explanationPa || explanationEn || "ਵਿਵਸਥਿਤ ਹੱਲ।",
         imageUrl: imageUrl || "",
       });
 
     } catch (err: any) {
-      errors.push(`Question ${index + 1}: ${err.message}`);
+      errors.push(`Block ${index + 1}: ${err.message}`);
     }
   });
 

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -6,16 +7,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { useFirestore, useCollection } from "@/firebase"
-import { collection, doc, writeBatch, serverTimestamp } from "firebase/firestore"
+import { collection, doc, writeBatch, serverTimestamp, setDoc } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { parseBulkQuestions, ImportFormat } from "@/lib/parser"
-import { Zap, Database, ChevronLeft, Rocket, CheckCircle2, FileWarning, AlertTriangle, Settings2, DatabaseBackup, Layers, Globe, GraduationCap } from "lucide-react"
+import { Zap, Database, ChevronLeft, Rocket, CheckCircle2, FileWarning, AlertTriangle, Settings2, DatabaseBackup, Layers, Globe, GraduationCap, Clock, ClipboardCheck } from "lucide-react"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { MockType } from "@/types"
 
 export default function BulkImportPage() {
   const router = useRouter()
@@ -35,12 +39,16 @@ export default function BulkImportPage() {
     chapterId: "",
     difficulty: "Medium" as any,
     status: "PUBLISHED" as any,
-    languagePreference: "bilingual" as any
+    languagePreference: "bilingual" as any,
+    duration: 120,
+    mockType: "FULL" as MockType
   })
   
   const [parsedQuestions, setParsedQuestions] = useState<any[]>([])
   const [parseErrors, setParseErrors] = useState<string[]>([])
   const [isImporting, setIsImporting] = useState(false)
+  const [showMockCreator, setShowMockCreator] = useState(false)
+  const [lastImportedIds, setLastImportedIds] = useState<string[]>([])
 
   const handleParse = () => {
     if (!rawText.trim()) return
@@ -66,6 +74,7 @@ export default function BulkImportPage() {
     if (!db || parsedQuestions.length === 0) return
     setIsImporting(true)
     const batch = writeBatch(db)
+    const ids: string[] = []
 
     parsedQuestions.forEach(q => {
       const newRef = doc(collection(db, "questions"))
@@ -76,16 +85,49 @@ export default function BulkImportPage() {
         updatedAt: serverTimestamp(),
         isStandalone: true
       })
+      ids.push(newRef.id)
     })
 
     try {
       await batch.commit()
+      setLastImportedIds(ids)
       toast({ title: "Bank Updated", description: `${parsedQuestions.length} nodes deployed.` })
-      router.push("/admin/questions")
+      setShowMockCreator(true)
     } catch (e) {
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: 'questions/bulk', operation: 'write' }));
     } finally {
       setIsImporting(false)
+    }
+  }
+
+  const handleDeployMock = async () => {
+    if (!db || lastImportedIds.length === 0) return
+    
+    const mockId = `mock-${Date.now()}`
+    const mockRef = doc(db, "mocks", mockId)
+    
+    const payload = {
+      id: mockId,
+      title: `${metadata.boardId} ${metadata.mockType} Series - ${new Date().toLocaleDateString()}`,
+      boardId: metadata.boardId,
+      examId: metadata.examId,
+      mockType: metadata.mockType,
+      duration: metadata.duration,
+      totalQuestions: lastImportedIds.length,
+      questionIds: lastImportedIds,
+      difficulty: metadata.difficulty,
+      published: true,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      isPremium: true
+    }
+
+    try {
+      await setDoc(mockRef, payload)
+      toast({ title: "Series Deployed", description: "Mock test is now live for all aspirants." })
+      router.push("/admin/mocks")
+    } catch (e) {
+      toast({ variant: "destructive", title: "Deployment Failed", description: "Could not initialize mock series." })
     }
   }
 
@@ -168,24 +210,24 @@ PUN_EXP: ਵਿਆਖਿਆ ਪੰਜਾਬੀ ਵਿੱਚ.`;
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Difficulty</Label>
-                   <Select value={metadata.difficulty} onValueChange={val => setMetadata({...metadata, difficulty: val})}>
-                     <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm text-[#0F172A]"><SelectValue /></SelectTrigger>
-                     <SelectContent>
-                        <SelectItem value="Easy">Aspirant (Easy)</SelectItem>
-                        <SelectItem value="Medium">Standard (Medium)</SelectItem>
-                        <SelectItem value="Hard">Advanced (Hard)</SelectItem>
-                     </SelectContent>
-                   </Select>
+                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Duration (Mins)</Label>
+                   <Input 
+                      type="number"
+                      placeholder="120" 
+                      className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm"
+                      value={metadata.duration}
+                      onChange={(e) => setMetadata({...metadata, duration: parseInt(e.target.value) || 0})}
+                   />
                 </div>
                 <div className="space-y-2">
-                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Primary Language</Label>
-                   <Select value={metadata.languagePreference} onValueChange={val => setMetadata({...metadata, languagePreference: val})}>
+                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Mock Type</Label>
+                   <Select value={metadata.mockType} onValueChange={(val: any) => setMetadata({...metadata, mockType: val})}>
                      <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm text-[#0F172A]"><SelectValue /></SelectTrigger>
                      <SelectContent>
-                        <SelectItem value="bilingual">Bilingual (Both)</SelectItem>
-                        <SelectItem value="en">English Only</SelectItem>
-                        <SelectItem value="pa">Punjabi Only</SelectItem>
+                        <SelectItem value="FULL">Full Mock</SelectItem>
+                        <SelectItem value="SUBJECT">Subject Test</SelectItem>
+                        <SelectItem value="SECTIONAL">Sectional</SelectItem>
+                        <SelectItem value="PYQ">PYQ Archive</SelectItem>
                      </SelectContent>
                    </Select>
                 </div>
@@ -254,6 +296,43 @@ PUN_EXP: ਵਿਆਖਿਆ ਪੰਜਾਬੀ ਵਿੱਚ.`;
           )}
         </div>
       </div>
+
+      {/* Deployment Modal */}
+      <Dialog open={showMockCreator} onOpenChange={setShowMockCreator}>
+        <DialogContent className="sm:max-w-2xl rounded-[3rem] bg-[#0F172A] text-white border-white/10 p-0 overflow-hidden shadow-4xl">
+          <div className="p-12 space-y-12">
+            <div className="text-center space-y-4">
+               <div className="h-20 w-20 bg-primary/20 rounded-[2.5rem] flex items-center justify-center mx-auto text-primary shadow-2xl">
+                  <Rocket className="h-10 w-10" />
+               </div>
+               <h2 className="text-4xl font-headline font-black uppercase tracking-tight">Deploy Active Series</h2>
+               <p className="text-slate-400 text-lg font-medium px-10">
+                  {parsedQuestions.length} questions successfully saved. Create a live mock series using these nodes immediately?
+               </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-8 bg-white/5 p-8 rounded-[2.5rem] border border-white/5 shadow-inner">
+               <div className="space-y-2">
+                  <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Duration</span>
+                  <p className="text-2xl font-headline font-black text-primary">{metadata.duration} Mins</p>
+               </div>
+               <div className="space-y-2">
+                  <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Type</span>
+                  <p className="text-2xl font-headline font-black text-white">{metadata.mockType} Mock</p>
+               </div>
+            </div>
+
+            <DialogFooter className="flex flex-col sm:flex-row gap-4">
+               <Button variant="ghost" onClick={() => router.push("/admin/questions")} className="h-14 px-8 rounded-2xl text-slate-400 hover:text-white font-bold uppercase text-[10px] tracking-widest">
+                  View in Bank
+               </Button>
+               <Button onClick={handleDeployMock} className="flex-1 h-16 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl shadow-3xl shadow-primary/20 gap-3">
+                  <ClipboardCheck className="h-5 w-5" /> Initialize Live Series
+               </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
