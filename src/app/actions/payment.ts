@@ -1,3 +1,4 @@
+
 'use server';
 
 import Razorpay from 'razorpay';
@@ -8,7 +9,8 @@ import {
   doc, 
   setDoc, 
   addDoc, 
-  serverTimestamp 
+  serverTimestamp,
+  updateDoc
 } from 'firebase/firestore';
 
 /**
@@ -55,6 +57,86 @@ export async function createRazorpayOrder(planId: string) {
   }
 }
 
+export async function submitManualPayment(data: {
+  userId: string;
+  userEmail: string;
+  userName: string;
+  planId: string;
+  transactionId: string;
+}) {
+  const { userId, userEmail, userName, planId, transactionId } = data;
+  const plan = PLANS[planId as keyof typeof PLANS];
+  if (!plan) throw new Error('Invalid Plan');
+
+  const { firestore: db } = initializeFirebase();
+
+  try {
+    const reqRef = await addDoc(collection(db, 'payment_requests'), {
+      userId,
+      userEmail,
+      userName,
+      planId,
+      planName: plan.name,
+      amount: plan.amount,
+      transactionId,
+      status: 'PENDING',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+
+    return { success: true, requestId: reqRef.id };
+  } catch (e) {
+    console.error('Manual Payment Submission Error:', e);
+    throw new Error('Failed to submit verification request.');
+  }
+}
+
+export async function approvePaymentRequest(requestId: string, adminId: string) {
+  const { firestore: db } = initializeFirebase();
+
+  try {
+    const reqRef = doc(db, 'payment_requests', requestId);
+    const snap = await (await import('firebase/firestore')).getDoc(reqRef);
+    
+    if (!snap.exists()) throw new Error('Request not found');
+    const data = snap.data();
+
+    // 1. Update User Status
+    const userRef = doc(db, 'users', data.userId);
+    await updateDoc(userRef, { 
+      status: PLANS[data.planId as keyof typeof PLANS].tier,
+      updatedAt: serverTimestamp()
+    });
+
+    // 2. Mark Request as Approved
+    await updateDoc(reqRef, {
+      status: 'APPROVED',
+      approvedBy: adminId,
+      updatedAt: serverTimestamp()
+    });
+
+    // 3. Create Subscription Record
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 30);
+
+    await addDoc(collection(db, 'subscriptions'), {
+      userId: data.userId,
+      planId: data.planId,
+      planName: data.planName,
+      status: 'active',
+      startDate: serverTimestamp(),
+      expiryDate: expiryDate.toISOString(),
+      verifiedManual: true,
+      transactionId: data.transactionId
+    });
+
+    return { success: true };
+  } catch (e) {
+    console.error('Approval Error:', e);
+    throw new Error('Failed to approve payment.');
+  }
+}
+
 export async function verifyRazorpayPayment(data: {
   orderId: string;
   paymentId: string;
@@ -66,7 +148,6 @@ export async function verifyRazorpayPayment(data: {
   const { orderId, paymentId, signature, userId, userEmail, planId } = data;
   const plan = PLANS[planId as keyof typeof PLANS];
 
-  // 1. Secure Signature Verification
   const generatedSignature = crypto
     .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || '')
     .update(`${orderId}|${paymentId}`)
@@ -76,18 +157,15 @@ export async function verifyRazorpayPayment(data: {
     throw new Error('Payment verification failed. Untrusted signature.');
   }
 
-  // 2. Database Synchronization
   const { firestore: db } = initializeFirebase();
 
   try {
-    // 3. Atomically Update User Status
     const userRef = doc(db, 'users', userId);
     await setDoc(userRef, { 
       status: plan.tier, 
       updatedAt: serverTimestamp() 
     }, { merge: true });
 
-    // 4. Record Subscription Registry
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 30);
 
@@ -102,7 +180,6 @@ export async function verifyRazorpayPayment(data: {
       paymentId
     });
 
-    // 5. Log Verified Transaction
     await addDoc(collection(db, 'payments'), {
       userId,
       userEmail,

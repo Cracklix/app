@@ -33,6 +33,23 @@
         "expiryDate": { "type": "string", "format": "date-time" }
       }
     },
+    "PaymentRequest": {
+      "title": "Manual Payment Request",
+      "description": "UPI/QR transaction details awaiting admin approval.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "userName": { "type": "string" },
+        "planId": { "type": "string" },
+        "planName": { "type": "string" },
+        "amount": { "type": "number" },
+        "transactionId": { "type": "string" },
+        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
     "Order": {
       "title": "Payment Order",
       "description": "Internal transaction logs before verification.",
@@ -45,29 +62,6 @@
         "currency": { "type": "string" },
         "status": { "type": "string", "enum": ["pending", "success", "failed"] },
         "createdAt": { "type": "string", "format": "date-time" }
-      }
-    },
-    "ExamPattern": {
-      "title": "Exam Pattern",
-      "description": "Official question distribution and duration for a specific exam type.",
-      "type": "object",
-      "properties": {
-        "examId": { "type": "string" },
-        "examName": { "type": "string" },
-        "totalQuestions": { "type": "number" },
-        "duration": { "type": "number" },
-        "negativeMarking": { "type": "boolean" },
-        "sections": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": { "type": "string" },
-              "count": { "type": "number" },
-              "subjectId": { "type": "string" }
-            }
-          }
-        }
       }
     }
   },
@@ -83,12 +77,16 @@
       "schema": { "$ref": "#/backend/entities/Subscription" },
       "description": "Active pass records."
     },
+    "/payment_requests/{reqId}": {
+      "schema": { "$ref": "#/backend/entities/PaymentRequest" },
+      "description": "Pending UPI verifications."
+    },
     "/orders/{orderId}": {
       "schema": { "$ref": "#/backend/entities/Order" },
       "description": "Transaction ledger."
     },
     "/exam_patterns/{patternId}": {
-      "schema": { "$ref": "#/backend/entities/ExamPattern" },
+      "schema": "object",
       "description": "Official question distribution blueprints."
     },
     "/boards/{boardId}": { "schema": "object", "description": "Recruitment boards." },
