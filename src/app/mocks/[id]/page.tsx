@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo } from "react"
@@ -23,14 +22,16 @@ import {
   Award,
   Lock,
   Users,
-  Sparkles
+  Sparkles,
+  Edit,
+  ShieldAlert
 } from "lucide-react"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
  * @fileOverview Redesigned Mock Overview Page (Phase 160).
- * Features: Institutional Access Control (Membership Gating).
+ * Updated: Administrative Quick-Edit Bridge (Phase 170).
  */
 
 export default function MockOverviewPage() {
@@ -42,13 +43,17 @@ export default function MockOverviewPage() {
   
   const { data: mock, loading } = useDoc<any>(useMemo(() => (db ? doc(db, "mocks", mockId) : null), [db, mockId]))
 
+  const isAdmin = useMemo(() => {
+    if (!profile) return false;
+    return profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN' || user?.email === 'arshdeepgrewal1122@gmail.com';
+  }, [profile, user])
+
   // Strict Membership Gating Logic
   const isLocked = useMemo(() => {
     if (!mock || !profile) return true;
     
     // Founder/Super Admin Bypass
-    const isFounder = user?.email === 'arshdeepgrewal1122@gmail.com';
-    if (profile.role === 'SUPER_ADMIN' || isFounder) return false;
+    if (isAdmin) return false;
 
     // Plan-based Permission Check
     const tier = profile.status || 'Free';
@@ -62,7 +67,7 @@ export default function MockOverviewPage() {
     if (!mock.isPremium) return false;
 
     return true;
-  }, [mock, profile, user])
+  }, [mock, profile, isAdmin])
 
   if (loading) return <div className="h-screen flex items-center justify-center bg-white"><Skeleton className="h-20 w-20 rounded-full" /></div>
   if (!mock) return <div className="h-screen flex items-center justify-center text-slate-400 font-bold uppercase tracking-widest">Mock not found.</div>
@@ -71,6 +76,23 @@ export default function MockOverviewPage() {
     <div className="min-h-screen bg-white flex flex-col font-body">
       <Navbar />
       
+      {/* Admin Blueprint Bridge */}
+      {isAdmin && (
+         <div className="bg-[#0F172A] border-b border-white/5 py-3 px-6 flex items-center justify-between shadow-2xl relative z-50">
+            <div className="flex items-center gap-4">
+               <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary shadow-inner">
+                  <ShieldAlert className="h-4 w-4" />
+               </div>
+               <p className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Institutional Admin Node <span className="text-primary opacity-50 ml-2">Audit Active</span></p>
+            </div>
+            <Button asChild size="sm" className="bg-primary hover:bg-orange-600 text-white rounded-xl h-10 px-6 font-black uppercase text-[9px] tracking-widest gap-2 shadow-xl">
+               <Link href={`/admin/mocks/builder?id=${mockId}`}>
+                  <Edit className="h-3.5 w-3.5" /> Edit This Blueprint
+               </Link>
+            </Button>
+         </div>
+      )}
+
       <main className="flex-1">
         <section className="bg-slate-50 border-b border-slate-100 py-10 md:py-16">
           <div className="container mx-auto px-6 max-w-6xl">
@@ -96,7 +118,7 @@ export default function MockOverviewPage() {
                  </div>
 
                  <div className="space-y-1">
-                    <h1 className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] uppercase leading-tight tracking-tight">
+                    <h1 className="text-3xl md:text-5xl font-headline font-black text-[#000000] uppercase leading-tight tracking-tight">
                       {mock.title}
                     </h1>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -144,7 +166,7 @@ export default function MockOverviewPage() {
              <div className="lg:col-span-8 space-y-12">
                 <Card className="border-none shadow-3xl shadow-slate-900/5 rounded-[2.5rem] bg-white overflow-hidden">
                    <CardHeader className="p-10 border-b border-slate-50 text-left">
-                      <CardTitle className="font-headline text-2xl font-black text-[#0F172A] uppercase">Test Instructions</CardTitle>
+                      <CardTitle className="font-headline text-2xl font-black text-[#000000] uppercase">Test Instructions</CardTitle>
                       <CardDescription className="text-slate-400 font-bold uppercase tracking-widest text-[9px] mt-1">Please read carefully before starting the exam.</CardDescription>
                    </CardHeader>
                    <CardContent className="p-10 space-y-12">
@@ -215,7 +237,7 @@ function InstructionCard({ icon, title, value, desc }: any) {
          </div>
          <div className="space-y-1 text-left">
             <p className="text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{title}</p>
-            <p className="text-lg font-black text-[#0F172A]">{value}</p>
+            <p className="text-lg font-black text-[#000000]">{value}</p>
             <p className="text-[11px] text-slate-500 font-medium leading-tight">{desc}</p>
          </div>
       </div>

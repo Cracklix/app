@@ -5,20 +5,21 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Search, Edit, Trash2, Database, Filter, Eye, Image as ImageIcon, History } from "lucide-react"
+import { Plus, Search, Edit, Trash2, Database, Filter, Eye, Image as ImageIcon, History, CheckSquare, XCircle, AlertCircle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, deleteDoc, doc, where } from "firebase/firestore"
+import { collection, query, deleteDoc, doc, where, writeBatch } from "firebase/firestore"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/hooks/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 
 /**
- * @fileOverview Institutional Asset Ledger (Global Bank).
- * Updated: Usage tracking and reuse filtering (Phase 165).
+ * @fileOverview Institutional Asset Ledger (Global Bank) v3.0.
+ * Updated: Bulk Selection, Select All, and Batch Deletion (Phase 170).
  */
 
 export default function QuestionBank() {
@@ -29,6 +30,8 @@ export default function QuestionBank() {
   const [subjectFilter, setSubjectFilter] = useState("all")
   const [boardFilter, setBoardFilter] = useState("all")
   const [showUnusedOnly, setShowUnusedOnly] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const qQuery = useMemo(() => {
     if (!db) return null
@@ -52,22 +55,67 @@ export default function QuestionBank() {
       .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
   }, [allQuestions, searchTerm, subjectFilter, boardFilter, showUnusedOnly])
 
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(filteredQuestions.map(q => q.id))
+    } else {
+      setSelectedIds([])
+    }
+  }
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    )
+  }
+
   const handleDelete = async (id: string) => {
     if (!confirm("Permanently purge this asset from the global bank?")) return
     await deleteDoc(doc(db!, "questions", id))
     toast({ title: "Asset Purged", description: "Node removed from registry." })
+    setSelectedIds(prev => prev.filter(i => i !== id))
   }
 
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0 || !db) return
+    if (!confirm(`DANGER: This will permanently delete ${selectedIds.length} questions from the bank. This action cannot be undone. Continue?`)) return
+
+    setIsDeleting(true)
+    const batchSize = 500;
+    const batches = [];
+    
+    // Safety loop to handle large bulk deletions (splitting into 500-doc batches)
+    for (let i = 0; i < selectedIds.length; i += batchSize) {
+      const batch = writeBatch(db);
+      selectedIds.slice(i, i + batchSize).forEach(id => {
+        batch.delete(doc(db, "questions", id));
+      });
+      batches.push(batch.commit());
+    }
+
+    try {
+      await Promise.all(batches);
+      toast({ title: "Batch Purge Complete", description: `${selectedIds.length} nodes successfully removed from the repository.` });
+      setSelectedIds([]);
+    } catch (e) {
+      toast({ variant: "destructive", title: "Batch Failed", description: "Institutional security prevented some deletions." });
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const allSelected = filteredQuestions.length > 0 && selectedIds.length === filteredQuestions.length;
+
   return (
-    <div className="space-y-10 pb-20 text-[#0F172A]">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+    <div className="space-y-10 pb-20 text-[#0F172A] text-left">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 px-4">
         <div>
           <div className="flex items-center gap-3 mb-2">
             <Database className="h-6 w-6 text-primary" />
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Atomic Asset Registry</span>
           </div>
           <h1 className="text-5xl font-black font-headline text-primary uppercase tracking-tight">Question Bank</h1>
-          <p className="text-muted-foreground mt-2 text-lg">Managing {allQuestions?.length || 0} structured reusable nodes.</p>
+          <p className="text-muted-foreground mt-2 text-lg font-medium">Managing {allQuestions?.length || 0} structured reusable nodes.</p>
         </div>
         <div className="flex gap-4">
            <Button asChild variant="outline" className="h-14 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 shadow-sm bg-white">
@@ -79,7 +127,32 @@ export default function QuestionBank() {
         </div>
       </div>
 
-      <Card className="border-none shadow-3xl rounded-[3rem] overflow-hidden bg-white">
+      {/* Bulk Action Strip */}
+      {selectedIds.length > 0 && (
+         <div className="mx-4 bg-[#0F172A] p-6 rounded-[2.5rem] flex items-center justify-between animate-in slide-in-from-top-4 duration-300 shadow-4xl text-white">
+            <div className="flex items-center gap-6">
+               <div className="h-12 w-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary shadow-inner">
+                  <CheckSquare className="h-6 w-6" />
+               </div>
+               <div className="text-left">
+                  <p className="text-2xl font-headline font-black leading-none">{selectedIds.length} Nodes Selected</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mt-2">Active Bulk Buffer Operation</p>
+               </div>
+            </div>
+            <div className="flex gap-4">
+               <Button variant="ghost" onClick={() => setSelectedIds([])} className="h-14 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest text-slate-400 hover:text-white">Cancel</Button>
+               <Button 
+                onClick={handleBulkDelete} 
+                disabled={isDeleting}
+                className="h-14 px-10 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-black uppercase text-[10px] tracking-[0.2em] gap-3 shadow-3xl shadow-rose-900/40"
+               >
+                  {isDeleting ? "Purging Registry..." : <><Trash2 className="h-4 w-4" /> Purge Selection</>}
+               </Button>
+            </div>
+         </div>
+      )}
+
+      <Card className="border-none shadow-3xl rounded-[3rem] overflow-hidden bg-white mx-4">
         <CardHeader className="p-10 border-b border-slate-50 bg-muted/20">
           <div className="flex flex-col lg:flex-row gap-8 items-center justify-between">
             <div className="relative w-full lg:w-[40%]">
@@ -92,12 +165,12 @@ export default function QuestionBank() {
                  <Switch checked={showUnusedOnly} onCheckedChange={setShowUnusedOnly} />
               </div>
               <Select value={subjectFilter} onValueChange={setSubjectFilter}>
-                <SelectTrigger className="rounded-xl h-12 bg-white border-none w-44 shadow-sm"><SelectValue placeholder="Subject" /></SelectTrigger>
-                <SelectContent><SelectItem value="all">All Subjects</SelectItem>{subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+                <SelectTrigger className="rounded-xl h-12 bg-white border-none w-44 shadow-sm font-bold"><SelectValue placeholder="Subject" /></SelectTrigger>
+                <SelectContent><SelectItem value="all" className="font-bold">All Subjects</SelectItem>{subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
               </Select>
               <Select value={boardFilter} onValueChange={setBoardFilter}>
-                <SelectTrigger className="rounded-xl h-12 bg-white border-none w-40 shadow-sm"><SelectValue placeholder="Authority" /></SelectTrigger>
-                <SelectContent><SelectItem value="all">All Boards</SelectItem>{boards?.map(b => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
+                <SelectTrigger className="rounded-xl h-12 bg-white border-none w-40 shadow-sm font-bold"><SelectValue placeholder="Authority" /></SelectTrigger>
+                <SelectContent><SelectItem value="all" className="font-bold">All Boards</SelectItem>{boards?.map(b => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
               </Select>
             </div>
           </div>
@@ -105,8 +178,15 @@ export default function QuestionBank() {
         <CardContent className="p-0 text-left">
           <Table>
             <TableHeader className="bg-slate-50/50">
-              <TableRow className="border-white/5 h-16">
-                <TableHead className="px-10 text-[10px] font-black uppercase text-slate-500">Node Strategy</TableHead>
+              <TableRow className="border-white/5 h-20">
+                <TableHead className="w-[60px] px-10">
+                   <Checkbox 
+                    checked={allSelected} 
+                    onCheckedChange={handleSelectAll} 
+                    className="h-5 w-5 rounded-lg border-2 border-slate-300"
+                   />
+                </TableHead>
+                <TableHead className="px-4 text-[10px] font-black uppercase text-slate-500">Node Strategy</TableHead>
                 <TableHead className="text-[10px] font-black uppercase text-slate-500">Context</TableHead>
                 <TableHead className="text-center text-[10px] font-black uppercase text-slate-500">Usage</TableHead>
                 <TableHead className="text-right px-10 text-[10px] font-black uppercase text-slate-500">Audit</TableHead>
@@ -115,41 +195,56 @@ export default function QuestionBank() {
             <TableBody>
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i} className="border-white/5"><TableCell colSpan={4} className="px-10 py-8"><Skeleton className="h-14 w-full rounded-2xl bg-white/5" /></TableCell></TableRow>
+                  <TableRow key={i} className="border-white/5"><TableCell colSpan={5} className="px-10 py-8"><Skeleton className="h-14 w-full rounded-2xl bg-white/5" /></TableCell></TableRow>
                 ))
-              ) : filteredQuestions.length > 0 ? filteredQuestions.map((q: any) => (
-                <TableRow key={q.id} className="hover:bg-slate-50 border-white/5 transition-colors group">
-                  <TableCell className="px-10 py-8 max-w-lg text-left">
-                    <p className="font-bold text-[#0F172A] line-clamp-1">{q.questionEn || q.titleEn}</p>
-                    <div className="flex items-center gap-4 mt-2">
-                       <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase px-2">{q.questionType}</Badge>
-                       <code className="text-[9px] font-mono text-slate-400">UUID: {q.id.slice(-8)}</code>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-left">
-                     <div className="space-y-1">
-                        <p className="text-[10px] font-black text-slate-700 uppercase tracking-widest">{q.boardId}</p>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{q.subjectId} • {q.chapterId || 'General'}</p>
-                     </div>
-                  </TableCell>
-                  <TableCell className="text-center">
-                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-50 rounded-lg border border-slate-100">
-                        <History className="h-3 w-3 text-slate-400" />
-                        <span className="text-xs font-black text-[#0F172A]">{q.usageCount || 0}</span>
-                     </div>
-                  </TableCell>
-                  <TableCell className="text-right px-10">
-                    <div className="flex justify-end gap-3 opacity-20 group-hover:opacity-100 transition-opacity">
-                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-white shadow-sm" asChild>
-                        <Link href={`/admin/questions/add?id=${q.id}`}><Edit className="h-4 w-4" /></Link>
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-rose-50 text-rose-500 shadow-sm" onClick={() => handleDelete(q.id)}><Trash2 className="h-4 w-4" /></Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )) : (
+              ) : filteredQuestions.length > 0 ? filteredQuestions.map((q: any) => {
+                const isSelected = selectedIds.includes(q.id);
+                return (
+                  <TableRow key={q.id} className={`hover:bg-slate-50 border-white/5 transition-colors group ${isSelected ? 'bg-primary/5' : ''}`}>
+                    <TableCell className="px-10 py-8">
+                       <Checkbox 
+                        checked={isSelected} 
+                        onCheckedChange={() => toggleSelection(q.id)} 
+                        className="h-5 w-5 rounded-lg border-2 border-slate-300 data-[state=checked]:bg-primary"
+                       />
+                    </TableCell>
+                    <TableCell className="px-4 py-8 max-w-lg text-left">
+                      <p className="font-bold text-[#000000] text-lg leading-tight line-clamp-2">{q.questionEn || q.titleEn}</p>
+                      <div className="flex items-center gap-4 mt-3">
+                         <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase px-2 py-0.5 rounded-md">{q.questionType}</Badge>
+                         <code className="text-[9px] font-mono text-slate-400 font-bold uppercase tracking-widest">ID: {q.id.slice(-8)}</code>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-left">
+                       <div className="space-y-1.5">
+                          <p className="text-[11px] font-black text-slate-800 uppercase tracking-[0.1em]">{q.boardId}</p>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">{q.subjectId} <br/> {q.chapterId || 'GENERAL'}</p>
+                       </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                       <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-xl border border-slate-100 shadow-inner group-hover:bg-white transition-all">
+                          <History className="h-3 w-3 text-slate-400" />
+                          <span className="text-xs font-black text-[#0F172A]">{q.usageCount || 0}</span>
+                       </div>
+                    </TableCell>
+                    <TableCell className="text-right px-10">
+                      <div className="flex justify-end gap-3 opacity-30 group-hover:opacity-100 transition-all duration-300">
+                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-[1.25rem] hover:bg-white hover:text-primary shadow-sm border border-transparent hover:border-slate-100" asChild>
+                          <Link href={`/admin/questions/add?id=${q.id}`}><Edit className="h-5 w-5" /></Link>
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-[1.25rem] hover:bg-rose-50 hover:text-rose-500 shadow-sm border border-transparent hover:border-rose-100" onClick={() => handleDelete(q.id)}><Trash2 className="h-5 w-5" /></Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )
+              }) : (
                 <TableRow>
-                   <TableCell colSpan={4} className="h-40 text-center opacity-30 italic text-slate-400 font-bold uppercase text-xs">No reusable nodes found in repository.</TableCell>
+                   <TableCell colSpan={5} className="h-60 text-center">
+                      <div className="flex flex-col items-center justify-center text-slate-300 opacity-20 space-y-6">
+                         <AlertCircle className="h-16 w-16" />
+                         <p className="font-headline font-black uppercase tracking-[0.4em] text-xl">Registry Repository Empty</p>
+                      </div>
+                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
