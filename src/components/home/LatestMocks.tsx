@@ -77,7 +77,7 @@ export default function LatestMocks() {
                     <div className="h-14 w-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center relative overflow-hidden group-hover:shadow-lg transition-all">
                        {mock.boardId === 'psssb' ? (
                           <img 
-                            src="https://sssb.punjab.gov.in/images/logo.png" 
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png" 
                             referrerPolicy="no-referrer"
                             className="w-full h-full object-contain p-2" 
                             alt="PSSSB" 

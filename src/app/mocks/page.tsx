@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo } from "react"
@@ -72,10 +73,10 @@ export default function MocksGatewayPage() {
                    <Card className="border-none shadow-xl hover:shadow-4xl hover:-translate-y-2 transition-all duration-500 rounded-[3.5rem] bg-white group overflow-hidden text-left h-full flex flex-col border border-slate-50">
                       <CardContent className="p-10 flex flex-col h-full">
                          <div className="flex justify-between items-start mb-10">
-                            <div className="h-20 w-20 rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:shadow-xl transition-all shadow-inner relative overflow-hidden shrink-0">
+                            <div className="h-20 w-20 rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all group-hover:shadow-xl shadow-inner relative overflow-hidden shrink-0">
                                {board?.iconUrl || board?.id === 'psssb' ? (
                                  <img 
-                                    src={board?.iconUrl || 'https://sssb.punjab.gov.in/images/logo.png'} 
+                                    src={board?.iconUrl || 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png'} 
                                     referrerPolicy="no-referrer"
                                     alt={board?.abbreviation} 
                                     className="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-110" 

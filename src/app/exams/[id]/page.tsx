@@ -1,3 +1,4 @@
+
 "use client"
 
 import Navbar from "@/components/layout/Navbar"
@@ -183,7 +184,7 @@ function MockCard({ mock }: { mock: any }) {
             <div className="flex justify-between items-start">
                <div className="h-16 w-16 rounded-2xl bg-white border border-slate-100 flex items-center justify-center relative overflow-hidden shadow-lg group-hover:scale-105 transition-transform duration-500">
                   {mock.boardId === 'psssb' ? (
-                     <img src="https://sssb.punjab.gov.in/images/logo.png" className="w-full h-full object-contain p-2" alt="PSSSB" />
+                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png" className="w-full h-full object-contain p-2" alt="PSSSB" />
                   ) : (
                      <ShieldCheck className="h-8 w-8 text-primary opacity-20" />
                   )}
