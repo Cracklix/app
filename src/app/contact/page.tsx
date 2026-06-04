@@ -45,7 +45,7 @@ export default function ContactPage() {
             </div>
 
             <div className="space-y-10">
-               <ContactInfo icon={<Mail />} label="Email Node" value="arshdeepgrewal1122@gmail.com" />
+               <ContactInfo icon={<Mail />} label="Email Node" value="cracklixhelp@gmail.com" />
                <a href="https://wa.me/919888188602" target="_blank" className="block group">
                  <ContactInfo icon={<Phone />} label="Institutional WhatsApp" value="+91 98881 88602" />
                </a>

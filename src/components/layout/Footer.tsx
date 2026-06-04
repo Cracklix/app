@@ -20,7 +20,7 @@ export default function Footer() {
 
   const content = {
     footerText: settings?.footerText || "Punjab's most advanced government exam portal. Designed for aspirants, built with integrity.",
-    email: settings?.supportEmail || "arshdeepgrewal1122@gmail.com",
+    email: settings?.supportEmail || "cracklixhelp@gmail.com",
     phone: settings?.supportPhone || "+91 98881 88602",
     fb: settings?.facebookUrl || "#",
     ig: settings?.instagramUrl || "#",
