@@ -1,4 +1,3 @@
-
 'use server';
 
 import Razorpay from 'razorpay';
@@ -9,14 +8,13 @@ import {
   doc, 
   setDoc, 
   addDoc, 
-  serverTimestamp, 
-  getFirestore 
+  serverTimestamp 
 } from 'firebase/firestore';
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || '',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || '',
-});
+/**
+ * @fileOverview Secure Payment Server Actions.
+ * Handles Razorpay order creation and HMAC-SHA256 signature verification.
+ */
 
 const PLANS = {
   silver: { amount: 99, name: 'Silver Pass', tier: 'Silver' },
@@ -24,10 +22,18 @@ const PLANS = {
   premium: { amount: 499, name: 'Elite Pass', tier: 'Premium' },
 };
 
+function getRazorpayInstance() {
+  return new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID || '',
+    key_secret: process.env.RAZORPAY_KEY_SECRET || '',
+  });
+}
+
 export async function createRazorpayOrder(planId: string) {
   const plan = PLANS[planId as keyof typeof PLANS];
   if (!plan) throw new Error('Invalid Plan');
 
+  const razorpay = getRazorpayInstance();
   const options = {
     amount: plan.amount * 100, // Razorpay expects paise
     currency: 'INR',
@@ -60,7 +66,7 @@ export async function verifyRazorpayPayment(data: {
   const { orderId, paymentId, signature, userId, userEmail, planId } = data;
   const plan = PLANS[planId as keyof typeof PLANS];
 
-  // 1. Backend Verification
+  // 1. Secure Signature Verification
   const generatedSignature = crypto
     .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || '')
     .update(`${orderId}|${paymentId}`)
@@ -70,9 +76,7 @@ export async function verifyRazorpayPayment(data: {
     throw new Error('Payment verification failed. Untrusted signature.');
   }
 
-  // 2. Initialize DB (Server Side)
-  // Note: We use the admin-like initialization here because it's a secure server action
-  // In a real production app, you might use firebase-admin SDK
+  // 2. Database Synchronization
   const { firestore: db } = initializeFirebase();
 
   try {
@@ -83,7 +87,7 @@ export async function verifyRazorpayPayment(data: {
       updatedAt: serverTimestamp() 
     }, { merge: true });
 
-    // 4. Record Subscription
+    // 4. Record Subscription Registry
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 30);
 
@@ -98,7 +102,7 @@ export async function verifyRazorpayPayment(data: {
       paymentId
     });
 
-    // 5. Create Payment Log
+    // 5. Log Verified Transaction
     await addDoc(collection(db, 'payments'), {
       userId,
       userEmail,
@@ -113,7 +117,7 @@ export async function verifyRazorpayPayment(data: {
 
     return { success: true };
   } catch (e) {
-    console.error('Firestore Verification Sync Error:', e);
-    throw new Error('Payment verified but database update failed. Contact support.');
+    console.error('Firestore Sync Error:', e);
+    throw new Error('Payment verified but database update failed.');
   }
 }

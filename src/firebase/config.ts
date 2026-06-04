@@ -1,5 +1,3 @@
-'use client';
-
 export const firebaseConfig = {
   apiKey: "AIzaSyD2zUm458U4N7rN1YObDrcnM1HUAjxHB6U",
   authDomain: "cracklix0.firebaseapp.com",
