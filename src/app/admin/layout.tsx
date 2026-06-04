@@ -1,7 +1,7 @@
 'use client';
 
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { LayoutDashboard, Database, ClipboardList, TrendingUp, Settings, Users, LogOut, Bell, ShieldCheck, GraduationCap, Zap, Newspaper, AlertCircle, AlertTriangle, FileText, Activity, ShieldAlert, HeartPulse, HelpCircle } from "lucide-react"
+import { LayoutDashboard, Database, ClipboardList, TrendingUp, Settings, Users, LogOut, Bell, ShieldCheck, GraduationCap, Zap, Newspaper, AlertCircle, AlertTriangle, FileText, Activity, ShieldAlert, HeartPulse, HelpCircle, Upload } from "lucide-react"
 import Link from "next/link"
 import Logo from "@/components/brand/Logo"
 import { useUser, useAuth } from "@/firebase"
@@ -47,11 +47,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <SidebarGroupLabel className="px-6 text-xs font-black uppercase tracking-widest text-white/20">Data Operations</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  <AdminNavItem icon={<Database />} label="MCQ Bank" href="/admin/questions" active={pathname === "/admin/questions"} />
-                  <AdminNavItem icon={<Zap className="text-primary fill-primary/20" />} label="Bulk Import" href="/admin/questions/bulk" active={pathname === "/admin/questions/bulk"} />
+                  <AdminNavItem icon={<LayoutDashboard />} label="Dashboard" href="/admin" active={pathname === "/admin"} />
+                  <AdminNavItem icon={<Database />} label="Question Bank" href="/admin/questions" active={pathname === "/admin/questions"} />
+                  <AdminNavItem icon={<Upload className="text-primary" />} label="Bulk Import" href="/admin/bulk-import" active={pathname === "/admin/bulk-import"} />
                   <AdminNavItem icon={<ClipboardList />} label="Mock Builder" href="/admin/mocks" active={pathname === "/admin/mocks"} />
-                  <AdminNavItem icon={<ShieldAlert className="text-rose-500" />} label="Integrity QA" href="/admin/qa" active={pathname === "/admin/qa"} />
-                  <AdminNavItem icon={<AlertTriangle className="text-rose-400" />} label="Audit Flags" href="/admin/reports" active={pathname === "/admin/reports"} />
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
@@ -68,16 +67,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </SidebarGroup>
 
             <SidebarGroup className="mt-4">
-              <SidebarGroupLabel className="px-6 text-xs font-black uppercase tracking-widest text-white/20">Core Management</SidebarGroupLabel>
+              <SidebarGroupLabel className="px-6 text-xs font-black uppercase tracking-widest text-white/20">System Control</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  <AdminNavItem icon={<LayoutDashboard />} label="Command Center" href="/admin" active={pathname === "/admin"} />
-                  <AdminNavItem icon={<HeartPulse className="text-rose-400" />} label="System Health" href="/admin/health" active={pathname === "/admin/health"} />
-                  <AdminNavItem icon={<HelpCircle className="text-blue-400" />} label="Support Hub" href="/admin/support" active={pathname === "/admin/support"} />
+                  <AdminNavItem icon={<HeartPulse className="text-rose-400" />} label="Platform Health" href="/admin/health" active={pathname === "/admin/health"} />
                   <AdminNavItem icon={<GraduationCap />} label="Exams & Boards" href="/admin/exams" active={pathname === "/admin/exams"} />
                   <AdminNavItem icon={<Users />} label="Aspirant Registry" href="/admin/users" active={pathname === "/admin/users"} />
-                  <AdminNavItem icon={<Activity />} label="Audit Logs" href="/admin/audit-logs" active={pathname === "/admin/audit-logs"} />
-                  <AdminNavItem icon={<TrendingUp />} label="Analytics Engine" href="/admin/analytics" active={pathname === "/admin/analytics"} />
+                  <AdminNavItem icon={<TrendingUp />} label="Result Analytics" href="/admin/analytics" active={pathname === "/admin/analytics"} />
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
@@ -85,7 +81,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <SidebarGroup className="mt-auto pb-8">
               <SidebarMenu>
                 {(profile?.role === 'SUPER_ADMIN' || isFounder) && (
-                  <AdminNavItem icon={<Settings />} label="Portal Settings" href="/admin/settings" active={pathname === "/admin/settings"} />
+                  <AdminNavItem icon={<Settings />} label="Global Settings" href="/admin/settings" active={pathname === "/admin/settings"} />
                 )}
                 <SidebarMenuItem>
                    <SidebarMenuButton onClick={handleLogout} className="px-6 text-destructive/70 hover:bg-destructive/10 hover:text-destructive transition-colors h-11">
@@ -104,21 +100,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div className="h-4 w-[1px] bg-slate-200 mx-2 hidden sm:block" />
               <div className="flex items-center gap-2 truncate">
                  <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0F172A] truncate">Management System</span>
+                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0F172A] truncate">Cracklix Management System</span>
               </div>
             </div>
-            <div className="flex items-center gap-6 shrink-0">
-              <div className="flex items-center gap-4">
-                <div className="text-right hidden md:block">
+            <div className="flex items-center gap-4">
+               <div className="text-right hidden md:block">
                   <p className="text-xs font-black leading-none truncate max-w-[150px] text-[#0F172A] uppercase">{displayName}</p>
-                  <p className="text-[9px] text-slate-500 uppercase font-black tracking-widest mt-1">
-                    {profile?.role === 'SUPER_ADMIN' || isFounder ? 'Lead Authority' : 'Content Admin'}
-                  </p>
-                </div>
-                <div className="h-9 w-9 rounded-xl bg-[#0F172A] flex items-center justify-center border border-[#0F172A]">
+                  <p className="text-[9px] text-slate-500 uppercase font-black tracking-widest mt-1">Lead Authority</p>
+               </div>
+               <div className="h-9 w-9 rounded-xl bg-[#0F172A] flex items-center justify-center border border-[#0F172A]">
                   <span className="font-black text-white text-xs">{displayName.split(' ').map(n => n[0]).join('')}</span>
-                </div>
-              </div>
+               </div>
             </div>
           </header>
           <main className="flex-1 p-8 overflow-y-auto bg-white">

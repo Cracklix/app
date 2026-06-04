@@ -1,14 +1,9 @@
 /**
  * @fileOverview Institutional Multi-Format Ingestion Engine.
- * Supports: Tagged/Line-Based Bilingual, OCR Columnar, and Metadata Injection.
+ * Extracts questions, options, answers, and images from structured and OCR text.
  */
 
-import { Question, Difficulty, DiagramType } from "@/types";
-
-export type ImportFormat = 
-  | 'BILINGUAL_TAGGED' 
-  | 'OCR_COLUMNAR' 
-  | 'STANDARD_MCQ';
+import { Question, Difficulty, MockType } from "@/types";
 
 export interface ParsedResults {
   questions: Partial<Question>[];
@@ -16,108 +11,120 @@ export interface ParsedResults {
 }
 
 export function parseBulkQuestions(
-  rawText: string, 
-  format: ImportFormat,
-  metadata: { 
-    boardId: string; 
-    examId: string; 
-    subjectId: string; 
-    chapterId?: string;
+  rawText: string,
+  metadata: {
+    board: string;
+    exam: string;
+    subject: string;
+    chapter: string;
+    language: string;
     difficulty: Difficulty;
-    status: any;
-    languagePreference?: string;
+    mockType: MockType;
   }
 ): ParsedResults {
-  const cleanedText = rawText.replace(/\r\n/g, '\n');
-  const blocks = cleanedText.split(/\[BLOCK_ID:.*?\]/g).filter(b => b.trim().length > 20);
-  
-  if (blocks.length === 0) {
-    // Attempt parsing even without BLOCK_ID if it's standard format, but for Cracklix, tagged is preferred.
-    return { questions: [], errors: ["No valid [BLOCK_ID] markers found. Please use the tagged format."] };
-  }
-
-  const parsedQuestions: Partial<Question>[] = [];
+  const questions: Partial<Question>[] = [];
   const errors: string[] = [];
 
-  blocks.forEach((block, index) => {
-    const fullText = block.trim();
-    const getTagValue = (tag: string, endTags: string[]) => {
-      const regex = new RegExp(`${tag}\\s*(.*?)(?=${endTags.map(t => '\\n?' + t.replace(/[\[\]]/g, '\\$&')).join('|')}|$)`, 'is');
-      const match = fullText.match(regex);
-      return match ? match[1].trim() : "";
-    };
+  // Normalize line endings
+  const text = rawText.replace(/\r\n/g, '\n').trim();
+  
+  // Split by Question markers (Q1., Q1 EN:, Q1 PA:, etc.)
+  // This identifies the start of a new question block
+  const questionBlocks = text.split(/\n(?=Q\d+[:.]?)/i).filter(b => b.trim().length > 0);
 
-    const tags = ['ENG_Q:', 'PUN_Q:', 'ENG_OPT:', 'PUN_OPT:', 'ENG_ANS:', 'PUN_ANS:', 'ENG_EXP:', 'PUN_EXP:', 'IMAGE_URL:', 'TABLE_DATA:'];
-    
-    const qEn = getTagValue('ENG_Q:', tags);
-    const qPa = getTagValue('PUN_Q:', tags);
-    const rawOptEn = getTagValue('ENG_OPT:', tags);
-    const rawOptPa = getTagValue('PUN_OPT:', tags);
+  if (questionBlocks.length === 0) {
+    return { questions: [], errors: ["No question markers (e.g., Q1.) detected in the text."] };
+  }
 
-    const splitOpts = (raw: string) => {
-      if (!raw) return [];
-      // Handle pipe separators or newlines
-      if (raw.includes('|')) return raw.split('|').map(s => s.trim().replace(/^[A-D][\.\)]\s*/i, ''));
-      return raw.split(/\n/).filter(s => s.trim().length > 0).map(s => s.trim().replace(/^[A-D][\.\)]\s*/i, ''));
-    };
+  questionBlocks.forEach((block, index) => {
+    try {
+      const qNumMatch = block.match(/^Q(\d+)/i);
+      const qNum = qNumMatch ? qNumMatch[1] : (index + 1).toString();
 
-    const optsEn = splitOpts(rawOptEn);
-    const optsPa = splitOpts(rawOptPa);
+      // Extraction logic for Bilingual/Standard formats
+      const getField = (startRegex: RegExp, endRegexes: RegExp[]) => {
+        const lines = block.split('\n');
+        let startLine = -1;
+        for(let i=0; i<lines.length; i++) {
+          if(startRegex.test(lines[i])) {
+            startLine = i;
+            break;
+          }
+        }
+        if (startLine === -1) return "";
 
-    const ans = getTagValue('ENG_ANS:', tags) || getTagValue('PUN_ANS:', tags);
-    const expEn = getTagValue('ENG_EXP:', tags);
-    const expPa = getTagValue('PUN_EXP:', tags);
-    const imgUrl = getTagValue('IMAGE_URL:', tags);
-    const rawTable = getTagValue('TABLE_DATA:', tags);
+        let content = lines[startLine].replace(startRegex, '').trim();
+        for(let i = startLine + 1; i < lines.length; i++) {
+          if (endRegexes.some(re => re.test(lines[i]))) break;
+          content += '\n' + lines[i].trim();
+        }
+        return content.trim();
+      };
 
-    // Validation
-    if (!qEn && !qPa) {
-      errors.push(`Block ${index + 1}: Missing Question Statement`);
-      return;
+      const markers = [
+        /^Q\d+\s+EN:/i, /^Q\d+\s+PA:/i, /^Q\d+[:.]?/i,
+        /^A\s+EN:/i, /^A\s+PA:/i, /^A[:.]/i,
+        /^B\s+EN:/i, /^B\s+PA:/i, /^B[:.]/i,
+        /^C\s+EN:/i, /^C\s+PA:/i, /^C[:.]/i,
+        /^D\s+EN:/i, /^D\s+PA:/i, /^D[:.]/i,
+        /^Answer[:.]/i, /^ANS[:.]/i,
+        /^Explanation\s+EN:/i, /^Explanation\s+PA:/i, /^Explanation[:.]/i,
+        /^Image[:.]/i
+      ];
+
+      // Question Content
+      let questionEn = getField(/^Q\d+\s+EN:/i, markers) || getField(/^Q\d+[:.]/i, markers);
+      let questionPa = getField(/^Q\d+\s+PA:/i, markers);
+
+      // Options
+      const optionAEn = getField(/^A\s+EN:/i, markers) || getField(/^A[:.]/i, markers);
+      const optionAPa = getField(/^A\s+PA:/i, markers);
+      const optionBEn = getField(/^B\s+EN:/i, markers) || getField(/^B[:.]/i, markers);
+      const optionBPa = getField(/^B\s+PA:/i, markers);
+      const optionCEn = getField(/^C\s+EN:/i, markers) || getField(/^C[:.]/i, markers);
+      const optionCPa = getField(/^C\s+PA:/i, markers);
+      const optionDEn = getField(/^D\s+EN:/i, markers) || getField(/^D[:.]/i, markers);
+      const optionDPa = getField(/^D\s+PA:/i, markers);
+
+      // Answer
+      const answerRaw = getField(/^(Answer|ANS)[:.]/i, markers);
+      const correctAnswerMatch = answerRaw.match(/([A-D])/i);
+      const correctAnswer = correctAnswerMatch ? correctAnswerMatch[1].toUpperCase() as 'A' | 'B' | 'C' | 'D' : undefined;
+
+      // Explanation
+      const explanationEn = getField(/^Explanation\s+EN:/i, markers) || getField(/^Explanation[:.]/i, markers);
+      const explanationPa = getField(/^Explanation\s+PA:/i, markers);
+
+      // Image
+      const imageUrl = getField(/^Image[:.]/i, markers);
+
+      // Validation
+      if (!questionEn && !questionPa) throw new Error(`Missing question text`);
+      if (!optionAEn && !optionAPa) throw new Error(`Missing Option A`);
+      if (!correctAnswer) throw new Error(`Missing or invalid Answer (Must be A, B, C, or D)`);
+
+      questions.push({
+        ...metadata,
+        questionEn,
+        questionPa,
+        optionAEn,
+        optionAPa: optionAPa || optionAEn,
+        optionBEn,
+        optionBPa: optionBPa || optionBEn,
+        optionCEn,
+        optionCPa: optionCPa || optionCEn,
+        optionDEn,
+        optionDPa: optionDPa || optionDEn,
+        correctAnswer,
+        explanationEn: explanationEn || "Solution verified by Cracklix.",
+        explanationPa: explanationPa || explanationEn || "ਵਿਵਸਥਿਤ ਹੱਲ।",
+        imageUrl: imageUrl || "",
+      });
+
+    } catch (err: any) {
+      errors.push(`Question ${index + 1}: ${err.message}`);
     }
-    if (optsEn.length < 4 && optsPa.length < 4) {
-      errors.push(`Block ${index + 1}: Missing Options (Found EN:${optsEn.length}, PA:${optsPa.length})`);
-      return;
-    }
-    if (!ans) {
-      errors.push(`Block ${index + 1}: Missing Correct Answer (A-D)`);
-      return;
-    }
-
-    let diagType: DiagramType = 'none';
-    let tableData = undefined;
-    if (rawTable) {
-      try { 
-        tableData = JSON.parse(rawTable); 
-        diagType = 'table'; 
-      } catch(e) {
-        errors.push(`Block ${index + 1}: Invalid TABLE_DATA JSON`);
-      }
-    }
-    if (imgUrl) diagType = 'image';
-
-    parsedQuestions.push({
-      ...metadata,
-      questionEn: qEn,
-      questionPa: qPa,
-      optionAEn: optsEn[0] || "",
-      optionBEn: optsEn[1] || "",
-      optionCEn: optsEn[2] || "",
-      optionDEn: optsEn[3] || "",
-      optionAPa: optsPa[0] || optsEn[0] || "",
-      optionBPa: optsPa[1] || optsEn[1] || "",
-      optionCPa: optsPa[2] || optsEn[2] || "",
-      optionDPa: optsPa[3] || optsEn[3] || "",
-      correctAnswer: (ans.charAt(0).toUpperCase()) as 'A' | 'B' | 'C' | 'D',
-      explanationEn: expEn || "Verified Solution",
-      explanationPa: expPa || expEn || "ਵਿਵਸਥਿਤ ਹੱਲ",
-      diagramType: diagType,
-      imageUrl: imgUrl,
-      tableData,
-      status: metadata.status || 'PUBLISHED',
-      questionType: (qPa && qEn) ? 'BILINGUAL_MCQ' : 'MCQ'
-    });
   });
 
-  return { questions: parsedQuestions, errors };
+  return { questions, errors };
 }

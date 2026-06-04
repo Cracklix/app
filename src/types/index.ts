@@ -55,73 +55,40 @@ export interface Chapter {
   name: string;
 }
 
-export interface PatternSection {
-  name: string;
-  count: number;
-  subjectId: string;
-}
-
-export interface ExamPattern {
-  id: string;
-  examId: string;
-  examName: string;
-  totalQuestions: number;
-  duration: number;
-  negativeMarking: boolean;
-  sections: PatternSection[];
-}
-
 export interface Question {
-  id: string;
-  boardId: string;
-  examId: string;
-  subjectId: string;
-  chapterId?: string;
+  id?: string;
+  board: string;
+  exam: string;
+  subject: string;
+  chapter: string;
+  language: string;
   difficulty: Difficulty;
-  status: ContentStatus;
-  questionType: QuestionType;
-  
-  // Content Node
+  mockType?: MockType;
+
   questionEn: string;
   questionPa: string;
-  
-  // Metadata Text
-  instructionEn?: string;
-  instructionPa?: string;
-  passageEn?: string;
-  passagePa?: string;
-  
-  // Options
+
   optionAEn: string;
-  optionBEn: string;
-  optionCEn: string;
-  optionDEn: string;
   optionAPa: string;
+  optionBEn: string;
   optionBPa: string;
+  optionCEn: string;
   optionCPa: string;
+  optionDEn: string;
   optionDPa: string;
-  
-  // Logic
+
   correctAnswer: 'A' | 'B' | 'C' | 'D';
+
   explanationEn: string;
   explanationPa: string;
-  
-  // Visual/DI Nodes
-  diagramType: DiagramType;
+
   imageUrl?: string;
-  tableData?: {
-    headers: string[];
-    rows: string[][];
-  };
-  chartConfig?: {
-    type: 'bar' | 'pie' | 'line';
-    labels: string[];
-    values: number[];
-  };
+  diagramType?: DiagramType;
+  tableData?: any;
+  chartConfig?: any;
 
   createdAt: any;
-  updatedAt?: any;
-  isStandalone?: boolean;
+  updatedAt: any;
 }
 
 export interface MockTest {
@@ -130,25 +97,21 @@ export interface MockTest {
   boardId: string;
   examId: string;
   mockType: MockType;
-  examType: ExamType;
   duration: number;
   totalQuestions: number;
   questionIds: string[];
   difficulty: string;
   published: boolean;
   isPremium?: boolean;
-  status: ContentStatus;
-  
-  // CMS Metadata
-  subjectId?: string;
-  chapterId?: string;
-  year?: number;
-  paperName?: string;
-  caCategory?: string;
-  caQuizType?: CAQuizType;
+  passingMarks?: number;
+  negativeMarking?: number;
+  instructions?: string;
+  language?: string;
+  randomizeQuestions?: boolean;
+  randomizeOptions?: boolean;
   
   createdAt: any;
-  updatedAt?: any;
+  updatedAt: any;
 }
 
 export interface UserProfile {
