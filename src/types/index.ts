@@ -8,12 +8,15 @@ export type CAQuizType = 'DAILY' | 'WEEKLY' | 'MONTHLY';
 export type QuestionType = 
   | 'MCQ' 
   | 'BILINGUAL_MCQ' 
-  | 'PASSAGE' 
-  | 'DI_TABLE' 
-  | 'DI_CHART' 
-  | 'MATCHING' 
+  | 'IMAGE_MCQ'
+  | 'MATCHING'
   | 'ASSERTION_REASON'
-  | 'SEATING_ARRANGEMENT';
+  | 'TABLE_MCQ'
+  | 'PASSAGE'
+  | 'PASSAGE_QUESTION'
+  | 'DI_SET'
+  | 'DI_QUESTION'
+  | 'CURRENT_AFFAIRS';
 
 export type DiagramType = 
   | 'none' 
@@ -45,6 +48,10 @@ export interface Question {
   questionType: QuestionType;
   diagramType: DiagramType;
 
+  // Context IDs for Sets
+  parentSetId?: string;
+  passageId?: string;
+
   // Primary Content
   instructionEn?: string;
   instructionPa?: string;
@@ -70,12 +77,14 @@ export interface Question {
 
   // Visual/Complex Data
   imageUrl?: string;
-  tableData?: any; // Structured JSON for DI tables
-  chartConfig?: any; // Recharts compatible config
+  tableData?: any; 
+  chartConfig?: any;
+
+  // Meta for CA
+  date?: string;
+  category?: string;
 
   isStandalone?: boolean;
-  parentSetId?: string; // For linking DI questions to a set
-
   createdAt: any;
   updatedAt: any;
   author?: string;
@@ -99,7 +108,6 @@ export interface MockTest {
   language?: string;
   sections?: MockSection[];
   
-  // Type specific metadata
   subjectId?: string;
   chapterId?: string;
   year?: number;

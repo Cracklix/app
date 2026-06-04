@@ -1,6 +1,6 @@
 /**
- * @fileOverview Production-Grade Institutional Ingestion Engine.
- * Supports Standard, Bilingual, Image-Based, DI Sets, and Passages.
+ * @fileOverview Ultimate Production-Grade Institutional Ingestion Engine.
+ * Supports: MCQ, Image MCQ, Matching, Assertion-Reason, DI Sets, Passage Sets, and CA.
  */
 
 import { Question, Difficulty, MockType, ContentStatus, QuestionType, DiagramType } from "@/types";
@@ -26,91 +26,101 @@ export function parseBulkQuestions(
   const questions: Partial<Question>[] = [];
   const errors: string[] = [];
   
-  // Normalize line endings and trim
   const text = rawText.replace(/\r\n/g, '\n').trim();
   
-  // Split by [BLOCK_ID: or Q1. style markers
-  const questionBlocks = text.split(/\[BLOCK_ID:.*?\]|Q\d+[:.]|Question \d+[:.]|\[Q\d+\]/i).filter(b => b.trim().length > 0);
+  // Use === or [BLOCK_ID or QUESTION_TYPE as separators
+  const blocks = text.split(/(?:={3,}|\[BLOCK_ID:|QUESTION_TYPE:)/i)
+    .map(b => b.trim())
+    .filter(b => b.length > 0);
 
-  if (questionBlocks.length === 0) {
-    return { questions: [], errors: ["No valid block markers detected. Use [BLOCK_ID: Q1] or Q1. format."], confidence: 0 };
+  if (blocks.length === 0) {
+    return { questions: [], errors: ["No valid content blocks detected. Use === to separate questions."], confidence: 0 };
   }
 
-  questionBlocks.forEach((block, index) => {
+  blocks.forEach((block, index) => {
     try {
-      const getTagContent = (tag: string) => {
+      // If we split by QUESTION_TYPE:, we need to put it back for the regex to work
+      const content = block.toUpperCase().includes('QUESTION_EN') ? block : `QUESTION_TYPE: ${block}`;
+      
+      const getTag = (tag: string) => {
         const regex = new RegExp(`${tag}:?\\s*([\\s\\S]*?)(?=\\n[A-Z_\\d\\s]+:?|$)`, 'i');
-        const match = block.match(regex);
+        const match = content.match(regex);
         return match ? match[1].trim() : "";
       };
 
-      // 1. Core Question Fields
-      const questionEn = getTagContent("ENG_Q") || getTagContent("Question EN") || getTagContent("Question");
-      const questionPa = getTagContent("PUN_Q") || getTagContent("Question PA");
+      const qTypeRaw = getTag("QUESTION_TYPE") || "MCQ";
+      const qType = qTypeRaw.toUpperCase() as QuestionType;
       
-      // 2. Options Extraction (Supporting pipe separator | or newlines)
-      let optAEn = getTagContent("ENG_OPT A") || getTagContent("A EN");
-      let optAPa = getTagContent("PUN_OPT A") || getTagContent("A PA");
-      let optBEn = getTagContent("ENG_OPT B") || getTagContent("B EN");
-      let optBPa = getTagContent("PUN_OPT B") || getTagContent("B PA");
-      let optCEn = getTagContent("ENG_OPT C") || getTagContent("C EN");
-      let optCPa = getTagContent("PUN_OPT C") || getTagContent("C PA");
-      let optDEn = getTagContent("ENG_OPT D") || getTagContent("D EN");
-      let optDPa = getTagContent("PUN_OPT D") || getTagContent("D PA");
-
-      // Handle Bunched Options (e.g., ENG_OPT: A. X | B. Y)
-      const fullOptEn = getTagContent("ENG_OPT");
-      if (fullOptEn) {
-        const parts = fullOptEn.split(/[A-D]\.\s*|\|/).map(p => p.trim()).filter(Boolean);
-        if (parts.length >= 4) {
-          optAEn = parts[0]; optBEn = parts[1]; optCEn = parts[2]; optDEn = parts[3];
-        }
-      }
+      const questionEn = getTag("QUESTION_EN");
+      const questionPa = getTag("QUESTION_PA");
       
-      const fullOptPa = getTagContent("PUN_OPT");
-      if (fullOptPa) {
-        const parts = fullOptPa.split(/[A-D]\.\s*|\|/).map(p => p.trim()).filter(Boolean);
-        if (parts.length >= 4) {
-          optAPa = parts[0]; optBPa = parts[1]; optCPa = parts[2]; optDPa = parts[3];
-        }
-      }
+      const optAEn = getTag("OPTION_A_EN");
+      const optAPa = getTag("OPTION_A_PA");
+      const optBEn = getTag("OPTION_B_EN");
+      const optBPa = getTag("OPTION_B_PA");
+      const optCEn = getTag("OPTION_C_EN");
+      const optCPa = getTag("OPTION_C_PA");
+      const optDEn = getTag("OPTION_D_EN");
+      const optDPa = getTag("OPTION_D_PA");
 
-      // 3. Answer & Explanation
-      const ansRaw = getTagContent("ENG_ANS") || getTagContent("Answer") || getTagContent("PUN_ANS");
-      const correctAnswer = ansRaw.match(/[A-D]/i)?.[0].toUpperCase() as any;
-      const explanationEn = getTagContent("ENG_EXP") || getTagContent("Explanation EN") || getTagContent("Explanation");
-      const explanationPa = getTagContent("PUN_EXP") || getTagContent("Explanation PA");
+      const ansRaw = getTag("ANSWER");
+      const correctAnswer = (ansRaw.match(/[A-D]/i)?.[0].toUpperCase() || "A") as 'A' | 'B' | 'C' | 'D';
+      
+      const explanationEn = getTag("EXPLANATION_EN");
+      const explanationPa = getTag("EXPLANATION_PA");
+      
+      const imageUrl = getTag("IMAGE_URL");
+      const tableDataRaw = getTag("TABLE_DATA");
+      const diSetId = getTag("DI_SET_ID");
+      const passageId = getTag("PASSAGE_ID");
+      const passageEn = getTag("PASSAGE_EN");
+      const passagePa = getTag("PASSAGE_PA");
+      
+      const date = getTag("DATE");
+      const category = getTag("CATEGORY");
+      const title = getTag("TITLE");
+      const description = getTag("DESCRIPTION");
 
-      // 4. Visual/Complex DI/Diagram Tags
-      const imageUrl = getTagContent("IMAGE_URL") || getTagContent("Image") || getTagContent("DIAGRAM");
-      const instructionEn = getTagContent("INSTRUCTION_EN") || getTagContent("Instruction");
-      const instructionPa = getTagContent("INSTRUCTION_PA");
-      const passageEn = getTagContent("PASSAGE_EN") || getTagContent("Passage");
-      const passagePa = getTagContent("PASSAGE_PA");
-      const tableDataRaw = getTagContent("TABLE_DATA");
+      // Handle DI Table Data Parsing (Pipe | Separated)
       let tableData = undefined;
       if (tableDataRaw) {
-        try { tableData = JSON.parse(tableDataRaw); } catch (e) { errors.push(`Block ${index + 1}: Invalid Table JSON format.`); }
+        try {
+          const lines = tableDataRaw.split('\n').filter(l => l.trim().length > 0);
+          if (lines.length > 0) {
+            const headers = lines[0].split('|').map(h => h.trim());
+            const rows = lines.slice(1).map(r => r.split('|').map(c => c.trim()));
+            tableData = { headers, rows };
+          }
+        } catch (e) {
+          errors.push(`Block ${index + 1}: Failed to parse TABLE_DATA format.`);
+        }
       }
 
-      // 5. Logic Mapping
-      let qType: QuestionType = 'MCQ';
+      // Logic Mapping for Diagram Type
       let dType: DiagramType = 'none';
+      if (imageUrl) dType = 'image';
+      if (tableData) dType = 'table';
 
-      if (passageEn) qType = 'PASSAGE';
-      if (imageUrl) { qType = 'IMAGE_MCQ' as any; dType = 'image'; }
-      if (tableData) { qType = 'DI_TABLE'; dType = 'table'; }
-
-      // Final Defaults
-      if (!questionEn && !passageEn) throw new Error("Empty question statement.");
-      if (!correctAnswer) throw new Error("Correct answer marker (A-D) not found.");
+      // Validation
+      if (!questionEn && !passageEn && !title) {
+        throw new Error("Missing content statement.");
+      }
 
       questions.push({
         ...metadata,
+        id: `q-${Date.now()}-${index}`,
         questionType: qType,
         diagramType: dType,
-        questionEn,
-        questionPa: questionPa || questionEn,
+        parentSetId: diSetId || undefined,
+        passageId: passageId || undefined,
+        
+        questionEn: questionEn || title || "",
+        questionPa: questionPa || questionEn || "",
+        
+        instructionEn: description || undefined,
+        passageEn: passageEn || undefined,
+        passagePa: passagePa || undefined,
+
         optionAEn: optAEn || "Option A",
         optionAPa: optAPa || optAEn || "ਵਿਕਲਪ A",
         optionBEn: optBEn || "Option B",
@@ -119,15 +129,16 @@ export function parseBulkQuestions(
         optionCPa: optCPa || optCEn || "ਵਿਕਲਪ C",
         optionDEn: optDEn || "Option D",
         optionDPa: optDPa || optDEn || "ਵਿਕਲਪ D",
-        correctAnswer: correctAnswer,
-        explanationEn: explanationEn || "No explanation provided.",
-        explanationPa: explanationPa || explanationEn || "ਕੋਈ ਵਿਆਖਿਆ ਨਹੀਂ ਦਿੱਤੀ ਗਈ।",
+
+        correctAnswer,
+        explanationEn: explanationEn || "Explanation in English",
+        explanationPa: explanationPa || explanationEn || "ਵਿਆਖਿਆ ਪੰਜਾਬੀ ਵਿੱਚ",
+        
         imageUrl,
-        instructionEn,
-        instructionPa,
-        passageEn,
-        passagePa,
         tableData,
+        date,
+        category,
+        
         isStandalone: true,
         status: metadata.status
       });

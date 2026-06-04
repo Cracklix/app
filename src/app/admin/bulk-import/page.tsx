@@ -26,7 +26,8 @@ import {
   Copy,
   Layers,
   Save,
-  ImageIcon
+  ImageIcon,
+  FileCode
 } from "lucide-react"
 import { useFirestore, useCollection } from "@/firebase"
 import { collection, doc, writeBatch, serverTimestamp, setDoc } from "firebase/firestore"
@@ -36,7 +37,7 @@ import { Difficulty, MockType, Question, ContentStatus, MockSection } from "@/ty
 
 /**
  * @fileOverview Enterprise Bulk Import & Publishing Hub.
- * Features: High-fidelity image rendering, quad-format parser, and direct deployment.
+ * Ultimate Format Support: MCQ, DI Sets, Passage Sets, Matching, Assertion-Reason.
  */
 
 export default function BulkImportPage() {
@@ -45,7 +46,6 @@ export default function BulkImportPage() {
   const { toast } = useToast()
   
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
-  const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
 
   // 1. Config State
@@ -66,7 +66,7 @@ export default function BulkImportPage() {
     passingMarks: 50,
   })
 
-  // 2. Section Builder State (For Full Mocks)
+  // 2. Section Builder State
   const [sections, setSections] = useState<MockSection[]>([
     { id: 'sec-1', name: 'Section 1', subjectId: '', questionCount: 0, duration: 30, marksPerQuestion: 1 }
   ])
@@ -77,7 +77,6 @@ export default function BulkImportPage() {
   const [parseErrors, setParseErrors] = useState<string[]>([])
   const [confidence, setConfidence] = useState(0)
   
-  // 4. Workflow State
   const [isSyncing, setIsSyncing] = useState(false)
 
   const addSection = () => {
@@ -109,9 +108,9 @@ export default function BulkImportPage() {
     setConfidence(conf)
 
     if (errors.length > 0) {
-      toast({ variant: "destructive", title: "Template Mismatch", description: `Found ${errors.length} formatting errors.` })
+      toast({ variant: "destructive", title: "Template Mismatch", description: `Found ${errors.length} errors in structure.` })
     } else {
-      toast({ title: "Analysis Complete", description: `${questions.length} nodes structured with ${conf}% confidence.` })
+      toast({ title: "Audit Complete", description: `${questions.length} nodes structured with ${conf}% confidence.` })
     }
   }
 
@@ -122,7 +121,6 @@ export default function BulkImportPage() {
     const batch = writeBatch(db)
     const questionIds: string[] = []
 
-    // 1. Commit Questions
     parsedQuestions.forEach(q => {
       const qRef = doc(collection(db, "questions"))
       batch.set(qRef, {
@@ -136,15 +134,13 @@ export default function BulkImportPage() {
       questionIds.push(qRef.id)
     })
 
-    // 2. Commit Mock Series
     const mockId = `mock-${Date.now()}`
     const mockRef = doc(db, "mocks", mockId)
     
-    const mockPayload = {
+    batch.set(mockRef, {
       id: mockId,
       title: metadata.title || `${metadata.boardId} ${metadata.mockType} - ${new Date().toLocaleDateString()}`,
       boardId: metadata.boardId,
-      examId: metadata.examId,
       mockType: metadata.mockType,
       duration: totalCalc.duration,
       totalQuestions: questionIds.length,
@@ -161,13 +157,11 @@ export default function BulkImportPage() {
       caCategory: metadata.caCategory,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
-    }
-
-    batch.set(mockRef, mockPayload)
+    })
 
     try {
       await batch.commit()
-      toast({ title: targetStatus === 'PUBLISHED' ? "Series Live" : "Draft Saved", description: `${parsedQuestions.length} nodes successfully deployed.` })
+      toast({ title: "Deployment Success", description: `${parsedQuestions.length} nodes successfully committed.` })
       router.push("/admin/mocks")
     } catch (e) {
       toast({ variant: "destructive", title: "Sync Failed", description: "Database rejected the transaction." })
@@ -184,8 +178,8 @@ export default function BulkImportPage() {
             <ChevronLeft className="h-6 w-6" />
           </Button>
           <div>
-            <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Rapid Deployment Hub</h1>
-            <p className="text-slate-500 font-medium">Configure, Ingest, and Publish Test Series in one cycle.</p>
+            <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Institutional Ingestion</h1>
+            <p className="text-slate-500 font-medium">Ultimate Ingestion Framework for MCQ, DI Sets, and Passages.</p>
           </div>
         </div>
         <div className="flex gap-4">
@@ -199,13 +193,12 @@ export default function BulkImportPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 px-4">
-        {/* Config Panel */}
         <div className="lg:col-span-5 space-y-8">
           <Card className="border-none bg-white shadow-3xl rounded-[3rem] overflow-hidden">
             <div className="h-2 w-full bg-primary" />
             <CardHeader className="p-10 pb-4">
               <CardTitle className="font-headline font-black text-2xl uppercase flex items-center gap-4">
-                <Settings2 className="h-6 w-6 text-primary" /> Master Configuration
+                <Settings2 className="h-6 w-6 text-primary" /> Authority Protocol
               </CardTitle>
             </CardHeader>
             <CardContent className="p-10 pt-4 space-y-8">
@@ -227,156 +220,81 @@ export default function BulkImportPage() {
                    <Select value={metadata.mockType} onValueChange={(v: any) => setMetadata({...metadata, mockType: v})}>
                       <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none font-bold text-[#0F172A]"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                         <SelectItem value="FULL">Entire Pattern (Full Mock)</SelectItem>
+                         <SelectItem value="FULL">Full Exam Pattern</SelectItem>
                          <SelectItem value="SUBJECT">Subject Mastery</SelectItem>
-                         <SelectItem value="SECTIONAL">Sectional / Topic</SelectItem>
-                         <SelectItem value="PYQ">Previous Year Paper</SelectItem>
+                         <SelectItem value="SECTIONAL">Topic / Sectional</SelectItem>
+                         <SelectItem value="PYQ">Previous Year Archive</SelectItem>
                          <SelectItem value="CA_QUIZ">Current Affairs Quiz</SelectItem>
                       </SelectContent>
                    </Select>
                 </div>
               </div>
 
-              {/* Dynamic Type Configuration */}
-              <div className="p-4 md:p-6 bg-slate-50 rounded-[2.5rem] border border-slate-100 space-y-6">
-                 {metadata.mockType === 'FULL' ? (
-                    <div className="space-y-6">
-                       <div className="flex justify-between items-center mb-2">
-                          <h4 className="font-headline font-black text-sm uppercase text-[#0F172A] flex items-center gap-2"><Layers className="h-4 w-4 text-primary" /> Section Builder</h4>
-                          <Button variant="ghost" size="sm" onClick={addSection} className="h-8 rounded-lg text-[9px] font-black uppercase tracking-widest bg-white border border-slate-200"><Plus className="h-3 w-3 mr-1" /> Add Section</Button>
-                       </div>
-                       <div className="space-y-4 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar">
-                          {sections.map((sec, idx) => (
-                             <div key={sec.id} className="p-4 bg-white rounded-2xl border border-slate-200 space-y-4 shadow-sm relative group">
-                                <Button variant="ghost" size="icon" onClick={() => setSections(sections.filter(s => s.id !== sec.id))} className="absolute top-2 right-2 h-8 w-8 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"><Trash2 className="h-4 w-4" /></Button>
-                                
-                                <div className="grid grid-cols-1 gap-4">
-                                   <div className="space-y-1.5">
-                                      <Label className="text-[10px] font-black uppercase text-slate-500 tracking-tight">Section Name</Label>
-                                      <Input value={sec.name} onChange={e => updateSection(sec.id, 'name', e.target.value)} className="h-9 rounded-xl bg-slate-50 border-none text-xs font-bold text-[#0F172A]" />
-                                   </div>
-                                   <div className="space-y-1.5">
-                                      <Label className="text-[10px] font-black uppercase text-slate-500 tracking-tight">Focus Subject</Label>
-                                      <Select value={sec.subjectId} onValueChange={v => updateSection(sec.id, 'subjectId', v)}>
-                                         <SelectTrigger className="h-9 rounded-xl bg-slate-50 border-none text-xs font-bold text-[#0F172A]"><SelectValue placeholder="Select" /></SelectTrigger>
-                                         <SelectContent>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
-                                      </Select>
-                                   </div>
+              {metadata.mockType === 'FULL' && (
+                 <div className="p-6 bg-slate-50 rounded-[2.5rem] border border-slate-100 space-y-6">
+                    <div className="flex justify-between items-center mb-2">
+                       <h4 className="font-headline font-black text-sm uppercase text-[#0F172A] flex items-center gap-2"><Layers className="h-4 w-4 text-primary" /> Section Architect</h4>
+                       <Button variant="ghost" size="sm" onClick={addSection} className="h-8 rounded-lg text-[9px] font-black uppercase tracking-widest bg-white border border-slate-200"><Plus className="h-3 w-3 mr-1" /> Add Node</Button>
+                    </div>
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                       {sections.map((sec) => (
+                          <div key={sec.id} className="p-4 bg-white rounded-2xl border border-slate-200 space-y-4 shadow-sm relative">
+                             <Button variant="ghost" size="icon" onClick={() => setSections(sections.filter(s => s.id !== sec.id))} className="absolute top-2 right-2 h-8 w-8 text-rose-400"><Trash2 className="h-4 w-4" /></Button>
+                             <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                   <Label className="text-[10px] font-black uppercase text-slate-400">Name</Label>
+                                   <Input value={sec.name} onChange={e => updateSection(sec.id, 'name', e.target.value)} className="h-8 text-xs font-bold bg-slate-50 border-none" />
                                 </div>
-
-                                <div className="grid grid-cols-3 gap-3 pt-3 border-t border-slate-50">
-                                   <div className="space-y-1 text-center">
-                                      <Label className="text-[8px] font-black uppercase text-slate-400">QS</Label>
-                                      <Input type="number" value={sec.questionCount.toString()} onChange={e => updateSection(sec.id, 'questionCount', parseInt(e.target.value) || 0)} className="h-8 rounded-lg bg-slate-50 border-none text-[10px] font-black text-center text-emerald-600 px-1" />
-                                   </div>
-                                   <div className="space-y-1 text-center">
-                                      <Label className="text-[8px] font-black uppercase text-slate-400">MINS</Label>
-                                      <Input type="number" value={sec.duration.toString()} onChange={e => updateSection(sec.id, 'duration', parseInt(e.target.value) || 0)} className="h-8 rounded-lg bg-slate-50 border-none text-[10px] font-black text-center text-primary px-1" />
-                                   </div>
-                                   <div className="space-y-1 text-center">
-                                      <Label className="text-[8px] font-black uppercase text-slate-400">MARKS</Label>
-                                      <Input type="number" value={sec.marksPerQuestion.toString()} onChange={e => updateSection(sec.id, 'marksPerQuestion', parseFloat(e.target.value) || 0)} className="h-8 rounded-lg bg-slate-50 border-none text-[10px] font-black text-center text-blue-600 px-1" />
-                                   </div>
+                                <div className="space-y-1.5">
+                                   <Label className="text-[10px] font-black uppercase text-slate-400">Focus</Label>
+                                   <Select value={sec.subjectId} onValueChange={v => updateSection(sec.id, 'subjectId', v)}>
+                                      <SelectTrigger className="h-8 text-xs font-bold bg-slate-50 border-none"><SelectValue placeholder="Subject" /></SelectTrigger>
+                                      <SelectContent>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+                                   </Select>
                                 </div>
                              </div>
-                          ))}
-                       </div>
-                    </div>
-                 ) : (
-                    <div className="grid grid-cols-2 gap-6">
-                       <div className="space-y-2">
-                          <Label className="text-[10px] font-black uppercase text-slate-500">Subject</Label>
-                          <Select value={metadata.subjectId} onValueChange={v => setMetadata({...metadata, subjectId: v})}>
-                             <SelectTrigger className="rounded-xl h-12 bg-white border-none font-bold text-[#0F172A]"><SelectValue placeholder="Select" /></SelectTrigger>
-                             <SelectContent>{subjects?.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
-                          </Select>
-                       </div>
-                       {metadata.mockType === 'SECTIONAL' ? (
-                          <div className="space-y-2">
-                             <Label className="text-[10px] font-black uppercase text-slate-500">Topic / Chapter</Label>
-                             <Input value={metadata.chapterId} onChange={e => setMetadata({...metadata, chapterId: e.target.value})} className="rounded-xl h-12 bg-white border-none font-bold text-[#0F172A]" />
+                             <div className="grid grid-cols-3 gap-3">
+                                <div className="text-center">
+                                   <Label className="text-[8px] font-black text-slate-400 uppercase">QS</Label>
+                                   <Input type="number" value={sec.questionCount.toString()} onChange={e => updateSection(sec.id, 'questionCount', parseInt(e.target.value) || 0)} className="h-8 text-[10px] font-black text-center" />
+                                </div>
+                                <div className="text-center">
+                                   <Label className="text-[8px] font-black text-slate-400 uppercase">MINS</Label>
+                                   <Input type="number" value={sec.duration.toString()} onChange={e => updateSection(sec.id, 'duration', parseInt(e.target.value) || 0)} className="h-8 text-[10px] font-black text-center" />
+                                </div>
+                                <div className="text-center">
+                                   <Label className="text-[8px] font-black text-slate-400 uppercase">MARKS</Label>
+                                   <Input type="number" value={sec.marksPerQuestion.toString()} onChange={e => updateSection(sec.id, 'marksPerQuestion', parseFloat(e.target.value) || 0)} className="h-8 text-[10px] font-black text-center" />
+                                </div>
+                             </div>
                           </div>
-                       ) : metadata.mockType === 'PYQ' ? (
-                          <div className="space-y-2">
-                             <Label className="text-[10px] font-black uppercase text-slate-500">Exam Year</Label>
-                             <Input type="number" value={metadata.year.toString()} onChange={e => setMetadata({...metadata, year: parseInt(e.target.value) || 2025})} className="rounded-xl h-12 bg-white border-none font-bold text-[#0F172A]" />
-                          </div>
-                       ) : (
-                          <div className="space-y-2">
-                             <Label className="text-[10px] font-black uppercase text-slate-500">Category</Label>
-                             <Select value={metadata.caCategory} onValueChange={v => setMetadata({...metadata, caCategory: v})}>
-                                <SelectTrigger className="rounded-xl h-12 bg-white border-none font-bold text-[#0F172A]"><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                   <SelectItem value="Punjab">Punjab Focus</SelectItem>
-                                   <SelectItem value="National">National</SelectItem>
-                                   <SelectItem value="International">International</SelectItem>
-                                   <SelectItem value="Mixed">Institutional Mixed</SelectItem>
-                                </SelectContent>
-                             </Select>
-                          </div>
-                       )}
-                    </div>
-                 )}
-
-                 <div className="grid grid-cols-2 gap-6 pt-4 border-t border-slate-200">
-                    <div className="space-y-2">
-                       <Label className="text-[10px] font-black uppercase text-slate-500">Difficulty</Label>
-                       <Select value={metadata.difficulty} onValueChange={(v: any) => setMetadata({...metadata, difficulty: v})}>
-                          <SelectTrigger className="rounded-xl h-12 bg-white border-none font-bold text-[#0F172A]"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                             <SelectItem value="Easy">Easy</SelectItem>
-                             <SelectItem value="Medium">Medium</SelectItem>
-                             <SelectItem value="Hard">Hard</SelectItem>
-                             <SelectItem value="Mixed">Mixed</SelectItem>
-                          </SelectContent>
-                       </Select>
-                    </div>
-                    <div className="space-y-2">
-                       <Label className="text-[10px] font-black uppercase text-slate-500">Duration (Mins)</Label>
-                       <Input 
-                         type="number" 
-                         disabled={metadata.mockType === 'FULL'}
-                         value={totalCalc.duration.toString()} 
-                         onChange={e => setMetadata({...metadata, duration: parseInt(e.target.value) || 0})} 
-                         className="h-12 rounded-xl bg-white border-none font-black text-lg text-[#0F172A] disabled:bg-slate-100" 
-                       />
+                       ))}
                     </div>
                  </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
-                 <div className="p-6 bg-emerald-50 rounded-2xl border border-emerald-100 text-center">
-                    <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Total questions</p>
-                    <p className="text-3xl font-headline font-black text-emerald-900 mt-1">{totalCalc.questions || 0}</p>
-                 </div>
-                 <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100 text-center">
-                    <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest">Total Duration</p>
-                    <p className="text-3xl font-headline font-black text-blue-900 mt-1">{totalCalc.duration}m</p>
-                 </div>
-              </div>
+              )}
 
               <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3">Ingestion Protocol</p>
-                 <ul className="text-[10px] font-bold text-slate-600 space-y-2">
-                    <li>• Format 1: Q1. -&gt; A. -&gt; B. -&gt; Answer:</li>
-                    <li>• Format 2: Question EN: -&gt; Question PA: -&gt; Answer: [A-D]</li>
-                    <li>• Image Question: Image: [URL] -&gt; Question: [Text]</li>
-                    <li>• Data Table: TABLE_DATA: [JSON]</li>
+                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2"><FileCode className="h-3 w-3" /> ULTIMATE FORMAT TAGS</p>
+                 <ul className="text-[9px] font-bold text-slate-600 space-y-2">
+                    <li>• QUESTION_TYPE: MCQ | IMAGE_MCQ | MATCHING | DI_SET | PASSAGE</li>
+                    <li>• QUESTION_EN / QUESTION_PA</li>
+                    <li>• OPTION_A_EN / OPTION_A_PA (up to D)</li>
+                    <li>• DI_SET_ID / PASSAGE_ID (for context linkage)</li>
+                    <li>• TABLE_DATA: Year | Value (Use | for columns)</li>
                  </ul>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Text Area & Preview */}
         <div className="lg:col-span-7 space-y-8">
            <div className="space-y-3">
               <Label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Ingestion Buffer (Max 1000 Nodes)</Label>
               <Textarea 
                 value={rawText}
                 onChange={e => setRawText(e.target.value)}
-                placeholder="Paste institutional content using standardized blocks..."
-                className="min-h-[400px] rounded-[3rem] bg-white border-none p-12 text-sm font-mono shadow-4xl custom-scrollbar text-[#0F172A]"
+                placeholder="Paste institutional content using ULTIMATE tags..."
+                className="min-h-[500px] rounded-[3rem] bg-white border-none p-12 text-sm font-mono shadow-4xl custom-scrollbar text-[#0F172A]"
               />
               <Button onClick={handleAnalyze} className="w-full h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.3em] rounded-[2.5rem] shadow-4xl mt-6 gap-4">
                  <Zap className="h-6 w-6 fill-current" /> Analyze & Inject Metadata
@@ -390,16 +308,16 @@ export default function BulkImportPage() {
                       <CardTitle className="font-headline font-black text-3xl uppercase">Audit Preview ({parsedQuestions.length})</CardTitle>
                       <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Parser Confidence: {confidence}%</p>
                    </div>
-                   <Badge className="bg-emerald-100 text-emerald-600 border-none font-black px-6 py-2 rounded-xl text-xs uppercase tracking-widest">READY FOR DEPLOYMENT</Badge>
+                   <Badge className="bg-emerald-100 text-emerald-600 border-none font-black px-6 py-2 rounded-xl text-xs uppercase tracking-widest">READY FOR SYNC</Badge>
                 </CardHeader>
                 <CardContent className="p-0">
                    <Table>
                       <TableHeader className="bg-slate-50">
                          <TableRow className="h-20 border-slate-50">
                             <TableHead className="px-12 text-[10px] font-black uppercase">Node</TableHead>
-                            <TableHead className="text-[10px] font-black uppercase">Logic Flow</TableHead>
-                            <TableHead className="text-center text-[10px] font-black uppercase">Key</TableHead>
-                            <TableHead className="text-right px-12 text-[10px] font-black uppercase">Action</TableHead>
+                            <TableHead className="text-[10px] font-black uppercase">Type & Statement</TableHead>
+                            <TableHead className="text-center text-[10px] font-black uppercase">Context</TableHead>
+                            <TableHead className="text-right px-12 text-[10px] font-black uppercase">Control</TableHead>
                          </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -407,31 +325,23 @@ export default function BulkImportPage() {
                            <TableRow key={idx} className="group hover:bg-slate-50/50 border-slate-50 transition-colors">
                               <TableCell className="px-12 py-10 font-black text-slate-300">#{idx + 1}</TableCell>
                               <TableCell className="py-10 max-w-lg">
-                                 <div className="space-y-4 text-left">
-                                    {q.imageUrl && (
-                                       <div className="h-20 w-32 relative rounded-lg overflow-hidden border border-slate-200">
-                                          <img src={q.imageUrl} className="object-cover w-full h-full" alt="Preview" />
-                                       </div>
-                                    )}
-                                    <div className="space-y-1">
-                                       <p className="font-bold text-[#0F172A] line-clamp-1">{q.questionEn}</p>
-                                       <p className="text-[11px] text-slate-400 italic line-clamp-1 font-medium">{q.questionPa}</p>
-                                    </div>
+                                 <div className="space-y-3">
+                                    <Badge className="bg-slate-100 text-slate-500 border-none text-[8px] font-black uppercase px-2">{q.questionType}</Badge>
+                                    <p className="font-bold text-[#0F172A] line-clamp-1">{q.questionEn}</p>
+                                    {q.imageUrl && <div className="h-10 w-16 relative rounded-lg border overflow-hidden"><img src={q.imageUrl} className="object-cover" /></div>}
                                  </div>
                               </TableCell>
                               <TableCell className="text-center">
-                                 <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center font-black text-primary mx-auto">
-                                    {q.correctAnswer}
-                                 </div>
+                                 {q.parentSetId ? <Badge className="bg-blue-50 text-blue-600 border-none font-black text-[8px] uppercase">DI: {q.parentSetId}</Badge> : '-'}
                               </TableCell>
                               <TableCell className="text-right px-12">
                                  <div className="flex justify-end gap-3 opacity-20 group-hover:opacity-100 transition-opacity">
-                                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-white shadow-sm" onClick={() => {
+                                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl" onClick={() => {
                                        const dup = [...parsedQuestions];
                                        dup.splice(idx, 0, {...q});
                                        setParsedQuestions(dup);
                                     }}><Copy className="h-5 w-5" /></Button>
-                                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-rose-500 hover:bg-rose-50" onClick={() => setParsedQuestions(parsedQuestions.filter((_, i) => i !== idx))}><Trash2 className="h-5 w-5" /></Button>
+                                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-rose-500" onClick={() => setParsedQuestions(parsedQuestions.filter((_, i) => i !== idx))}><Trash2 className="h-5 w-5" /></Button>
                                  </div>
                               </TableCell>
                            </TableRow>
@@ -446,7 +356,7 @@ export default function BulkImportPage() {
              <Card className="border-rose-100 bg-rose-50/50 p-16 rounded-[4rem] shadow-4xl">
                 <div className="flex items-center gap-6 text-rose-600 mb-10">
                    <AlertCircle className="h-12 w-12" />
-                   <h4 className="font-headline font-black text-3xl uppercase tracking-tight">Audit Mismatches Found</h4>
+                   <h4 className="font-headline font-black text-3xl uppercase tracking-tight">Audit Failures</h4>
                 </div>
                 <div className="space-y-4">
                    {parseErrors.map((err, i) => (
