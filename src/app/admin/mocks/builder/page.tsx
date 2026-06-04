@@ -32,6 +32,11 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 import { MockType, MockSection } from "@/types"
 
+/**
+ * @fileOverview Modular Mock Architect.
+ * Optimized to handle 'undefined' properties before Firestore setDoc.
+ */
+
 export default function MockBuilderPage() {
   return (
     <Suspense fallback={<div className="h-screen flex items-center justify-center bg-white"><Loader2 className="h-10 w-10 text-primary animate-spin" /></div>}>
@@ -132,7 +137,9 @@ function MockBuilderContent() {
     setIsPublishing(true)
     const finalId = mockId || `mock-${Date.now()}`
     const mockRef = doc(db, "mocks", finalId)
-    const payload = {
+    
+    // Sanitization: Firestore does not accept 'undefined'. Purge them.
+    const payload = JSON.parse(JSON.stringify({
       ...mockData,
       id: finalId,
       totalQuestions: totalQuestions,
@@ -141,14 +148,15 @@ function MockBuilderContent() {
       published: true,
       updatedAt: serverTimestamp(),
       createdAt: isEditing ? (existingMock?.createdAt || serverTimestamp()) : serverTimestamp(),
-    }
+    }));
 
     setDoc(mockRef, payload, { merge: true })
       .then(() => {
         toast({ title: isEditing ? "Blueprint Updated" : "Mock Test Deployed", description: "Series is now live in the student hub." })
         router.push("/admin/mocks")
       })
-      .catch(async () => {
+      .catch(async (err) => {
+        console.error("Firestore Mock Save Error:", err)
         errorEmitter.emit("permission-error", new FirestorePermissionError({ path: mockRef.path, operation: 'write' }))
       })
       .finally(() => setIsPublishing(false))

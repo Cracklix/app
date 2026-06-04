@@ -19,6 +19,11 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import { QuestionType, DiagramType } from "@/types"
 
+/**
+ * @fileOverview Enterprise Question Entry Point.
+ * Optimized for payload sanitization to prevent 'undefined' field errors.
+ */
+
 export default function QuestionEntryPage() {
   return (
     <Suspense fallback={<div className="h-screen flex items-center justify-center bg-white"><div className="h-10 w-10 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
@@ -75,8 +80,8 @@ function QuestionEntryContent() {
     if (!db || isSaving) return
     
     // Parse JSON fields
-    let tableData = undefined;
-    let chartConfig = undefined;
+    let tableData = null;
+    let chartConfig = null;
     
     try {
       if (formData.tableDataJson) tableData = JSON.parse(formData.tableDataJson);
@@ -90,7 +95,8 @@ function QuestionEntryContent() {
     const finalId = questionId || `q-${Date.now()}`
     const questionRef = doc(db, "questions", finalId)
     
-    const payload = { 
+    // Sanitization: Firestore does not accept 'undefined'. Convert to null or remove.
+    const payload = JSON.parse(JSON.stringify({ 
       ...formData, 
       id: finalId,
       tableData,
@@ -98,9 +104,9 @@ function QuestionEntryContent() {
       updatedAt: serverTimestamp(),
       createdAt: isEditing ? (existingData?.createdAt || serverTimestamp()) : serverTimestamp(),
       author: existingData?.author || profile?.name || "Team Node"
-    }
+    }));
     
-    // Cleanup temporary fields
+    // Cleanup temporary UI fields
     delete (payload as any).tableDataJson;
     delete (payload as any).chartConfigJson;
 
@@ -109,7 +115,8 @@ function QuestionEntryContent() {
         toast({ title: "Node Synced", description: `MCQ status set to: ${formData.status}` })
         router.push("/admin/questions")
       })
-      .catch(async () => {
+      .catch(async (err) => {
+        console.error("Firestore Save Error:", err)
         errorEmitter.emit("permission-error", new FirestorePermissionError({ path: questionRef.path, operation: 'write', requestResourceData: payload }))
       })
       .finally(() => setIsSaving(false))

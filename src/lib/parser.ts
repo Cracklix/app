@@ -102,9 +102,9 @@ function parseTaggedBlock(block: string, metadata: any): Partial<Question> {
     correctAnswer,
     explanationEn: getTag("EXPLANATION_EN") || "Rationale provided.",
     explanationPa: getTag("EXPLANATION_PA") || getTag("EXPLANATION_EN") || "ਵਿਆਖਿਆ.",
-    imageUrl: getTag("IMAGE_URL") || undefined,
-    passageEn: getTag("PASSAGE_EN") || undefined,
-    passagePa: getTag("PASSAGE_PA") || undefined,
+    imageUrl: getTag("IMAGE_URL") || null,
+    passageEn: getTag("PASSAGE_EN") || null,
+    passagePa: getTag("PASSAGE_PA") || null,
   };
 }
 
@@ -148,5 +148,8 @@ function parseSimpleBlock(block: string, metadata: any): Partial<Question> {
     correctAnswer,
     explanationEn: exp || "Rationale provided.",
     explanationPa: exp || "ਵਿਆਖਿਆ.",
+    imageUrl: null,
+    passageEn: null,
+    passagePa: null
   };
 }

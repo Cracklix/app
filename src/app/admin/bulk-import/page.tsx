@@ -37,7 +37,7 @@ import { Difficulty, Question, ContentStatus } from "@/types"
 /**
  * @fileOverview Institutional Hybrid Bank Ingestion Node.
  * Supports Simple (Q1, A, B, C, D) and Tagged formats automatically.
- * Fixed: Escaped arrow characters and sanitized numeric inputs.
+ * Fixed: Sanitized payload to remove undefined fields before Firestore WriteBatch.
  */
 
 export default function BulkImportPage() {
@@ -90,22 +90,27 @@ export default function BulkImportPage() {
 
     parsedQuestions.forEach(q => {
       const qRef = doc(collection(db, "questions"))
-      batch.set(qRef, {
+      
+      // Sanitization: Firestore does not accept 'undefined'. Convert to null or remove.
+      const payload = JSON.parse(JSON.stringify({
         ...q,
         id: qRef.id,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         isStandalone: true,
         status: metadata.status
-      })
+      }));
+
+      batch.set(qRef, payload)
     })
 
     try {
       await batch.commit()
       toast({ title: "Bank Sync Success", description: `${parsedQuestions.length} nodes successfully added to global registry.` })
       router.push("/admin/questions")
-    } catch (e) {
-      toast({ variant: "destructive", title: "Sync Failed", description: "Database rejected the transaction." })
+    } catch (e: any) {
+      console.error("Firestore Write Error:", e)
+      toast({ variant: "destructive", title: "Sync Failed", description: e.message || "Database rejected the transaction." })
     } finally {
       setIsSyncing(false)
     }
@@ -181,9 +186,9 @@ export default function BulkImportPage() {
               <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2"><FileCode className="h-3 w-3" /> PROTOCOL MODES</p>
                  <ul className="text-[9px] font-bold text-slate-600 space-y-3">
-                    <li>• <span className="text-primary">SIMPLE MODE:</span> Q1. Question text -&gt; A. Option A -&gt; Answer: B</li>
-                    <li>• <span className="text-primary">TAGGED MODE:</span> QUESTION_EN: -&gt; OPTION_A_EN: -&gt; ANSWER:</li>
-                    <li>• <span className="text-primary">IMAGE MODE:</span> IMAGE_URL: [Link] -&gt; QUESTION_EN: ...</li>
+                    <li>• <span className="text-primary">SIMPLE MODE:</span> Q1. Question text &gt; A. Option A &gt; Answer: B</li>
+                    <li>• <span className="text-primary">TAGGED MODE:</span> QUESTION_EN: &gt; OPTION_A_EN: &gt; ANSWER:</li>
+                    <li>• <span className="text-primary">IMAGE MODE:</span> IMAGE_URL: [Link] &gt; QUESTION_EN: ...</li>
                     <li>• Use <span className="font-black text-[#0F172A]">===</span> between questions for best results.</li>
                  </ul>
               </div>

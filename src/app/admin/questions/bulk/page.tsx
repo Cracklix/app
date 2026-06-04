@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
@@ -13,13 +12,18 @@ import { Badge } from "@/components/ui/badge"
 import { useFirestore, useCollection } from "@/firebase"
 import { collection, doc, writeBatch, serverTimestamp, setDoc } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
-import { parseBulkQuestions, ImportFormat } from "@/lib/parser"
+import { parseBulkQuestions } from "@/lib/parser"
 import { Zap, Database, ChevronLeft, Rocket, CheckCircle2, FileWarning, AlertTriangle, Settings2, DatabaseBackup, Layers, Globe, GraduationCap, Clock, ClipboardCheck } from "lucide-react"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { MockType } from "@/types"
+
+/**
+ * @fileOverview Institutional Bulk Ingestion Hub.
+ * Optimized to prevent 'undefined' field errors in WriteBatch.
+ */
 
 export default function BulkImportPage() {
   const router = useRouter()
@@ -31,7 +35,6 @@ export default function BulkImportPage() {
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
 
   const [rawText, setRawText] = useState("")
-  const [importFormat, setImportFormat] = useState<ImportFormat>("BILINGUAL_TAGGED")
   const [metadata, setMetadata] = useState({
     boardId: "",
     examId: "",
@@ -57,7 +60,12 @@ export default function BulkImportPage() {
       return
     }
     
-    const results = parseBulkQuestions(rawText, importFormat, { ...metadata })
+    // Updated parser call logic matching current engine capabilities
+    const results = parseBulkQuestions(rawText, {
+      ...metadata,
+      status: metadata.status || "PUBLISHED",
+      difficulty: metadata.difficulty || "Medium"
+    })
     
     if (results.errors.length > 0) {
       setParseErrors(results.errors)
@@ -78,13 +86,17 @@ export default function BulkImportPage() {
 
     parsedQuestions.forEach(q => {
       const newRef = doc(collection(db, "questions"))
-      batch.set(newRef, {
+      
+      // Sanitization: Firestore does not accept 'undefined'. Purge them.
+      const payload = JSON.parse(JSON.stringify({
         ...q,
         id: newRef.id,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         isStandalone: true
-      })
+      }));
+
+      batch.set(newRef, payload)
       ids.push(newRef.id)
     })
 
@@ -106,7 +118,7 @@ export default function BulkImportPage() {
     const mockId = `mock-${Date.now()}`
     const mockRef = doc(db, "mocks", mockId)
     
-    const payload = {
+    const payload = JSON.parse(JSON.stringify({
       id: mockId,
       title: `${metadata.boardId} ${metadata.mockType} Series - ${new Date().toLocaleDateString()}`,
       boardId: metadata.boardId,
@@ -120,7 +132,7 @@ export default function BulkImportPage() {
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       isPremium: true
-    }
+    }));
 
     try {
       await setDoc(mockRef, payload)
