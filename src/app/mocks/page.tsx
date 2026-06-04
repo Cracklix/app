@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo } from "react"
@@ -77,6 +76,7 @@ export default function MocksGatewayPage() {
                                {board?.iconUrl || board?.id === 'psssb' ? (
                                  <img 
                                     src={board?.iconUrl || 'https://sssb.punjab.gov.in/images/logo.png'} 
+                                    referrerPolicy="no-referrer"
                                     alt={board?.abbreviation} 
                                     className="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-110" 
                                  />

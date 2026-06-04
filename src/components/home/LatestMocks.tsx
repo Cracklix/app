@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from "react"
@@ -10,6 +9,7 @@ import Link from "next/link"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, where } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
+import Image from "next/image"
 
 /**
  * @fileOverview High-Fidelity Latest Mocks Node.
@@ -75,7 +75,12 @@ export default function LatestMocks() {
                   <div className="flex justify-between items-start mb-6">
                     <div className="h-14 w-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center relative overflow-hidden group-hover:shadow-lg transition-all">
                        {mock.boardId === 'psssb' ? (
-                          <img src="https://sssb.punjab.gov.in/images/logo.png" className="w-full h-full object-contain p-2" alt="PSSSB" />
+                          <img 
+                            src="https://sssb.punjab.gov.in/images/logo.png" 
+                            referrerPolicy="no-referrer"
+                            className="w-full h-full object-contain p-2" 
+                            alt="PSSSB" 
+                          />
                        ) : (
                           <ShieldCheck className="h-7 w-7 text-primary opacity-20" />
                        )}

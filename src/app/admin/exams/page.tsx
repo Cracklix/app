@@ -95,7 +95,13 @@ export default function ExamManagement() {
                   <TableCell className="px-10 py-6">
                     <div className="h-14 w-14 rounded-2xl bg-white border border-white/10 flex items-center justify-center overflow-hidden relative shadow-inner group-hover:scale-110 transition-transform">
                       {board.iconUrl ? (
-                        <Image src={board.iconUrl} alt={board.abbreviation || 'Board'} fill className="object-contain p-2" />
+                        <Image 
+                          src={board.iconUrl} 
+                          alt={board.abbreviation || 'Board'} 
+                          fill 
+                          unoptimized={board.iconUrl.includes('punjab.gov.in')}
+                          className="object-contain p-2" 
+                        />
                       ) : (
                         <ImageIcon className="h-6 w-6 text-slate-700" />
                       )}
@@ -130,7 +136,12 @@ export default function ExamManagement() {
             <div className="flex justify-center">
               <div className="h-24 w-24 rounded-3xl bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center relative overflow-hidden group">
                  {editingBoard?.iconUrl ? (
-                    <img src={editingBoard.iconUrl} className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform" />
+                    <img 
+                      src={editingBoard.iconUrl} 
+                      referrerPolicy="no-referrer"
+                      className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform" 
+                      alt="Preview"
+                    />
                  ) : (
                     <ImageIcon className="h-8 w-8 text-slate-500" />
                  )}
