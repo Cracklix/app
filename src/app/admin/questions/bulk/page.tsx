@@ -13,14 +13,14 @@ import { useFirestore, useCollection } from "@/firebase"
 import { collection, doc, writeBatch, serverTimestamp } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { parseBulkQuestions, ImportFormat } from "@/lib/parser"
-import { Zap, Database, ChevronLeft, Rocket, ShieldCheck, ClipboardList, Layers, Settings2, Globe, Languages, AlertTriangle, FileWarning, CheckCircle2, LayoutList, DatabaseBackup, Eye } from "lucide-react"
+import { Zap, Database, ChevronLeft, Rocket, ShieldCheck, ClipboardList, Layers, Settings2, Globe, Languages, AlertTriangle, FileWarning, CheckCircle2, LayoutList, DatabaseBackup, Eye, FileCode } from "lucide-react"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Content Extraction Engine.
- * Supports bulk metadata injection for Board, Exam, Subject, and Topic.
+ * @fileOverview Final Content Extraction Engine with OCR support.
+ * Supports Columnar OCR and Structured JSON ingestion.
  */
 
 export default function BulkImportPage() {
@@ -33,7 +33,7 @@ export default function BulkImportPage() {
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
 
   const [rawText, setRawText] = useState("")
-  const [importFormat, setImportFormat] = useState<ImportFormat>("BILINGUAL_MCQ")
+  const [importFormat, setImportFormat] = useState<ImportFormat>("OCR_COLUMNAR")
   const [metadata, setMetadata] = useState({
     boardId: "",
     examId: "",
@@ -54,7 +54,6 @@ export default function BulkImportPage() {
       return
     }
     
-    // Position-based parser with metadata injection
     const results = parseBulkQuestions(rawText, importFormat, { ...metadata })
     
     if (results.errors.length > 0) {
@@ -105,7 +104,7 @@ export default function BulkImportPage() {
           </Button>
           <div className="text-left">
             <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Institutional Ingestion</h1>
-            <p className="text-slate-500 font-medium">Bulk Ingest 10-500 Questions with strict metadata injection.</p>
+            <p className="text-slate-500 font-medium">Bulk Ingest with Layout-Aware OCR and Structured JSON support.</p>
           </div>
         </div>
         <div className="flex gap-4">
@@ -161,15 +160,14 @@ export default function BulkImportPage() {
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-3">
-                  <p className="text-[10px] font-black uppercase text-primary ml-1 flex items-center gap-2"><LayoutList className="h-3 w-3" /> Template Format</p>
+                  <p className="text-[10px] font-black uppercase text-primary ml-1 flex items-center gap-2"><LayoutList className="h-3 w-3" /> Parser Logic</p>
                   <Select value={importFormat} onValueChange={(val: any) => setImportFormat(val)}>
                     <SelectTrigger className="rounded-xl bg-primary/5 border-primary/20 h-14 font-black uppercase text-[10px] tracking-widest"><SelectValue placeholder="Select Format" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="STANDARD_MCQ">Standard MCQ (English)</SelectItem>
-                      <SelectItem value="BILINGUAL_MCQ">Bilingual MCQ (Strict EN/PA)</SelectItem>
-                      <SelectItem value="DI_SET">Data Interpretation Hub</SelectItem>
-                      <SelectItem value="REASONING_DIAGRAM">Logical Reasoning Diagram</SelectItem>
-                      <SelectItem value="PASSAGE_BASED">Reading Comprehension</SelectItem>
+                      <SelectItem value="OCR_COLUMNAR">OCR Columnar (Preserved TXT)</SelectItem>
+                      <SelectItem value="BILINGUAL_MCQ">Line-Based Bilingual (EN/PA)</SelectItem>
+                      <SelectItem value="STRUCTURED_JSON">Structured JSON (OCR API)</SelectItem>
+                      <SelectItem value="STANDARD_MCQ">Standard MCQ (English Only)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -189,7 +187,7 @@ export default function BulkImportPage() {
               <div className="space-y-3">
                 <Label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Paste Institutional Content (Batch 10–500)</Label>
                 <Textarea 
-                  placeholder={`Paste ${importFormat} content here...`}
+                  placeholder={importFormat === 'STRUCTURED_JSON' ? '{ "document": { ... } }' : `Paste ${importFormat} content here...`}
                   className="min-h-[500px] rounded-[2.5rem] bg-slate-50 border-none p-10 text-sm font-mono leading-relaxed shadow-inner custom-scrollbar"
                   value={rawText}
                   onChange={e => setRawText(e.target.value)}
@@ -231,9 +229,6 @@ export default function BulkImportPage() {
                     </CardTitle>
                     <CardDescription className="text-xs font-black uppercase tracking-[0.3em] text-slate-400 mt-2">{parsedQuestions.length} Institutional Nodes Mapped Successfully.</CardDescription>
                  </div>
-                 <div className="flex gap-4">
-                    <Badge className="bg-primary/10 text-primary border-none text-[11px] font-black uppercase tracking-widest px-6 py-2 rounded-xl">Bilingual Audit View</Badge>
-                 </div>
                </CardHeader>
                <CardContent className="p-16 flex-1 overflow-y-auto custom-scrollbar space-y-16">
                   {parsedQuestions.map((q, idx) => (
@@ -245,22 +240,7 @@ export default function BulkImportPage() {
                           </div>
                           <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-lg">Correct Key: {q.correctAnswer}</span>
                        </div>
-
-                       {/* Preview matches student view: Bilingual */}
                        <QuestionRenderer language="bilingual" question={q} />
-
-                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {['A','B','C','D'].map(l => (
-                             <div key={l} className={`p-8 rounded-[2rem] border transition-all ${q.correctAnswer === l ? 'bg-emerald-50 border-emerald-100 ring-2 ring-emerald-500/10' : 'bg-slate-50 border-slate-100 opacity-60'}`}>
-                                <div className="flex items-center gap-4 mb-4">
-                                   <div className={`h-8 w-8 rounded-xl flex items-center justify-center text-[11px] font-black ${q.correctAnswer === l ? 'bg-emerald-500 text-white shadow-lg' : 'bg-white text-slate-400 shadow-sm border border-slate-100'}`}>{l}</div>
-                                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Option Node</span>
-                                </div>
-                                <p className="text-base font-bold text-[#0F172A] mb-2">{q[`option${l}En`]}</p>
-                                {q[`option${l}Pa`] && <p className="text-sm font-medium text-slate-500 italic border-t border-slate-200/50 pt-2 mt-2">{q[`option${l}Pa`]}</p>}
-                             </div>
-                          ))}
-                       </div>
                     </div>
                   ))}
                </CardContent>
@@ -268,8 +248,8 @@ export default function BulkImportPage() {
           ) : (
             <div className="h-full flex flex-col items-center justify-center text-slate-300 opacity-20 py-60">
               <ClipboardList className="h-32 w-32 mb-8" />
-              <p className="font-headline font-black uppercase tracking-[0.4em] text-xl">Awaiting extraction input</p>
-              <p className="text-sm font-bold uppercase tracking-widest mt-4">Paste official content in the extraction box to begin audit.</p>
+              <p className="font-headline font-black uppercase tracking-[0.4em] text-xl">Awaiting Ingestion Input</p>
+              <p className="text-sm font-bold uppercase tracking-widest mt-4">Paste OCR or Structured content to begin audit.</p>
             </div>
           )}
         </div>

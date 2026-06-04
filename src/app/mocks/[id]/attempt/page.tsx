@@ -11,11 +11,8 @@ import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { 
-  PauseCircle, 
-  PlayCircle,
   Languages,
   Loader2,
-  Trash2,
   Target,
   LayoutGrid,
   ChevronRight,
@@ -24,6 +21,11 @@ import {
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+
+/**
+ * @fileOverview Final Enterprise Attempt Engine.
+ * Features: Manual Duration Sync, Absolute Language Gating, and Section Mapping.
+ */
 
 type LangMode = 'en' | 'pa' | 'bilingual'
 
@@ -46,7 +48,6 @@ export default function MockAttemptPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [language, setLanguage] = useState<LangMode>('bilingual')
   const [remainingTime, setRemainingTime] = useState(0)
-  const [isPaused, setIsPaused] = useState(false)
   const [loadingQs, setLoadingQs] = useState(true)
 
   useEffect(() => {
@@ -107,7 +108,8 @@ export default function MockAttemptPage() {
       accuracy: Math.round((score / (Object.keys(answers).length || 1)) * 100),
       timestamp: new Date().toISOString(), answers, createdAt: serverTimestamp(),
       mockTitle: mock?.title || "Mock Test",
-      subjectStats
+      subjectStats,
+      timeTaken: (mock.duration * 60) - remainingTime
     }
 
     try {
@@ -119,7 +121,7 @@ export default function MockAttemptPage() {
       toast({ variant: "destructive", title: "Submission Failed", description: "Audit trail interrupted." })
       setIsSubmitting(false)
     }
-  }, [isSubmitting, questions, answers, mock, user, db, router, mockId, toast])
+  }, [isSubmitting, questions, answers, mock, user, db, router, mockId, toast, remainingTime])
 
   if (mockLoading || loadingQs) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-4">
@@ -140,7 +142,7 @@ export default function MockAttemptPage() {
            <LangTab label="BI" active={language === 'bilingual'} onClick={() => setLanguage('bilingual')} />
         </div>
         <div className="flex items-center gap-3">
-          <Timer onTimeUp={submitMock} initialSeconds={remainingTime || (mock?.duration || 120) * 60} onTick={setRemainingTime} isPaused={isPaused} />
+          <Timer onTimeUp={submitMock} initialSeconds={remainingTime} onTick={setRemainingTime} />
           <Button onClick={submitMock} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[10px] h-9 px-6 rounded-xl shadow-lg">
              Finish Audit
           </Button>
@@ -167,9 +169,7 @@ export default function MockAttemptPage() {
                  </Button>
                </SheetTrigger>
                <SheetContent side="right" className="p-0 border-none w-[300px]">
-                  <SheetHeader className="sr-only">
-                    <SheetTitle>Question Audit Map</SheetTitle>
-                  </SheetHeader>
+                  <SheetHeader className="sr-only"><SheetTitle>Audit Map</SheetTitle></SheetHeader>
                   <div className="p-6 h-full overflow-y-auto bg-white pt-16 text-left">
                      <QuestionPalette 
                         totalQuestions={questions.length} currentIndex={currentIdx} 
@@ -194,9 +194,14 @@ export default function MockAttemptPage() {
                   className="grid grid-cols-1 gap-3"
                 >
                   {['A', 'B', 'C', 'D'].map((k, i) => {
-                    const isSelected = answers[currentIdx] === i
-                    const optEn = q?.[`option${k}En`] || ""
-                    const optPa = q?.[`option${k}Pa`] || ""
+                    const isSelected = answers[currentIdx] === i;
+                    const optEn = q?.[`option${k}En`] || "";
+                    const optPa = q?.[`option${k}Pa`] || "";
+                    
+                    // Logic Gating based on student choice
+                    const showOptEn = !isPunjabiOnlyNode && (language === 'en' || language === 'bilingual');
+                    const showOptPa = isPunjabiOnlyNode || (language === 'pa' || language === 'bilingual');
+
                     return (
                       <div key={i} className={cn(
                         "flex items-center space-x-4 p-4 md:p-6 border rounded-2xl transition-all cursor-pointer bg-white",
@@ -204,20 +209,8 @@ export default function MockAttemptPage() {
                       )}>
                          <RadioGroupItem value={i.toString()} id={`opt-${i}`} />
                          <Label htmlFor={`opt-${i}`} className="flex-1 cursor-pointer select-none text-base md:text-lg font-bold text-[#0B1528] flex flex-col gap-1 text-left">
-                            {isPunjabiOnlyNode ? (
-                               <span className="leading-tight">{optPa || optEn}</span>
-                            ) : (
-                               <>
-                                  {language === 'bilingual' ? (
-                                    <>
-                                        <span className="leading-tight">{optEn}</span>
-                                        {optPa && optPa !== optEn && <span className="leading-tight opacity-70 border-t border-slate-50 pt-1 mt-1 text-sm md:text-base font-medium">{optPa}</span>}
-                                    </>
-                                  ) : (
-                                    <span>{language === 'en' ? optEn : (optPa || optEn)}</span>
-                                  )}
-                               </>
-                            )}
+                            {showOptEn && <span className="leading-tight">{optEn}</span>}
+                            {showOptPa && <span className={cn("leading-tight", (showOptEn && language === 'bilingual') ? "opacity-70 border-t border-slate-50 pt-1 mt-1 text-sm md:text-base font-medium italic" : "")}>{optPa || optEn}</span>}
                          </Label>
                       </div>
                     )

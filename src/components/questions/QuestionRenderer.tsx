@@ -31,13 +31,13 @@ const COLORS = ['#F97316', '#3B82F6', '#10B981', '#EF4444', '#8B5CF6'];
 /**
  * @fileOverview Final Enterprise Question Renderer.
  * Hardened for strict trilingual support and complex DI nodes.
+ * Features: Absolute language gating (EN vs PA vs Bilingual).
  */
 
 export default function QuestionRenderer({ question, language }: QuestionRendererProps) {
   const showEn = language === 'en' || language === 'bilingual';
   const showPa = language === 'pa' || language === 'bilingual';
   
-  // Safe Fallback for Language Data
   const questionEn = question.questionEn || "";
   const questionPa = question.questionPa || "";
   
@@ -71,10 +71,9 @@ export default function QuestionRenderer({ question, language }: QuestionRendere
         </div>
       )}
 
-      {/* 3. Diagram / Visual Node */}
+      {/* 3. Diagram / Visual Node (High-Fidelity DI Support) */}
       {question.diagramType && question.diagramType !== 'none' && (
         <div className="w-full py-4">
-          {/* Table DI */}
           {question.diagramType === 'table' && question.tableData && (
             <Card className="border-slate-200 overflow-hidden rounded-2xl shadow-xl">
               <Table>
@@ -98,7 +97,6 @@ export default function QuestionRenderer({ question, language }: QuestionRendere
             </Card>
           )}
 
-          {/* Chart DI */}
           {(question.diagramType === 'barGraph' || question.diagramType === 'pieChart' || question.diagramType === 'lineGraph') && question.chartConfig && (
             <div className="h-[350px] w-full bg-white p-8 rounded-3xl border border-slate-100 shadow-lg">
               <ResponsiveContainer width="100%" height="100%">
@@ -135,7 +133,6 @@ export default function QuestionRenderer({ question, language }: QuestionRendere
             </div>
           )}
 
-          {/* Image Based */}
           {question.diagramType === 'image' && question.imageUrl && (
             <div className="relative w-full aspect-video rounded-[3rem] overflow-hidden border-2 border-slate-100 shadow-2xl">
               <Image src={question.imageUrl} fill alt={question.imageAlt || "Question Diagram"} className="object-contain bg-white" />
@@ -144,7 +141,7 @@ export default function QuestionRenderer({ question, language }: QuestionRendere
         </div>
       )}
 
-      {/* 4. Question Statement Node */}
+      {/* 4. Question Statement Node (Strict Language Separation) */}
       <div className="space-y-5">
         <div className="flex items-center gap-3">
            <div className="h-6 w-1 bg-primary rounded-full" />
