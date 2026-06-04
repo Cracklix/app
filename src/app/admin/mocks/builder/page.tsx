@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -34,7 +35,7 @@ import { MockType, MockSection } from "@/types"
 
 /**
  * @fileOverview Modular Mock Architect.
- * Optimized to handle 'undefined' properties before Firestore setDoc by using strict object cleanup.
+ * Optimized for React controlled component stability and payload sanitization.
  */
 
 export default function MockBuilderPage() {
@@ -81,7 +82,12 @@ function MockBuilderContent() {
 
   useEffect(() => {
     if (existingMock) {
-      setMockData({ ...existingMock })
+      // Coalesce null values to empty strings to prevent React controlled component warnings
+      const sanitized = { ...existingMock };
+      Object.keys(sanitized).forEach(key => {
+        if (sanitized[key] === null) sanitized[key] = "";
+      });
+      setMockData(sanitized);
     }
   }, [existingMock])
 
@@ -198,7 +204,7 @@ function MockBuilderContent() {
             <CardContent className="p-10 space-y-10">
               <div className="space-y-3">
                 <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Mock Title</Label>
-                <Input placeholder="e.g. PSSSB Clerk Full Mock 01" value={mockData.title} onChange={e => setMockData({...mockData, title: e.target.value})} className="rounded-xl h-14 bg-slate-50 border-none font-bold text-lg" />
+                <Input placeholder="e.g. PSSSB Clerk Full Mock 01" value={mockData.title || ""} onChange={e => setMockData({...mockData, title: e.target.value})} className="rounded-xl h-14 bg-slate-50 border-none font-bold text-lg" />
               </div>
 
               <div className="space-y-3">
@@ -234,7 +240,7 @@ function MockBuilderContent() {
                           {(mockData.sections || []).map((sec: any, idx: number) => (
                              <div key={sec.id} className="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm relative group space-y-4">
                                 <Button variant="ghost" size="icon" onClick={() => removeSection(sec.id)} className="absolute top-2 right-2 h-8 w-8 text-rose-400 opacity-0 group-hover:opacity-100"><Trash2 className="h-4 w-4" /></Button>
-                                <Input value={sec.name} onChange={e => updateSection(idx, 'name', e.target.value)} className="h-9 rounded-xl bg-slate-50 border-none text-xs font-bold" placeholder="Section Name" />
+                                <Input value={sec.name || ""} onChange={e => updateSection(idx, 'name', e.target.value)} className="h-9 rounded-xl bg-slate-50 border-none text-xs font-bold" placeholder="Section Name" />
                                 <Select value={sec.subjectId} onValueChange={v => updateSection(idx, 'subjectId', v)}>
                                    <SelectTrigger className="h-9 rounded-xl bg-slate-50 border-none text-xs font-bold"><SelectValue placeholder="Focus Subject" /></SelectTrigger>
                                    <SelectContent>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
@@ -319,12 +325,12 @@ function MockBuilderContent() {
 
                     <TabsContent value="bank" className="p-12 space-y-8 min-h-[500px]">
                        <div className="grid grid-cols-3 gap-6 mb-8">
-                          <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300" /><Input placeholder="Search bank..." value={bankFilter.search} onChange={e => setBankFilter({...bankFilter, search: e.target.value})} className="pl-10 h-12 rounded-xl bg-slate-50 border-none shadow-inner" /></div>
+                          <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300" /><Input placeholder="Search bank..." value={bankFilter.search || ""} onChange={e => setBankFilter({...bankFilter, search: e.target.value})} className="pl-10 h-12 rounded-xl bg-slate-50 border-none shadow-inner" /></div>
                           <Select value={bankFilter.subjectId} onValueChange={v => setBankFilter({...bankFilter, subjectId: v})}>
                              <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none font-bold"><SelectValue /></SelectTrigger>
                              <SelectContent><SelectItem value="all">All Subjects</SelectItem>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                           </Select>
-                          <Input placeholder="Chapter filter..." value={bankFilter.chapterId} onChange={e => setBankFilter({...bankFilter, chapterId: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-none shadow-inner" />
+                          <Input placeholder="Chapter filter..." value={bankFilter.chapterId || ""} onChange={e => setBankFilter({...bankFilter, chapterId: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-none shadow-inner" />
                        </div>
 
                        <div className="grid grid-cols-1 gap-4">

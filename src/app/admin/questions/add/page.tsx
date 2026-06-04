@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -20,8 +21,7 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
  * @fileOverview Enterprise Question Editor Node.
- * Optimized for payload sanitization to prevent 'undefined' field errors.
- * Fixed: TabsList scrolling to prevent "Classification" being cut off.
+ * Optimized for payload sanitization and React controlled component stability.
  */
 
 export default function QuestionEntryPage() {
@@ -63,13 +63,20 @@ function QuestionEntryContent() {
     passageEn: "", passagePa: "",
     tableDataJson: "",
     chartConfigJson: "",
-    imageUrl: ""
+    imageUrl: "",
+    chapterId: ""
   })
 
   useEffect(() => {
     if (existingData) {
+      // Coalesce null values to empty strings to prevent React controlled component warnings
+      const sanitized = { ...existingData };
+      Object.keys(sanitized).forEach(key => {
+        if (sanitized[key] === null) sanitized[key] = "";
+      });
+
       setFormData({ 
-        ...existingData,
+        ...sanitized,
         tableDataJson: existingData.tableData ? JSON.stringify(existingData.tableData, null, 2) : "",
         chartConfigJson: existingData.chartConfig ? JSON.stringify(existingData.chartConfig, null, 2) : ""
       })
