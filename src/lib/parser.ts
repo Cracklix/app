@@ -1,9 +1,9 @@
 /**
  * @fileOverview Production-Grade Institutional Ingestion Engine.
- * Supports Standard, Bilingual, Image-Based, and Current Affairs formats.
+ * Supports Standard, Bilingual, Image-Based, DI Sets, and Passages.
  */
 
-import { Question, Difficulty, MockType, ContentStatus } from "@/types";
+import { Question, Difficulty, MockType, ContentStatus, QuestionType, DiagramType } from "@/types";
 
 export interface ParsedResults {
   questions: Partial<Question>[];
@@ -38,111 +38,96 @@ export function parseBulkQuestions(
 
   questionBlocks.forEach((block, index) => {
     try {
-      const lines = block.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      const getTagContent = (tag: string) => {
+        const regex = new RegExp(`${tag}:?\\s*([\\s\\S]*?)(?=\\n[A-Z_\\d\\s]+:?|$)`, 'i');
+        const match = block.match(regex);
+        return match ? match[1].trim() : "";
+      };
+
+      // 1. Core Question Fields
+      const questionEn = getTagContent("ENG_Q") || getTagContent("Question EN") || getTagContent("Question");
+      const questionPa = getTagContent("PUN_Q") || getTagContent("Question PA");
       
-      let questionEn = "";
-      let questionPa = "";
-      let optionAEn = "", optionBEn = "", optionCEn = "", optionDEn = "";
-      let optionAPa = "", optionBPa = "", optionCPa = "", optionDPa = "";
-      let correctAnswer: 'A' | 'B' | 'C' | 'D' | undefined;
-      let explanationEn = "";
-      let explanationPa = "";
-      let imageUrl = "";
+      // 2. Options Extraction (Supporting pipe separator | or newlines)
+      let optAEn = getTagContent("ENG_OPT A") || getTagContent("A EN");
+      let optAPa = getTagContent("PUN_OPT A") || getTagContent("A PA");
+      let optBEn = getTagContent("ENG_OPT B") || getTagContent("B EN");
+      let optBPa = getTagContent("PUN_OPT B") || getTagContent("B PA");
+      let optCEn = getTagContent("ENG_OPT C") || getTagContent("C EN");
+      let optCPa = getTagContent("PUN_OPT C") || getTagContent("C PA");
+      let optDEn = getTagContent("ENG_OPT D") || getTagContent("D EN");
+      let optDPa = getTagContent("PUN_OPT D") || getTagContent("D PA");
 
-      // Format Detection
-      const isFormat2 = block.includes("Question EN:") || block.includes("ENG_Q:");
-      const isFormat4 = block.includes("Date:") && block.includes("Category:");
-
-      if (isFormat2) {
-        // Format 2: Strict Bilingual Tags
-        const getTagContent = (tag: string) => {
-          const regex = new RegExp(`${tag}:?\\s*([\\s\\S]*?)(?=\\n[A-Z_\\d\\s]+:?|$)`, 'i');
-          const match = block.match(regex);
-          return match ? match[1].trim() : "";
-        };
-
-        questionEn = getTagContent("Question EN") || getTagContent("ENG_Q");
-        questionPa = getTagContent("Question PA") || getTagContent("PUN_Q");
-        
-        optionAEn = getTagContent("A EN") || getTagContent("ENG_OPT A");
-        optionAPa = getTagContent("A PA") || getTagContent("PUN_OPT A");
-        optionBEn = getTagContent("B EN") || getTagContent("ENG_OPT B");
-        optionBPa = getTagContent("B PA") || getTagContent("PUN_OPT B");
-        optionCEn = getTagContent("C EN") || getTagContent("ENG_OPT C");
-        optionCPa = getTagContent("C PA") || getTagContent("PUN_OPT C");
-        optionDEn = getTagContent("D EN") || getTagContent("ENG_OPT D");
-        optionDPa = getTagContent("D PA") || getTagContent("PUN_OPT D");
-
-        const ansRaw = getTagContent("Answer") || getTagContent("ENG_ANS");
-        correctAnswer = ansRaw.match(/[A-D]/i)?.[0].toUpperCase() as any;
-
-        explanationEn = getTagContent("Explanation EN") || getTagContent("ENG_EXP");
-        explanationPa = getTagContent("Explanation PA") || getTagContent("PUN_EXP");
-        imageUrl = getTagContent("Image");
-      } else if (isFormat4) {
-        // Format 4: Current Affairs
-        const getTagContent = (tag: string) => {
-          const regex = new RegExp(`${tag}:?\\s*([\\s\\S]*?)(?=\\n[A-Z_\\d\\s]+:?|$)`, 'i');
-          const match = block.match(regex);
-          return match ? match[1].trim() : "";
-        };
-        questionEn = getTagContent("Question");
-        const ansRaw = getTagContent("Answer");
-        correctAnswer = ansRaw.match(/[A-D]/i)?.[0].toUpperCase() as any;
-        explanationEn = getTagContent("Explanation");
-        // For CA, set fields same for now
-        questionPa = questionEn;
-        optionAEn = "A"; optionBEn = "B"; optionCEn = "C"; optionDEn = "D"; // CA usually has custom options, need more parsing if options present
-      } else {
-        // Format 1 & 3: Standard / Image Sequential
-        let currentField = "QUESTION";
-        lines.forEach(line => {
-          if (line.match(/^A\./i)) { optionAEn = line.replace(/^A\.\s*/i, ''); currentField = "OPT_A"; }
-          else if (line.match(/^B\./i)) { optionBEn = line.replace(/^B\.\s*/i, ''); currentField = "OPT_B"; }
-          else if (line.match(/^C\./i)) { optionCEn = line.replace(/^C\.\s*/i, ''); currentField = "OPT_C"; }
-          else if (line.match(/^D\./i)) { optionDEn = line.replace(/^D\.\s*/i, ''); currentField = "OPT_D"; }
-          else if (line.match(/^Answer:/i)) { 
-            const match = line.match(/Answer:\s*([A-D])/i);
-            if (match) correctAnswer = match[1].toUpperCase() as any;
-          }
-          else if (line.match(/^Explanation:/i)) { explanationEn = line.replace(/^Explanation:\s*/i, ''); currentField = "EXP"; }
-          else if (line.match(/^Image:/i)) { imageUrl = line.replace(/^Image:\s*/i, ''); }
-          else {
-             if (currentField === "QUESTION") questionEn += (questionEn ? " " : "") + line;
-             else if (currentField === "EXP") explanationEn += (explanationEn ? " " : "") + line;
-          }
-        });
+      // Handle Bunched Options (e.g., ENG_OPT: A. X | B. Y)
+      const fullOptEn = getTagContent("ENG_OPT");
+      if (fullOptEn) {
+        const parts = fullOptEn.split(/[A-D]\.\s*|\|/).map(p => p.trim()).filter(Boolean);
+        if (parts.length >= 4) {
+          optAEn = parts[0]; optBEn = parts[1]; optCEn = parts[2]; optDEn = parts[3];
+        }
+      }
+      
+      const fullOptPa = getTagContent("PUN_OPT");
+      if (fullOptPa) {
+        const parts = fullOptPa.split(/[A-D]\.\s*|\|/).map(p => p.trim()).filter(Boolean);
+        if (parts.length >= 4) {
+          optAPa = parts[0]; optBPa = parts[1]; optCPa = parts[2]; optDPa = parts[3];
+        }
       }
 
-      // Final mappings for mixed types
-      if (!questionPa) questionPa = questionEn;
-      if (!optionAPa) optionAPa = optionAEn;
-      if (!optionBPa) optionBPa = optionBEn;
-      if (!optionCPa) optionCPa = optionCEn;
-      if (!optionDPa) optionDPa = optionDEn;
-      if (!explanationPa) explanationPa = explanationEn;
+      // 3. Answer & Explanation
+      const ansRaw = getTagContent("ENG_ANS") || getTagContent("Answer") || getTagContent("PUN_ANS");
+      const correctAnswer = ansRaw.match(/[A-D]/i)?.[0].toUpperCase() as any;
+      const explanationEn = getTagContent("ENG_EXP") || getTagContent("Explanation EN") || getTagContent("Explanation");
+      const explanationPa = getTagContent("PUN_EXP") || getTagContent("Explanation PA");
 
-      // Validations
+      // 4. Complex DI/Diagram Tags
+      const imageUrl = getTagContent("IMAGE_URL") || getTagContent("Image");
+      const instructionEn = getTagContent("INSTRUCTION_EN") || getTagContent("Instruction");
+      const instructionPa = getTagContent("INSTRUCTION_PA");
+      const passageEn = getTagContent("PASSAGE_EN") || getTagContent("Passage");
+      const passagePa = getTagContent("PASSAGE_PA");
+      const tableDataRaw = getTagContent("TABLE_DATA");
+      let tableData = undefined;
+      if (tableDataRaw) {
+        try { tableData = JSON.parse(tableDataRaw); } catch (e) { errors.push(`Block ${index + 1}: Invalid Table JSON format.`); }
+      }
+
+      // 5. Logic Mapping
+      let qType: QuestionType = 'MCQ';
+      let dType: DiagramType = 'none';
+
+      if (passageEn) qType = 'PASSAGE';
+      if (imageUrl) { qType = 'IMAGE_MCQ' as any; dType = 'image'; }
+      if (tableData) { qType = 'DI_TABLE'; dType = 'table'; }
+
+      // Final Defaults
       if (!questionEn) throw new Error("Empty question statement.");
       if (!correctAnswer) throw new Error("Correct answer marker (A-D) not found.");
-      if (!optionAEn && !isFormat4) throw new Error("Options missing.");
 
       questions.push({
         ...metadata,
+        questionType: qType,
+        diagramType: dType,
         questionEn,
-        questionPa,
-        optionAEn,
-        optionAPa,
-        optionBEn,
-        optionBPa,
-        optionCEn,
-        optionCPa,
-        optionDEn,
-        optionDPa,
-        correctAnswer: correctAnswer as any,
-        explanationEn,
-        explanationPa,
+        questionPa: questionPa || questionEn,
+        optionAEn: optAEn || "Option A",
+        optionAPa: optAPa || optAEn || "ਵਿਕਲਪ A",
+        optionBEn: optBEn || "Option B",
+        optionBPa: optBPa || optBEn || "ਵਿਕਲਪ B",
+        optionCEn: optCEn || "Option C",
+        optionCPa: optCPa || optCEn || "ਵਿਕਲਪ C",
+        optionDEn: optDEn || "Option D",
+        optionDPa: optDPa || optDEn || "ਵਿਕਲਪ D",
+        correctAnswer: correctAnswer,
+        explanationEn: explanationEn || "No explanation provided.",
+        explanationPa: explanationPa || explanationEn || "ਕੋਈ ਵਿਆਖਿਆ ਨਹੀਂ ਦਿੱਤੀ ਗਈ।",
         imageUrl,
+        instructionEn,
+        instructionPa,
+        passageEn,
+        passagePa,
+        tableData,
         isStandalone: true,
         status: metadata.status
       });

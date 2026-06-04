@@ -12,7 +12,8 @@ export type QuestionType =
   | 'DI_TABLE' 
   | 'DI_CHART' 
   | 'MATCHING' 
-  | 'ASSERTION_REASON';
+  | 'ASSERTION_REASON'
+  | 'SEATING_ARRANGEMENT';
 
 export type DiagramType = 
   | 'none' 
@@ -41,7 +42,15 @@ export interface Question {
   difficulty: Difficulty;
   mockType?: MockType;
   status: ContentStatus;
+  questionType: QuestionType;
+  diagramType: DiagramType;
 
+  // Primary Content
+  instructionEn?: string;
+  instructionPa?: string;
+  passageEn?: string;
+  passagePa?: string;
+  
   questionEn: string;
   questionPa: string;
 
@@ -59,14 +68,17 @@ export interface Question {
   explanationEn: string;
   explanationPa: string;
 
+  // Visual/Complex Data
   imageUrl?: string;
-  diagramType?: DiagramType;
-  tableData?: any;
-  chartConfig?: any;
+  tableData?: any; // Structured JSON for DI tables
+  chartConfig?: any; // Recharts compatible config
+
   isStandalone?: boolean;
+  parentSetId?: string; // For linking DI questions to a set
 
   createdAt: any;
   updatedAt: any;
+  author?: string;
 }
 
 export interface MockTest {

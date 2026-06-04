@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -11,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ChevronLeft, Save, Languages, ShieldCheck, Clock, Layers, Layout, Database, Eye } from "lucide-react"
+import { ChevronLeft, Save, Languages, ShieldCheck, Clock, Layers, Layout, Database, Eye, Image as ImageIcon, FileText, BarChart3 } from "lucide-react"
 import { useFirestore, useDoc, useCollection, useUser } from "@/firebase"
 import { doc, setDoc, serverTimestamp, collection } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
@@ -44,7 +43,7 @@ function QuestionEntryContent() {
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
 
   const [formData, setFormData] = useState<any>({
-    boardId: "", examId: "", subjectId: "", difficulty: "medium",
+    boardId: "", examId: "", subjectId: "", difficulty: "Medium",
     status: "DRAFT",
     questionType: "MCQ",
     diagramType: "none",
@@ -58,7 +57,8 @@ function QuestionEntryContent() {
     instructionEn: "", instructionPa: "",
     passageEn: "", passagePa: "",
     tableDataJson: "",
-    chartConfigJson: ""
+    chartConfigJson: "",
+    imageUrl: ""
   })
 
   useEffect(() => {
@@ -89,6 +89,7 @@ function QuestionEntryContent() {
     setIsSaving(true)
     const finalId = questionId || `q-${Date.now()}`
     const questionRef = doc(db, "questions", finalId)
+    
     const payload = { 
       ...formData, 
       id: finalId,
@@ -119,8 +120,8 @@ function QuestionEntryContent() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Button variant="ghost" size="icon" className="rounded-2xl h-12 w-12 border border-slate-200 bg-white" onClick={() => router.back()}><ChevronLeft className="h-6 w-6" /></Button>
-          <div>
-            <h1 className="text-3xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Audit Node</h1>
+          <div className="text-left">
+            <h1 className="text-3xl font-black font-headline text-[#0F172A] uppercase tracking-tight">{isEditing ? "Audit Entry" : "Creation Node"}</h1>
             <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mt-1">Enterprise Question Ingestion Framework</p>
           </div>
         </div>
@@ -128,7 +129,7 @@ function QuestionEntryContent() {
            <Select value={formData.status} onValueChange={(v: any) => setFormData({...formData, status: v})}>
              <SelectTrigger className="h-14 w-44 rounded-2xl bg-white border-slate-200 font-black uppercase text-[10px] tracking-widest text-[#0F172A] shadow-sm"><SelectValue /></SelectTrigger>
              <SelectContent>
-                <SelectItem value="DRAFT">Draft</SelectItem>
+                <SelectItem value="DRAFT">Draft Mode</SelectItem>
                 <SelectItem value="REVIEW">Audit Queue</SelectItem>
                 <SelectItem value="PUBLISHED">Go Live</SelectItem>
              </SelectContent>
@@ -144,9 +145,10 @@ function QuestionEntryContent() {
         <div className="lg:col-span-7 space-y-8 text-left">
           <Tabs defaultValue="content" className="w-full">
             <TabsList className="bg-slate-100 rounded-2xl p-1.5 h-16 mb-6 overflow-x-auto overflow-y-hidden custom-scrollbar max-w-full">
-              <TabsTrigger value="content" className="rounded-xl px-8 font-black uppercase text-[10px] h-full"><Database className="h-4 w-4 mr-2" /> Content</TabsTrigger>
-              <TabsTrigger value="complex" className="rounded-xl px-8 font-black uppercase text-[10px] h-full"><Layers className="h-4 w-4 mr-2" /> Diagram/Data</TabsTrigger>
+              <TabsTrigger value="content" className="rounded-xl px-8 font-black uppercase text-[10px] h-full"><Database className="h-4 w-4 mr-2" /> Basic Content</TabsTrigger>
+              <TabsTrigger value="complex" className="rounded-xl px-8 font-black uppercase text-[10px] h-full"><BarChart3 className="h-4 w-4 mr-2" /> Diagram/Data</TabsTrigger>
               <TabsTrigger value="punjabi" className="rounded-xl px-8 font-black uppercase text-[10px] h-full"><Languages className="h-4 w-4 mr-2" /> ਪੰਜਾਬੀ</TabsTrigger>
+              <TabsTrigger value="metadata" className="rounded-xl px-8 font-black uppercase text-[10px] h-full"><Layers className="h-4 w-4 mr-2" /> Classification</TabsTrigger>
             </TabsList>
 
             <TabsContent value="content" className="space-y-6">
@@ -163,20 +165,19 @@ function QuestionEntryContent() {
                               <SelectItem value="DI_TABLE">Table DI</SelectItem>
                               <SelectItem value="DI_CHART">Chart DI</SelectItem>
                               <SelectItem value="MATCHING">Match Following</SelectItem>
+                              <SelectItem value="ASSERTION_REASON">Assertion Reason</SelectItem>
                            </SelectContent>
                         </Select>
                      </div>
                      <div className="space-y-3">
-                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Diagram Node</Label>
-                        <Select value={formData.diagramType} onValueChange={(v: any) => setFormData({...formData, diagramType: v})}>
-                           <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100"><SelectValue /></SelectTrigger>
+                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Correct Logic Output</Label>
+                        <Select value={formData.correctAnswer} onValueChange={(v: any) => setFormData({...formData, correctAnswer: v})}>
+                           <SelectTrigger className="h-12 rounded-xl bg-emerald-50 border-emerald-100 text-emerald-700 font-bold"><SelectValue /></SelectTrigger>
                            <SelectContent>
-                              <SelectItem value="none">No Visual</SelectItem>
-                              <SelectItem value="image">Static Image</SelectItem>
-                              <SelectItem value="table">Data Table</SelectItem>
-                              <SelectItem value="barGraph">Bar Graph</SelectItem>
-                              <SelectItem value="pieChart">Pie Chart</SelectItem>
-                              <SelectItem value="lineGraph">Line Graph</SelectItem>
+                              <SelectItem value="A">Option A</SelectItem>
+                              <SelectItem value="B">Option B</SelectItem>
+                              <SelectItem value="C">Option C</SelectItem>
+                              <SelectItem value="D">Option D</SelectItem>
                            </SelectContent>
                         </Select>
                      </div>
@@ -205,11 +206,42 @@ function QuestionEntryContent() {
                       </div>
                     ))}
                   </div>
+
+                  <div className="space-y-3 pt-6 border-t border-slate-100">
+                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Audit Rationale (English)</Label>
+                    <Textarea 
+                      value={formData.explanationEn} 
+                      onChange={e => setFormData({...formData, explanationEn: e.target.value})} 
+                      className="min-h-[100px] rounded-2xl bg-emerald-50/30 border-emerald-100 p-6 font-medium" 
+                      placeholder="Detailed explanation for solution hub..."
+                    />
+                  </div>
                </Card>
             </TabsContent>
 
             <TabsContent value="complex" className="space-y-6">
                <Card className="border-slate-100 bg-white shadow-2xl rounded-[3rem] p-12 space-y-10">
+                  <div className="grid grid-cols-2 gap-8">
+                     <div className="space-y-3">
+                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Visual Mode</Label>
+                        <Select value={formData.diagramType} onValueChange={(v: any) => setFormData({...formData, diagramType: v})}>
+                           <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100"><SelectValue /></SelectTrigger>
+                           <SelectContent>
+                              <SelectItem value="none">No Visual</SelectItem>
+                              <SelectItem value="image">Static Image / Map</SelectItem>
+                              <SelectItem value="table">Interactive Table</SelectItem>
+                              <SelectItem value="barGraph">Bar Graph</SelectItem>
+                              <SelectItem value="pieChart">Pie Chart</SelectItem>
+                              <SelectItem value="lineGraph">Line Graph</SelectItem>
+                           </SelectContent>
+                        </Select>
+                     </div>
+                     <div className="space-y-3">
+                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Image URI</Label>
+                        <Input value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100" placeholder="https://..." />
+                     </div>
+                  </div>
+
                   <div className="space-y-3">
                     <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Passage / Caselet (English)</Label>
                     <Textarea 
@@ -226,17 +258,17 @@ function QuestionEntryContent() {
                         <Textarea 
                           value={formData.tableDataJson} 
                           onChange={e => setFormData({...formData, tableDataJson: e.target.value})} 
-                          className="h-[200px] rounded-2xl bg-slate-900 border-none p-6 font-mono text-emerald-400 text-xs" 
-                          placeholder='{ "headers": ["X", "Y"], "rows": [["1", "2"]] }'
+                          className="h-[200px] rounded-2xl bg-slate-900 border-none p-6 font-mono text-blue-400 text-xs" 
+                          placeholder='{ "headers": ["City", "Pop"], "rows": [["Bathinda", "30k"]] }'
                         />
                      </div>
                      <div className="space-y-3">
-                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Chart Config (JSON)</Label>
+                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Chart Configuration (JSON)</Label>
                         <Textarea 
                           value={formData.chartConfigJson} 
                           onChange={e => setFormData({...formData, chartConfigJson: e.target.value})} 
-                          className="h-[200px] rounded-2xl bg-slate-900 border-none p-6 font-mono text-emerald-400 text-xs" 
-                          placeholder='{ "type": "bar", "labels": ["A", "B"], "values": [10, 20] }'
+                          className="h-[200px] rounded-2xl bg-slate-900 border-none p-6 font-mono text-orange-400 text-xs" 
+                          placeholder='{ "data": [{ "name": "2024", "value": 100 }] }'
                         />
                      </div>
                   </div>
@@ -244,7 +276,7 @@ function QuestionEntryContent() {
             </TabsContent>
 
             <TabsContent value="punjabi" className="space-y-6">
-               <Card className="border-slate-100 bg-white shadow-2xl rounded-[3rem] p-12 space-y-8">
+               <Card className="border-slate-100 bg-white shadow-2xl rounded-[3rem] p-12 space-y-10">
                   <div className="space-y-3">
                     <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">ਸਵਾਲ (Question Statement)</Label>
                     <Textarea value={formData.questionPa} onChange={e => setFormData({...formData, questionPa: e.target.value})} className="min-h-[120px] rounded-2xl bg-slate-50 border-slate-100 p-6 text-lg font-bold" />
@@ -257,6 +289,48 @@ function QuestionEntryContent() {
                       </div>
                     ))}
                   </div>
+                  <div className="space-y-3 pt-6 border-t border-slate-100">
+                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">ਵਿਆਖਿਆ (Explanation)</Label>
+                    <Textarea value={formData.explanationPa} onChange={e => setFormData({...formData, explanationPa: e.target.value})} className="min-h-[100px] rounded-2xl bg-slate-50 border-slate-100 p-6 font-medium" />
+                  </div>
+               </Card>
+            </TabsContent>
+
+            <TabsContent value="metadata" className="space-y-6">
+               <Card className="border-slate-100 bg-white shadow-2xl rounded-[3rem] p-12 space-y-8">
+                  <div className="grid grid-cols-2 gap-8">
+                     <div className="space-y-3">
+                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Recruitment Board</Label>
+                        <Select value={formData.boardId} onValueChange={v => setFormData({...formData, boardId: v})}>
+                           <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100"><SelectValue placeholder="Select" /></SelectTrigger>
+                           <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
+                        </Select>
+                     </div>
+                     <div className="space-y-3">
+                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Subject Hub</Label>
+                        <Select value={formData.subjectId} onValueChange={v => setFormData({...formData, subjectId: v})}>
+                           <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100"><SelectValue placeholder="Select" /></SelectTrigger>
+                           <SelectContent>{subjects?.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+                        </Select>
+                     </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-8">
+                     <div className="space-y-3">
+                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Difficulty</Label>
+                        <Select value={formData.difficulty} onValueChange={v => setFormData({...formData, difficulty: v})}>
+                           <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100"><SelectValue /></SelectTrigger>
+                           <SelectContent>
+                              <SelectItem value="Easy">Easy</SelectItem>
+                              <SelectItem value="Medium">Medium</SelectItem>
+                              <SelectItem value="Hard">Hard</SelectItem>
+                           </SelectContent>
+                        </Select>
+                     </div>
+                     <div className="space-y-3">
+                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Topic / Chapter</Label>
+                        <Input value={formData.chapterId} onChange={e => setFormData({...formData, chapterId: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100" placeholder="e.g. Percentage" />
+                     </div>
+                  </div>
                </Card>
             </TabsContent>
           </Tabs>
@@ -264,33 +338,24 @@ function QuestionEntryContent() {
 
         {/* Right: Real-time Preview */}
         <div className="lg:col-span-5 space-y-8">
-          <Card className="border-slate-100 bg-white shadow-2xl rounded-[3.5rem] overflow-hidden sticky top-32">
+          <Card className="border-none bg-white shadow-2xl rounded-[3.5rem] overflow-hidden sticky top-32">
              <div className="bg-[#0B1528] px-10 py-6 flex items-center justify-between border-b border-white/5">
                 <div className="flex items-center gap-3">
                    <Eye className="h-4 w-4 text-primary" />
                    <span className="text-[10px] font-black uppercase tracking-widest text-white">Student View Node</span>
                 </div>
-                <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase tracking-widest px-3 py-1">Institutional Audit</Badge>
+                <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase tracking-widest px-3 py-1">Instant Audit</Badge>
              </div>
              <CardContent className="p-10 space-y-10 h-[70vh] overflow-y-auto custom-scrollbar">
                 <QuestionRenderer 
-                   language="en" 
+                   language="bilingual" 
                    question={{
                      ...formData,
                      tableData: formData.tableDataJson ? JSON.parse(formData.tableDataJson || '{}') : undefined,
                      chartConfig: formData.chartConfigJson ? JSON.parse(formData.chartConfigJson || '{}') : undefined
                    }} 
+                   showSolution={true}
                 />
-                <div className="pt-8 border-t border-slate-100 space-y-4">
-                   <Label className="text-[10px] font-black uppercase text-primary tracking-widest">Correct Logic Output</Label>
-                   <RadioGroup value={formData.correctAnswer} onValueChange={(val: any) => setFormData({...formData, correctAnswer: val})} className="grid grid-cols-2 gap-4">
-                      {['A','B','C','D'].map(opt => (
-                        <div key={opt} className={`flex items-center gap-4 p-5 rounded-2xl border transition-all cursor-pointer ${formData.correctAnswer === opt ? 'border-primary bg-primary/5' : 'border-slate-100 bg-slate-50'}`}>
-                          <RadioGroupItem value={opt} id={`opt-${opt}`} /><Label htmlFor={`opt-${opt}`} className="font-black text-xs cursor-pointer">Option {opt}</Label>
-                        </div>
-                      ))}
-                   </RadioGroup>
-                </div>
              </CardContent>
           </Card>
         </div>
