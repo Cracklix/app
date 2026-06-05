@@ -17,8 +17,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub v14.0 - Master Registry Control.
- * Features: Node Deletion, Asset Loader, and Referrer Suppression.
+ * @fileOverview Authority Hub v15.0 - Master Registry Control.
+ * Fixed: Robust Delete Logic and Official Logo failover.
  */
 
 export default function ExamManagement() {
@@ -32,15 +32,11 @@ export default function ExamManagement() {
   const [editingBoard, setEditingBoard] = useState<any>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [isDeleting, setIsDeleting] = useState<string | null>(null)
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
-  const [assetError, setAssetError] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const stateEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
-
-  useEffect(() => {
-     setAssetError(false);
-  }, [editingBoard?.id, editingBoard?.iconUrl]);
 
   const handleSave = async () => {
     if (!db || !editingBoard) return
@@ -71,13 +67,20 @@ export default function ExamManagement() {
   }
 
   const handleDelete = async (id: string) => {
+    if (!id || !db) return
     if (!confirm("Permanently remove this authority from the registry? This will affect all linked mocks.")) return
-    const boardRef = doc(db!, "boards", id)
+    
+    setIsDeleting(id)
+    const boardRef = doc(db, "boards", id)
+    
     try {
       await deleteDoc(boardRef)
       toast({ title: "Registry Purged", description: "Authority node removed from cloud." })
     } catch (serverError: any) {
+      console.error("Delete Rejection:", serverError)
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: boardRef.path, operation: 'delete' }));
+    } finally {
+      setIsDeleting(null)
     }
   }
 
@@ -168,8 +171,14 @@ export default function ExamManagement() {
                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-slate-100" onClick={() => setEditingBoard(board)}>
                           <Edit className="h-5 w-5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-rose-500/10 hover:text-rose-500" onClick={() => handleDelete(board.id)}>
-                          <Trash2 className="h-5 w-5" />
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-12 w-12 rounded-xl hover:bg-rose-500/10 hover:text-rose-500" 
+                          onClick={() => handleDelete(board.id)}
+                          disabled={isDeleting === board.id}
+                        >
+                          {isDeleting === board.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-5 w-5" />}
                         </Button>
                       </div>
                     </TableCell>
@@ -198,13 +207,12 @@ export default function ExamManagement() {
                     <Loader2 className="h-8 w-8 text-primary animate-spin" />
                  ) : (
                     <div className="relative h-full w-full flex items-center justify-center bg-white p-2">
-                      {!assetError && editingBoard?.iconUrl ? (
+                      {editingBoard?.iconUrl ? (
                         <img 
                           src={editingBoard.iconUrl} 
                           referrerPolicy="no-referrer"
                           className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform" 
                           alt="Preview"
-                          onError={() => setAssetError(true)}
                         />
                       ) : (
                         <div className="flex flex-col items-center gap-2 opacity-30">
