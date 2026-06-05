@@ -38,7 +38,7 @@ export default function ExamManagement() {
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const stateEmblem = "https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png";
+  const stateEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
 
   const handleSave = async () => {
     if (!db || !editingBoard) return
@@ -148,13 +148,13 @@ export default function ExamManagement() {
                   <TableRow key={board.id} className="hover:bg-slate-50 group border-slate-50 transition-all">
                     <TableCell className="px-10 py-6">
                       <div className="h-16 w-16 rounded-2xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden relative shadow-inner group-hover:scale-110 transition-transform">
-                          {isImageFailed ? (
+                          {isImageFailed || !board.iconUrl ? (
                              <div className="bg-primary text-white h-full w-full flex items-center justify-center font-black text-xl">
                                 {board.abbreviation?.substring(0, 2).toUpperCase()}
                              </div>
                           ) : (
                             <img 
-                              src={board.iconUrl || stateEmblem} 
+                              src={board.iconUrl} 
                               className={cn("h-full w-full object-contain p-2", isArmy ? "scale-150" : "")} 
                               referrerPolicy="no-referrer"
                               alt={board.abbreviation}

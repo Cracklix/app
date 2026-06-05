@@ -78,7 +78,7 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1 }}
-            className="relative flex items-center justify-center lg:block"
+            className="relative flex items-center justify-center"
           >
             {/* Glow Effect */}
             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-[4rem] blur opacity-20 transition duration-1000"></div>

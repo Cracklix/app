@@ -77,7 +77,7 @@ export async function seedInitialData(db: Firestore) {
       abbreviation: 'PPSC',
       name: 'Punjab Public Service Commission',
       iconUrl: stateEmblem,
-      description: 'Authority for Class A and B civil services.'
+      description: 'Official authority for Class A and B civil services.'
     },
     {
       id: 'punjab-police',
