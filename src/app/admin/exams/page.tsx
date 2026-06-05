@@ -18,8 +18,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub v24.3 - Hardened Operations Engine.
- * Features: Fixed Deletion Logic with absolute event isolation and direct cloud targeting.
+ * @fileOverview Authority Hub v24.4 - Hardened Operations Engine.
+ * Features: Absolute Deletion Logic with event isolation to prevent "dummy" button issue.
  */
 
 export default function ExamManagement() {

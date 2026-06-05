@@ -62,6 +62,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'pstet.pseb.ac.in',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'www.markfedpunjab.com',
         pathname: '/**',
       },
