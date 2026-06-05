@@ -4,7 +4,7 @@ import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/fi
  * @fileOverview Final Institutional Seeding Engine for Cracklix.
  * Synchronizes binary access passes, official board registry, and platform settings.
  * Optimized for Testbook-style "Select Board" logic with high-fidelity logos.
- * Hardcoded to Wikimedia and Government URLs to ensure Cross-Origin (CORS) compatibility.
+ * Hardcoded to official Government SVG for PSSSB.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('[REGISTRY] Initializing Global Punjab Access Registry Sync...');
@@ -51,10 +51,12 @@ export async function seedInitialData(db: Firestore) {
     await setDoc(doc(db, 'passes', p.id), { ...p, updatedAt: serverTimestamp() });
   }
 
-  // 2. Master Authority Registry with Official Government & Wikimedia URLs
+  // 2. Master Authority Registry with Official Government & CDN URLs
   const stateEmblem = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png';
+  // OFFICIAL PSSSB SVG URL PROVIDED BY USER
   const psssbOfficialLogo = 'https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg';
   const policeEmblem = 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Punjab_Police_India_Logo.png';
+  const hcEmblem = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Scale_of_justice_2.svg/512px-Scale_of_justice_2.svg.png';
 
   const boards = [
     {
@@ -68,7 +70,7 @@ export async function seedInitialData(db: Firestore) {
       id: 'ppsc',
       abbreviation: 'PPSC',
       name: 'Punjab Public Service Commission',
-      iconUrl: stateEmblem,
+      iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png',
       description: 'Authority for Class A and B civil services.'
     },
     {
@@ -103,7 +105,7 @@ export async function seedInitialData(db: Firestore) {
       id: 'high-court',
       abbreviation: 'High Court',
       name: 'Punjab & Haryana High Court',
-      iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Scale_of_justice_2.svg/512px-Scale_of_justice_2.svg.png',
+      iconUrl: hcEmblem,
       description: 'Judicial and clerical court recruitments.'
     }
   ];

@@ -17,8 +17,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub v8.0 - Hardened Anti-Block Branding Hub.
- * Features: Triple-layer failover + Cross-Origin anti-block protocols for government SVGs.
+ * @fileOverview Authority Hub v12.0 - Optimized Government SVG Renderer.
+ * Features: Hardened Referrer Bypassing and Anti-Block protocols.
  */
 
 export default function ExamManagement() {
@@ -41,7 +41,7 @@ export default function ExamManagement() {
 
   useEffect(() => {
      setAssetError(false);
-  }, [editingBoard?.iconUrl]);
+  }, [editingBoard?.id, editingBoard?.iconUrl]);
 
   const handleSave = async () => {
     if (!db || !editingBoard) return
@@ -76,19 +76,22 @@ export default function ExamManagement() {
     if (!file || !storage) return
 
     setIsUploading(true)
+    const uploadRef = ref(storage, `authority_logos/${Date.now()}_${file.name.replace(/\s+/g, '_')}`)
+
     const timer = setTimeout(() => {
        setIsUploading(false);
        toast({ variant: "destructive", title: "Sync Timeout", description: "Storage response took too long." });
     }, 30000);
 
     try {
-      const storageRef = ref(storage, `authority_logos/${Date.now()}_${file.name.replace(/\s+/g, '_')}`)
-      const snapshot = await uploadBytes(storageRef, file)
+      const snapshot = await uploadBytes(uploadRef, file)
       const downloadURL = await getDownloadURL(snapshot.ref)
       
+      console.log("[UPLOAD] File synced to storage. URL:", downloadURL);
       setEditingBoard((prev: any) => ({ ...prev, iconUrl: downloadURL }))
       toast({ title: "Asset Synced", description: "Logo updated in storage." })
     } catch (error: any) {
+      console.error("[UPLOAD] Sync failed:", error);
       toast({ variant: "destructive", title: "Upload Failed", description: error.message || "Storage rejection." })
     } finally {
       clearTimeout(timer);
@@ -142,8 +145,7 @@ export default function ExamManagement() {
                           ) : (
                             <img 
                               src={board.iconUrl || stateEmblem} 
-                              className="h-full w-full object-contain p-1" 
-                              crossOrigin="anonymous"
+                              className="h-full w-full object-contain p-2" 
                               referrerPolicy="no-referrer"
                               alt={board.abbreviation}
                               onError={() => setFailedImages(p => ({...p, [board.id]: true}))}
@@ -184,20 +186,19 @@ export default function ExamManagement() {
                  {isUploading ? (
                     <Loader2 className="h-8 w-8 text-primary animate-spin" />
                  ) : (
-                    <div className="relative h-full w-full flex items-center justify-center">
+                    <div className="relative h-full w-full flex items-center justify-center bg-white p-2">
                       {!assetError && editingBoard?.iconUrl ? (
                         <img 
                           src={editingBoard.iconUrl} 
                           referrerPolicy="no-referrer"
-                          crossOrigin="anonymous"
                           className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform" 
                           alt="Preview"
                           onError={() => setAssetError(true)}
                         />
                       ) : (
-                        <div className="flex flex-col items-center gap-2 opacity-30 group-hover:opacity-100 transition-opacity">
+                        <div className="flex flex-col items-center gap-2 opacity-30">
                            <ImageIcon className="h-8 w-8 text-slate-400" />
-                           <span className="text-[8px] font-black uppercase text-slate-400">No Asset Load</span>
+                           <span className="text-[8px] font-black uppercase text-slate-400">No Logo Loaded</span>
                         </div>
                       )}
                     </div>
@@ -230,8 +231,12 @@ export default function ExamManagement() {
                  </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Logo URL Override (Government SVG)</Label>
-                <Input value={editingBoard?.iconUrl || ""} onChange={e => setEditingBoard({...editingBoard, iconUrl: e.target.value.trim()})} className="bg-slate-50 border-none rounded-xl h-12 text-[10px] font-mono" />
+                <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Logo URL Override (Official SVG)</Label>
+                <div className="flex gap-2">
+                  <Input value={editingBoard?.iconUrl || ""} onChange={e => setEditingBoard({...editingBoard, iconUrl: e.target.value.trim()})} className="bg-slate-50 border-none rounded-xl h-12 text-[10px] font-mono flex-1" placeholder="https://..." />
+                  {editingBoard?.iconUrl && <Button variant="ghost" size="icon" onClick={() => setEditingBoard({...editingBoard, iconUrl: ""})} className="h-12 w-12 rounded-xl"><X className="h-4 w-4" /></Button>}
+                </div>
+                <p className="text-[8px] text-slate-400 font-bold uppercase mt-1">Direct links from government servers require referrer-bypass nodes.</p>
               </div>
             </div>
           </div>
