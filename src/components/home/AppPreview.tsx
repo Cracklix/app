@@ -6,8 +6,9 @@ import { Apple, Play, Smartphone, CheckCircle2, Map as MapIcon, Globe } from "lu
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Final App Preview Hub v2.0.
- * Replaced phone boxes with high-fidelity Punjab and India maps for geographic clarity.
+ * @fileOverview Final App Preview Hub v3.0.
+ * Fixed: Zero-clip map rendering using object-contain.
+ * Optimized for full visibility of Punjab and India maps.
  */
 
 export default function AppPreview() {
@@ -63,48 +64,46 @@ export default function AppPreview() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
              <div className="absolute -inset-10 bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
              
-             {/* Punjab Coverage Node */}
+             {/* Punjab Coverage Node - FULL MAP VIEW */}
              <motion.div 
                initial={{ opacity: 0, y: 30 }}
                whileInView={{ opacity: 1, y: 0 }}
                viewport={{ once: true }}
-               className="group relative rounded-[3rem] bg-[#0F172A] border-[10px] border-[#0F172A] shadow-5xl overflow-hidden aspect-[4/5] hover:-translate-y-2 transition-all duration-500"
+               className="group relative rounded-[3rem] bg-white border-[8px] border-[#0F172A] shadow-5xl overflow-hidden aspect-[3/4] hover:-translate-y-2 transition-all duration-500 flex items-center justify-center p-4"
              >
                 <img 
                    src={punjabMap} 
-                   className="w-full h-full object-cover grayscale brightness-125 group-hover:grayscale-0 group-hover:scale-110 transition-all duration-[2s]" 
+                   className="w-full h-full object-contain transition-all duration-[2s] group-hover:scale-105" 
                    referrerPolicy="no-referrer"
                    alt="Punjab Hub"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-transparent to-transparent opacity-60" />
-                <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between">
+                <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between bg-[#0F172A]/80 backdrop-blur-sm p-3 rounded-2xl">
                    <div className="flex items-center gap-2">
-                      <MapIcon className="h-5 w-5 text-primary" />
-                      <span className="text-[10px] font-black uppercase text-white tracking-widest">Punjab Hub</span>
+                      <MapIcon className="h-4 w-4 text-primary" />
+                      <span className="text-[9px] font-black uppercase text-white tracking-widest">Punjab Hub</span>
                    </div>
                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                 </div>
              </motion.div>
 
-             {/* National Coverage Node */}
+             {/* National Coverage Node - FULL MAP VIEW */}
              <motion.div 
                initial={{ opacity: 0, y: 50 }}
                whileInView={{ opacity: 1, y: 0 }}
                viewport={{ once: true }}
                transition={{ delay: 0.2 }}
-               className="group relative rounded-[3rem] bg-[#0F172A] border-[10px] border-[#0F172A] shadow-5xl overflow-hidden aspect-[4/5] md:mt-12 hover:-translate-y-2 transition-all duration-500"
+               className="group relative rounded-[3rem] bg-white border-[8px] border-[#0F172A] shadow-5xl overflow-hidden aspect-[3/4] md:mt-12 hover:-translate-y-2 transition-all duration-500 flex items-center justify-center p-4"
              >
                 <img 
                    src={indiaMap} 
-                   className="w-full h-full object-cover grayscale brightness-125 group-hover:grayscale-0 group-hover:scale-110 transition-all duration-[2s]" 
+                   className="w-full h-full object-contain transition-all duration-[2s] group-hover:scale-105" 
                    referrerPolicy="no-referrer"
                    alt="National Hub"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-transparent to-transparent opacity-60" />
-                <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between">
+                <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between bg-[#0F172A]/80 backdrop-blur-sm p-3 rounded-2xl">
                    <div className="flex items-center gap-2">
-                      <Globe className="h-5 w-5 text-blue-400" />
-                      <span className="text-[10px] font-black uppercase text-white tracking-widest">National Hub</span>
+                      <Globe className="h-4 w-4 text-blue-400" />
+                      <span className="text-[9px] font-black uppercase text-white tracking-widest">National Hub</span>
                    </div>
                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                 </div>

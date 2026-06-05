@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import { Globe, Shield, Layout, Bell, Save, RefreshCw, ShieldCheck, Lock, CloudLightning, FileCode, QrCode, Phone, Zap } from "lucide-react"
+import { Globe, Shield, Layout, Bell, Save, RefreshCw, ShieldCheck, Lock, CloudLightning, FileCode, QrCode, Phone, Zap, Megaphone } from "lucide-react"
 import { useDoc, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from "@/hooks/use-toast";
@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 
 /**
  * @fileOverview Final Enterprise CMS Node.
- * Features: Manual Payment Configuration (UPI Registry).
+ * Features: Manual Payment Configuration (UPI Registry) and Announcement Toggle.
  */
 
 export default function AdminSettings() {
@@ -27,7 +27,6 @@ export default function AdminSettings() {
   const settingsRef = useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]);
   const { data: remoteSettings, loading } = useDoc<any>(settingsRef);
 
-  const [isDeploying, setIsDeploying] = useState(false);
   const [formData, setFormData] = useState({
     heroLine1: "Prepare Smarter.",
     heroLine2: "Score Higher.",
@@ -86,6 +85,22 @@ export default function AdminSettings() {
                 <div className="space-y-6">
                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Marquee Announcement</Label>
                    <Input value={formData.announcement} onChange={e => setFormData({...formData, announcement: e.target.value})} className="h-16 rounded-2xl bg-slate-50 border-slate-100 text-lg font-bold" />
+                   
+                   <div className="flex items-center justify-between p-6 bg-orange-50 rounded-2xl border border-orange-100 mt-4">
+                      <div className="flex items-center gap-4">
+                         <div className="h-10 w-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                            <Megaphone className="h-5 w-5 text-primary" />
+                         </div>
+                         <div className="text-left">
+                            <p className="font-black text-xs uppercase tracking-tight text-[#0F172A]">Display Announcement Bar</p>
+                            <p className="text-[9px] text-slate-500 uppercase font-bold">Toggle visibility for all students.</p>
+                         </div>
+                      </div>
+                      <Switch 
+                         checked={formData.showAnnouncement} 
+                         onCheckedChange={val => setFormData({...formData, showAnnouncement: val})} 
+                      />
+                   </div>
                 </div>
                 <div className="space-y-6">
                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Platform Identity</Label>
