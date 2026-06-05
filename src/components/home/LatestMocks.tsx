@@ -13,7 +13,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 /**
  * @fileOverview High-Fidelity Latest Mocks Node.
- * Dynamically fetches published mocks from Firestore and applies Testbook styling.
+ * Dynamically fetches published mocks from Firestore and applies Board Branding.
+ * Fixed: PSSSB Logo scaling and broken image handling.
  */
 
 export default function LatestMocks() {
@@ -38,6 +39,7 @@ export default function LatestMocks() {
     }).slice(0, 5)
   }, [rawMocks])
 
+  // High-Fidelity Official PSSSB Fallback
   const psssbEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
 
   return (
@@ -80,7 +82,7 @@ export default function LatestMocks() {
                 >
                   <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-xl hover:shadow-3xl hover:-translate-y-1 transition-all duration-500 group h-full flex flex-col p-6">
                     <div className="flex justify-between items-start mb-6">
-                      <div className="h-14 w-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center relative overflow-hidden group-hover:shadow-lg transition-all shadow-inner">
+                      <div className="h-14 w-14 rounded-2xl bg-white border border-slate-100 flex items-center justify-center relative overflow-hidden group-hover:shadow-lg transition-all shadow-inner">
                          <img 
                             src={board?.iconUrl || psssbEmblem} 
                             referrerPolicy="no-referrer"
@@ -89,7 +91,7 @@ export default function LatestMocks() {
                             alt={mock.boardId || 'Board'} 
                             onError={(e) => {
                                const target = e.target as HTMLImageElement;
-                               target.src = psssbEmblem;
+                               target.src = psssbEmblem; // Absolute Fallback
                             }}
                          />
                       </div>

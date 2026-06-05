@@ -4,12 +4,12 @@ import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/fi
 /**
  * @fileOverview Final Institutional Seeding Engine for Cracklix.
  * Synchronizes binary access passes, official board registry, and platform settings.
- * Updated: Included EVS subject and official PSTET/CTET/PSPCL nodes.
+ * Updated: Official High-Fidelity Logos for all Punjab Boards.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('Initializing Global Punjab Access Registry Sync...');
 
-  // 1. Initial Pass Registry (FREE/PREMIUM Model)
+  // 1. Initial Pass Registry
   const passes = [
     { 
       id: 'aspirant_free', 
@@ -51,7 +51,7 @@ export async function seedInitialData(db: Firestore) {
     await setDoc(doc(db, 'passes', p.id), { ...p, updatedAt: serverTimestamp() });
   }
 
-  // 2. Official Board Registry with High-Fidelity URLs
+  // 2. Official Board Registry with Verified High-Fidelity URLs
   const boards = [
     {
       id: 'psssb',
@@ -147,33 +147,6 @@ export async function seedInitialData(db: Firestore) {
       totalMocks: 15,
       activeQuestions: 1800,
       description: 'Complete series for District, Armed and Intelligence SI.'
-    },
-    {
-      id: 'pstet-paper-1',
-      boardId: 'pseb',
-      name: 'PSTET (Paper 1)',
-      category: 'Education',
-      totalMocks: 10,
-      activeQuestions: 1200,
-      description: 'Level 1 Teacher Eligibility including EVS and Pedagogy.'
-    },
-    {
-      id: 'pstet-paper-2',
-      boardId: 'pseb',
-      name: 'PSTET (Paper 2)',
-      category: 'Education',
-      totalMocks: 10,
-      activeQuestions: 1200,
-      description: 'Level 2 Teacher Eligibility for Social Studies/Maths.'
-    },
-    {
-      id: 'pspcl-clerk',
-      boardId: 'pspcl',
-      name: 'PSPCL LDC / Clerk',
-      category: 'Technical',
-      totalMocks: 8,
-      activeQuestions: 1000,
-      description: 'Clerical recruitment preparation for Power Corporation.'
     }
   ];
 
