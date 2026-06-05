@@ -3,19 +3,30 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, ShieldCheck, Search, Zap, GraduationCap, Trophy, Globe, Target } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 /**
- * @fileOverview Professional Mock Platform Hero v2.0.
- * Redesigned for Adda247 high-density discovery experience.
+ * @fileOverview Professional Mock Platform Hero v2.1.
+ * Fixed: Typography clipping for "RECRUITMENT".
+ * Added: Functional Search logic for Exam Hubs.
  */
 
 export default function Hero() {
+  const router = useRouter();
+  const [query, setQuery] = useState("");
   const policeImage = "https://punjabpolice.gov.in/media/images/pp10.original.jpg";
+
+  const handleSearch = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (query.trim()) {
+      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+    }
+  };
 
   return (
     <section className="relative pt-10 pb-20 lg:pt-24 lg:pb-36 bg-[#08152D] overflow-hidden">
@@ -38,7 +49,7 @@ export default function Hero() {
                   <Sparkles className="h-4 w-4 text-primary animate-pulse" />
                   <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Punjab's No. 1 Prep Node 2026</span>
                </div>
-               <h1 className="text-5xl lg:text-8xl font-headline font-black leading-[0.85] tracking-tighter text-white uppercase">
+               <h1 className="text-5xl lg:text-7xl font-headline font-black leading-[0.85] tracking-tighter text-white uppercase">
                   CRACK EVERY <br/> <span className="text-primary text-glow">RECRUITMENT.</span>
                </h1>
                <p className="text-xl lg:text-2xl text-slate-400 font-medium max-w-2xl antialiased leading-relaxed">
@@ -46,20 +57,25 @@ export default function Hero() {
                </p>
             </div>
 
-            {/* Platform Discovery Hub */}
-            <div className="relative group max-w-2xl">
+            {/* Platform Discovery Hub - NOW FUNCTIONAL */}
+            <form onSubmit={handleSearch} className="relative group max-w-2xl">
                <div className="absolute -inset-1.5 bg-gradient-to-r from-primary via-orange-500 to-amber-500 rounded-[2.5rem] blur opacity-20 group-hover:opacity-50 transition duration-1000"></div>
                <div className="relative flex items-center bg-white rounded-[2rem] p-2 shadow-4xl border border-white/10">
                   <Search className="absolute left-8 h-6 w-6 text-slate-400" />
                   <Input 
                     placeholder="Search for Patwari, SI, Agniveer, SSC..." 
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
                     className="h-16 md:h-20 pl-16 pr-6 border-none text-xl font-medium text-[#0F172A] bg-transparent focus-visible:ring-0 w-full"
                   />
-                  <Button className="hidden md:flex h-16 px-10 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[11px] tracking-widest rounded-2xl ml-2 gap-4 shadow-2xl transition-all active:scale-95">
+                  <Button 
+                    type="submit"
+                    className="hidden md:flex h-16 px-10 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[11px] tracking-widest rounded-2xl ml-2 gap-4 shadow-2xl transition-all active:scale-95"
+                  >
                     <Target className="h-5 w-5 text-primary" /> Start Audit
                   </Button>
                </div>
-            </div>
+            </form>
 
             {/* Vertical Routing Nodes */}
             <div className="flex flex-wrap gap-4 pt-4">
