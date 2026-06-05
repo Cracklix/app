@@ -19,7 +19,7 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Authority Hub v25.1 - Logo Restoration & Hardened Purge Engine.
+ * @fileOverview Authority Hub v25.2 - Logo Restoration & Hardened Purge Engine.
  * Features: Absolute Deletion Logic (Propagation Fixed) & Logo Zoom Protocol.
  */
 
