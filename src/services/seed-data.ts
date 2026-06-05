@@ -1,9 +1,10 @@
+
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
  * @fileOverview Final Institutional Seeding Engine for Cracklix.
  * Synchronizes binary access passes, official board registry, and platform settings.
- * Hardcoded to official Government URLs for PSSSB, PSPCL, PSTCL, and Punjab Police.
+ * Hardcoded to official Government URLs provided by Arsh Grewal Management.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('[REGISTRY] Initializing Global Punjab Access Registry Sync...');
@@ -50,13 +51,15 @@ export async function seedInitialData(db: Firestore) {
     await setDoc(doc(db, 'passes', p.id), { ...p, updatedAt: serverTimestamp() });
   }
 
-  // 2. Master Authority Registry with Official Government URLs
+  // 2. Master Authority Registry with OFFICIAL Government URLs
   const stateEmblem = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png';
   const psssbOfficialLogo = 'https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg';
   const pspclOfficialLogo = 'https://pspcl.in/assets/images/logo.png';
   const pstclOfficialLogo = 'https://www.pstcl.org/images/logo.png';
   const policeOfficialLogo = 'https://punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png';
   const hcOfficialLogo = 'https://highcourtchd.gov.in/images/newlogo.png';
+  const markfedOfficialLogo = 'https://www.markfedpunjab.com/wp-content/uploads/2019/04/markfed-logo.png';
+  const verkaOfficialLogo = 'https://www.verka.coop/wp-content/themes/verka/images/logo.png';
 
   const boards = [
     {
@@ -107,6 +110,20 @@ export async function seedInitialData(db: Firestore) {
       name: 'Punjab & Haryana High Court',
       iconUrl: hcOfficialLogo,
       description: 'Judicial and clerical court recruitment registry.'
+    },
+    {
+      id: 'markfed',
+      abbreviation: 'MARKFED',
+      name: 'Punjab MARKFED',
+      iconUrl: markfedOfficialLogo,
+      description: 'Cooperative marketing federation recruitment.'
+    },
+    {
+      id: 'verka',
+      abbreviation: 'Verka',
+      name: 'Verka Milkfed',
+      iconUrl: verkaOfficialLogo,
+      description: 'Milkfed Punjab recruitment series.'
     }
   ];
 

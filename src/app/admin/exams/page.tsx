@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef, useEffect } from "react"
@@ -17,8 +18,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub v15.0 - Master Registry Control.
- * Fixed: Robust Delete Logic and Official Logo failover.
+ * @fileOverview Authority Hub v16.0 - Master Registry Control.
+ * Fixed: Robust Delete Logic and Official Logo failover with no-referrer protocol.
  */
 
 export default function ExamManagement() {
@@ -68,17 +69,16 @@ export default function ExamManagement() {
 
   const handleDelete = async (id: string) => {
     if (!id || !db) return
-    if (!confirm("Permanently remove this authority from the registry? This will affect all linked mocks.")) return
+    if (!window.confirm("Permanently remove this authority from the registry? This will affect all linked mocks.")) return
     
     setIsDeleting(id)
-    const boardRef = doc(db, "boards", id)
-    
     try {
+      const boardRef = doc(db, "boards", id)
       await deleteDoc(boardRef)
       toast({ title: "Registry Purged", description: "Authority node removed from cloud." })
     } catch (serverError: any) {
       console.error("Delete Rejection:", serverError)
-      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: boardRef.path, operation: 'delete' }));
+      toast({ variant: "destructive", title: "Purge Failed", description: "Cloud registry sync rejected." })
     } finally {
       setIsDeleting(null)
     }
@@ -151,7 +151,7 @@ export default function ExamManagement() {
                       <div className="h-16 w-16 rounded-2xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden relative shadow-inner group-hover:scale-110 transition-transform">
                           {isImageFailed ? (
                              <div className="bg-primary text-white h-full w-full flex items-center justify-center font-black text-xl">
-                                {board.abbreviation?.substring(0, 2)}
+                                {board.abbreviation?.substring(0, 2).toUpperCase()}
                              </div>
                           ) : (
                             <img 
@@ -174,7 +174,7 @@ export default function ExamManagement() {
                         <Button 
                           variant="ghost" 
                           size="icon" 
-                          className="h-12 w-12 rounded-xl hover:bg-rose-500/10 hover:text-rose-500" 
+                          className="h-12 w-12 rounded-xl hover:bg-rose-50 hover:text-rose-500" 
                           onClick={() => handleDelete(board.id)}
                           disabled={isDeleting === board.id}
                         >
@@ -255,7 +255,7 @@ export default function ExamManagement() {
                   <Input value={editingBoard?.iconUrl || ""} onChange={e => setEditingBoard({...editingBoard, iconUrl: e.target.value.trim()})} className="bg-slate-50 border-none rounded-xl h-12 text-[10px] font-mono flex-1" placeholder="https://..." />
                   {editingBoard?.iconUrl && <Button variant="ghost" size="icon" onClick={() => setEditingBoard({...editingBoard, iconUrl: ""})} className="h-12 w-12 rounded-xl"><X className="h-4 w-4" /></Button>}
                 </div>
-                <p className="text-[8px] text-slate-400 font-bold uppercase mt-1">Direct links from government servers require referrer-bypass nodes.</p>
+                <p className="text-[8px] text-slate-400 font-bold uppercase mt-1">Government servers require referrer-bypass nodes to load images.</p>
               </div>
             </div>
           </div>
