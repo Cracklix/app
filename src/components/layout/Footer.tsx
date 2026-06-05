@@ -1,16 +1,16 @@
+
 "use client";
 
 import Link from "next/link";
 import Logo from "@/components/brand/Logo";
-import { Twitter, Facebook, Instagram, Mail, Phone, Heart, ShieldCheck, MapPin, Send } from "lucide-react";
+import { Twitter, Facebook, Instagram, Mail, Phone, Heart, ShieldCheck, MapPin, Send, Code, User } from "lucide-react";
 import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { useMemo } from "react";
 
 /**
  * @fileOverview Final Institutional Footer Node.
- * Updated Address: Shergarh, Bathinda, Punjab.
- * Added: Telegram and WhatsApp integration.
+ * Updated: Prominent Credit to Founder & Developer Arsh Grewal.
  */
 
 export default function Footer() {
@@ -41,18 +41,18 @@ export default function Footer() {
             <div className="space-y-4">
                <div className="flex items-center gap-4 text-slate-300">
                   <MapPin className="h-5 w-5 text-primary" />
-                  <span className="font-bold">HQs: Shergarh, Bathinda, Punjab</span>
+                  <span className="font-bold text-sm">HQs: Shergarh, Bathinda, Punjab</span>
                </div>
                <div className="flex items-center gap-4 text-slate-300">
                   <ShieldCheck className="h-5 w-5 text-primary" />
-                  <span className="font-bold">Institutional Registry Verified</span>
+                  <span className="font-bold text-sm">Institutional Registry Verified</span>
                </div>
             </div>
           </div>
 
           <div className="text-left">
             <h4 className="font-headline font-black text-xs uppercase tracking-[0.2em] text-slate-500 mb-8">Exam Verticals</h4>
-            <ul className="space-y-4 text-slate-300 font-bold">
+            <ul className="space-y-4 text-slate-300 font-bold text-sm">
               <li><Link href="/exams" className="hover:text-primary transition-colors">PSSSB Boards</Link></li>
               <li><Link href="/exams" className="hover:text-primary transition-colors">PPSC Gazetted</Link></li>
               <li><Link href="/exams" className="hover:text-primary transition-colors">Punjab Police</Link></li>
@@ -62,7 +62,7 @@ export default function Footer() {
 
           <div className="text-left">
             <h4 className="font-headline font-black text-xs uppercase tracking-[0.2em] text-slate-500 mb-8">Resources</h4>
-            <ul className="space-y-4 text-slate-300 font-bold">
+            <ul className="space-y-4 text-slate-300 font-bold text-sm">
               <li><Link href="/mocks" className="hover:text-primary transition-colors">Free Mock Tests</Link></li>
               <li><Link href="/current-affairs" className="hover:text-primary transition-colors">Daily Analysis</Link></li>
               <li><Link href="/pyqs" className="hover:text-primary transition-colors">Previous Year Papers</Link></li>
@@ -79,7 +79,7 @@ export default function Footer() {
                <SocialIcon icon={<Facebook />} href={content.fb} label="Facebook" />
             </div>
             <div className="mt-8 space-y-2">
-               <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Founder: Arsh Grewal</p>
+               <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Support Node</p>
                <a 
                  href="https://wa.me/919888188602" 
                  target="_blank" 
@@ -91,12 +91,29 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-24 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-slate-500 text-sm font-bold italic">
-            © 2026 {settings?.platformName || 'Cracklix'} Technologies. Built with ❤️ in Punjab.
-          </p>
-          <div className="flex items-center gap-2 text-slate-400 font-bold text-sm">
-             Built for Punjab Aspirants by <span className="text-white font-black">Arsh Grewal</span>
+        {/* INSTITUTIONAL CREDITS BAR */}
+        <div className="mt-24 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+             <p className="text-slate-500 text-xs font-bold italic">
+               © 2026 {settings?.platformName || 'Cracklix'} Technologies. Built with ❤️ in Punjab.
+             </p>
+             <div className="hidden md:block h-4 w-px bg-white/10" />
+             <div className="flex items-center gap-3 px-5 py-2 bg-white/5 rounded-full border border-white/5">
+                <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Registry Secure</span>
+             </div>
+          </div>
+          
+          <div className="flex flex-col items-center md:items-end gap-2">
+             <div className="flex items-center gap-3 group">
+                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-xl shadow-primary/20">
+                   <User className="h-4 w-4" />
+                </div>
+                <p className="text-sm font-bold text-slate-300">
+                   Founder & Developer: <span className="text-white font-black uppercase tracking-tighter ml-1 group-hover:text-primary transition-colors">Arsh Grewal</span>
+                </p>
+             </div>
+             <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em]">Authority Node Punjab</p>
           </div>
         </div>
       </div>

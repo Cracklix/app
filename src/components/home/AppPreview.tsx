@@ -2,13 +2,13 @@
 'use client';
 
 import { motion } from "framer-motion";
-import { Apple, Play, Smartphone, CheckCircle2, Map as MapIcon, Globe } from "lucide-react";
+import { Apple, Play, Smartphone, CheckCircle2, Map as MapIcon, Globe, ShieldCheck, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Final App Preview Hub v3.0.
- * Fixed: Zero-clip map rendering using object-contain.
- * Optimized for full visibility of Punjab and India maps.
+ * @fileOverview Final App Preview Hub v4.0.
+ * Fixed: Zero-clip map rendering and high-visibility labels.
+ * Added: Founder & Developer Credit: Arsh Grewal.
  */
 
 export default function AppPreview() {
@@ -61,51 +61,79 @@ export default function AppPreview() {
             </div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
-             <div className="absolute -inset-10 bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-             
-             {/* Punjab Coverage Node - FULL MAP VIEW */}
-             <motion.div 
-               initial={{ opacity: 0, y: 30 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true }}
-               className="group relative rounded-[3rem] bg-white border-[8px] border-[#0F172A] shadow-5xl overflow-hidden aspect-[3/4] hover:-translate-y-2 transition-all duration-500 flex items-center justify-center p-4"
-             >
-                <img 
-                   src={punjabMap} 
-                   className="w-full h-full object-contain transition-all duration-[2s] group-hover:scale-105" 
-                   referrerPolicy="no-referrer"
-                   alt="Punjab Hub"
-                />
-                <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between bg-[#0F172A]/80 backdrop-blur-sm p-3 rounded-2xl">
-                   <div className="flex items-center gap-2">
-                      <MapIcon className="h-4 w-4 text-primary" />
-                      <span className="text-[9px] font-black uppercase text-white tracking-widest">Punjab Hub</span>
+          <div className="space-y-12">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
+                <div className="absolute -inset-10 bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+                
+                {/* Punjab Coverage Node */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="group relative rounded-[3rem] bg-white border-[8px] border-[#0F172A] shadow-5xl overflow-hidden aspect-[3/4] hover:-translate-y-2 transition-all duration-500 flex items-center justify-center p-4"
+                >
+                   <img 
+                      src={punjabMap} 
+                      className="w-full h-full object-contain transition-all duration-[2s] group-hover:scale-105" 
+                      referrerPolicy="no-referrer"
+                      alt="Punjab Hub"
+                   />
+                   {/* FIXED VISIBILITY LABEL */}
+                   <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between bg-[#0B1528] border border-white/10 p-4 rounded-2xl shadow-2xl z-20">
+                      <div className="flex items-center gap-3">
+                         <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                            <MapIcon className="h-4 w-4 text-primary" />
+                         </div>
+                         <span className="text-[11px] font-black uppercase text-white tracking-[0.2em]">Punjab Hub</span>
+                      </div>
+                      <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] animate-pulse" />
                    </div>
-                   <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                </div>
-             </motion.div>
+                </motion.div>
 
-             {/* National Coverage Node - FULL MAP VIEW */}
-             <motion.div 
-               initial={{ opacity: 0, y: 50 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true }}
-               transition={{ delay: 0.2 }}
-               className="group relative rounded-[3rem] bg-white border-[8px] border-[#0F172A] shadow-5xl overflow-hidden aspect-[3/4] md:mt-12 hover:-translate-y-2 transition-all duration-500 flex items-center justify-center p-4"
-             >
-                <img 
-                   src={indiaMap} 
-                   className="w-full h-full object-contain transition-all duration-[2s] group-hover:scale-105" 
-                   referrerPolicy="no-referrer"
-                   alt="National Hub"
-                />
-                <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between bg-[#0F172A]/80 backdrop-blur-sm p-3 rounded-2xl">
-                   <div className="flex items-center gap-2">
-                      <Globe className="h-4 w-4 text-blue-400" />
-                      <span className="text-[9px] font-black uppercase text-white tracking-widest">National Hub</span>
+                {/* National Coverage Node */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 }}
+                  className="group relative rounded-[3rem] bg-white border-[8px] border-[#0F172A] shadow-5xl overflow-hidden aspect-[3/4] md:mt-12 hover:-translate-y-2 transition-all duration-500 flex items-center justify-center p-4"
+                >
+                   <img 
+                      src={indiaMap} 
+                      className="w-full h-full object-contain transition-all duration-[2s] group-hover:scale-105" 
+                      referrerPolicy="no-referrer"
+                      alt="National Hub"
+                   />
+                   {/* FIXED VISIBILITY LABEL */}
+                   <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between bg-[#0B1528] border border-white/10 p-4 rounded-2xl shadow-2xl z-20">
+                      <div className="flex items-center gap-3">
+                         <div className="h-8 w-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                            <Globe className="h-4 w-4 text-blue-400" />
+                         </div>
+                         <span className="text-[11px] font-black uppercase text-white tracking-[0.2em]">National Hub</span>
+                      </div>
+                      <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] animate-pulse" />
                    </div>
-                   <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                </motion.div>
+             </div>
+
+             {/* Founder & Developer Credit Node */}
+             <motion.div 
+               initial={{ opacity: 0 }}
+               whileInView={{ opacity: 1 }}
+               viewport={{ once: true }}
+               className="flex items-center justify-center gap-4 bg-slate-50 py-6 rounded-[2rem] border border-slate-100"
+             >
+                <div className="flex -space-x-2">
+                   <div className="h-10 w-10 rounded-full border-2 border-white bg-primary flex items-center justify-center text-white shadow-lg relative z-10">
+                      <ShieldCheck className="h-5 w-5" />
+                   </div>
+                </div>
+                <div className="text-left">
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Architect & Authority</p>
+                   <p className="text-sm font-bold text-[#0F172A] flex items-center gap-2">
+                      Founder & Developer: <span className="text-primary font-black uppercase tracking-tighter">Arsh Grewal</span>
+                   </p>
                 </div>
              </motion.div>
           </div>
