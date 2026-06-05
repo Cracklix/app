@@ -92,11 +92,10 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
             <h2 className="font-headline font-black text-base text-white uppercase tracking-tight leading-tight truncate">
               {profile?.name || "Aspirant"}
             </h2>
-            <div className="mt-1 flex items-center gap-2">
+            <div className="mt-1">
               <Badge className="bg-[#F97316] text-white border-none text-[8px] font-black uppercase px-2 py-0.5 rounded-sm">
                 {profile?.status?.replace('_', ' ') || "FREE"} PASS
               </Badge>
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{profile?.role || "STUDENT"}</span>
             </div>
           </div>
         </div>
