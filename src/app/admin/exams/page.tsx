@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Plus, Edit, Image as ImageIcon, Trash2, Save, Globe, Upload, Loader2, AlertCircle, CheckCircle2 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useCollection, useFirestore, useStorage } from "@/firebase"
-import { collection, doc, setDoc, deleteDoc } from "firebase/firestore"
+import { collection, doc, setDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/hooks/use-toast"
@@ -17,9 +17,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub - Recruitment Board Management v7.0.
- * Fixed: Removed console.error from preview to prevent Next.js overlays.
- * Features: Robust Lifecycle Reset and Silent Fallbacks for Government assets.
+ * @fileOverview Authority Hub - Institutional Board Registry.
+ * Features: High-Fidelity Logo Upload and centralized Board Identity management.
  */
 
 export default function ExamManagement() {
@@ -36,7 +35,9 @@ export default function ExamManagement() {
   const [assetError, setAssetError] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Critical: Reset asset error when modal changes or URL changes to prevent "phantom" invalid states
+  // Absolute fallback for previews
+  const stateEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
+
   useEffect(() => {
     setAssetError(false);
   }, [editingBoard?.id, editingBoard?.iconUrl]);
@@ -45,7 +46,7 @@ export default function ExamManagement() {
     if (!db || !editingBoard) return
     
     if (!editingBoard.abbreviation || !editingBoard.name) {
-      toast({ variant: "destructive", title: "Audit Blocked", description: "Identity and Authority Name are mandatory." })
+      toast({ variant: "destructive", title: "Audit Blocked", description: "Short Code and Full Name are mandatory." })
       return
     }
 
@@ -55,37 +56,17 @@ export default function ExamManagement() {
     const payload = { 
       ...editingBoard, 
       id: boardId,
-      updatedAt: new Date().toISOString()
+      updatedAt: serverTimestamp()
     }
     
     try {
       await setDoc(boardRef, payload, { merge: true })
-      toast({ title: "Audit Success", description: "Recruitment board configuration updated in global registry." })
+      toast({ title: "Audit Success", description: "Registry node updated." })
       setEditingBoard(null)
     } catch (serverError: any) {
-      const permissionError = new FirestorePermissionError({
-        path: boardRef.path,
-        operation: 'write',
-        requestResourceData: payload,
-      } satisfies SecurityRuleContext);
-      errorEmitter.emit('permission-error', permissionError);
+      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: boardRef.path, operation: 'write' }));
     } finally {
       setIsSaving(false)
-    }
-  }
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Permanently remove this authority from the institutional database?")) return
-    const boardRef = doc(db!, "boards", id)
-    try {
-      await deleteDoc(boardRef)
-      toast({ title: "Authority Deleted", description: "Board removed from cloud repository." })
-    } catch (serverError: any) {
-      const permissionError = new FirestorePermissionError({
-        path: boardRef.path,
-        operation: 'delete',
-      } satisfies SecurityRuleContext);
-      errorEmitter.emit('permission-error', permissionError);
     }
   }
 
@@ -99,7 +80,7 @@ export default function ExamManagement() {
     const timeoutId = setTimeout(() => {
        if (isUploading) {
           setIsUploading(false);
-          toast({ variant: "destructive", title: "Upload Timeout", description: "Storage sync timed out." });
+          toast({ variant: "destructive", title: "Sync Timeout", description: "Storage response failed." });
        }
     }, 30000);
 
@@ -109,9 +90,9 @@ export default function ExamManagement() {
       const snapshot = await uploadBytes(storageRef, file)
       const downloadURL = await getDownloadURL(snapshot.ref)
       setEditingBoard({ ...editingBoard, iconUrl: downloadURL })
-      toast({ title: "Upload Complete", description: "Logo synchronized." })
+      toast({ title: "Asset Synced", description: "Official logo uploaded to storage." })
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Upload Failed", description: error.message || "Storage error." })
+      toast({ variant: "destructive", title: "Upload Failed", description: "Storage rejection." })
     } finally {
       clearTimeout(timeoutId);
       setIsUploading(false)
@@ -128,22 +109,22 @@ export default function ExamManagement() {
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Official Board Registry</span>
            </div>
           <h1 className="text-4xl font-headline font-black text-primary uppercase tracking-tight">Authority Hub</h1>
-          <p className="text-slate-600 mt-1 font-medium">Manage official recruitment boards and their visual identities.</p>
+          <p className="text-slate-600 mt-1 font-medium">Manage institutional identities for Punjab recruitment boards.</p>
         </div>
-        <Button className="bg-primary hover:bg-primary/90 h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/20 gap-3" onClick={() => setEditingBoard({ abbreviation: "", name: "", description: "", iconUrl: "" })}>
-          <Plus className="h-5 w-5" /> Add Authority
+        <Button className="bg-primary hover:bg-primary/90 h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl gap-3" onClick={() => setEditingBoard({ abbreviation: "", name: "", description: "", iconUrl: "" })}>
+          <Plus className="h-5 w-5" /> Add New Authority
         </Button>
       </div>
 
-      <Card className="border-none shadow-3xl shadow-slate-900/5 bg-white rounded-[3rem] overflow-hidden mx-4">
+      <Card className="border-none shadow-3xl bg-white rounded-[3rem] overflow-hidden mx-4">
         <CardContent className="p-0 text-left">
           <Table>
             <TableHeader className="bg-slate-50/50">
               <TableRow className="border-white/5 h-16">
                 <TableHead className="px-10 text-[10px] font-black uppercase tracking-widest text-slate-400">Identity</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Authority</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Full Name</TableHead>
-                <TableHead className="text-right px-10 text-[10px] font-black uppercase tracking-widest text-slate-400">Management</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Short Code</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Authority Name</TableHead>
+                <TableHead className="text-right px-10 text-[10px] font-black uppercase tracking-widest text-slate-400">Audit</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -155,17 +136,14 @@ export default function ExamManagement() {
                 <TableRow key={board.id} className="hover:bg-slate-50 group border-slate-50 transition-all">
                   <TableCell className="px-10 py-6">
                     <div className="h-14 w-14 rounded-2xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden relative shadow-inner group-hover:scale-110 transition-transform">
-                      {board.iconUrl ? (
                         <img 
-                          src={board.iconUrl} 
-                          alt={board.abbreviation || 'Board'} 
+                          src={board.iconUrl || stateEmblem} 
                           className="h-full w-full object-contain p-2" 
                           crossOrigin="anonymous"
                           referrerPolicy="no-referrer"
+                          alt={board.abbreviation}
+                          onError={(e) => { (e.target as HTMLImageElement).src = stateEmblem }}
                         />
-                      ) : (
-                        <ImageIcon className="h-6 w-6 text-slate-300" />
-                      )}
                     </div>
                   </TableCell>
                   <TableCell className="font-headline font-black text-primary text-lg tracking-tighter uppercase">{board.abbreviation}</TableCell>
@@ -174,9 +152,6 @@ export default function ExamManagement() {
                     <div className="flex justify-end gap-2 opacity-30 group-hover:opacity-100 transition-all">
                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-slate-100" onClick={() => setEditingBoard(board)}>
                         <Edit className="h-5 w-5" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-rose-50/10 hover:text-rose-500" onClick={() => handleDelete(board.id)}>
-                        <Trash2 className="h-5 w-5" />
                       </Button>
                     </div>
                   </TableCell>
@@ -191,7 +166,7 @@ export default function ExamManagement() {
         <DialogContent className="sm:max-w-lg rounded-[3rem] bg-white border-none shadow-4xl p-0 overflow-hidden text-left">
           <div className="h-2 w-full bg-[#0F172A]" />
           <DialogHeader className="p-10 pb-0 text-left">
-            <DialogTitle className="text-2xl font-black font-headline uppercase text-[#0F172A]">{editingBoard?.id ? "Update Authority" : "New Recruitment Board"}</DialogTitle>
+            <DialogTitle className="text-2xl font-black font-headline uppercase text-[#0F172A]">{editingBoard?.id ? "Update Registry" : "New Authority Node"}</DialogTitle>
           </DialogHeader>
           
           <div className="p-10 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
@@ -202,74 +177,52 @@ export default function ExamManagement() {
                        <Loader2 className="h-8 w-8 text-primary animate-spin" />
                        <span className="text-[8px] font-black text-primary uppercase tracking-widest">Syncing Asset...</span>
                     </div>
-                 ) : editingBoard?.iconUrl && !assetError ? (
+                 ) : (
                     <img 
-                      src={editingBoard.iconUrl} 
+                      src={editingBoard?.iconUrl || stateEmblem} 
                       referrerPolicy="no-referrer"
                       crossOrigin="anonymous"
                       className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform" 
                       alt="Preview"
-                      onError={() => setAssetError(true)}
+                      onError={(e) => { (e.target as HTMLImageElement).src = stateEmblem }}
                     />
-                 ) : (
-                    <div className="flex flex-col items-center gap-2 text-center px-4">
-                       {assetError ? <AlertCircle className="h-8 w-8 text-rose-500" /> : <ImageIcon className="h-8 w-8 text-slate-300" />}
-                       <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-tight">
-                          {assetError ? "Invalid URL or CORS Block" : "No Logo Uploaded"}
-                       </span>
-                    </div>
                  )}
               </div>
               
-              <div className="flex gap-3 w-full">
-                 <Button 
-                    variant="outline" 
-                    className="flex-1 h-12 rounded-xl border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest gap-2 hover:bg-slate-50 shadow-sm"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isUploading || isSaving}
-                 >
-                    {isUploading ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Upload className="h-4 w-4 text-primary" />}
-                    {isUploading ? "Uploading..." : "Upload Device Logo"}
-                 </Button>
-                 <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    className="hidden" 
-                    accept="image/*" 
-                    onChange={handleFileUpload} 
-                 />
-              </div>
+              <Button 
+                variant="outline" 
+                className="w-full h-12 rounded-xl border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest gap-2 hover:bg-slate-50 shadow-sm"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading || isSaving}
+              >
+                {isUploading ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Upload className="h-4 w-4 text-primary" />}
+                {isUploading ? "Uploading..." : "Upload Device Logo"}
+              </Button>
+              <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileUpload} />
             </div>
 
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-2">
-                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Abbreviation (e.g. PSPCL)</Label>
+                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Short Code (e.g. PSPCL)</Label>
                     <Input value={editingBoard?.abbreviation || ""} onChange={e => setEditingBoard({...editingBoard, abbreviation: e.target.value.toUpperCase()})} className="bg-slate-50 border-none rounded-xl h-12 font-black uppercase" />
                  </div>
                  <div className="space-y-2">
-                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Asset URL</Label>
-                    <Input value={editingBoard?.iconUrl || ""} onChange={e => setEditingBoard({...editingBoard, iconUrl: e.target.value.trim()})} className="bg-slate-50 border-none rounded-xl h-12 text-[10px] font-mono text-slate-500" placeholder="https://..." />
+                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Registry Name</Label>
+                    <Input value={editingBoard?.name || ""} onChange={e => setEditingBoard({...editingBoard, name: e.target.value})} className="bg-slate-50 border-none rounded-xl h-12 font-bold" />
                  </div>
               </div>
-
               <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Full Authority Name</Label>
-                <Input value={editingBoard?.name || ""} onChange={e => setEditingBoard({...editingBoard, name: e.target.value})} className="bg-slate-50 border-none rounded-xl h-12 font-bold" />
-              </div>
-              
-              <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Registry Description</Label>
-                <Input value={editingBoard?.description || ""} onChange={e => setEditingBoard({...editingBoard, description: e.target.value})} className="bg-slate-50 border-none rounded-xl h-12 text-sm" />
+                <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Logo URL (Optional Override)</Label>
+                <Input value={editingBoard?.iconUrl || ""} onChange={e => setEditingBoard({...editingBoard, iconUrl: e.target.value})} className="bg-slate-50 border-none rounded-xl h-12 text-[9px] font-mono" placeholder="https://..." />
               </div>
             </div>
           </div>
 
           <DialogFooter className="p-10 pt-4 flex gap-4 border-t border-slate-50 bg-slate-50/30">
-            <Button variant="ghost" onClick={() => setEditingBoard(null)} disabled={isSaving || isUploading} className="rounded-xl h-12 px-6 font-bold text-slate-400 hover:text-[#0F172A]">Cancel Draft</Button>
+            <Button variant="ghost" onClick={() => setEditingBoard(null)} disabled={isSaving || isUploading} className="rounded-xl h-12 px-6 font-bold text-slate-400">Cancel</Button>
             <Button className="bg-[#0F172A] hover:bg-black text-white rounded-xl h-12 px-10 font-black uppercase tracking-widest text-[10px] shadow-2xl gap-3 transition-all active:scale-95" onClick={handleSave} disabled={isSaving || isUploading}>
-              {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              {isSaving ? "Syncing..." : (editingBoard?.id ? "Update Registry" : "Initialize Board")}
+              {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Sync Registry
             </Button>
           </DialogFooter>
         </DialogContent>

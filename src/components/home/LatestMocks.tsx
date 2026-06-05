@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from "react"
@@ -14,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 /**
  * @fileOverview High-Fidelity Latest Mocks Node.
  * Dynamically fetches published mocks from Firestore and applies Board Branding.
- * Fixed: PSSSB Logo scaling and broken image handling.
+ * Optimized with Absolute Fallbacks for Government emblems.
  */
 
 export default function LatestMocks() {
@@ -39,8 +38,8 @@ export default function LatestMocks() {
     }).slice(0, 5)
   }, [rawMocks])
 
-  // High-Fidelity Official PSSSB Fallback
-  const psssbEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
+  // Official State Emblem Fallback
+  const stateEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
 
   return (
     <section className="py-24 bg-white">
@@ -84,14 +83,14 @@ export default function LatestMocks() {
                     <div className="flex justify-between items-start mb-6">
                       <div className="h-14 w-14 rounded-2xl bg-white border border-slate-100 flex items-center justify-center relative overflow-hidden group-hover:shadow-lg transition-all shadow-inner">
                          <img 
-                            src={board?.iconUrl || psssbEmblem} 
+                            src={board?.iconUrl || stateEmblem} 
                             referrerPolicy="no-referrer"
                             crossOrigin="anonymous"
                             className="w-full h-full object-contain p-2" 
                             alt={mock.boardId || 'Board'} 
                             onError={(e) => {
                                const target = e.target as HTMLImageElement;
-                               target.src = psssbEmblem; // Absolute Fallback
+                               target.src = stateEmblem;
                             }}
                          />
                       </div>
