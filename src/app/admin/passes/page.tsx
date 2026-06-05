@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Dynamic Pass Hub.
- * Optimized for mobile viewport safety and in-modal audit controls.
+ * Optimized for compact visibility and precise registry control.
  */
 
 export default function PassManagement() {
@@ -123,83 +123,82 @@ export default function PassManagement() {
       </div>
 
       <Dialog open={!!editingPass} onOpenChange={(open) => !open && setEditingPass(null)}>
-        <DialogContent className="sm:max-w-2xl w-[95vw] max-h-[95vh] rounded-[2rem] md:rounded-[3rem] bg-white border-none shadow-4xl p-0 overflow-hidden text-left flex flex-col">
+        <DialogContent className="sm:max-w-xl w-[95vw] max-h-[90vh] rounded-[3rem] bg-white border-none shadow-4xl p-0 overflow-hidden text-left flex flex-col">
           <div className="h-1.5 w-full bg-amber-500 shrink-0" />
-          <DialogHeader className="p-6 md:p-10 pb-0 text-left shrink-0">
+          <DialogHeader className="p-8 pb-0 text-left shrink-0">
             <div className="flex justify-between items-start">
-               <DialogTitle className="text-2xl md:text-3xl font-black font-headline uppercase flex items-center gap-4">
-                  <Gem className="h-8 w-8 text-amber-500" /> {editingPass?.id ? "Update Registry" : "Initialize New Pass"}
+               <DialogTitle className="text-2xl font-black font-headline uppercase flex items-center gap-3">
+                  <Gem className="h-6 w-6 text-amber-500" /> {editingPass?.id ? "Update Registry" : "Initialize Pass"}
                </DialogTitle>
-               <button onClick={() => setEditingPass(null)} className="p-2 rounded-xl hover:bg-slate-50 md:hidden"><X className="h-6 w-6" /></button>
+               <button onClick={() => setEditingPass(null)} className="p-2 rounded-xl hover:bg-slate-50 transition-colors"><X className="h-5 w-5 text-slate-400" /></button>
             </div>
           </DialogHeader>
           
-          <div className="p-6 md:p-10 space-y-8 overflow-y-auto custom-scrollbar flex-1">
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                <div className="space-y-3">
+          <div className="p-8 space-y-6 overflow-y-auto custom-scrollbar flex-1">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Pass Label</Label>
-                   <Input value={editingPass?.name || ""} onChange={e => setEditingPass({...editingPass, name: e.target.value})} placeholder="e.g. Premium Monthly" className="h-14 rounded-xl bg-slate-50 border-none font-bold" />
+                   <Input value={editingPass?.name || ""} onChange={e => setEditingPass({...editingPass, name: e.target.value})} placeholder="e.g. Premium Monthly" className="h-11 rounded-xl bg-slate-50 border-none font-bold" />
                 </div>
-                <div className="space-y-3">
-                   <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Registry Price (₹)</Label>
-                   <Input type="number" value={editingPass?.price || 0} onChange={e => setEditingPass({...editingPass, price: e.target.value})} className="h-14 rounded-xl bg-slate-50 border-none font-black" />
+                <div className="space-y-2">
+                   <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Price (₹)</Label>
+                   <Input type="number" value={editingPass?.price || 0} onChange={e => setEditingPass({...editingPass, price: e.target.value})} className="h-11 rounded-xl bg-slate-50 border-none font-black" />
                 </div>
              </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-                <div className="space-y-3">
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2">
                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Duration (Days)</Label>
-                   <Input type="number" value={editingPass?.durationDays || 30} onChange={e => setEditingPass({...editingPass, durationDays: e.target.value})} className="h-14 rounded-xl bg-slate-50 border-none font-bold" />
+                   <Input type="number" value={editingPass?.durationDays || 30} onChange={e => setEditingPass({...editingPass, durationDays: e.target.value})} className="h-11 rounded-xl bg-slate-50 border-none font-bold" />
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-2">
                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Display Sort</Label>
-                   <Input type="number" value={editingPass?.displayOrder || 1} onChange={e => setEditingPass({...editingPass, displayOrder: e.target.value})} className="h-14 rounded-xl bg-slate-50 border-none font-bold" />
+                   <Input type="number" value={editingPass?.displayOrder || 1} onChange={e => setEditingPass({...editingPass, displayOrder: e.target.value})} className="h-11 rounded-xl bg-slate-50 border-none font-bold" />
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-2">
                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Access Tier</Label>
-                   <select value={editingPass?.type || "PREMIUM"} onChange={e => setEditingPass({...editingPass, type: e.target.value})} className="w-full h-14 rounded-xl bg-slate-50 border-none px-4 font-bold text-xs uppercase outline-none">
+                   <select value={editingPass?.type || "PREMIUM"} onChange={e => setEditingPass({...editingPass, type: e.target.value})} className="w-full h-11 rounded-xl bg-slate-50 border-none px-4 font-bold text-xs uppercase outline-none">
                       <option value="FREE">Free Tier</option>
                       <option value="PREMIUM">Premium Access</option>
                    </select>
                 </div>
              </div>
 
-             <div className="space-y-3">
+             <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Pass Abstract</Label>
-                <Textarea value={editingPass?.description || ""} onChange={e => setEditingPass({...editingPass, description: e.target.value})} placeholder="Strategic description for pricing card..." className="rounded-2xl bg-slate-50 border-none h-24 p-6 resize-none" />
+                <Textarea value={editingPass?.description || ""} onChange={e => setEditingPass({...editingPass, description: e.target.value})} placeholder="Strategic description for pricing card..." className="rounded-xl bg-slate-50 border-none h-20 p-4 resize-none text-sm" />
              </div>
 
-             <div className="space-y-3">
+             <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Feature List (Comma separated)</Label>
-                <Textarea value={Array.isArray(editingPass?.features) ? editingPass.features.join(', ') : editingPass?.features || ""} onChange={e => setEditingPass({...editingPass, features: e.target.value})} placeholder="Unlock All Mocks, AI Rationale, PYQ Vault..." className="rounded-2xl bg-slate-50 border-none h-24 p-6 font-medium resize-none" />
+                <Textarea value={Array.isArray(editingPass?.features) ? editingPass.features.join(', ') : editingPass?.features || ""} onChange={e => setEditingPass({...editingPass, features: e.target.value})} placeholder="Unlock All Mocks, AI Rationale..." className="rounded-xl bg-slate-50 border-none h-20 p-4 font-medium resize-none text-sm" />
              </div>
 
-             <div className="flex items-center justify-between p-6 md:p-8 bg-slate-50 rounded-[2rem] border border-slate-100 shadow-inner">
-                <div className="space-y-1">
-                   <p className="font-black text-xs uppercase tracking-widest text-[#0F172A]">Active Enrollment Node</p>
-                   <p className="text-[10px] text-slate-400 font-bold uppercase">When disabled, this pass is hidden from students.</p>
+             <div className="flex items-center justify-between p-5 bg-slate-50 rounded-[1.5rem] border border-slate-100">
+                <div className="space-y-0.5">
+                   <p className="font-black text-xs uppercase text-[#0F172A]">Active Node</p>
+                   <p className="text-[9px] text-slate-400 font-bold uppercase">Visibility Control</p>
                 </div>
                 <Switch checked={editingPass?.active} onCheckedChange={val => setEditingPass({...editingPass, active: val})} />
              </div>
           </div>
 
-          <DialogFooter className="p-6 md:p-10 flex flex-row items-center justify-between gap-4 border-t border-slate-50 shrink-0 bg-white">
-            <div className="flex items-center gap-4">
+          <DialogFooter className="p-8 border-t border-slate-50 shrink-0 bg-white flex flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
                {editingPass?.id && (
                   <Button 
                      variant="ghost" 
                      size="icon" 
-                     className="h-14 w-14 rounded-2xl text-rose-500 hover:bg-rose-50 shadow-sm border border-slate-100" 
+                     className="h-12 w-12 rounded-xl text-rose-500 hover:bg-rose-50 border border-slate-100 shadow-sm" 
                      onClick={() => handleDelete(editingPass.id)}
-                     title="Purge Node"
                   >
-                     <Trash2 className="h-6 w-6" />
+                     <Trash2 className="h-5 w-5" />
                   </Button>
                )}
-               <Button variant="ghost" onClick={() => setEditingPass(null)} className="h-14 px-6 font-black uppercase text-[10px] tracking-widest text-slate-400 hover:text-slate-900 transition-colors hidden md:flex">Cancel Draft</Button>
+               <Button variant="ghost" onClick={() => setEditingPass(null)} className="h-12 px-5 font-black uppercase text-[10px] tracking-widest text-slate-400 hover:text-slate-900 transition-colors">Cancel</Button>
             </div>
             
-            <Button className="bg-[#0F172A] hover:bg-black text-white rounded-2xl h-14 px-8 md:px-12 font-black uppercase text-[10px] tracking-[0.2em] shadow-2xl gap-3 flex-1 md:flex-none transition-all active:scale-95" onClick={handleSave}>
+            <Button className="bg-[#0F172A] hover:bg-black text-white rounded-xl h-12 px-10 font-black uppercase text-[10px] tracking-[0.2em] shadow-2xl gap-2 flex-1 md:flex-none transition-all active:scale-95" onClick={handleSave}>
               <Save className="h-4 w-4" /> Sync Registry
             </Button>
           </DialogFooter>
