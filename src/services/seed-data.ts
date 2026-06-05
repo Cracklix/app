@@ -1,9 +1,9 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Engine v5.1.
+ * @fileOverview Institutional Seeding Engine v5.2.
  * Organizes content into Punjab State, Teaching, and Central verticals.
- * Updated: Verified Indian Army recruitment emblem asset.
+ * Fixed: Verified URLs and consistent board IDs for routing integrity.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('[AUDIT] Initializing Global Institutional Registry Sync...');

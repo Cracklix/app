@@ -1,7 +1,6 @@
-
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import AdPlacement from "@/components/ads/AdPlacement"
@@ -19,33 +18,34 @@ import {
   Layout, 
   GraduationCap,
   Sparkles,
-  Target
+  Target,
+  Shield,
+  Trophy
 } from "lucide-react"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Final Exam Gateway Node.
- * Re-engineered to use high-fidelity Wikimedia logos for PSSSB/PPSC.
+ * Updated: Resilient Board Icon rendering and fixed font scaling for mobile.
  */
 
 export default function MocksGatewayPage() {
   const db = useFirestore()
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
   
   const examsQuery = useMemo(() => {
     if (!db) return null
     return query(collection(db, "exams"))
   }, [db])
 
-  const boardsQuery = useMemo(() => {
-    if (!db) return null
-    return query(collection(db, "boards"))
-  }, [db])
+  const boardsQuery = useMemo(() => (db ? query(collection(db, "boards")) : null), [db])
 
   const { data: exams, loading: examsLoading } = useCollection<any>(examsQuery)
   const { data: boards } = useCollection<any>(boardsQuery)
 
-  const psssbLogo = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
+  const stateEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body">
@@ -58,11 +58,11 @@ export default function MocksGatewayPage() {
              </div>
              <span className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-500">Official Exam Registry 2026</span>
           </div>
-          <h1 className="text-5xl md:text-8xl font-headline font-black text-[#000000] uppercase tracking-tighter leading-[0.85]">
+          <h1 className="text-3xl md:text-5xl lg:text-8xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-[0.85]">
             Select Your <br/> <span className="text-primary">Mastery Hub</span>
           </h1>
-          <p className="text-slate-500 font-medium text-lg md:text-xl max-w-2xl mt-4">
-            Access strictly structured preparation matrices. No confusion, just official patterns and precision.
+          <p className="text-slate-500 font-medium text-lg md:text-xl max-w-2xl mt-4 leading-relaxed">
+            Access strictly structured preparation matrices audited for official patterns.
           </p>
         </div>
 
@@ -73,7 +73,7 @@ export default function MocksGatewayPage() {
              Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-[450px] w-full rounded-[3.5rem]" />)
            ) : exams?.sort((a: any, b: any) => (b.totalMocks || 0) - (a.totalMocks || 0)).map((exam: any) => {
              const board = boards?.find(b => b.id === exam.boardId)
-             const isPSSSB = board?.abbreviation === 'PSSSB' || exam.boardId === 'psssb';
+             const isImgFailed = failedImages[exam.id];
 
              return (
                 <Link key={exam.id} href={`/exams/${exam.id}`}>
@@ -81,21 +81,27 @@ export default function MocksGatewayPage() {
                       <CardContent className="p-10 flex flex-col h-full">
                          <div className="flex justify-between items-start mb-10">
                             <div className="h-20 w-20 rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all group-hover:shadow-xl shadow-inner relative overflow-hidden shrink-0">
-                               <img 
-                                  src={isPSSSB ? psssbLogo : (board?.iconUrl || psssbLogo)} 
-                                  referrerPolicy="no-referrer"
-                                  alt={board?.abbreviation || 'Board'} 
-                                  className="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-110" 
-                                  onError={(e) => { (e.target as HTMLImageElement).src = psssbLogo }}
-                               />
+                               {board?.iconUrl && !isImgFailed ? (
+                                  <img 
+                                    src={board.iconUrl} 
+                                    referrerPolicy="no-referrer"
+                                    alt={board.abbreviation || 'Board'} 
+                                    className="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-110" 
+                                    onError={() => setFailedImages(p => ({...p, [exam.id]: true}))}
+                                  />
+                               ) : (
+                                  <div className="flex flex-col items-center justify-center text-primary">
+                                     {board?.id === 'punjab-police' ? <Shield className="h-10 w-10" /> : <GraduationCap className="h-10 w-10" />}
+                                  </div>
+                               )}
                             </div>
                             <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-lg shadow-sm">
-                               {board?.abbreviation || 'PSSSB'} BOARD
+                               {board?.abbreviation || 'OFFICIAL'} BOARD
                             </Badge>
                          </div>
                          
                          <div className="space-y-4 flex-1">
-                            <h3 className="font-headline text-3xl font-black text-[#000000] uppercase leading-[0.95] group-hover:text-primary transition-colors">
+                            <h3 className="font-headline text-3xl font-black text-[#0F172A] uppercase leading-[0.95] group-hover:text-primary transition-colors">
                                {exam.name}
                             </h3>
                             <p className="text-sm font-medium text-slate-400 leading-relaxed line-clamp-2">
@@ -138,17 +144,6 @@ export default function MocksGatewayPage() {
                     Every exam vertical is audited daily to ensure pattern accuracy and updated current affairs for 2026.
                  </p>
               </div>
-              <div className="hidden lg:flex justify-end gap-16">
-                 <div className="space-y-10">
-                    <PortalStat val="500+" label="SERIES LIVE" />
-                    <PortalStat val="10k+" label="REUSABLE MCQS" />
-                 </div>
-                 <div className="h-44 w-px bg-white/5 self-center" />
-                 <div className="space-y-10">
-                    <PortalStat val="15k+" label="ASPIRANTS" />
-                    <PortalStat val="24/7" label="AUDIT ACTIVE" />
-                 </div>
-              </div>
            </div>
         </div>
       </main>
@@ -162,18 +157,9 @@ function InventoryNode({ icon, count, label }: any) {
     <div className="flex items-center gap-3 bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-100 shadow-sm transition-all group-hover:bg-white">
       <div className="shrink-0">{icon}</div>
       <div className="flex flex-col">
-         <span className="text-xs font-black text-[#000000] leading-none">{count}</span>
+         <span className="text-xs font-black text-[#0F172A] leading-none">{count}</span>
          <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1">{label}</span>
       </div>
     </div>
   )
-}
-
-function PortalStat({ val, label }: any) {
-   return (
-      <div className="text-left">
-         <p className="text-6xl font-headline font-black text-primary leading-none tracking-tighter">{val}</p>
-         <p className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 mt-4">{label}</p>
-      </div>
-   )
 }
