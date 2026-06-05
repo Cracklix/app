@@ -1,10 +1,9 @@
-
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
  * @fileOverview Final Institutional Seeding Engine for Cracklix.
  * Synchronizes binary access passes, official board registry, and platform settings.
- * Updated: Official High-Fidelity Logos for all Punjab Boards including PSPCL.
+ * Updated: Official High-Fidelity URLs for all Punjab Boards.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('Initializing Global Punjab Access Registry Sync...');

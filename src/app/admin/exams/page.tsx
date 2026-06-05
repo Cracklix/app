@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Edit, Image as ImageIcon, Trash2, Save, Globe, Upload, Loader2 } from "lucide-react"
+import { Plus, Edit, Image as ImageIcon, Trash2, Save, Globe, Upload, Loader2, AlertCircle } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useCollection, useFirestore, useStorage } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc } from "firebase/firestore"
@@ -17,15 +17,17 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub - Recruitment Board Management.
- * Updated: Direct File Upload to Firebase Storage and CORS/Referrer Fixes for Wikimedia logos.
+ * @fileOverview Authority Hub - Recruitment Board Management v4.0.
+ * Features: Direct Firebase Storage Upload, URL Validation, and Anti-Hang Sync Logic.
  */
 
 export default function ExamManagement() {
   const db = useFirestore()
   const storage = useStorage()
   const { toast } = useToast()
-  const { data: boards, loading } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
+  
+  const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db])
+  const { data: boards, loading } = useCollection<any>(boardsQuery)
   
   const [editingBoard, setEditingBoard] = useState<any>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -34,11 +36,21 @@ export default function ExamManagement() {
 
   const handleSave = async () => {
     if (!db || !editingBoard) return
-    setIsSaving(true)
+    
+    // Safety check for basic metadata
+    if (!editingBoard.abbreviation || !editingBoard.name) {
+      toast({ variant: "destructive", title: "Audit Blocked", description: "Identity and Authority Name are mandatory." })
+      return
+    }
 
+    setIsSaving(true)
     const boardId = editingBoard.id || `board-${Date.now()}`
     const boardRef = doc(db, "boards", boardId)
-    const payload = { ...editingBoard, id: boardId }
+    const payload = { 
+      ...editingBoard, 
+      id: boardId,
+      updatedAt: new Date().toISOString()
+    }
     
     try {
       await setDoc(boardRef, payload, { merge: true })
@@ -75,8 +87,14 @@ export default function ExamManagement() {
     const file = e.target.files?.[0]
     if (!file || !storage) return
 
+    // File type validation
+    if (!file.type.startsWith('image/')) {
+       toast({ variant: "destructive", title: "Invalid Type", description: "Only image files (PNG, JPG, SVG) are supported." })
+       return
+    }
+
     setIsUploading(true)
-    const storageRef = ref(storage, `authority_logos/${Date.now()}_${file.name}`)
+    const storageRef = ref(storage, `authority_logos/${Date.now()}_${file.name.replace(/\s+/g, '_')}`)
 
     try {
       const snapshot = await uploadBytes(storageRef, file)
@@ -84,34 +102,33 @@ export default function ExamManagement() {
       setEditingBoard({ ...editingBoard, iconUrl: downloadURL })
       toast({ title: "Upload Complete", description: "Logo successfully synchronized with institutional storage." })
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Upload Failed", description: error.message })
+      toast({ variant: "destructive", title: "Upload Failed", description: error.message || "Could not reach storage node." })
     } finally {
       setIsUploading(false)
-      // Reset the input so the same file can be uploaded again if needed
       if (fileInputRef.current) fileInputRef.current.value = ""
     }
   }
 
   return (
-    <div className="space-y-12">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+    <div className="space-y-12 pb-24 text-[#0F172A] text-left">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 px-4">
         <div>
            <div className="flex items-center gap-3 mb-2">
               <Globe className="h-5 w-5 text-primary" />
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Official Board Registry</span>
            </div>
           <h1 className="text-4xl font-headline font-black text-primary uppercase tracking-tight">Authority Hub</h1>
-          <p className="text-muted-foreground mt-1">Manage official Punjab Government recruitment boards and their visual identity.</p>
+          <p className="text-slate-600 mt-1 font-medium">Manage official recruitment boards and their visual identities.</p>
         </div>
         <Button className="bg-primary hover:bg-primary/90 h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/20 gap-3" onClick={() => setEditingBoard({ abbreviation: "", name: "", description: "", iconUrl: "" })}>
           <Plus className="h-5 w-5" /> Add Authority
         </Button>
       </div>
 
-      <Card className="border-none shadow-3xl shadow-slate-900/5 bg-card/50 rounded-[3rem] overflow-hidden">
-        <CardContent className="p-0">
+      <Card className="border-none shadow-3xl shadow-slate-900/5 bg-white rounded-[3rem] overflow-hidden mx-4">
+        <CardContent className="p-0 text-left">
           <Table>
-            <TableHeader className="bg-muted/30">
+            <TableHeader className="bg-slate-50/50">
               <TableRow className="border-white/5 h-16">
                 <TableHead className="px-10 text-[10px] font-black uppercase tracking-widest text-slate-400">Identity</TableHead>
                 <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Authority</TableHead>
@@ -122,12 +139,12 @@ export default function ExamManagement() {
             <TableBody>
               {loading ? (
                 Array.from({ length: 4 }).map((_, i) => (
-                  <TableRow key={i} className="border-white/5"><TableCell colSpan={4} className="px-10 py-5"><Skeleton className="h-14 w-full rounded-2xl bg-white/5" /></TableCell></TableRow>
+                  <TableRow key={i} className="border-slate-50"><TableCell colSpan={4} className="px-10 py-5"><Skeleton className="h-14 w-full rounded-2xl bg-slate-50" /></TableCell></TableRow>
                 ))
               ) : boards?.map((board: any) => (
-                <TableRow key={board.id} className="hover:bg-white/5 group border-white/5 transition-all">
+                <TableRow key={board.id} className="hover:bg-slate-50 group border-slate-50 transition-all">
                   <TableCell className="px-10 py-6">
-                    <div className="h-14 w-14 rounded-2xl bg-white border border-white/10 flex items-center justify-center overflow-hidden relative shadow-inner group-hover:scale-110 transition-transform">
+                    <div className="h-14 w-14 rounded-2xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden relative shadow-inner group-hover:scale-110 transition-transform">
                       {board.iconUrl ? (
                         <img 
                           src={board.iconUrl} 
@@ -137,18 +154,18 @@ export default function ExamManagement() {
                           referrerPolicy="no-referrer"
                         />
                       ) : (
-                        <ImageIcon className="h-6 w-6 text-slate-700" />
+                        <ImageIcon className="h-6 w-6 text-slate-300" />
                       )}
                     </div>
                   </TableCell>
                   <TableCell className="font-headline font-black text-primary text-lg tracking-tighter uppercase">{board.abbreviation}</TableCell>
-                  <TableCell className="text-sm font-bold text-slate-300 leading-tight max-w-xs">{board.name}</TableCell>
+                  <TableCell className="text-sm font-bold text-slate-800 leading-tight max-w-xs">{board.name}</TableCell>
                   <TableCell className="text-right px-10">
                     <div className="flex justify-end gap-2 opacity-30 group-hover:opacity-100 transition-all">
-                       <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-white/5" onClick={() => setEditingBoard(board)}>
+                       <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-slate-100" onClick={() => setEditingBoard(board)}>
                         <Edit className="h-5 w-5" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-rose-500/10 hover:text-rose-500" onClick={() => handleDelete(board.id)}>
+                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-rose-50 hover:text-rose-500" onClick={() => handleDelete(board.id)}>
                         <Trash2 className="h-5 w-5" />
                       </Button>
                     </div>
@@ -161,14 +178,15 @@ export default function ExamManagement() {
       </Card>
 
       <Dialog open={!!editingBoard} onOpenChange={(open) => !open && !isSaving && !isUploading && setEditingBoard(null)}>
-        <DialogContent className="sm:max-w-md rounded-[3rem] bg-[#0F172A] text-white border-white/10 shadow-4xl p-0 overflow-hidden">
-          <div className="h-2 w-full bg-primary" />
-          <DialogHeader className="p-10 pb-0">
-            <DialogTitle className="text-3xl font-black font-headline uppercase">{editingBoard?.id ? "Update Authority" : "New Recruitment Board"}</DialogTitle>
+        <DialogContent className="sm:max-w-lg rounded-[3rem] bg-white border-none shadow-4xl p-0 overflow-hidden text-left">
+          <div className="h-2 w-full bg-[#0F172A]" />
+          <DialogHeader className="p-10 pb-0 text-left">
+            <DialogTitle className="text-2xl font-black font-headline uppercase text-[#0F172A]">{editingBoard?.id ? "Update Authority" : "New Recruitment Board"}</DialogTitle>
           </DialogHeader>
-          <div className="p-10 space-y-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
+          
+          <div className="p-10 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
             <div className="flex flex-col items-center gap-6">
-              <div className="h-32 w-32 rounded-[2rem] bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center relative overflow-hidden group shadow-inner">
+              <div className="h-32 w-32 rounded-[2.5rem] bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden group shadow-inner">
                  {editingBoard?.iconUrl ? (
                     <img 
                       src={editingBoard.iconUrl} 
@@ -178,23 +196,26 @@ export default function ExamManagement() {
                       alt="Preview"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = "https://placehold.co/200x200?text=Invalid+URL";
+                        target.src = "https://placehold.co/200x200?text=Invalid+Asset";
                       }}
                     />
                  ) : (
-                    <ImageIcon className="h-10 w-10 text-slate-500" />
+                    <div className="flex flex-col items-center gap-2">
+                       <ImageIcon className="h-8 w-8 text-slate-300" />
+                       <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">No Logo</span>
+                    </div>
                  )}
               </div>
               
               <div className="flex gap-3 w-full">
                  <Button 
                     variant="outline" 
-                    className="flex-1 h-12 rounded-xl border-white/10 bg-white/5 font-black uppercase text-[10px] tracking-widest gap-2"
+                    className="flex-1 h-12 rounded-xl border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest gap-2 hover:bg-slate-50 shadow-sm"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading || isSaving}
                  >
-                    {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                    {isUploading ? "Syncing..." : "Upload Logo"}
+                    {isUploading ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Upload className="h-4 w-4 text-primary" />}
+                    {isUploading ? "Uploading..." : "Upload Device Logo"}
                  </Button>
                  <input 
                     type="file" 
@@ -207,29 +228,34 @@ export default function ExamManagement() {
             </div>
 
             <div className="space-y-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Icon Reference URL (Auto-filled on upload)</Label>
-                <Input value={editingBoard?.iconUrl || ""} onChange={e => setEditingBoard({...editingBoard, iconUrl: e.target.value})} className="bg-white/5 border-white/10 rounded-xl h-12 text-xs font-mono text-slate-400" placeholder="External URL or direct link..." />
+              <div className="grid grid-cols-2 gap-4">
+                 <div className="space-y-2">
+                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Abbreviation (e.g. PSSSB)</Label>
+                    <Input value={editingBoard?.abbreviation || ""} onChange={e => setEditingBoard({...editingBoard, abbreviation: e.target.value.toUpperCase()})} className="bg-slate-50 border-none rounded-xl h-12 font-black uppercase" />
+                 </div>
+                 <div className="space-y-2">
+                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Asset URL (Overrides Upload)</Label>
+                    <Input value={editingBoard?.iconUrl || ""} onChange={e => setEditingBoard({...editingBoard, iconUrl: e.target.value})} className="bg-slate-50 border-none rounded-xl h-12 text-[10px] font-mono text-slate-500" placeholder="https://..." />
+                 </div>
               </div>
+
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Abbreviation (e.g. PSSSB)</Label>
-                <Input value={editingBoard?.abbreviation || ""} onChange={e => setEditingBoard({...editingBoard, abbreviation: e.target.value.toUpperCase()})} className="bg-white/5 border-white/10 rounded-xl h-12 font-black uppercase" />
+                <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Full Authority Name</Label>
+                <Input value={editingBoard?.name || ""} onChange={e => setEditingBoard({...editingBoard, name: e.target.value})} className="bg-slate-50 border-none rounded-xl h-12 font-bold" />
               </div>
+              
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Full Authority Name</Label>
-                <Input value={editingBoard?.name || ""} onChange={e => setEditingBoard({...editingBoard, name: e.target.value})} className="bg-white/5 border-white/10 rounded-xl h-12 font-bold" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Description</Label>
-                <Input value={editingBoard?.description || ""} onChange={e => setEditingBoard({...editingBoard, description: e.target.value})} className="bg-white/5 border-white/10 rounded-xl h-12 text-sm" />
+                <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Registry Description</Label>
+                <Input value={editingBoard?.description || ""} onChange={e => setEditingBoard({...editingBoard, description: e.target.value})} className="bg-slate-50 border-none rounded-xl h-12 text-sm" />
               </div>
             </div>
           </div>
-          <DialogFooter className="p-10 pt-0 flex gap-4 border-t border-white/5 pt-6">
-            <Button variant="ghost" onClick={() => setEditingBoard(null)} disabled={isSaving || isUploading} className="rounded-xl h-12 px-6 font-bold text-slate-400 hover:text-white">Cancel</Button>
-            <Button className="bg-primary hover:bg-primary/90 rounded-xl h-12 px-10 font-black uppercase tracking-widest text-xs shadow-2xl gap-2" onClick={handleSave} disabled={isSaving || isUploading}>
+
+          <DialogFooter className="p-10 pt-4 flex gap-4 border-t border-slate-50 bg-slate-50/30">
+            <Button variant="ghost" onClick={() => setEditingBoard(null)} disabled={isSaving || isUploading} className="rounded-xl h-12 px-6 font-bold text-slate-400 hover:text-[#0F172A]">Cancel Draft</Button>
+            <Button className="bg-[#0F172A] hover:bg-black text-white rounded-xl h-12 px-10 font-black uppercase tracking-widest text-[10px] shadow-2xl gap-3 transition-all active:scale-95" onClick={handleSave} disabled={isSaving || isUploading}>
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              {isSaving ? "Syncing..." : (editingBoard?.id ? "Sync Configuration" : "Initialize Board")}
+              {isSaving ? "Syncing..." : (editingBoard?.id ? "Update Registry" : "Initialize Board")}
             </Button>
           </DialogFooter>
         </DialogContent>
