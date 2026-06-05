@@ -17,9 +17,9 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub - Recruitment Board Management v6.0.
- * Fixed: Eager "Invalid Asset" validation bug.
- * Features: Robust Storage Upload, Lifecycle Logging, and Idle-State Placeholders.
+ * @fileOverview Authority Hub - Recruitment Board Management v7.0.
+ * Fixed: Removed console.error from preview to prevent Next.js overlays.
+ * Features: Robust Lifecycle Reset and Silent Fallbacks for Government assets.
  */
 
 export default function ExamManagement() {
@@ -36,12 +36,9 @@ export default function ExamManagement() {
   const [assetError, setAssetError] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Reset asset error when modal changes or URL changes
+  // Critical: Reset asset error when modal changes or URL changes to prevent "phantom" invalid states
   useEffect(() => {
     setAssetError(false);
-    if (editingBoard) {
-       console.log("[LOG] Modal Interaction Node Opened:", editingBoard.id || "NEW_ENTRY");
-    }
   }, [editingBoard?.id, editingBoard?.iconUrl]);
 
   const handleSave = async () => {
@@ -94,25 +91,15 @@ export default function ExamManagement() {
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (!file || !storage) {
-       toast({ variant: "destructive", title: "Storage Offline", description: "Firebase Storage is not initialized." })
-       return
-    }
+    if (!file || !storage) return
 
-    if (!file.type.startsWith('image/')) {
-       toast({ variant: "destructive", title: "Invalid Type", description: "Only image files (PNG, JPG, SVG) are supported." })
-       return
-    }
-
-    console.log("[STORAGE] Upload Cycle Initiated:", file.name);
     setIsUploading(true)
     setAssetError(false)
     
     const timeoutId = setTimeout(() => {
        if (isUploading) {
           setIsUploading(false);
-          toast({ variant: "destructive", title: "Upload Timeout", description: "Storage sync timed out. Check connection." });
-          console.error("[STORAGE] Upload Timed Out after 30s");
+          toast({ variant: "destructive", title: "Upload Timeout", description: "Storage sync timed out." });
        }
     }, 30000);
 
@@ -120,16 +107,11 @@ export default function ExamManagement() {
 
     try {
       const snapshot = await uploadBytes(storageRef, file)
-      console.log("[STORAGE] Block Written Successfully:", snapshot.metadata.fullPath);
-      
       const downloadURL = await getDownloadURL(snapshot.ref)
-      console.log("[STORAGE] High-Fidelity URL Generated:", downloadURL);
-      
       setEditingBoard({ ...editingBoard, iconUrl: downloadURL })
-      toast({ title: "Upload Complete", description: "Logo successfully synchronized with institutional storage." })
+      toast({ title: "Upload Complete", description: "Logo synchronized." })
     } catch (error: any) {
-      console.error("[STORAGE] Upload Failed Error Code:", error.code);
-      toast({ variant: "destructive", title: "Upload Failed", description: error.message || "Could not reach storage node." })
+      toast({ variant: "destructive", title: "Upload Failed", description: error.message || "Storage error." })
     } finally {
       clearTimeout(timeoutId);
       setIsUploading(false)
@@ -193,7 +175,7 @@ export default function ExamManagement() {
                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-slate-100" onClick={() => setEditingBoard(board)}>
                         <Edit className="h-5 w-5" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-rose-500/10 hover:text-rose-500" onClick={() => handleDelete(board.id)}>
+                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-rose-50/10 hover:text-rose-500" onClick={() => handleDelete(board.id)}>
                         <Trash2 className="h-5 w-5" />
                       </Button>
                     </div>
@@ -227,16 +209,13 @@ export default function ExamManagement() {
                       crossOrigin="anonymous"
                       className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform" 
                       alt="Preview"
-                      onError={() => {
-                        console.error("[PREVIEW] Image load failed for URL:", editingBoard.iconUrl);
-                        setAssetError(true);
-                      }}
+                      onError={() => setAssetError(true)}
                     />
                  ) : (
-                    <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-col items-center gap-2 text-center px-4">
                        {assetError ? <AlertCircle className="h-8 w-8 text-rose-500" /> : <ImageIcon className="h-8 w-8 text-slate-300" />}
-                       <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                          {assetError ? "Invalid Asset" : "No Logo Uploaded"}
+                       <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-tight">
+                          {assetError ? "Invalid URL or CORS Block" : "No Logo Uploaded"}
                        </span>
                     </div>
                  )}
@@ -246,10 +225,7 @@ export default function ExamManagement() {
                  <Button 
                     variant="outline" 
                     className="flex-1 h-12 rounded-xl border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest gap-2 hover:bg-slate-50 shadow-sm"
-                    onClick={() => {
-                       console.log("[LOG] File Picker Triggered");
-                       fileInputRef.current?.click();
-                    }}
+                    onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading || isSaving}
                  >
                     {isUploading ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Upload className="h-4 w-4 text-primary" />}
@@ -268,7 +244,7 @@ export default function ExamManagement() {
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-2">
-                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Abbreviation (e.g. PSSSB)</Label>
+                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Abbreviation (e.g. PSPCL)</Label>
                     <Input value={editingBoard?.abbreviation || ""} onChange={e => setEditingBoard({...editingBoard, abbreviation: e.target.value.toUpperCase()})} className="bg-slate-50 border-none rounded-xl h-12 font-black uppercase" />
                  </div>
                  <div className="space-y-2">
