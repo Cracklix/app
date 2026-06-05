@@ -70,7 +70,7 @@ export default function Navbar() {
                  </SheetTrigger>
                  <SheetContent 
                    side="left" 
-                   className="p-0 border-none w-[min(320px,80vw)]"
+                   className="p-0 border-none w-[min(320px,82vw)] h-full"
                  >
                    <SheetHeader className="sr-only"><SheetTitle>Aspirant Menu</SheetTitle></SheetHeader>
                    <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
