@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -34,6 +33,7 @@ import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 import { MockType, Difficulty, AccessType } from "@/types"
+import { cn } from "@/lib/utils"
 
 export default function MockBuilderPage() {
   return (
