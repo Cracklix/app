@@ -52,7 +52,7 @@ export async function seedInitialData(db: Firestore) {
   }
 
   // 2. Master Authority Registry with OFFICIAL Government URLs
-  const stateEmblem = 'https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png';
+  const stateEmblem = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png';
   const psssbLogo = 'https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg';
   const policeLogo = 'https://punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png';
   const hcOfficialLogo = 'https://highcourtchd.gov.in/images/newlogo.png';
@@ -62,6 +62,7 @@ export async function seedInitialData(db: Firestore) {
   const pspclOfficialLogo = 'https://pspcl.in/assets/images/logo.png';
   const pstclOfficialLogo = 'https://pstcl.org/images/logo.png';
   const technicalLogo = 'https://www.punjabteched.com/images/Clogo-blue.gif';
+  const ctetLogo = 'https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png';
 
   const boards = [
     {
@@ -87,17 +88,17 @@ export async function seedInitialData(db: Firestore) {
     },
     {
       id: 'pseb',
-      abbreviation: 'EDUCATION',
-      name: 'Punjab School Education Board (Teaching)',
+      abbreviation: 'PSEB',
+      name: 'Punjab School Education Board (Schooling)',
       iconUrl: psebSchoolLogo,
-      description: 'Official board for school-level staff and teaching cadres.'
+      description: 'Official board for school-level staff and schooling nodes.'
     },
     {
       id: 'edu-dept',
       abbreviation: 'PSTET',
       name: 'Punjab Education Department',
       iconUrl: eduDeptLogo,
-      description: 'ETT, Master Cadre, and PSTET recruitment node.'
+      description: 'ETT, Master Cadre, and PSTET recruitment hub.'
     },
     {
       id: 'pspcl',
@@ -133,6 +134,13 @@ export async function seedInitialData(db: Firestore) {
       name: 'Indian Army Hub',
       iconUrl: armyOfficialLogo,
       description: 'Official military recruitment gateway for Agniveer nodes.'
+    },
+    {
+      id: 'ctet-central',
+      abbreviation: 'CTET',
+      name: 'Central Teacher Eligibility Test',
+      iconUrl: ctetLogo,
+      description: 'National level eligibility test for central schooling nodes.'
     }
   ];
 
@@ -177,6 +185,15 @@ export async function seedInitialData(db: Firestore) {
       totalMocks: 15,
       activeQuestions: 1800,
       description: 'High-fidelity preparation series for Indian Army Agniveer.'
+    },
+    {
+      id: 'ctet-paper-1',
+      boardId: 'ctet-central',
+      name: 'CTET Paper 1',
+      category: 'Teaching',
+      totalMocks: 10,
+      activeQuestions: 1200,
+      description: 'National level teacher eligibility for primary nodes.'
     }
   ];
 

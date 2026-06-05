@@ -27,17 +27,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'www.pspcl.in',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
         hostname: 'pspcl.in',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.pstcl.org',
         pathname: '/**',
       },
       {
@@ -73,6 +63,11 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'www.indianarmy.nic.in',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdnbbsr.s3waas.gov.in',
         pathname: '/**',
       }
     ],
