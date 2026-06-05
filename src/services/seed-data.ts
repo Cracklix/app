@@ -58,8 +58,8 @@ export async function seedInitialData(db: Firestore) {
   const hcOfficialLogo = 'https://highcourtchd.gov.in/images/newlogo.png';
   const psebSchoolLogo = 'https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png';
   const eduDeptLogo = 'https://pstet.pseb.ac.in/img/main-logo-2.png';
-  const armyLogo = 'https://www.indianarmy.nic.in/content/images/logo_bl.png';
-  const pspclOfficialLogo = 'https://www.pspcl.in/assets/images/logo.png';
+  const armyOfficialLogo = 'https://joinindianarmy.nic.in/writereaddata/Portal/Images/logo.png';
+  const pspclOfficialLogo = 'https://pspcl.in/assets/images/logo.png';
   const pstclOfficialLogo = 'https://pstcl.org/images/logo.png';
   const technicalLogo = 'https://www.punjabteched.com/images/Clogo-blue.gif';
 
@@ -131,7 +131,7 @@ export async function seedInitialData(db: Firestore) {
       id: 'indian-army',
       abbreviation: 'Army',
       name: 'Indian Army Agniveer Hub',
-      iconUrl: armyLogo,
+      iconUrl: armyOfficialLogo,
       description: 'National recruitment gateway for Agniveer nodes.'
     }
   ];

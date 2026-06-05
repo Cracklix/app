@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState } from "react"
@@ -9,10 +10,11 @@ import Link from "next/link"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, where } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview High-Fidelity Latest Mocks Node.
- * Updated: Government SVG Protocol and Triple-layer failover.
+ * Updated: Government SVG Protocol and Logo Zoom for visibility.
  */
 
 export default function LatestMocks() {
@@ -71,6 +73,8 @@ export default function LatestMocks() {
             mocks.map((mock, i) => {
               const board = boards?.find((b: any) => b.id === mock.boardId);
               const isImgFailed = failedImages[mock.id];
+              const isArmy = board?.abbreviation === 'Army';
+              
               return (
                 <motion.div
                   key={mock.id}
@@ -91,7 +95,7 @@ export default function LatestMocks() {
                            <img 
                               src={board?.iconUrl || stateEmblem} 
                               referrerPolicy="no-referrer"
-                              className="w-full h-full object-contain p-1" 
+                              className={cn("w-full h-full object-contain p-1", isArmy ? "scale-150" : "")} 
                               alt={mock.boardId || 'Board'} 
                               onError={() => setFailedImages(p => ({ ...p, [mock.id]: true }))}
                            />

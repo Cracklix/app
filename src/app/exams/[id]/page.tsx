@@ -1,3 +1,4 @@
+
 "use client"
 
 import Navbar from "@/components/layout/Navbar"
@@ -27,10 +28,11 @@ import { useParams, useRouter } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useMemo, useState } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Final Exam-Specific Mastery Hub.
- * Optimized for Testbook Aesthetic with high-fidelity Wikimedia logos.
+ * Optimized for Testbook Aesthetic with high-fidelity Government logos & Zoom protocol.
  */
 
 export default function ExamHubPage() {
@@ -183,6 +185,8 @@ function HubGrid({ mocks, emptyLabel, logo, boardId, failedImages, setFailedImag
 
 function MockCard({ mock, logo, boardId, failedImages, setFailedImages }: any) {
   const isImgFailed = failedImages[mock.id];
+  const isArmy = boardId === 'indian-army' || boardId === 'Army';
+  
   return (
     <Card className="border-none shadow-xl hover:shadow-3xl transition-all duration-500 rounded-[2.5rem] bg-white group overflow-hidden text-left flex flex-col h-full border border-slate-100">
       <CardContent className="p-0 flex-1 flex flex-col h-full">
@@ -197,7 +201,7 @@ function MockCard({ mock, logo, boardId, failedImages, setFailedImages }: any) {
                     <img 
                       src={logo} 
                       referrerPolicy="no-referrer" 
-                      className="w-full h-full object-contain p-2" 
+                      className={cn("w-full h-full object-contain p-2", isArmy ? "scale-150" : "")} 
                       alt="Board" 
                       onError={() => setFailedImages((p: any) => ({ ...p, [mock.id]: true }))}
                     />

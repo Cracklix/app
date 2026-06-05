@@ -16,10 +16,11 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
+import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Authority Hub v24.5 - Operational Hardening.
- * Features: Absolute Deletion Logic with event isolation to ensure button functionality.
+ * @fileOverview Authority Hub v24.6 - Operational Hardening.
+ * Features: Absolute Deletion Logic & Logo Zoom Protocol.
  */
 
 export default function ExamManagement() {
@@ -140,6 +141,7 @@ export default function ExamManagement() {
                 ))
               ) : boards?.map((board: any) => {
                 const isImageFailed = failedImages[board.id];
+                const isArmy = board.abbreviation === 'Army';
                 return (
                   <TableRow key={board.id} className="hover:bg-slate-50 group border-slate-50 transition-all">
                     <TableCell className="px-10 py-6">
@@ -151,7 +153,7 @@ export default function ExamManagement() {
                           ) : (
                             <img 
                               src={board.iconUrl || stateEmblem} 
-                              className="h-full w-full object-contain p-2" 
+                              className={cn("h-full w-full object-contain p-2", isArmy ? "scale-150" : "")} 
                               referrerPolicy="no-referrer"
                               alt={board.abbreviation}
                               onError={() => setFailedImages(p => ({...p, [board.id]: true}))}
@@ -215,7 +217,7 @@ export default function ExamManagement() {
                         <img 
                           src={editingBoard.iconUrl} 
                           referrerPolicy="no-referrer"
-                          className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform" 
+                          className={cn("absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform", editingBoard.abbreviation === 'Army' ? "scale-150" : "")} 
                           alt="Preview"
                         />
                       ) : (
@@ -246,7 +248,7 @@ export default function ExamManagement() {
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-2">
                     <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Short Code</Label>
-                    <input value={editingBoard?.abbreviation || ""} onChange={e => setEditingBoard({...editingBoard, abbreviation: e.target.value.toUpperCase()})} className="w-full bg-slate-50 border-none rounded-xl h-12 font-black uppercase px-4 outline-none text-[#0F172A]" />
+                    <input value={editingBoard?.abbreviation || ""} onChange={e => setEditingBoard({...editingBoard, abbreviation: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl h-12 font-black uppercase px-4 outline-none text-[#0F172A]" />
                  </div>
                  <div className="space-y-2">
                     <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Registry Name</Label>
