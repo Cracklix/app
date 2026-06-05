@@ -54,8 +54,7 @@ export async function seedInitialData(db: Firestore) {
   // 2. Master Authority Registry with OFFICIAL Government URLs
   const stateEmblem = 'https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png';
   const psssbOfficialLogo = 'https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg';
-  const pspclOfficialLogo = 'https://www.pspcl.in/assets/images/logo.png';
-  const pstclOfficialLogo = 'https://www.pstcl.org/images/logo.png';
+  const technicalOfficialLogo = 'https://dte.punjab.gov.in/sites/default/files/logo_0.png';
   const policeOfficialLogo = 'https://punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png';
   const hcOfficialLogo = 'https://highcourtchd.gov.in/images/newlogo.png';
   const psebOfficialLogo = 'https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png';
@@ -93,14 +92,14 @@ export async function seedInitialData(db: Firestore) {
       id: 'pspcl',
       abbreviation: 'PSPCL',
       name: 'State Power Corporation (PSPCL)',
-      iconUrl: pspclOfficialLogo,
+      iconUrl: technicalOfficialLogo,
       description: 'Technical and clerical power sector recruitment.'
     },
     {
       id: 'pstcl',
       abbreviation: 'PSTCL',
       name: 'State Transmission Corporation (PSTCL)',
-      iconUrl: pstclOfficialLogo,
+      iconUrl: technicalOfficialLogo,
       description: 'Technical and clerical transmission sector recruitment.'
     },
     {

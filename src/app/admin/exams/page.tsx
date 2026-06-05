@@ -18,8 +18,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub v23.8 - Hardened Operations Engine.
- * Features: Robust Deletion with event isolation and optimized Image failover.
+ * @fileOverview Authority Hub v23.9 - Hardened Operations Engine.
+ * Features: Corrected Deletion with explicit event isolation.
  */
 
 export default function ExamManagement() {
@@ -68,7 +68,7 @@ export default function ExamManagement() {
   }
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
-    // CRITICAL: Prevent event propagation to ensure the button click is isolated from the table row
+    // CRITICAL: Explicitly stop event propagation to avoid row clicks interfering
     e.preventDefault();
     e.stopPropagation();
     

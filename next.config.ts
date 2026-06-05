@@ -64,6 +64,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'www.verka.coop',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dte.punjab.gov.in',
+        pathname: '/**',
       }
     ],
   },
