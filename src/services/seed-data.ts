@@ -58,6 +58,7 @@ export async function seedInitialData(db: Firestore) {
   const pstclOfficialLogo = 'https://www.pstcl.org/images/logo.png';
   const policeOfficialLogo = 'https://punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png';
   const hcOfficialLogo = 'https://highcourtchd.gov.in/images/newlogo.png';
+  const psebOfficialLogo = 'https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png';
   const markfedOfficialLogo = 'https://www.markfedpunjab.com/wp-content/uploads/2019/04/markfed-logo.png';
   const verkaOfficialLogo = 'https://www.verka.coop/wp-content/themes/verka/images/logo.png';
 
@@ -87,7 +88,7 @@ export async function seedInitialData(db: Firestore) {
       id: 'pseb',
       abbreviation: 'Education',
       name: 'School Education Board',
-      iconUrl: stateEmblem,
+      iconUrl: psebOfficialLogo,
       description: 'ETT, Master Cadre, and PSTET recruitment nodes.'
     },
     {

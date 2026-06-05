@@ -18,8 +18,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub v23.0 - Hardened Deletion Engine & Registry Control.
- * Fixed: Robust Delete Engine with strict event isolation to prevent "dummy" behavior.
+ * @fileOverview Authority Hub v23.5 - Operational Deletion Engine.
+ * Fixed: Robust Delete Engine with event isolation (stopPropagation).
  */
 
 export default function ExamManagement() {
@@ -73,7 +73,7 @@ export default function ExamManagement() {
     
     if (!id || !db) return
     
-    const confirmMsg = "Are you sure you want to permanently delete this authority? This will remove it from the global registry.";
+    const confirmMsg = "CRITICAL AUDIT: Permanently purge this authority from the global registry? This action is irreversible.";
     if (!window.confirm(confirmMsg)) return
     
     setIsDeleting(id)
@@ -245,17 +245,17 @@ export default function ExamManagement() {
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-2">
                     <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Short Code</Label>
-                    <Input value={editingBoard?.abbreviation || ""} onChange={e => setEditingBoard({...editingBoard, abbreviation: e.target.value.toUpperCase()})} className="bg-slate-50 border-none rounded-xl h-12 font-black uppercase" />
+                    <input value={editingBoard?.abbreviation || ""} onChange={e => setEditingBoard({...editingBoard, abbreviation: e.target.value.toUpperCase()})} className="w-full bg-slate-50 border-none rounded-xl h-12 font-black uppercase px-4 outline-none text-[#0F172A]" />
                  </div>
                  <div className="space-y-2">
                     <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Registry Name</Label>
-                    <Input value={editingBoard?.name || ""} onChange={e => setEditingBoard({...editingBoard, name: e.target.value})} className="bg-slate-50 border-none rounded-xl h-12 font-bold" />
+                    <input value={editingBoard?.name || ""} onChange={e => setEditingBoard({...editingBoard, name: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl h-12 font-bold px-4 outline-none text-[#0F172A]" />
                  </div>
               </div>
               <div className="space-y-2">
                 <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Logo URL Override</Label>
                 <div className="flex gap-2">
-                  <Input value={editingBoard?.iconUrl || ""} onChange={e => setEditingBoard({...editingBoard, iconUrl: e.target.value.trim()})} className="bg-slate-50 border-none rounded-xl h-12 text-[10px] font-mono flex-1" placeholder="https://..." />
+                  <input value={editingBoard?.iconUrl || ""} onChange={e => setEditingBoard({...editingBoard, iconUrl: e.target.value.trim()})} className="w-full bg-slate-50 border-none rounded-xl h-12 text-[10px] font-mono px-4 outline-none text-slate-500" placeholder="https://..." />
                   {editingBoard?.iconUrl && <Button variant="ghost" size="icon" onClick={() => setEditingBoard({...editingBoard, iconUrl: ""})} className="h-12 w-12 rounded-xl"><X className="h-4 w-4" /></Button>}
                 </div>
               </div>
