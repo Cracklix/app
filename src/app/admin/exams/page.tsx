@@ -18,8 +18,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub v23.5 - Operational Deletion Engine.
- * Fixed: Robust Delete Engine with event isolation (stopPropagation).
+ * @fileOverview Authority Hub v23.6 - Operational Deletion Engine.
+ * Hardened Delete Engine with explicit event isolation and direct Firestore targeting.
  */
 
 export default function ExamManagement() {
@@ -37,7 +37,7 @@ export default function ExamManagement() {
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const stateEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
+  const stateEmblem = "https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png";
 
   const handleSave = async () => {
     if (!db || !editingBoard) return
@@ -68,6 +68,7 @@ export default function ExamManagement() {
   }
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
+    // CRITICAL: Stop event propagation to ensure the button click is not lost
     e.preventDefault();
     e.stopPropagation();
     
