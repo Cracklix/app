@@ -35,9 +35,9 @@ import {
 import { useState } from "react";
 
 /**
- * @fileOverview Compact Information Architecture Refactor.
+ * @fileOverview Compact Mobile Navigation Module.
  * Follows Adda247/Testbook minimalist navigation patterns.
- * Optimized for first-screen visibility and zero-bloat UX.
+ * Features: Reduced Profile Node (40%), Collapsible Groups, and fixed safe-area offsets.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -81,19 +81,19 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="flex flex-col h-full bg-white text-[#0F172A] overflow-hidden font-body">
-      {/* 1. COMPACT PROFILE SECTION (-40% Height) */}
-      <div className="px-5 pb-6 pt-[calc(env(safe-area-inset-top,24px)+16px)] bg-[#0B1528] shrink-0">
-        <div className="flex items-center gap-4">
+      {/* 1. COMPACT PROFILE SECTION (40% Smaller, Respects Notch) */}
+      <div className="px-5 pb-5 pt-[calc(env(safe-area-inset-top,24px)+12px)] bg-[#0B1528] shrink-0">
+        <div className="flex items-center gap-3">
           <StudentAvatar 
             profile={profile} 
-            className="h-12 w-12 border-2 border-white/10 rounded-xl shrink-0" 
+            className="h-11 w-11 border border-white/10 rounded-xl shrink-0" 
           />
           <div className="flex-1 text-left min-w-0">
-            <h2 className="font-headline font-black text-base text-white uppercase tracking-tight leading-tight truncate">
+            <h2 className="font-headline font-black text-sm text-white uppercase tracking-tight leading-tight truncate">
               {profile?.name || "Aspirant"}
             </h2>
             <div className="mt-1">
-              <Badge className="bg-[#F97316] text-white border-none text-[8px] font-black uppercase px-2 py-0.5 rounded-sm">
+              <Badge className="bg-[#F97316] text-white border-none text-[7px] font-black uppercase px-2 py-0.5 rounded-sm">
                 {profile?.status?.replace('_', ' ') || "FREE"} PASS
               </Badge>
             </div>
@@ -101,19 +101,17 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      {/* 2. NAVIGATION HUB (Flat List Design) */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar px-2 py-4 space-y-1">
+      {/* 2. NAVIGATION HUB (Fixed list design, no cards) */}
+      <div className="flex-1 overflow-y-auto no-scrollbar px-2 py-4 space-y-0.5">
         {/* PRIMARY SECTION */}
-        <div className="space-y-0.5">
-          {primaryMenu.map((item) => (
-            <MenuLink 
-              key={item.href} 
-              item={item} 
-              active={pathname === item.href}
-              onClick={onClose} 
-            />
-          ))}
-        </div>
+        {primaryMenu.map((item) => (
+          <MenuLink 
+            key={item.href} 
+            item={item} 
+            active={pathname === item.href}
+            onClick={onClose} 
+          />
+        ))}
 
         <div className="my-3 border-t border-slate-50" />
 
@@ -159,7 +157,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* 3. VERSION FOOTER */}
-      <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 shrink-0">
+      <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 shrink-0 mb-[env(safe-area-inset-bottom,0px)]">
         <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.4em] text-center">
           Cracklix Registry v5.2.0
         </p>
@@ -174,7 +172,7 @@ function MenuLink({ item, active, onClick, indent = false }: any) {
       href={item.href} 
       onClick={onClick}
       className={cn(
-        "flex items-center justify-between px-3 h-11 rounded-lg transition-all group",
+        "flex items-center justify-between px-3 h-[48px] rounded-lg transition-all group",
         active ? "bg-primary/5 text-primary" : "hover:bg-slate-50 text-slate-600",
         indent && "pl-8"
       )}
@@ -182,7 +180,7 @@ function MenuLink({ item, active, onClick, indent = false }: any) {
       <div className="flex items-center gap-3">
         <item.icon className={cn("h-[18px] w-[18px] shrink-0", active ? "text-primary" : "text-slate-400")} />
         <span className={cn(
-          "text-sm font-bold uppercase tracking-tight transition-colors",
+          "text-[13px] font-bold uppercase tracking-tight transition-colors",
           active ? "text-primary" : "group-hover:text-[#0F172A]"
         )}>
           {item.label}
