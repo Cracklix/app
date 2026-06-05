@@ -42,6 +42,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'cdnbbsr.s3waas.gov.in',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'www.markfedpunjab.com',
         pathname: '/**',
       },

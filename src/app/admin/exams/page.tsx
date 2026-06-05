@@ -1,13 +1,13 @@
 
 "use client"
 
-import { useState, useMemo, useRef, useEffect } from "react"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { useState, useMemo, useRef } from "react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Edit, Image as ImageIcon, Trash2, Save, Globe, Upload, Loader2, AlertCircle, RefreshCw, X, ShieldCheck, Zap } from "lucide-react"
+import { Plus, Edit, Image as ImageIcon, Trash2, Save, Globe, Upload, Loader2, X } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useCollection, useFirestore, useStorage } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
@@ -18,8 +18,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub v16.0 - Master Registry Control.
- * Fixed: Robust Delete Logic and Official Logo failover with no-referrer protocol.
+ * @fileOverview Authority Hub v18.0 - Master Registry Control.
+ * Fixed: Robust Deletion engine and Technical logo support.
  */
 
 export default function ExamManagement() {
@@ -69,13 +69,13 @@ export default function ExamManagement() {
 
   const handleDelete = async (id: string) => {
     if (!id || !db) return
-    if (!window.confirm("Permanently remove this authority from the registry? This will affect all linked mocks.")) return
+    if (!window.confirm("Permanently purge this authority from the registry? This will affect all linked mocks.")) return
     
     setIsDeleting(id)
     try {
       const boardRef = doc(db, "boards", id)
       await deleteDoc(boardRef)
-      toast({ title: "Registry Purged", description: "Authority node removed from cloud." })
+      toast({ title: "Registry Purged", description: "Authority node removed from cloud registry." })
     } catch (serverError: any) {
       console.error("Delete Rejection:", serverError)
       toast({ variant: "destructive", title: "Purge Failed", description: "Cloud registry sync rejected." })
@@ -250,12 +250,11 @@ export default function ExamManagement() {
                  </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Logo URL Override (Official SVG/PNG)</Label>
+                <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Logo URL Override</Label>
                 <div className="flex gap-2">
                   <Input value={editingBoard?.iconUrl || ""} onChange={e => setEditingBoard({...editingBoard, iconUrl: e.target.value.trim()})} className="bg-slate-50 border-none rounded-xl h-12 text-[10px] font-mono flex-1" placeholder="https://..." />
                   {editingBoard?.iconUrl && <Button variant="ghost" size="icon" onClick={() => setEditingBoard({...editingBoard, iconUrl: ""})} className="h-12 w-12 rounded-xl"><X className="h-4 w-4" /></Button>}
                 </div>
-                <p className="text-[8px] text-slate-400 font-bold uppercase mt-1">Government servers require referrer-bypass nodes to load images.</p>
               </div>
             </div>
           </div>
