@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo, useState } from "react"
@@ -5,7 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Search, Edit, Trash2, Database, Filter, Eye, Image as ImageIcon, History, CheckSquare, XCircle, AlertCircle } from "lucide-react"
+import { Plus, Search, Edit, Trash2, Database, Filter, Eye, AlertCircle, CheckSquare, History } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, deleteDoc, doc, where, writeBatch } from "firebase/firestore"
@@ -18,8 +19,8 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 
 /**
- * @fileOverview Institutional Asset Ledger (Global Bank) v3.0.
- * Updated: Bulk Selection, Select All, and Batch Deletion (Phase 170).
+ * @fileOverview Institutional Asset Ledger (Global Bank) v3.1.
+ * Optimized: Robust Bulk Selection, Select All, and Batch Deletion logic fixed.
  */
 
 export default function QuestionBank() {
@@ -55,8 +56,8 @@ export default function QuestionBank() {
       .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
   }, [allQuestions, searchTerm, subjectFilter, boardFilter, showUnusedOnly])
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
+  const handleSelectAll = (checked: boolean | string) => {
+    if (checked === true) {
       setSelectedIds(filteredQuestions.map(q => q.id))
     } else {
       setSelectedIds([])
@@ -71,9 +72,13 @@ export default function QuestionBank() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Permanently purge this asset from the global bank?")) return
-    await deleteDoc(doc(db!, "questions", id))
-    toast({ title: "Asset Purged", description: "Node removed from registry." })
-    setSelectedIds(prev => prev.filter(i => i !== id))
+    try {
+      await deleteDoc(doc(db!, "questions", id))
+      toast({ title: "Asset Purged", description: "Node removed from registry." })
+      setSelectedIds(prev => prev.filter(i => i !== id))
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Purge Failed", description: e.message })
+    }
   }
 
   const handleBulkDelete = async () => {
@@ -81,24 +86,34 @@ export default function QuestionBank() {
     if (!confirm(`DANGER: This will permanently delete ${selectedIds.length} questions from the bank. This action cannot be undone. Continue?`)) return
 
     setIsDeleting(true)
-    const batchSize = 500;
-    const batches = [];
     
-    // Safety loop to handle large bulk deletions (splitting into 500-doc batches)
-    for (let i = 0; i < selectedIds.length; i += batchSize) {
-      const batch = writeBatch(db);
-      selectedIds.slice(i, i + batchSize).forEach(id => {
-        batch.delete(doc(db, "questions", id));
-      });
-      batches.push(batch.commit());
-    }
-
     try {
-      await Promise.all(batches);
-      toast({ title: "Batch Purge Complete", description: `${selectedIds.length} nodes successfully removed from the repository.` });
-      setSelectedIds([]);
-    } catch (e) {
-      toast({ variant: "destructive", title: "Batch Failed", description: "Institutional security prevented some deletions." });
+      const batchSize = 500
+      const chunks = []
+      for (let i = 0; i < selectedIds.length; i += batchSize) {
+        chunks.push(selectedIds.slice(i, i + batchSize))
+      }
+
+      for (const chunk of chunks) {
+        const batch = writeBatch(db)
+        chunk.forEach(id => {
+          batch.delete(doc(db, "questions", id))
+        })
+        await batch.commit()
+      }
+
+      toast({ 
+        title: "Batch Purge Complete", 
+        description: `${selectedIds.length} nodes successfully removed from the repository.` 
+      })
+      setSelectedIds([])
+    } catch (e: any) {
+      console.error("Bulk Purge Error:", e)
+      toast({ 
+        variant: "destructive", 
+        title: "Batch Failed", 
+        description: e.message || "Institutional security prevented some deletions." 
+      })
     } finally {
       setIsDeleting(false)
     }
@@ -129,7 +144,7 @@ export default function QuestionBank() {
 
       {/* Bulk Action Strip */}
       {selectedIds.length > 0 && (
-         <div className="mx-4 bg-[#0F172A] p-6 rounded-[2.5rem] flex items-center justify-between animate-in slide-in-from-top-4 duration-300 shadow-4xl text-white">
+         <div className="mx-4 bg-[#0F172A] p-6 rounded-[2.5rem] flex items-center justify-between animate-in slide-in-from-top-4 duration-300 shadow-4xl text-white sticky top-20 z-50">
             <div className="flex items-center gap-6">
                <div className="h-12 w-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary shadow-inner">
                   <CheckSquare className="h-6 w-6" />
@@ -140,7 +155,7 @@ export default function QuestionBank() {
                </div>
             </div>
             <div className="flex gap-4">
-               <Button variant="ghost" onClick={() => setSelectedIds([])} className="h-14 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest text-slate-400 hover:text-white">Cancel</Button>
+               <Button variant="ghost" onClick={() => setSelectedIds([])} disabled={isDeleting} className="h-14 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest text-slate-400 hover:text-white">Cancel</Button>
                <Button 
                 onClick={handleBulkDelete} 
                 disabled={isDeleting}
