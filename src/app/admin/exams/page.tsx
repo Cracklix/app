@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -18,8 +17,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub v19.0 - Master Registry Control.
- * Fixed: Hardened Deletion engine with immediate cloud sync.
+ * @fileOverview Authority Hub v22.0 - Hardened Deletion & Registry Control.
+ * Fixed: Operational Delete Engine with event propagation guards.
  */
 
 export default function ExamManagement() {
@@ -72,13 +71,13 @@ export default function ExamManagement() {
     e.stopPropagation();
     
     if (!id || !db) return
-    if (!window.confirm("Permanently purge this authority from the registry? This will affect all linked mocks.")) return
+    if (!window.confirm("Permanently purge this authority from the registry? Irreversible.")) return
     
     setIsDeleting(id)
     try {
       const boardRef = doc(db, "boards", id)
       await deleteDoc(boardRef)
-      toast({ title: "Registry Purged", description: "Authority node removed from cloud registry." })
+      toast({ title: "Registry Purged", description: "Authority node removed from cloud." })
     } catch (serverError: any) {
       console.error("Delete Rejection:", serverError)
       toast({ variant: "destructive", title: "Purge Failed", description: "Cloud registry sync rejected." })
@@ -94,21 +93,14 @@ export default function ExamManagement() {
     setIsUploading(true)
     const uploadRef = ref(storage, `authority_logos/${Date.now()}_${file.name.replace(/\s+/g, '_')}`)
 
-    const timer = setTimeout(() => {
-       setIsUploading(false);
-       toast({ variant: "destructive", title: "Sync Timeout", description: "Storage response took too long." });
-    }, 30000);
-
     try {
       const snapshot = await uploadBytes(uploadRef, file)
       const downloadURL = await getDownloadURL(snapshot.ref)
-      
       setEditingBoard((prev: any) => ({ ...prev, iconUrl: downloadURL }))
       toast({ title: "Asset Synced", description: "Logo updated in storage." })
     } catch (error: any) {
       toast({ variant: "destructive", title: "Upload Failed", description: error.message || "Storage rejection." })
     } finally {
-      clearTimeout(timer);
       setIsUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ""
     }
@@ -177,7 +169,7 @@ export default function ExamManagement() {
                         <Button 
                           variant="ghost" 
                           size="icon" 
-                          className="h-12 w-12 rounded-xl hover:bg-rose-50 hover:text-rose-500" 
+                          className="h-12 w-12 rounded-xl hover:bg-rose-50 hover:text-rose-600" 
                           onClick={(e) => handleDelete(e, board.id)}
                           disabled={isDeleting === board.id}
                         >

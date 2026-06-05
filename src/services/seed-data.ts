@@ -1,4 +1,3 @@
-
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
@@ -54,11 +53,10 @@ export async function seedInitialData(db: Firestore) {
   // 2. Master Authority Registry with OFFICIAL Government URLs
   const stateEmblem = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png';
   const psssbOfficialLogo = 'https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg';
-  const technicalOfficialLogo = 'https://cdnbbsr.s3waas.gov.in/s3d9be0b02a7ac20eb4f97d84bce01ffc0/uploads/2026/04/202604172071072683.gif';
+  const pspclOfficialLogo = 'https://www.pspcl.in/assets/images/logo.png';
+  const pstclOfficialLogo = 'https://www.pstcl.org/images/logo.png';
   const policeOfficialLogo = 'https://punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png';
   const hcOfficialLogo = 'https://highcourtchd.gov.in/images/newlogo.png';
-  const pspclOfficialLogo = 'https://pspcl.in/assets/images/logo.png';
-  const pstclOfficialLogo = 'https://www.pstcl.org/images/logo.png';
   const markfedOfficialLogo = 'https://www.markfedpunjab.com/wp-content/uploads/2019/04/markfed-logo.png';
   const verkaOfficialLogo = 'https://www.verka.coop/wp-content/themes/verka/images/logo.png';
 

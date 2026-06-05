@@ -1,4 +1,3 @@
-
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -23,6 +22,11 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'punjabpolice.gov.in',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.pspcl.in',
         pathname: '/**',
       },
       {
