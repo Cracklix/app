@@ -56,9 +56,10 @@ export async function seedInitialData(db: Firestore) {
   const psssbOfficialLogo = 'https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg';
   const policeOfficialLogo = 'https://punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png';
   const hcOfficialLogo = 'https://highcourtchd.gov.in/images/newlogo.png';
-  const educationLogo = 'https://pstet.pseb.ac.in/img/main-logo-2.png';
+  const psebSchoolLogo = 'https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png';
+  const eduDeptLogo = 'https://pstet.pseb.ac.in/img/main-logo-2.png';
   const armyLogo = 'https://www.indianarmy.nic.in/content/images/logo_bl.png';
-  const pspclOfficialLogo = 'https://pspcl.in/assets/images/logo.png';
+  const pspclOfficialLogo = 'https://www.pspcl.in/assets/images/logo.png';
   const pstclOfficialLogo = 'https://pstcl.org/images/logo.png';
   const technicalLogo = 'https://www.punjabteched.com/images/Clogo-blue.gif';
 
@@ -86,10 +87,17 @@ export async function seedInitialData(db: Firestore) {
     },
     {
       id: 'pseb',
-      abbreviation: 'Education',
+      abbreviation: 'PSEB',
       name: 'School Education Board (PSEB)',
-      iconUrl: educationLogo,
-      description: 'ETT, Master Cadre, and PSTET recruitment nodes.'
+      iconUrl: psebSchoolLogo,
+      description: 'School level education board of Punjab.'
+    },
+    {
+      id: 'edu-dept',
+      abbreviation: 'Education',
+      name: 'Punjab Education Department',
+      iconUrl: eduDeptLogo,
+      description: 'ETT, Master Cadre, and PSTET recruitment node.'
     },
     {
       id: 'pspcl',
@@ -124,7 +132,7 @@ export async function seedInitialData(db: Firestore) {
       abbreviation: 'Army',
       name: 'Indian Army Agniveer Hub',
       iconUrl: armyLogo,
-      description: 'National recruitment gateway for Agniveer GD, Tech, and Clerical nodes.'
+      description: 'National recruitment gateway for Agniveer nodes.'
     }
   ];
 
@@ -168,34 +176,7 @@ export async function seedInitialData(db: Firestore) {
       category: 'Defense',
       totalMocks: 15,
       activeQuestions: 1800,
-      description: 'High-fidelity preparation series for Indian Army Agniveer national recruitment.'
-    },
-    {
-      id: 'pspcl-clerk',
-      boardId: 'pspcl',
-      name: 'PSPCL LDC / Clerk',
-      category: 'Technical',
-      totalMocks: 12,
-      activeQuestions: 1500,
-      description: 'Preparation for Power Corporation clerical nodes.'
-    },
-    {
-      id: 'pstet-p1',
-      boardId: 'pseb',
-      name: 'PSTET Paper 1 (EVS)',
-      category: 'Teaching',
-      totalMocks: 10,
-      activeQuestions: 1200,
-      description: 'Specialized PSTET node with focus on EVS and Pedagogy.'
-    },
-    {
-      id: 'punjab-police-si',
-      boardId: 'punjab-police',
-      name: 'Sub-Inspector (SI)',
-      category: 'Police',
-      totalMocks: 15,
-      activeQuestions: 1800,
-      description: 'Complete series for District and Armed SI.'
+      description: 'High-fidelity preparation series for Indian Army Agniveer.'
     }
   ];
 
