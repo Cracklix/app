@@ -1,4 +1,3 @@
-
 "use client"
 
 import Navbar from "@/components/layout/Navbar"
@@ -21,7 +20,8 @@ import {
   History,
   Layout,
   Info,
-  ChevronLeft
+  ChevronLeft,
+  Sparkles
 } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
