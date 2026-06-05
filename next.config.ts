@@ -52,11 +52,6 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'cdnbbsr.s3waas.gov.in',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
         hostname: 'static.pseb.ac.in',
         pathname: '/**',
       },
@@ -67,17 +62,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'www.markfedpunjab.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.verka.coop',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'dte.punjab.gov.in',
+        hostname: 'www.punjabteched.com',
         pathname: '/**',
       },
       {
@@ -88,11 +73,6 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'www.indianarmy.nic.in',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.punjabteched.com',
         pathname: '/**',
       }
     ],

@@ -53,8 +53,8 @@ export async function seedInitialData(db: Firestore) {
 
   // 2. Master Authority Registry with OFFICIAL Government URLs
   const stateEmblem = 'https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png';
-  const psssbOfficialLogo = 'https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg';
-  const policeOfficialLogo = 'https://punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png';
+  const psssbLogo = 'https://sssb.punjab.gov.in/images/logo.png';
+  const policeLogo = 'https://punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png';
   const hcOfficialLogo = 'https://highcourtchd.gov.in/images/newlogo.png';
   const psebSchoolLogo = 'https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png';
   const eduDeptLogo = 'https://pstet.pseb.ac.in/img/main-logo-2.png';
@@ -67,14 +67,14 @@ export async function seedInitialData(db: Firestore) {
     {
       id: 'psssb',
       abbreviation: 'PSSSB',
-      name: 'Subordinate Services Selection Board',
-      iconUrl: psssbOfficialLogo,
+      name: 'Punjab Subordinate Services Selection Board',
+      iconUrl: psssbLogo,
       description: 'Official board for Group B and C recruitment nodes.'
     },
     {
       id: 'ppsc',
       abbreviation: 'PPSC',
-      name: 'Public Service Commission',
+      name: 'Punjab Public Service Commission',
       iconUrl: stateEmblem,
       description: 'Authority for Class A and B civil services.'
     },
@@ -82,19 +82,19 @@ export async function seedInitialData(db: Firestore) {
       id: 'punjab-police',
       abbreviation: 'Police',
       name: 'Punjab Police Recruitment',
-      iconUrl: policeOfficialLogo,
+      iconUrl: policeLogo,
       description: 'District and Armed cadre recruitment registry.'
     },
     {
       id: 'pseb',
-      abbreviation: 'PSEB',
-      name: 'School Education Board (PSEB)',
+      abbreviation: 'EDUCATION',
+      name: 'Punjab School Education Board (Teaching)',
       iconUrl: psebSchoolLogo,
-      description: 'School level education board of Punjab.'
+      description: 'Official board for school-level staff and teaching cadres.'
     },
     {
       id: 'edu-dept',
-      abbreviation: 'Education',
+      abbreviation: 'PSTET',
       name: 'Punjab Education Department',
       iconUrl: eduDeptLogo,
       description: 'ETT, Master Cadre, and PSTET recruitment node.'
@@ -102,21 +102,21 @@ export async function seedInitialData(db: Firestore) {
     {
       id: 'pspcl',
       abbreviation: 'PSPCL',
-      name: 'State Power Corporation (PSPCL)',
+      name: 'Punjab State Power Corporation Limited',
       iconUrl: pspclOfficialLogo,
       description: 'Technical and clerical power sector recruitment.'
     },
     {
       id: 'pstcl',
       abbreviation: 'PSTCL',
-      name: 'State Transmission Corporation (PSTCL)',
+      name: 'Punjab State Transmission Corporation',
       iconUrl: pstclOfficialLogo,
       description: 'Technical and clerical transmission sector recruitment.'
     },
     {
       id: 'technical-edu',
       abbreviation: 'Technical',
-      name: 'Board of Technical Education',
+      name: 'Punjab Technical Education Board',
       iconUrl: technicalLogo,
       description: 'Punjab State Board of Technical Education and Industrial Training.'
     },
@@ -129,8 +129,8 @@ export async function seedInitialData(db: Firestore) {
     },
     {
       id: 'indian-army',
-      abbreviation: 'Army',
-      name: 'Indian Army Hub',
+      abbreviation: 'ARMY',
+      name: 'Indian Army Agniveer Hub',
       iconUrl: armyOfficialLogo,
       description: 'Official military recruitment gateway for Agniveer nodes.'
     }

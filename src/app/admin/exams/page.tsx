@@ -19,7 +19,7 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Authority Hub v24.8 - Operational Hardening.
+ * @fileOverview Authority Hub v25.1 - Logo Restoration & Hardened Purge Engine.
  * Features: Absolute Deletion Logic (Propagation Fixed) & Logo Zoom Protocol.
  */
 
@@ -112,7 +112,7 @@ export default function ExamManagement() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 px-6">
         <div>
            <div className="flex items-center gap-3 mb-2">
-              <Globe className="h-5 w-5 text-primary" />
+              <Globe className="h-6 w-6 text-primary" />
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Official Board Registry</span>
            </div>
           <h1 className="text-5xl font-headline font-black text-primary uppercase tracking-tight">Authority Hub</h1>
@@ -136,12 +136,12 @@ export default function ExamManagement() {
             </TableHeader>
             <TableBody>
               {loading ? (
-                Array.from({ length: 5 }).map((_, i) => (
+                Array.from({ length: 8 }).map((_, i) => (
                   <TableRow key={i} className="border-slate-50"><TableCell colSpan={4} className="px-10 py-5"><Skeleton className="h-14 w-full rounded-2xl bg-slate-50" /></TableCell></TableRow>
                 ))
               ) : boards?.map((board: any) => {
                 const isImageFailed = failedImages[board.id];
-                const isArmy = board.id === 'indian-army' || board.abbreviation === 'Army';
+                const isArmy = board.id === 'indian-army' || board.abbreviation === 'ARMY';
                 return (
                   <TableRow key={board.id} className="hover:bg-slate-50 group border-slate-50 transition-all">
                     <TableCell className="px-10 py-6">
@@ -217,7 +217,7 @@ export default function ExamManagement() {
                         <img 
                           src={editingBoard.iconUrl} 
                           referrerPolicy="no-referrer"
-                          className={cn("absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform", (editingBoard.id === 'indian-army' || editingBoard.abbreviation === 'Army') ? "scale-150" : "")} 
+                          className={cn("absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform", (editingBoard.id === 'indian-army' || editingBoard.abbreviation === 'ARMY') ? "scale-150" : "")} 
                           alt="Preview"
                         />
                       ) : (
