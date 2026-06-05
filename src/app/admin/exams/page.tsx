@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Edit, Image as ImageIcon, Trash2, Save, Globe, Upload, Loader2, AlertCircle, CheckCircle2 } from "lucide-react"
+import { Plus, Edit, Image as ImageIcon, Trash2, Save, Globe, Upload, Loader2, AlertCircle, RefreshCw, X } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useCollection, useFirestore, useStorage } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
@@ -14,11 +14,11 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
-import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
+import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub - Institutional Board Registry.
- * Features: High-Fidelity Logo Upload and centralized Board Identity management.
+ * @fileOverview Authority Hub v4.0 - Institutional Board Registry.
+ * Features: High-Fidelity Logo Upload, Direct URL Override, and Anti-Hang Pipeline.
  */
 
 export default function ExamManagement() {
@@ -35,7 +35,7 @@ export default function ExamManagement() {
   const [assetError, setAssetError] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Absolute fallback for previews
+  // Official State Emblem Fallback
   const stateEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
 
   useEffect(() => {
@@ -74,25 +74,30 @@ export default function ExamManagement() {
     const file = e.target.files?.[0]
     if (!file || !storage) return
 
+    console.log("[STORAGE] Starting upload for:", file.name);
     setIsUploading(true)
     setAssetError(false)
     
+    // Safety timeout: If upload doesn't finish in 30s, force reset
     const timeoutId = setTimeout(() => {
        if (isUploading) {
           setIsUploading(false);
-          toast({ variant: "destructive", title: "Sync Timeout", description: "Storage response failed." });
+          toast({ variant: "destructive", title: "Sync Timeout", description: "Storage response took too long. Check your rules or use URL override." });
+          console.error("[STORAGE] Upload timed out after 30s");
        }
     }, 30000);
 
-    const storageRef = ref(storage, `authority_logos/${Date.now()}_${file.name.replace(/\s+/g, '_')}`)
-
     try {
+      const storageRef = ref(storage, `authority_logos/${Date.now()}_${file.name.replace(/\s+/g, '_')}`)
       const snapshot = await uploadBytes(storageRef, file)
       const downloadURL = await getDownloadURL(snapshot.ref)
+      
       setEditingBoard({ ...editingBoard, iconUrl: downloadURL })
-      toast({ title: "Asset Synced", description: "Official logo uploaded to storage." })
+      toast({ title: "Asset Synced", description: "Logo uploaded to storage." })
+      console.log("[STORAGE] Upload success, URL:", downloadURL);
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Upload Failed", description: "Storage rejection." })
+      console.error("[STORAGE] Upload failed:", error);
+      toast({ variant: "destructive", title: "Upload Failed", description: error.message || "Storage rejection. Check Firebase Rules." })
     } finally {
       clearTimeout(timeoutId);
       setIsUploading(false)
@@ -101,7 +106,7 @@ export default function ExamManagement() {
   }
 
   return (
-    <div className="space-y-12 pb-24 text-[#0F172A] text-left">
+    <div className="space-y-12 pb-24 text-[#0F172A] text-left pt-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 px-4">
         <div>
            <div className="flex items-center gap-3 mb-2">
@@ -109,7 +114,7 @@ export default function ExamManagement() {
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Official Board Registry</span>
            </div>
           <h1 className="text-4xl font-headline font-black text-primary uppercase tracking-tight">Authority Hub</h1>
-          <p className="text-slate-600 mt-1 font-medium">Manage institutional identities for Punjab recruitment boards.</p>
+          <p className="text-slate-600 mt-1 font-medium">Manage institutional identities for all Punjab recruitment boards.</p>
         </div>
         <Button className="bg-primary hover:bg-primary/90 h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl gap-3" onClick={() => setEditingBoard({ abbreviation: "", name: "", description: "", iconUrl: "" })}>
           <Plus className="h-5 w-5" /> Add New Authority
@@ -166,7 +171,10 @@ export default function ExamManagement() {
         <DialogContent className="sm:max-w-lg rounded-[3rem] bg-white border-none shadow-4xl p-0 overflow-hidden text-left">
           <div className="h-2 w-full bg-[#0F172A]" />
           <DialogHeader className="p-10 pb-0 text-left">
-            <DialogTitle className="text-2xl font-black font-headline uppercase text-[#0F172A]">{editingBoard?.id ? "Update Registry" : "New Authority Node"}</DialogTitle>
+            <div className="flex justify-between items-center">
+               <DialogTitle className="text-2xl font-black font-headline uppercase text-[#0F172A]">{editingBoard?.id ? "Update Registry" : "New Authority Node"}</DialogTitle>
+               <button onClick={() => setEditingBoard(null)} className="p-2 rounded-xl hover:bg-slate-50 transition-colors"><X className="h-5 w-5 text-slate-400" /></button>
+            </div>
           </DialogHeader>
           
           <div className="p-10 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
@@ -178,30 +186,49 @@ export default function ExamManagement() {
                        <span className="text-[8px] font-black text-primary uppercase tracking-widest">Syncing Asset...</span>
                     </div>
                  ) : (
-                    <img 
-                      src={editingBoard?.iconUrl || stateEmblem} 
-                      referrerPolicy="no-referrer"
-                      crossOrigin="anonymous"
-                      className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform" 
-                      alt="Preview"
-                      onError={(e) => { (e.target as HTMLImageElement).src = stateEmblem }}
-                    />
+                    <div className="relative h-full w-full flex items-center justify-center">
+                      <img 
+                        src={editingBoard?.iconUrl || stateEmblem} 
+                        referrerPolicy="no-referrer"
+                        crossOrigin="anonymous"
+                        className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform" 
+                        alt="Preview"
+                        onError={(e) => { 
+                          if (editingBoard?.iconUrl) setAssetError(true);
+                          (e.target as HTMLImageElement).src = stateEmblem;
+                        }}
+                      />
+                      {assetError && editingBoard?.iconUrl && (
+                        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center text-center p-4">
+                           <AlertCircle className="h-6 w-6 text-rose-500 mb-1" />
+                           <span className="text-[8px] font-black text-rose-600 uppercase tracking-widest leading-tight">Invalid Asset URL</span>
+                        </div>
+                      )}
+                    </div>
                  )}
               </div>
               
-              <Button 
-                variant="outline" 
-                className="w-full h-12 rounded-xl border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest gap-2 hover:bg-slate-50 shadow-sm"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading || isSaving}
-              >
-                {isUploading ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Upload className="h-4 w-4 text-primary" />}
-                {isUploading ? "Uploading..." : "Upload Device Logo"}
-              </Button>
-              <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileUpload} />
+              <div className="w-full space-y-3">
+                <Button 
+                  variant="outline" 
+                  className="w-full h-14 rounded-xl border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest gap-2 hover:bg-slate-50 shadow-sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading || isSaving}
+                >
+                  {isUploading ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Upload className="h-4 w-4 text-primary" />}
+                  {isUploading ? "Uploading to Storage..." : "Upload Device Logo"}
+                </Button>
+                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileUpload} />
+                
+                {isUploading && (
+                  <Button variant="ghost" className="w-full text-rose-500 font-bold uppercase text-[9px]" onClick={() => setIsUploading(false)}>
+                    Cancel Upload Node
+                  </Button>
+                )}
+              </div>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-6 pt-4 border-t border-slate-50">
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-2">
                     <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Short Code (e.g. PSPCL)</Label>
@@ -213,8 +240,12 @@ export default function ExamManagement() {
                  </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Logo URL (Optional Override)</Label>
-                <Input value={editingBoard?.iconUrl || ""} onChange={e => setEditingBoard({...editingBoard, iconUrl: e.target.value})} className="bg-slate-50 border-none rounded-xl h-12 text-[9px] font-mono" placeholder="https://..." />
+                <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1 flex items-center justify-between">
+                  Logo URL (Manual Entry / Storage Result)
+                  {editingBoard?.iconUrl && <button onClick={() => setEditingBoard({...editingBoard, iconUrl: ""})} className="text-rose-500 hover:underline">Clear</button>}
+                </Label>
+                <Input value={editingBoard?.iconUrl || ""} onChange={e => setEditingBoard({...editingBoard, iconUrl: e.target.value.trim()})} className="bg-slate-50 border-none rounded-xl h-12 text-[10px] font-mono" placeholder="https://..." />
+                <p className="text-[8px] text-slate-400 font-bold uppercase italic">Hint: If upload hangs, paste a direct image URL from Wikimedia/Official site.</p>
               </div>
             </div>
           </div>

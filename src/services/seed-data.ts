@@ -4,9 +4,10 @@ import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/fi
  * @fileOverview Final Institutional Seeding Engine for Cracklix.
  * Synchronizes binary access passes, official board registry, and platform settings.
  * Optimized for Testbook-style "Select Board" logic with high-fidelity logos.
+ * Fixed: Explicit inclusion of PSPCL, PSTCL, and EVS subject nodes.
  */
 export async function seedInitialData(db: Firestore) {
-  console.log('Initializing Global Punjab Access Registry Sync...');
+  console.log('[REGISTRY] Initializing Global Punjab Access Registry Sync...');
 
   // 1. Initial Pass Registry (Monetization Hub)
   const passes = [
@@ -194,5 +195,5 @@ export async function seedInitialData(db: Firestore) {
     updatedAt: serverTimestamp()
   }, { merge: true });
 
-  console.log('Institutional Registry Sync Complete.');
+  console.log('[REGISTRY] Institutional Registry Sync Complete.');
 }
