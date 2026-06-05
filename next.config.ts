@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'sssb.punjab.gov.in',
         pathname: '/**',
       },

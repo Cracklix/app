@@ -40,7 +40,7 @@ export default function PopularExams() {
               Complete preparation matrices for State and Central verticals.
             </p>
           </div>
-          <Link href="/exams" className="text-primary font-black text-[11px] uppercase tracking-[0.2em] flex items-center group gap-2 px-6 py-3 bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-lg transition-all">
+          <Link href="/exams" className="text-primary font-black text-[8px] uppercase tracking-[0.2em] flex items-center group gap-2 px-6 py-3 bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-lg transition-all">
             Full Catalog <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -64,12 +64,13 @@ export default function PopularExams() {
                       <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:scale-110 transition-transform"><GraduationCap className="h-40 w-40" /></div>
                       
                       <div className="flex items-center gap-8 relative z-10">
-                        <div className="shrink-0 h-20 w-20 rounded-[1.5rem] bg-slate-50 border border-slate-100 flex items-center justify-center transition-all group-hover:shadow-2xl shadow-inner relative overflow-hidden group-hover:bg-white">
+                        <div className="shrink-0 h-20 w-20 rounded-[1.5rem] bg-slate-50 border border-slate-100 flex items-center justify-center transition-all group-hover:shadow-xl shadow-inner relative overflow-hidden group-hover:bg-white">
                            {board?.iconUrl || board?.id === 'psssb' ? (
                              <img 
                                src={board?.iconUrl || 'https://sssb.punjab.gov.in/images/logo.png'} 
                                className="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-110" 
                                alt="Logo" 
+                               referrerPolicy="no-referrer"
                              />
                            ) : (
                              <GraduationCap className="h-9 w-9 text-slate-300 group-hover:text-primary transition-colors" />
@@ -77,10 +78,10 @@ export default function PopularExams() {
                         </div>
                         <div className="min-w-0 flex-1 space-y-2">
                           <div className="flex items-center justify-between">
-                             <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-lg">
+                             <Badge className="bg-primary/5 text-primary border-none text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg">
                                 {board?.abbreviation || 'OFFICIAL'} BOARD
                              </Badge>
-                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{exam.category}</span>
+                             <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{exam.category}</span>
                           </div>
                           <h3 className="text-2xl font-black text-[#000000] group-hover:text-primary transition-colors leading-tight uppercase truncate tracking-tight">
                             {exam.name}

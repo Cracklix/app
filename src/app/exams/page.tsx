@@ -122,7 +122,7 @@ function ExamVerticalCard({ exam, boards }: any) {
                     <GraduationCap className="h-10 w-10 text-slate-300" />
                  )}
               </div>
-              <Badge className="bg-primary/5 text-primary border-none text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-xl">
+              <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-lg">
                  {board?.abbreviation || 'OFFICIAL'}
               </Badge>
            </div>

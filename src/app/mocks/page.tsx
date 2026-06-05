@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo } from "react"
@@ -54,7 +55,7 @@ export default function MocksGatewayPage() {
              <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-sm">
                 <ShieldCheck className="h-6 w-6" />
              </div>
-             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">Official Exam Registry 2026</span>
+             <span className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-500">Official Exam Registry 2026</span>
           </div>
           <h1 className="text-5xl md:text-8xl font-headline font-black text-[#000000] uppercase tracking-tighter leading-[0.85]">
             Select Your <br/> <span className="text-primary">Mastery Hub</span>
@@ -85,7 +86,7 @@ export default function MocksGatewayPage() {
                                   onError={(e) => { (e.target as HTMLImageElement).src = psssbLogo }}
                                />
                             </div>
-                            <Badge className="bg-primary/5 text-primary border-none text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-xl shadow-sm">
+                            <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-lg shadow-sm">
                                {board?.abbreviation || 'PSSSB'} BOARD
                             </Badge>
                          </div>

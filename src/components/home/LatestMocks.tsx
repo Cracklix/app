@@ -51,7 +51,7 @@ export default function LatestMocks() {
                <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-inner">
                   <Zap className="h-5 w-5" />
                </div>
-               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">Live Registry Feed</span>
+               <span className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-500">Live Registry Feed</span>
             </div>
             <h2 className="text-4xl lg:text-6xl font-headline font-black text-[#000000] uppercase leading-[0.95] tracking-tight">
               LATEST <span className="text-primary text-glow">MOCK SERIES</span>
@@ -105,7 +105,7 @@ export default function LatestMocks() {
                            />
                          )}
                       </div>
-                      <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black uppercase px-2 py-0.5 rounded-lg shadow-sm">
+                      <Badge className="bg-primary/5 text-primary border-none text-[7px] font-black uppercase px-2 py-0.5 rounded-lg shadow-sm">
                         {board?.abbreviation || 'OFFICIAL'}
                       </Badge>
                     </div>
