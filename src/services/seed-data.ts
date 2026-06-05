@@ -30,7 +30,7 @@ export async function seedInitialData(db: Firestore) {
     
     // Central Exams
     { id: 'indian-army', abbreviation: 'ARMY', name: 'Indian Army Recruitment', iconUrl: 'https://www.indianarmy.nic.in/writereaddata/images/slider/270526_Hindi_1.jpeg', region: 'National', category: 'CENTRAL', description: 'Defense and Agniveer verticals.' },
-    { id: 'ssc', abbreviation: 'SSC', name: 'Staff Selection Commission', iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Emblem_of_India.svg/200px-Emblem_of_India.svg.png', region: 'National', category: 'CENTRAL', description: 'Central staff recruitment authority.' }
+    { id: 'ssc', abbreviation: 'SSC', name: 'Staff Selection Commission', iconUrl: 'https://ssc.gov.in/assets/sscLogo.webp', region: 'National', category: 'CENTRAL', description: 'Central staff recruitment authority.' }
   ];
 
   for (const b of boards) {
