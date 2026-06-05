@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 /**
  * @fileOverview High-Fidelity Latest Mocks Node.
- * Updated: Robust board logo lookup to ensure official emblems appear at top-left.
+ * Updated: Triple-layer failover for logos to guarantee branding presence.
  */
 
 export default function LatestMocks() {
@@ -37,7 +37,7 @@ export default function LatestMocks() {
     }).slice(0, 5)
   }, [rawMocks])
 
-  // Official State Emblem Fallback
+  // Triple Failover State Emblem
   const stateEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
 
   return (

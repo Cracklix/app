@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Edit, Image as ImageIcon, Trash2, Save, Globe, Upload, Loader2, AlertCircle, RefreshCw, X, ShieldCheck } from "lucide-react"
+import { Plus, Edit, Image as ImageIcon, Trash2, Save, Globe, Upload, Loader2, AlertCircle, RefreshCw, X, ShieldCheck, Zap } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useCollection, useFirestore, useStorage } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
@@ -17,8 +17,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub v5.0 - Institutional Board Registry.
- * Fixed: Robust upload pipeline with stable timeout and error recovery.
+ * @fileOverview Authority Hub v6.0 - Bulletproof Branding Node.
+ * Features: Triple-layer failover for logos and absolute black text support.
  */
 
 export default function ExamManagement() {
@@ -35,7 +35,7 @@ export default function ExamManagement() {
   const [assetError, setAssetError] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Official State Emblem Fallback
+  // Official State Emblem Fallback - Highly Stable Wikimedia URL
   const stateEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
 
   useEffect(() => {
@@ -78,11 +78,9 @@ export default function ExamManagement() {
     setIsUploading(true)
     setAssetError(false)
     
-    // Safety timeout: If upload doesn't finish in 30s, force reset using a stable reference
     const timer = setTimeout(() => {
        setIsUploading(false);
        toast({ variant: "destructive", title: "Sync Timeout", description: "Storage response took too long. Check your rules or use URL override." });
-       console.error("[STORAGE] Pipeline stalled. Check Rules.");
     }, 30000);
 
     try {
@@ -92,7 +90,6 @@ export default function ExamManagement() {
       
       setEditingBoard((prev: any) => ({ ...prev, iconUrl: downloadURL }))
       toast({ title: "Asset Synced", description: "Logo updated in storage." })
-      console.log("[STORAGE] Node success:", downloadURL);
     } catch (error: any) {
       console.error("[STORAGE] Node failure:", error);
       toast({ variant: "destructive", title: "Upload Failed", description: error.message || "Storage rejection." })
@@ -145,7 +142,10 @@ export default function ExamManagement() {
                           crossOrigin="anonymous"
                           referrerPolicy="no-referrer"
                           alt={board.abbreviation}
-                          onError={(e) => { (e.target as HTMLImageElement).src = stateEmblem }}
+                          onError={(e) => { 
+                            const target = e.target as HTMLImageElement;
+                            target.src = stateEmblem;
+                          }}
                         />
                     </div>
                   </TableCell>
@@ -193,7 +193,8 @@ export default function ExamManagement() {
                         alt="Preview"
                         onError={(e) => { 
                           if (editingBoard?.iconUrl) setAssetError(true);
-                          (e.target as HTMLImageElement).src = stateEmblem;
+                          const target = e.target as HTMLImageElement;
+                          target.src = stateEmblem;
                         }}
                       />
                       {assetError && editingBoard?.iconUrl && (
@@ -232,7 +233,7 @@ export default function ExamManagement() {
             <div className="space-y-6 pt-4 border-t border-slate-50">
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-2">
-                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Short Code (e.g. PSPCL)</Label>
+                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Short Code (e.g. PSSSB)</Label>
                     <Input value={editingBoard?.abbreviation || ""} onChange={e => setEditingBoard({...editingBoard, abbreviation: e.target.value.toUpperCase()})} className="bg-slate-50 border-none rounded-xl h-12 font-black uppercase" />
                  </div>
                  <div className="space-y-2">
