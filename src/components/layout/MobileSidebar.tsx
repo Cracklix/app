@@ -1,3 +1,4 @@
+
 'use client';
 
 import { 
@@ -8,29 +9,35 @@ import {
   Bell, 
   Settings, 
   Phone, 
-  Shield, 
   ChevronRight, 
   Gem,
   Trophy,
   Zap,
   GraduationCap,
   BarChart3,
-  X,
   Home,
-  LogOut
+  LogOut,
+  ChevronDown,
+  Info
 } from "lucide-react";
 import Link from "next/link";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter, usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import StudentAvatar from "@/components/brand/StudentAvatar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { useState } from "react";
 
 /**
- * @fileOverview Final Enterprise Mobile Sidebar (Adda247 Style).
- * Fixed: Safe-area visibility, independent scrolling, and fixed bottom logout.
+ * @fileOverview Compact Information Architecture Refactor.
+ * Follows Adda247/Testbook minimalist navigation patterns.
+ * Optimized for first-screen visibility and zero-bloat UX.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -39,152 +46,169 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const router = useRouter();
   const pathname = usePathname();
 
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
+
   const handleLogout = async () => {
     await signOut(auth);
     onClose();
     router.push('/login');
   };
 
-  const mainPrepItems = [
-    { label: "Home Hub", href: "/", icon: Home, color: "text-blue-500" },
-    { label: "My Mocks", href: "/mocks", icon: Zap, color: "text-[#F97316]" },
-    { label: "Exam Hubs", href: "/exams", icon: GraduationCap, color: "text-indigo-500" },
-    { label: "Study Notes", href: "/notes", icon: FileText, color: "text-emerald-500" },
-    { label: "Results Registry", href: "/dashboard", icon: BarChart3, color: "text-amber-500" },
-    { label: "Hall of Rankers", href: "/leaderboard", icon: Trophy, color: "text-rose-500" },
-    { label: "PYQ Archives", href: "/pyqs", icon: FileStack, color: "text-slate-400" },
+  const primaryMenu = [
+    { label: "Home", href: "/", icon: Home },
+    { label: "Exams", href: "/exams", icon: GraduationCap },
+    { label: "My Mocks", href: "/mocks", icon: Zap },
+    { label: "Notes", href: "/notes", icon: FileText },
+    { label: "Results", href: "/dashboard", icon: BarChart3 },
+    { label: "PYQ", href: "/pyqs", icon: FileStack },
+    { label: "Pass", href: "/pass", icon: Gem },
+    { label: "Analysis", href: "/current-affairs", icon: Newspaper },
   ];
 
-  const secondaryItems = [
-    { label: "Daily Analysis", href: "/current-affairs", icon: Newspaper },
-    { label: "Exam Calendar", href: "/exam-calendar", icon: CalendarDays },
-    { label: "Notifications", href: "/notifications", icon: Bell },
+  const secondaryMenu = [
     { label: "Profile Settings", href: "/profile", icon: Settings },
-    { label: "Institutional Contact", href: "/contact", icon: Phone },
+    { label: "Notifications", href: "/notifications", icon: Bell },
+    { label: "Contact Support", href: "/contact", icon: Phone },
+  ];
+
+  const moreMenu = [
+    { label: "Hall of Rankers", href: "/leaderboard", icon: Trophy },
+    { label: "Exam Calendar", href: "/exam-calendar", icon: CalendarDays },
+    { label: "Daily Analysis", href: "/current-affairs", icon: Newspaper },
+    { label: "Institutional Nodes", href: "/about", icon: Info },
   ];
 
   return (
-    <div className="flex flex-col h-full bg-white text-[#0F172A] overflow-hidden">
-      {/* 1. PROFILE SECTION (Fixed Top) - Hardened for Safe Areas */}
-      <div className="px-6 pb-8 bg-[#0B1528] shrink-0 pt-[calc(env(safe-area-inset-top,24px)+24px)] min-h-[180px] relative overflow-hidden">
-        {/* Abstract Background Element */}
-        <div className="absolute top-0 right-0 p-8 opacity-5 rotate-12"><Shield className="h-40 w-40 text-white" /></div>
-        
-        <div className="flex justify-between items-start mb-6 relative z-10">
-           <div className="flex items-center gap-4">
-              <StudentAvatar 
-                profile={profile} 
-                className="h-14 w-14 border-2 border-white/10 rounded-2xl shadow-xl shadow-black/20 shrink-0" 
-              />
-              <div className="space-y-0.5 text-left min-w-0">
-                 <h2 className="font-headline font-black text-lg text-white uppercase tracking-tight leading-none truncate pr-2">
-                    {profile?.name || "Aspirant Node"}
-                 </h2>
-                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate opacity-80">
-                    {profile?.email || user?.email || "Registry: PENDING"}
-                 </p>
-              </div>
-           </div>
-           <button 
-             onClick={onClose}
-             className="h-9 w-9 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 hover:bg-white/10 transition-colors"
-           >
-             <X className="h-4 w-4 text-slate-400" />
-           </button>
-        </div>
-
-        <div className="flex flex-wrap gap-2 relative z-10">
-           <Badge className="bg-[#F97316] text-white border-none text-[8px] font-black uppercase px-3 py-1 rounded-lg shadow-lg">
-              {profile?.status?.replace('_', ' ') || "FREE"} PASS
-           </Badge>
-           <Badge variant="outline" className="border-white/10 text-slate-400 text-[8px] font-black uppercase px-3 py-1 rounded-lg">
-              {profile?.role || "STUDENT"}
-           </Badge>
-        </div>
-      </div>
-
-      {/* 2. MENU SECTION (Independent Scrolling) */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 custom-scrollbar bg-white">
-        <div className="space-y-1 pb-4">
-          <p className="px-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Preparation Trajectory</p>
-          {mainPrepItems.map((item) => (
-            <SidebarLink 
-              key={item.href} 
-              item={item} 
-              active={pathname === item.href}
-              onClick={onClose} 
-            />
-          ))}
-          
-          <div className="px-2 py-6">
-            <Button asChild className="w-full bg-[#F97316] hover:bg-orange-600 text-white rounded-xl h-14 font-black uppercase text-[10px] tracking-widest gap-3 shadow-2xl shadow-orange-900/20 transition-all active:scale-95">
-              <Link href="/pass" onClick={onClose}>
-                <Gem className="h-4 w-4" /> Upgrade My Pass
-              </Link>
-            </Button>
-          </div>
-
-          <div className="h-px w-full bg-slate-50 my-4" />
-          
-          <p className="px-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Institutional Nodes</p>
-          {secondaryItems.map((item) => (
-            <SidebarLink 
-              key={item.href} 
-              item={item} 
-              active={pathname === item.href}
-              onClick={onClose} 
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* 3. LOGOUT SECTION (Fixed Bottom) */}
-      <div className="p-6 border-t border-slate-100 bg-white shrink-0 pb-[calc(env(safe-area-inset-bottom,12px)+16px)]">
-         <button 
-            onClick={handleLogout}
-            className="flex items-center justify-between w-full px-5 h-[56px] rounded-2xl bg-rose-50 hover:bg-rose-100 transition-all group border border-rose-100/50"
-         >
-            <div className="flex items-center gap-4">
-               <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center text-rose-500 shadow-sm border border-rose-100 group-hover:scale-110 transition-transform">
-                  <LogOut className="h-5 w-5" />
-               </div>
-               <span className="font-black uppercase text-[11px] tracking-widest text-rose-600">Logout Session</span>
+    <div className="flex flex-col h-full bg-white text-[#0F172A] overflow-hidden font-body">
+      {/* 1. COMPACT PROFILE SECTION (-40% Height) */}
+      <div className="px-5 pb-6 pt-[calc(env(safe-area-inset-top,24px)+16px)] bg-[#0B1528] shrink-0">
+        <div className="flex items-center gap-4">
+          <StudentAvatar 
+            profile={profile} 
+            className="h-12 w-12 border-2 border-white/10 rounded-xl shrink-0" 
+          />
+          <div className="flex-1 text-left min-w-0">
+            <h2 className="font-headline font-black text-base text-white uppercase tracking-tight leading-tight truncate">
+              {profile?.name || "Aspirant"}
+            </h2>
+            <div className="mt-1 flex items-center gap-2">
+              <Badge className="bg-[#F97316] text-white border-none text-[8px] font-black uppercase px-2 py-0.5 rounded-sm">
+                {profile?.status?.replace('_', ' ') || "FREE"} PASS
+              </Badge>
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{profile?.role || "STUDENT"}</span>
             </div>
-            <ChevronRight className="h-4 w-4 text-rose-300" />
-         </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. NAVIGATION HUB (Flat List Design) */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar px-2 py-4 space-y-1">
+        {/* PRIMARY SECTION */}
+        <div className="space-y-0.5">
+          {primaryMenu.map((item) => (
+            <MenuLink 
+              key={item.href} 
+              item={item} 
+              active={pathname === item.href}
+              onClick={onClose} 
+            />
+          ))}
+        </div>
+
+        <div className="my-3 border-t border-slate-50" />
+
+        {/* COLLAPSIBLE GROUPS */}
+        <CollapsibleGroup 
+          label="Account & Support" 
+          isOpen={isAccountOpen} 
+          onToggle={setIsAccountOpen}
+        >
+          {secondaryMenu.map((item) => (
+            <MenuLink 
+              key={item.href} 
+              item={item} 
+              active={pathname === item.href}
+              onClick={onClose}
+              indent
+            />
+          ))}
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-8 h-11 text-rose-500 hover:bg-rose-50 transition-colors rounded-lg group"
+          >
+            <LogOut className="h-[18px] w-[18px] shrink-0" />
+            <span className="text-sm font-bold uppercase tracking-tight">Logout</span>
+          </button>
+        </CollapsibleGroup>
+
+        <CollapsibleGroup 
+          label="More Sections" 
+          isOpen={isMoreOpen} 
+          onToggle={setIsMoreOpen}
+        >
+          {moreMenu.map((item) => (
+            <MenuLink 
+              key={item.href} 
+              item={item} 
+              active={pathname === item.href}
+              onClick={onClose}
+              indent
+            />
+          ))}
+        </CollapsibleGroup>
+      </div>
+
+      {/* 3. VERSION FOOTER */}
+      <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 shrink-0">
+        <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.4em] text-center">
+          Cracklix Registry v5.2.0
+        </p>
       </div>
     </div>
   );
 }
 
-function SidebarLink({ item, active, onClick }: { item: any, active: boolean, onClick: () => void }) {
+function MenuLink({ item, active, onClick, indent = false }: any) {
   return (
     <Link 
       href={item.href} 
       onClick={onClick}
       className={cn(
-        "flex items-center justify-between px-4 rounded-xl transition-all h-[56px] group border border-transparent mb-1",
-        active ? "bg-primary/5 border-primary/10 shadow-sm" : "hover:bg-slate-50"
+        "flex items-center justify-between px-3 h-11 rounded-lg transition-all group",
+        active ? "bg-primary/5 text-primary" : "hover:bg-slate-50 text-slate-600",
+        indent && "pl-8"
       )}
     >
-      <div className="flex items-center gap-4">
-        <div className={cn(
-          "h-10 w-10 rounded-xl flex items-center justify-center transition-all shadow-inner shrink-0",
-          active ? "bg-primary text-white" : "bg-slate-50 text-slate-400 group-hover:bg-white group-hover:text-primary"
-        )}>
-          {item.icon && <item.icon className={cn("h-5 w-5", !active && (item.color || "text-slate-400"))} />}
-        </div>
+      <div className="flex items-center gap-3">
+        <item.icon className={cn("h-[18px] w-[18px] shrink-0", active ? "text-primary" : "text-slate-400")} />
         <span className={cn(
-          "font-bold text-[14px] transition-colors truncate uppercase tracking-tight",
-          active ? "text-primary" : "text-slate-600 group-hover:text-[#0F172A]"
+          "text-sm font-bold uppercase tracking-tight transition-colors",
+          active ? "text-primary" : "group-hover:text-[#0F172A]"
         )}>
           {item.label}
         </span>
       </div>
       <ChevronRight className={cn(
-        "h-4 w-4 transition-all shrink-0",
-        active ? "text-primary translate-x-0.5" : "text-slate-200 group-hover:text-slate-400"
+        "h-3.5 w-3.5 transition-all opacity-0 group-hover:opacity-100",
+        active ? "opacity-100 text-primary" : "text-slate-200"
       )} />
     </Link>
+  );
+}
+
+function CollapsibleGroup({ label, children, isOpen, onToggle }: any) {
+  return (
+    <Collapsible open={isOpen} onOpenChange={onToggle} className="w-full">
+      <CollapsibleTrigger asChild>
+        <button className="flex items-center justify-between w-full px-3 h-11 rounded-lg hover:bg-slate-50 transition-all text-slate-400 group">
+          <span className="text-[10px] font-black uppercase tracking-[0.2em]">{label}</span>
+          <ChevronDown className={cn("h-4 w-4 transition-transform duration-300", isOpen && "rotate-180")} />
+        </button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="space-y-0.5 mt-1 overflow-hidden transition-all data-[state=closed]:animate-collapse-up data-[state=open]:animate-collapse-down">
+        {children}
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

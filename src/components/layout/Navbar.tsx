@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -25,7 +26,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * @fileOverview Global Navigation Node.
- * Features: Sheet-based Mobile Sidebar with safe-area constraints.
+ * Features: Optimized for compact mobile sidebar and safe-area constraints.
  */
 
 export default function Navbar() {
@@ -70,7 +71,7 @@ export default function Navbar() {
                  </SheetTrigger>
                  <SheetContent 
                    side="left" 
-                   className="p-0 border-none w-[min(320px,82vw)] h-full"
+                   className="p-0 border-none w-[min(300px,85vw)] h-full"
                  >
                    <SheetHeader className="sr-only"><SheetTitle>Aspirant Menu</SheetTitle></SheetHeader>
                    <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
@@ -82,8 +83,8 @@ export default function Navbar() {
             <div className="hidden lg:flex items-center gap-8 text-[12px] font-bold uppercase tracking-widest text-[#7A8B9E]">
               <Link href="/exams" className={pathname === '/exams' ? 'text-white' : 'hover:text-primary transition-colors'}>Exams</Link>
               <Link href="/mocks" className={pathname === '/mocks' ? 'text-white' : 'hover:text-primary transition-colors'}>Mocks</Link>
-              <Link href="/pass" className="flex items-center gap-2 hover:text-primary transition-colors"><CreditCard className="h-3.5 w-3.5 text-primary" /> Pass</Link>
-              <Link href="/notes" className="flex items-center gap-2 hover:text-primary transition-colors"><Zap className="h-3.5 w-3.5 text-emerald-500" /> Notes</Link>
+              <Link href="/pass" className={pathname === '/pass' ? 'text-white' : 'hover:text-primary transition-colors'}>Pass</Link>
+              <Link href="/notes" className={pathname === '/notes' ? 'text-white' : 'hover:text-primary transition-colors'}>Notes</Link>
             </div>
           </div>
 
