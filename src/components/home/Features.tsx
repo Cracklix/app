@@ -3,65 +3,70 @@
 import { motion } from "framer-motion";
 import { Clipboard, Search, TrendingUp, Smartphone } from "lucide-react";
 
+/**
+ * @fileOverview Responsive Features Section.
+ * Optimized for mobile-first scanning with reduced vertical sprawl.
+ */
+
 const features = [
   { 
-    icon: <Clipboard className="h-[22px] w-[22px]" />, 
-    title: "Real Exam Pattern Based Mocks", 
-    desc: "Mocks designed exactly as per the latest exam pattern and syllabus.",
+    icon: <Clipboard className="h-5 w-5 md:h-6 md:w-6" />, 
+    title: "Pattern Based Mocks", 
+    desc: "Mocks designed exactly as per the latest 2026 norms.",
     variant: "blue"
   },
   { 
-    icon: <Search className="h-[22px] w-[22px]" />, 
+    icon: <Search className="h-5 w-5 md:h-6 md:w-6" />, 
     title: "Detailed Solutions", 
-    desc: "Step-by-step solutions with concept explanation to clear your doubts.",
+    desc: "Step-by-step rationalizations to fix logic gaps.",
     variant: "orange"
   },
   { 
-    icon: <TrendingUp className="h-[22px] w-[22px]" />, 
-    title: "Performance Analytics", 
-    desc: "Track your progress with in-depth analytics and performance insights.",
+    icon: <TrendingUp className="h-5 w-5 md:h-6 md:w-6" />, 
+    title: "Performance Index", 
+    desc: "All Punjab state ranking and readiness audit.",
     variant: "blue"
   },
   { 
-    icon: <Smartphone className="h-[22px] w-[22px]" />, 
-    title: "Study Anytime Anywhere", 
-    desc: "Learn on the go with our mobile app. Anytime, anywhere.",
+    icon: <Smartphone className="h-5 w-5 md:h-6 md:w-6" />, 
+    title: "On-The-Go Learning", 
+    desc: "Access verified content from mobile or desktop hub.",
     variant: "orange"
   },
 ];
 
 export default function Features() {
   return (
-    <section className="bg-[#0c1527] text-white py-[80px] px-[7.5%] text-center mt-[80px]">
+    <section className="bg-[#0B1528] text-white py-12 md:py-24 px-4 md:px-[7.5%] text-center">
       <div className="container mx-auto">
         <motion.h2 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-[32px] font-bold mb-[40px]"
+          className="text-2xl md:text-4xl font-headline font-black mb-10 md:mb-16 uppercase tracking-tight"
         >
-          Why Choose <span className="text-[#ff7a00]">Cracklix?</span>
+          Why Choose <span className="text-[#F97316]">Cracklix?</span>
         </motion.h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {features.map((feature, idx) => (
             <motion.div 
               key={idx}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
+              transition={{ delay: idx * 0.05 }}
               viewport={{ once: true }}
-              className="bg-[#111e38] border border-white/5 rounded-[10px] p-[30px_20px] text-left group"
+              className="bg-white/5 border border-white/5 rounded-xl md:rounded-[2rem] p-6 md:p-10 text-left group hover:border-primary/20 transition-all shadow-xl"
             >
-              <div className={`w-[50px] h-[50px] rounded-[8px] flex items-center justify-center mb-5 ${
+              <div className={`w-10 h-10 md:w-14 md:h-14 rounded-lg md:rounded-2xl flex items-center justify-center mb-4 md:mb-6 shadow-inner ${
                 feature.variant === 'blue' ? 'bg-blue-600/20 text-[#3b82f6]' : 'bg-[#ff7a00]/20 text-[#ff7a00]'
               }`}>
                 {feature.icon}
               </div>
-              <h3 className="text-[18px] font-bold mb-[10px] leading-[1.4] group-hover:text-[#ff7a00] transition-colors">
+              <h3 className="text-base md:text-xl font-bold mb-2 leading-tight uppercase group-hover:text-[#ff7a00] transition-colors">
                 {feature.title}
               </h3>
-              <p className="text-[#94a3b8] text-[14px] leading-[1.6]">
+              <p className="text-slate-400 text-xs md:text-sm leading-relaxed font-medium">
                 {feature.desc}
               </p>
             </motion.div>
