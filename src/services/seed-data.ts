@@ -57,7 +57,7 @@ export async function seedInitialData(db: Firestore) {
   const policeOfficialLogo = 'https://punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png';
   const hcOfficialLogo = 'https://highcourtchd.gov.in/images/newlogo.png';
   const psebOfficialLogo = 'https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png';
-  const armyLogo = 'https://joinindianarmy.nic.in/writereaddata/Portal/Images/logo.png';
+  const armyLogo = 'https://www.indianarmy.nic.in/content/images/logo_bl.png';
   const pspclOfficialLogo = 'https://pspcl.in/assets/images/logo.png';
   const pstclOfficialLogo = 'https://pstcl.org/images/logo.png';
   const technicalLogo = 'https://www.punjabteched.com/images/Clogo-blue.gif';

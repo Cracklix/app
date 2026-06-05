@@ -18,8 +18,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub v24.2 - Hardened Operations Engine.
- * Features: Fixed Deletion Logic with explicit event isolation and Firestore targeting.
+ * @fileOverview Authority Hub v24.3 - Hardened Operations Engine.
+ * Features: Fixed Deletion Logic with absolute event isolation and direct cloud targeting.
  */
 
 export default function ExamManagement() {
@@ -67,11 +67,7 @@ export default function ExamManagement() {
     }
   }
 
-  const handleDelete = async (e: React.MouseEvent, id: string) => {
-    // CRITICAL: Stop event propagation to prevent Row/Sidebar interference
-    e.preventDefault();
-    e.stopPropagation();
-    
+  const handleDelete = async (id: string) => {
     if (!id || !db) return
     
     const confirmMsg = "CRITICAL AUDIT: Permanently purge this authority from the global registry? This action is irreversible.";
@@ -179,7 +175,11 @@ export default function ExamManagement() {
                             variant="ghost" 
                             size="icon" 
                             className="h-12 w-12 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-all" 
-                            onClick={(e) => handleDelete(e, board.id)}
+                            onClick={(e) => {
+                               e.preventDefault();
+                               e.stopPropagation();
+                               handleDelete(board.id);
+                            }}
                             disabled={isDeleting === board.id}
                           >
                             {isDeleting === board.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-5 w-5" />}
