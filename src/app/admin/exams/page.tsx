@@ -18,8 +18,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub v18.0 - Master Registry Control.
- * Fixed: Robust Deletion engine and Technical logo support.
+ * @fileOverview Authority Hub v19.0 - Master Registry Control.
+ * Fixed: Hardened Deletion engine with immediate cloud sync.
  */
 
 export default function ExamManagement() {
@@ -67,7 +67,10 @@ export default function ExamManagement() {
     }
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (!id || !db) return
     if (!window.confirm("Permanently purge this authority from the registry? This will affect all linked mocks.")) return
     
@@ -175,7 +178,7 @@ export default function ExamManagement() {
                           variant="ghost" 
                           size="icon" 
                           className="h-12 w-12 rounded-xl hover:bg-rose-50 hover:text-rose-500" 
-                          onClick={() => handleDelete(board.id)}
+                          onClick={(e) => handleDelete(e, board.id)}
                           disabled={isDeleting === board.id}
                         >
                           {isDeleting === board.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-5 w-5" />}
