@@ -23,10 +23,13 @@ import { collection, query, doc, deleteDoc } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
+import { errorEmitter } from "@/firebase/error-emitter"
+import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 
 /**
  * @fileOverview Institutional QA & Testing Dashboard.
  * Standardised to high-contrast Navy/White theme for readability.
+ * Fixed: Robust Deletion logic with error emission.
  */
 
 export default function QADashboard() {
@@ -74,9 +77,21 @@ export default function QADashboard() {
   }
 
   const handleDelete = async (coll: string, id: string) => {
-    if (!confirm("Permanently purge this broken asset?")) return
-    await deleteDoc(doc(db, coll, id))
-    toast({ title: "Asset Purged", description: "Repository cleaned successfully." })
+    if (!db) return
+    if (!confirm("Permanently purge this broken asset from the repository?")) return
+    
+    const docRef = doc(db, coll, id)
+    deleteDoc(docRef)
+      .then(() => {
+        toast({ title: "Asset Purged", description: "Repository cleaned successfully." })
+      })
+      .catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'delete',
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+      });
   }
 
   return (
@@ -106,7 +121,7 @@ export default function QADashboard() {
       </div>
 
       <div className="space-y-10">
-         <section className="space-y-6">
+         <section className="space-y-6 text-left">
             <h3 className="text-2xl font-headline font-black uppercase flex items-center gap-4 text-[#0F172A]">
                <AlertTriangle className="h-6 w-6 text-rose-600" /> Broken Question Node
             </h3>
@@ -125,7 +140,7 @@ export default function QADashboard() {
                      ) : issues.brokenQuestions.length > 0 ? (
                         issues.brokenQuestions.map((q: any) => (
                            <TableRow key={q.id} className="border-slate-50 hover:bg-slate-50 transition-colors">
-                              <TableCell className="px-10 py-6 max-w-md">
+                              <TableCell className="px-10 py-6 max-w-md text-left">
                                  <p className="font-bold text-[#0F172A] line-clamp-1">{q.questionEn || "Untitled Content"}</p>
                                  <code className="text-[9px] text-slate-400 font-mono">UUID: {q.id}</code>
                               </TableCell>
@@ -156,7 +171,7 @@ export default function QADashboard() {
             </Card>
          </section>
 
-         <section className="space-y-6">
+         <section className="space-y-6 text-left">
             <h3 className="text-2xl font-headline font-black uppercase flex items-center gap-4 text-[#0F172A]">
                <FileWarning className="h-6 w-6 text-orange-600" /> Series Pattern Failures
             </h3>
@@ -175,7 +190,7 @@ export default function QADashboard() {
                      ) : issues.brokenMocks.length > 0 ? (
                         issues.brokenMocks.map((m: any) => (
                            <TableRow key={m.id} className="border-slate-50 hover:bg-slate-50 transition-colors">
-                              <TableCell className="px-10 py-6">
+                              <TableCell className="px-10 py-6 text-left">
                                  <p className="font-bold text-[#0F172A]">{m.title}</p>
                                  <code className="text-[9px] text-slate-400 font-mono">{m.boardId} • {m.examId}</code>
                               </TableCell>

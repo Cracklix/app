@@ -16,12 +16,13 @@ import { useFirestore, useDoc, useCollection, useUser } from "@/firebase"
 import { doc, setDoc, serverTimestamp, collection } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
-import { FirestorePermissionError } from "@/firebase/errors"
+import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
  * @fileOverview Enterprise Question Editor Node.
  * Optimized for payload sanitization and React controlled component stability.
+ * Fixed: Robust save logic with error emission.
  */
 
 export default function QuestionEntryPage() {
@@ -69,7 +70,6 @@ function QuestionEntryContent() {
 
   useEffect(() => {
     if (existingData) {
-      // Coalesce null values to empty strings to prevent React controlled component warnings
       const sanitized = { ...existingData };
       Object.keys(sanitized).forEach(key => {
         if (sanitized[key] === null) sanitized[key] = "";
@@ -113,7 +113,6 @@ function QuestionEntryContent() {
     delete basePayload.tableDataJson;
     delete basePayload.chartConfigJson;
 
-    // Strict cleanup of undefined values
     Object.keys(basePayload).forEach(key => basePayload[key] === undefined && delete basePayload[key]);
 
     const finalPayload = {
@@ -128,8 +127,12 @@ function QuestionEntryContent() {
         router.push("/admin/questions")
       })
       .catch(async (err) => {
-        console.error("Firestore Save Error:", err)
-        errorEmitter.emit("permission-error", new FirestorePermissionError({ path: questionRef.path, operation: 'write' }))
+        const permissionError = new FirestorePermissionError({
+          path: questionRef.path,
+          operation: 'write',
+          requestResourceData: finalPayload,
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit("permission-error", permissionError)
       })
       .finally(() => setIsSaving(false))
   }
@@ -172,7 +175,7 @@ function QuestionEntryContent() {
             <TabsContent value="content" className="space-y-6">
                <Card className="border-slate-100 bg-white shadow-2xl rounded-[3rem] p-12 space-y-8">
                   <div className="grid grid-cols-2 gap-8">
-                     <div className="space-y-3">
+                     <div className="space-y-3 text-left">
                         <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Inquiry Type</Label>
                         <Select value={formData.questionType} onValueChange={(v: any) => setFormData({...formData, questionType: v})}>
                            <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100"><SelectValue /></SelectTrigger>
@@ -185,7 +188,7 @@ function QuestionEntryContent() {
                            </SelectContent>
                         </Select>
                      </div>
-                     <div className="space-y-3">
+                     <div className="space-y-3 text-left">
                         <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Correct Logic Output</Label>
                         <Select value={formData.correctAnswer} onValueChange={(v: any) => setFormData({...formData, correctAnswer: v})}>
                            <SelectTrigger className="h-12 rounded-xl bg-emerald-50 border-emerald-100 text-emerald-700 font-bold"><SelectValue /></SelectTrigger>
@@ -199,7 +202,7 @@ function QuestionEntryContent() {
                      </div>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-3 text-left">
                     <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Question Statement (English)</Label>
                     <Textarea 
                       value={formData.questionEn} 
@@ -211,14 +214,14 @@ function QuestionEntryContent() {
 
                   <div className="grid grid-cols-2 gap-6">
                     {['A','B','C','D'].map(opt => (
-                      <div key={opt} className="space-y-2">
+                      <div key={opt} className="space-y-2 text-left">
                         <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Option {opt} (EN)</Label>
                         <Input value={formData[`option${opt}En`]} onChange={e => setFormData({...formData, [`option${opt}En`]: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100 font-bold" />
                       </div>
                     ))}
                   </div>
 
-                  <div className="space-y-3 pt-6 border-t border-slate-100">
+                  <div className="space-y-3 pt-6 border-t border-slate-100 text-left">
                     <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Audit Rationale (English)</Label>
                     <Textarea 
                       value={formData.explanationEn} 
@@ -233,7 +236,7 @@ function QuestionEntryContent() {
             <TabsContent value="complex" className="space-y-6">
                <Card className="border-slate-100 bg-white shadow-2xl rounded-[3rem] p-12 space-y-10">
                   <div className="grid grid-cols-2 gap-8">
-                     <div className="space-y-3">
+                     <div className="space-y-3 text-left">
                         <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Visual Mode</Label>
                         <Select value={formData.diagramType} onValueChange={(v: any) => setFormData({...formData, diagramType: v})}>
                            <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100"><SelectValue /></SelectTrigger>
@@ -246,13 +249,13 @@ function QuestionEntryContent() {
                            </SelectContent>
                         </Select>
                      </div>
-                     <div className="space-y-3">
+                     <div className="space-y-3 text-left">
                         <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Image URI</Label>
                         <Input value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100" placeholder="https://..." />
                      </div>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-3 text-left">
                     <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Passage / Caselet (English)</Label>
                     <Textarea 
                       value={formData.passageEn} 
@@ -265,13 +268,13 @@ function QuestionEntryContent() {
 
             <TabsContent value="punjabi" className="space-y-6">
                <Card className="border-slate-100 bg-white shadow-2xl rounded-[3rem] p-12 space-y-10">
-                  <div className="space-y-3">
+                  <div className="space-y-3 text-left">
                     <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">ਸਵਾਲ (Question Statement)</Label>
                     <Textarea value={formData.questionPa} onChange={e => setFormData({...formData, questionPa: e.target.value})} className="min-h-[120px] rounded-2xl bg-slate-50 border-slate-100 p-6 text-lg font-bold" />
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     {['A','B','C','D'].map(opt => (
-                      <div key={opt} className="space-y-2">
+                      <div key={opt} className="space-y-2 text-left">
                         <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">ਵਿਕਲਪ {opt}</Label>
                         <Input value={formData[`option${opt}Pa`]} onChange={e => setFormData({...formData, [`option${opt}Pa`]: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100 font-bold" />
                       </div>
@@ -283,14 +286,14 @@ function QuestionEntryContent() {
             <TabsContent value="metadata" className="space-y-6">
                <Card className="border-slate-100 bg-white shadow-2xl rounded-[3rem] p-12 space-y-8">
                   <div className="grid grid-cols-2 gap-8">
-                     <div className="space-y-3">
+                     <div className="space-y-3 text-left">
                         <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Board</Label>
                         <Select value={formData.boardId} onValueChange={v => setFormData({...formData, boardId: v})}>
                            <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100"><SelectValue placeholder="Select" /></SelectTrigger>
                            <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
                         </Select>
                      </div>
-                     <div className="space-y-3">
+                     <div className="space-y-3 text-left">
                         <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Subject Hub</Label>
                         <Select value={formData.subjectId} onValueChange={v => setFormData({...formData, subjectId: v})}>
                            <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100"><SelectValue placeholder="Select" /></SelectTrigger>
@@ -299,11 +302,11 @@ function QuestionEntryContent() {
                      </div>
                   </div>
                   <div className="grid grid-cols-2 gap-8">
-                     <div className="space-y-3">
+                     <div className="space-y-3 text-left">
                         <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Topic / Chapter</Label>
                         <Input value={formData.chapterId} onChange={e => setFormData({...formData, chapterId: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100" placeholder="e.g. Percentage" />
                      </div>
-                     <div className="space-y-3">
+                     <div className="space-y-3 text-left">
                         <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Difficulty</Label>
                         <Select value={formData.difficulty} onValueChange={v => setFormData({...formData, difficulty: v})}>
                            <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100"><SelectValue /></SelectTrigger>
@@ -329,7 +332,7 @@ function QuestionEntryContent() {
                 </div>
                 <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase tracking-widest px-3 py-1">Instant Audit</Badge>
              </div>
-             <CardContent className="p-10 space-y-10 h-[70vh] overflow-y-auto custom-scrollbar">
+             <CardContent className="p-10 space-y-10 h-[70vh] overflow-y-auto custom-scrollbar text-left">
                 <QuestionRenderer 
                    language="bilingual" 
                    question={{

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo } from "react"
@@ -11,11 +12,13 @@ import { collection, query, doc, updateDoc, deleteDoc } from "firebase/firestore
 import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
+import { errorEmitter } from "@/firebase/error-emitter"
+import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 
 /**
  * @fileOverview Institutional Content Audit Node.
  * Standardised to high-contrast Navy/White theme for readability.
- * Fixed: Removed orderBy to prevent index errors, handling sorting client-side.
+ * Fixed: Robust Resolve/Delete logic with error emission.
  */
 
 export default function AdminReports() {
@@ -36,20 +39,41 @@ export default function AdminReports() {
 
   const handleResolve = async (id: string) => {
     if (!db) return
-    await updateDoc(doc(db, "reports", id), { status: 'RESOLVED' })
-    toast({ title: "Audit Resolved", description: "The content report has been marked as audited and corrected." })
+    const docRef = doc(db, "reports", id)
+    updateDoc(docRef, { status: 'RESOLVED' })
+      .then(() => {
+        toast({ title: "Audit Resolved", description: "The content report has been marked as audited and corrected." })
+      })
+      .catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'update',
+          requestResourceData: { status: 'RESOLVED' }
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+      });
   }
 
   const handleDelete = async (id: string) => {
     if (!db || !confirm("Permanently delete this audit record?")) return
-    await deleteDoc(doc(db, "reports", id))
-    toast({ title: "Record Purged", description: "Report record removed from queue." })
+    const docRef = doc(db, "reports", id)
+    deleteDoc(docRef)
+      .then(() => {
+        toast({ title: "Record Purged", description: "Report record removed from queue." })
+      })
+      .catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'delete',
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+      });
   }
 
   return (
     <div className="space-y-12 text-[#0F172A]">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-        <div>
+        <div className="text-left">
           <div className="flex items-center gap-3 mb-2">
             <ShieldAlert className="h-6 w-6 text-rose-500" />
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Quality Assurance Registry</span>
@@ -69,7 +93,7 @@ export default function AdminReports() {
         </div>
       </div>
 
-      <Card className="border-slate-100 shadow-2xl bg-white rounded-[3.5rem] overflow-hidden">
+      <Card className="border-slate-100 shadow-2xl bg-white rounded-[3rem] overflow-hidden">
         <CardContent className="p-0 text-left">
           <Table>
             <TableHeader className="bg-slate-50/50">
@@ -88,7 +112,7 @@ export default function AdminReports() {
               ) : reports && reports.length > 0 ? (
                 reports.map((r: any) => (
                   <TableRow key={r.id} className={`hover:bg-slate-50 group border-slate-50 transition-all duration-500 ${r.status === 'RESOLVED' ? 'opacity-40 grayscale-[0.8]' : ''}`}>
-                    <TableCell className="px-12 py-12">
+                    <TableCell className="px-12 py-12 text-left">
                        <div className="space-y-4">
                           <Badge className={`border-none text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-xl shadow-lg ${
                             r.type === 'WRONG_ANS' ? 'bg-rose-50 text-rose-600' :
@@ -101,7 +125,7 @@ export default function AdminReports() {
                           </div>
                        </div>
                     </TableCell>
-                    <TableCell className="max-w-md py-12">
+                    <TableCell className="max-w-md py-12 text-left">
                        <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-inner">
                           <p className="text-lg font-medium text-slate-600 leading-relaxed italic antialiased text-left">"{r.comment}"</p>
                        </div>
