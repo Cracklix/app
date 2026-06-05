@@ -17,7 +17,7 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub v12.6 - Fixed Syntax Error & Referrer Bypass.
+ * @fileOverview Authority Hub v12.8 - Fixed Build Error & Referrer Bypass.
  * Features: Absolute Referrer Bypassing and Triple-Layer text fallback.
  */
 
