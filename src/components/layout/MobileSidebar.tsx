@@ -36,7 +36,7 @@ import { useState } from "react";
 /**
  * @fileOverview Compact Mobile Navigation Module.
  * Follows Adda247 style minimalist high-density layout.
- * Features: Fixed Sidebar Width (260px), Tightened Spacing, and Collapsible Sections.
+ * Fixed: Explicitly forced 260px width to match container and eliminate right whitespace.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -78,20 +78,20 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-white text-[#0F172A] overflow-hidden font-body w-full max-w-[260px]">
+    <div className="flex flex-col h-full bg-white text-[#0F172A] overflow-hidden font-body w-[260px] max-w-[260px]">
       {/* 1. COMPACT PROFILE HUB */}
-      <div className="px-4 pb-6 pt-[calc(env(safe-area-inset-top,24px)+16px)] bg-[#0B1528] shrink-0">
+      <div className="px-4 pb-4 pt-[calc(env(safe-area-inset-top,24px)+12px)] bg-[#0B1528] shrink-0">
         <div className="flex items-center gap-3">
           <StudentAvatar 
             profile={profile} 
-            className="h-12 w-12 border border-white/10 rounded-xl shrink-0 shadow-lg" 
+            className="h-10 w-10 border border-white/10 rounded-xl shrink-0 shadow-lg" 
           />
           <div className="flex-1 text-left min-w-0">
-            <h2 className="font-headline font-black text-sm text-white uppercase tracking-tight leading-tight truncate">
+            <h2 className="font-headline font-black text-[13px] text-white uppercase tracking-tight leading-tight truncate">
               {profile?.name || "Aspirant"}
             </h2>
-            <div className="mt-1.5 flex flex-wrap gap-1">
-              <Badge className="bg-[#F97316] text-white border-none text-[8px] font-black uppercase px-2 py-0.5 rounded-sm">
+            <div className="mt-1 flex flex-wrap gap-1">
+              <Badge className="bg-[#F97316] text-white border-none text-[7px] font-black uppercase px-2 py-0.5 rounded-sm">
                 {profile?.status?.replace('_', ' ') || "FREE"} PASS
               </Badge>
             </div>
@@ -100,7 +100,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* 2. FITTED NAVIGATION LIST */}
-      <div className="flex-1 overflow-y-auto no-scrollbar py-4 space-y-0.5">
+      <div className="flex-1 overflow-y-auto no-scrollbar py-2 space-y-0.5">
         {primaryMenu.map((item) => (
           <MenuLink 
             key={item.href} 
@@ -110,7 +110,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
           />
         ))}
 
-        <div className="my-3 border-t border-slate-50 mx-4" />
+        <div className="my-2 border-t border-slate-50 mx-4" />
 
         <CollapsibleGroup 
           label="Account & Support" 
