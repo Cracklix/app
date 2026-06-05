@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -26,7 +27,7 @@ import {
   ArrowRight
 } from "lucide-react"
 import { useFirestore, useUser, useCollection } from "@/firebase"
-import { collection, query, where, orderBy, limit, doc, getDoc } from "firebase/firestore"
+import { collection, query, where, doc, getDoc } from "firebase/firestore"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -34,7 +35,7 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
  * @fileOverview Institutional Result Engine.
- * Features: Solution Hub with Advanced Rendering (DI/RC), Solutions, and Mastery Index.
+ * Optimized: Client-side sorting for Results to bypass composite index requirements.
  */
 export default function ResultPage() {
   const params = useParams()
@@ -47,26 +48,25 @@ export default function ResultPage() {
   const [questions, setQuestions] = useState<any[]>([])
   const [loadingContent, setLoadingContent] = useState(true)
 
+  // Simplified query to bypass composite index requirement
   const resultsQuery = useMemo(() => {
-    if (!db || !user || !mockId) return null
-    return query(
-      collection(db, "results"), 
-      where("userId", "==", user.uid),
-      where("mockId", "==", mockId),
-      limit(1)
-    )
-  }, [db, user, mockId])
+    if (!db || !user) return null
+    return query(collection(db, "results"), where("userId", "==", user.uid))
+  }, [db, user])
 
-  const { data: resultDocs, loading: resultsLoading } = useCollection<any>(resultsQuery)
+  const { data: rawResultDocs, loading: resultsLoading } = useCollection<any>(resultsQuery)
   
   const sessionData = useMemo(() => {
-    if (!resultDocs) return null
-    return [...resultDocs].sort((a, b) => {
-      const tA = a.createdAt?.seconds || 0
-      const tB = b.createdAt?.seconds || 0
-      return tB - tA
-    })[0]
-  }, [resultDocs])
+    if (!rawResultDocs || !mockId) return null
+    // Filter for the specific mock and take the most recent session
+    return rawResultDocs
+      .filter((r: any) => r.mockId === mockId)
+      .sort((a: any, b: any) => {
+         const tA = new Date(a.timestamp || 0).getTime()
+         const tB = new Date(b.timestamp || 0).getTime()
+         return tB - tA
+      })[0]
+  }, [rawResultDocs, mockId])
 
   useEffect(() => {
     async function loadQuestions() {

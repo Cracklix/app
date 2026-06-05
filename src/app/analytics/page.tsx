@@ -5,7 +5,7 @@ import { useMemo } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useCollection, useFirestore } from "@/firebase"
-import { collection, query, where, orderBy } from "firebase/firestore"
+import { collection, query, where } from "firebase/firestore"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { 
   TrendingUp, 
@@ -31,7 +31,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Deep Performance Analysis Node.
- * Features: High-fidelity Recharts visualization and Subject Mastery Index.
+ * Optimized: Client-side sorting for Results to bypass composite index requirements.
  */
 
 export default function DeepAnalytics() {
@@ -39,12 +39,22 @@ export default function DeepAnalytics() {
   const db = useFirestore()
   const router = useRouter()
 
+  // Simplified query to bypass composite index requirement
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
-    return query(collection(db, "results"), where("userId", "==", user.uid), orderBy("timestamp", "desc"))
+    return query(collection(db, "results"), where("userId", "==", user.uid))
   }, [db, user])
 
-  const { data: results } = useCollection<any>(resultsQuery)
+  const { data: rawResults } = useCollection<any>(resultsQuery)
+
+  const results = useMemo(() => {
+    if (!rawResults) return []
+    return [...rawResults].sort((a: any, b: any) => {
+      const tA = new Date(a.timestamp || 0).getTime()
+      const tB = new Date(b.timestamp || 0).getTime()
+      return tB - tA
+    })
+  }, [rawResults])
 
   const analytics = useMemo(() => {
     if (!results || results.length === 0) return {
@@ -112,7 +122,7 @@ export default function DeepAnalytics() {
          </div>
 
          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            <Card className="lg:col-span-8 border-none shadow-3xl rounded-[3.5rem] bg-white overflow-hidden">
+            <Card className="border-none shadow-3xl rounded-[3.5rem] bg-white overflow-hidden">
                <CardHeader className="p-10 border-b border-slate-50 bg-slate-50/30">
                   <div className="flex items-center gap-4">
                      <TrendingUp className="h-6 w-6 text-primary" />

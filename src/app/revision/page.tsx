@@ -5,7 +5,7 @@ import { useMemo, useState } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useCollection, useFirestore, useUser } from "@/firebase"
-import { collection, query, where, orderBy, limit } from "firebase/firestore"
+import { collection, query, where } from "firebase/firestore"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { 
   Bookmark, 
@@ -27,10 +27,11 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import Link from "next/link"
 
 /**
  * @fileOverview Institutional Revision & Preparation Hub.
- * Features: Smart Bookmarks, Missed Audit Nodes, and AI Rationalizations.
+ * Optimized: Client-side sorting for Results to bypass composite index requirements.
  */
 
 export default function RevisionHub() {
@@ -41,8 +42,18 @@ export default function RevisionHub() {
   const bookmarkQuery = useMemo(() => (db && user ? query(collection(db, "bookmarks"), where("userId", "==", user.uid)) : null), [db, user])
   const { data: bookmarks, loading: bLoading } = useCollection<any>(bookmarkQuery)
 
-  const resultsQuery = useMemo(() => (db && user ? query(collection(db, "results"), where("userId", "==", user.uid), orderBy("timestamp", "desc"), limit(20)) : null), [db, user])
-  const { data: results, loading: rLoading } = useCollection<any>(resultsQuery)
+  // Simplified query to bypass composite index requirement
+  const resultsQuery = useMemo(() => (db && user ? query(collection(db, "results"), where("userId", "==", user.uid)) : null), [db, user])
+  const { data: rawResults, loading: rLoading } = useCollection<any>(resultsQuery)
+
+  const results = useMemo(() => {
+    if (!rawResults) return []
+    return [...rawResults].sort((a: any, b: any) => {
+      const tA = new Date(a.timestamp || 0).getTime()
+      const tB = new Date(b.timestamp || 0).getTime()
+      return tB - tA
+    }).slice(0, 20)
+  }, [rawResults])
 
   // Smart logic to extract "Audit Failures" from recent results for revision
   const wrongAttempts = useMemo(() => {

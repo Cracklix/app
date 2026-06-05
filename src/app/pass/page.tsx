@@ -10,18 +10,27 @@ import { CheckCircle2, XCircle, Trophy, Zap, Star, ArrowRight, ShieldCheck, Spar
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, where, orderBy } from "firebase/firestore"
+import { collection, query } from "firebase/firestore"
 import { useMemo } from "react"
 
 /**
  * @fileOverview Institutional Dynamic Pass Center.
- * Fetches dynamic preparation tiers from Firestore registry.
+ * Optimized: Client-side sorting/filtering to bypass composite index requirements.
  */
 
 export default function PassPage() {
   const db = useFirestore()
-  const passQuery = useMemo(() => (db ? query(collection(db, "passes"), where("active", "==", true), orderBy("displayOrder", "asc")) : null), [db])
-  const { data: passes, loading } = useCollection<any>(passQuery)
+  
+  // Simplified query to bypass composite index requirement
+  const passQuery = useMemo(() => (db ? collection(db, "passes") : null), [db])
+  const { data: rawPasses, loading } = useCollection<any>(passQuery)
+
+  const passes = useMemo(() => {
+    if (!rawPasses) return []
+    return rawPasses
+      .filter((p: any) => p.active === true)
+      .sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0))
+  }, [rawPasses])
 
   return (
     <div className="min-h-screen bg-slate-50/50 font-body">
@@ -29,7 +38,7 @@ export default function PassPage() {
       <main className="container mx-auto px-6 py-12 md:py-24 max-w-7xl">
         <div className="text-center space-y-8 mb-20">
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <Badge className="bg-primary/10 text-primary border-none px-6 py-2 rounded-full font-black uppercase text-[10px] tracking-[0.3em] mb-6">
+              <Badge className="bg-primary/10 text-primary border-none px-6 py-2 rounded-full font-black uppercase text-[10px] tracking-[0.2em] mb-6">
                  Official Pass Registry v2.0
               </Badge>
               <h1 className="text-5xl md:text-8xl font-headline font-black text-[#0F172A] tracking-tight uppercase leading-[0.85]">

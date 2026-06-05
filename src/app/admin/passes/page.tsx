@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Plus, Trash2, Edit, Save, Gem, Zap, Lock, X, ChevronRight } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, doc, setDoc, deleteDoc, serverTimestamp, query, orderBy } from "firebase/firestore"
+import { collection, doc, setDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -19,15 +19,20 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Dynamic Pass Hub v3.1.
- * Optimized for high-density visibility and zero-clipping on all screens.
+ * Optimized: Client-side sorting to bypass composite index requirements.
  */
 
 export default function PassManagement() {
   const db = useFirestore()
   const { toast } = useToast()
   
-  const passQuery = useMemo(() => (db ? query(collection(db, "passes"), orderBy("displayOrder", "asc")) : null), [db])
-  const { data: passes, loading } = useCollection<any>(passQuery)
+  const passQuery = useMemo(() => (db ? collection(db, "passes") : null), [db])
+  const { data: rawPasses, loading } = useCollection<any>(passQuery)
+
+  const passes = useMemo(() => {
+    if (!rawPasses) return []
+    return [...rawPasses].sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0))
+  }, [rawPasses])
 
   const [editingPass, setEditingPass] = useState<any>(null)
 

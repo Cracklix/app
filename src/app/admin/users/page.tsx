@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Search, MoreVertical, ShieldCheck, Trash2, Gift, Gem, RefreshCw, XCircle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore, useUser } from "@/firebase"
-import { collection, query, doc, updateDoc, serverTimestamp, orderBy } from "firebase/firestore"
+import { collection, query, doc, updateDoc, serverTimestamp } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   DropdownMenu,
@@ -29,6 +29,11 @@ import {
 import { useToast } from "@/hooks/use-toast"
 import StudentAvatar from "@/components/brand/StudentAvatar"
 
+/**
+ * @fileOverview Aspirants Management Terminal.
+ * Optimized: Client-side sorting for passes to bypass composite index requirement.
+ */
+
 export default function AspirantsManagement() {
   const db = useFirestore()
   const { user: currentUser, profile: currentProfile } = useUser()
@@ -41,8 +46,13 @@ export default function AspirantsManagement() {
   const usersQuery = useMemo(() => (db ? query(collection(db, 'users')) : null), [db])
   const { data: aspirants, loading } = useCollection<any>(usersQuery)
 
-  const passQuery = useMemo(() => (db ? query(collection(db, "passes"), orderBy("displayOrder", "asc")) : null), [db])
-  const { data: passes } = useCollection<any>(passQuery)
+  const passQuery = useMemo(() => (db ? collection(db, "passes") : null), [db])
+  const { data: rawPasses } = useCollection<any>(passQuery)
+
+  const passes = useMemo(() => {
+    if (!rawPasses) return []
+    return [...rawPasses].sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0))
+  }, [rawPasses])
 
   const filteredAspirants = useMemo(() => {
     if (!aspirants) return []

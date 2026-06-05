@@ -5,7 +5,7 @@ import { useMemo, useState, useEffect } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useCollection, useFirestore } from "@/firebase"
-import { collection, query, where, orderBy, limit, doc, updateDoc, serverTimestamp } from "firebase/firestore"
+import { collection, query, where, doc, updateDoc, serverTimestamp } from "firebase/firestore"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -39,7 +39,7 @@ import { Progress } from "@/components/ui/progress"
 
 /**
  * @fileOverview Final Production-Grade Student Success Hub.
- * Optimized with Auto-Expiry Check and Tier-Based HUD.
+ * Optimized: Client-side sorting for Results to bypass composite index requirements.
  */
 
 export default function StudentDashboard() {
@@ -65,12 +65,22 @@ export default function StudentDashboard() {
     }
   }, [profile, db, user]);
 
+  // Simplified query to bypass composite index requirement
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
-    return query(collection(db, "results"), where("userId", "==", user.uid), orderBy("timestamp", "desc"))
+    return query(collection(db, "results"), where("userId", "==", user.uid))
   }, [db, user])
 
-  const { data: results, loading: resultsLoading } = useCollection<any>(resultsQuery)
+  const { data: rawResults, loading: resultsLoading } = useCollection<any>(resultsQuery)
+
+  const results = useMemo(() => {
+    if (!rawResults) return []
+    return [...rawResults].sort((a: any, b: any) => {
+      const timeA = new Date(a.timestamp || 0).getTime()
+      const timeB = new Date(b.timestamp || 0).getTime()
+      return timeB - timeA
+    })
+  }, [rawResults])
 
   const stats = useMemo(() => {
     if (!results || results.length === 0) return { 
@@ -172,7 +182,7 @@ export default function StudentDashboard() {
                         </div>
                      </div>
                      <div className="flex-1 w-full space-y-6">
-                        <SubjectReadyNode label="Mental Ability" val={Math.min(100, stats.avgAccuracy + 10)} color="bg-blue-500" />
+                        <SubjectReadyNode label="Mental Ability" val={Math.min(100, stats.avgAccuracy + 10)} color="bg-blue-50" />
                         <SubjectReadyNode label="Quant Aptitude" val={Math.min(100, stats.avgAccuracy - 5)} color="bg-primary" />
                         <SubjectReadyNode label="Punjab GK" val={Math.min(100, stats.avgAccuracy + 15)} color="bg-emerald-500" />
                      </div>
