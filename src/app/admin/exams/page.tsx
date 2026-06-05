@@ -17,8 +17,8 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Authority Hub v13.5 - Hardened Government Asset Loader.
- * Features: Multi-Layer Referrer Suppression and Text-Rescue fallback.
+ * @fileOverview Authority Hub v14.0 - Master Registry Control.
+ * Features: Node Deletion, Asset Loader, and Referrer Suppression.
  */
 
 export default function ExamManagement() {
@@ -67,6 +67,17 @@ export default function ExamManagement() {
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: boardRef.path, operation: 'write' }));
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Permanently remove this authority from the registry? This will affect all linked mocks.")) return
+    const boardRef = doc(db!, "boards", id)
+    try {
+      await deleteDoc(boardRef)
+      toast({ title: "Registry Purged", description: "Authority node removed from cloud." })
+    } catch (serverError: any) {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: boardRef.path, operation: 'delete' }));
     }
   }
 
@@ -156,6 +167,9 @@ export default function ExamManagement() {
                       <div className="flex justify-end gap-2 opacity-30 group-hover:opacity-100 transition-all">
                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-slate-100" onClick={() => setEditingBoard(board)}>
                           <Edit className="h-5 w-5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-rose-500/10 hover:text-rose-500" onClick={() => handleDelete(board.id)}>
+                          <Trash2 className="h-5 w-5" />
                         </Button>
                       </div>
                     </TableCell>
