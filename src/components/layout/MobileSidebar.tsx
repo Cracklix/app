@@ -34,13 +34,12 @@ import {
 import { useState } from "react";
 
 /**
- * @fileOverview Compact Mobile Navigation Module.
- * Follows Adda247 style minimalist high-density layout.
- * Fixed: Explicitly forced 260px width to match container and eliminate right whitespace.
+ * @fileOverview Compact Mobile Navigation Module (Adda247/Testbook Style).
+ * Fixed: Strictly forced width to 230px to eliminate right-side whitespace.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
-  const { user, profile } = useUser();
+  const { profile } = useUser();
   const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -78,9 +77,9 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-white text-[#0F172A] overflow-hidden font-body w-[260px] max-w-[260px]">
-      {/* 1. COMPACT PROFILE HUB */}
-      <div className="px-4 pb-4 pt-[calc(env(safe-area-inset-top,24px)+12px)] bg-[#0B1528] shrink-0">
+    <div className="flex flex-col h-full bg-white text-[#0F172A] overflow-hidden font-body w-[230px] max-w-[230px]">
+      {/* 1. COMPACT PROFILE HUB - 40% Height Reduction */}
+      <div className="px-4 pb-4 pt-[calc(env(safe-area-inset-top,24px)+12px)] bg-[#0B1528] shrink-0 border-b border-white/5">
         <div className="flex items-center gap-3">
           <StudentAvatar 
             profile={profile} 
@@ -90,7 +89,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
             <h2 className="font-headline font-black text-[13px] text-white uppercase tracking-tight leading-tight truncate">
               {profile?.name || "Aspirant"}
             </h2>
-            <div className="mt-1 flex flex-wrap gap-1">
+            <div className="mt-1">
               <Badge className="bg-[#F97316] text-white border-none text-[7px] font-black uppercase px-2 py-0.5 rounded-sm">
                 {profile?.status?.replace('_', ' ') || "FREE"} PASS
               </Badge>
@@ -99,7 +98,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      {/* 2. FITTED NAVIGATION LIST */}
+      {/* 2. FITTED NAVIGATION LIST (230px Width) */}
       <div className="flex-1 overflow-y-auto no-scrollbar py-2 space-y-0.5">
         {primaryMenu.map((item) => (
           <MenuLink 
