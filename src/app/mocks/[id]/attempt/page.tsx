@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
@@ -27,7 +28,7 @@ import {
 
 /**
  * @fileOverview Final Production-Grade CBT Attempt Hub v4.0.
- * Optimized: Reduced sizes for high-density mobile-friendly experience.
+ * Updated: Hydrates questions with section identity from mock registry.
  */
 
 export default function MockAttemptPage() {
@@ -56,7 +57,21 @@ export default function MockAttemptPage() {
         const qSnaps = await Promise.all(
           (mockData.questionIds || []).map((id: string) => getDoc(doc(db, "questions", id)))
         );
-        const questions = qSnaps.map(s => s.exists() ? ({ ...s.data(), id: s.id }) : null).filter(Boolean) as any[];
+        
+        // Hydrate questions with section identity
+        let questions = qSnaps.map(s => s.exists() ? ({ ...s.data(), id: s.id }) : null).filter(Boolean) as any[];
+
+        if (mockData.sections && mockData.sections.length > 0) {
+           let currentIndex = 0;
+           mockData.sections.forEach((sec: any) => {
+              for (let i = 0; i < sec.count; i++) {
+                 if (questions[currentIndex]) {
+                    questions[currentIndex].sectionId = sec.name;
+                 }
+                 currentIndex++;
+              }
+           });
+        }
 
         if (questions.length === 0) throw new Error("This mock has no questions available.");
 

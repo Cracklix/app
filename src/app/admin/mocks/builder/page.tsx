@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -26,7 +27,9 @@ import {
   PlusCircle,
   XCircle,
   Gem,
-  Filter
+  Filter,
+  ListTree,
+  GripVertical
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, where, limit, getDocs } from "firebase/firestore"
@@ -74,10 +77,13 @@ function MockBuilderContent() {
     published: false,
     positiveMarks: 1,
     negativeMarks: 0.25,
-    questionIds: []
   })
 
-  const [selectedQuestions, setSelectedQuestions] = useState<any[]>([])
+  // Subject-Wise Section State
+  const [sections, setSections] = useState<any[]>([
+    { id: 'sec-1', name: 'General Knowledge', questions: [] }
+  ])
+  const [activeSectionId, setActiveSectionId] = useState('sec-1')
   const [bankSelection, setBankSelection] = useState<string[]>([])
 
   useEffect(() => {
@@ -95,34 +101,70 @@ function MockBuilderContent() {
     fetchBank()
   }, [db])
 
+  // Hydrate sections on edit
   useEffect(() => {
-    if (existingMock) {
+    if (existingMock && questionBank.length > 0) {
       setMockData(prev => ({ 
         ...prev, 
         ...existingMock,
         passId: existingMock.passId || "any"
       }));
-      if (existingMock.questionIds && questionBank.length > 0) {
-        const staged = questionBank.filter(q => existingMock.questionIds.includes(q.id))
-        setSelectedQuestions(staged)
+
+      if (existingMock.sections && existingMock.sections.length > 0) {
+        const hydratedSections = existingMock.sections.map((s: any, idx: number) => {
+          const qIds = existingMock.questionIds?.slice(
+            existingMock.sections.slice(0, idx).reduce((acc: number, curr: any) => acc + curr.count, 0),
+            existingMock.sections.slice(0, idx + 1).reduce((acc: number, curr: any) => acc + curr.count, 0)
+          ) || [];
+          
+          return {
+            id: `sec-${idx + 1}`,
+            name: s.name,
+            questions: questionBank.filter(q => qIds.includes(q.id))
+          };
+        });
+        setSections(hydratedSections);
+        if (hydratedSections[0]) setActiveSectionId(hydratedSections[0].id);
+      } else if (existingMock.questionIds) {
+        // Fallback for flat mocks
+        setSections([{
+          id: 'sec-1',
+          name: 'General',
+          questions: questionBank.filter(q => existingMock.questionIds.includes(q.id))
+        }]);
       }
     }
   }, [existingMock, questionBank])
 
   const filteredBank = useMemo(() => {
+    const allSelectedIds = sections.flatMap(s => s.questions.map(q => q.id));
     return questionBank.filter((q: any) => {
       const matchesSub = bankFilter.subjectId === "all" || q.subjectId === bankFilter.subjectId
-      const matchesSearch = !bankFilter.search || (q.questionEn || "").toLowerCase().includes(bankFilter.search.toLowerCase())
-      const notAlreadySelected = !selectedQuestions.find(sq => sq.id === q.id)
+      const matchesSearch = !bankFilter.search || (q.questionEn || q.englishQuestion || "").toLowerCase().includes(bankFilter.search.toLowerCase())
+      const notAlreadySelected = !allSelectedIds.includes(q.id)
       return matchesSub && matchesSearch && notAlreadySelected
     })
-  }, [questionBank, bankFilter, selectedQuestions])
+  }, [questionBank, bankFilter, sections])
+
+  const handleAddSection = () => {
+    const newId = `sec-${Date.now()}`;
+    setSections([...sections, { id: newId, name: `New Section ${sections.length + 1}`, questions: [] }]);
+    setActiveSectionId(newId);
+  }
+
+  const handleUpdateSectionName = (id: string, name: string) => {
+    setSections(sections.map(s => s.id === id ? { ...s, name } : s));
+  }
 
   const handleBulkLink = () => {
     const toAdd = questionBank.filter(q => bankSelection.includes(q.id))
-    setSelectedQuestions(prev => [...prev, ...toAdd])
+    setSections(sections.map(s => s.id === activeSectionId ? { ...s, questions: [...s.questions, ...toAdd] } : s));
     setBankSelection([])
-    toast({ title: "Nodes Linked", description: `${toAdd.length} questions linked.` })
+    toast({ title: "Nodes Linked", description: `${toAdd.length} questions linked to ${sections.find(s => s.id === activeSectionId)?.name}.` })
+  }
+
+  const removeQuestion = (sectionId: string, qId: string) => {
+    setSections(sections.map(s => s.id === sectionId ? { ...s, questions: s.questions.filter((q: any) => q.id !== qId) } : s));
   }
 
   const handlePublish = async () => {
@@ -131,15 +173,29 @@ function MockBuilderContent() {
       return
     }
 
+    const totalQuestions = sections.reduce((acc, s) => acc + s.questions.length, 0);
+    if (totalQuestions === 0) {
+      toast({ variant: "destructive", title: "Audit Blocked", description: "Empty mocks cannot be deployed." });
+      return;
+    }
+
     setIsPublishing(true)
     const finalId = mockId || `mock-${Date.now()}`
     const mockRef = doc(db!, "mocks", finalId)
     
+    // Structure metadata for CBT engine
+    const flatQuestionIds = sections.flatMap(s => s.questions.map(q => q.id));
+    const sectionMetadata = sections.map(s => ({
+      name: s.name,
+      count: s.questions.length
+    })).filter(s => s.count > 0);
+
     const payload = {
       ...mockData,
       id: finalId,
-      totalQuestions: selectedQuestions.length,
-      questionIds: selectedQuestions.map(q => q.id),
+      totalQuestions,
+      questionIds: flatQuestionIds,
+      sections: sectionMetadata,
       passId: mockData.passId === 'any' ? '' : mockData.passId,
       updatedAt: serverTimestamp(),
       createdAt: isEditing ? (existingMock?.createdAt || serverTimestamp()) : serverTimestamp(),
@@ -231,7 +287,7 @@ function MockBuilderContent() {
                     <Input type="number" step="0.05" value={mockData.negativeMarks} onChange={e => setMockData({...mockData, negativeMarks: parseFloat(e.target.value) || 0})} className="h-12 rounded-xl text-center" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px) font-black uppercase text-slate-500">Access Protocol</Label>
+                    <Label className="text-[10px] font-black uppercase text-slate-500">Access Protocol</Label>
                     <Select value={mockData.accessType} onValueChange={(v: AccessType) => setMockData({...mockData, accessType: v})}>
                       <SelectTrigger className="rounded-xl h-12 bg-slate-50/50"><SelectValue placeholder="Protocol" /></SelectTrigger>
                       <SelectContent>
@@ -274,7 +330,7 @@ function MockBuilderContent() {
                     </TabsTrigger>
                     <TabsTrigger value="assembly" className="font-black uppercase text-[11px] tracking-widest gap-3 h-12">
                        <Layers className="h-4 w-4" /> Active Assembly 
-                       <Badge className="bg-primary text-white border-none text-[8px] ml-1">{selectedQuestions.length}</Badge>
+                       <Badge className="bg-primary text-white border-none text-[8px] ml-1">{sections.reduce((acc, s) => acc + s.questions.length, 0)}</Badge>
                     </TabsTrigger>
                  </TabsList>
 
@@ -305,14 +361,28 @@ function MockBuilderContent() {
 
                     <div className="bg-[#0F172A] p-4 rounded-2xl mb-6 flex items-center justify-between text-white">
                        <div className="flex items-center gap-6 px-4">
-                          <Checkbox 
-                            checked={filteredBank.length > 0 && bankSelection.length === filteredBank.length} 
-                            onCheckedChange={(v) => {
-                               if (v) setBankSelection(filteredBank.map(q => q.id))
-                               else setBankSelection([])
-                            }}
-                          />
-                          <p className="font-black uppercase text-[10px]">Select Visible ({bankSelection.length})</p>
+                          <div className="flex flex-col gap-1">
+                             <Label className="text-[9px] font-black uppercase text-slate-400">Target Section</Label>
+                             <Select value={activeSectionId} onValueChange={setActiveSectionId}>
+                                <SelectTrigger className="h-9 w-48 bg-white/10 border-none text-white font-bold text-[10px] rounded-lg">
+                                   <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                   {sections.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                                </SelectContent>
+                             </Select>
+                          </div>
+                          <div className="h-8 w-px bg-white/10" />
+                          <div className="flex items-center gap-2">
+                             <Checkbox 
+                               checked={filteredBank.length > 0 && bankSelection.length === filteredBank.length} 
+                               onCheckedChange={(v) => {
+                                  if (v) setBankSelection(filteredBank.map(q => q.id))
+                                  else setBankSelection([])
+                               }}
+                             />
+                             <p className="font-black uppercase text-[10px]">Select All Visible ({bankSelection.length})</p>
+                          </div>
                        </div>
                        <div className="flex gap-3">
                          <Button disabled={bankSelection.length === 0} onClick={handleBulkLink} className="bg-emerald-600 hover:bg-emerald-700 h-10 px-8 rounded-xl text-[10px] uppercase font-black tracking-widest shadow-xl">
@@ -337,11 +407,13 @@ function MockBuilderContent() {
                                   }}
                                 />
                                 <div className="min-w-0 flex-1">
-                                   <p className="font-bold text-sm text-[#0F172A] truncate">{q.questionEn}</p>
+                                   <p className="font-bold text-sm text-[#0F172A] truncate">{q.questionEn || q.englishQuestion}</p>
                                    <Badge variant="outline" className="text-[8px] font-black uppercase mt-1 border-slate-100 text-slate-400">{q.subjectId}</Badge>
                                 </div>
                              </div>
-                             <Button size="sm" variant="ghost" className="text-primary font-black uppercase text-[9px] hover:bg-primary/10" onClick={() => setSelectedQuestions([...selectedQuestions, q])}>Link</Button>
+                             <Button size="sm" variant="ghost" className="text-primary font-black uppercase text-[9px] hover:bg-primary/10" onClick={() => {
+                                setSections(sections.map(s => s.id === activeSectionId ? { ...s, questions: [...s.questions, q] } : s));
+                             }}>Link to {sections.find(s => s.id === activeSectionId)?.name.split(' ')[0]}</Button>
                           </div>
                        ))}
                        
@@ -356,22 +428,55 @@ function MockBuilderContent() {
 
                  <TabsContent value="assembly" className="p-10 flex-1 flex flex-col m-0">
                     <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 mb-8 flex items-center justify-between">
-                       <p className="font-black uppercase text-[10px] text-[#0F172A]">Blueprint Assembly ({selectedQuestions.length} Nodes)</p>
-                       <Button variant="ghost" size="sm" className="text-rose-500 font-black uppercase text-[9px]" onClick={() => setSelectedQuestions([])}>
-                          <XCircle className="h-3 w-3 mr-2" /> Purge Selection
+                       <p className="font-black uppercase text-[10px] text-[#0F172A]">Blueprint Sections ({sections.length})</p>
+                       <Button variant="outline" size="sm" className="bg-white rounded-xl h-10 px-6 font-black uppercase text-[9px] text-[#0F172A] border-slate-200 gap-2" onClick={handleAddSection}>
+                          <Plus className="h-3 w-3" /> Add Subject Section
                        </Button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 space-y-2">
-                       {selectedQuestions.map((q, idx) => (
-                          <div key={`${q.id}-${idx}`} className="p-4 bg-white border border-slate-100 rounded-xl flex items-center justify-between group">
-                             <div className="flex items-center gap-4 min-w-0 flex-1">
-                                <span className="font-black text-[10px] text-slate-400 shrink-0">#{idx+1}</span>
-                                <p className="font-bold text-xs text-[#0F172A] truncate">{q.questionEn}</p>
+                    <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 space-y-10">
+                       {sections.map((section) => (
+                          <div key={section.id} className="space-y-4">
+                             <div className="flex items-center justify-between group">
+                                <div className="flex items-center gap-4 flex-1">
+                                   <GripVertical className="h-4 w-4 text-slate-300" />
+                                   <input 
+                                     value={section.name}
+                                     onChange={(e) => handleUpdateSectionName(section.id, e.target.value)}
+                                     className="bg-transparent border-none font-black uppercase text-sm text-primary outline-none w-full"
+                                   />
+                                </div>
+                                <div className="flex items-center gap-4">
+                                   <Badge className="bg-slate-100 text-slate-500 border-none font-black text-[8px]">{section.questions.length} Qs</Badge>
+                                   <Button 
+                                     size="icon" 
+                                     variant="ghost" 
+                                     className="h-8 w-8 text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all"
+                                     onClick={() => setSections(sections.filter(s => s.id !== section.id))}
+                                   >
+                                      <Trash2 className="h-4 w-4" />
+                                   </Button>
+                                </div>
                              </div>
-                             <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-300 hover:text-rose-500" onClick={() => setSelectedQuestions(selectedQuestions.filter((_, i) => i !== idx))}>
-                                <Trash2 className="h-4 w-4" />
-                             </Button>
+
+                             <div className="space-y-2 pl-8">
+                                {section.questions.map((q: any, qIdx: number) => (
+                                   <div key={`${q.id}-${qIdx}`} className="p-4 bg-white border border-slate-100 rounded-xl flex items-center justify-between group/q">
+                                      <div className="flex items-center gap-4 min-w-0 flex-1">
+                                         <span className="font-black text-[10px] text-slate-400 shrink-0">#{qIdx+1}</span>
+                                         <p className="font-bold text-xs text-[#0F172A] truncate">{q.questionEn || q.englishQuestion}</p>
+                                      </div>
+                                      <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-300 hover:text-rose-500" onClick={() => removeQuestion(section.id, q.id)}>
+                                         <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                   </div>
+                                ))}
+                                {section.questions.length === 0 && (
+                                   <div className="p-8 border-2 border-dashed border-slate-100 rounded-2xl text-center opacity-30 italic text-[10px] uppercase font-bold">
+                                      No questions linked to this section.
+                                   </div>
+                                )}
+                             </div>
                           </div>
                        ))}
                     </div>
