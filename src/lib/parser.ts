@@ -1,7 +1,10 @@
 /**
- * @fileOverview Institutional High-Fidelity Ingestion Engine v11.0.
- * Optimized for: "Question En / Question Pa" and "(A) Opt En / Opt Pa" format.
- * Fixes: Redundant numbering and clumpsy explanation parsing.
+ * @fileOverview Institutional High-Fidelity Ingestion Engine v12.0.
+ * Optimized for: 
+ * Line 1: Q1. English Question
+ * Line 2: ਪ੍ਰਸ਼ਨ 1. Punjabi Question
+ * Line 3-6: (A) Eng / Pun
+ * Line 7: Correct Answer: (A) Text / ਸਹੀ ਉੱਤਰ: ਪਾ * English Explanation: ...
  */
 
 import { Question } from "@/types";
@@ -14,7 +17,10 @@ export interface ParsedResults {
 
 const sanitizeText = (text: string = "") => {
   return text
-    .replace(/^\d+[\.\):\s-]*/, '') // Remove leading numbers like 1. or 24)
+    .replace(/^Q\d+[\.\):\s-]*/i, '')      // Remove Q1.
+    .replace(/^ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]*/, '') // Remove ਪ੍ਰਸ਼ਨ 1.
+    .replace(/^\d+[\.\):\s-]*/, '')        // Remove 1.
+    .replace(/^\(?[A-D]\)?[\.\):\s-]*/i, '') // Remove (A) or A.
     .replace(/^\*\*|\*\*$/g, '')
     .replace(/\*\*/g, '')
     .replace(/\s+/g, ' ')
@@ -25,7 +31,7 @@ export function parseBulkQuestions(
   rawText: string,
   metadata: any
 ): ParsedResults {
-  // Split by Question markers (Q1, Q2, Q24, etc.)
+  // Split by Question markers (Q1, Q2, etc.)
   const blocks = rawText.split(/(?=Q\d+[\.\):\s-])/g).filter(p => p.trim().length > 10);
   
   const parsed = blocks.map((block, index) => {
@@ -38,6 +44,7 @@ export function parseBulkQuestions(
         status: metadata.status || "PUBLISHED",
       };
     } catch (err: any) {
+      console.error("Parse error in block:", index, err);
       return null;
     }
   }).filter(Boolean) as Partial<Question>[];
@@ -47,62 +54,55 @@ export function parseBulkQuestions(
 }
 
 function parseStandardBlock(block: string, metadata: any): Partial<Question> {
-  // 1. Extract Question Statement (Everything before (A))
-  // Removing the Q1. marker from the start of the match
-  const qMatch = block.match(/Q\d+[\.\):\s-](.*?)(?=\s*\(A\))/s);
-  const qFullText = qMatch ? qMatch[1].trim() : "";
-  let questionEn = qFullText;
-  let questionPa = qFullText;
-
-  // Split by slash if present
-  if (qFullText.includes('/')) {
-    const parts = qFullText.split('/');
-    questionEn = sanitizeText(parts[0]);
-    questionPa = sanitizeText(parts[1] || parts[0]);
-  } else {
-    questionEn = sanitizeText(qFullText);
-    questionPa = "";
-  }
-
-  // 2. Extract Options (A, B, C, D)
+  const lines = block.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  
+  let questionEn = "";
+  let questionPa = "";
   const options: Record<string, { en: string; pa: string }> = {};
-  ['A', 'B', 'C', 'D'].forEach(label => {
-    const nextLabel = label === 'A' ? 'B' : label === 'B' ? 'C' : label === 'C' ? 'D' : 'Correct Answer';
-    const regex = new RegExp(`\\(${label}\\)(.*?)(?=\\s*\\(${nextLabel}\\)|\\s*${nextLabel}|$)`, 's');
-    const match = block.match(regex);
-    if (match) {
-      const optText = match[1].trim();
-      if (optText.includes('/')) {
-        const parts = optText.split('/');
-        options[label] = { en: sanitizeText(parts[0]), pa: sanitizeText(parts[1] || parts[0]) };
-      } else {
-        options[label] = { en: sanitizeText(optText), pa: "" };
+  let correctAnswer: 'A' | 'B' | 'C' | 'D' = 'A';
+  let explanationEn = "";
+  let explanationPa = "";
+
+  // 1. Identify Questions (Lines starting with Q and ਪ੍ਰਸ਼ਨ)
+  lines.forEach(line => {
+    if (line.match(/^Q\d+[\.\):\s-]/i)) {
+      questionEn = sanitizeText(line);
+    } else if (line.match(/^ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]/)) {
+      questionPa = sanitizeText(line);
+    } else if (line.match(/^\([A-D]\)/i)) {
+      // 2. Identify Options (Line: (A) Eng / Pun)
+      const labelMatch = line.match(/^\(([A-D])\)/i);
+      if (labelMatch) {
+        const label = labelMatch[1].toUpperCase();
+        const content = line.replace(/^\([A-D]\)/i, '').trim();
+        if (content.includes('/')) {
+          const parts = content.split('/');
+          options[label] = { en: sanitizeText(parts[0]), pa: sanitizeText(parts[1]) };
+        } else {
+          options[label] = { en: sanitizeText(content), pa: "" };
+        }
+      }
+    } else if (line.toLowerCase().includes('correct answer:')) {
+      // 3. Identify Answer & Explanation
+      // Format: Correct Answer: (B) West / ਸਹੀ ਉੱਤਰ: ਪੱਛਮ * English Explanation: ...
+      const ansMatch = line.match(/Correct Answer:\s*(?:\()?([A-D])(?:\))?/i);
+      if (ansMatch) correctAnswer = ansMatch[1].toUpperCase() as any;
+
+      if (line.includes('* English Explanation:')) {
+        const expParts = line.split('* English Explanation:');
+        explanationEn = sanitizeText(expParts[1]);
+      } else if (line.includes('Explanation:')) {
+        const expParts = line.split(/Explanation:/i);
+        explanationEn = sanitizeText(expParts[1]);
       }
     }
   });
 
-  // 3. Extract Correct Answer
-  const answerMatch = block.match(/(?:Correct Answer|ਸਹੀ ਉੱਤਰ|Answer|ਜਵਾਬ):?\s*(?:\()?\s*([A-D])\s*(?:\))?/i);
-  const correctAnswer = (answerMatch?.[1].toUpperCase() || "A") as 'A' | 'B' | 'C' | 'D';
-
-  // 4. Extract Explanations with Spacing Support
-  // Looking for markers or splitting by slash
-  const expBlockMatch = block.match(/(?:English Explanation|ਵਿਆਖਿਆ|Explanation):?\s*(.*)$/s);
-  const expFullText = expBlockMatch ? expBlockMatch[1].trim() : "";
-  
-  let explanationEn = "";
-  let explanationPa = "";
-
-  if (expFullText.includes('Punjabi Explanation:') || expFullText.includes('ਪੰਜਾਬੀ ਵਿਆਖਿਆ:')) {
-    const parts = expFullText.split(/Punjabi Explanation:|ਪੰਜਾਬੀ ਵਿਆਖਿਆ:/i);
-    explanationEn = sanitizeText(parts[0].replace(/English Explanation:/i, ''));
-    explanationPa = sanitizeText(parts[1]);
-  } else if (expFullText.includes('/')) {
-    const parts = expFullText.split('/');
-    explanationEn = sanitizeText(parts[0]);
-    explanationPa = sanitizeText(parts[1]);
-  } else {
-    explanationEn = sanitizeText(expFullText);
+  // Fallback: If no separate Punjabi question line, try splitting English line by slash
+  if (!questionPa && questionEn.includes('/')) {
+    const parts = questionEn.split('/');
+    questionEn = sanitizeText(parts[0]);
+    questionPa = sanitizeText(parts[1]);
   }
 
   return {
@@ -119,7 +119,7 @@ function parseStandardBlock(block: string, metadata: any): Partial<Question> {
     optionDEn: options['D']?.en || "Option D",
     optionDPa: options['D']?.pa || "",
     correctAnswer,
-    explanationEn: explanationEn || explanationPa,
-    explanationPa: explanationPa || explanationEn
+    explanationEn,
+    explanationPa: "" // Typically implied in the bilingual answer part or empty in user's image
   };
 }
