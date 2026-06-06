@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo, useCallback } from "react"
@@ -18,8 +19,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/co
 type LangMode = 'en' | 'pa' | 'bilingual'
 
 /**
- * @fileOverview Institutional High-Fidelity CBT Engine v14.0.
- * Permanent Fix: Removed double-rendering of options and hardened bilingual joining.
+ * @fileOverview Institutional High-Fidelity CBT Engine v15.0.
+ * Features: Zero-Scroll Optimized Layout, Sectional Palette, and Improved Terminology.
  */
 
 export default function MockAttemptPage() {
@@ -64,16 +65,22 @@ export default function MockAttemptPage() {
     init()
   }, [db, mock, toast])
 
+  const subjectMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    subjects?.forEach(s => { map[s.id] = s.name.toUpperCase() });
+    return map;
+  }, [subjects]);
+
   const contextInfo = useMemo(() => {
     const currentQ = questions[currentIdx];
     const examName = exams?.find(e => e.id === mock?.examId)?.name || mock?.title || "MOCK HUB";
-    const subjectName = subjects?.find(s => s.id === currentQ?.subjectId)?.name || "GENERAL KNOWLEDGE";
+    const subjectName = subjectMap[currentQ?.subjectId] || "GENERAL KNOWLEDGE";
     
     return {
       exam: examName.toUpperCase(),
-      section: subjectName.toUpperCase()
+      section: subjectName
     };
-  }, [currentIdx, questions, subjects, exams, mock])
+  }, [currentIdx, questions, exams, mock, subjectMap])
 
   const cleanText = (text: string = "") => {
     return text.replace(/^[A-D][\.\):\s-]*/i, '').replace(/\*\*/g, '').trim();
@@ -176,7 +183,7 @@ export default function MockAttemptPage() {
         )}
 
         <div className="flex-1 flex flex-col overflow-hidden bg-white">
-          <div className="px-6 py-1.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between shrink-0">
+          <div className="px-6 py-2 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between shrink-0">
              <div className="flex items-center gap-6">
                 <div className="text-left">
                    <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest leading-none">SECTION</p>
@@ -186,7 +193,7 @@ export default function MockAttemptPage() {
                 </div>
                 <div className="h-4 w-px bg-slate-200" />
                 <div className="text-left">
-                   <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest leading-none">NODE</p>
+                   <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest leading-none">QUESTION</p>
                    <p className="text-[10px] font-black text-black mt-0.5">{currentIdx + 1} / {questions.length}</p>
                 </div>
              </div>
@@ -198,31 +205,33 @@ export default function MockAttemptPage() {
                  </Button>
                </SheetTrigger>
                <SheetContent side="right" className="p-0 border-none w-[280px]">
-                  <div className="p-4 h-full overflow-y-auto bg-white pt-12">
+                  <div className="p-6 h-full overflow-y-auto bg-white pt-12">
                      <QuestionPalette 
-                        totalQuestions={questions.length} currentIndex={currentIdx} 
+                        questions={questions} 
+                        currentIndex={currentIdx} 
                         answeredIndices={Object.keys(answers).map(Number)} 
                         flaggedIndices={flagged} visitedIndices={visited}
                         onSelect={(idx) => { setCurrentIdx(idx); if (!visited.includes(idx)) setVisited(p => [...p, idx]); }} 
+                        subjectMap={subjectMap}
                       />
                   </div>
                </SheetContent>
              </Sheet>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
-             <div className="max-w-4xl mx-auto pb-10">
+          <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar">
+             <div className="max-w-4xl mx-auto pb-6">
                 <QuestionRenderer 
                    language={language}
                    question={q}
                    hideOptions={true}
                 />
                 
-                <div className="mt-8 space-y-3">
+                <div className="mt-6 space-y-2.5">
                    <RadioGroup 
                      value={answers[currentIdx]?.toString() || ""} 
                      onValueChange={(v) => setAnswers(prev => ({ ...prev, [currentIdx]: parseInt(v) }))} 
-                     className="grid grid-cols-1 gap-3"
+                     className="grid grid-cols-1 gap-2.5"
                    >
                      {['A', 'B', 'C', 'D'].map((k, i) => {
                        const isSelected = answers[currentIdx] === i;
@@ -230,16 +239,16 @@ export default function MockAttemptPage() {
 
                        return (
                          <div key={i} className={cn(
-                           "flex items-center space-x-4 p-4 md:p-6 border-2 rounded-2xl transition-all cursor-pointer shadow-sm",
+                           "flex items-center space-x-4 p-3 md:p-4 border-2 rounded-xl transition-all cursor-pointer shadow-sm",
                            isSelected ? 'border-primary bg-primary/5' : 'border-slate-100 bg-white hover:border-slate-200'
                          )} onClick={() => setAnswers(prev => ({ ...prev, [currentIdx]: i }))}>
                             <div className={cn(
-                               "h-8 w-8 md:h-10 md:w-10 rounded-full border-2 flex items-center justify-center font-black text-xs md:text-sm shrink-0",
+                               "h-8 w-8 rounded-full border-2 flex items-center justify-center font-black text-xs shrink-0",
                                isSelected ? "bg-primary border-primary text-white" : "border-slate-200 text-slate-300"
                             )}>
                                {k}
                             </div>
-                            <Label className="flex-1 cursor-pointer select-none text-base md:text-lg font-bold text-black text-left leading-snug">
+                            <Label className="flex-1 cursor-pointer select-none text-sm md:text-base font-bold text-black text-left leading-tight">
                                {displayVal || "N/A"}
                             </Label>
                          </div>
@@ -250,18 +259,18 @@ export default function MockAttemptPage() {
              </div>
           </div>
 
-          <footer className="h-14 md:h-20 border-t border-slate-100 bg-white px-4 md:px-12 flex items-center justify-between shrink-0 shadow-sm">
+          <footer className="h-14 md:h-16 border-t border-slate-100 bg-white px-4 md:px-12 flex items-center justify-between shrink-0 shadow-sm">
              <div className="flex gap-2 md:gap-4">
-                <Button variant="outline" className="h-10 md:h-13 px-6 text-[10px] font-black uppercase rounded-xl border-slate-200" onClick={() => currentIdx > 0 && setCurrentIdx(currentIdx - 1)} disabled={currentIdx === 0}>
+                <Button variant="outline" className="h-9 md:h-11 px-5 text-[10px] font-black uppercase rounded-lg border-slate-200" onClick={() => currentIdx > 0 && setCurrentIdx(currentIdx - 1)} disabled={currentIdx === 0}>
                    <ChevronLeft className="h-4 w-4 mr-2" /> Prev
                 </Button>
-                <Button variant="ghost" className="h-10 md:h-13 px-4 text-[10px] font-black uppercase text-slate-300 rounded-xl hidden sm:flex" onClick={() => setAnswers(p => { const n={...p}; delete n[currentIdx]; return n; })}>Clear</Button>
+                <Button variant="ghost" className="h-9 md:h-11 px-4 text-[10px] font-black uppercase text-slate-300 rounded-lg hidden sm:flex" onClick={() => setAnswers(p => { const n={...p}; delete n[currentIdx]; return n; })}>Clear</Button>
              </div>
              <div className="flex gap-2 md:gap-4">
-                <Button variant="outline" className={cn("h-10 md:h-13 px-6 text-[10px] font-black uppercase rounded-xl border-2 transition-all", flagged.includes(currentIdx) ? "bg-amber-500 border-amber-500 text-white" : "text-amber-500 border-amber-100 hover:bg-amber-50")} onClick={() => { if(!flagged.includes(currentIdx)) setFlagged(p=>[...p, currentIdx]); else setFlagged(p=>p.filter(idx=>idx!==currentIdx)); }}>
+                <Button variant="outline" className={cn("h-9 md:h-11 px-5 text-[10px] font-black uppercase rounded-lg border-2 transition-all", flagged.includes(currentIdx) ? "bg-amber-500 border-amber-500 text-white" : "text-amber-500 border-amber-100 hover:bg-amber-50")} onClick={() => { if(!flagged.includes(currentIdx)) setFlagged(p=>[...p, currentIdx]); else setFlagged(p=>p.filter(idx=>idx!==currentIdx)); }}>
                    {flagged.includes(currentIdx) ? 'FLAGGED' : 'REVIEW'}
                 </Button>
-                <Button className="bg-black hover:bg-slate-900 text-white h-10 md:h-13 px-8 md:px-12 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl transition-all active:scale-95" onClick={() => { if(currentIdx < questions.length-1) { const next = currentIdx + 1; setCurrentIdx(next); if(!visited.includes(next)) setVisited(v=>[...v, next])} }}>
+                <Button className="bg-black hover:bg-slate-900 text-white h-9 md:h-11 px-8 md:px-12 rounded-lg font-black uppercase text-[10px] tracking-widest shadow-xl transition-all active:scale-95" onClick={() => { if(currentIdx < questions.length-1) { const next = currentIdx + 1; setCurrentIdx(next); if(!visited.includes(next)) setVisited(v=>[...v, next])} }}>
                    Next <ChevronRight className="h-4 w-4 ml-2" />
                 </Button>
              </div>
@@ -271,10 +280,12 @@ export default function MockAttemptPage() {
         <aside className="w-[300px] border-l border-slate-50 bg-white hidden lg:flex flex-col shrink-0 overflow-hidden">
            <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
               <QuestionPalette 
-                totalQuestions={questions.length} currentIndex={currentIdx} 
+                questions={questions} 
+                currentIndex={currentIdx} 
                 answeredIndices={Object.keys(answers).map(Number)} 
                 flaggedIndices={flagged} visitedIndices={visited}
                 onSelect={(idx) => { setCurrentIdx(idx); if (!visited.includes(idx)) setVisited(p => [...p, idx]); }} 
+                subjectMap={subjectMap}
               />
            </div>
         </aside>
