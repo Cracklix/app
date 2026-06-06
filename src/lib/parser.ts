@@ -1,8 +1,8 @@
 
 /**
- * @fileOverview Institutional Regex Parser v10.0.
- * Strictly non-AI. Optimized for "Line 1 English / Line 2 Punjabi" format.
- * Preserves bilingual strings for options and answers as requested.
+ * @fileOverview Institutional Compact Parser v12.0.
+ * Optimized for "Line 1 EN / Line 2 PA" and "Inline Options (A)/(B)/(C)/(D)" format.
+ * Strictly non-AI. Deterministic mapping to High-Fidelity registry.
  */
 
 import { Question } from "@/types";
@@ -18,7 +18,7 @@ export function parseBulkQuestions(rawText: string, metadata: any): ParsedResult
   // Split by Q followed by a number
   const blocks = cleanRaw.split(/\n(?=Q\d+[\.\s])/g).filter(b => b.trim().length > 10);
   
-  // Fallback for first block
+  // Fallback for first block if it doesn't start with newline
   if (blocks.length === 1 && !blocks[0].trim().startsWith('Q')) {
     const initialSplit = cleanRaw.split(/(?=Q\d+[\.\s])/g).filter(b => b.trim().startsWith('Q'));
     return parseBlocks(initialSplit, metadata);
@@ -32,8 +32,8 @@ function parseBlocks(blocks: string[], metadata: any): ParsedResults {
   const errors: string[] = [];
 
   blocks.forEach((block, index) => {
-    const lines = block.split('\n').map(l => l.trim());
-    if (lines.length < 5) return;
+    const lines = block.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length < 3) return;
 
     try {
       const q: any = { 
@@ -52,54 +52,61 @@ function parseBlocks(blocks: string[], metadata: any): ParsedResults {
         explanationPa: ""
       };
 
-      // 1. Question EN
+      // 1. Extract Question Text
+      // English is the first line after Q#
       q.questionEn = lines[0].replace(/^Q\d+[\.\s]*/i, '').trim();
 
-      // 2. Question PA (Look for first line that isn't an option)
-      let currentLine = 1;
-      while (lines[currentLine] && !lines[currentLine].match(/^\([A-D]\)/i)) {
-        if (lines[currentLine].length > 0) {
-          q.questionPa = lines[currentLine].replace(/^(ਪ੍ਰਸ਼ਨ|ਪ੍ਰਸ਼ਨ)\s*\d+[\.\s]*/, '').trim();
-          break;
-        }
-        currentLine++;
+      // Punjabi is usually the second line
+      if (lines[1] && !lines[1].includes('(A)')) {
+        q.questionPa = lines[1].replace(/^(ਪ੍ਰਸ਼ਨ|ਪ੍ਰਸ਼ਨ)\s*\d+[\.\s]*/, '').trim();
       }
 
-      // 3. Options (A-D) - Capture full bilingual string
-      const optionA = lines.find(l => l.startsWith('(A)'));
-      const optionB = lines.find(l => l.startsWith('(B)'));
-      const optionC = lines.find(l => l.startsWith('(C)'));
-      const optionD = lines.find(l => l.startsWith('(D)'));
+      // 2. Extract Options (Handles both Multi-line and Inline compact format)
+      const fullBlockText = lines.join(' ');
+      
+      const extractOption = (key: string, nextKey: string | null) => {
+        const startMarker = `(${key})`;
+        const startIndex = fullBlockText.indexOf(startMarker);
+        if (startIndex === -1) return "";
+        
+        let endIndex = nextKey ? fullBlockText.indexOf(`(${nextKey})`, startIndex) : fullBlockText.indexOf('Correct Answer', startIndex);
+        if (endIndex === -1) endIndex = fullBlockText.length;
+        
+        return fullBlockText.substring(startIndex + startMarker.length, endIndex).replace(/[\/]/g, '').trim();
+      };
 
-      if (optionA) q.optionAEn = optionA.replace(/^\(A\)\s*/i, '').trim();
-      if (optionB) q.optionBEn = optionB.replace(/^\(B\)\s*/i, '').trim();
-      if (optionC) q.optionCEn = optionC.replace(/^\(C\)\s*/i, '').trim();
-      if (optionD) q.optionDEn = optionD.replace(/^\(D\)\s*/i, '').trim();
+      q.optionAEn = extractOption('A', 'B');
+      q.optionBEn = extractOption('B', 'C');
+      q.optionCEn = extractOption('C', 'D');
+      q.optionDEn = extractOption('D', null);
 
-      // 4. Correct Answer Line
+      // 3. Extract Correct Answer
       const ansLine = lines.find(l => l.toLowerCase().includes('correct answer') || l.toLowerCase().includes('ਸਹੀ ਉੱਤਰ'));
       if (ansLine) {
         const match = ansLine.match(/(?:correct answer|ans)[:\s]*\(?([A-D])\)?/i);
         if (match) q.correctAnswer = match[1].toUpperCase();
-        q.correctAnswerRaw = ansLine.trim(); // Store for exact rendering
+        q.correctAnswerRaw = ansLine.trim();
       }
 
-      // 5. Explanations (Vertical Flow Preservation)
-      const expEnStart = lines.findIndex(l => l.includes('• English Explanation:'));
-      const expPaStart = lines.findIndex(l => l.includes('• ਪੰਜਾਬੀ ਵਿਆਖਿਆ:'));
+      // 4. Extract Explanations (Vertical Flow Preservation)
+      const rawLines = block.split('\n').map(l => l.trim());
+      
+      const expEnStart = rawLines.findIndex(l => l.includes('• English Explanation:'));
+      const expPaStart = rawLines.findIndex(l => l.includes('• ਪੰਜਾਬੀ ਵਿਆਖਿਆ:'));
 
       if (expEnStart !== -1) {
-        const end = expPaStart !== -1 ? expPaStart : lines.length;
-        // Slice and preserve line breaks
-        q.explanationEn = lines.slice(expEnStart + 1, end).join('\n').trim();
+        const end = expPaStart !== -1 ? expPaStart : rawLines.length;
+        q.explanationEn = rawLines.slice(expEnStart).join('\n').replace('• English Explanation:', '').trim();
       }
 
       if (expPaStart !== -1) {
-        q.explanationPa = lines.slice(expPaStart + 1).join('\n').trim();
+        q.explanationPa = rawLines.slice(expPaStart).join('\n').replace('• ਪੰਜਾਬੀ ਵਿਆਖਿਆ:', '').trim();
       }
 
       if (q.questionEn && q.correctAnswer) {
         questions.push(q);
+      } else {
+        errors.push(`Block ${index + 1}: Missing Question or Answer.`);
       }
     } catch (err: any) {
       errors.push(`Block ${index + 1}: ${err.message}`);
