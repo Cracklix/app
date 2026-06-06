@@ -20,7 +20,9 @@ import {
   Edit,
   X,
   AlertTriangle,
-  Database
+  Database,
+  SearchCode,
+  CheckCircle2
 } from "lucide-react"
 import { useFirestore, useCollection } from "@/firebase"
 import { collection, doc, writeBatch, serverTimestamp } from "firebase/firestore"
@@ -29,10 +31,11 @@ import { parseBulkQuestions } from "@/lib/parser"
 import { Difficulty, Question, ContentStatus } from "@/types"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Deterministic Content Ingestion Hub v20.0.
- * Focus: High-Fidelity Validation and Accurate Multi-line Previews.
+ * @fileOverview Institutional Content Ingestion Hub v25.0.
+ * Deterministic Regex Parsing with Per-Block Debug Audit.
  */
 export default function BulkImportPage() {
   const router = useRouter()
@@ -50,7 +53,7 @@ export default function BulkImportPage() {
   })
 
   const [rawText, setRawText] = useState("")
-  const [parsedQuestions, setParsedQuestions] = useState<Partial<Question>[]>([])
+  const [parsedQuestions, setParsedQuestions] = useState<any[]>([])
   const [errors, setErrors] = useState<string[]>([])
   const [isSyncing, setIsSyncing] = useState(false)
   
@@ -60,7 +63,7 @@ export default function BulkImportPage() {
   const handleImport = () => {
     if (!rawText.trim()) return
     if (!metadata.boardId || !metadata.subjectId) {
-      toast({ variant: "destructive", title: "Configuration Required", description: "Select Board and Subject." })
+      toast({ variant: "destructive", title: "Audit Blocked", description: "Select Board and Subject hub first." })
       return
     }
 
@@ -69,9 +72,9 @@ export default function BulkImportPage() {
     setErrors(result.errors);
 
     if (result.questions.length > 0) {
-      toast({ title: "Import Successful", description: `${result.questions.length} blocks validated.` });
+      toast({ title: "Extraction Success", description: `${result.questions.length} blocks mapped to registry.` });
     } else {
-      toast({ variant: "destructive", title: "Audit Validation Failure", description: "Check input markers and markers." });
+      toast({ variant: "destructive", title: "Audit Rejected", description: "No valid blocks identified. Check debug report." });
     }
   }
 
@@ -86,12 +89,12 @@ export default function BulkImportPage() {
     updated[editingIndex] = editForm
     setParsedQuestions(updated)
     setEditingIndex(null)
-    toast({ title: "Entry Modified" })
+    toast({ title: "Entry Tweak Synced" })
   }
 
   const handleDelete = (idx: number) => {
     setParsedQuestions(parsedQuestions.filter((_, i) => i !== idx))
-    toast({ title: "Entry Purged" })
+    toast({ title: "Block Purged" })
   }
 
   const handleSaveToRegistry = async () => {
@@ -100,9 +103,11 @@ export default function BulkImportPage() {
     const batch = writeBatch(db)
 
     parsedQuestions.forEach(q => {
+      // Clean debug and metadata before storage
+      const { debug, ...cleanQ } = q;
       const qRef = doc(collection(db, "questions"))
       batch.set(qRef, {
-        ...q,
+        ...cleanQ,
         id: qRef.id,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -111,7 +116,7 @@ export default function BulkImportPage() {
 
     try {
       await batch.commit()
-      toast({ title: "Database Synchronized", description: `${parsedQuestions.length} assets committed to registry.` })
+      toast({ title: "Database Registry Synced", description: `${parsedQuestions.length} assets committed.` })
       router.push("/admin/questions")
     } catch (e) {
       toast({ variant: "destructive", title: "Cloud Rejection", description: "Permission denied." })
@@ -121,17 +126,17 @@ export default function BulkImportPage() {
   }
 
   return (
-    <div className="space-y-12 pb-32 text-left max-w-7xl mx-auto pt-8">
+    <div className="space-y-10 pb-32 text-left max-w-7xl mx-auto pt-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 px-4">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-xl border border-slate-200 h-12 w-12 bg-white"><ChevronLeft className="h-6 w-6" /></Button>
           <div>
-            <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase">Exam Content Paste</h1>
-            <p className="text-slate-500 font-medium">Deterministic High-Fidelity Ingestion Hub.</p>
+            <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Content Paste Hub</h1>
+            <p className="text-slate-500 font-medium">Deterministic Ingestion Management.</p>
           </div>
         </div>
         <Button onClick={handleSaveToRegistry} disabled={isSyncing || parsedQuestions.length === 0} className="bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[11px] tracking-widest rounded-xl h-14 px-12 gap-3 shadow-2xl">
-          {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4 text-primary fill-current" />} Commit {parsedQuestions.length} Questions
+          {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4 text-primary fill-current" />} Commit Staged Content
         </Button>
       </div>
 
@@ -139,22 +144,22 @@ export default function BulkImportPage() {
         <div className="lg:col-span-5 space-y-8">
           <Card className="border-none bg-white shadow-3xl rounded-[2.5rem] overflow-hidden">
             <div className="h-1.5 w-full bg-[#0F172A]" />
-            <CardHeader className="p-8 pb-4">
-              <CardTitle className="font-headline font-black text-xl uppercase flex items-center gap-3"><ClipboardList className="h-5 w-5 text-primary" /> Authority Context</CardTitle>
+            <CardHeader className="p-10 pb-4 text-left">
+              <CardTitle className="font-headline font-black text-xl uppercase flex items-center gap-3"><ClipboardList className="h-5 w-5 text-primary" /> Authority Registry</CardTitle>
             </CardHeader>
-            <CardContent className="p-8 pt-4 space-y-6">
+            <CardContent className="p-10 pt-4 space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Board</Label>
+                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Board Hub</Label>
                   <Select value={metadata.boardId} onValueChange={v => setMetadata({...metadata, boardId: v})}>
-                    <SelectTrigger className="rounded-xl h-11 bg-slate-50 border-none font-bold"><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none font-bold text-sm"><SelectValue placeholder="Select" /></SelectTrigger>
                     <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                   <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Subject</Label>
+                   <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Subject Hub</Label>
                    <Select value={metadata.subjectId} onValueChange={v => setMetadata({...metadata, subjectId: v})}>
-                      <SelectTrigger className="rounded-xl h-11 bg-slate-50 border-none font-bold"><SelectValue placeholder="Select" /></SelectTrigger>
+                      <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none font-bold text-sm"><SelectValue placeholder="Select" /></SelectTrigger>
                       <SelectContent>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                    </Select>
                 </div>
@@ -163,28 +168,33 @@ export default function BulkImportPage() {
           </Card>
           
           <div className="space-y-4">
-            <Textarea 
-              value={rawText}
-              onChange={e => setRawText(e.target.value)}
-              placeholder="Paste raw pattern here (Q1. En statement ...)"
-              className="min-h-[500px] rounded-[2.5rem] bg-white border-none p-10 text-sm font-bold shadow-4xl leading-relaxed resize-none focus-visible:ring-primary"
-            />
-            <Button onClick={handleImport} className="w-full h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.3em] text-[11px] rounded-[2rem] shadow-4xl gap-4">
-               Import Questions <ArrowRight className="h-6 w-6" />
+            <div className="relative group">
+               <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-[2.5rem] blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
+               <Textarea 
+                value={rawText}
+                onChange={e => setRawText(e.target.value)}
+                placeholder="Paste Q1. English... Punjabi... (A) / (B) / (C) / (D)... Correct Answer... English Explanation... Punjabi Explanation..."
+                className="min-h-[550px] rounded-[2.5rem] bg-white border-none p-12 text-sm font-bold shadow-4xl leading-relaxed resize-none focus-visible:ring-primary relative z-10"
+              />
+            </div>
+            <Button onClick={handleImport} className="w-full h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.3em] text-[11px] rounded-[2rem] shadow-4xl gap-4 group">
+               Import Questions <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
 
           {errors.length > 0 && (
-             <Card className="border-rose-100 bg-rose-50/50 p-6 rounded-2xl">
-                <div className="flex items-center gap-3 text-rose-600 mb-4">
-                   <AlertTriangle className="h-5 w-5" />
-                   <h4 className="font-black uppercase text-xs">Validation Errors ({errors.length})</h4>
+             <Card className="border-rose-100 bg-rose-50/50 p-8 rounded-[2rem] animate-in slide-in-from-top-4">
+                <div className="flex items-center gap-3 text-rose-600 mb-6">
+                   <AlertTriangle className="h-6 w-6" />
+                   <h4 className="font-black uppercase text-sm tracking-tight">Audit Failures ({errors.length})</h4>
                 </div>
-                <ul className="space-y-2">
+                <div className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
                    {errors.map((err, i) => (
-                      <li key={i} className="text-[10px] font-bold text-rose-500 leading-tight">• {err}</li>
+                      <div key={i} className="p-3 bg-white/50 border border-rose-100 rounded-xl text-[10px] font-bold text-rose-500 leading-tight">
+                         {err}
+                      </div>
                    ))}
-                </ul>
+                </div>
              </Card>
           )}
         </div>
@@ -194,90 +204,120 @@ export default function BulkImportPage() {
              <div className="space-y-12">
                 <div className="flex items-center justify-between px-2">
                    <h3 className="font-headline font-black text-2xl uppercase flex items-center gap-4 text-[#0F172A]">
-                      <Database className="h-6 w-6 text-primary" /> Staged Content
+                      <Database className="h-6 w-6 text-primary" /> Staged Hub
                    </h3>
-                   <Badge className="bg-emerald-50 text-emerald-600 border-none font-black px-4">{parsedQuestions.length} Blocks Verified</Badge>
+                   <Badge className="bg-emerald-50 text-emerald-600 border-none font-black px-6 py-2 rounded-xl text-[10px] tracking-widest uppercase">
+                      {parsedQuestions.length} Blocks Verified
+                   </Badge>
                 </div>
                 {parsedQuestions.map((q, idx) => (
-                  <Card key={idx} className="border-none shadow-3xl rounded-[3rem] bg-white p-12 text-left group overflow-visible h-auto min-h-0">
-                     <div className="flex justify-between items-center mb-10 border-b border-slate-50 pb-6">
-                        <Badge className="bg-[#0F172A] text-white border-none text-[10px] font-black px-6 py-2 rounded-xl uppercase tracking-widest">Question {idx + 1}</Badge>
-                        <div className="flex gap-2">
-                           <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-blue-500 bg-blue-50" onClick={() => handleOpenEdit(idx)}><Edit className="h-5 w-5" /></Button>
-                           <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl text-rose-500 bg-rose-50" onClick={() => handleDelete(idx)}><Trash2 className="h-5 w-5" /></Button>
-                        </div>
-                     </div>
-                     <QuestionRenderer question={q} language="bilingual" showSolution={true} />
-                  </Card>
+                  <div key={idx} className="relative group">
+                    <Card className="border-none shadow-3xl rounded-[3rem] bg-white p-12 text-left group overflow-visible h-auto min-h-0 border border-slate-50 transition-all hover:border-primary/20">
+                       <div className="flex justify-between items-start mb-10 border-b border-slate-50 pb-8">
+                          <div className="space-y-2">
+                             <Badge className="bg-[#0F172A] text-white border-none text-[10px] font-black px-6 py-2 rounded-xl uppercase tracking-widest">Question {idx + 1}</Badge>
+                             <div className="flex flex-wrap gap-2 pt-2">
+                                <DebugIndicator label="EN" active={q.debug.QuestionEnFound === 'YES'} />
+                                <DebugIndicator label="PA" active={q.debug.QuestionPaFound === 'YES'} />
+                                <DebugIndicator label="OPTIONS" active={q.debug.OptionAFound === 'YES' && q.debug.OptionDFound === 'YES'} />
+                                <DebugIndicator label="KEY" active={q.debug.CorrectAnswerFound === 'YES'} />
+                                <DebugIndicator label="LOGIC" active={q.debug.ExplanationEnFound === 'YES' && q.debug.ExplanationPaFound === 'YES'} />
+                             </div>
+                          </div>
+                          <div className="flex gap-3">
+                             <Button variant="ghost" size="icon" className="h-14 w-14 rounded-2xl text-blue-500 bg-blue-50 shadow-sm hover:scale-110 transition-transform" onClick={() => handleOpenEdit(idx)}><Edit className="h-6 w-6" /></Button>
+                             <Button variant="ghost" size="icon" className="h-14 w-14 rounded-2xl text-rose-500 bg-rose-50 shadow-sm hover:scale-110 transition-transform" onClick={() => handleDelete(idx)}><Trash2 className="h-6 w-6" /></Button>
+                          </div>
+                       </div>
+                       <QuestionRenderer question={q} language="bilingual" showSolution={true} />
+                    </Card>
+                  </div>
                 ))}
              </div>
            ) : (
              <div className="h-full flex flex-col items-center justify-center text-slate-300 opacity-20 pt-40">
-                <FileText className="h-32 w-32 mb-8" />
-                <p className="font-headline font-black uppercase text-xl">Awaiting Content Hub</p>
+                <FileText className="h-40 w-40 mb-10" />
+                <p className="font-headline font-black uppercase text-2xl tracking-[0.2em]">Awaiting Content Registry</p>
              </div>
            )}
         </div>
       </div>
 
       <Dialog open={editingIndex !== null} onOpenChange={open => !open && setEditingIndex(null)}>
-         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] bg-white border-none shadow-4xl p-0 text-left">
-            <div className="h-2 w-full bg-[#0F172A] sticky top-0 z-20" />
-            <DialogHeader className="p-8 pb-0 flex flex-row items-center justify-between">
-               <DialogTitle className="text-2xl font-black font-headline uppercase text-[#0F172A]">Modify Entry</DialogTitle>
-               <Button variant="ghost" size="icon" onClick={() => setEditingIndex(null)}><X className="h-6 w-6" /></Button>
+         <DialogContent className="sm:max-w-4xl max-h-[95vh] overflow-y-auto rounded-[3rem] bg-white border-none shadow-4xl p-0 text-left flex flex-col">
+            <div className="h-2 w-full bg-[#0F172A] shrink-0" />
+            <DialogHeader className="p-10 pb-6 flex flex-row items-center justify-between shrink-0">
+               <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600"><SearchCode className="h-7 w-7" /></div>
+                  <DialogTitle className="text-3xl font-black font-headline uppercase text-[#0F172A]">Modify Audit Node</DialogTitle>
+               </div>
+               <Button variant="ghost" size="icon" onClick={() => setEditingIndex(null)} className="rounded-xl h-12 w-12"><X className="h-6 w-6 text-slate-400" /></Button>
             </DialogHeader>
-            <div className="p-8 space-y-8">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-2">
-                     <Label className="text-[10px] font-black uppercase text-slate-500">English Question</Label>
-                     <Textarea value={editForm?.questionEn || ""} onChange={e => setEditForm({...editForm, questionEn: e.target.value})} className="h-32 rounded-xl bg-slate-50 font-bold" />
+            <div className="px-10 pb-10 space-y-10 overflow-y-auto custom-scrollbar flex-1">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  <div className="space-y-3">
+                     <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">English Statement</Label>
+                     <Textarea value={editForm?.questionEn || ""} onChange={e => setEditForm({...editForm, questionEn: e.target.value})} className="h-36 rounded-2xl bg-slate-50 border-none font-bold text-lg p-6 shadow-inner" />
                   </div>
-                  <div className="space-y-2">
-                     <Label className="text-[10px] font-black uppercase text-slate-500">Punjabi Question</Label>
-                     <Textarea value={editForm?.questionPa || ""} onChange={e => setEditForm({...editForm, questionPa: e.target.value})} className="h-32 rounded-xl bg-slate-50 font-bold" />
+                  <div className="space-y-3">
+                     <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">Punjabi Statement</Label>
+                     <Textarea value={editForm?.questionPa || ""} onChange={e => setEditForm({...editForm, questionPa: e.target.value})} className="h-36 rounded-2xl bg-slate-50 border-none font-bold text-lg p-6 shadow-inner" />
                   </div>
                </div>
 
-               <div className="grid grid-cols-2 gap-6">
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-50">
                   {['A','B','C','D'].map(opt => (
-                    <div key={opt} className="space-y-2">
-                       <Label className="text-[10px] font-black uppercase text-slate-500">Option {opt}</Label>
-                       <Input value={editForm?.[`option${opt}En`] || ""} onChange={e => setEditForm({...editForm, [`option${opt}En`]: e.target.value})} className="h-12 rounded-xl bg-slate-50 font-bold" />
+                    <div key={opt} className="space-y-3">
+                       <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Option {opt} Value</Label>
+                       <Input value={editForm?.[`option${opt}En`] || ""} onChange={e => setEditForm({...editForm, [`option${opt}En`]: e.target.value})} className="h-14 rounded-xl bg-slate-50 border-none font-black px-6 shadow-inner text-[#0F172A]" />
                     </div>
                   ))}
                </div>
 
-               <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-500">Correct Answer Key</Label>
+               <div className="space-y-3 pt-4 border-t border-slate-50">
+                  <Label className="text-[10px] font-black uppercase text-emerald-600 tracking-widest ml-1">Correct Logic Key</Label>
                   <Select value={editForm?.correctAnswer} onValueChange={v => setEditForm({...editForm, correctAnswer: v})}>
-                     <SelectTrigger className="h-12 rounded-xl bg-emerald-50 text-emerald-700 font-black"><SelectValue /></SelectTrigger>
+                     <SelectTrigger className="h-14 rounded-xl bg-emerald-50 border-emerald-100 text-emerald-700 font-black px-6 shadow-sm"><SelectValue /></SelectTrigger>
                      <SelectContent>
-                        <SelectItem value="A">Option A</SelectItem>
-                        <SelectItem value="B">Option B</SelectItem>
-                        <SelectItem value="C">Option C</SelectItem>
-                        <SelectItem value="D">Option D</SelectItem>
+                        <SelectItem value="A">OPTION A</SelectItem>
+                        <SelectItem value="B">OPTION B</SelectItem>
+                        <SelectItem value="C">OPTION C</SelectItem>
+                        <SelectItem value="D">OPTION D</SelectItem>
                      </SelectContent>
                   </Select>
                </div>
 
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-2">
-                     <Label className="text-[10px] font-black uppercase text-slate-500">English Explanation</Label>
-                     <Textarea value={editForm?.explanationEn || ""} onChange={e => setEditForm({...editForm, explanationEn: e.target.value})} className="h-48 rounded-xl bg-slate-50 font-medium" />
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-4 border-t border-slate-50">
+                  <div className="space-y-3">
+                     <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">English Logic Hub</Label>
+                     <Textarea value={editForm?.explanationEn || ""} onChange={e => setEditForm({...editForm, explanationEn: e.target.value})} className="h-64 rounded-2xl bg-slate-50 border-none font-medium p-8 leading-relaxed shadow-inner" />
                   </div>
-                  <div className="space-y-2">
-                     <Label className="text-[10px] font-black uppercase text-slate-500">Punjabi Explanation</Label>
-                     <Textarea value={editForm?.explanationPa || ""} onChange={e => setEditForm({...editForm, explanationPa: e.target.value})} className="h-48 rounded-xl bg-slate-50 font-medium" />
+                  <div className="space-y-3">
+                     <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">Punjabi Logic Hub</Label>
+                     <Textarea value={editForm?.explanationPa || ""} onChange={e => setEditForm({...editForm, explanationPa: e.target.value})} className="h-64 rounded-2xl bg-slate-50 border-none font-medium p-8 leading-relaxed shadow-inner" />
                   </div>
                </div>
             </div>
-            <DialogFooter className="p-8 bg-slate-50 flex gap-4">
-               <Button variant="ghost" onClick={() => setEditingIndex(null)} className="h-14 px-8 font-black uppercase text-[10px]">Discard Tweak</Button>
-               <Button onClick={handleSaveEdit} className="bg-[#0F172A] hover:bg-black text-white h-14 px-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 shadow-xl">Apply Modification</Button>
+            <DialogFooter className="p-10 pt-6 bg-slate-50 flex gap-6 shrink-0">
+               <Button variant="ghost" onClick={() => setEditingIndex(null)} className="h-16 px-10 font-black uppercase text-[11px] text-slate-400 tracking-widest">Discard Audit</Button>
+               <Button onClick={handleSaveEdit} className="bg-[#0F172A] hover:bg-black text-white h-16 px-16 rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] flex-1 shadow-2xl transition-all active:scale-95">
+                  <CheckCircle2 className="h-5 w-5 mr-3" /> Apply Modifications
+               </Button>
             </DialogFooter>
          </DialogContent>
       </Dialog>
     </div>
   )
+}
+
+function DebugIndicator({ label, active }: { label: string, active: boolean }) {
+   return (
+      <div className={cn(
+         "px-2 py-0.5 rounded text-[7px] font-black uppercase tracking-tighter flex items-center gap-1 border",
+         active ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-rose-50 text-rose-600 border-rose-100"
+      )}>
+         <div className={cn("h-1 w-1 rounded-full", active ? "bg-emerald-500" : "bg-rose-500")} />
+         {label}
+      </div>
+   )
 }

@@ -1,58 +1,60 @@
 /**
- * @fileOverview Institutional High-Fidelity Regex Parser v25.0.
- * Strictly enforces mandatory extraction of Bilingual Questions, Combined Options, 
- * Correct Answer Codes, and Multi-line Explanations.
+ * @fileOverview Institutional High-Fidelity Regex Parser v28.0.
+ * Deterministic extraction with robust boundary detection and detailed validation.
  */
 
 import { Question } from "@/types";
 
 export interface ParsedResults {
-  questions: Partial<Question>[];
+  questions: any[];
   errors: string[];
 }
 
 export function parseBulkQuestions(rawText: string, metadata: any): ParsedResults {
-  const cleanRaw = "\n" + rawText.replace(/\r\n/g, '\n').trim() + "\n";
+  // Normalize line endings and add padding for regex splitting
+  const text = "\n" + rawText.replace(/\r\n/g, '\n').trim() + "\n";
   
-  // Split by Q followed by a number (e.g. Q1., Q24.)
-  const blocks = cleanRaw.split(/\n(?=Q\d+[\.\s])/g).filter(b => b.trim().length > 10);
+  // Split blocks using Q1. or Question 1 etc. (Case Insensitive)
+  const blocks = text.split(/\n(?=(?:Q|Question)\s*\d+[\.\s])/i).filter(b => b.trim().length > 10);
   
-  const results: Partial<Question>[] = [];
+  const results: any[] = [];
   const errors: string[] = [];
 
   blocks.forEach((block, index) => {
     try {
       const fullText = block.trim();
-      const lines = fullText.split('\n').map(l => l.trim());
+      const lines = fullText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       
       const q: any = { 
         ...metadata,
         id: `q-node-${Date.now()}-${index}`,
         status: metadata.status || "PUBLISHED",
         isStandalone: true,
-        questionEn: "",
-        questionPa: "",
-        optionAEn: "",
-        optionBEn: "",
-        optionCEn: "",
-        optionDEn: "",
-        correctAnswer: "",
-        explanationEn: "",
-        explanationPa: ""
+        debug: {}
       };
 
-      // 1. Extract Question Lines (Lines 1 and 2)
-      q.questionEn = lines[0].replace(/^Q\d+[\.\s]*/i, '').trim();
-      if (lines[1] && !lines[1].startsWith('(')) {
-        q.questionPa = lines[1].replace(/^(ਪ੍ਰਸ਼ਨ|ਪ੍ਰਸ਼ਨ)\s*\d+[\.\s]*/, '').trim();
+      // 1. Identify Option A line to find Question parts
+      const optionAIndex = lines.findIndex(l => /^\(A\)/i.test(l));
+      
+      if (optionAIndex !== -1) {
+        // Line 0 is the EN Question Statement
+        q.questionEn = lines[0].replace(/^(?:Q|Question)\s*\d+[\.\s]*/i, '').trim();
+        // Lines between index 1 and Option A are PA Question Statement
+        q.questionPa = lines.slice(1, optionAIndex).join('\n').trim();
       }
 
-      // 2. Extract Options (Combined EN/PA strings)
+      q.debug.QuestionEnFound = q.questionEn ? "YES" : "NO";
+      q.debug.QuestionPaFound = q.questionPa ? "YES" : "NO";
+
+      // 2. Extract Options (A-D) - Support both multiline and inline (A) / (B)
       const extractOptionValue = (letter: string) => {
-        // Regex looks for (A) followed by text until the next option marker or newline
-        const regex = new RegExp(`\\(${letter}\\)\\s*([^\\n\\(]+)`, 'i');
-        const match = fullText.match(regex);
-        return match ? match[1].trim() : "";
+        const regex = new RegExp(`\\(${letter}\\)\\s*(.*)`, 'i');
+        const line = lines.find(l => regex.test(l));
+        if (line) {
+          const match = line.match(regex);
+          return match ? match[1].trim() : "";
+        }
+        return "";
       };
 
       q.optionAEn = extractOptionValue('A');
@@ -60,41 +62,59 @@ export function parseBulkQuestions(rawText: string, metadata: any): ParsedResult
       q.optionCEn = extractOptionValue('C');
       q.optionDEn = extractOptionValue('D');
 
-      // 3. Extract Correct Answer Code (Store only A, B, C, or D)
-      const ansMatch = fullText.match(/Correct Answer[:\s]*\(?([A-D])\)?/i);
+      q.debug.OptionAFound = q.optionAEn ? "YES" : "NO";
+      q.debug.OptionBFound = q.optionBEn ? "YES" : "NO";
+      q.debug.OptionCFound = q.optionCEn ? "YES" : "NO";
+      q.debug.OptionDFound = q.optionDEn ? "YES" : "NO";
+
+      // 3. Correct Answer Extraction (A-D)
+      // Marker Variations: Correct Answer, Answer, Answer Key, Correct Option
+      const ansMatch = fullText.match(/(?:Correct Answer|Answer|Answer Key|Correct Option)[:\s]*\(?([A-D])\)?/i);
       if (ansMatch) q.correctAnswer = ansMatch[1].toUpperCase();
 
-      // 4. Extract Explanations (Vertical Block Preservation)
-      const enMarker = "• English Explanation:";
-      const paMarker = "• ਪੰਜਾਬੀ ਵਿਆਖਿਆ:";
+      q.debug.CorrectAnswerFound = q.correctAnswer ? "YES" : "NO";
 
-      const enIndex = fullText.indexOf(enMarker);
-      const paIndex = fullText.indexOf(paMarker);
+      // 4. Explanation Extraction (EN / PA)
+      // Supports variations like English Logic, English Rationale, etc.
+      const enMarkerRegex = /(?:•?\s*English\s+(?:Explanation|Logic|Rationale))/i;
+      const paMarkerRegex = /(?:•?\s*(?:ਪੰਜਾਬੀ ਵਿਆਖਿਆ|Punjabi\s+(?:Explanation|Logic|Rationale)))/i;
 
-      if (enIndex !== -1 && paIndex !== -1) {
-        q.explanationEn = fullText.substring(enIndex + enMarker.length, paIndex).trim();
-        q.explanationPa = fullText.substring(paIndex + paMarker.length).trim();
+      const enMatch = fullText.match(enMarkerRegex);
+      const paMatch = fullText.match(paMarkerRegex);
+
+      if (enMatch && paMatch) {
+        const enStartIndex = fullText.indexOf(enMatch[0]) + enMatch[0].length;
+        const paStartIndex = fullText.indexOf(paMatch[0]);
+        
+        q.explanationEn = fullText.substring(enStartIndex, paStartIndex).trim();
+        
+        const finalPaStartIndex = paStartIndex + paMatch[0].length;
+        // From PA marker until the end of the block
+        q.explanationPa = fullText.substring(finalPaStartIndex).trim();
       }
 
-      // 5. Institutional Validation Rule
-      const isValid = 
-        q.questionEn && 
-        q.questionPa && 
-        q.optionAEn && 
-        q.optionBEn && 
-        q.optionCEn && 
-        q.optionDEn && 
-        q.correctAnswer && 
-        q.explanationEn && 
-        q.explanationPa;
+      q.debug.ExplanationEnFound = q.explanationEn ? "YES" : "NO";
+      q.debug.ExplanationPaFound = q.explanationPa ? "YES" : "NO";
 
-      if (isValid) {
+      // 5. Institutional Validation Protocol
+      const missingFields = [];
+      if (!q.questionEn) missingFields.push("English Question");
+      if (!q.questionPa) missingFields.push("Punjabi Question");
+      if (!q.optionAEn) missingFields.push("Option A");
+      if (!q.optionBEn) missingFields.push("Option B");
+      if (!q.optionCEn) missingFields.push("Option C");
+      if (!q.optionDEn) missingFields.push("Option D");
+      if (!q.correctAnswer) missingFields.push("Correct Answer");
+      if (!q.explanationEn) missingFields.push("English Explanation");
+      if (!q.explanationPa) missingFields.push("Punjabi Explanation");
+
+      if (missingFields.length === 0) {
         results.push(q);
       } else {
-        errors.push(`Block ${index + 1}: Missing mandatory fields. Check Q, PA statement, Options A-D, Answer Key, and both Explanation markers.`);
+        errors.push(`Block ${index + 1} Rejection: Missing ${missingFields.join(', ')}`);
       }
     } catch (err: any) {
-      errors.push(`Block ${index + 1}: Parsing rejection - ${err.message}`);
+      errors.push(`Block ${index + 1} Logic Error: ${err.message}`);
     }
   });
 
