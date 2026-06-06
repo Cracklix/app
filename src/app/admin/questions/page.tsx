@@ -26,8 +26,8 @@ import {
 } from "@/components/ui/tooltip"
 
 /**
- * @fileOverview Institutional Asset Ledger (Global Bank) v8.6.
- * Hardened: Enforced strict validation on db instance to prevent runtime query errors.
+ * @fileOverview Institutional Asset Ledger (Global Bank) v8.8.
+ * Hardened: Fixed runtime errors by ensuring Firestore instance check on all calls.
  */
 
 export default function QuestionBank() {
