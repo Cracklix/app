@@ -30,7 +30,7 @@ import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/e
 
 /**
  * @fileOverview Institutional Integrity & Cleanup Dashboard.
- * Features: Dummy Content Scanner, Duplicate Detection, and Review Queue.
+ * Hardened: Verified Firestore instance checks for query/collection calls.
  */
 
 export default function QADashboard() {
@@ -62,8 +62,8 @@ export default function QADashboard() {
 
     const brokenQuestions = questions.filter((q: any) => 
       !q.correctAnswer || 
-      !q.questionEn || 
-      dummyKeywords.some(kw => q.questionEn?.toUpperCase().includes(kw))
+      (!q.questionEn && !q.englishQuestion) || 
+      (q.questionEn || q.englishQuestion || "").toUpperCase().includes("DUMMY")
     )
 
     return {

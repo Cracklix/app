@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo, useState, useEffect, useCallback } from "react"
@@ -25,10 +26,8 @@ import {
 } from "@/components/ui/tooltip"
 
 /**
- * @fileOverview Institutional Asset Ledger (Global Bank) v7.7.
- * Optimized: Removed server-side orderBy to bypass mandatory Firestore indexing.
- * Handles massive scale via client-side processing for active viewports.
- * Fixed: Filter hardened to show all 250+ ICT nodes.
+ * @fileOverview Institutional Asset Ledger (Global Bank) v7.8.
+ * Hardened: Enforced strict Firestore instance validation for all collection/query nodes.
  */
 
 export default function QuestionBank() {
@@ -50,7 +49,6 @@ export default function QuestionBank() {
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
 
-  // Fetch Logic - Simplified to bypass indexing requirements and show all 250+ questions
   const fetchQuestions = useCallback(async (isNext = false) => {
     if (!db) return
     setLoading(true)
@@ -58,7 +56,6 @@ export default function QuestionBank() {
     try {
       let constraints: any[] = [limit(100)]
       
-      // Strict Terminology: "upcoming exams" patterns
       if (examFilter !== "all") constraints.push(where("examId", "==", examFilter))
       else if (boardFilter !== "all") constraints.push(where("boardId", "==", boardFilter))
       
@@ -66,7 +63,8 @@ export default function QuestionBank() {
         constraints.push(startAfter(lastDoc))
       }
 
-      const q = query(collection(db, "questions"), ...constraints)
+      const questionsCol = collection(db, "questions");
+      const q = query(questionsCol, ...constraints)
       const snap = await getDocs(q)
       
       const newQs = snap.docs.map(d => ({ ...d.data(), id: d.id }))
@@ -88,7 +86,7 @@ export default function QuestionBank() {
   }, [db, boardFilter, examFilter, lastDoc, toast])
 
   useEffect(() => {
-    fetchQuestions()
+    if (db) fetchQuestions()
   }, [boardFilter, examFilter, db, fetchQuestions])
 
   const usageMap = useMemo(() => {
@@ -107,7 +105,7 @@ export default function QuestionBank() {
     if (!questions) return []
     return questions.filter(q => {
         const term = searchTerm.toLowerCase();
-        const matchesSearch = (q.questionEn || q.titleEn || "").toLowerCase().includes(term) || 
+        const matchesSearch = (q.questionEn || q.titleEn || q.englishQuestion || "").toLowerCase().includes(term) || 
                              (q.displayId || "").toLowerCase().includes(term) ||
                              (q.id || "").toLowerCase().includes(term);
         const matchesSub = subjectFilter === "all" || q.subjectId === subjectFilter
@@ -153,12 +151,13 @@ export default function QuestionBank() {
   }
 
   const handleDeleteSingle = (id: string) => {
+    if (!db) return;
     const usage = usageMap[id] || [];
     if (usage.length > 0) {
       if (!confirm(`WARNING: This question is used in ${usage.length} mocks. Proceed?`)) return;
     } else if (!confirm("Permanently purge this asset?")) return;
     
-    const qRef = doc(db!, "questions", id)
+    const qRef = doc(db, "questions", id)
     deleteDoc(qRef)
       .then(() => {
         toast({ title: "Asset Purged" })
@@ -257,7 +256,7 @@ export default function QuestionBank() {
                         <Badge className="bg-[#0F172A] text-white border-none text-[8px] font-black uppercase px-2 py-0.5">{q.displayId || 'Q-NODE'}</Badge>
                         <code className="text-[7px] text-slate-400 font-mono">ID: {q.id}</code>
                       </div>
-                      <p className="font-bold text-[#000000] text-base leading-snug line-clamp-2">{q.questionEn}</p>
+                      <p className="font-bold text-[#000000] text-base leading-snug line-clamp-2">{q.englishQuestion || q.questionEn}</p>
                     </TableCell>
                     <TableCell className="text-left">
                        <div className="space-y-1">
