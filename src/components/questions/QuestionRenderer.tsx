@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { Question } from '@/types';
 import { cn } from '@/lib/utils';
-import { CheckCircle2, Info } from 'lucide-react';
+import { CheckCircle2, Info, Languages } from 'lucide-react';
 
 interface QuestionRendererProps {
   question: Partial<Question> & { displayId?: string };
@@ -13,8 +13,8 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview Institutional High-Fidelity Question Renderer v17.0.
- * Optimized for: High-density mobile friendly bilingual scaling (15px/17px).
+ * @fileOverview Institutional High-Fidelity Question Renderer v18.0.
+ * Optimized for: Neat and clean bilingual spacing and redundant marker removal.
  */
 
 export default function QuestionRenderer({ 
@@ -25,11 +25,12 @@ export default function QuestionRenderer({
 }: QuestionRendererProps) {
   
   const cleanText = (text: string = "") => {
+    if (!text) return "";
     return text
-      .replace(/^[A-D][\.\):\s-]*/i, '')
-      .replace(/^\d+[\.\):\s-]*/, '')
-      .replace(/^\*\*|\*\*$/g, '')
-      .replace(/\*\*/g, '')
+      .replace(/^[A-D][\.\):\s-]*/i, '') // Remove A) or B.
+      .replace(/^\d+[\.\):\s-]*/, '')     // Remove 1. or 24)
+      .replace(/^\*\*|\*\*$/g, '')       // Remove leading/trailing bold
+      .replace(/\*\*/g, '')              // Remove internal bold
       .trim();
   };
 
@@ -39,7 +40,17 @@ export default function QuestionRenderer({
 
     if (language === 'en') return cEn;
     if (language === 'pa') return cPa || cEn;
-    return `${cEn}${cPa && cPa !== cEn ? ` / ${cPa}` : ''}`;
+    return (
+      <div className="flex flex-wrap items-center gap-x-2">
+        <span>{cEn}</span>
+        {cPa && cPa !== cEn && (
+          <>
+            <span className="text-slate-300 font-light">/</span>
+            <span className="text-[#0B1528]">{cPa}</span>
+          </>
+        )}
+      </div>
+    );
   };
 
   const expEn = useMemo(() => question.explanationEn || (question as any).explanation || "", [question]);
@@ -53,8 +64,8 @@ export default function QuestionRenderer({
         </div>
       )}
 
-      {/* Question Statement - Compact High Density */}
-      <div className="text-[15px] md:text-[17px] font-black leading-tight text-[#0F172A] whitespace-pre-wrap antialiased">
+      {/* Question Statement - Neat Bilingual Rendering */}
+      <div className="text-[15px] md:text-[17px] font-black leading-tight text-[#0F172A] antialiased">
         {renderContent(question.questionEn, question.questionPa)}
       </div>
 
@@ -64,18 +75,17 @@ export default function QuestionRenderer({
           {['A', 'B', 'C', 'D'].map(key => {
             const en = (question as any)[`option${key}En`] || "";
             const pa = (question as any)[`option${key}Pa`] || "";
-            const optionText = renderContent(en, pa);
             
-            if (!optionText) return null;
+            if (!en && !pa) return null;
             
             return (
                 <div key={key} className="flex items-center gap-3 p-3 md:p-4 bg-white border border-slate-100 rounded-xl md:rounded-2xl shadow-sm">
                   <div className="h-7 w-7 md:h-8 md:w-8 rounded-lg bg-slate-50 flex items-center justify-center font-black text-[10px] md:text-xs text-primary shrink-0 border border-slate-100">
                      {key}
                   </div>
-                  <p className="text-[13px] md:text-[15px] font-bold text-slate-700 leading-snug">
-                      {optionText}
-                  </p>
+                  <div className="text-[13px] md:text-[15px] font-bold text-slate-700 leading-snug">
+                      {renderContent(en, pa)}
+                  </div>
                 </div>
             )
           })}
@@ -86,24 +96,51 @@ export default function QuestionRenderer({
         <div className="mt-6 p-5 md:p-8 bg-emerald-50/40 rounded-2xl md:rounded-[2.5rem] border border-emerald-100 space-y-4 md:space-y-6 shadow-sm relative overflow-hidden">
            <div className="absolute top-0 right-0 p-8 opacity-5"><CheckCircle2 className="h-32 w-32" /></div>
            
-           <div className="flex items-center gap-3 relative z-10">
-              <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg">
-                 <CheckCircle2 className="h-5 w-5 md:h-6 md:w-6" />
+           <div className="flex items-center justify-between relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg">
+                   <CheckCircle2 className="h-5 w-5 md:h-6 md:w-6" />
+                </div>
+                <div className="text-left">
+                   <p className="text-[8px] md:text-[9px] font-black text-emerald-600 uppercase tracking-widest leading-none mb-1">Verified Audit Key</p>
+                   <h4 className="text-base md:text-lg text-[#0F172A] font-black uppercase">Option {question.correctAnswer}</h4>
+                </div>
               </div>
-              <div className="text-left">
-                 <p className="text-[8px] md:text-[9px] font-black text-emerald-600 uppercase tracking-widest leading-none mb-1">Official Key</p>
-                 <h4 className="text-base md:text-lg text-[#0F172A] font-black uppercase">Option {question.correctAnswer}</h4>
-              </div>
+              <Badge className="bg-emerald-600/10 text-emerald-700 border-none text-[8px] font-black uppercase px-2 py-0.5">Logic Node</Badge>
            </div>
            
-           <div className="space-y-2 md:space-y-3 pt-4 md:pt-6 border-t border-emerald-200/30 relative z-10">
-              <div className="flex items-center gap-2 mb-1">
-                 <Info className="h-3 md:h-3.5 w-3 md:w-3.5 text-emerald-600" />
-                 <span className="text-[8px] md:text-[10px] font-black text-emerald-600 uppercase tracking-widest">Logic Hub</span>
-              </div>
-              <div className="text-[13px] md:text-[16px] text-slate-800 leading-relaxed font-semibold bg-white/60 p-4 md:p-6 rounded-xl md:rounded-2xl whitespace-pre-wrap border border-emerald-100/30 shadow-inner italic">
-                {renderContent(expEn, expPa)}
-              </div>
+           {/* Neat and Clean Explanation Spacing */}
+           <div className="space-y-4 pt-4 md:pt-6 border-t border-emerald-200/30 relative z-10">
+              {language === 'bilingual' ? (
+                <div className="space-y-6">
+                  {expEn && (
+                    <div className="space-y-2">
+                       <div className="flex items-center gap-2 opacity-40">
+                          <Languages className="h-3 w-3" />
+                          <span className="text-[7px] font-black uppercase tracking-widest text-[#0B1528]">English Rationale</span>
+                       </div>
+                       <p className="text-[13px] md:text-[15px] text-slate-700 font-medium leading-relaxed bg-white/40 p-4 rounded-xl shadow-inner border border-white/20 italic">
+                          {cleanText(expEn)}
+                       </p>
+                    </div>
+                  )}
+                  {expPa && (
+                    <div className="space-y-2">
+                       <div className="flex items-center gap-2 opacity-40">
+                          <Languages className="h-3 w-3" />
+                          <span className="text-[7px] font-black uppercase tracking-widest text-[#0B1528]">ਪੰਜਾਬੀ ਵਿਆਖਿਆ</span>
+                       </div>
+                       <p className="text-[13px] md:text-[15px] text-slate-700 font-medium leading-relaxed bg-white/40 p-4 rounded-xl shadow-inner border border-white/20 italic">
+                          {cleanText(expPa)}
+                       </p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-[13px] md:text-[15px] text-slate-700 font-medium leading-relaxed bg-white/40 p-4 rounded-xl shadow-inner border border-white/20 italic">
+                   {cleanText(language === 'en' ? expEn : (expPa || expEn))}
+                </p>
+              )}
            </div>
         </div>
       )}
