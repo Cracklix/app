@@ -26,9 +26,9 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Final Institutional CBT Attempt Hub v10.0.
+ * @fileOverview Final Institutional CBT Attempt Hub v11.0.
  * Optimized: Reduced width to 920px for high-density focus and ergonomics.
- * Hardened: Robust Firestore guards to prevent runtime crashes.
+ * Scaling: Reduced Commit Assessment modal size for professional footprint.
  */
 
 export default function MockAttemptPage() {
@@ -272,29 +272,29 @@ export default function MockAttemptPage() {
       </Sheet>
 
       <Dialog open={showSubmitModal} onOpenChange={setShowSubmitModal}>
-         <DialogContent className="max-w-lg rounded-[2.5rem] p-6 md:p-10 bg-white border-none shadow-5xl text-left">
-            <DialogHeader className="text-center space-y-4">
-               <div className="h-14 w-14 bg-emerald-50 rounded-[1.5rem] flex items-center justify-center mx-auto text-emerald-600 shadow-2xl">
-                  <ShieldCheck className="h-8 w-8" />
+         <DialogContent className="max-w-[420px] w-[95vw] rounded-[2rem] p-6 md:p-8 bg-white border-none shadow-5xl text-left">
+            <DialogHeader className="text-center space-y-3">
+               <div className="h-12 w-12 bg-emerald-50 rounded-[1.25rem] flex items-center justify-center mx-auto text-emerald-600 shadow-xl">
+                  <ShieldCheck className="h-7 w-7" />
                </div>
                <div>
-                  <DialogTitle className="text-2xl md:text-3xl font-headline font-black text-[#0F172A] uppercase tracking-tight">COMMIT ASSESSMENT</DialogTitle>
-                  <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px] mt-2">Audit Registry for {examStore.mockTitle}</p>
+                  <DialogTitle className="text-xl md:text-2xl font-headline font-black text-[#0F172A] uppercase tracking-tight">COMMIT ASSESSMENT</DialogTitle>
+                  <p className="text-slate-400 font-bold uppercase tracking-widest text-[8px] mt-1 text-center">Audit Registry for {examStore.mockTitle}</p>
                </div>
             </DialogHeader>
 
-            <div className="py-8 grid grid-cols-2 gap-3">
-               <SubmissionNode label="Attempted Nodes" val={stats.answered + stats.ansMarked} color="text-emerald-600" icon={<CheckCircle2 className="h-3.5 w-3.5" />} />
+            <div className="py-6 grid grid-cols-2 gap-2.5">
+               <SubmissionNode label="Attempted Nodes" val={stats.answered + stats.ansMarked} color="text-emerald-600" icon={<CheckCircle2 className="h-3 w-3" />} />
                <SubmissionNode label="Logic Review" val={stats.marked + stats.ansMarked} color="text-violet-600" />
-               <SubmissionNode label="Total Atomic Qs" val={examStore.questions.length} color="text-[#0F172A]" icon={<Trophy className="h-3.5 w-3.5" />} />
+               <SubmissionNode label="Total Atomic Qs" val={examStore.questions.length} color="text-[#0F172A]" icon={<Trophy className="h-3 w-3" />} />
             </div>
 
-            <DialogFooter className="flex flex-col gap-3">
-               <Button onClick={handleSubmitFinal} disabled={isSubmittingFinal} className="w-full h-16 bg-[#F97316] hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-[1.25rem] shadow-3xl">
-                  {isSubmittingFinal ? <Loader2 className="h-5 w-5 animate-spin mr-3" /> : <ShieldCheck className="h-5 w-5 mr-3" />}
+            <DialogFooter className="flex flex-col gap-2.5 pt-2">
+               <Button onClick={handleSubmitFinal} disabled={isSubmittingFinal} className="w-full h-14 bg-[#F97316] hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] text-[9px] rounded-xl shadow-2xl transition-all active:scale-95">
+                  {isSubmittingFinal ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ShieldCheck className="h-4 w-4 mr-2" />}
                   FINALIZE & SYNC REGISTRY
                </Button>
-               <Button variant="ghost" onClick={() => setShowSubmitModal(false)} className="w-full h-10 text-slate-400 font-black uppercase text-[10px] tracking-widest">RE-AUDIT QUESTIONS</Button>
+               <Button variant="ghost" onClick={() => setShowSubmitModal(false)} className="w-full h-8 text-slate-400 font-black uppercase text-[9px] tracking-widest hover:text-[#0F172A]">RE-AUDIT QUESTIONS</Button>
             </DialogFooter>
          </DialogContent>
       </Dialog>
@@ -315,11 +315,11 @@ function ResumeStat({ label, val, color, textColor = "text-white" }: any) {
 
 function SubmissionNode({ label, val, color, icon }: any) {
    return (
-      <div className="p-5 bg-slate-50 rounded-[1.5rem] border border-slate-100 text-left space-y-3">
-         {icon && <div className={cn("h-7 w-7 rounded-lg flex items-center justify-center bg-white shadow-sm", color)}>{icon}</div>}
+      <div className="p-4 md:p-5 bg-slate-50 rounded-[1.5rem] border border-slate-100 text-left space-y-2.5">
+         {icon && <div className={cn("h-6 w-6 rounded-lg flex items-center justify-center bg-white shadow-sm", color)}>{icon}</div>}
          <div className="space-y-0.5">
-            <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">{label}</p>
-            <p className={cn("text-2xl md:text-3xl font-headline font-black", color)}>{val}</p>
+            <p className="text-[7px] md:text-[8px] font-black uppercase text-slate-400 tracking-widest">{label}</p>
+            <p className={cn("text-xl md:text-2xl font-headline font-black", color)}>{val}</p>
          </div>
       </div>
    )
