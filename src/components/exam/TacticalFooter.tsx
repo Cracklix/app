@@ -7,7 +7,8 @@ import { ChevronLeft, ChevronRight, CheckCircle2, RotateCcw } from 'lucide-react
 import { useFirestore } from '@/firebase';
 
 /**
- * @fileOverview Testbook-Style Fixed Navigation Belt.
+ * @fileOverview Testbook-Style Fixed Navigation Belt v2.0.
+ * Reordered buttons to place "Save & Next" to the left of the tactical group.
  */
 export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const { currentIdx, questions, clearAnswer, markForReview, saveAndNext, setCurrentIdx } = useExamStore();
@@ -30,24 +31,9 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
         </Button>
       </div>
 
-      {/* RIGHT: TACTICAL TRIO */}
+      {/* RIGHT: TACTICAL GROUP (Reordered) */}
       <div className="flex items-center gap-3">
-        <Button 
-          variant="outline" 
-          onClick={() => markForReview(currentIdx, db)}
-          className="h-11 px-6 rounded-xl font-black uppercase text-[10px] tracking-tight border-violet-200 text-violet-600 bg-violet-50 hover:bg-violet-100 hidden sm:flex"
-        >
-          Mark For Review & Next
-        </Button>
-        
-        <Button 
-          variant="outline" 
-          onClick={() => clearAnswer(currentIdx, db)}
-          className="h-11 px-6 rounded-xl font-black uppercase text-[10px] tracking-tight border-slate-200 text-slate-500 hover:bg-slate-50"
-        >
-          <RotateCcw className="h-4 w-4 mr-2" /> Clear Response
-        </Button>
-        
+        {/* Primary Action on the left of the group */}
         {isLast ? (
           <Button 
             onClick={onSubmit}
@@ -63,6 +49,22 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
             Save & Next <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         )}
+
+        <Button 
+          variant="outline" 
+          onClick={() => markForReview(currentIdx, db)}
+          className="h-11 px-6 rounded-xl font-black uppercase text-[10px] tracking-tight border-violet-200 text-violet-600 bg-violet-50 hover:bg-violet-100 hidden sm:flex"
+        >
+          Mark For Review & Next
+        </Button>
+        
+        <Button 
+          variant="outline" 
+          onClick={() => clearAnswer(currentIdx, db)}
+          className="h-11 px-6 rounded-xl font-black uppercase text-[10px] tracking-tight border-slate-200 text-slate-500 hover:bg-slate-50"
+        >
+          <RotateCcw className="h-4 w-4 mr-2" /> Clear Response
+        </Button>
       </div>
     </footer>
   );

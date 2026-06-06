@@ -9,16 +9,20 @@ import {
   ChevronDown
 } from "lucide-react";
 import { useExamStore } from '@/store/useExamStore';
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+interface QuestionPaletteProps {
+  onSelect: (index: number) => void;
+  onSubmit: () => void;
+}
+
 /**
- * @fileOverview Professional CBT Question Palette Hub v5.0.
+ * @fileOverview Professional CBT Question Palette Hub v5.1.
  * Unified Scroll: The entire sidebar (Summary, Sections, Submit) scrolls as one unit.
- * Styled to match provided institutional screenshot.
+ * Submit button is now active.
  */
-export default function QuestionPalette({ onSelect }: { onSelect: (index: number) => void }) {
+export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const { questions, status, currentIdx, visited } = useExamStore();
 
   const stats = useMemo(() => {
@@ -53,12 +57,9 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
 
   return (
     <div className="flex flex-col h-full bg-white border-l border-slate-200 text-left font-body select-none">
-      
-      {/* UNIFIED SCROLL AREA - Covers everything from Status to Submit */}
       <ScrollArea className="h-full">
         <div className="p-6 space-y-10">
            
-           {/* 1. STATUS SUMMARY HUB - Screenshot Styled */}
            <div className="space-y-6">
               <p className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Question Status</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -70,7 +71,6 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
               </div>
            </div>
 
-           {/* 2. SECTION-WISE GRID */}
            <div className="space-y-10 pt-6 border-t border-slate-50">
               {sections.map(([secId, data]) => (
                 <div key={secId} className="space-y-5">
@@ -97,14 +97,15 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
               ))}
            </div>
 
-           {/* 3. SUBMIT HUB - End of Scroll */}
            <div className="pt-10 pb-8">
-              <Button className="w-full h-16 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-xl shadow-emerald-900/10 gap-3 group transition-all">
+              <Button 
+                onClick={onSubmit}
+                className="w-full h-16 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-xl shadow-emerald-900/10 gap-3 group transition-all"
+              >
                  <ShieldCheck className="h-5 w-5 group-hover:scale-110 transition-transform" /> SUBMIT FINAL ASSESSMENT
               </Button>
               <p className="text-[9px] text-center text-slate-300 font-bold uppercase tracking-widest mt-6">Audit Registry Sync v5.0</p>
            </div>
-
         </div>
       </ScrollArea>
     </div>

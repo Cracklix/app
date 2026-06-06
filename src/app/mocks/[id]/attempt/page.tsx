@@ -174,7 +174,6 @@ export default function MockAttemptPage() {
       <SubjectTabs />
 
       <main className="flex-1 flex overflow-hidden relative">
-        {/* Pause Modal */}
         <AnimatePresence>
           {examStore.isPaused && (
             <motion.div 
@@ -234,7 +233,7 @@ export default function MockAttemptPage() {
               transition={{ type: 'spring', damping: 30, stiffness: 250 }}
               className="hidden lg:block w-[380px] shrink-0 h-full border-l"
             >
-               <QuestionPalette onSelect={(idx) => examStore.setCurrentIdx(idx)} />
+               <QuestionPalette onSelect={(idx) => examStore.setCurrentIdx(idx)} onSubmit={() => setShowSubmitModal(true)} />
             </motion.aside>
           )}
         </AnimatePresence>
@@ -244,10 +243,10 @@ export default function MockAttemptPage() {
       
       <Sheet open={isMobilePaletteOpen} onOpenChange={setIsMobilePaletteOpen}>
         <SheetContent side="right" className="w-[320px] p-0 border-none">
-          <SheetHeader className="sr-only">
-             <SheetTitle>Question Palette</SheetTitle>
+          <SheetHeader className="p-6 border-b">
+             <SheetTitle className="text-sm font-black uppercase tracking-[0.2em]">Navigation Palette</SheetTitle>
           </SheetHeader>
-          <QuestionPalette onSelect={(idx) => { examStore.setCurrentIdx(idx); setIsMobilePaletteOpen(false); }} />
+          <QuestionPalette onSelect={(idx) => { examStore.setCurrentIdx(idx); setIsMobilePaletteOpen(false); }} onSubmit={() => setShowSubmitModal(true)} />
         </SheetContent>
       </Sheet>
 

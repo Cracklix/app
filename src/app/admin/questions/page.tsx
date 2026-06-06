@@ -6,10 +6,10 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Search, Edit, Trash2, Database, Filter, Eye, AlertCircle, CheckSquare, History, X, Loader2, Zap, AlertTriangle, Layers, Copy, ChevronLeft, ChevronRight, RefreshCw, ExternalLink } from "lucide-react"
+import { Plus, Search, Edit, Trash2, Database, CheckSquare, X, Loader2, RefreshCw, ChevronRight, Layers } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, deleteDoc, doc, where, writeBatch, setDoc, serverTimestamp, limit, getDocs, startAfter, Firestore } from "firebase/firestore"
+import { collection, query, deleteDoc, doc, where, writeBatch, limit, getDocs, startAfter, Firestore } from "firebase/firestore"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/hooks/use-toast"
@@ -26,8 +26,8 @@ import {
 } from "@/components/ui/tooltip"
 
 /**
- * @fileOverview Institutional Asset Ledger (Global Bank) v7.9.
- * Hardened: Enforced strict Firestore instance validation for all collection/query nodes.
+ * @fileOverview Institutional Asset Ledger (Global Bank) v8.0.
+ * Hardened: Double-check logic for db instance to prevent Firebase SDK crashes.
  */
 
 export default function QuestionBank() {
@@ -45,9 +45,13 @@ export default function QuestionBank() {
   const [lastDoc, setLastDoc] = useState<any>(null)
   const [hasMore, setLastHasMore] = useState(true)
 
-  const { data: allMocks } = useCollection<any>(useMemo(() => (db && typeof db === 'object' ? collection(db, "mocks") : null), [db]))
-  const { data: boards } = useCollection<any>(useMemo(() => (db && typeof db === 'object' ? collection(db, "boards") : null), [db]))
-  const { data: subjects } = useCollection<any>(useMemo(() => (db && typeof db === 'object' ? collection(db, "subjects") : null), [db]))
+  const mocksQuery = useMemo(() => (db && typeof db === 'object' ? collection(db, "mocks") : null), [db])
+  const boardsQuery = useMemo(() => (db && typeof db === 'object' ? collection(db, "boards") : null), [db])
+  const subjectsQuery = useMemo(() => (db && typeof db === 'object' ? collection(db, "subjects") : null), [db])
+
+  const { data: allMocks } = useCollection<any>(mocksQuery)
+  const { data: boards } = useCollection<any>(boardsQuery)
+  const { data: subjects } = useCollection<any>(subjectsQuery)
 
   const fetchQuestions = useCallback(async (isNext = false) => {
     if (!db || typeof db !== 'object') return
@@ -85,7 +89,7 @@ export default function QuestionBank() {
   }, [db, boardFilter, examFilter, lastDoc, toast])
 
   useEffect(() => {
-    if (db) fetchQuestions()
+    if (db && typeof db === 'object') fetchQuestions()
   }, [boardFilter, examFilter, db, fetchQuestions])
 
   const usageMap = useMemo(() => {
@@ -104,7 +108,7 @@ export default function QuestionBank() {
     if (!questions) return []
     return questions.filter(q => {
         const term = searchTerm.toLowerCase();
-        const matchesSearch = (q.questionEn || q.titleEn || q.englishQuestion || "").toLowerCase().includes(term) || 
+        const matchesSearch = (q.englishQuestion || q.questionEn || q.titleEn || "").toLowerCase().includes(term) || 
                              (q.displayId || "").toLowerCase().includes(term) ||
                              (q.id || "").toLowerCase().includes(term);
         const matchesSub = subjectFilter === "all" || q.subjectId === subjectFilter
@@ -136,8 +140,8 @@ export default function QuestionBank() {
 
     setIsDeleting(true)
     try {
-      const batch = writeBatch(db)
-      ids.forEach(id => { batch.delete(doc(db, "questions", id)) })
+      const batch = writeBatch(db as Firestore)
+      ids.forEach(id => { batch.delete(doc(db as Firestore, "questions", id)) })
       await batch.commit()
       toast({ title: "Audit Success", description: `${ids.length} items successfully purged.` })
       setSelectedIds([])
@@ -156,7 +160,7 @@ export default function QuestionBank() {
       if (!confirm(`WARNING: This question is used in ${usage.length} mocks. Proceed?`)) return;
     } else if (!confirm("Permanently purge this asset?")) return;
     
-    const qRef = doc(db, "questions", id)
+    const qRef = doc(db as Firestore, "questions", id)
     deleteDoc(qRef)
       .then(() => {
         toast({ title: "Asset Purged" })

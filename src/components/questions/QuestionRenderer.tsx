@@ -5,7 +5,7 @@ import React from 'react';
 import { Question } from '@/types';
 import { cn } from '@/lib/utils';
 import MathText from './MathText';
-import { Bookmark, Flag, Info, Star } from 'lucide-react';
+import { Bookmark, Flag, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface QuestionRendererProps {
@@ -16,8 +16,8 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview Professional CBT Question Area.
- * Strictly enforces identical typography (#111111, 700 weight) and high-density meta info.
+ * @fileOverview Professional CBT Question Area v1.1.
+ * Added field fallbacks to prevent "Loading question..." issues with legacy data.
  */
 export default function QuestionRenderer({ 
   question, 
@@ -31,6 +31,12 @@ export default function QuestionRenderer({
   const isBi = language === 'bi';
 
   const typographyClass = "font-[700] leading-[1.4] antialiased tracking-normal text-[#111111] text-[20px] md:text-[24px]";
+
+  // Field Fallbacks for legacy/varied data structures
+  const englishQ = question.englishQuestion || (question as any).questionEn || (question as any).english_question;
+  const punjabiQ = question.punjabiQuestion || (question as any).questionPa || (question as any).punjabi_question;
+  const englishExp = question.englishExplanation || (question as any).explanationEn || (question as any).english_explanation;
+  const punjabiExp = question.punjabiExplanation || (question as any).explanationPa || (question as any).punjabi_explanation;
 
   return (
     <div className="w-full text-left font-body bg-transparent h-auto min-h-0 flex flex-col select-none">
@@ -62,7 +68,7 @@ export default function QuestionRenderer({
       <div className="flex flex-col gap-6 mb-12">
          {(isEn || isBi) && (
             <div className={typographyClass}>
-               <MathText text={question.englishQuestion || "Loading question..."} />
+               <MathText text={englishQ || "Loading question statement..."} />
             </div>
          )}
          
@@ -70,7 +76,7 @@ export default function QuestionRenderer({
 
          {(isPa || isBi) && (
             <div className={typographyClass}>
-               <MathText text={question.punjabiQuestion || ""} />
+               <MathText text={punjabiQ || ""} />
             </div>
          )}
       </div>
@@ -79,8 +85,8 @@ export default function QuestionRenderer({
       {!hideOptions && (
         <div className="flex flex-col space-y-3 mb-8">
           {['A', 'B', 'C', 'D'].map(key => {
-            const en = (question as any)[`option${key}English`];
-            const pa = (question as any)[`option${key}Punjabi`];
+            const en = (question as any)[`option${key}English`] || (question as any)[`option_${key.toLowerCase()}_english`];
+            const pa = (question as any)[`option${key}Punjabi`] || (question as any)[`option_${key.toLowerCase()}_punjabi`];
 
             return (
               <div key={key} className="flex gap-5 items-center group p-4 rounded-xl border-2 border-slate-100 hover:border-[#F97316]/30 transition-all bg-white shadow-sm cursor-pointer hover:shadow-xl active:scale-[0.99]">
@@ -113,8 +119,8 @@ export default function QuestionRenderer({
            </div>
            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200 text-left">
               <div className="font-[500] text-[18px] text-[#111111] leading-relaxed">
-                 {(isEn || isBi) && <MathText text={question.englishExplanation || ""} />}
-                 {(isPa || isBi) && <MathText text={question.punjabiExplanation || ""} />}
+                 {(isEn || isBi) && <MathText text={englishExp || ""} />}
+                 {(isPa || isBi) && <MathText text={punjabiExp || ""} />}
               </div>
            </div>
         </div>
