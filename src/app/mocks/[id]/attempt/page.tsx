@@ -13,7 +13,7 @@ import AntiCheat from "@/components/exam/AntiCheat";
 import QuestionRenderer from "@/components/questions/QuestionRenderer";
 import QuestionPalette from "@/components/mocks/QuestionPalette";
 import { Button } from "@/components/ui/button";
-import { Loader2, Play, ShieldCheck, CheckCircle2, History, Zap, Trophy, TrendingUp, AlertTriangle } from "lucide-react";
+import { Loader2, Play, ShieldCheck, CheckCircle2, Trophy, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -174,8 +174,15 @@ export default function MockAttemptPage() {
       <SubjectTabs />
 
       <main className="flex-1 flex overflow-hidden relative">
-        {examStore.isPaused && (
-           <div className="absolute inset-0 z-[100] bg-[#0B1528]/95 backdrop-blur-xl flex items-center justify-center animate-in fade-in duration-300 p-6">
+        {/* Pause Modal */}
+        <AnimatePresence>
+          {examStore.isPaused && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-[100] bg-[#0B1528]/95 backdrop-blur-xl flex items-center justify-center p-6"
+            >
               <div className="max-w-xl w-full bg-white rounded-[3rem] shadow-5xl overflow-hidden">
                  <div className="bg-slate-50 p-12 border-b border-slate-100 text-center space-y-6">
                     <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mx-auto text-[#F97316] shadow-2xl">
@@ -193,17 +200,16 @@ export default function MockAttemptPage() {
                        <ResumeStat label="Marked" val={stats.marked} color="bg-pink-500" />
                        <ResumeStat label="Remaining" val={stats.notVisited} color="bg-slate-50" textColor="text-slate-300" />
                     </div>
-                    <div className="flex flex-col gap-4">
-                       <Button onClick={() => examStore.setPaused(false)} className="w-full h-20 bg-[#F97316] hover:bg-orange-600 text-white rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-[11px] shadow-3xl gap-4">
-                          <Play className="h-6 w-6 fill-current" /> RESUME EVALUATION
-                       </Button>
-                    </div>
+                    <Button onClick={() => examStore.setPaused(false)} className="w-full h-20 bg-[#F97316] hover:bg-orange-600 text-white rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-[11px] shadow-3xl gap-4">
+                       <Play className="h-6 w-6 fill-current" /> RESUME EVALUATION
+                    </Button>
                  </div>
               </div>
-           </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-10">
            <div className="max-w-[900px] mx-auto pb-24">
               {q ? (
                 <QuestionRenderer 
@@ -222,11 +228,11 @@ export default function MockAttemptPage() {
         <AnimatePresence>
           {examStore.isPaletteVisible && (
             <motion.aside 
-              initial={{ x: 350 }}
+              initial={{ x: 380 }}
               animate={{ x: 0 }}
-              exit={{ x: 350 }}
+              exit={{ x: 380 }}
               transition={{ type: 'spring', damping: 30, stiffness: 250 }}
-              className="hidden lg:block w-[350px] shrink-0"
+              className="hidden lg:block w-[380px] shrink-0 h-full border-l"
             >
                <QuestionPalette onSelect={(idx) => examStore.setCurrentIdx(idx)} />
             </motion.aside>
@@ -237,7 +243,7 @@ export default function MockAttemptPage() {
       <TacticalFooter onSubmit={() => setShowSubmitModal(true)} />
       
       <Sheet open={isMobilePaletteOpen} onOpenChange={setIsMobilePaletteOpen}>
-        <SheetContent side="right" className="w-[300px] p-0 border-none">
+        <SheetContent side="right" className="w-[320px] p-0 border-none">
           <SheetHeader className="sr-only">
              <SheetTitle>Question Palette</SheetTitle>
           </SheetHeader>
@@ -259,9 +265,8 @@ export default function MockAttemptPage() {
 
             <div className="py-10 grid grid-cols-2 gap-4">
                <SubmissionNode label="Attempted Nodes" val={stats.answered + stats.ansMarked} color="text-emerald-600" icon={<CheckCircle2 className="h-4 w-4" />} />
-               <SubmissionNode label="Logic Review" val={stats.marked + stats.ansMarked} color="text-violet-600" icon={<Zap className="h-4 w-4" />} />
+               <SubmissionNode label="Logic Review" val={stats.marked + stats.ansMarked} color="text-violet-600" />
                <SubmissionNode label="Total Atomic Qs" val={examStore.questions.length} color="text-[#0F172A]" icon={<Trophy className="h-4 w-4" />} />
-               <SubmissionNode label="Registry Time" val={`${Math.floor(examStore.timeLeft / 60)}m`} color="text-[#F97316]" icon={<History className="h-4 w-4" />} />
             </div>
 
             <DialogFooter className="flex flex-col gap-4">
@@ -291,9 +296,7 @@ function ResumeStat({ label, val, color, textColor = "text-white" }: any) {
 function SubmissionNode({ label, val, color, icon }: any) {
    return (
       <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100 text-left space-y-4">
-         <div className={cn("h-8 w-8 rounded-lg flex items-center justify-center bg-white shadow-sm", color)}>
-            {icon}
-         </div>
+         {icon && <div className={cn("h-8 w-8 rounded-lg flex items-center justify-center bg-white shadow-sm", color)}>{icon}</div>}
          <div className="space-y-0.5">
             <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">{label}</p>
             <p className={cn("text-3xl font-headline font-black", color)}>{val}</p>
