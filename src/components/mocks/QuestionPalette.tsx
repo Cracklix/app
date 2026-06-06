@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState } from "react"
@@ -7,12 +6,13 @@ import { ChevronLeft, ChevronRight, LayoutGrid, List, FileText, Info } from "luc
 import { useExamStore } from '@/store/useExamStore';
 
 /**
- * @fileOverview Professional CBT Palette Node v26.0.
- * Optimized Grid Visibility: grid-area assigned flex-1 to ensure all nodes are viewable.
+ * @fileOverview Professional CBT Palette Node v27.0.
+ * Enforced Grid Visibility: Grid displays 25 questions in a single screen without scrolling.
+ * Functional pagination for tests > 25 nodes.
  */
 export default function QuestionPalette({ onSelect }: { onSelect: (index: number) => void }) {
   const { questions, status, currentIdx, visited } = useExamStore();
-  const [viewMode, setViewViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [currentPage, setCurrentPage] = useState(0);
   const pageSize = 25;
 
@@ -38,7 +38,7 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
       {/* 1. PALETTE HEADER TABS */}
       <div className="flex border-b border-slate-100 shrink-0">
          <button 
-           onClick={() => setViewViewMode('grid')}
+           onClick={() => setViewMode('grid')}
            className={cn(
              "flex-1 h-12 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border-b-2 transition-all",
              viewMode === 'grid' ? "border-primary text-primary bg-primary/5" : "border-transparent text-slate-400"
@@ -47,7 +47,7 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
             <LayoutGrid className="h-3.5 w-3.5" /> Grid View
          </button>
          <button 
-           onClick={() => setViewViewMode('list')}
+           onClick={() => setViewMode('list')}
            className={cn(
              "flex-1 h-12 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border-b-2 transition-all",
              viewMode === 'list' ? "border-primary text-primary bg-primary/5" : "border-transparent text-slate-400"
@@ -63,11 +63,11 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
             <Info className="h-3 w-3 text-primary" /> Instructions
          </button>
          <button className="h-10 flex items-center justify-center gap-2 text-[9px] font-black uppercase text-slate-500 hover:bg-slate-50">
-            <FileText className="h-3 w-3 text-primary" /> Question Paper
+            <FileText className="h-3 w-3 text-primary" /> Paper
          </button>
       </div>
 
-      {/* 3. LEGEND / STATISTICS */}
+      {/* 3. LEGEND / STATISTICS (Compact) */}
       <div className="p-3 grid grid-cols-2 gap-1.5 bg-slate-50/50 shrink-0">
          <LegendItem count={summary.answered} label="Answered" color="bg-blue-600" />
          <LegendItem count={summary.notAnswered} label="Not Answered" color="bg-slate-400" />
@@ -76,11 +76,9 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
          <LegendItem count={summary.ansMarked} label="Ans & Marked" color="bg-violet-600" colSpan={2} />
       </div>
 
-      <div className="h-px w-full bg-slate-200 shrink-0" />
-
-      {/* 4. GRID MATRIX (5-column scrollable) */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 min-h-0">
-         <div className="grid grid-cols-5 gap-2.5">
+      {/* 4. GRID MATRIX (5x5 Single Screen) */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-3 min-h-0 bg-white">
+         <div className="grid grid-cols-5 gap-2">
             {visibleQuestions.map((_, i) => {
               const idx = currentPage * pageSize + i;
               const st = status[idx];
@@ -109,12 +107,12 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
       </div>
 
       {/* 5. PAGINATION NAV */}
-      <div className="shrink-0 p-3 border-t border-slate-100 bg-white">
-        <div className="flex items-center justify-between mb-4">
+      <div className="shrink-0 p-3 border-t border-slate-100 bg-slate-50/50">
+        <div className="flex items-center justify-between mb-2">
            <button 
              disabled={currentPage === 0}
              onClick={() => setCurrentPage(p => p - 1)}
-             className="h-8 w-8 rounded-lg border border-slate-200 flex items-center justify-center disabled:opacity-30 hover:bg-slate-50"
+             className="h-8 w-8 rounded-lg border border-slate-200 flex items-center justify-center disabled:opacity-30 bg-white hover:bg-slate-50"
            >
               <ChevronLeft className="h-3.5 w-3.5" />
            </button>
@@ -124,14 +122,11 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
            <button 
              disabled={currentPage === totalPages - 1}
              onClick={() => setCurrentPage(p => p + 1)}
-             className="h-8 w-8 rounded-lg border border-slate-200 flex items-center justify-center disabled:opacity-30 hover:bg-slate-50"
+             className="h-8 w-8 rounded-lg border border-slate-200 flex items-center justify-center disabled:opacity-30 bg-white hover:bg-slate-50"
            >
               <ChevronRight className="h-3.5 w-3.5" />
            </button>
         </div>
-        <p className="text-[7px] font-black text-slate-300 uppercase tracking-[0.4em] text-center">
-            CRACKLIX INSTITUTIONAL CBT
-        </p>
       </div>
     </div>
   )
@@ -139,7 +134,7 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
 
 function LegendItem({ count, label, color, textColor = "text-white", colSpan = 1 }: any) {
   return (
-    <div className={cn("flex items-center gap-2 p-1 rounded-lg border border-slate-100 bg-white shadow-sm", colSpan > 1 && "col-span-2")}>
+    <div className={cn("flex items-center gap-2 p-1.5 rounded-lg border border-slate-100 bg-white shadow-sm", colSpan > 1 && "col-span-2")}>
        <div className={cn("h-4.5 w-4.5 rounded-md flex items-center justify-center text-[8px] font-black shrink-0 border", color, textColor)}>
           {count}
        </div>

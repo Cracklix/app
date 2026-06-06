@@ -1,15 +1,13 @@
-
-'use server';
-
 'use client';
 
 import { useExamStore } from '@/store/useExamStore';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ShieldCheck, RotateCcw, Bookmark } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 /**
  * @fileOverview Testbook-style Fixed Tactical Navigation Belt.
- * Optimized height (h-14) and functional grouping.
+ * Standard Layout: [Previous] on Left | [Mark for Review, Clear Response, Save & Next] on Right.
  */
 export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const { currentIdx, questions, clearAnswer, markForReview, saveAndNext, setCurrentIdx } = useExamStore();
