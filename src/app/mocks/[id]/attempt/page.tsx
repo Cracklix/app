@@ -26,8 +26,8 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Final Production-Grade CBT Evaluation Hub.
- * Strictly implements Auto-Save, Resume, and High-Density professional layout.
+ * @fileOverview Final Production-Grade CBT Evaluation Hub v3.0.
+ * Fixed: Variable initialization scoping for mockTitle and loading logic.
  */
 export default function MockAttemptPage() {
   const params = useParams();
@@ -53,9 +53,11 @@ export default function MockAttemptPage() {
         const mockData = mockSnap.data();
 
         const qSnaps = await Promise.all(
-          mockData.questionIds.map((id: string) => getDoc(doc(db, "questions", id)))
+          (mockData.questionIds || []).map((id: string) => getDoc(doc(db, "questions", id)))
         );
-        const questions = qSnaps.map(s => ({ ...s.data(), id: s.id })).filter(Boolean) as any[];
+        const questions = qSnaps.map(s => s.exists() ? ({ ...s.data(), id: s.id }) : null).filter(Boolean) as any[];
+
+        if (questions.length === 0) throw new Error("This mock has no questions available.");
 
         // RESUME LOGIC HUB
         const attemptSnap = await getDoc(doc(db, "attempts", `${user.uid}_${mockId}`));
@@ -81,7 +83,7 @@ export default function MockAttemptPage() {
            });
         }
 
-        examStore.initExam(mockId, mockTitle, user.uid, questions, mockData.duration, savedState);
+        examStore.initExam(mockId, mockData.title || "Evaluation Series", user.uid, questions, mockData.duration || 120, savedState);
       } catch (err: any) {
         toast({ variant: "destructive", title: "CBT Sync Failure", description: err.message });
         router.push(`/mocks/${mockId}`);
@@ -90,19 +92,19 @@ export default function MockAttemptPage() {
       }
     }
     loadExam();
-  }, [db, user, mockId]);
+  }, [db, user, mockId, router, toast]);
 
   // Global Timer Tick
   useEffect(() => {
     if (isInitializing) return;
     const interval = setInterval(() => {
       examStore.tick();
-      if (examStore.timeLeft <= 0 && !isSubmittingFinal) {
+      if (examStore.timeLeft <= 0 && !isSubmittingFinal && !isInitializing) {
          handleSubmitFinal();
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [isInitializing, examStore.timeLeft]);
+  }, [isInitializing, examStore.timeLeft, isSubmittingFinal]);
 
   const stats = useMemo(() => {
     const s = { answered: 0, marked: 0, notAnswered: 0, notVisited: 0, ansMarked: 0 };
@@ -118,7 +120,7 @@ export default function MockAttemptPage() {
   }, [examStore.questions, examStore.status, examStore.visited]);
 
   const handleSubmitFinal = async () => {
-    if (!db || !user) return;
+    if (!db || !user || isSubmittingFinal) return;
     setIsSubmittingFinal(true);
     
     try {
@@ -142,6 +144,7 @@ export default function MockAttemptPage() {
         answers: examStore.answers,
         timestamp: new Date().toISOString(),
         timeTaken: (examStore.questions.length * 60) - examStore.timeLeft,
+        createdAt: serverTimestamp()
       };
 
       await setDoc(doc(db, "results", `${user.uid}_${mockId}`), resultPayload);
@@ -176,17 +179,16 @@ export default function MockAttemptPage() {
       <SubjectTabs />
 
       <main className="flex-1 flex overflow-hidden relative">
-        {/* RESUME INTERFACE */}
         {examStore.isPaused && (
            <div className="absolute inset-0 z-[100] bg-[#0B1528]/95 backdrop-blur-xl flex items-center justify-center animate-in fade-in duration-300 p-6">
               <div className="max-w-xl w-full bg-white rounded-[3rem] shadow-5xl overflow-hidden">
-                 <div className="bg-slate-50 p-12 border-b border-slate-100 text-center space-y-6 text-left">
+                 <div className="bg-slate-50 p-12 border-b border-slate-100 text-center space-y-6">
                     <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mx-auto text-[#F97316] shadow-2xl">
                        <Play className="h-10 w-10 fill-current" />
                     </div>
                     <div>
-                       <h2 className="text-4xl font-headline font-black text-[#0F172A] uppercase tracking-tight text-center">TEST PAUSED</h2>
-                       <p className="text-slate-500 font-medium uppercase text-[10px] tracking-widest mt-2 text-center">Institutional Progress Audit</p>
+                       <h2 className="text-4xl font-headline font-black text-[#0F172A] uppercase tracking-tight">TEST PAUSED</h2>
+                       <p className="text-slate-500 font-medium uppercase text-[10px] tracking-widest mt-2">Institutional Progress Audit</p>
                     </div>
                  </div>
                  <div className="p-12 space-y-12">
@@ -208,10 +210,17 @@ export default function MockAttemptPage() {
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8">
            <div className="max-w-[900px] mx-auto pb-24">
-              <QuestionRenderer 
-                 language={examStore.language} 
-                 question={{...q, displayId: (examStore.currentIdx + 1).toString()}} 
-              />
+              {q ? (
+                <QuestionRenderer 
+                   language={examStore.language} 
+                   question={{...q, displayId: (examStore.currentIdx + 1).toString()}} 
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full opacity-20">
+                   <AlertTriangle className="h-12 w-12 mb-4" />
+                   <p className="font-black uppercase tracking-widest text-xs">Node Missing</p>
+                </div>
+              )}
            </div>
         </div>
 

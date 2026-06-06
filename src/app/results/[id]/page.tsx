@@ -34,8 +34,8 @@ import { cn } from "@/lib/utils"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Result Engine v2.5.
- * Optimized: High-density card layout for faster results review and mobile-friendly scaling.
+ * @fileOverview Institutional Result Engine v2.6.
+ * Fixed: Infinite loading logic and missing dependency audit.
  */
 export default function ResultPage() {
   const params = useParams()
@@ -48,7 +48,6 @@ export default function ResultPage() {
   const [questions, setQuestions] = useState<any[]>([])
   const [loadingContent, setLoadingContent] = useState(true)
 
-  // Simplified query to bypass composite index requirement
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
     return query(collection(db, "results"), where("userId", "==", user.uid))
@@ -58,9 +57,10 @@ export default function ResultPage() {
   
   const sessionData = useMemo(() => {
     if (!rawResultDocs || !mockId) return null
-    return rawResultDocs
-      .filter((r: any) => r.mockId === mockId)
-      .sort((a: any, b: any) => {
+    const filtered = rawResultDocs.filter((r: any) => r.mockId === mockId);
+    if (filtered.length === 0) return undefined;
+    
+    return filtered.sort((a: any, b: any) => {
          const tA = new Date(a.timestamp || 0).getTime()
          const tB = new Date(b.timestamp || 0).getTime()
          return tB - tA
@@ -69,14 +69,20 @@ export default function ResultPage() {
 
   useEffect(() => {
     async function loadQuestions() {
-      if (!db || !sessionData) return
+      if (resultsLoading) return;
+      
+      if (!sessionData) {
+        setLoadingContent(false);
+        return;
+      }
+
       setLoadingContent(true)
       try {
         const mockSnap = await getDoc(doc(db, "mocks", mockId))
         if (mockSnap.exists()) {
           const qIds = mockSnap.data().questionIds || []
           const qSnaps = await Promise.all(qIds.map((id: string) => getDoc(doc(db, "questions", id))))
-          setQuestions(qSnaps.map(s => ({ ...s.data(), id: s.id })))
+          setQuestions(qSnaps.map(s => ({ ...s.data(), id: s.id })).filter(Boolean))
         }
       } catch (e) {
         toast({ variant: "destructive", title: "Content Sync Failure", description: "Could not load solution hub data." })
@@ -85,12 +91,12 @@ export default function ResultPage() {
       }
     }
     loadQuestions()
-  }, [db, sessionData, mockId, toast])
+  }, [db, sessionData, mockId, toast, resultsLoading])
 
   const chartData = useMemo(() => {
     if (!sessionData?.subjectStats) return []
     return Object.entries(sessionData.subjectStats).map(([id, stats]: [string, any]) => ({
-      name: id.replace('-', ' ').toUpperCase(),
+      name: String(id).replace(/-/g, ' ').toUpperCase(),
       accuracy: Math.round((stats.correct / (stats.attempted || 1)) * 100),
       score: `${stats.correct}/${stats.total}`
     })).sort((a, b) => b.accuracy - a.accuracy)
@@ -109,8 +115,11 @@ export default function ResultPage() {
   if (!sessionData) return (
     <div className="h-screen flex flex-col items-center justify-center bg-slate-50 p-6">
        <Trophy className="h-20 w-20 text-slate-200 mb-6" />
-       <h1 className="text-2xl font-headline font-black uppercase text-slate-300 tracking-tight">Audit Trail Missing</h1>
-       <Button asChild className="mt-8 rounded-xl h-12 px-8 bg-primary"><Link href="/mocks">Explore All Series</Link></Button>
+       <h1 className="text-2xl font-headline font-black uppercase text-slate-300 tracking-tight text-center">Audit Trail Missing</h1>
+       <p className="text-slate-400 text-sm font-medium mt-2 mb-8 uppercase tracking-widest">No previous attempts found for this series.</p>
+       <Button asChild className="rounded-xl h-14 px-10 bg-[#0B1528] hover:bg-black text-white font-black uppercase tracking-widest text-xs shadow-2xl">
+          <Link href="/mocks">Explore All Series</Link>
+       </Button>
     </div>
   )
 
@@ -120,7 +129,6 @@ export default function ResultPage() {
       <main className="container mx-auto px-4 py-6 md:py-12 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
           
-          {/* Main Performance Hub */}
           <div className="lg:col-span-8 space-y-6 md:space-y-10 text-left">
             <Card className="border-none shadow-3xl rounded-2xl md:rounded-[3rem] overflow-hidden bg-white group">
                <div className="h-1.5 w-full bg-primary" />
@@ -175,7 +183,6 @@ export default function ResultPage() {
                </CardContent>
             </Card>
 
-            {/* Solution Review Hub */}
             <div className="space-y-6">
                <div className="flex items-center justify-between px-2">
                   <h3 className="font-headline font-black text-xl md:text-3xl uppercase flex items-center gap-4">
@@ -250,7 +257,6 @@ export default function ResultPage() {
             </div>
           </div>
 
-          {/* Institutional Sidebar */}
           <div className="lg:col-span-4 space-y-6 md:space-y-10">
              <Card className="border-none bg-[#0F172A] text-white shadow-4xl rounded-2xl md:rounded-[2.5rem] p-8 md:p-10 text-center space-y-8 overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-all duration-1000"><TrendingUp className="h-64 w-64 md:h-[300px] md:w-[300px]" /></div>

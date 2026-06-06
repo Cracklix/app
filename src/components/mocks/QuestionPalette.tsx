@@ -14,15 +14,15 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 /**
- * @fileOverview Professional CBT Question Palette Hub.
- * Optimized: Removed Grid/List toggles for a unified, high-density section-wise grid.
+ * @fileOverview Professional CBT Question Palette Hub v2.1.
+ * Optimized: Unified high-density section-wise grid with strictly enforced colors.
  */
 export default function QuestionPalette({ onSelect }: { onSelect: (index: number) => void }) {
   const { questions, status, currentIdx, visited } = useExamStore();
 
   const stats = useMemo(() => {
     const s = { answered: 0, marked: 0, notAnswered: 0, notVisited: 0, ansMarked: 0 };
-    questions.forEach((_, i) => {
+    (questions || []).forEach((_, i) => {
       const st = status[i];
       if (st === 'answered') s.answered++;
       else if (st === 'marked') s.marked++;
@@ -33,12 +33,11 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
     return s;
   }, [questions, status, visited]);
 
-  // Group by Section Name for a flattened scrollable list
   const sections = useMemo(() => {
     const map: Record<string, { name: string, questions: number[] }> = {};
     
-    questions.forEach((q, idx) => {
-      const sectionId = q.sectionId || 'General';
+    (questions || []).forEach((q, idx) => {
+      const sectionId = String(q.sectionId || 'General');
       if (!map[sectionId]) {
         map[sectionId] = {
           name: sectionId.replace(/-/g, ' ').toUpperCase(),
@@ -93,7 +92,6 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
         </div>
       </ScrollArea>
 
-      {/* 3. STICKY ACTION HUB */}
       <div className="p-4 border-t border-slate-100 bg-white shrink-0 shadow-[0_-4px_15px_rgba(0,0,0,0.05)]">
          <Button className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-xl shadow-xl shadow-emerald-900/10 gap-3 group transition-all">
             <ShieldCheck className="h-5 w-5 group-hover:scale-110 transition-transform" /> SUBMIT FINAL ASSESSMENT
@@ -102,10 +100,6 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
     </div>
   );
 }
-
-/**
- * @section Helper Components
- */
 
 function LegendItem({ count, label, color, textColor = "text-white", colSpan = 1 }: any) {
   return (
