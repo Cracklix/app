@@ -1,11 +1,10 @@
 
 'use server';
 /**
- * @fileOverview Expert Bilingual MCQ Data-Formatting AI.
+ * @fileOverview Expert Bilingual MCQ Data-Formatting AI v10.0.
  * 
  * - bulkParseMCQ - AI flow to extract, clean, and map bilingual MCQs.
- * - BulkParseInput - Raw text input for parsing.
- * - BulkParseOutput - Structured JSON array of questions.
+ * - Rules: No prefixes, No slashes in questions, 1-line space between logic blocks.
  */
 
 import { ai } from '@/ai/genkit';
@@ -24,8 +23,8 @@ const QuestionOutputSchema = z.object({
   option_d_english: z.string().describe('Clean English text for Option D.'),
   option_d_punjabi: z.string().describe('Clean Punjabi text for Option D.'),
   correct_option: z.enum(['A', 'B', 'C', 'D']),
-  explanation_english: z.string().describe('Full Step-by-step English logic. Use double newlines between steps.'),
-  explanation_punjabi: z.string().describe('Full Step-by-step Punjabi logic. Use double newlines between steps.'),
+  explanation_english: z.string().describe('Full Step-by-step English logic. Use clear sentences.'),
+  explanation_punjabi: z.string().describe('Full Step-by-step Punjabi logic.'),
 });
 
 const BulkParseInputSchema = z.object({
@@ -44,19 +43,24 @@ const prompt = ai.definePrompt({
   output: { schema: BulkParseOutputSchema },
   prompt: `You are an expert bilingual data-formatting AI specializing in bulk ingestion for competitive exams. 
 
-### DATA EXTRACTION RULES:
-1. NO DUAL NUMBERING OR SLASHES IN QUESTIONS: Extract English and Punjabi questions into their separate fields. You MUST strip prefixes like "Q1.", "ਪ੍ਰਸ਼ਨ 1.", or "ਪ੍ਰਸ਼ਨ 01" from the content. The fields should contain ONLY the statement.
-2. NO SLASHES IN STATEMENTS: Do not use a slash to separate languages within a single field.
-3. CLEAN OPTIONS: Separate English and Punjabi options from strings like "(A) Geometry / ਰੇਖਾਗਣਿਤ (Geometry)". Strip labels and redundant brackets. Punjabi field should only have Punjabi text, English field only English text.
-4. EXPLANATION SPACING: Extract full step-by-step logic. Ensure a clear 1-line gap (double newline) exists between logical steps in the explanation fields.
+### DATA EXTRACTION RULES (STRICT):
+1. IMAGE PATTERN MATCHING: Follow this pattern exactly:
+   Q24. [English Question Statement]
+   [Punjabi Question Statement]
+   (A) [Option EN] / [Option PA]
+   Correct Answer: (A) ...
+2. PREFIX PURGE: You MUST strip prefixes like "Q24.", "ਪ੍ਰਸ਼ਨ 24.", "ਪ੍ਰਸ਼ਨ 01" from the content. The fields should contain ONLY the statement text.
+3. NO DUAL NUMBERING: Do not include numbers inside the question text fields. 
+4. NO SLASHES IN STATEMENTS: Extract English and Punjabi statements into their separate database fields cleanly.
+5. OPTION SEPARATION: Split combined strings like "84 cm² / 84 cm²" into the English and Punjabi fields respectively.
+6. EXPLANATION SPACING: Capture the full step-by-step logic. The renderer will handle the visual gap, so just provide clean text for both fields.
 
 ---
 ### INPUT DATA FOR BULK INGESTION:
 {{{rawText}}}
 ---
 
-Parse the entire dataset at once without omitting any questions or solutions. 
-Return ONLY a valid JSON array of objects matching the specified schema.`,
+Return ONLY a valid JSON array of objects. No markdown wrappers.`,
 });
 
 const bulkParseMCQFlow = ai.defineFlow(

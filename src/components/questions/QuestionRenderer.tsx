@@ -14,12 +14,8 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview Institutional High-Fidelity Question Renderer v29.0.
- * Rules Enforcement:
- * 1. STRICT ISOLATION: "EN" mode hides ALL Punjabi. "PA" mode hides ALL English.
- * 2. NEAT SPACING: Professional gap between logic steps.
- * 3. SUBJECT LOCKING: Language subjects automatically lock to their native tongue.
- * 4. PREFIX PURGE: Ensures no "Q1." or "ਪ੍ਰਸ਼ਨ 01" appears in the statement.
+ * @fileOverview Institutional High-Fidelity Question Renderer v30.0.
+ * Features: Strict Isolation, 1-Line Spacing for logic, and single-line Bilingual joiner.
  */
 
 export default function QuestionRenderer({ 
@@ -33,12 +29,11 @@ export default function QuestionRenderer({
     if (!text) return "";
     return text
       .replace(/^Q\d+[\.\):\s-]*/i, '')      
-      .replace(/^\d+[\.\):\s-]*/, '')         
+      .replace(/^ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]*/, '') 
       .replace(/^ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]*/, '')
-      .replace(/^ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]*/, '')
-      .replace(/^ਪ੍ਰਸ਼ਨ\s*0\d+[\.\):\s-]*/, '')
+      .replace(/^\d+[\.\):\s-]*/, '')        
       .replace(/^\*\*|\*\*$/g, '')           
-      .replace(/\*\*/g, '')                  
+      .replace(/\s+/g, ' ')
       .trim();
   };
 
@@ -60,7 +55,7 @@ export default function QuestionRenderer({
     if (language === 'en') return qEn;
     if (language === 'pa') return qPa || qEn;
     
-    // Bilingual Mode: Single line joined by /
+    // Bilingual Mode: Same line joined by /
     return (
       <div className="inline">
         {qEn} {qPa && qPa !== qEn && <span className="text-primary/40 mx-2">/</span>} {qPa !== qEn && qPa}
@@ -69,7 +64,7 @@ export default function QuestionRenderer({
   };
 
   return (
-    <div className="w-full text-left font-body space-y-4 md:space-y-6">
+    <div className="w-full text-left font-body space-y-6">
       {question.imageUrl && (
         <div className="bg-slate-50 border border-slate-100 rounded-2xl p-3 shadow-inner overflow-hidden max-w-md">
            <img src={question.imageUrl} alt="Asset" className="max-h-[120px] rounded-xl mx-auto object-contain" />
@@ -83,7 +78,7 @@ export default function QuestionRenderer({
 
       {/* Options Hub */}
       {!hideOptions && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 md:gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {['A', 'B', 'C', 'D'].map(key => {
             const en = (question as any)[`option${key}En`] || "";
             const pa = (question as any)[`option${key}Pa`] || "";
@@ -92,7 +87,7 @@ export default function QuestionRenderer({
             const cPa = cleanText(pa);
             
             return (
-                <div key={key} className="flex items-center gap-3 p-3 md:p-4 bg-white border border-slate-100 rounded-xl shadow-sm">
+                <div key={key} className="flex items-center gap-3 p-4 bg-white border border-slate-100 rounded-xl shadow-sm">
                   <div className="h-7 w-7 rounded-lg bg-slate-50 flex items-center justify-center font-black text-[10px] text-primary shrink-0 border border-slate-100">
                      {key}
                   </div>
@@ -114,33 +109,31 @@ export default function QuestionRenderer({
       )}
 
       {showSolution && (
-        <div className="mt-6 p-6 md:p-8 bg-emerald-50/40 rounded-[2rem] border border-emerald-100 space-y-6 shadow-sm relative overflow-hidden">
-           <div className="absolute top-0 right-0 p-6 opacity-5"><CheckCircle2 className="h-24 w-24" /></div>
-           
-           <div className="flex items-center gap-4 relative z-10">
+        <div className="mt-10 p-8 bg-emerald-50/40 rounded-[2.5rem] border border-emerald-100 space-y-8 shadow-sm">
+           <div className="flex items-center gap-4">
               <div className="h-10 w-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg">
                  <CheckCircle2 className="h-6 w-6" />
               </div>
               <div className="text-left">
-                 <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest leading-none mb-1">Answer Key</p>
-                 <h4 className="text-lg md:text-xl text-[#0F172A] font-black uppercase">Option {question.correctAnswer}</h4>
+                 <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest leading-none mb-1">Audit Solution Hub</p>
+                 <h4 className="text-xl text-[#0F172A] font-black uppercase">Option {question.correctAnswer}</h4>
               </div>
            </div>
            
-           <div className="space-y-8 pt-6 border-t border-emerald-100 relative z-10">
+           <div className="space-y-10 pt-8 border-t border-emerald-100">
               {(isEnglishSubject || (language !== 'pa' && expEn)) && (
-                <div className="space-y-3">
-                   <p className="text-[8px] font-black uppercase tracking-[0.2em] text-emerald-600/60">English Logic</p>
-                   <p className="text-[14px] text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap">
+                <div className="space-y-4">
+                   <p className="text-[8px] font-black uppercase tracking-[0.3em] text-emerald-600/60">English Logic Hub</p>
+                   <p className="text-[14px] md:text-[15px] text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap antialiased">
                       {cleanText(expEn)}
                    </p>
                 </div>
               )}
               
               {(isPunjabiSubject || (language !== 'en' && expPa)) && (
-                <div className="space-y-3 pt-6 border-t border-emerald-100/30">
-                   <p className="text-[8px] font-black uppercase tracking-[0.2em] text-emerald-600/60">ਪੰਜਾਬੀ ਵਿਆਖਿਆ</p>
-                   <p className="text-[14px] text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap">
+                <div className="space-y-4 pt-10 border-t border-emerald-100/30">
+                   <p className="text-[8px] font-black uppercase tracking-[0.3em] text-emerald-600/60">ਪੰਜਾਬੀ ਵਿਆਖਿਆ (Punjabi Rationale)</p>
+                   <p className="text-[14px] md:text-[15px] text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap antialiased">
                       {cleanText(expPa)}
                    </p>
                 </div>

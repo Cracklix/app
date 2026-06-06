@@ -17,7 +17,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 /**
  * @fileOverview High-Density Responsive Exam Catalog v3.0.
  * Optimized: Uses 100% real-time aggregation logic from the 'mocks' collection.
- * Fixed: Replaced fake multipliers with accurate document counts.
  */
 
 export default function ExamsCatalog() {
@@ -40,7 +39,7 @@ function CatalogContent() {
   const { data: boards } = useCollection<any>(boardsQuery)
   const { data: mocks, loading: mocksLoading } = useCollection<any>(mocksQuery)
 
-  // Institutional Aggregation Engine: Calculates live totals from the mocks registry
+  // Institutional Aggregation Hub
   const statsMap = useMemo(() => {
     if (!mocks) return {};
     const map: Record<string, any> = {};
@@ -128,7 +127,7 @@ function CatalogContent() {
                           </p>
                        </div>
 
-                       {/* Institutional Reactive Counters: Fixed numbering issues */}
+                       {/* Reactive Inventory Matrix */}
                        <div className="grid grid-cols-2 gap-y-4 gap-x-2 mt-6 pt-6 border-t border-slate-50">
                           <CounterNode icon={<Zap className="h-3 w-3 text-primary" />} val={stats.full} label="Full Mocks" />
                           <CounterNode icon={<BookOpen className="h-3 w-3 text-blue-500" />} val={stats.subjects.size} label="Subject Hubs" />
@@ -154,7 +153,7 @@ function CatalogContent() {
 
 function CounterNode({ icon, val, label }: { icon: React.ReactNode, val: number, label: string }) {
   return (
-    <div className="space-y-0.5">
+    <div className="space-y-0.5 text-left">
        <div className="flex items-center gap-1.5">
           {icon}
           <p className="text-[10px] md:text-[12px] font-black text-[#0F172A]">{val}</p>
