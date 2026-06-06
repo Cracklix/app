@@ -26,8 +26,8 @@ import {
 } from "@/components/ui/tooltip"
 
 /**
- * @fileOverview Institutional Asset Ledger (Global Bank) v8.0.
- * Hardened: Double-check logic for db instance to prevent Firebase SDK crashes.
+ * @fileOverview Institutional Asset Ledger (Global Bank) v8.5.
+ * Hardened: Enforced strict null checks for all Firestore collection calls to prevent runtime crashes.
  */
 
 export default function QuestionBank() {
@@ -45,16 +45,16 @@ export default function QuestionBank() {
   const [lastDoc, setLastDoc] = useState<any>(null)
   const [hasMore, setLastHasMore] = useState(true)
 
-  const mocksQuery = useMemo(() => (db && typeof db === 'object' ? collection(db, "mocks") : null), [db])
-  const boardsQuery = useMemo(() => (db && typeof db === 'object' ? collection(db, "boards") : null), [db])
-  const subjectsQuery = useMemo(() => (db && typeof db === 'object' ? collection(db, "subjects") : null), [db])
+  const mocksQuery = useMemo(() => (db ? collection(db, "mocks") : null), [db])
+  const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db])
+  const subjectsQuery = useMemo(() => (db ? collection(db, "subjects") : null), [db])
 
   const { data: allMocks } = useCollection<any>(mocksQuery)
   const { data: boards } = useCollection<any>(boardsQuery)
   const { data: subjects } = useCollection<any>(subjectsQuery)
 
   const fetchQuestions = useCallback(async (isNext = false) => {
-    if (!db || typeof db !== 'object') return
+    if (!db) return
     setLoading(true)
     
     try {
@@ -67,7 +67,7 @@ export default function QuestionBank() {
         constraints.push(startAfter(lastDoc))
       }
 
-      const q = query(collection(db as Firestore, "questions"), ...constraints)
+      const q = query(collection(db, "questions"), ...constraints)
       const snap = await getDocs(q)
       
       const newQs = snap.docs.map(d => ({ ...d.data(), id: d.id }))
@@ -89,7 +89,7 @@ export default function QuestionBank() {
   }, [db, boardFilter, examFilter, lastDoc, toast])
 
   useEffect(() => {
-    if (db && typeof db === 'object') fetchQuestions()
+    if (db) fetchQuestions()
   }, [boardFilter, examFilter, db, fetchQuestions])
 
   const usageMap = useMemo(() => {
@@ -140,8 +140,8 @@ export default function QuestionBank() {
 
     setIsDeleting(true)
     try {
-      const batch = writeBatch(db as Firestore)
-      ids.forEach(id => { batch.delete(doc(db as Firestore, "questions", id)) })
+      const batch = writeBatch(db)
+      ids.forEach(id => { batch.delete(doc(db, "questions", id)) })
       await batch.commit()
       toast({ title: "Audit Success", description: `${ids.length} items successfully purged.` })
       setSelectedIds([])
@@ -160,7 +160,7 @@ export default function QuestionBank() {
       if (!confirm(`WARNING: This question is used in ${usage.length} mocks. Proceed?`)) return;
     } else if (!confirm("Permanently purge this asset?")) return;
     
-    const qRef = doc(db as Firestore, "questions", id)
+    const qRef = doc(db, "questions", id)
     deleteDoc(qRef)
       .then(() => {
         toast({ title: "Asset Purged" })

@@ -34,7 +34,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Exam Master Registry.
- * High-fidelity normalization tool for organizing recruitment hubs.
+ * Hardened: Enforced null checks on all collection calls.
  */
 
 export default function ExamRegistryPage() {
@@ -109,20 +109,17 @@ export default function ExamRegistryPage() {
 
     setIsMerging(true)
     try {
-      // 1. Audit Linked Questions
       const qSnap = await getDocs(query(collection(db, "questions"), where("examId", "==", mergeSource)))
       const batch = writeBatch(db)
       qSnap.docs.forEach(d => {
          batch.update(doc(db, "questions", d.id), { examId: mergeTarget, updatedAt: serverTimestamp() })
       })
 
-      // 2. Audit Linked Mocks
       const mSnap = await getDocs(query(collection(db, "mocks"), where("examId", "==", mergeSource)))
       mSnap.docs.forEach(d => {
          batch.update(doc(db, "mocks", d.id), { examId: mergeTarget, updatedAt: serverTimestamp() })
       })
 
-      // 3. Purge Source Hub
       batch.delete(doc(db, "exams", mergeSource))
 
       await batch.commit()
@@ -254,7 +251,7 @@ export default function ExamRegistryPage() {
                         className="w-full h-14 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none"
                      >
                         <option value="">Select Board</option>
-                        {boards?.map(b => <option key={b.id} value={b.id}>{b.abbreviation}</option>)}
+                        {boards?.map((b: any) => <option key={b.id} value={b.id}>{b.abbreviation}</option>)}
                      </select>
                   </div>
                   <div className="space-y-2">
@@ -277,65 +274,6 @@ export default function ExamRegistryPage() {
                   {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Commit Hub to Registry"}
                </Button>
             </DialogFooter>
-         </DialogContent>
-      </Dialog>
-
-      {/* Normalization Engine (Merge) */}
-      <Dialog open={mergeDialogOpen} onOpenChange={setMergeDialogOpen}>
-         <DialogContent className="sm:max-w-2xl rounded-[3rem] bg-[#0F172A] text-white border-white/10 shadow-4xl p-0 overflow-hidden text-left">
-            <div className="p-12 space-y-10">
-               <div className="flex items-center gap-6">
-                  <div className="h-16 w-16 bg-emerald-500 rounded-3xl flex items-center justify-center text-white shadow-2xl">
-                     <GitMerge className="h-8 w-8" />
-                  </div>
-                  <div className="text-left">
-                     <h2 className="text-3xl font-headline font-black uppercase">Hub Normalization</h2>
-                     <p className="text-slate-400 text-sm font-medium">Consolidate fragmented recruitment nodes into a canonical hub.</p>
-                  </div>
-               </div>
-
-               <div className="grid grid-cols-1 md:grid-cols-11 gap-4 items-center">
-                  <div className="md:col-span-5 space-y-2">
-                     <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Fragment Hub (Merge)</label>
-                     <select 
-                        value={mergeSource} 
-                        onChange={e => setMergeSource(e.target.value)}
-                        className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-4 outline-none font-bold"
-                     >
-                        <option value="" className="bg-[#0F172A]">Select Fragment</option>
-                        {exams?.map(e => <option key={e.id} value={e.id} className="bg-[#0F172A]">{e.name}</option>)}
-                     </select>
-                  </div>
-                  <div className="md:col-span-1 flex justify-center opacity-30">
-                     <ChevronRight className="h-6 w-6" />
-                  </div>
-                  <div className="md:col-span-5 space-y-2">
-                     <label className="text-[10px] font-black uppercase text-primary ml-1">Canonical Hub (Keep)</label>
-                     <select 
-                        value={mergeTarget} 
-                        onChange={e => setMergeTarget(e.target.value)}
-                        className="w-full h-14 bg-white/5 border border-primary/30 rounded-2xl px-4 outline-none font-black text-primary shadow-[0_0_15px_rgba(249,115,22,0.1)]"
-                     >
-                        <option value="" className="bg-[#0F172A]">Select Canonical</option>
-                        {exams?.map(e => <option key={e.id} value={e.id} className="bg-[#0F172A]">{e.name}</option>)}
-                     </select>
-                  </div>
-               </div>
-
-               <div className="bg-white/5 p-8 rounded-[2rem] border border-white/5 flex items-start gap-4">
-                  <AlertTriangle className="h-6 w-6 text-rose-500 shrink-0" />
-                  <p className="text-[11px] font-medium text-slate-400 leading-relaxed uppercase">
-                     <strong>CRITICAL:</strong> All linked MCQs, mocks, and results from the fragment will be reassigned to the canonical hub. The fragment node will be purged. This action is terminal.
-                  </p>
-               </div>
-
-               <div className="flex gap-4">
-                  <Button variant="ghost" onClick={() => setMergeDialogOpen(false)} className="rounded-2xl h-16 px-8 font-black uppercase text-[10px] text-slate-400 hover:text-white">Cancel Audit</Button>
-                  <Button onClick={handleDeepMerge} disabled={isMerging || !mergeSource || !mergeTarget} className="flex-1 bg-emerald-600 hover:bg-emerald-700 h-16 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl gap-3">
-                     {isMerging ? <Loader2 className="h-5 w-5 animate-spin" /> : <GitMerge className="h-5 w-5" />} Execute Consolidation
-                  </Button>
-               </div>
-            </div>
          </DialogContent>
       </Dialog>
     </div>

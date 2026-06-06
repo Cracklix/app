@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -15,8 +16,9 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview Hardened CBT Question Renderer v3.0.
- * Optimized: Reduced typography sizes and margins for high-density mobile interface.
+ * @fileOverview Hardened CBT Question Renderer v4.0.
+ * Scaling: Reduced typography sizes to 18px (mobile) / 21px (desktop).
+ * Logic: Added field-level fallbacks for legacy data registry support.
  */
 export default function QuestionRenderer({ 
   question, 
@@ -55,11 +57,11 @@ export default function QuestionRenderer({
             </div>
          </div>
          <div className="flex gap-2 md:gap-3">
-            <button className="h-9 w-9 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary transition-all shadow-sm">
-               <Bookmark className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            <button className="h-8 w-8 md:h-9 md:w-9 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary transition-all shadow-sm">
+               <Bookmark className="h-3.5 w-3.5" />
             </button>
-            <button className="h-9 w-9 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-rose-500 transition-all shadow-sm">
-               <Flag className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            <button className="h-8 w-8 md:h-9 md:w-9 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-rose-500 transition-all shadow-sm">
+               <Flag className="h-3.5 w-3.5" />
             </button>
          </div>
       </div>
@@ -72,7 +74,7 @@ export default function QuestionRenderer({
             </div>
          )}
          
-         {isBi && <div className="h-px w-full bg-slate-50 border-t border-dashed border-slate-200 my-1" />}
+         {isBi && englishQ && punjabiQ && <div className="h-px w-full bg-slate-50 border-t border-dashed border-slate-200 my-1" />}
 
          {(isPa || isBi) && (
             <div className={typographyClass}>
@@ -87,6 +89,8 @@ export default function QuestionRenderer({
           {['A', 'B', 'C', 'D'].map(key => {
             const en = q[`option${key}English`] || q[`option_${key.toLowerCase()}_english`];
             const pa = q[`option${key}Punjabi`] || q[`option_${key.toLowerCase()}_punjabi`];
+
+            if (!en && !pa) return null;
 
             return (
               <div key={key} className="flex gap-3 md:gap-5 items-center group p-3 md:p-4 rounded-lg md:rounded-xl border-2 border-slate-100 hover:border-[#F97316]/30 transition-all bg-white shadow-sm cursor-pointer hover:shadow-lg active:scale-[0.99]">
