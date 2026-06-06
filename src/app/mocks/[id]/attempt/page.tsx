@@ -25,8 +25,8 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Hardened CBT Attempt Hub v17.1.
- * Updated: Mobile palette height optimized to 65vh to prevent full-screen coverage.
+ * @fileOverview Final CBT Attempt Node v18.0.
+ * Fixed: Relocated TacticalFooter from fixed-bottom to inline-flow to prevent mobile clipping.
  */
 
 export default function MockAttemptPage() {
@@ -188,7 +188,7 @@ export default function MockAttemptPage() {
   const selectedAnswer = examStore.answers[examStore.currentIdx];
 
   return (
-    <div className="flex flex-col h-screen h-svh overflow-hidden bg-[#000000] font-body select-none">
+    <div className="flex flex-col h-screen bg-black font-body select-none">
       <AntiCheat />
       <ExamHeader 
         onPaletteToggle={() => setIsMobilePaletteOpen(true)} 
@@ -203,15 +203,15 @@ export default function MockAttemptPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 z-[100] bg-[#000000]/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-6"
+              className="absolute inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4"
             >
               <div className="max-w-md w-full bg-white rounded-[2rem] shadow-5xl overflow-hidden">
                  <div className="bg-slate-50 p-6 border-b border-slate-100 text-center space-y-3">
-                    <div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto text-primary shadow-xl">
-                       <Play className="h-6 v-6 fill-current" />
+                    <div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto text-primary">
+                       <Play className="h-6 w-6 fill-current" />
                     </div>
                     <div>
-                       <h2 className="text-xl md:text-2xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-none">TEST PAUSED</h2>
+                       <h2 className="text-xl md:text-2xl font-headline font-black text-[#0F172A] uppercase tracking-tight">TEST PAUSED</h2>
                        <p className="text-slate-500 font-medium uppercase text-[8px] tracking-widest mt-1">Institutional Progress Audit</p>
                     </div>
                  </div>
@@ -231,15 +231,20 @@ export default function MockAttemptPage() {
           )}
         </AnimatePresence>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-6 lg:p-8 bg-[#000000] flex flex-col items-center">
-           <div className="w-full max-w-[920px] pb-24 md:pb-10">
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar bg-black flex flex-col items-center">
+           <div className="w-full max-w-[920px] p-3 md:p-6 lg:p-8 space-y-4">
               {q && (
-                <QuestionRenderer 
-                   language={examStore.language} 
-                   question={{...q, displayId: (examStore.currentIdx + 1).toString()}} 
-                   selectedAnswer={selectedAnswer}
-                   onSelect={(idx) => examStore.setAnswer(examStore.currentIdx, idx, db)}
-                />
+                <>
+                  <QuestionRenderer 
+                    language={examStore.language} 
+                    question={{...q, displayId: (examStore.currentIdx + 1).toString()}} 
+                    selectedAnswer={selectedAnswer}
+                    onSelect={(idx) => examStore.setAnswer(examStore.currentIdx, idx, db)}
+                  />
+                  {/* RELOCATED FOOTER: Direct Flow below question */}
+                  <TacticalFooter onSubmit={() => setShowSubmitModal(true)} />
+                </>
               )}
            </div>
         </div>
@@ -250,7 +255,6 @@ export default function MockAttemptPage() {
               initial={{ x: 380 }}
               animate={{ x: 0 }}
               exit={{ x: 380 }}
-              transition={{ type: 'spring', damping: 30, stiffness: 250 }}
               className="hidden lg:block w-[320px] shrink-0 h-full border-l border-white/5 bg-white"
             >
                <QuestionPalette onSelect={(idx) => examStore.setCurrentIdx(idx)} onSubmit={() => setShowSubmitModal(true)} />
@@ -258,8 +262,6 @@ export default function MockAttemptPage() {
           )}
         </AnimatePresence>
       </main>
-
-      <TacticalFooter onSubmit={() => setShowSubmitModal(true)} />
       
       <Sheet open={isMobilePaletteOpen} onOpenChange={setIsMobilePaletteOpen}>
         <SheetContent side="bottom" className="h-[65vh] p-0 border-none rounded-t-[3rem] overflow-hidden">
@@ -276,7 +278,7 @@ export default function MockAttemptPage() {
       <Dialog open={showSubmitModal} onOpenChange={setShowSubmitModal}>
          <DialogContent className="max-w-[420px] w-[95vw] rounded-[2rem] p-6 md:p-8 bg-white border-none shadow-5xl text-left">
             <DialogHeader className="text-center space-y-3">
-               <div className="h-12 w-12 bg-emerald-50 rounded-[1.25rem] flex items-center justify-center mx-auto text-emerald-600 shadow-xl">
+               <div className="h-12 w-12 bg-emerald-50 rounded-[1.25rem] flex items-center justify-center mx-auto text-emerald-600">
                   <ShieldCheck className="h-7 w-7" />
                </div>
                <div>
@@ -304,7 +306,7 @@ export default function MockAttemptPage() {
       <Dialog open={showExitModal} onOpenChange={setShowExitModal}>
          <DialogContent className="max-w-[400px] w-[90vw] rounded-[2rem] p-8 bg-white border-none shadow-5xl text-center">
             <DialogHeader className="space-y-4">
-               <div className="h-16 w-16 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto text-rose-500 shadow-lg">
+               <div className="h-16 w-16 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto text-rose-500">
                   <AlertTriangle className="h-8 w-8" />
                </div>
                <DialogTitle className="text-2xl font-headline font-black text-[#0F172A] uppercase">Leave Evaluation?</DialogTitle>
