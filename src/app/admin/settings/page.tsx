@@ -9,15 +9,15 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import { Globe, Shield, Layout, Bell, Save, RefreshCw, ShieldCheck, Lock, CloudLightning, FileCode, QrCode, Phone, Zap, Megaphone, MapPin, Mail, Twitter, Facebook, Instagram, Send, MousePointer2 } from "lucide-react"
+import { Globe, Shield, Layout, Bell, Save, RefreshCw, ShieldCheck, Lock, CloudLightning, FileCode, QrCode, Phone, Zap, Megaphone, MapPin, Mail, Twitter, Facebook, Instagram, Send, MousePointer2, Smartphone } from "lucide-react"
 import { useDoc, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Final Enterprise CMS Node v5.1.
- * Features: AdSense Control & Manual Payment Configuration.
+ * @fileOverview Final Enterprise CMS Node v5.2.
+ * Features: Play Store / App Store link management & AdSense Control.
  */
 
 export default function AdminSettings() {
@@ -47,6 +47,8 @@ export default function AdminSettings() {
     instagramUrl: "",
     twitterUrl: "",
     telegramUrl: "https://t.me/cracklixapp",
+    playStoreUrl: "#",
+    appStoreUrl: "#",
     adSenseEnabled: false,
     adSenseClientCode: ""
   });
@@ -73,7 +75,7 @@ export default function AdminSettings() {
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">System Configuration Node</span>
            </div>
           <h1 className="text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tight">System Portal</h1>
-          <p className="text-slate-500 mt-2 text-lg font-medium">Enterprise Control: CMS, Security, and Monetization.</p>
+          <p className="text-slate-500 mt-2 text-lg font-medium">Enterprise Control: CMS, Security, and App Links.</p>
         </div>
         <Button onClick={handleSave} className="bg-primary hover:bg-primary/90 h-16 px-12 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl gap-3">
           <Save className="h-5 w-5" /> Commit Platform Changes
@@ -85,7 +87,7 @@ export default function AdminSettings() {
           <TabsTrigger value="homepage" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white">Global CMS</TabsTrigger>
           <TabsTrigger value="social" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white">Social & Contact</TabsTrigger>
           <TabsTrigger value="monetization" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white">Monetization</TabsTrigger>
-          <TabsTrigger value="logic" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white">Logic Engines</TabsTrigger>
+          <TabsTrigger value="app-links" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white">App Stores</TabsTrigger>
         </TabsList>
 
         <TabsContent value="homepage">
@@ -126,6 +128,24 @@ export default function AdminSettings() {
                 />
              </div>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="app-links">
+           <Card className="border-slate-100 bg-white shadow-xl rounded-[3rem] p-12 space-y-12">
+              <h3 className="font-headline font-black text-xl uppercase flex items-center gap-3">
+                 <Smartphone className="h-6 w-6 text-primary" /> Mobile Distribution
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                 <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Google Play Store Link</Label>
+                    <Input value={formData.playStoreUrl} onChange={e => setFormData({...formData, playStoreUrl: e.target.value})} className="h-14 rounded-xl bg-slate-50 border-slate-100 font-bold" placeholder="https://play.google.com/store/apps/details?id=..." />
+                 </div>
+                 <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Apple App Store Link</Label>
+                    <Input value={formData.appStoreUrl} onChange={e => setFormData({...formData, appStoreUrl: e.target.value})} className="h-14 rounded-xl bg-slate-50 border-slate-100 font-bold" placeholder="https://apps.apple.com/app/..." />
+                 </div>
+              </div>
+           </Card>
         </TabsContent>
 
         <TabsContent value="social">

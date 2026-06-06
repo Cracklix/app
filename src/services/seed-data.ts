@@ -1,9 +1,10 @@
+
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Engine v5.2.
+ * @fileOverview Institutional Seeding Engine v5.3.
  * Organizes content into Punjab State, Teaching, and Central verticals.
- * Fixed: Verified URLs and consistent board IDs for routing integrity.
+ * Includes Anganwadi, ETT, and Lecturer Cadre.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('[AUDIT] Initializing Global Institutional Registry Sync...');
@@ -14,6 +15,8 @@ export async function seedInitialData(db: Firestore) {
   const eduDeptLogo = 'https://pstet.pseb.ac.in/img/main-logo-2.png';
   const ppscOfficialLogo = 'https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png';
   const armyEmblem = 'https://pbs.twimg.com/profile_images/2054486939102035969/AE8RcJUh_400x400.jpg';
+  const courtLogo = 'https://highcourtchd.gov.in/images/newlogo.png';
+  const ctetLogo = 'https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png';
 
   // 1. Boards Registry
   const boards = [
@@ -21,14 +24,15 @@ export async function seedInitialData(db: Firestore) {
     { id: 'psssb', abbreviation: 'PSSSB', name: 'Punjab Subordinate Services Selection Board', iconUrl: psssbLogo, region: 'Punjab', category: 'PUNJAB_STATE', description: 'Group B and C recruitment hub.' },
     { id: 'punjab-police', abbreviation: 'Police', name: 'Punjab Police Recruitment', iconUrl: policeLogo, region: 'Punjab', category: 'PUNJAB_STATE', description: 'District and Armed cadre registry.' },
     { id: 'pspcl', abbreviation: 'PSPCL', name: 'Punjab State Power Corporation Limited', iconUrl: 'https://pspcl.in/assets/images/logo.png', region: 'Punjab', category: 'PUNJAB_STATE', description: 'Technical and clerical power nodes.' },
-    { id: 'pstcl', abbreviation: 'PSTCL', name: 'Punjab State Transmission Corporation', iconUrl: 'https://pstcl.org/images/logo.png', region: 'Punjab', category: 'PUNJAB_STATE', description: 'Transmission sector recruitment.' },
     { id: 'ppsc', abbreviation: 'PPSC', name: 'Punjab Public Service Commission', iconUrl: ppscOfficialLogo, region: 'Punjab', category: 'PUNJAB_STATE', description: 'Class A and B Gazetted services.' },
-    { id: 'high-court', abbreviation: 'High Court', name: 'Punjab & Haryana High Court', iconUrl: 'https://highcourtchd.gov.in/images/newlogo.png', region: 'Punjab', category: 'PUNJAB_STATE', description: 'Judicial and SSSC clerical nodes.' },
+    { id: 'high-court', abbreviation: 'High Court', name: 'Punjab & Haryana High Court', iconUrl: courtLogo, region: 'Punjab', category: 'PUNJAB_STATE', description: 'Judicial and SSSC clerical nodes.' },
+    { id: 'punjab-anganwadi', abbreviation: 'Anganwadi', name: 'Punjab Anganwadi Recruitment', iconUrl: stateEmblem, region: 'Punjab', category: 'PUNJAB_STATE', description: 'Social security and child development node.' },
     
     // Teaching Exams
     { id: 'pstet-board', abbreviation: 'PSTET', name: 'Punjab Education Dept (PSTET)', iconUrl: eduDeptLogo, region: 'Punjab', category: 'TEACHING', description: 'State Teacher Eligibility Hub.' },
-    { id: 'ctet-board', abbreviation: 'CTET', name: 'Central Teacher Eligibility Test', iconUrl: 'https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png', region: 'National', category: 'TEACHING', description: 'Central schooling eligibility node.' },
-    { id: 'master-cadre', abbreviation: 'Master Cadre', name: 'Punjab Master Cadre Board', iconUrl: eduDeptLogo, region: 'Punjab', category: 'TEACHING', description: 'Subject-specific teacher recruitment.' },
+    { id: 'ctet-board', abbreviation: 'CTET', name: 'Central Teacher Eligibility Test', iconUrl: ctetLogo, region: 'National', category: 'TEACHING', description: 'Central schooling eligibility node.' },
+    { id: 'ett-cadre', abbreviation: 'ETT', name: 'Punjab ETT Cadre', iconUrl: eduDeptLogo, region: 'Punjab', category: 'TEACHING', description: 'Elementary Teacher Training vertical.' },
+    { id: 'lecturer-cadre', abbreviation: 'Lecturer', name: 'Punjab Lecturer Cadre', iconUrl: eduDeptLogo, region: 'Punjab', category: 'TEACHING', description: 'Higher secondary teaching node.' },
     
     // Central Exams
     { id: 'indian-army', abbreviation: 'ARMY', name: 'Indian Army Recruitment', iconUrl: armyEmblem, region: 'National', category: 'CENTRAL', description: 'Defense and Agniveer verticals.' },

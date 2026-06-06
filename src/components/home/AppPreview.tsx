@@ -1,22 +1,28 @@
 
 'use client';
 
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Smartphone, CheckCircle2, Map as MapIcon, Globe, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Apple, Play } from "lucide-react";
+import { useDoc, useFirestore } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Final Geographic Registry Hub v6.0.
- * Re-engineered for absolute map visibility: 
- * - Removed all card containers and overlapping overlays.
- * - Maps are now raw, high-fidelity nodes on the section background.
- * - Labels moved below the content to ensure zero-clipping.
+ * @fileOverview Final Geographic Registry Hub v6.1.
+ * Features: Dynamic Play Store and App Store links from global settings.
  */
 
 export default function AppPreview() {
+  const db = useFirestore();
   const punjabMap = "https://www.mapsofindia.com/maps/punjab/punjab-map.jpg";
   const indiaMap = "https://www.mapsofindia.com/images2/india-map.jpg";
+
+  const { data: settings } = useDoc<any>(useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]));
+
+  const playStoreLink = settings?.playStoreUrl || "#";
+  const appStoreLink = settings?.appStoreUrl || "#";
 
   return (
     <section className="py-32 bg-white overflow-hidden border-t border-slate-50">
@@ -47,27 +53,31 @@ export default function AppPreview() {
             </ul>
 
             <div className="flex flex-wrap gap-4 pt-8">
-              <Button className="h-16 px-8 bg-[#0F172A] hover:bg-black text-white rounded-2xl flex items-center gap-4 shadow-xl transition-all active:scale-95">
-                <Apple className="h-8 w-8" />
-                <div className="text-left">
-                  <p className="text-[10px] uppercase font-bold opacity-50 leading-none">Download on</p>
-                  <p className="text-xl font-bold mt-1 leading-none">App Store</p>
-                </div>
-              </Button>
-              <Button className="h-16 px-8 bg-[#0F172A] hover:bg-black text-white rounded-2xl flex items-center gap-4 shadow-xl transition-all active:scale-95">
-                <Play className="h-8 w-8" />
-                <div className="text-left">
-                  <p className="text-[10px] uppercase font-bold opacity-50 leading-none">Get it on</p>
-                  <p className="text-xl font-bold mt-1 leading-none">Google Play</p>
-                </div>
-              </Button>
+              <a href={appStoreLink} target="_blank" rel="noopener noreferrer">
+                <Button className="h-16 px-8 bg-[#0F172A] hover:bg-black text-white rounded-2xl flex items-center gap-4 shadow-xl transition-all active:scale-95">
+                  <Apple className="h-8 w-8" />
+                  <div className="text-left">
+                    <p className="text-[10px] uppercase font-bold opacity-50 leading-none">Download on</p>
+                    <p className="text-xl font-bold mt-1 leading-none">App Store</p>
+                  </div>
+                </Button>
+              </a>
+              <a href={playStoreLink} target="_blank" rel="noopener noreferrer">
+                <Button className="h-16 px-8 bg-[#0F172A] hover:bg-black text-white rounded-2xl flex items-center gap-4 shadow-xl transition-all active:scale-95">
+                  <Play className="h-8 w-8" />
+                  <div className="text-left">
+                    <p className="text-[10px] uppercase font-bold opacity-50 leading-none">Get it on</p>
+                    <p className="text-xl font-bold mt-1 leading-none">Google Play</p>
+                  </div>
+                </Button>
+              </a>
             </div>
           </motion.div>
 
           <div className="space-y-16">
              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative">
                 
-                {/* Punjab Registry Node - ZERO OVERLAY */}
+                {/* Punjab Registry Node */}
                 <motion.div 
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -94,7 +104,7 @@ export default function AppPreview() {
                    </div>
                 </motion.div>
 
-                {/* National Registry Node - ZERO OVERLAY */}
+                {/* National Registry Node */}
                 <motion.div 
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
