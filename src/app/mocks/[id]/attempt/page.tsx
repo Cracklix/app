@@ -27,8 +27,8 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Final Production-Grade CBT Attempt Hub v4.0.
- * Updated: Hydrates questions with section identity from mock registry.
+ * @fileOverview Final Institutional CBT Attempt Hub v5.0.
+ * Optimized: Cinema Dark Mode for question area.
  */
 
 export default function MockAttemptPage() {
@@ -58,7 +58,6 @@ export default function MockAttemptPage() {
           (mockData.questionIds || []).map((id: string) => getDoc(doc(db, "questions", id)))
         );
         
-        // Hydrate questions with section identity
         let questions = qSnaps.map(s => s.exists() ? ({ ...s.data(), id: s.id }) : null).filter(Boolean) as any[];
 
         if (mockData.sections && mockData.sections.length > 0) {
@@ -187,7 +186,7 @@ export default function MockAttemptPage() {
   const q = examStore.questions[examStore.currentIdx];
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-50 font-body select-none">
+    <div className="flex flex-col h-screen overflow-hidden bg-slate-900 font-body select-none">
       <AntiCheat />
       <ExamHeader onPaletteToggle={() => setIsMobilePaletteOpen(true)} />
       <SubjectTabs />
@@ -227,15 +226,15 @@ export default function MockAttemptPage() {
           )}
         </AnimatePresence>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-8">
-           <div className="max-w-[900px] mx-auto pb-24">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-8 bg-[#000000]">
+           <div className="max-w-[1000px] mx-auto pb-24">
               {q ? (
                 <QuestionRenderer 
                    language={examStore.language} 
                    question={{...q, displayId: (examStore.currentIdx + 1).toString()}} 
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center h-full opacity-20">
+                <div className="flex flex-col items-center justify-center h-full opacity-20 text-white">
                    <AlertTriangle className="h-10 w-10 mb-4" />
                    <p className="font-black uppercase tracking-widest text-[10px]">Node Missing</p>
                 </div>
@@ -250,7 +249,7 @@ export default function MockAttemptPage() {
               animate={{ x: 0 }}
               exit={{ x: 380 }}
               transition={{ type: 'spring', damping: 30, stiffness: 250 }}
-              className="hidden lg:block w-[380px] shrink-0 h-full border-l"
+              className="hidden lg:block w-[380px] shrink-0 h-full border-l border-white/5 bg-white"
             >
                <QuestionPalette onSelect={(idx) => examStore.setCurrentIdx(idx)} onSubmit={() => setShowSubmitModal(true)} />
             </motion.aside>

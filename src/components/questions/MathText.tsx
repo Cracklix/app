@@ -12,8 +12,8 @@ interface MathTextProps {
 }
 
 /**
- * @fileOverview Precision Neat & Clean Math Renderer v11.0.
- * Uniform Typography Pass: Removed color overrides for symbols to ensure 100% #111111 consistency.
+ * @fileOverview Precision High-Contrast Math Renderer v12.0.
+ * Optimized for Dark Themes: Ensures white rendering on deep backgrounds.
  */
 export default function MathText({ text, className }: MathTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -26,7 +26,7 @@ export default function MathText({ text, className }: MathTextProps) {
       
       const renderedHtml = lines.map(line => {
         const trimmed = line.trim();
-        if (!trimmed) return '<div class="h-6"></div>';
+        if (!trimmed) return '<div class="h-4"></div>';
 
         // Normalize symbols for logic detection
         let processed = trimmed
@@ -43,33 +43,28 @@ export default function MathText({ text, className }: MathTextProps) {
 
         if (isPureFormula || (hasSymbols && !/[a-z]{4,}/i.test(trimmed))) {
           try {
-            return `<div class="py-3 overflow-x-auto no-scrollbar font-sans text-xl md:text-2xl">${katex.renderToString(processed, {
+            return `<div class="py-2 overflow-x-auto no-scrollbar font-sans text-lg md:text-xl text-white">${katex.renderToString(processed, {
               throwOnError: false,
               displayMode: false,
               trust: true
             })}</div>`;
           } catch (e) {
-            return `<div class="py-3">${trimmed}</div>`;
+            return `<div class="py-2 text-white">${trimmed}</div>`;
           }
         }
 
         // descriptive text (e.g., "Total age = 300")
         if (trimmed.includes('=') && !/[a-z]{10,}/i.test(trimmed)) {
           const parts = trimmed.split('=');
-          return `<div class="py-3 flex flex-wrap items-baseline gap-2">
-            <span class="font-black text-inherit uppercase tracking-wide">${parts[0].trim()}</span>
+          return `<div class="py-2 flex flex-wrap items-baseline gap-2 text-white">
+            <span class="font-bold text-inherit uppercase tracking-wide">${parts[0].trim()}</span>
             <span class="text-inherit font-black">=</span>
-            <span class="font-black text-inherit">${parts[1].trim()}</span>
+            <span class="font-bold text-inherit">${parts[1].trim()}</span>
           </div>`;
         }
-        
-        // Header detection for "Formula:", "Calculation:", etc.
-        if (trimmed.endsWith(':')) {
-           return `<div class="font-black text-inherit mt-8 mb-4 uppercase tracking-[0.2em] text-xs md:text-sm border-l-4 border-slate-300 pl-4 bg-slate-50 py-2 rounded-r-lg">${trimmed}</div>`;
-        }
 
-        // Standard neat text line with maximum spacing
-        return `<div class="py-2 text-inherit font-black leading-[2.2] tracking-wide antialiased">${trimmed}</div>`;
+        // Standard neat text line
+        return `<div class="py-1 text-inherit font-[700] leading-[1.8] antialiased">${trimmed}</div>`;
       }).join('');
 
       containerRef.current.innerHTML = renderedHtml;
@@ -81,7 +76,7 @@ export default function MathText({ text, className }: MathTextProps) {
   return (
     <div 
       ref={containerRef} 
-      className={cn("whitespace-pre-wrap leading-[2.2] h-auto overflow-visible tracking-wide", className)} 
+      className={cn("whitespace-pre-wrap leading-relaxed h-auto overflow-visible text-white", className)} 
     />
   );
 }
