@@ -7,6 +7,8 @@ export type Gender = 'Male' | 'Female' | 'Other';
 export type AccessType = 'FREE' | 'PREMIUM';
 export type RegionType = 'Punjab' | 'National';
 export type BoardCategory = 'PUNJAB_STATE' | 'TEACHING' | 'CENTRAL';
+export type QuestionStatus = 'not-visited' | 'not-answered' | 'answered' | 'marked' | 'answered-marked';
+export type ExamLanguage = 'en' | 'pa' | 'hi' | 'bilingual';
 
 export interface Board {
   id: string;
@@ -57,15 +59,6 @@ export interface Pass {
   updatedAt?: any;
 }
 
-export interface UserSubscription {
-  id: string;
-  userId: string;
-  passId: string;
-  status: 'ACTIVE' | 'EXPIRED';
-  expiryDate: string;
-  purchaseDate: string;
-}
-
 export interface UserProfile {
   id: string;
   name: string;
@@ -96,33 +89,55 @@ export interface MockTest {
   difficulty: string;
   status: ContentStatus;
   published: boolean;
-  isDummy?: boolean;
   positiveMarks: number;
   negativeMarks: number;
+  parts?: string[]; // e.g. ["PART A", "PART B"]
   createdAt: any;
   updatedAt: any;
 }
 
 export interface Question {
   id: string;
+  partId?: string;
+  sectionId?: string;
   englishQuestion: string;
   punjabiQuestion: string;
+  hindiQuestion?: string;
   optionAEnglish: string;
   optionAPunjabi: string;
+  optionAHindi?: string;
   optionBEnglish: string;
   optionBPunjabi: string;
+  optionBHindi?: string;
   optionCEnglish: string;
   optionCPunjabi: string;
+  optionCHindi?: string;
   optionDEnglish: string;
   optionDPunjabi: string;
+  optionDHindi?: string;
   correctAnswer: 'A' | 'B' | 'C' | 'D';
   englishExplanation: string;
   punjabiExplanation: string;
+  hindiExplanation?: string;
   subjectId: string;
   boardId: string;
   difficulty: Difficulty;
   isStandalone: boolean;
   status: ContentStatus;
+  positiveMarks?: number;
+  negativeMarks?: number;
   createdAt: any;
   updatedAt: any;
+}
+
+export interface AttemptState {
+  answers: Record<number, number>; // index: optionIndex (0-3)
+  status: Record<number, QuestionStatus>;
+  visited: number[];
+  bookmarks: number[];
+  timeLeft: number;
+  currentIdx: number;
+  currentSectionId: string;
+  currentPartId: string;
+  violations?: number;
 }
