@@ -32,7 +32,7 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
         </div>
         {showTagline && (
           <div className={`flex flex-col leading-[1.1] mt-0.5 ${isLightVariant ? 'text-white/60' : 'text-slate-400'}`}>
-            <span className="text-[7px] md:text-[8px] font-black uppercase tracking-widest">PUNJAB'S NO. 1 HUB</span>
+            <span className="text-[7px] md:text-[8px] font-black uppercase tracking-widest">PUNJAB'S NO. 1 MOCK HUB</span>
           </div>
         )}
       </div>

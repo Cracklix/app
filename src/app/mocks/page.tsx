@@ -56,13 +56,13 @@ export default function MocksGatewayPage() {
              <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-sm">
                 <ShieldCheck className="h-6 w-6" />
              </div>
-             <span className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-500">Official Exam Registry 2026</span>
+             <span className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-500">Official Exam Registry</span>
           </div>
           <h1 className="text-3xl md:text-5xl lg:text-8xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-[0.85]">
             Select Your <br/> <span className="text-primary">Mastery Hub</span>
           </h1>
           <p className="text-slate-500 font-medium text-lg md:text-xl max-w-2xl mt-4 leading-relaxed">
-            Access strictly structured preparation matrices audited for official patterns.
+            Access strictly structured preparation matrices audited for upcoming exam patterns.
           </p>
         </div>
 
@@ -141,7 +141,7 @@ export default function MocksGatewayPage() {
                     <h2 className="text-5xl md:text-7xl font-headline font-black uppercase leading-[0.85]">Audit Your <br/> Progress.</h2>
                  </div>
                  <p className="text-slate-400 text-xl font-medium leading-relaxed max-w-xl">
-                    Every exam vertical is audited daily to ensure pattern accuracy and updated current affairs for 2026.
+                    Every exam vertical is audited daily to ensure pattern accuracy and updated current affairs for upcoming exams.
                  </p>
               </div>
            </div>

@@ -39,7 +39,7 @@ export default function LatestMocks() {
             <h2 className="text-2xl md:text-4xl font-headline font-black text-[#000000] uppercase tracking-tight">
               LATEST <span className="text-primary">MOCKS</span>
             </h2>
-            <p className="text-[11px] md:text-lg text-slate-500 font-medium">Updated for 2026 notifications.</p>
+            <p className="text-[11px] md:text-lg text-slate-500 font-medium">Updated for upcoming exams.</p>
           </div>
           <Link href="/mocks" className="text-primary font-black text-[7px] md:text-[11px] uppercase tracking-widest bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
             View All <ChevronRight className="h-3 w-3 inline" />

@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo } from "react"
@@ -141,7 +140,7 @@ export default function MockOverviewPage() {
                  <div className="space-y-4">
                     <h2 className="text-4xl font-headline font-black text-[#0F172A] uppercase">Premium Content Gated</h2>
                     <p className="text-slate-500 text-lg font-medium max-w-xl mx-auto">
-                       This high-fidelity practice series is part of the institutional premium vault. Upgrade your pass to unlock 500+ official pattern mocks and AI rationalizations.
+                       This high-fidelity practice series is part of the institutional premium vault. Upgrade your pass to unlock upcoming exam patterns and AI rationalizations.
                     </p>
                  </div>
 
@@ -164,7 +163,7 @@ export default function MockOverviewPage() {
                    <Guideline text="Ensure stable connectivity throughout the attempt node." />
                    <Guideline text="Bilingual toggle available inside the CBT engine." />
                    <Guideline text="Audit results generated instantly after submission." />
-                   <Guideline text="Access Protocol: Verified for 2026 patterns." />
+                   <Guideline text="Access Protocol: Upcoming exam patterns." />
                 </ul>
              </div>
           </div>

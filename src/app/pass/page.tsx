@@ -29,13 +29,13 @@ export default function PassPage() {
         <div className="text-center space-y-4 md:space-y-8 mb-12 md:mb-20">
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Badge className="bg-primary/10 text-primary border-none px-4 py-1.5 rounded-full font-black uppercase text-[8px] md:text-[10px] tracking-widest mb-4">
-                 Official Registry 2026
+                 Official Registry
               </Badge>
               <h1 className="text-3xl md:text-7xl lg:text-8xl font-headline font-black text-[#0F172A] tracking-tight uppercase leading-none">
                  SELECT YOUR <br/> <span className="text-primary">MASTERY PASS</span>
               </h1>
               <p className="text-xs md:text-lg text-slate-500 font-medium max-w-xl mx-auto mt-4 leading-relaxed">
-                 Invest in institutional precision. Unlock verified patterns and AI rationalizations for all 2026 recruitments.
+                 Invest in institutional precision. Unlock upcoming exam patterns and AI rationalizations for all recruitments.
               </p>
            </motion.div>
         </div>
@@ -100,7 +100,7 @@ export default function PassPage() {
                  <h2 className="text-3xl md:text-7xl font-headline font-black uppercase leading-tight">Audit Your <br/> Progress.</h2>
               </div>
               <p className="text-sm md:text-xl text-slate-400 font-medium leading-relaxed max-w-xl">
-                 Official preparation nodes are audited daily to ensure absolute pattern accuracy for 2026 state recruitments.
+                 Official preparation nodes are audited daily to ensure absolute pattern accuracy for upcoming exams.
               </p>
            </div>
         </div>

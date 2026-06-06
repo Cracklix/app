@@ -1,4 +1,3 @@
-
 'use client';
 
 import { motion } from "framer-motion";
@@ -56,7 +55,7 @@ export default function Hero() {
                   CRACK EVERY <br/> <span className="text-primary">RECRUITMENT.</span>
                </h1>
                <p className="text-[13px] md:text-xl text-slate-400 font-medium max-w-lg leading-relaxed">
-                  High-fidelity practice series for PSSSB, PPSC, Police, and Army. Verified patterns for 2026.
+                  High-fidelity practice series for PSSSB, PPSC, Police, and Army. Upcoming exam patterns.
                </p>
             </div>
 
