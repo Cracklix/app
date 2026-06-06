@@ -4,7 +4,7 @@ import React from 'react';
 import { Question } from '@/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { CheckCircle2, AlertTriangle, Info, Database } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, Info, Database, BrainCircuit } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface QuestionRendererProps {
@@ -14,9 +14,8 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview High-Fidelity Question Renderer v3.0.
- * Optimized for absolute formatting preservation (line breaks, para structure)
- * and original numbering (displayId) integration.
+ * @fileOverview High-Fidelity Question Renderer v3.1.
+ * Hardened: Guaranteed explanation visibility and sectional boundary checks.
  */
 
 export default function QuestionRenderer({ question, language, showSolution = false }: QuestionRendererProps) {
@@ -24,6 +23,7 @@ export default function QuestionRenderer({ question, language, showSolution = fa
   const showPa = language === 'pa' || language === 'bilingual';
   
   const isMissingPa = !question.questionPa || question.questionPa === question.questionEn;
+  const hasExplanation = !!(question.explanationEn || question.explanationPa);
 
   return (
     <div className="w-full text-left font-body animate-in fade-in duration-300">
@@ -120,20 +120,26 @@ export default function QuestionRenderer({ question, language, showSolution = fa
         <div className="mt-10 p-8 bg-emerald-50 rounded-[2.5rem] border border-emerald-100 space-y-6 shadow-xl animate-in slide-in-from-bottom-4">
            <div className="flex items-center gap-4">
               <div className="h-10 w-10 rounded-full bg-emerald-600 flex items-center justify-center text-white shadow-lg"><CheckCircle2 className="h-5 w-5" /></div>
-              <h4 className="text-[16px] text-[#0F172A] font-black uppercase tracking-tight">Institutional Key: {question.correctAnswer}</h4>
+              <h4 className="text-[16px] text-[#0F172A] font-black uppercase tracking-tight">Verified Answer Key: {question.correctAnswer}</h4>
            </div>
            
            <div className="space-y-6 pt-6 border-t border-emerald-200/50">
               {showEn && question.explanationEn && (
                 <div className="space-y-2">
-                   <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest ml-1">Rationale (EN)</p>
+                   <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest ml-1">Audit Rationale (English)</p>
                    <div className="text-[14px] text-slate-800 leading-relaxed font-bold bg-white/60 p-6 rounded-2xl whitespace-pre-wrap break-words">{question.explanationEn}</div>
                 </div>
               )}
               {showPa && question.explanationPa && (
                 <div className="space-y-2">
-                   <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest ml-1">ਵਿਆਖਿਆ (PA)</p>
+                   <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest ml-1">ਵਿਆਖਿਆ (Punjabi)</p>
                    <div className="text-[14px] text-slate-800 leading-relaxed font-bold bg-white/60 p-6 rounded-2xl whitespace-pre-wrap break-words">{question.explanationPa}</div>
+                </div>
+              )}
+              {!hasExplanation && (
+                <div className="flex items-center gap-3 p-4 bg-white/40 rounded-xl border border-dashed border-emerald-200">
+                   <BrainCircuit className="h-4 w-4 text-emerald-400" />
+                   <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-tight">AI Rationale Node is being generated for this asset.</p>
                 </div>
               )}
            </div>

@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo } from "react";
@@ -19,7 +18,7 @@ import Link from "next/link";
 
 /**
  * @fileOverview High-Density Mobile-First Homepage.
- * Activated with real-time Firestore statistics and correct branding.
+ * Updated: Precision counters for global Atomic Bank.
  */
 
 export default function HomePage() {
@@ -40,6 +39,12 @@ export default function HomePage() {
     return totalQs > 0 ? Math.round((totalCorrect / totalQs) * 100) : 68;
   }, [results]);
 
+  const formattedQCount = useMemo(() => {
+    const count = questions?.length || 0;
+    if (count > 999) return `${(count / 1000).toFixed(1)}k+`;
+    return count.toString();
+  }, [questions]);
+
   return (
     <main className="min-h-screen bg-white font-body pb-safe overflow-x-hidden">
       <Navbar />
@@ -52,7 +57,7 @@ export default function HomePage() {
                <TrustNode 
                  icon={<BookOpen className="text-primary h-3.5 w-3.5 md:h-6 md:w-6" />} 
                  label="MCQ Bank" 
-                 val={questions?.length || "0"} 
+                 val={formattedQCount} 
                />
                <TrustNode 
                  icon={<Zap className="text-blue-500 h-3.5 w-3.5 md:h-6 md:w-6" />} 

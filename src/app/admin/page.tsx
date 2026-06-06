@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -14,8 +13,8 @@ import { useToast } from "@/hooks/use-toast"
 import { Progress } from "@/components/ui/progress"
 
 /**
- * @fileOverview Final Command Center v6.5.
- * Features: Synchronized Statistics with Global Database Volume.
+ * @fileOverview Final Command Center v6.6.
+ * Features: High-Fidelity Question Counts per Section & Sync Matrix.
  */
 
 export default function AdminDashboard() {
@@ -36,24 +35,17 @@ export default function AdminDashboard() {
 
   const proUsers = useMemo(() => users?.filter((u: any) => u.status && u.status !== 'Free') || [], [users]);
 
-  // Global Accuracy Registry
-  const globalAccuracy = useMemo(() => {
-    if (!results || results.length === 0) return 0;
-    const totalCorrect = results.reduce((acc: number, r: any) => acc + (r.score || 0), 0);
-    const totalQs = results.reduce((acc: number, r: any) => acc + (r.totalQuestions || 0), 0);
-    return totalQs > 0 ? Math.round((totalCorrect / totalQs) * 100) : 0;
-  }, [results]);
-
-  // Exam-wise Content Matrix
+  // Exam-wise Content Matrix (Hardened for Sectional Counts)
   const examBreakdown = useMemo(() => {
-    if (!exams || !mocks) return [];
+    if (!exams || !mocks || !questions) return [];
     return exams.map(e => ({
       id: e.id,
       name: e.name,
       mockCount: mocks.filter(m => m.examId === e.id).length,
+      questionCount: questions.filter(q => q.examId === e.id).length,
       publishedCount: mocks.filter(m => m.examId === e.id && m.published).length
-    })).sort((a, b) => b.mockCount - a.mockCount);
-  }, [exams, mocks]);
+    })).sort((a, b) => b.questionCount - a.questionCount);
+  }, [exams, mocks, questions]);
 
   const handleSyncDatabase = async () => {
     if (!db) return
@@ -102,8 +94,8 @@ export default function AdminDashboard() {
             <CardHeader className="p-12 border-b border-slate-50 bg-slate-50/30">
                <div className="flex items-center justify-between">
                   <div className="text-left">
-                     <CardTitle className="text-2xl font-headline font-black uppercase text-[#0F172A]">Exam Distribution</CardTitle>
-                     <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Content density across recruitment verticals.</CardDescription>
+                     <CardTitle className="text-2xl font-headline font-black uppercase text-[#0F172A]">Vertical Breakdown</CardTitle>
+                     <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Content density across recruitment hubs.</CardDescription>
                   </div>
                   <Button variant="ghost" asChild className="text-primary font-black uppercase text-[10px] tracking-widest">
                      <Link href="/admin/exams">Registry Hub <ChevronRight className="h-3 w-3 ml-2" /></Link>
@@ -115,18 +107,20 @@ export default function AdminDashboard() {
                   {examBreakdown.map((e) => (
                      <div key={e.id} className="p-8 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
                         <div className="flex items-center gap-6">
-                           <div className="h-12 w-12 rounded-xl bg-slate-100 flex items-center justify-center font-black text-slate-400">
+                           <div className="h-12 w-12 rounded-xl bg-slate-100 flex items-center justify-center font-black text-slate-400 uppercase text-xs">
                               {e.name[0]}
                            </div>
                            <div>
                               <p className="font-black text-[#0B1528] text-lg uppercase leading-none">{e.name}</p>
-                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">{e.publishedCount} Published • {e.mockCount - e.publishedCount} Drafts</p>
+                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">
+                                {e.questionCount} Questions Locked • {e.mockCount} Series
+                              </p>
                            </div>
                         </div>
                         <div className="flex items-center gap-8 text-right">
                            <div className="space-y-1">
-                              <p className="text-2xl font-headline font-black text-[#0B1528]">{e.mockCount}</p>
-                              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Total Mocks</p>
+                              <p className="text-2xl font-headline font-black text-[#0B1528]">{e.questionCount}</p>
+                              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">MCQ Node Count</p>
                            </div>
                            <Button size="icon" variant="ghost" className="h-10 w-10 rounded-xl bg-slate-50"><ChevronRight className="h-4 w-4" /></Button>
                         </div>
