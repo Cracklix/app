@@ -61,7 +61,6 @@ function QuestionEntryContent() {
       setFormData(prev => ({ 
         ...prev, 
         ...existingData,
-        // Ensure strings for controlled inputs
         englishQuestion: existingData.englishQuestion || "",
         punjabiQuestion: existingData.punjabiQuestion || "",
         optionAEnglish: existingData.optionAEnglish || "",
@@ -94,7 +93,7 @@ function QuestionEntryContent() {
 
     const missing = mandatory.filter(key => !formData[key]?.trim());
     if (missing.length > 0) {
-       toast({ variant: "destructive", title: "Bilingual Audit Blocked", description: `Field missing: ${missing[0].replace(/([A-Z])/g, ' $1')}` })
+       toast({ variant: "destructive", title: "Validation Error", description: `Field missing: ${missing[0].replace(/([A-Z])/g, ' $1')}` })
        return
     }
 
@@ -134,12 +133,12 @@ function QuestionEntryContent() {
             <ChevronLeft className="h-6 w-6" />
           </button>
           <div className="text-left">
-            <h1 className="text-3xl font-black font-headline text-[#0F172A] uppercase tracking-tight">{isEditing ? "Audit Registry" : "Manual Ingestion Node"}</h1>
+            <h1 className="text-3xl font-black font-headline text-[#0F172A] uppercase tracking-tight">{isEditing ? "Modify Entry" : "Manual Ingestion"}</h1>
             <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mt-1">Strict 12-Node Field Control</p>
           </div>
         </div>
         <Button className="bg-primary hover:bg-primary/90 gap-3 font-black px-10 h-14 shadow-xl rounded-2xl uppercase tracking-widest text-xs" onClick={handleSave} disabled={isSaving}>
-           {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Commit Bilingual Assets
+           {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Commit to Registry
         </Button>
       </div>
 
@@ -162,7 +161,7 @@ function QuestionEntryContent() {
 
               <div className="space-y-6 pt-6 border-t border-slate-100">
                  <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">2. Option Matrix</p>
-                 <div className="grid grid-cols-1 gap-8">
+                 <div className="grid grid-cols-1 gap-6">
                     {['A','B','C','D'].map(opt => (
                        <div key={opt} className="grid grid-cols-2 gap-4 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
                           <div className="space-y-2">
@@ -180,7 +179,7 @@ function QuestionEntryContent() {
 
               <div className="grid grid-cols-2 gap-8 pt-6 border-t border-slate-100">
                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Logic Key</Label>
+                    <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Correct Key</Label>
                     <Select value={formData.correctAnswer} onValueChange={(v: any) => setFormData({...formData, correctAnswer: v})}>
                        <SelectTrigger className="h-12 rounded-xl bg-emerald-50 border-emerald-100 text-emerald-700 font-black"><SelectValue /></SelectTrigger>
                        <SelectContent>
@@ -198,14 +197,14 @@ function QuestionEntryContent() {
               </div>
 
               <div className="space-y-6 pt-6 border-t border-slate-100">
-                 <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">3. Solution Archives</p>
+                 <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">3. Solution Logic</p>
                  <div className="space-y-6">
                     <div className="space-y-2">
-                       <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">English Logic</Label>
+                       <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">English Rationale</Label>
                        <Textarea value={formData.englishExplanation || ""} onChange={e => setFormData({...formData, englishExplanation: e.target.value})} className="h-40 rounded-xl bg-slate-900 text-emerald-400 font-medium" />
                     </div>
                     <div className="space-y-2">
-                       <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Punjabi Logic</Label>
+                       <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Punjabi Rationale</Label>
                        <Textarea value={formData.punjabiExplanation || ""} onChange={e => setFormData({...formData, punjabiExplanation: e.target.value})} className="h-40 rounded-xl bg-slate-900 text-blue-400 font-medium" />
                     </div>
                  </div>
@@ -218,13 +217,26 @@ function QuestionEntryContent() {
              <div className="bg-[#0B1528] px-10 py-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                    <Eye className="h-4 w-4 text-primary" />
-                   <span className="text-[10px] font-black uppercase tracking-widest text-white">Student View Node</span>
+                   <span className="text-[10px] font-black uppercase tracking-widest text-white">CBT Preview Node</span>
                 </div>
-                <Badge className="bg-emerald-500 text-white border-none text-[8px] font-black uppercase tracking-widest px-3 py-1">Zero Inference Logic</Badge>
+                <div className="flex gap-2">
+                   {['EN', 'PA', 'BI'].map((l) => (
+                      <button 
+                        key={l}
+                        onClick={() => setFormData({...formData, previewLang: l.toLowerCase()})}
+                        className={cn(
+                           "text-[8px] font-black px-2 py-1 rounded border border-white/10 transition-all",
+                           formData.previewLang === l.toLowerCase() ? "bg-primary text-white" : "bg-white/5 text-slate-400"
+                        )}
+                      >
+                         {l}
+                      </button>
+                   ))}
+                </div>
              </div>
              <CardContent className="p-10 space-y-10 h-[70vh] overflow-y-auto custom-scrollbar text-left">
                 <QuestionRenderer 
-                   language="bilingual" 
+                   language={formData.previewLang || "bilingual"} 
                    question={formData} 
                    showSolution={true}
                 />
