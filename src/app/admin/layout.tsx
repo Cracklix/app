@@ -2,13 +2,18 @@
 'use client';
 
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { LayoutDashboard, Database, ClipboardList, Settings, Users, LogOut, ShieldCheck, Zap, Newspaper, FileText, Megaphone, Globe, MousePointer2, Layers, CheckCircle2, Gem, History, ShieldAlert, SearchCode, HeartPulse, HelpCircle, Upload, ListTree, Landmark, BookOpen, FileStack } from "lucide-react"
+import { LayoutDashboard, Database, ClipboardList, LogOut, ShieldCheck, Zap, Newspaper, Megaphone, Globe, MousePointer2, Layers, CheckCircle2, Gem, BookOpen, FileStack, Upload, ListTree, Landmark } from "lucide-react"
 import Link from "next/link"
 import Logo from "@/components/brand/Logo"
 import { useUser, useAuth } from "@/firebase"
 import { useRouter, usePathname } from "next/navigation"
 import { useEffect } from "react"
 import { signOut } from "firebase/auth"
+
+/**
+ * @fileOverview Administrative Sidebar & Navigation Layout.
+ * Mobile: Optimized SidebarTrigger and responsive inset padding.
+ */
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useUser()
@@ -34,18 +39,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   
   if (!user || !isAdmin) return null
 
-  const displayName = profile?.name || user?.displayName || 'System Admin';
-
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-white">
+      <div className="flex min-h-screen w-full bg-white font-body">
         <Sidebar className="border-r border-white/5 bg-[#0F172A]">
           <SidebarHeader className="p-6">
             <Logo variant="light" className="scale-90 origin-left" />
           </SidebarHeader>
           <SidebarContent className="custom-scrollbar overflow-x-hidden">
             <SidebarGroup>
-              <SidebarGroupLabel className="px-6 text-xs font-black uppercase tracking-widest text-white/20 text-left">Operations</SidebarGroupLabel>
+              <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Operations</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   <AdminNavItem icon={<LayoutDashboard />} label="Dashboard" href="/admin" active={pathname === "/admin"} />
@@ -59,7 +62,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </SidebarGroup>
 
             <SidebarGroup className="mt-4">
-              <SidebarGroupLabel className="px-6 text-xs font-black uppercase tracking-widest text-white/20 text-left">CMS Hub</SidebarGroupLabel>
+              <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">CMS Hub</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   <AdminNavItem icon={<Zap className="text-primary" />} label="Free Study Hub" href="/admin/free-content" active={pathname === "/admin/free-content"} />
@@ -72,7 +75,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </SidebarGroup>
 
             <SidebarGroup className="mt-4">
-              <SidebarGroupLabel className="px-6 text-xs font-black uppercase tracking-widest text-white/20 text-left">Modular Architect</SidebarGroupLabel>
+              <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Modular Architect</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   <AdminNavItem icon={<Layers className="text-primary" />} label="Test Assembly" href="/admin/mocks" active={pathname === "/admin/mocks"} />
@@ -82,13 +85,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </SidebarGroup>
 
             <SidebarGroup className="mt-4">
-              <SidebarGroupLabel className="px-6 text-xs font-black uppercase tracking-widest text-white/20 text-left">Monetization Hub</SidebarGroupLabel>
+              <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Monetization</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  <AdminNavItem icon={<Gem className="text-amber-400" />} label="Pass Management" href="/admin/passes" active={pathname === "/admin/passes"} />
+                  <AdminNavItem icon={<Gem className="text-amber-400" />} label="Pass Registry" href="/admin/passes" active={pathname === "/admin/passes"} />
                   <AdminNavItem icon={<MousePointer2 className="text-orange-400" />} label="Ad Manager" href="/admin/ads" active={pathname === "/admin/ads"} />
                   <AdminNavItem icon={<CheckCircle2 className="text-emerald-400" />} label="Verify Payments" href="/admin/payments/verify" active={pathname === "/admin/payments/verify"} />
-                  <AdminNavItem icon={<Zap />} label="Gross Revenue" href="/admin/payments" active={pathname === "/admin/payments"} />
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
@@ -96,8 +98,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <SidebarGroup className="mt-auto pb-8">
               <SidebarMenu>
                 <SidebarMenuItem>
-                   <SidebarMenuButton onClick={handleLogout} className="px-6 text-destructive/70 hover:bg-destructive/10 hover:text-destructive transition-colors h-11">
-                    <LogOut className="size-4 mr-3 shrink-0" /> <span className="font-bold">Logout Portal</span>
+                   <SidebarMenuButton onClick={handleLogout} className="px-6 text-destructive/70 hover:bg-destructive/10 hover:text-destructive h-11">
+                    <LogOut className="size-4 mr-3 shrink-0" /> <span className="font-bold">Logout</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
@@ -106,17 +108,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </Sidebar>
         
         <SidebarInset className="flex flex-col bg-white">
-          <header className="h-16 border-b border-slate-200 flex items-center px-6 justify-between bg-white sticky top-0 z-40 shadow-sm shrink-0">
-            <div className="flex items-center gap-4 min-w-0">
+          <header className="h-14 md:h-16 border-b border-slate-200 flex items-center px-4 md:px-6 justify-between bg-white sticky top-0 z-40 shrink-0">
+            <div className="flex items-center gap-3">
               <SidebarTrigger className="text-[#0F172A]" />
-              <div className="h-4 w-[1px] bg-slate-200 mx-2 hidden sm:block" />
+              <div className="h-4 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
               <div className="flex items-center gap-2 truncate">
-                 <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0F172A] truncate">Cracklix Management System</span>
+                 <ShieldCheck className="h-3.5 w-3.5 text-primary shrink-0" />
+                 <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#0F172A] truncate">Cracklix Management System</span>
               </div>
             </div>
           </header>
-          <main className="flex-1 p-8 bg-white overflow-y-auto">
+          <main className="flex-1 p-4 md:p-8 bg-white overflow-y-auto overflow-x-hidden">
             {children}
           </main>
         </SidebarInset>
@@ -137,7 +139,7 @@ function AdminNavItem({ icon, label, href, active }: { icon: React.ReactNode, la
           <div className="shrink-0 flex items-center justify-center size-4">
             {icon}
           </div>
-          <span className="font-bold tracking-tight truncate text-left">{label}</span>
+          <span className="font-bold tracking-tight truncate text-left text-[13px]">{label}</span>
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
