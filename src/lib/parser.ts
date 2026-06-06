@@ -1,8 +1,10 @@
 
 /**
- * @fileOverview Institutional Compact Parser v15.0.
- * Optimized for "Line 1 EN / Line 2 PA / Inline Options / Vertical Explanations" format.
- * Features: High-fidelity math block extraction and bilingual logic mapping.
+ * @fileOverview Institutional Compact Parser v16.0.
+ * Optimized for:
+ * 1. Line 1 EN / Line 2 PA
+ * 2. Combined Options (A) EN/PA
+ * 3. Bulleted Explanations (• English Explanation: / • ਪੰਜਾਬੀ ਵਿਆਖਿਆ:)
  */
 
 import { Question } from "@/types";
@@ -58,7 +60,7 @@ function parseBlocks(blocks: string[], metadata: any): ParsedResults {
         q.questionPa = rawLines[1].replace(/^(ਪ੍ਰਸ਼ਨ|ਪ੍ਰਸ਼ਨ)\s*\d+[\.\s]*/, '').trim();
       }
 
-      // 2. Extract Options (Deterministic Inline or Vertical)
+      // 2. Extract Options (Handles combined strings like "(A) 12 / 12")
       const fullBlockText = block.replace(/\n/g, ' ');
       
       const extractOption = (key: string, nextKey: string | null) => {
@@ -68,10 +70,11 @@ function parseBlocks(blocks: string[], metadata: any): ParsedResults {
         
         let endIndex = nextKey ? fullBlockText.indexOf(`(${nextKey})`, startIndex) : fullBlockText.indexOf('Correct Answer', startIndex);
         if (endIndex === -1) endIndex = fullBlockText.indexOf('• English Explanation', startIndex);
+        if (endIndex === -1) endIndex = fullBlockText.indexOf('ਸਹੀ ਉੱਤਰ', startIndex);
         if (endIndex === -1) endIndex = fullBlockText.length;
         
         const data = fullBlockText.substring(startIndex + startMarker.length, endIndex);
-        return data.trim();
+        return data.replace(/^[:\s\/-]*/, '').trim();
       };
 
       q.optionAEn = extractOption('A', 'B');
@@ -87,9 +90,9 @@ function parseBlocks(blocks: string[], metadata: any): ParsedResults {
         q.correctAnswerRaw = ansLine.trim();
       }
 
-      // 4. Extract Explanations (Vertical Block Preservation)
+      // 4. Extract Explanations (Vertical Block Preservation with Marker Support)
       const expEnStart = rawLines.findIndex(l => /English Explanation/i.test(l));
-      const expPaStart = rawLines.findIndex(l => /ਪੰਜਾਬੀ ਵਿਆਖਿਆ/i.test(l));
+      const expPaStart = rawLines.findIndex(l => /ਪੰਜਾਬੀ ਵਿਆਖਿਆ|ਵਿਆਖਿਆ/i.test(l));
 
       if (expEnStart !== -1) {
         const end = expPaStart !== -1 ? expPaStart : rawLines.length;
@@ -103,7 +106,7 @@ function parseBlocks(blocks: string[], metadata: any): ParsedResults {
       if (q.questionEn && q.correctAnswer) {
         questions.push(q);
       } else {
-        errors.push(`Block ${index + 1}: Check statements or Correct Answer Node.`);
+        errors.push(`Block ${index + 1}: Missing Question statement or Answer Node.`);
       }
     } catch (err: any) {
       errors.push(`Block ${index + 1}: ${err.message}`);

@@ -14,8 +14,8 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview Institutional Solution Hub Renderer v5.0 (PSSSB / Testbook Style).
- * Features: Unified 22px typography, strict vertical spacing, and dark theme logic.
+ * @fileOverview Institutional Solution Hub Renderer v6.0 (PSSSB / Testbook Style).
+ * Features: Unified 22px typography, bold option labels, and precision blank line spacing.
  */
 export default function QuestionRenderer({ 
   question, 
@@ -26,7 +26,7 @@ export default function QuestionRenderer({
   return (
     <div className="w-full text-left font-body space-y-0 text-[#0F172A]">
       {/* 1. English Question Statement */}
-      <div className="text-[18px] md:text-[22px] font-bold leading-relaxed antialiased">
+      <div className="text-[18px] md:text-[22px] font-black leading-relaxed antialiased">
          {question.displayId && <span className="mr-2 text-primary">Q{question.displayId}.</span>}
          <MathText text={question.questionEn || ""} className="inline" />
       </div>
@@ -35,23 +35,23 @@ export default function QuestionRenderer({
 
       {/* 2. Punjabi Question Statement */}
       {question.questionPa && (
-        <div className="text-[18px] md:text-[22px] font-bold leading-relaxed antialiased text-slate-800">
+        <div className="text-[18px] md:text-[22px] font-black leading-relaxed antialiased text-slate-800">
            <MathText text={question.questionPa} />
         </div>
       )}
 
-      <div className="h-6" />
+      <div className="h-8" />
 
-      {/* 3. Options List - CLEAN LINE FORMAT */}
+      {/* 3. Options List - BOLD LABELS & CLEAN LINE FORMAT */}
       {!hideOptions && (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {['A', 'B', 'C', 'D'].map(key => {
-            const content = (question as any)[`option${key}En`];
+            const content = (question as any)[`option${key}En` || `option${key}`];
             if (!content) return null;
 
             return (
-              <div key={key} className="text-[17px] md:text-[21px] font-bold text-slate-700 flex gap-3">
-                <span className="shrink-0 text-slate-400">({key})</span>
+              <div key={key} className="text-[18px] md:text-[21px] font-bold text-[#0F172A] flex gap-3">
+                <span className="shrink-0 font-black">({key})</span>
                 <MathText text={content} className="inline" />
               </div>
             )
@@ -61,7 +61,7 @@ export default function QuestionRenderer({
 
       <div className="h-10" />
 
-      {/* 4. Correct Answer Indicator - SYNCED HIGH-FIDELITY SCALE */}
+      {/* 4. Correct Answer Indicator - BOLD SYSTEM SCALE */}
       <div className="text-[18px] md:text-[22px] font-black text-[#0F172A] border-y border-slate-100 py-8 mb-12">
          {question.correctAnswerRaw ? (
            <MathText text={question.correctAnswerRaw} />
@@ -79,30 +79,30 @@ export default function QuestionRenderer({
            <div className="space-y-0 relative z-10">
               
               {/* English Explanation */}
-              {(question.explanationEn || question.explanation) && (
-                <div className="space-y-6">
+              {(question.explanationEn || (question as any).explanation) && (
+                <div className="space-y-8">
                    <div className="flex items-center gap-3">
-                      <span className="text-[15px] md:text-[17px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 px-4 py-1.5 rounded-lg border border-primary/20">
+                      <span className="text-[16px] md:text-[18px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 px-4 py-2 rounded-lg border border-primary/20">
                         • English Explanation:
                       </span>
                    </div>
-                   <div className="text-[18px] md:text-[22px] text-slate-100 font-medium leading-relaxed antialiased">
+                   <div className="text-[18px] md:text-[22px] text-slate-100 font-bold leading-relaxed antialiased">
                       <MathText text={question.explanationEn || (question as any).explanation} />
                    </div>
                 </div>
               )}
 
-              {(question.explanationEn || (question as any).explanation) && question.explanationPa && <div className="h-16 border-b border-white/5 mb-16" />}
+              {(question.explanationEn || (question as any).explanation) && question.explanationPa && <div className="h-12 border-b border-white/5 mb-12" />}
 
               {/* Punjabi Explanation */}
               {question.explanationPa && (
-                <div className="space-y-6">
+                <div className="space-y-8">
                    <div className="flex items-center gap-3">
-                      <span className="text-[15px] md:text-[17px] font-black uppercase tracking-[0.2em] text-emerald-500 bg-emerald-500/10 px-4 py-1.5 rounded-lg border border-emerald-500/20">
+                      <span className="text-[16px] md:text-[18px] font-black uppercase tracking-[0.2em] text-emerald-500 bg-emerald-500/10 px-4 py-2 rounded-lg border border-emerald-500/20">
                         • ਪੰਜਾਬੀ ਵਿਆਖਿਆ:
                       </span>
                    </div>
-                   <div className="text-[18px] md:text-[22px] text-slate-100 font-medium leading-relaxed antialiased">
+                   <div className="text-[18px] md:text-[22px] text-slate-100 font-bold leading-relaxed antialiased">
                       <MathText text={question.explanationPa} />
                    </div>
                 </div>
