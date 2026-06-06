@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -17,29 +18,29 @@ import {
   Zap, 
   Rocket, 
   SearchCode, 
-  Image as ImageIcon, 
+  ImageIcon, 
   Edit3,
   Languages,
   CheckCircle2,
-  AlertTriangle
+  BrainCircuit,
+  Sparkles
 } from "lucide-react"
-import { useFirestore, useCollection, useStorage } from "@/firebase"
+import { useFirestore, useCollection } from "@/firebase"
 import { collection, doc, writeBatch, serverTimestamp } from "firebase/firestore"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { useToast } from "@/hooks/use-toast"
 import { parseBulkQuestions } from "@/lib/parser"
+import { bulkParseMCQ } from "@/ai/flows/bulk-parse-mcq"
 import { Difficulty, Question, ContentStatus } from "@/types"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Bulk Ingestion Hub.
- * Updated: Neat and clean UI with high-fidelity matrix preview.
+ * @fileOverview Institutional Bulk Ingestion Hub v5.0.
+ * Features: AI-Powered Deep Audit & Standard Regex Extraction.
  */
 
 export default function BulkImportPage() {
   const router = useRouter()
   const db = useFirestore()
-  const storage = useStorage()
   const { toast } = useToast()
   
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
@@ -56,29 +57,62 @@ export default function BulkImportPage() {
 
   const [rawText, setRawText] = useState("")
   const [parsedQuestions, setParsedQuestions] = useState<Partial<Question>[]>([])
-  const [parseErrors, setParseErrors] = useState<string[]>([])
-  const [confidence, setConfidence] = useState(0)
   const [isSyncing, setIsSyncing] = useState(false)
-  const [uploadingIdx, setUploadingIdx] = useState<number | null>(null)
+  const [isAILoading, setIsAILoading] = useState(false)
   const [editingIdx, setEditingIdx] = useState<number | null>(null)
 
-  const handleAnalyze = async () => {
+  const handleStandardAnalyze = () => {
     if (!rawText.trim()) return
     if (!metadata.boardId || !metadata.subjectId) {
       toast({ variant: "destructive", title: "Audit Blocked", description: "Select Board and Subject to initialize parsing." })
       return
     }
 
-    const { questions, errors, confidence: conf } = parseBulkQuestions(rawText, metadata)
-    
+    const { questions, errors } = parseBulkQuestions(rawText, metadata)
     setParsedQuestions(questions)
-    setParseErrors(errors)
-    setConfidence(conf)
 
     if (errors.length > 0) {
       toast({ variant: "destructive", title: "Parse Warnings", description: "Some nodes may require manual audit." })
     } else {
       toast({ title: "Extraction Complete", description: `${questions.length} nodes ready for registry.` })
+    }
+  }
+
+  const handleAIAnalyze = async () => {
+    if (!rawText.trim()) return
+    if (!metadata.boardId || !metadata.subjectId) {
+      toast({ variant: "destructive", title: "Audit Blocked", description: "Select Board and Subject to initialize AI parsing." })
+      return
+    }
+
+    setIsAILoading(true)
+    try {
+       const aiResults = await bulkParseMCQ({ rawText });
+       const mapped = aiResults.map(q => ({
+          ...metadata,
+          questionEn: q.question_english,
+          questionPa: q.question_punjabi,
+          optionAEn: q.option_a_english,
+          optionAPa: q.option_a_punjabi,
+          optionBEn: q.option_b_english,
+          optionBPa: q.option_b_punjabi,
+          optionCEn: q.option_c_english,
+          optionCPa: q.option_c_punjabi,
+          optionDEn: q.option_d_english,
+          optionDPa: q.option_d_punjabi,
+          correctAnswer: q.correct_option as any,
+          explanationEn: q.explanation_english,
+          explanationPa: q.explanation_punjabi,
+          displayId: `AI-Q${q.question_number}`,
+          isStandalone: true,
+          status: metadata.status
+       }));
+       setParsedQuestions(mapped);
+       toast({ title: "AI Audit Success", description: `${mapped.length} questions extracted with logic.` })
+    } catch (e: any) {
+       toast({ variant: "destructive", title: "AI Service Error", description: e.message })
+    } finally {
+       setIsAILoading(false)
     }
   }
 
@@ -103,7 +137,6 @@ export default function BulkImportPage() {
         isStandalone: true,
       };
       
-      // Cleanup undefined
       Object.keys(payload).forEach(key => (payload[key] === undefined || payload[key] === null) && delete payload[key]);
       batch.set(qRef, payload)
     })
@@ -128,7 +161,7 @@ export default function BulkImportPage() {
           </Button>
           <div className="text-left">
             <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Institutional Ingestion</h1>
-            <p className="text-slate-500 font-medium">Inject high-fidelity bilingual nodes into the Atomic Bank.</p>
+            <p className="text-slate-500 font-medium">Inject high-fidelity bilingual nodes using AI or Regex protocols.</p>
           </div>
         </div>
         <div className="flex gap-4">
@@ -169,16 +202,18 @@ export default function BulkImportPage() {
              <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12"><SearchCode className="h-40 w-40" /></div>
              <div className="flex items-center gap-4 relative z-10">
                 <SearchCode className="h-6 w-6 text-primary" />
-                <h3 className="font-headline font-black uppercase">Fidelity Scan</h3>
+                <h3 className="font-headline font-black uppercase">Ingestion Scan</h3>
              </div>
              <div className="space-y-6 relative z-10">
                 <div className="flex justify-between items-center">
-                   <span className="text-slate-400 font-bold uppercase text-[10px]">Total Block Nodes</span>
+                   <span className="text-slate-400 font-bold uppercase text-[10px]">Total Extracted</span>
                    <span className="font-black text-primary text-xl">{parsedQuestions.length}</span>
                 </div>
-                <div className="flex justify-between items-center">
-                   <span className="text-slate-400 font-bold uppercase text-[10px]">Parse Confidence</span>
-                   <span className="font-black text-emerald-400 text-xl">{confidence}%</span>
+                <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5">
+                   <BrainCircuit className="h-4 w-4 text-emerald-400" />
+                   <p className="text-[9px] font-medium text-slate-300 uppercase leading-relaxed">
+                      AI Audit will automatically separate EN/PA lines and map step-by-step explanations.
+                   </p>
                 </div>
              </div>
           </div>
@@ -189,19 +224,24 @@ export default function BulkImportPage() {
               <Textarea 
                 value={rawText}
                 onChange={e => setRawText(e.target.value)}
-                placeholder="Paste bilingual series text here... Format: Question Statement (EN/PA) followed by Options (A, B, C, D) and Answer/Explanation."
+                placeholder="Paste your raw bilingual series text here..."
                 className="min-h-[400px] rounded-[3.5rem] bg-white border-none p-12 text-sm font-bold leading-relaxed shadow-4xl custom-scrollbar text-[#0F172A]"
               />
-              <Button onClick={handleAnalyze} className="w-full h-20 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.3em] rounded-[2.5rem] shadow-4xl mt-6 gap-4 transition-all">
-                 <Zap className="h-6 w-6 text-primary fill-current" /> Initialize Audit & Matrix
-              </Button>
+              <div className="grid grid-cols-2 gap-4 mt-6">
+                 <Button onClick={handleStandardAnalyze} className="h-20 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.2em] rounded-[2rem] shadow-4xl gap-4 transition-all">
+                    <Zap className="h-6 w-6 text-primary fill-current" /> Regex Extraction
+                 </Button>
+                 <Button onClick={handleAIAnalyze} disabled={isAILoading} className="h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] rounded-[2rem] shadow-4xl gap-4 transition-all">
+                    {isAILoading ? <Loader2 className="h-6 w-6 animate-spin" /> : <Sparkles className="h-6 w-6 fill-current" />} AI Deep Audit
+                 </Button>
+              </div>
            </div>
 
            {parsedQuestions.length > 0 && (
              <Card className="border-none shadow-4xl rounded-[4rem] bg-white overflow-hidden text-left">
                 <CardHeader className="p-12 border-b border-slate-50 bg-slate-50/30">
                    <CardTitle className="font-headline font-black text-3xl uppercase flex items-center gap-4">
-                      <CheckCircle2 className="h-8 w-8 text-emerald-500" /> Validated Matrix
+                      <CheckCircle2 className="h-8 w-8 text-emerald-500" /> Validated Registry Matrix
                    </CardTitle>
                 </CardHeader>
                 <CardContent className="p-12 space-y-12">
@@ -216,7 +256,7 @@ export default function BulkImportPage() {
                                  className="rounded-xl h-11 px-6 gap-3 bg-white font-black uppercase text-[10px] tracking-widest shadow-sm"
                                  onClick={() => setEditingIdx(editingIdx === idx ? null : idx)}
                                >
-                                  <Edit3 className="h-4 w-4" /> {editingIdx === idx ? "View Preview" : "Edit Metadata"}
+                                  <Edit3 className="h-4 w-4" /> {editingIdx === idx ? "View Preview" : "Edit Node"}
                                </Button>
                                <Button variant="ghost" size="icon" className="h-11 w-11 text-rose-500 bg-rose-50 rounded-xl" onClick={() => setParsedQuestions(parsedQuestions.filter((_, i) => i !== idx))}><Trash2 className="h-5 w-5" /></Button>
                             </div>
@@ -227,7 +267,7 @@ export default function BulkImportPage() {
                                <div className="grid grid-cols-1 gap-8 animate-in fade-in duration-300">
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                      <div className="space-y-2">
-                                        <Label className="text-[9px] font-black uppercase text-slate-400">Statement (EN)</Label>
+                                        <Label className="text-[9px] font-black uppercase text-slate-400">Question Statement (EN)</Label>
                                         <Textarea value={q.questionEn} onChange={e => handleUpdateQuestion(idx, 'questionEn', e.target.value)} className="rounded-xl h-32 font-bold" />
                                      </div>
                                      <div className="space-y-2">
@@ -235,14 +275,24 @@ export default function BulkImportPage() {
                                         <Textarea value={q.questionPa} onChange={e => handleUpdateQuestion(idx, 'questionPa', e.target.value)} className="rounded-xl h-32 font-bold" />
                                      </div>
                                   </div>
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="grid grid-cols-2 gap-4">
                                      {['A', 'B', 'C', 'D'].map(opt => (
                                         <div key={opt} className="p-4 bg-white border border-slate-100 rounded-2xl space-y-3">
-                                           <p className="text-[10px] font-black text-primary">Option {opt}</p>
+                                           <p className="text-[10px] font-black text-primary uppercase">Option {opt}</p>
                                            <Input value={(q as any)[`option${opt}En`]} onChange={e => handleUpdateQuestion(idx, `option${opt}En`, e.target.value)} placeholder="English" className="h-10 text-xs font-bold" />
                                            <Input value={(q as any)[`option${opt}Pa`]} onChange={e => handleUpdateQuestion(idx, `option${opt}Pa`, e.target.value)} placeholder="ਪੰਜਾਬੀ" className="h-10 text-xs font-bold" />
                                         </div>
                                      ))}
+                                  </div>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                     <div className="space-y-2">
+                                        <Label className="text-[9px] font-black uppercase text-slate-400">English Logic</Label>
+                                        <Textarea value={q.explanationEn} onChange={e => handleUpdateQuestion(idx, 'explanationEn', e.target.value)} className="rounded-xl h-24 text-xs" />
+                                     </div>
+                                     <div className="space-y-2">
+                                        <Label className="text-[9px] font-black uppercase text-slate-400">ਪੰਜਾਬੀ ਵਿਆਖਿਆ</Label>
+                                        <Textarea value={q.explanationPa} onChange={e => handleUpdateQuestion(idx, 'explanationPa', e.target.value)} className="rounded-xl h-24 text-xs" />
+                                     </div>
                                   </div>
                                </div>
                             ) : (
