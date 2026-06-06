@@ -1,14 +1,16 @@
+
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, Database, Users, ShieldCheck, Rocket, Zap, RefreshCw, ChevronRight, ListTree, Loader2, FileText, Newspaper } from "lucide-react"
+import { Plus, Database, Users, ShieldCheck, Rocket, Zap, RefreshCw, ChevronRight, ListTree, Loader2, FileText, Newspaper, Landmark } from "lucide-react"
 import Link from "next/link"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, query } from "firebase/firestore"
 import { useMemo, useState } from "react"
 import { seedInitialData } from "@/services/seed-data"
 import { useToast } from "@/hooks/use-toast"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function AdminDashboard() {
   const db = useFirestore()
@@ -19,12 +21,13 @@ export default function AdminDashboard() {
   const { data: questions, loading: qLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "questions") : null), [db]))
   const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]))
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
+  const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
   const { data: notes } = useCollection<any>(useMemo(() => (db ? collection(db, "notes") : null), [db]))
   const { data: pyqs } = useCollection<any>(useMemo(() => (db ? collection(db, "pyqs") : null), [db]))
 
   const proUsers = useMemo(() => users?.filter((u: any) => u.status && u.status !== 'Free') || [], [users]);
 
-  // Dynamic Subject Breakdown - Ensures ICT 250+ count is shown
+  // Subject Breakdown
   const subjectBreakdown = useMemo(() => {
     if (!questions) return [];
     const uniqueSubjectIds = Array.from(new Set(questions.map((q: any) => q.subjectId))).filter(Boolean);
@@ -33,6 +36,14 @@ export default function AdminDashboard() {
        return { id, name: subjectName, count: questions.filter((q: any) => q.subjectId === id).length }
     }).sort((a, b) => b.count - a.count);
   }, [questions, subjects]);
+
+  // Exam Breakdown
+  const examBreakdown = useMemo(() => {
+     if (!questions || !exams) return [];
+     return exams.map((e: any) => {
+        return { id: e.id, name: e.name, count: questions.filter((q: any) => q.examId === e.id).length }
+     }).sort((a, b) => b.count - a.count);
+  }, [questions, exams]);
 
   const handleSyncDatabase = async () => {
     if (!db) return
@@ -77,35 +88,68 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-         <Card className="lg:col-span-7 border-none shadow-3xl bg-white rounded-[3.5rem] overflow-hidden text-left">
-            <CardHeader className="p-12 border-b border-slate-50 bg-slate-50/30">
-               <CardTitle className="text-2xl font-headline font-black uppercase text-[#0F172A]">Subject Mastery Hub</CardTitle>
-               <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Total questions across registry sections.</CardDescription>
-            </CardHeader>
-            <CardContent className="p-0">
-               <div className="divide-y divide-slate-50 max-h-[600px] overflow-y-auto custom-scrollbar">
-                  {qLoading ? (
-                     <div className="p-20 flex flex-col items-center justify-center gap-4 text-slate-300">
-                        <Loader2 className="h-10 w-10 animate-spin" />
-                        <p className="font-black uppercase text-[10px]">Auditing Registry...</p>
-                     </div>
-                  ) : subjectBreakdown.map((s) => (
-                     <div key={s.id} className="p-8 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
-                        <div className="flex items-center gap-6">
-                           <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black uppercase text-xs">{s.name[0]}</div>
-                           <div>
-                              <p className="font-black text-[#0B1528] text-lg uppercase leading-none">{s.name}</p>
-                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">Section Registry ID: {s.id}</p>
+         <Card className="lg:col-span-8 border-none shadow-3xl bg-white rounded-[3.5rem] overflow-hidden text-left">
+            <Tabs defaultValue="subjects">
+               <CardHeader className="p-12 border-b border-slate-50 bg-slate-50/30 flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="text-2xl font-headline font-black uppercase text-[#0F172A]">Mastery Hubs</CardTitle>
+                    <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Sectional and Vertical Registry Audit.</CardDescription>
+                  </div>
+                  <TabsList className="bg-white border p-1 rounded-xl h-12 shadow-sm">
+                    <TabsTrigger value="subjects" className="font-black uppercase text-[9px] px-6 h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white">Subjects</TabsTrigger>
+                    <TabsTrigger value="exams" className="font-black uppercase text-[9px] px-6 h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white">Exams</TabsTrigger>
+                  </TabsList>
+               </CardHeader>
+               <CardContent className="p-0">
+                  <TabsContent value="subjects" className="m-0">
+                     <div className="divide-y divide-slate-50 max-h-[600px] overflow-y-auto custom-scrollbar">
+                        {qLoading ? (
+                           <div className="p-20 flex flex-col items-center justify-center gap-4 text-slate-300">
+                              <Loader2 className="h-10 w-10 animate-spin" />
+                              <p className="font-black uppercase text-[10px]">Auditing Registry...</p>
                            </div>
-                        </div>
-                        <div className="text-right">
-                           <p className="text-2xl font-headline font-black text-primary leading-none">{s.count}</p>
-                           <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mt-1">Questions</p>
-                        </div>
+                        ) : subjectBreakdown.map((s) => (
+                           <div key={s.id} className="p-8 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+                              <div className="flex items-center gap-6">
+                                 <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black uppercase text-xs">{s.name[0]}</div>
+                                 <div>
+                                    <p className="font-black text-[#0B1528] text-lg uppercase leading-none">{s.name}</p>
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">Subject Registry Node: {s.id}</p>
+                                 </div>
+                              </div>
+                              <div className="text-right">
+                                 <p className="text-2xl font-headline font-black text-primary leading-none">{s.count}</p>
+                                 <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mt-1">Questions</p>
+                              </div>
+                           </div>
+                        ))}
                      </div>
-                  ))}
-               </div>
-            </CardContent>
+                  </TabsContent>
+                  <TabsContent value="exams" className="m-0">
+                     <div className="divide-y divide-slate-50 max-h-[600px] overflow-y-auto custom-scrollbar">
+                        {qLoading ? (
+                           <div className="p-20 flex flex-col items-center justify-center gap-4 text-slate-300">
+                              <Loader2 className="h-10 w-10 animate-spin" />
+                           </div>
+                        ) : examBreakdown.map((e) => (
+                           <div key={e.id} className="p-8 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+                              <div className="flex items-center gap-6">
+                                 <div className="h-12 w-12 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 font-black uppercase text-xs shadow-inner"><Landmark className="h-5 w-5" /></div>
+                                 <div>
+                                    <p className="font-black text-[#0B1528] text-lg uppercase leading-none">{e.name}</p>
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">Exam Hub Node: {e.id}</p>
+                                 </div>
+                              </div>
+                              <div className="text-right">
+                                 <p className="text-2xl font-headline font-black text-amber-600 leading-none">{e.count}</p>
+                                 <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mt-1">Linked MCQs</p>
+                              </div>
+                           </div>
+                        ))}
+                     </div>
+                  </TabsContent>
+               </CardContent>
+            </Tabs>
          </Card>
       </div>
     </div>
