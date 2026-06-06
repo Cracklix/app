@@ -198,7 +198,7 @@ export default function QuestionBank() {
                 <SelectContent><SelectItem value="all">All Exams</SelectItem>{exams?.filter(e => boardFilter === "all" || e.boardId === boardFilter).map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent>
               </Select>
               <Select value={subjectFilter} onValueChange={setSubjectFilter}>
-                <SelectTrigger className="rounded-xl h-11 bg-white border-none w-36 shadow-sm font-bold text-xs"><SelectValue placeholder="Subject" /></SelectTrigger>
+                <SelectTrigger className="rounded-xl h-11 bg-white border-none w-36 shadow-sm font-bold text-xs"><SelectValue placeholder="Subject" /></SelectValue></SelectTrigger>
                 <SelectContent><SelectItem value="all">All Subjects</SelectItem>{subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
               </Select>
             </div>
@@ -208,7 +208,7 @@ export default function QuestionBank() {
           <Table>
             <TableHeader className="bg-slate-50/50">
               <TableRow className="border-white/5 h-16">
-                <TableHead className="w-[60px] px-8 text-center"><Checkbox checked={allSelected} onValueChange={(v) => handleSelectAll(!!v)} /></TableHead>
+                <TableHead className="w-[60px] px-8 text-center"><Checkbox checked={allSelected} onCheckedChange={(v) => handleSelectAll(!!v)} /></TableHead>
                 <TableHead className="px-4 text-[9px] font-black uppercase text-slate-500">Identity & Content</TableHead>
                 <TableHead className="text-[9px] font-black uppercase text-slate-500">Context</TableHead>
                 <TableHead className="text-center text-[9px] font-black uppercase text-slate-500">Usage</TableHead>
