@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo } from 'react';
@@ -14,8 +13,10 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview Institutional High-Fidelity Question Renderer v30.0.
- * Features: Strict Isolation, 1-Line Spacing for logic, and single-line Bilingual joiner.
+ * @fileOverview Institutional High-Fidelity Question Renderer v32.0.
+ * Rules Enforcement:
+ * 1. STRICT SEGREGATION: "EN" mode shows 0 Punjabi, "PA" mode shows 0 English.
+ * 2. NO REDUNDANT PREFIXES: Strips "Q1." or "ਪ੍ਰਸ਼ਨ 1." from statements.
  */
 
 export default function QuestionRenderer({ 
@@ -32,8 +33,6 @@ export default function QuestionRenderer({
       .replace(/^ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]*/, '') 
       .replace(/^ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]*/, '')
       .replace(/^\d+[\.\):\s-]*/, '')        
-      .replace(/^\*\*|\*\*$/g, '')           
-      .replace(/\s+/g, ' ')
       .trim();
   };
 
@@ -44,24 +43,21 @@ export default function QuestionRenderer({
   const qEn = cleanText(question.questionEn);
   const qPa = cleanText(question.questionPa);
   
-  const expEn = useMemo(() => question.explanationEn || (question as any).explanation || "", [question]);
-  const expPa = useMemo(() => question.explanationPa || "", [question]);
+  const expEn = question.explanationEn || (question as any).explanation || "";
+  const expPa = question.explanationPa || "";
 
-  // CONTENT SELECTOR LOGIC
-  const renderQuestion = () => {
-    if (isEnglishSubject) return qEn;
-    if (isPunjabiSubject) return qPa || qEn;
+  // Content Selection Logic
+  const getContent = () => {
+    if (isEnglishSubject) return { en: qEn, pa: "" };
+    if (isPunjabiSubject) return { en: "", pa: qPa || qEn };
 
-    if (language === 'en') return qEn;
-    if (language === 'pa') return qPa || qEn;
+    if (language === 'en') return { en: qEn, pa: "" };
+    if (language === 'pa') return { en: "", pa: qPa || qEn };
     
-    // Bilingual Mode: Same line joined by /
-    return (
-      <div className="inline">
-        {qEn} {qPa && qPa !== qEn && <span className="text-primary/40 mx-2">/</span>} {qPa !== qEn && qPa}
-      </div>
-    );
+    return { en: qEn, pa: qPa };
   };
+
+  const content = getContent();
 
   return (
     <div className="w-full text-left font-body space-y-6">
@@ -71,36 +67,32 @@ export default function QuestionRenderer({
         </div>
       )}
 
-      {/* Question Statement Hub */}
+      {/* Question Hub */}
       <div className="text-[15px] md:text-[18px] font-black leading-snug text-[#0F172A] antialiased">
-        {renderQuestion()}
+        {content.en}
+        {content.en && content.pa && <span className="text-primary/40 mx-2">/</span>}
+        {content.pa}
       </div>
 
       {/* Options Hub */}
       {!hideOptions && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {['A', 'B', 'C', 'D'].map(key => {
-            const en = (question as any)[`option${key}En`] || "";
-            const pa = (question as any)[`option${key}Pa`] || "";
+            const en = cleanText((question as any)[`option${key}En`]);
+            const pa = cleanText((question as any)[`option${key}Pa`]);
             
-            const cEn = cleanText(en);
-            const cPa = cleanText(pa);
-            
+            const showEn = isEnglishSubject || language === 'en' || language === 'bilingual';
+            const showPa = isPunjabiSubject || language === 'pa' || language === 'bilingual';
+
             return (
                 <div key={key} className="flex items-center gap-3 p-4 bg-white border border-slate-100 rounded-xl shadow-sm">
                   <div className="h-7 w-7 rounded-lg bg-slate-50 flex items-center justify-center font-black text-[10px] text-primary shrink-0 border border-slate-100">
                      {key}
                   </div>
                   <div className="text-[14px] md:text-[16px] font-bold text-slate-700 leading-snug">
-                      {isEnglishSubject ? cEn : 
-                       isPunjabiSubject ? (cPa || cEn) : 
-                       language === 'en' ? cEn : 
-                       language === 'pa' ? (cPa || cEn) : 
-                       (
-                        <div className="inline">
-                          {cEn} {cPa && cPa !== cEn && <span className="text-primary/40 mx-1.5">/</span>} {cPa !== cEn && cPa}
-                        </div>
-                       )}
+                      {showEn && en}
+                      {showEn && showPa && pa && <span className="text-primary/40 mx-1.5">/</span>}
+                      {showPa && (pa || (!showEn && en))}
                   </div>
                 </div>
             )
@@ -121,21 +113,17 @@ export default function QuestionRenderer({
            </div>
            
            <div className="space-y-10 pt-8 border-t border-emerald-100">
-              {(isEnglishSubject || (language !== 'pa' && expEn)) && (
+              {content.en && expEn && (
                 <div className="space-y-4">
                    <p className="text-[8px] font-black uppercase tracking-[0.3em] text-emerald-600/60">English Logic Hub</p>
-                   <p className="text-[14px] md:text-[15px] text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap antialiased">
-                      {cleanText(expEn)}
-                   </p>
+                   <p className="text-[14px] md:text-[15px] text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap">{expEn}</p>
                 </div>
               )}
               
-              {(isPunjabiSubject || (language !== 'en' && expPa)) && (
+              {content.pa && expPa && (
                 <div className="space-y-4 pt-10 border-t border-emerald-100/30">
                    <p className="text-[8px] font-black uppercase tracking-[0.3em] text-emerald-600/60">ਪੰਜਾਬੀ ਵਿਆਖਿਆ (Punjabi Rationale)</p>
-                   <p className="text-[14px] md:text-[15px] text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap antialiased">
-                      {cleanText(expPa)}
-                   </p>
+                   <p className="text-[14px] md:text-[15px] text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap">{expPa}</p>
                 </div>
               )}
            </div>

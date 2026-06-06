@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useState } from "react"
@@ -16,10 +15,10 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Institutional Audit Matrix v7.0.
+ * @fileOverview Institutional Audit Matrix v8.0.
  * Rules Enforcement:
- * 1. FIXED CIRCLE OVERLAP: Explicit gap-3 with w-10 nodes and box-sizing lockdown.
- * 2. EXACT 25 NODES: Pagination Hub calibrated for high-density focus.
+ * 1. FIXED CIRCLE OVERLAP: Calibrated grid-cols-5 with gap-3.
+ * 2. NO BLEED: Strict box-sizing for number nodes.
  */
 
 export default function QuestionPalette({
@@ -61,15 +60,13 @@ export default function QuestionPalette({
 
   return (
     <div className="space-y-8 flex flex-col h-full text-left font-body box-border">
-      {/* Dynamic Exam Branding */}
       <div className="space-y-1.5 pb-6 border-b border-slate-100">
          <p className="text-[7px] font-black text-primary uppercase tracking-[0.4em] leading-none">ACTIVE AUDIT Hub</p>
-         <h3 className="text-[13px] font-black text-[#0F172A] uppercase leading-tight">
+         <h3 className="text-[13px] font-black text-[#0F172A] uppercase leading-tight truncate">
             {examName}
          </h3>
       </div>
 
-      {/* Stats Summary Grid (Compact) */}
       <div className="grid grid-cols-2 gap-3">
          <PaletteStat count={summary.answered} label="Done" color="bg-emerald-600" />
          <PaletteStat count={summary.notAnswered} label="Missed" color="bg-rose-500" />
@@ -77,7 +74,6 @@ export default function QuestionPalette({
          <PaletteStat count={summary.review} label="Review" color="bg-amber-500" />
       </div>
 
-      {/* Pagination Hub */}
       {totalPages > 1 && (
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
            {Array.from({ length: totalPages }).map((_, i) => (
@@ -91,15 +87,14 @@ export default function QuestionPalette({
                     : "bg-white text-slate-400 border-slate-100 hover:border-primary/20"
                 )}
               >
-                Page {i + 1}
+                {i + 1}
               </button>
            ))}
         </div>
       )}
 
-      {/* High-Density Matrix (FIXED OVERLAP) */}
       <div className="flex-1 overflow-y-auto no-scrollbar pt-2">
-         <div className="grid grid-cols-5 gap-3">
+         <div className="grid grid-cols-5 gap-3 w-full">
             {currentQuestions.map((q) => {
               const idx = q.globalIdx;
               const isCurrent = currentIndex === idx
@@ -113,13 +108,12 @@ export default function QuestionPalette({
                   key={idx}
                   onClick={() => onSelect(idx)}
                   className={cn(
-                    "w-10 h-10 rounded-full text-[11px] font-black transition-all flex items-center justify-center shrink-0 border-2 relative box-border",
-                    "hover:scale-110 active:scale-95",
-                    isCurrent ? "border-primary bg-white text-primary z-20 shadow-2xl ring-2 ring-primary ring-offset-2" : "border-transparent",
-                    !isCurrent && isBoth && "bg-purple-600 text-white border-purple-600 shadow-lg",
-                    !isCurrent && isAnswered && !isFlagged && "bg-emerald-600 text-white border-emerald-600 shadow-md",
-                    !isCurrent && isFlagged && !isAnswered && "bg-amber-50 text-white border-amber-500 shadow-sm",
-                    !isCurrent && isVisited && !isAnswered && !isFlagged && "bg-rose-500 text-white border-rose-500",
+                    "w-10 h-10 rounded-full text-[11px] font-black transition-all flex items-center justify-center shrink-0 border-2 box-border",
+                    isCurrent ? "border-primary bg-white text-primary shadow-lg ring-2 ring-primary ring-offset-2 z-10" : "border-transparent",
+                    !isCurrent && isBoth && "bg-purple-600 text-white",
+                    !isCurrent && isAnswered && !isFlagged && "bg-emerald-600 text-white",
+                    !isCurrent && isFlagged && !isAnswered && "bg-amber-500 text-white",
+                    !isCurrent && isVisited && !isAnswered && !isFlagged && "bg-rose-500 text-white",
                     !isCurrent && !isVisited && "bg-slate-50 text-slate-300 border-slate-100",
                   )}
                 >
@@ -132,7 +126,7 @@ export default function QuestionPalette({
       
       <div className="pt-6 border-t border-slate-100">
          <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest text-center">
-            Registry Nodes {currentPage * PAGE_SIZE + 1} - {Math.min((currentPage + 1) * PAGE_SIZE, totalQuestions)}
+            Nodes {currentPage * PAGE_SIZE + 1} - {Math.min((currentPage + 1) * PAGE_SIZE, totalQuestions)}
          </p>
       </div>
     </div>
