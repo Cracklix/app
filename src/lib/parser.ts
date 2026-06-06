@@ -1,10 +1,7 @@
-
 /**
- * @fileOverview Institutional Compact Parser v16.0.
- * Optimized for:
- * 1. Line 1 EN / Line 2 PA
- * 2. Combined Options (A) EN/PA
- * 3. Bulleted Explanations (• English Explanation: / • ਪੰਜਾਬੀ ਵਿਆਖਿਆ:)
+ * @fileOverview Institutional High-Fidelity Regex Parser v20.0.
+ * Strictly enforces mandatory extraction of Bilingual Questions, Options, 
+ * Correct Answer Codes, and Multi-line Explanations.
  */
 
 import { Question } from "@/types";
@@ -15,26 +12,19 @@ export interface ParsedResults {
 }
 
 export function parseBulkQuestions(rawText: string, metadata: any): ParsedResults {
-  const cleanRaw = rawText.replace(/\r\n/g, '\n');
+  const cleanRaw = "\n" + rawText.replace(/\r\n/g, '\n').trim();
   
-  // Split by Q followed by a number
+  // Split by Q followed by a number (e.g. Q1., Q24.)
   const blocks = cleanRaw.split(/\n(?=Q\d+[\.\s])/g).filter(b => b.trim().length > 10);
   
-  // Fallback for first block if it doesn't start with newline
-  if (blocks.length === 1 && !blocks[0].trim().startsWith('Q')) {
-    const initialSplit = cleanRaw.split(/(?=Q\d+[\.\s])/g).filter(b => b.trim().startsWith('Q'));
-    return parseBlocks(initialSplit, metadata);
-  }
-
-  return parseBlocks(blocks, metadata);
-}
-
-function parseBlocks(blocks: string[], metadata: any): ParsedResults {
-  const questions: Partial<Question>[] = [];
+  const results: Partial<Question>[] = [];
   const errors: string[] = [];
 
   blocks.forEach((block, index) => {
     try {
+      const lines = block.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      if (lines.length < 5) return;
+
       const q: any = { 
         ...metadata,
         id: `q-node-${Date.now()}-${index}`,
@@ -51,67 +41,68 @@ function parseBlocks(blocks: string[], metadata: any): ParsedResults {
         explanationPa: ""
       };
 
-      const rawLines = block.split('\n').map(l => l.trim());
+      // 1. Extract Question Lines
+      q.questionEn = lines[0].replace(/^Q\d+[\.\s]*/i, '').trim();
       
-      // 1. Extract Question Text (Line 1 EN, Line 2 PA)
-      q.questionEn = rawLines[0].replace(/^Q\d+[\.\s]*/i, '').trim();
-
-      if (rawLines[1] && !rawLines[1].includes('(A)')) {
-        q.questionPa = rawLines[1].replace(/^(ਪ੍ਰਸ਼ਨ|ਪ੍ਰਸ਼ਨ)\s*\d+[\.\s]*/, '').trim();
+      // The second line is usually the Punjabi version
+      if (lines[1] && !lines[1].startsWith('(')) {
+        q.questionPa = lines[1].replace(/^(ਪ੍ਰਸ਼ਨ|ਪ੍ਰਸ਼ਨ)\s*\d+[\.\s]*/, '').trim();
       }
 
-      // 2. Extract Options (Handles combined strings like "(A) 12 / 12")
-      const fullBlockText = block.replace(/\n/g, ' ');
-      
-      const extractOption = (key: string, nextKey: string | null) => {
-        const startMarker = `(${key})`;
-        const startIndex = fullBlockText.indexOf(startMarker);
-        if (startIndex === -1) return "";
-        
-        let endIndex = nextKey ? fullBlockText.indexOf(`(${nextKey})`, startIndex) : fullBlockText.indexOf('Correct Answer', startIndex);
-        if (endIndex === -1) endIndex = fullBlockText.indexOf('• English Explanation', startIndex);
-        if (endIndex === -1) endIndex = fullBlockText.indexOf('ਸਹੀ ਉੱਤਰ', startIndex);
-        if (endIndex === -1) endIndex = fullBlockText.length;
-        
-        const data = fullBlockText.substring(startIndex + startMarker.length, endIndex);
-        return data.replace(/^[:\s\/-]*/, '').trim();
+      // 2. Extract Options (Strictly remove (A), (B) etc from stored value)
+      const extractOption = (key: string) => {
+        const line = lines.find(l => l.startsWith(`(${key})`));
+        if (!line) return "";
+        return line.replace(/^\([A-D]\)[\s\/-]*/i, '').trim();
       };
 
-      q.optionAEn = extractOption('A', 'B');
-      q.optionBEn = extractOption('B', 'C');
-      q.optionCEn = extractOption('C', 'D');
-      q.optionDEn = extractOption('D', null);
+      q.optionAEn = extractOption('A');
+      q.optionBEn = extractOption('B');
+      q.optionCEn = extractOption('C');
+      q.optionDEn = extractOption('D');
 
-      // 3. Extract Correct Answer Key
-      const ansLine = rawLines.find(l => /Correct Answer|ਸਹੀ ਉੱਤਰ/i.test(l));
+      // 3. Extract Correct Answer (Only store the letter)
+      const ansLine = lines.find(l => /Correct Answer|ਸਹੀ ਉੱਤਰ/i.test(l));
       if (ansLine) {
-        const match = ansLine.match(/(?:Correct Answer|ਸਹੀ ਉੱਤਰ|Ans)[:\s]*\(?([A-D])\)?/i);
+        const match = ansLine.match(/Correct Answer[:\s]*\(?([A-D])\)?/i);
         if (match) q.correctAnswer = match[1].toUpperCase();
-        q.correctAnswerRaw = ansLine.trim();
       }
 
-      // 4. Extract Explanations (Vertical Block Preservation with Marker Support)
-      const expEnStart = rawLines.findIndex(l => /English Explanation/i.test(l));
-      const expPaStart = rawLines.findIndex(l => /ਪੰਜਾਬੀ ਵਿਆਖਿਆ|ਵਿਆਖਿਆ/i.test(l));
+      // 4. Extract Explanations (Vertical Block Preservation)
+      const fullText = block.replace(/\r/g, '');
+      
+      const enMarker = "• English Explanation:";
+      const paMarker = "• ਪੰਜਾਬੀ ਵਿਆਖਿਆ:";
 
-      if (expEnStart !== -1) {
-        const end = expPaStart !== -1 ? expPaStart : rawLines.length;
-        q.explanationEn = rawLines.slice(expEnStart + 1, end).join('\n').trim();
+      const enStart = fullText.indexOf(enMarker);
+      const paStart = fullText.indexOf(paMarker);
+
+      if (enStart !== -1 && paStart !== -1) {
+        q.explanationEn = fullText.substring(enStart + enMarker.length, paStart).trim();
+        q.explanationPa = fullText.substring(paStart + paMarker.length).trim();
       }
 
-      if (expPaStart !== -1) {
-        q.explanationPa = rawLines.slice(expPaStart + 1).join('\n').trim();
-      }
+      // 5. Validation Rule
+      const isValid = 
+        q.questionEn && 
+        q.questionPa && 
+        q.optionAEn && 
+        q.optionBEn && 
+        q.optionCEn && 
+        q.optionDEn && 
+        q.correctAnswer && 
+        q.explanationEn && 
+        q.explanationPa;
 
-      if (q.questionEn && q.correctAnswer) {
-        questions.push(q);
+      if (isValid) {
+        results.push(q);
       } else {
-        errors.push(`Block ${index + 1}: Missing Question statement or Answer Node.`);
+        errors.push(`Block ${index + 1}: Missing mandatory fields (Ensure Questions, A-D Options, Answer Key, and Both Explanations exist).`);
       }
     } catch (err: any) {
-      errors.push(`Block ${index + 1}: ${err.message}`);
+      errors.push(`Block ${index + 1}: Parsing rejection - ${err.message}`);
     }
   });
 
-  return { questions, errors };
+  return { questions: results, errors };
 }
