@@ -32,6 +32,17 @@ export default function QuestionRenderer({ question, language, showSolution = fa
       .trim();
   };
 
+  const renderOption = (key: string) => {
+    const rawEn = (question as any)[`option${key}En`] || "";
+    const rawPa = (question as any)[`option${key}Pa`] || "";
+    const cleanEn = rawEn.replace(/^[A-D][\.\):\s-]*/i, '').trim();
+    const cleanPa = rawPa.replace(/^[A-D][\.\):\s-]*/i, '').trim();
+
+    if (language === 'en') return cleanEn;
+    if (language === 'pa') return cleanPa || cleanEn;
+    return `${cleanEn}${cleanPa ? ` / ${cleanPa}` : ''}`;
+  };
+
   return (
     <div className="w-full text-left font-body">
       {question.imageUrl && (
@@ -41,21 +52,35 @@ export default function QuestionRenderer({ question, language, showSolution = fa
       )}
 
       {/* Question Statements - High Contrast Black */}
-      <div className="space-y-2 mb-4">
+      <div className="space-y-2 mb-6">
         {showEn && question.questionEn && (
-           <div className="text-[17px] md:text-[20px] font-black leading-snug text-black whitespace-pre-wrap antialiased">
+           <div className="text-[17px] md:text-[19px] font-black leading-snug text-black whitespace-pre-wrap antialiased">
               {cleanText(question.questionEn)}
            </div>
         )}
         {showPa && question.questionPa && (
            <div className={cn(
-              "text-[17px] md:text-[20px] font-black leading-snug text-black whitespace-pre-wrap antialiased",
+              "text-[17px] md:text-[19px] font-black leading-snug text-black whitespace-pre-wrap antialiased",
               showEn ? "pt-2 border-t border-slate-50 mt-2" : ""
            )}>
               {cleanText(question.questionPa)}
            </div>
         )}
       </div>
+
+      {/* Logic Hub: Render Options for Preview/Matrix */}
+      {!showSolution && (
+         <div className="space-y-2 mb-6">
+            {['A', 'B', 'C', 'D'].map(key => (
+               <div key={key} className="flex items-start gap-3">
+                  <span className="font-black text-xs text-primary min-w-[20px]">{key})</span>
+                  <p className="text-sm font-bold text-slate-700 leading-tight">
+                     {renderOption(key)}
+                  </p>
+               </div>
+            ))}
+         </div>
+      )}
 
       {showSolution && (
         <div className="mt-6 p-6 bg-emerald-50 rounded-2xl border border-emerald-100 space-y-4 shadow-lg">

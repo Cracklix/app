@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -296,11 +297,11 @@ export default function BulkImportPage() {
                                            <div key={opt} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-white border border-slate-100 rounded-2xl shadow-inner">
                                               <div className="space-y-2">
                                                  <Label className="text-[9px] font-black uppercase text-slate-400">Option {opt} (EN)</Label>
-                                                 <Input value={(q as any)[`option${opt}En`]} onChange={e => handleUpdateQuestion(idx, `option${opt}En`, e.target.value)} className="rounded-xl h-11 text-xs font-bold bg-slate-50 border-none" />
+                                                 <Input value={(q as any)[`option${opt}En`] || ""} onChange={e => handleUpdateQuestion(idx, `option${opt}En`, e.target.value)} className="rounded-xl h-11 text-xs font-bold bg-slate-50 border-none" />
                                               </div>
                                               <div className="space-y-2">
                                                  <Label className="text-[9px] font-black uppercase text-slate-400">ਵਿਕਲਪ {opt} (PA)</Label>
-                                                 <Input value={(q as any)[`option${opt}Pa`]} onChange={e => handleUpdateQuestion(idx, `option${opt}Pa`, e.target.value)} className="rounded-xl h-11 text-xs font-bold bg-emerald-50/30 border-none" />
+                                                 <Input value={(q as any)[`option${opt}Pa`] || ""} onChange={e => handleUpdateQuestion(idx, `option${opt}Pa`, e.target.value)} className="rounded-xl h-11 text-xs font-bold bg-emerald-50/30 border-none" />
                                               </div>
                                            </div>
                                         ))}

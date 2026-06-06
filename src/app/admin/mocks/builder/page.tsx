@@ -81,7 +81,7 @@ function MockBuilderContent() {
     difficulty: "Medium" as Difficulty, 
     mockType: "FULL" as MockType, 
     accessType: "FREE" as AccessType,
-    passId: "", // Linked Pass Tier
+    passId: "", 
     published: false,
     positiveMarks: 1,
     negativeMarks: 0.25,
@@ -189,7 +189,6 @@ function MockBuilderContent() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 px-4">
-        {/* Left Sidebar: Global Logic */}
         <div className="lg:col-span-4 space-y-8">
           <Card className="border-none shadow-4xl rounded-[3rem] bg-white p-10 space-y-10 overflow-hidden relative">
             <div className="absolute top-0 right-0 p-8 opacity-[0.03]"><Settings2 className="h-32 w-32" /></div>
@@ -211,13 +210,12 @@ function MockBuilderContent() {
                       <SelectItem value="PYQ">Previous Year Paper</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest px-1">Determines where this test appears on the Exam page.</p>
                </div>
 
                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Authority</Label>
-                   <Select value={mockData.boardId} onValueChange={v => setMockData({...mockData, boardId: v, examId: ""})}>
+                   <Select value={mockData.boardId} onValueChange={v => setMetadata({...mockData, boardId: v, examId: ""})}>
                      <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-slate-50 font-black uppercase text-[10px]"><SelectValue placeholder="Select" /></SelectTrigger>
                      <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
                    </Select>
@@ -262,16 +260,15 @@ function MockBuilderContent() {
                {mockData.accessType === 'PREMIUM' && (
                   <div className="space-y-2 animate-in slide-in-from-top-4 duration-500">
                     <Label className="text-[10px] font-black uppercase text-primary flex items-center gap-2"><Gem className="h-3 w-3" /> Required Pass Tier</Label>
-                    <Select value={mockData.passId} onValueChange={(v: string) => setMockData({...mockData, passId: v})}>
+                    <Select value={mockData.passId || "any"} onValueChange={(v: string) => setMockData({...mockData, passId: v === 'any' ? '' : v})}>
                       <SelectTrigger className="rounded-xl h-14 bg-primary/5 border-primary/20 font-black uppercase text-[10px] text-primary"><SelectValue placeholder="Any Premium Pass" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Any Premium Pass</SelectItem>
+                        <SelectItem value="any">Any Premium Pass</SelectItem>
                         {passes?.map((p: any) => (
                            <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest px-1">Selected pass will be required to unlock this test.</p>
                   </div>
                )}
 
@@ -286,7 +283,6 @@ function MockBuilderContent() {
           </Card>
         </div>
 
-        {/* Right Content Area: Assembler */}
         <div className="lg:col-span-8 space-y-6">
            <Card className="border-none shadow-4xl rounded-[4rem] bg-white overflow-hidden min-h-[700px] flex flex-col">
               <Tabs defaultValue="bank" className="flex-1 flex flex-col">
@@ -315,7 +311,6 @@ function MockBuilderContent() {
                        </Select>
                     </div>
 
-                    {/* Bulk Selection Bar */}
                     <div className="bg-[#0F172A] p-4 rounded-2xl mb-6 flex items-center justify-between text-white shadow-2xl">
                        <div className="flex items-center gap-6 px-4">
                           <Checkbox 
