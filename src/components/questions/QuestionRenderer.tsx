@@ -1,9 +1,10 @@
+
 'use client';
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Question } from '@/types';
 import { cn } from '@/lib/utils';
-import { CheckCircle2 } from 'lucide-react';
+import MathText from './MathText';
 
 interface QuestionRendererProps {
   question: Partial<Question> & { displayId?: string };
@@ -13,12 +14,11 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview Institutional High-Fidelity Question Renderer v32.0.
- * Rules Enforcement:
- * 1. STRICT SEGREGATION: "EN" mode shows 0 Punjabi, "PA" mode shows 0 English.
- * 2. NO REDUNDANT PREFIXES: Strips "Q1." or "ਪ੍ਰਸ਼ਨ 1." from statements.
+ * @fileOverview Official Exam Solution Renderer (Testbook/PSSSB Style).
+ * - Dark theme for solutions
+ * - KaTeX math rendering
+ * - No redundant prefixes (Q1., A, B, C, D)
  */
-
 export default function QuestionRenderer({ 
   question, 
   language, 
@@ -50,33 +50,33 @@ export default function QuestionRenderer({
   const getContent = () => {
     if (isEnglishSubject) return { en: qEn, pa: "" };
     if (isPunjabiSubject) return { en: "", pa: qPa || qEn };
-
     if (language === 'en') return { en: qEn, pa: "" };
     if (language === 'pa') return { en: "", pa: qPa || qEn };
-    
     return { en: qEn, pa: qPa };
   };
 
   const content = getContent();
 
   return (
-    <div className="w-full text-left font-body space-y-6">
-      {question.imageUrl && (
-        <div className="bg-slate-50 border border-slate-100 rounded-2xl p-3 shadow-inner overflow-hidden max-w-md">
-           <img src={question.imageUrl} alt="Asset" className="max-h-[120px] rounded-xl mx-auto object-contain" />
-        </div>
-      )}
-
-      {/* Question Hub */}
-      <div className="text-[15px] md:text-[18px] font-black leading-snug text-[#0F172A] antialiased">
-        {content.en}
-        {content.en && content.pa && <span className="text-primary/40 mx-2">/</span>}
-        {content.pa}
+    <div className="w-full text-left font-body space-y-8">
+      {/* 1. Question Statement */}
+      <div className="space-y-4">
+        {content.en && (
+          <div className="text-[16px] md:text-[19px] font-bold text-[#0F172A] leading-relaxed antialiased">
+             {question.displayId && <span className="mr-2">{question.displayId}.</span>}
+             <MathText text={content.en} className="inline" />
+          </div>
+        )}
+        {content.pa && (
+          <div className="text-[16px] md:text-[19px] font-bold text-[#0F172A] leading-relaxed antialiased">
+             <MathText text={content.pa} className="inline" />
+          </div>
+        )}
       </div>
 
-      {/* Options Hub */}
+      {/* 2. Options Grid */}
       {!hideOptions && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
           {['A', 'B', 'C', 'D'].map(key => {
             const en = cleanText((question as any)[`option${key}En`]);
             const pa = cleanText((question as any)[`option${key}Pa`]);
@@ -85,47 +85,66 @@ export default function QuestionRenderer({
             const showPa = isPunjabiSubject || language === 'pa' || language === 'bilingual';
 
             return (
-                <div key={key} className="flex items-center gap-3 p-4 bg-white border border-slate-100 rounded-xl shadow-sm">
-                  <div className="h-7 w-7 rounded-lg bg-slate-50 flex items-center justify-center font-black text-[10px] text-primary shrink-0 border border-slate-100">
-                     {key}
-                  </div>
-                  <div className="text-[14px] md:text-[16px] font-bold text-slate-700 leading-snug">
-                      {showEn && en}
-                      {showEn && showPa && pa && <span className="text-primary/40 mx-1.5">/</span>}
-                      {showPa && (pa || (!showEn && en))}
-                  </div>
+              <div key={key} className="flex items-center gap-4 p-4 md:p-5 bg-white border border-slate-200 rounded-xl hover:border-primary/40 transition-colors">
+                <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center font-black text-[11px] text-[#0F172A] shrink-0 border border-slate-200">
+                  {key}
                 </div>
+                <div className="text-[15px] md:text-[17px] font-medium text-slate-800 leading-snug">
+                  {showEn && <MathText text={en} className="inline" />}
+                  {showEn && showPa && pa && <span className="text-slate-300 mx-2">/</span>}
+                  {showPa && <MathText text={pa || (!showEn ? en : "")} className="inline" />}
+                </div>
+              </div>
             )
           })}
         </div>
       )}
 
+      {/* 3. Solution Hub (Testbook Style) */}
       {showSolution && (
-        <div className="mt-10 p-8 bg-emerald-50/40 rounded-[2.5rem] border border-emerald-100 space-y-8 shadow-sm">
-           <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg">
-                 <CheckCircle2 className="h-6 w-6" />
-              </div>
-              <div className="text-left">
-                 <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest leading-none mb-1">Audit Solution Hub</p>
-                 <h4 className="text-xl text-[#0F172A] font-black uppercase">Option {question.correctAnswer}</h4>
-              </div>
+        <div className="mt-12 bg-[#121212] rounded-[2.5rem] p-8 md:p-12 text-white shadow-2xl relative overflow-hidden">
+           <div className="absolute top-0 right-0 p-8 opacity-5">
+              <svg className="w-40 h-40" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+              </svg>
            </div>
-           
-           <div className="space-y-10 pt-8 border-t border-emerald-100">
-              {content.en && expEn && (
-                <div className="space-y-4">
-                   <p className="text-[8px] font-black uppercase tracking-[0.3em] text-emerald-600/60">English Logic Hub</p>
-                   <p className="text-[14px] md:text-[15px] text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap">{expEn}</p>
-                </div>
-              )}
-              
-              {content.pa && expPa && (
-                <div className="space-y-4 pt-10 border-t border-emerald-100/30">
-                   <p className="text-[8px] font-black uppercase tracking-[0.3em] text-emerald-600/60">ਪੰਜਾਬੀ ਵਿਆਖਿਆ (Punjabi Rationale)</p>
-                   <p className="text-[14px] md:text-[15px] text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap">{expPa}</p>
-                </div>
-              )}
+
+           <div className="space-y-10 relative z-10">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/10 pb-8">
+                 <div className="space-y-1">
+                    <p className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Official Answer Key</p>
+                    <h4 className="text-3xl font-black uppercase">Correct Option: ({question.correctAnswer})</h4>
+                 </div>
+                 <div className="bg-white/10 px-6 py-3 rounded-2xl border border-white/10">
+                    <p className="text-[14px] font-bold text-white leading-none">
+                       {cleanText((question as any)[`option${question.correctAnswer}En` || `option${question.correctAnswer}Pa`])}
+                    </p>
+                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                 {/* English Explanation */}
+                 {expEn && (
+                   <div className="space-y-6">
+                      <div className="flex items-center gap-3">
+                         <div className="h-1 w-12 bg-primary rounded-full" />
+                         <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">English Explanation</span>
+                      </div>
+                      <MathText text={expEn} className="text-[15px] md:text-[16px] text-slate-300 font-medium leading-relaxed" />
+                   </div>
+                 )}
+
+                 {/* Punjabi Explanation */}
+                 {expPa && (
+                   <div className="space-y-6">
+                      <div className="flex items-center gap-3">
+                         <div className="h-1 w-12 bg-emerald-500 rounded-full" />
+                         <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">ਪੰਜਾਬੀ ਵਿਆਖਿਆ (Punjabi)</span>
+                      </div>
+                      <MathText text={expPa} className="text-[15px] md:text-[16px] text-slate-300 font-medium leading-relaxed" />
+                   </div>
+                 )}
+              </div>
            </div>
         </div>
       )}

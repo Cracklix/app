@@ -1,33 +1,33 @@
+
 'use server';
 /**
- * @fileOverview Expert Bilingual MCQ Data-Formatting AI v12.0.
+ * @fileOverview Final Exam Content Formatter AI v15.0.
  * 
- * - bulkParseMCQ - AI flow to extract, clean, and map bilingual MCQs.
- * - Rules: Strip all prefixes, Split options by '/', 1-line space in logic.
+ * - Rules: No prefixes (Q1., A, B, etc.), Math symbols preserved, Pure text output.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const QuestionOutputSchema = z.object({
-  question_number: z.number().describe('The sequential index of the question.'),
-  question_english: z.string().describe('Clean English question text. STRIP ALL PREFIXES like "Q1.", "Question 1.", etc.'),
-  question_punjabi: z.string().describe('Clean Punjabi question text. STRIP ALL PREFIXES like "ਪ੍ਰਸ਼ਨ 1.", "ਪ੍ਰਸ਼ਨ 01".'),
-  option_a_english: z.string().describe('Value only for Option A. STRIP "A)", "(A)" or "Option A".'),
-  option_a_punjabi: z.string().describe('Punjabi value only for Option A.'),
-  option_b_english: z.string().describe('Value only for Option B.'),
-  option_b_punjabi: z.string().describe('Punjabi value only for Option B.'),
-  option_c_english: z.string().describe('Value only for Option C.'),
-  option_c_punjabi: z.string().describe('Punjabi value only for Option C.'),
-  option_d_english: z.string().describe('Value only for Option D.'),
-  option_d_punjabi: z.string().describe('Punjabi value only for Option D.'),
+  question_number: z.number().describe('Index of the question.'),
+  question_english: z.string().describe('Clean English question. NO PREFIXES like "Q1."'),
+  question_punjabi: z.string().describe('Clean Punjabi question. NO PREFIXES like "ਪ੍ਰਸ਼ਨ 1."'),
+  option_a_english: z.string().describe('Option A English text only.'),
+  option_a_punjabi: z.string().describe('Option A Punjabi text only.'),
+  option_b_english: z.string().describe('Option B English text only.'),
+  option_b_punjabi: z.string().describe('Option B Punjabi text only.'),
+  option_c_english: z.string().describe('Option C English text only.'),
+  option_c_punjabi: z.string().describe('Option C Punjabi text only.'),
+  option_d_english: z.string().describe('Option D English text only.'),
+  option_d_punjabi: z.string().describe('Option D Punjabi text only.'),
   correct_option: z.enum(['A', 'B', 'C', 'D']),
-  explanation_english: z.string().describe('Full Step-by-step English logic.'),
-  explanation_punjabi: z.string().describe('Full Step-by-step Punjabi logic.')
+  explanation_english: z.string().describe('English step-by-step logic. Use LaTeX format for math like $...$.'),
+  explanation_punjabi: z.string().describe('Punjabi step-by-step logic. Use LaTeX format for math like $...$.')
 });
 
 const BulkParseInputSchema = z.object({
-  rawText: z.string().describe('The block of raw bilingual MCQ text.'),
+  rawText: z.string().describe('Raw bilingual text block.'),
 });
 
 const BulkParseOutputSchema = z.array(QuestionOutputSchema);
@@ -40,24 +40,20 @@ const prompt = ai.definePrompt({
   name: 'bulkParseMCQ',
   input: { schema: BulkParseInputSchema },
   output: { schema: BulkParseOutputSchema },
-  prompt: `You are an expert bilingual data-formatting AI. 
+  prompt: `You are an expert bilingual exam content formatter. 
 
-### DATA EXTRACTION RULES (STRICT):
-1. PATTERN: 
-   Q1. English Question
-   Punjabi Question
-   (A) Option EN / Option PA
-   ...
-2. PREFIX PURGE: Strip "Q1.", "ਪ੍ਰਸ਼ਨ 1.", "(A)", "A)" from ALL fields. The fields must contain ONLY the content data.
-3. BILINGUAL SPLIT: Split strings like "12 days / 12 ਦਿਨ" into English and Punjabi fields respectively.
-4. EXPLANATION: Extract the full step-by-step logic for both languages.
+### FORMATTING RULES (STRICT):
+1. NO PREFIXES: Remove "Q1.", "ਪ੍ਰਸ਼ਨ 1.", "(A)", "Option A" from ALL output fields. Stored values must be PURE text/math.
+2. OPTION SPLIT: Split strings like "84 cm² / 84 ਵਰਗ ਸੈਂਟੀਮੀਟਰ" into English and Punjabi fields.
+3. MATH RENDER: If you see formulas like Area = sqrt(s(s-a)...), convert them to basic LaTeX format using dollar signs: e.g. $\\text{Area} = \\sqrt{s(s-a)(s-b)(s-c)}$.
+4. EXPLANATION: Capture the full logic. Do not summarize.
 
 ---
-### INPUT DATA:
+INPUT DATA:
 {{{rawText}}}
 ---
 
-Return ONLY valid JSON array. No markdown.`,
+Return ONLY a JSON array.`,
 });
 
 const bulkParseMCQFlow = ai.defineFlow(
