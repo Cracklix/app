@@ -25,8 +25,8 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Hardened CBT Attempt Hub v16.0.
- * Updated: Universal Exit confirmation protocol added to prevent accidental departures.
+ * @fileOverview Hardened CBT Attempt Hub v17.0.
+ * Updated: Viewport height optimized for mobile safe-areas to prevent button clipping.
  */
 
 export default function MockAttemptPage() {
@@ -188,7 +188,7 @@ export default function MockAttemptPage() {
   const selectedAnswer = examStore.answers[examStore.currentIdx];
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-[#000000] font-body select-none">
+    <div className="flex flex-col h-screen h-svh overflow-hidden bg-[#000000] font-body select-none">
       <AntiCheat />
       <ExamHeader 
         onPaletteToggle={() => setIsMobilePaletteOpen(true)} 
@@ -232,7 +232,7 @@ export default function MockAttemptPage() {
         </AnimatePresence>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-6 lg:p-8 bg-[#000000] flex flex-col items-center">
-           <div className="w-full max-w-[920px] pb-10">
+           <div className="w-full max-w-[920px] pb-24 md:pb-10">
               {q && (
                 <QuestionRenderer 
                    language={examStore.language} 
