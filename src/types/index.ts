@@ -17,7 +17,7 @@ export interface Subject {
 export interface ExamSection {
   id: string;
   name: string;
-  questions: number;
+  count: number;
 }
 
 export interface MockTest {
@@ -31,6 +31,7 @@ export interface MockTest {
   totalQuestions: number;
   totalMarks: number;
   negativeMarks: number;
+  positiveMarks: number;
   questionIds: string[];
   sections: ExamSection[];
   published: boolean;
@@ -58,6 +59,7 @@ export interface Question {
   englishExplanation: string;
   punjabiExplanation: string;
   difficulty: Difficulty;
+  subjectId: string;
 }
 
 export interface AttemptState {
@@ -72,3 +74,52 @@ export interface AttemptState {
   startTime: number;
   endTime: number;
 }
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: UserRole;
+  state: "Punjab";
+  targetExam: string;
+  createdAt: string;
+  status: string;
+  passExpiryDate?: string;
+  photoURL?: string;
+  gender?: Gender;
+  subscriptions?: string[];
+}
+
+export interface Advertisement {
+  id: string;
+  title: string;
+  type: 'BANNER' | 'ADSENSE' | 'HTML';
+  status: 'ACTIVE' | 'PAUSED' | 'SCHEDULED';
+  placements: AdPlacementType[];
+  desktopImageUrl?: string;
+  mobileImageUrl?: string;
+  externalUrl?: string;
+  htmlCode?: string;
+  adSenseCode?: string;
+  priority: number;
+  targeting?: {
+    examIds?: string[];
+  };
+  stats: {
+    impressions: number;
+    clicks: number;
+  };
+}
+
+export type AdPlacementType = 
+  | 'HOMEPAGE_TOP' 
+  | 'HOMEPAGE_MIDDLE' 
+  | 'HOMEPAGE_BOTTOM' 
+  | 'EXAM_LISTING' 
+  | 'MOCK_LISTING' 
+  | 'NOTES_PAGE' 
+  | 'CA_PAGE' 
+  | 'RESULT_PAGE' 
+  | 'SIDEBAR' 
+  | 'FOOTER';

@@ -6,28 +6,19 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Search, Edit, Trash2, Database, CheckSquare, Loader2, RefreshCw, ChevronRight, Layers, Filter } from "lucide-react"
+import { Plus, Search, Edit, Trash2, Database, Loader2, RefreshCw, ChevronRight, Filter } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, deleteDoc, doc, where, writeBatch, limit, getDocs, startAfter } from "firebase/firestore"
+import { collection, query, deleteDoc, doc, where, limit, getDocs, startAfter } from "firebase/firestore"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/hooks/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
 import { cn } from "@/lib/utils"
-import { errorEmitter } from "@/firebase/error-emitter"
-import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 
 /**
- * @fileOverview Institutional Asset Ledger (Global Bank).
- * Optimized: Table-to-Card conversion for mobile responsiveness.
+ * @fileOverview Hardened Institutional Asset Ledger (Global Bank).
+ * Optimized: Infinite scroll pagination, multi-node filtering, and strict instance validation.
  */
 
 export default function QuestionBank() {
@@ -38,8 +29,6 @@ export default function QuestionBank() {
   const [subjectFilter, setSubjectFilter] = useState("all")
   const [boardFilter, setBoardFilter] = useState("all")
   const [examFilter, setExamFilter] = useState("all")
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [isDeleting, setIsDeleting] = useState(false)
   const [loading, setLoading] = useState(true)
   const [questions, setQuestions] = useState<any[]>([])
   const [lastDoc, setLastDoc] = useState<any>(null)
@@ -48,11 +37,9 @@ export default function QuestionBank() {
 
   const isValidDb = db && typeof db === 'object';
 
-  const mocksQuery = useMemo(() => (isValidDb ? query(collection(db, "mocks")) : null), [isValidDb, db])
   const boardsQuery = useMemo(() => (isValidDb ? query(collection(db, "boards")) : null), [isValidDb, db])
   const subjectsQuery = useMemo(() => (isValidDb ? query(collection(db, "subjects")) : null), [isValidDb, db])
 
-  const { data: allMocks } = useCollection<any>(mocksQuery)
   const { data: boards } = useCollection<any>(boardsQuery)
   const { data: subjects } = useCollection<any>(subjectsQuery)
 
@@ -84,6 +71,7 @@ export default function QuestionBank() {
       setLastDoc(snap.docs[snap.docs.length - 1])
       setLastHasMore(snap.docs.length === 50)
     } catch (e: any) {
+      console.error("Registry fetch error:", e);
       toast({ variant: "destructive", title: "Fetch Error" })
     } finally {
       setLoading(false)
@@ -98,19 +86,23 @@ export default function QuestionBank() {
     if (!questions) return []
     return questions.filter(q => {
         const term = searchTerm.toLowerCase();
-        const matchesSearch = (q.englishQuestion || q.questionEn || q.titleEn || "").toLowerCase().includes(term) || 
-                             (q.displayId || "").toLowerCase().includes(term);
+        const matchesSearch = (q.englishQuestion || q.questionEn || "").toLowerCase().includes(term) || 
+                             (q.id || "").toLowerCase().includes(term);
         const matchesSub = subjectFilter === "all" || q.subjectId === subjectFilter
         return matchesSearch && matchesSub
       })
-      .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)) 
   }, [questions, searchTerm, subjectFilter])
 
-  const handleDeleteSingle = (id: string) => {
+  const handleDeleteSingle = async (id: string) => {
     if (!isValidDb) return;
     if (!confirm("Permanently purge this asset?")) return;
-    const qRef = doc(db, "questions", id)
-    deleteDoc(qRef).then(() => fetchQuestions())
+    try {
+      await deleteDoc(doc(db, "questions", id))
+      setQuestions(prev => prev.filter(q => q.id !== id))
+      toast({ title: "Registry Node Purged" })
+    } catch (e) {
+      toast({ variant: "destructive", title: "Purge Failed" })
+    }
   }
 
   return (
@@ -158,7 +150,6 @@ export default function QuestionBank() {
         </CardHeader>
 
         <CardContent className="p-0">
-          {/* Desktop Table */}
           <div className="hidden md:block overflow-x-auto">
             <Table>
               <TableHeader className="bg-slate-50/50">
@@ -177,7 +168,7 @@ export default function QuestionBank() {
                   <TableRow key={q.id} className="hover:bg-slate-50 border-white/5 transition-colors group">
                     <TableCell className="px-8 py-6">
                       <div className="flex items-center gap-3 mb-1.5">
-                        <Badge className="bg-[#0F172A] text-white border-none text-[7px] font-black uppercase px-2 py-0.5">{q.displayId || 'NODE'}</Badge>
+                        <Badge className="bg-[#0F172A] text-white border-none text-[7px] font-black uppercase px-2 py-0.5">NODE</Badge>
                         <code className="text-[7px] text-slate-400 font-mono">ID: {q.id.slice(-6)}</code>
                       </div>
                       <p className="font-bold text-[#000000] text-sm leading-snug line-clamp-2">{q.englishQuestion || q.questionEn}</p>
@@ -200,7 +191,6 @@ export default function QuestionBank() {
             </Table>
           </div>
 
-          {/* Mobile Card List */}
           <div className="md:hidden divide-y divide-slate-100">
              {loading && questions.length === 0 ? (
                Array.from({ length: 4 }).map((_, i) => <div key={i} className="p-6 space-y-4"><Skeleton className="h-6 w-1/4" /><Skeleton className="h-12 w-full" /></div>)
@@ -227,7 +217,7 @@ export default function QuestionBank() {
       {hasMore && (
         <div className="flex justify-center mt-6">
           <Button onClick={() => fetchQuestions(true)} disabled={loading} className="rounded-xl h-11 px-10 bg-white border border-slate-200 text-[#0F172A] font-black uppercase text-[10px] tracking-widest gap-2">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ChevronRight className="h-4 w-4 rotate-90" />}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
             Load More
           </Button>
         </div>

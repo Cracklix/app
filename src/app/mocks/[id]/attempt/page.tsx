@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useFirestore, useUser } from "@/firebase";
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
@@ -15,7 +15,6 @@ import QuestionPalette from "@/components/mocks/QuestionPalette";
 import { Button } from "@/components/ui/button";
 import { Loader2, Play, ShieldCheck, CheckCircle2, Trophy, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -27,8 +26,8 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Final Institutional CBT Attempt Hub v12.0.
- * Optimized: Fully responsive mobile-first architecture with bottom-sheet palette.
+ * @fileOverview Hardened CBT Attempt Hub v15.0.
+ * Optimized: Unified timer sync, state restoration, and multi-node validation.
  */
 
 export default function MockAttemptPage() {
@@ -74,14 +73,15 @@ export default function MockAttemptPage() {
 
         if (questions.length === 0) throw new Error("This mock has no questions available.");
 
-        const attemptSnap = await getDoc(doc(db, "attempts", `${user.uid}_${mockId}`));
+        const attemptRef = doc(db, "attempts", `${user.uid}_${mockId}`);
+        const attemptSnap = await getDoc(attemptRef);
         const savedState = attemptSnap.exists() ? attemptSnap.data() : undefined;
 
         if (!attemptSnap.exists()) {
            const startTime = Date.now();
            const endTime = startTime + (mockData.duration * 60 * 1000);
            
-           await setDoc(doc(db, 'attempts', `${user.uid}_${mockId}`), {
+           await setDoc(attemptRef, {
               userId: user.uid,
               mockId,
               mockTitle: mockData.title,
@@ -132,7 +132,7 @@ export default function MockAttemptPage() {
     return s;
   }, [examStore.questions, examStore.status, examStore.visited]);
 
-  const handleSubmitFinal = async () => {
+  const handleSubmitFinal = useCallback(async () => {
     if (!db || typeof db !== 'object' || !user || isSubmittingFinal) return;
     setIsSubmittingFinal(true);
     
@@ -145,7 +145,8 @@ export default function MockAttemptPage() {
         else if (studentAnsIdx !== undefined) score -= 0.25;
       });
 
-      const accuracy = Math.round((score / (Object.keys(examStore.answers).length || 1)) * 100);
+      const attempted = Object.keys(examStore.answers).length;
+      const accuracy = attempted > 0 ? Math.round((score / attempted) * 100) : 0;
 
       const resultPayload = {
         userId: user.uid,
@@ -171,13 +172,13 @@ export default function MockAttemptPage() {
       setIsSubmittingFinal(false);
       setShowSubmitModal(false);
     }
-  };
+  }, [db, user, isSubmittingFinal, examStore, router, toast, mockId]);
 
   if (isInitializing) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-6">
-       <Loader2 className="h-10 w-10 text-[#F97316] animate-spin" />
+       <Loader2 className="h-10 w-10 text-primary animate-spin" />
        <div className="text-center">
-          <p className="font-black uppercase text-[10px] tracking-[0.4em] text-[#F97316]">Institutional Node</p>
+          <p className="font-black uppercase text-[10px] tracking-[0.4em] text-primary">Institutional Node</p>
           <p className="text-sm font-bold text-slate-400 mt-2">Syncing Evaluation Engine...</p>
        </div>
     </div>
@@ -203,7 +204,7 @@ export default function MockAttemptPage() {
             >
               <div className="max-w-md w-full bg-white rounded-[2rem] shadow-5xl overflow-hidden">
                  <div className="bg-slate-50 p-6 border-b border-slate-100 text-center space-y-3">
-                    <div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto text-[#F97316] shadow-xl">
+                    <div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto text-primary shadow-xl">
                        <Play className="h-6 v-6 fill-current" />
                     </div>
                     <div>
@@ -218,7 +219,7 @@ export default function MockAttemptPage() {
                        <ResumeStat label="Marked" val={stats.marked + stats.ansMarked} color="bg-pink-500" />
                        <ResumeStat label="Remaining" val={stats.notVisited} color="bg-slate-50" textColor="text-slate-300" />
                     </div>
-                    <Button onClick={() => examStore.setPaused(false)} className="w-full h-14 bg-[#F97316] hover:bg-orange-600 text-white rounded-[1rem] font-black uppercase tracking-[0.2em] text-[10px] shadow-3xl gap-4">
+                    <Button onClick={() => examStore.setPaused(false)} className="w-full h-14 bg-primary hover:bg-orange-600 text-white rounded-[1rem] font-black uppercase tracking-[0.2em] text-[10px] shadow-3xl gap-4">
                        <Play className="h-4 w-4 fill-current" /> RESUME EVALUATION
                     </Button>
                  </div>
@@ -229,18 +230,13 @@ export default function MockAttemptPage() {
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-6 lg:p-8 bg-[#000000] flex flex-col items-center">
            <div className="w-full max-w-[920px] pb-10">
-              {q ? (
+              {q && (
                 <QuestionRenderer 
                    language={examStore.language} 
                    question={{...q, displayId: (examStore.currentIdx + 1).toString()}} 
                    selectedAnswer={selectedAnswer}
                    onSelect={(idx) => examStore.setAnswer(examStore.currentIdx, idx, db)}
                 />
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full opacity-20 text-white mt-40">
-                   <AlertTriangle className="h-10 w-10 mb-4" />
-                   <p className="font-black uppercase tracking-widest text-[10px]">Node Missing</p>
-                </div>
               )}
            </div>
         </div>
@@ -292,7 +288,7 @@ export default function MockAttemptPage() {
             </div>
 
             <DialogFooter className="flex flex-col gap-2.5 pt-2">
-               <Button onClick={handleSubmitFinal} disabled={isSubmittingFinal} className="w-full h-14 bg-[#F97316] hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] text-[9px] rounded-xl shadow-2xl transition-all active:scale-95">
+               <Button onClick={handleSubmitFinal} disabled={isSubmittingFinal} className="w-full h-14 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] text-[9px] rounded-xl shadow-2xl transition-all active:scale-95">
                   {isSubmittingFinal ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ShieldCheck className="h-4 w-4 mr-2" />}
                   FINALIZE & SYNC REGISTRY
                </Button>

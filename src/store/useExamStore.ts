@@ -1,7 +1,12 @@
 
 import { create } from 'zustand';
 import { AttemptState, ExamLanguage, QuestionStatus, Question } from '@/types';
-import { Firestore, doc, updateDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { Firestore, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+
+/**
+ * @fileOverview Institutional CBT Global Store v15.0.
+ * Hardened: Drift-corrected timer logic and atomic state updates.
+ */
 
 interface ExamStore extends AttemptState {
   questions: Question[];
@@ -67,6 +72,8 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       currentIdx: savedState?.currentIdx || 0,
       visited: Array.from(new Set([...(savedState?.visited || []), 0])),
       currentSectionId: questions[savedState?.currentIdx || 0]?.sectionId || '',
+      isPaused: false,
+      isSubmitting: false
     });
   },
 
@@ -77,6 +84,8 @@ export const useExamStore = create<ExamStore>((set, get) => ({
 
   setCurrentIdx: (idx) => {
     const { visited, questions } = get();
+    if (idx < 0 || idx >= questions.length) return;
+    
     const newVisited = Array.from(new Set([...visited, idx]));
     set({ 
       currentIdx: idx, 
@@ -87,6 +96,8 @@ export const useExamStore = create<ExamStore>((set, get) => ({
 
   setAnswer: async (idx, optionIdx, db) => {
     const { answers, status, userId, mockId } = get();
+    if (!userId || !mockId) return;
+
     const newAnswers = { ...answers };
     const newStatus = { ...status };
 
@@ -100,17 +111,18 @@ export const useExamStore = create<ExamStore>((set, get) => ({
 
     set({ answers: newAnswers, status: newStatus });
 
-    // Auto-Save Every Click logic
     const attemptRef = doc(db, 'attempts', `${userId}_${mockId}`);
     updateDoc(attemptRef, {
       [`answers.${idx}`]: optionIdx,
       [`status.${idx}`]: newStatus[idx],
       updatedAt: serverTimestamp()
-    }).catch(() => {});
+    }).catch(e => console.error("Auto-save failed:", e));
   },
 
   clearAnswer: async (idx, db) => {
     const { answers, status, userId, mockId } = get();
+    if (!userId || !mockId) return;
+
     const newAnswers = { ...answers };
     const newStatus = { ...status };
     delete newAnswers[idx];
@@ -127,6 +139,8 @@ export const useExamStore = create<ExamStore>((set, get) => ({
 
   markForReview: async (idx, db) => {
     const { status, answers, userId, mockId } = get();
+    if (!userId || !mockId) return;
+
     const newStatus = { ...status };
     const hasAnswer = answers[idx] !== undefined;
     newStatus[idx] = hasAnswer ? 'answered-marked' : 'marked';
@@ -152,39 +166,43 @@ export const useExamStore = create<ExamStore>((set, get) => ({
         currentSectionId: questions[nextIdx]?.sectionId || ''
       });
       
-      const attemptRef = doc(db, 'attempts', `${userId}_${mockId}`);
-      updateDoc(attemptRef, {
-        currentIdx: nextIdx,
-        visited: newVisited,
-        updatedAt: serverTimestamp()
-      }).catch(() => {});
+      if (userId && mockId) {
+        const attemptRef = doc(db, 'attempts', `${userId}_${mockId}`);
+        updateDoc(attemptRef, {
+          currentIdx: nextIdx,
+          visited: newVisited,
+          updatedAt: serverTimestamp()
+        }).catch(() => {});
+      }
     }
   },
 
   tick: () => {
     const { endTime, isPaused, isSubmitting } = get();
-    if (!isPaused && !isSubmitting) {
+    if (!isPaused && !isSubmitting && endTime > 0) {
       const now = Date.now();
       const remain = Math.max(0, Math.floor((endTime - now) / 1000));
-      set({ timeLeft: remain });
+      if (get().timeLeft !== remain) {
+        set({ timeLeft: remain });
+      }
     }
   },
 
   addViolation: async (db) => {
     const { violations, userId, mockId } = get();
+    if (!userId || !mockId) return;
+    
     const newVal = (violations || 0) + 1;
     set({ violations: newVal });
-    if (userId && mockId) {
-      updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), { violations: newVal }).catch(() => {});
-    }
+    updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), { violations: newVal }).catch(() => {});
   },
 
   toggleBookmark: async (idx, db) => {
     const { bookmarks, userId, mockId } = get();
+    if (!userId || !mockId) return;
+
     const next = bookmarks.includes(idx) ? bookmarks.filter(i => i !== idx) : [...bookmarks, idx];
     set({ bookmarks: next });
-    if (userId && mockId) {
-      updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), { bookmarks: next }).catch(() => {});
-    }
+    updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), { bookmarks: next }).catch(() => {});
   }
 }));
