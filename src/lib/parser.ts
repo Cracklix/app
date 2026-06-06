@@ -4,9 +4,10 @@
  * 1. Simple Format (Q1. Text, A., B., C., D., Answer: B)
  * 2. High-Fidelity Tagged Format (QUESTION_TYPE: ..., QUESTION_EN: ..., etc.)
  * 3. Contextual Sets (DI_SET, PASSAGE)
+ * Updated: Resilient regex for Markdown bolding and bilingual pipe separators.
  */
 
-import { Question, Difficulty, ContentStatus, QuestionType, DiagramType } from "@/types";
+import { Question, Difficulty, ContentStatus, QuestionType } from "@/types";
 
 export interface ParsedResults {
   questions: Partial<Question>[];
@@ -28,15 +29,16 @@ export function parseBulkQuestions(
   const questions: Partial<Question>[] = [];
   const errors: string[] = [];
   
-  const text = rawText.replace(/\r\n/g, '\n').trim();
+  // Normalize and clean text
+  const text = "\n" + rawText.replace(/\r\n/g, '\n').trim();
   
-  // Split by specific markers
-  const blocks = text.split(/(?:={3,}|(?=\nQUESTION_TYPE:)|(?=\nQ\d+\.)|(?=\n\d+\.))/i)
+  // Resilient splitting: Look for separators like --- or === OR question starts like Q1, 1., **Q1**
+  const blocks = text.split(/(?:\n\s*[=-]{3,}\s*\n|(?=\n\s*\**Q?\d+[\.\)])|(?=\n\s*QUESTION_TYPE:))/i)
     .map(b => b.trim())
     .filter(b => b.length > 5);
 
   if (blocks.length === 0) {
-    return { questions: [], errors: ["No valid content blocks detected. Check delimiters (===)."], confidence: 0 };
+    return { questions: [], errors: ["No valid content blocks detected. Ensure questions start with Q1., 1. or use === separators."], confidence: 0 };
   }
 
   blocks.forEach((block, index) => {
@@ -51,9 +53,9 @@ export function parseBulkQuestions(
         parsed = parseSimpleBlock(block, metadata);
       }
 
-      // Final validation
+      // Validate question existence
       if (!parsed.questionEn && parsed.questionType !== 'DI_SET' && parsed.questionType !== 'PASSAGE') {
-        throw new Error("Could not identify question statement (QUESTION_EN missing).");
+        throw new Error("Could not extract question statement. Check formatting.");
       }
 
       questions.push({
@@ -67,7 +69,7 @@ export function parseBulkQuestions(
     }
   });
 
-  const confidence = Math.round((questions.length / (questions.length + errors.length)) * 100);
+  const confidence = Math.round((questions.length / (questions.length + (errors.length || 0))) * 100);
   return { questions, errors, confidence };
 }
 
@@ -97,80 +99,94 @@ function parseTaggedBlock(block: string, metadata: any): Partial<Question> {
     ...metadata,
     questionType: qType,
     diagramType: getTag("IMAGE_URL") ? 'image' : tableData ? 'table' : 'none',
-    diSetId: getTag("DI_SET_ID"),
-    passageId: getTag("PASSAGE_ID"),
-    
     questionEn: getTag("QUESTION_EN") || getTag("TITLE"),
     questionPa: getTag("QUESTION_PA") || getTag("QUESTION_EN") || "",
-    
     optionAEn: getTag("OPTION_A_EN") || "Option A",
-    optionAPa: getTag("OPTION_A_PA") || getTag("OPTION_A_EN") || "",
+    optionAPa: getTag("OPTION_A_PA") || "",
     optionBEn: getTag("OPTION_B_EN") || "Option B",
-    optionBPa: getTag("OPTION_B_PA") || getTag("OPTION_B_EN") || "",
+    optionBPa: getTag("OPTION_B_PA") || "",
     optionCEn: getTag("OPTION_C_EN") || "Option C",
-    optionCPa: getTag("OPTION_C_PA") || getTag("OPTION_C_EN") || "",
+    optionCPa: getTag("OPTION_C_PA") || "",
     optionDEn: getTag("OPTION_D_EN") || "Option D",
-    optionDPa: getTag("OPTION_D_PA") || getTag("OPTION_D_EN") || "",
-    
+    optionDPa: getTag("OPTION_DPa") || "",
     correctAnswer,
-    explanationEn: getTag("EXPLANATION_EN") || "Solution registry pending.",
-    explanationPa: getTag("EXPLANATION_PA") || getTag("EXPLANATION_EN") || "",
-    
+    explanationEn: getTag("EXPLANATION_EN") || "Solution provided in bank.",
+    explanationPa: getTag("EXPLANATION_PA") || "",
     imageUrl: getTag("IMAGE_URL"),
     passageEn: getTag("PASSAGE_EN"),
-    passagePa: getTag("PASSAGE_PA"),
-    instructionEn: getTag("INSTRUCTION_EN"),
-    instructionPa: getTag("INSTRUCTION_PA"),
-    
-    titleEn: getTag("TITLE_EN") || getTag("TITLE"),
-    titlePa: getTag("TITLE_PA"),
-    descriptionEn: getTag("DESCRIPTION_EN") || getTag("DESCRIPTION"),
-    descriptionPa: getTag("DESCRIPTION_PA"),
-    
-    tableData,
-    date: getTag("DATE"),
-    category: getTag("CATEGORY"),
-    year: parseInt(getTag("YEAR") || "2026")
+    passagePa: getTag("PASSAGE_PA")
   };
 }
 
 function parseSimpleBlock(block: string, metadata: any): Partial<Question> {
-  const cleanBlock = block.replace(/^(?:Q?\d+[\.\)]\s*)/i, '').trim();
-  const parts = cleanBlock.split(/(?=\n[A-D][\.\)]\s*|Answer:\s*|Explanation:\s*)/i);
+  // Strip Markdown bolding and question numbers
+  const cleanBlock = block.replace(/^(\**Q?\d+[\.\)]\s*\*?)/i, '').trim();
   
-  const questionEn = parts[0]?.trim();
+  // Split parts based on typical labels
+  const parts = cleanBlock.split(/(?=\n\s*\**[A-D][\.\)]\s*\*?|(?:\n\s*\**Correct Answer:?\**)|(?:\n\s*\**Explanation:?\**))/i);
   
-  const findPart = (prefix: string) => {
-    return parts.find(p => p.trim().toLowerCase().startsWith(prefix.toLowerCase()))
-      ?.replace(new RegExp(`^${prefix}[\\.\\)]?\\s*`, 'i'), '').trim() || null;
+  const questionPart = parts[0]?.trim();
+  const qLines = questionPart.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  
+  // Bilingual question detection (Line 1: EN, Line 2: PA)
+  const questionEn = qLines[0] || "";
+  const questionPa = qLines.length > 1 ? qLines.slice(1).join('\n') : questionEn;
+
+  const findRawPart = (prefix: string) => {
+    return parts.find(p => {
+       const cleanP = p.trim().replace(/^\**|\**$/g, '');
+       return cleanP.toLowerCase().startsWith(prefix.toLowerCase());
+    });
   };
 
-  const optA = findPart("A") || "Option A";
-  const optB = findPart("B") || "Option B";
-  const optC = findPart("C") || "Option C";
-  const optD = findPart("D") || "Option D";
-  const ans = findPart("Answer") || "A";
-  const exp = findPart("Explanation") || "Rationale provided.";
+  const extractOption = (prefix: string) => {
+    const raw = findRawPart(prefix);
+    if (!raw) return { en: `Option ${prefix}`, pa: "" };
+    
+    // Remove the A) or B. prefix
+    const content = raw.trim().replace(new RegExp(`^\\**${prefix}[\\.\\)]?\\s*\\**`, 'i'), '').trim();
+    
+    // Handle pipe separator for bilingual options
+    if (content.includes('|')) {
+      const [en, pa] = content.split('|').map(s => s.trim());
+      // Further clean the second part if it repeats the prefix like "A) EN | A) PA"
+      const cleanPa = pa.replace(new RegExp(`^\\**${prefix}[\\.\\)]?\\s*\\**`, 'i'), '').trim();
+      return { en, pa: cleanPa };
+    }
+    
+    return { en: content, pa: "" };
+  };
 
-  const correctAnswer = (ans.match(/[A-D]/i)?.[0].toUpperCase() || "A") as 'A' | 'B' | 'C' | 'D';
+  const optA = extractOption("A");
+  const optB = extractOption("B");
+  const optC = extractOption("C");
+  const optD = extractOption("D");
+
+  const ansPart = findRawPart("Correct Answer") || "A";
+  const correctAnswer = (ansPart.match(/[A-D]/i)?.[0].toUpperCase() || "A") as 'A' | 'B' | 'C' | 'D';
+
+  const expPart = findRawPart("Explanation") || "";
+  const expLines = expPart.replace(/^\**Explanation:?\**\s*/i, '').split('\n').filter(l => l.trim().length > 0);
+  const explanationEn = expLines[0] || "Rationale available in bank.";
+  const explanationPa = expLines.length > 1 ? expLines.slice(1).join('\n') : "";
 
   return {
     ...metadata,
     questionType: 'MCQ',
     diagramType: 'none',
     questionEn,
-    questionPa: questionEn, // Fallback
-    optionAEn: optA,
-    optionAPa: optA,
-    optionBEn: optB,
-    optionBPa: optB,
-    optionCEn: optC,
-    optionCPa: optC,
-    optionDEn: optD,
-    optionDPa: optD,
+    questionPa,
+    optionAEn: optA.en,
+    optionAPa: optA.pa,
+    optionBEn: optB.en,
+    optionBPa: optB.pa,
+    optionCEn: optC.en,
+    optionCPa: optC.pa,
+    optionDEn: optD.en,
+    optionDPa: optD.pa,
     correctAnswer,
-    explanationEn: exp,
-    explanationPa: exp,
+    explanationEn,
+    explanationPa,
     imageUrl: null,
     tableData: null
   };
