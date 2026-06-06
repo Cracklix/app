@@ -15,30 +15,36 @@ Punjab's most advanced government exam preparation platform. Designed for aspira
 - **State**: Zustand (Exam Store)
 - **AI**: Genkit (Logic Rationalization)
 
-## 📦 Deployment & Repository Setup
+## 📦 GitHub Deployment (Correct Sequence)
 
-### GitHub Setup
-To push this project to your GitHub repository, run these commands in your local terminal:
+If you are pushing to a new repository for the first time, run these commands exactly in this order:
+
 ```bash
+# 1. Initialize and Stage all files (This was the missing step)
+git add .
+
+# 2. Commit the files to your local registry
+git commit -m "Initial commit: Production-hardened Cracklix platform"
+
+# 3. Add your remote repository (If already added, skip this or use 'set-url')
 git remote add origin https://github.com/arshgrewal1122/cracklix.git
+
+# 4. Set branch to main
 git branch -M main
+
+# 5. Push to GitHub
 git push -u origin main
 ```
 
-### Vercel Deployment
+## 🚀 Vercel Deployment
 1. Go to [Vercel](https://vercel.com) and click **"Add New Project"**.
 2. Import your GitHub repository (`cracklix`).
 3. **Crucial**: Add the following Environment Variables in the Vercel Settings:
-   - `RAZORPAY_KEY_ID`: Your Razorpay Live/Test Key ID.
-   - `RAZORPAY_KEY_SECRET`: Your Razorpay Key Secret.
-   - `GOOGLE_GENAI_API_KEY`: Your Google AI API Key (for Genkit rationalizations).
-   - `NEXT_PUBLIC_FIREBASE_API_KEY`: (And other Firebase config values if needed, though they are usually in `src/firebase/config.ts`).
+   - `RAZORPAY_KEY_ID`: Your Razorpay Key.
+   - `RAZORPAY_KEY_SECRET`: Your Razorpay Secret.
+   - `GOOGLE_GENAI_API_KEY`: Your Google AI API Key.
+   - `NEXT_PUBLIC_FIREBASE_API_KEY`: (And other Firebase config values from src/firebase/config.ts).
 4. Click **Deploy**.
-
-## 🛡️ Security & Integrity
-The platform employs strict Role-Based Access Control (RBAC).
-- **Students**: Limited to identity and own attempt nodes.
-- **Admin**: Exclusive access to the Master Content Registry.
 
 ---
 Developed by **Arsh Grewal**
