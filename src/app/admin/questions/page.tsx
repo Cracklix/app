@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useState, useEffect, useCallback } from "react"
@@ -26,8 +25,8 @@ import {
 } from "@/components/ui/tooltip"
 
 /**
- * @fileOverview Institutional Asset Ledger (Global Bank) v9.0.
- * Hardened: Enforced double-gated null checks on all Firestore calls.
+ * @fileOverview Institutional Asset Ledger (Global Bank) v10.0.
+ * Hardened: Robust Firestore instance validation to prevent runtime collection() errors.
  */
 
 export default function QuestionBank() {
@@ -45,16 +44,17 @@ export default function QuestionBank() {
   const [lastDoc, setLastDoc] = useState<any>(null)
   const [hasMore, setLastHasMore] = useState(true)
 
-  const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks")) : null), [db])
-  const boardsQuery = useMemo(() => (db ? query(collection(db, "boards")) : null), [db])
-  const subjectsQuery = useMemo(() => (db ? query(collection(db, "subjects")) : null), [db])
+  // Double-gated queries for registry safety
+  const mocksQuery = useMemo(() => (db && typeof db === 'object' ? query(collection(db, "mocks")) : null), [db])
+  const boardsQuery = useMemo(() => (db && typeof db === 'object' ? query(collection(db, "boards")) : null), [db])
+  const subjectsQuery = useMemo(() => (db && typeof db === 'object' ? query(collection(db, "subjects")) : null), [db])
 
   const { data: allMocks } = useCollection<any>(mocksQuery)
   const { data: boards } = useCollection<any>(boardsQuery)
   const { data: subjects } = useCollection<any>(subjectsQuery)
 
   const fetchQuestions = useCallback(async (isNext = false) => {
-    if (!db) return
+    if (!db || typeof db !== 'object') return
     setLoading(true)
     
     try {
@@ -89,7 +89,7 @@ export default function QuestionBank() {
   }, [db, boardFilter, examFilter, lastDoc, toast])
 
   useEffect(() => {
-    if (db) fetchQuestions()
+    if (db && typeof db === 'object') fetchQuestions()
   }, [boardFilter, examFilter, db, fetchQuestions])
 
   const usageMap = useMemo(() => {
@@ -226,7 +226,7 @@ export default function QuestionBank() {
                 <SelectTrigger className="rounded-xl h-11 bg-white border-none w-36 shadow-sm font-bold text-xs">
                   <SelectValue placeholder="Subject Hub" />
                 </SelectTrigger>
-                <SelectContent className="max-h-60 overflow-y-auto">{subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+                <SelectContent className="max-h-60 overflow-y-auto"><SelectItem value="all">All Subjects</SelectItem>{subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
               </Select>
             </div>
           </div>

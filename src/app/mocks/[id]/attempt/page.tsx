@@ -26,8 +26,9 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Final Institutional CBT Attempt Hub v8.0.
+ * @fileOverview Final Institutional CBT Attempt Hub v9.0.
  * Optimized: Centered layout with tighter visual rhythm to minimize mouse travel.
+ * Hardened: Robust Firestore guards to prevent runtime crashes.
  */
 
 export default function MockAttemptPage() {
@@ -47,7 +48,7 @@ export default function MockAttemptPage() {
 
   useEffect(() => {
     async function loadExam() {
-      if (!db || !user || !mockId) return;
+      if (!db || typeof db !== 'object' || !user || !mockId) return;
       try {
         const mockSnap = await getDoc(doc(db, "mocks", mockId));
         if (!mockSnap.exists()) throw new Error("Mock series not found in registry.");
@@ -132,7 +133,7 @@ export default function MockAttemptPage() {
   }, [examStore.questions, examStore.status, examStore.visited]);
 
   const handleSubmitFinal = async () => {
-    if (!db || !user || isSubmittingFinal) return;
+    if (!db || typeof db !== 'object' || !user || isSubmittingFinal) return;
     setIsSubmittingFinal(true);
     
     try {
@@ -226,8 +227,8 @@ export default function MockAttemptPage() {
           )}
         </AnimatePresence>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-6 lg:p-8 bg-[#000000]">
-           <div className="max-w-[1000px] mx-auto pb-20">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-6 lg:p-8 bg-[#000000] flex flex-col items-center">
+           <div className="w-full max-w-[1000px] pb-20">
               {q ? (
                 <QuestionRenderer 
                    language={examStore.language} 
@@ -236,7 +237,7 @@ export default function MockAttemptPage() {
                    onSelect={(idx) => examStore.setAnswer(examStore.currentIdx, idx, db)}
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center h-full opacity-20 text-white">
+                <div className="flex flex-col items-center justify-center h-full opacity-20 text-white mt-40">
                    <AlertTriangle className="h-10 w-10 mb-4" />
                    <p className="font-black uppercase tracking-widest text-[10px]">Node Missing</p>
                 </div>

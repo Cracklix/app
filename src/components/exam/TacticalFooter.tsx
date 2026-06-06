@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, CheckCircle2, RotateCcw, Flag } from 'lucide
 import { useFirestore } from '@/firebase';
 
 /**
- * @fileOverview Institutional Tactical Navigation Belt v9.0.
+ * @fileOverview Institutional Tactical Navigation Belt v10.0.
  * Optimized: Aligned to center max-width (1000px) to bring buttons closer to options.
  * Order: [PREVIOUS] ... [MARK & NEXT] [CLEAR RESPONSE] [SAVE & NEXT]
  */
@@ -17,7 +17,7 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const isLast = currentIdx === questions.length - 1;
 
   return (
-    <footer className="h-16 bg-white border-t border-slate-200 px-4 flex items-center justify-center shrink-0 z-50 select-none shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
+    <footer className="h-16 bg-white border-t border-slate-200 px-4 flex items-center justify-center shrink-0 z-50 select-none shadow-[0_-4px_15px_rgba(0,0,0,0.05)]">
       <div className="w-full max-w-[1000px] flex items-center justify-between">
         
         {/* LEFT: PREVIOUS ACTION */}
