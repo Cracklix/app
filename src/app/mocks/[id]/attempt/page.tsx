@@ -169,14 +169,14 @@ export default function MockAttemptPage() {
              </div>
            )}
 
-           <div className="max-w-[1200px] mx-auto p-4 md:p-14 space-y-6 h-auto min-h-0">
+           <div className="max-w-[1200px] mx-auto p-4 md:p-10 space-y-6 h-auto min-h-0">
               <QuestionRenderer 
                  language={examStore.language} 
                  question={q} 
                  hideOptions={true}
               />
 
-              <div className="grid grid-cols-1 gap-4 pb-12">
+              <div className="grid grid-cols-1 gap-3 pb-4">
                  {['A', 'B', 'C', 'D'].map((key, i) => {
                     const isSelected = selectedOption === i;
                     const enVal = (q as any)[`option${key}English`];
@@ -187,7 +187,7 @@ export default function MockAttemptPage() {
                          key={i}
                          onClick={() => examStore.setAnswer(examStore.currentIdx, i)}
                          className={cn(
-                           "flex items-center gap-6 p-5 md:p-6 rounded-[16px] border-2 transition-all text-left shadow-sm min-h-[68px] group",
+                           "flex items-center gap-6 p-4 md:p-5 rounded-[16px] border-2 transition-all text-left shadow-sm min-h-[64px] group",
                            isSelected 
                              ? "border-primary bg-primary/5 ring-4 ring-primary/10" 
                              : "border-slate-100 bg-white hover:border-slate-300 hover:shadow-md"

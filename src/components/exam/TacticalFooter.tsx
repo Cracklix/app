@@ -23,18 +23,18 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
           variant="outline" 
           onClick={() => setCurrentIdx(Math.max(0, currentIdx - 1))}
           disabled={currentIdx === 0}
-          className="h-10 md:h-12 px-4 md:px-6 rounded-xl font-black uppercase text-[10px] tracking-widest border-slate-200 text-slate-500 hover:bg-slate-50"
+          className="h-10 md:h-12 px-4 md:px-6 rounded-xl font-black uppercase text-[10px] tracking-widest border-slate-200 text-slate-500 hover:bg-slate-50 transition-all shadow-sm"
         >
-          <ChevronLeft className="h-4 w-4 mr-1" /> Prev
+          <ChevronLeft className="h-4 w-4 mr-1" /> Previous
         </Button>
       </div>
 
       {/* RIGHT: PRIMARY TACTICAL GROUP */}
-      <div className="flex items-center gap-2 md:gap-3">
+      <div className="flex items-center gap-2 md:gap-4">
         <Button 
           variant="outline" 
           onClick={() => markForReview(currentIdx)}
-          className="h-10 md:h-12 px-4 md:px-8 rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-widest border-purple-200 text-purple-600 bg-purple-50 hover:bg-purple-100 hidden sm:flex"
+          className="h-10 md:h-12 px-4 md:px-8 rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-widest border-purple-200 text-purple-600 bg-purple-50 hover:bg-purple-100 hidden sm:flex shadow-sm transition-all"
         >
           Mark For Review & Next
         </Button>
@@ -42,7 +42,7 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
         <Button 
           variant="outline" 
           onClick={() => clearAnswer(currentIdx)}
-          className="h-10 md:h-12 px-4 md:px-8 rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-widest border-slate-200 text-slate-500 hover:bg-slate-50"
+          className="h-10 md:h-12 px-4 md:px-8 rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-widest border-slate-200 text-slate-500 hover:bg-slate-50 shadow-sm transition-all"
         >
           <RotateCcw className="h-3.5 w-3.5 mr-2" /> Clear Response
         </Button>
@@ -50,14 +50,14 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
         {isLast ? (
           <Button 
             onClick={onSubmit}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white h-10 md:h-12 px-6 md:px-14 rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-[0.2em] shadow-xl border-none"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white h-10 md:h-12 px-8 md:px-16 rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-[0.2em] shadow-xl border-none transition-all active:scale-95"
           >
-            Submit <ShieldCheck className="ml-2 h-4 w-4" />
+            Submit Test <ShieldCheck className="ml-2 h-4 w-4" />
           </Button>
         ) : (
           <Button 
             onClick={saveAndNext}
-            className="bg-[#0B1528] hover:bg-black text-white h-10 md:h-12 px-6 md:px-14 rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-[0.2em] shadow-xl border-none"
+            className="bg-primary hover:bg-orange-600 text-white h-10 md:h-12 px-8 md:px-16 rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-[0.2em] shadow-xl border-none transition-all active:scale-95"
           >
             Save & Next <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
