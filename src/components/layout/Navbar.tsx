@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * @fileOverview Global Navigation Node.
- * Updated: Analysis replaced with 'Free Hub' (Unified CMS).
+ * Updated: Analysis replaced with 'Free Hub'.
  */
 
 export default function Navbar() {

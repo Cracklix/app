@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo } from 'react';
@@ -13,8 +14,11 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview Institutional High-Fidelity Question Renderer v19.0.
- * Optimized for: Neat and clean single-line bilingual rendering.
+ * @fileOverview Institutional High-Fidelity Question Renderer v20.0.
+ * Rules:
+ * 1. Bilingual Mode: Single line joined by /
+ * 2. Explanations: Segregated logic blocks with professional spacing.
+ * 3. Mobile Friendly: Compact 15px/17px scaling.
  */
 
 export default function QuestionRenderer({ 
@@ -29,6 +33,7 @@ export default function QuestionRenderer({
     return text
       .replace(/^[A-D][\.\):\s-]*/i, '') 
       .replace(/^\d+[\.\):\s-]*/, '')     
+      .replace(/^ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]*/, '')
       .replace(/^\*\*|\*\*$/g, '')       
       .replace(/\*\*/g, '')              
       .trim();
@@ -41,7 +46,7 @@ export default function QuestionRenderer({
     if (language === 'en') return cEn;
     if (language === 'pa') return cPa || cEn;
     
-    // Single-line bilingual rendering
+    // Single-line bilingual rendering as requested
     return (
       <span className="inline-flex flex-wrap items-center gap-x-2">
         <span className="text-[#0F172A]">{cEn}</span>
@@ -59,7 +64,7 @@ export default function QuestionRenderer({
   const expPa = useMemo(() => question.explanationPa || "", [question]);
 
   return (
-    <div className="w-full text-left font-body space-y-4 md:space-y-5">
+    <div className="w-full text-left font-body space-y-4 md:space-y-6">
       {question.imageUrl && (
         <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 shadow-inner overflow-hidden">
            <img src={question.imageUrl} alt="Asset" className="max-h-[160px] rounded-xl mx-auto object-contain" />
@@ -95,35 +100,38 @@ export default function QuestionRenderer({
       )}
 
       {showSolution && (
-        <div className="mt-5 p-5 md:p-6 bg-emerald-50/40 rounded-2xl border border-emerald-100 space-y-4 shadow-sm relative overflow-hidden">
-           <div className="absolute top-0 right-0 p-6 opacity-5"><CheckCircle2 className="h-24 w-24" /></div>
+        <div className="mt-6 p-6 md:p-8 bg-emerald-50/40 rounded-[2rem] border border-emerald-100 space-y-6 shadow-sm relative overflow-hidden">
+           <div className="absolute top-0 right-0 p-6 opacity-5"><CheckCircle2 className="h-32 w-32" /></div>
            
            <div className="flex items-center justify-between relative z-10">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-lg">
-                   <CheckCircle2 className="h-5 w-5" />
+              <div className="flex items-center gap-4">
+                <div className="h-10 w-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg">
+                   <CheckCircle2 className="h-6 w-6" />
                 </div>
                 <div className="text-left">
-                   <p className="text-[8px] font-black text-emerald-600 uppercase tracking-widest leading-none mb-1">Verified Audit Key</p>
-                   <h4 className="text-sm md:text-base text-[#0F172A] font-black uppercase">Option {question.correctAnswer}</h4>
+                   <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest leading-none mb-1">Verified Audit Key</p>
+                   <h4 className="text-base md:text-xl text-[#0F172A] font-black uppercase">Option {question.correctAnswer}</h4>
                 </div>
               </div>
-              <Badge className="bg-emerald-600/10 text-emerald-700 border-none text-[8px] font-black uppercase px-2 py-0.5">Logic Hub</Badge>
            </div>
            
-           <div className="space-y-4 pt-4 border-t border-emerald-100 relative z-10">
+           <div className="space-y-6 pt-6 border-t border-emerald-100 relative z-10">
               {expEn && (
-                <div className="space-y-1">
-                   <p className="text-[7px] font-black uppercase tracking-widest text-emerald-600/60">English Rationale</p>
-                   <p className="text-[13px] md:text-[14px] text-slate-700 font-medium leading-relaxed italic">
+                <div className="space-y-2">
+                   <p className="text-[8px] font-black uppercase tracking-[0.2em] text-emerald-600/60 flex items-center gap-2">
+                      <Languages className="h-3 w-3" /> English Rationale
+                   </p>
+                   <p className="text-[14px] md:text-[15px] text-slate-700 font-medium leading-relaxed italic antialiased">
                       {cleanText(expEn)}
                    </p>
                 </div>
               )}
               {expPa && (
-                <div className="space-y-1">
-                   <p className="text-[7px] font-black uppercase tracking-widest text-emerald-600/60">ਪੰਜਾਬੀ ਵਿਆਖਿਆ</p>
-                   <p className="text-[13px] md:text-[14px] text-slate-700 font-medium leading-relaxed italic">
+                <div className="space-y-2 pt-4 border-t border-emerald-100/50">
+                   <p className="text-[8px] font-black uppercase tracking-[0.2em] text-emerald-600/60 flex items-center gap-2">
+                      <Languages className="h-3 w-3" /> ਪੰਜਾਬੀ ਵਿਆਖਿਆ
+                   </p>
+                   <p className="text-[14px] md:text-[15px] text-slate-700 font-medium leading-relaxed italic antialiased">
                       {cleanText(expPa)}
                    </p>
                 </div>

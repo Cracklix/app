@@ -1,10 +1,10 @@
 /**
- * @fileOverview Institutional High-Fidelity Ingestion Engine v12.0.
- * Optimized for: 
- * Line 1: Q1. English Question
- * Line 2: ਪ੍ਰਸ਼ਨ 1. Punjabi Question
- * Line 3-6: (A) Eng / Pun
- * Line 7: Correct Answer: (A) Text / ਸਹੀ ਉੱਤਰ: ਪਾ * English Explanation: ...
+ * @fileOverview Institutional High-Fidelity Ingestion Engine v15.0.
+ * Rules Enforcement:
+ * 1. NO DUAL NUMBERING: Strips numbering from Punjabi lines.
+ * 2. NO SLASH IN QUESTIONS: English and Punjabi on separate lines.
+ * 3. OPTION FORMATTING: Combine EN / PA on one line, separated by /.
+ * 4. Segregated Explanations.
  */
 
 import { Question } from "@/types";
@@ -17,10 +17,10 @@ export interface ParsedResults {
 
 const sanitizeText = (text: string = "") => {
   return text
-    .replace(/^Q\d+[\.\):\s-]*/i, '')      // Remove Q1.
-    .replace(/^ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]*/, '') // Remove ਪ੍ਰਸ਼ਨ 1.
-    .replace(/^\d+[\.\):\s-]*/, '')        // Remove 1.
-    .replace(/^\(?[A-D]\)?[\.\):\s-]*/i, '') // Remove (A) or A.
+    .replace(/^Q\d+[\.\):\s-]*/i, '')      
+    .replace(/^ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]*/, '') 
+    .replace(/^\d+[\.\):\s-]*/, '')        
+    .replace(/^\(?[A-D]\)?[\.\):\s-]*/i, '') 
     .replace(/^\*\*|\*\*$/g, '')
     .replace(/\*\*/g, '')
     .replace(/\s+/g, ' ')
@@ -63,12 +63,21 @@ function parseStandardBlock(block: string, metadata: any): Partial<Question> {
   let explanationEn = "";
   let explanationPa = "";
 
-  // 1. Identify Questions (Lines starting with Q and ਪ੍ਰਸ਼ਨ)
-  lines.forEach(line => {
+  // 1. Identify Questions & Options
+  // Logic: First line with Q is English. Next line without a known marker is Punjabi.
+  let questionStarted = false;
+  let punjabiQuestionFound = false;
+
+  lines.forEach((line, idx) => {
     if (line.match(/^Q\d+[\.\):\s-]/i)) {
       questionEn = sanitizeText(line);
-    } else if (line.match(/^ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]/)) {
-      questionPa = sanitizeText(line);
+      questionStarted = true;
+      // Look at the next line: if it's not an option, it's Punjabi
+      const nextLine = lines[idx+1];
+      if (nextLine && !nextLine.match(/^\([A-D]\)/i) && !nextLine.toLowerCase().includes('correct answer')) {
+        questionPa = sanitizeText(nextLine);
+        punjabiQuestionFound = true;
+      }
     } else if (line.match(/^\([A-D]\)/i)) {
       // 2. Identify Options (Line: (A) Eng / Pun)
       const labelMatch = line.match(/^\(([A-D])\)/i);
@@ -84,26 +93,21 @@ function parseStandardBlock(block: string, metadata: any): Partial<Question> {
       }
     } else if (line.toLowerCase().includes('correct answer:')) {
       // 3. Identify Answer & Explanation
-      // Format: Correct Answer: (B) West / ਸਹੀ ਉੱਤਰ: ਪੱਛਮ * English Explanation: ...
       const ansMatch = line.match(/Correct Answer:\s*(?:\()?([A-D])(?:\))?/i);
       if (ansMatch) correctAnswer = ansMatch[1].toUpperCase() as any;
 
+      // Segregated Explanation Extraction
       if (line.includes('* English Explanation:')) {
         const expParts = line.split('* English Explanation:');
-        explanationEn = sanitizeText(expParts[1]);
+        const logicTail = expParts[1].split('* ਪੰਜਾਬੀ ਵਿਆਖਿਆ:');
+        explanationEn = sanitizeText(logicTail[0]);
+        if (logicTail[1]) explanationPa = sanitizeText(logicTail[1]);
       } else if (line.includes('Explanation:')) {
         const expParts = line.split(/Explanation:/i);
         explanationEn = sanitizeText(expParts[1]);
       }
     }
   });
-
-  // Fallback: If no separate Punjabi question line, try splitting English line by slash
-  if (!questionPa && questionEn.includes('/')) {
-    const parts = questionEn.split('/');
-    questionEn = sanitizeText(parts[0]);
-    questionPa = sanitizeText(parts[1]);
-  }
 
   return {
     ...metadata,
@@ -120,6 +124,6 @@ function parseStandardBlock(block: string, metadata: any): Partial<Question> {
     optionDPa: options['D']?.pa || "",
     correctAnswer,
     explanationEn,
-    explanationPa: "" // Typically implied in the bilingual answer part or empty in user's image
+    explanationPa
   };
 }
