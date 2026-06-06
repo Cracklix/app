@@ -1,10 +1,11 @@
+
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Question } from '@/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { CheckCircle2, AlertTriangle, Info, Database, BrainCircuit, Loader2, Sparkles, Zap, Wand2 } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, Info, Database, BrainCircuit, Loader2, Zap, Wand2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { rationalizeMockQuestion } from '@/ai/flows/rationalize-mock-question';
 import { useFirestore } from '@/firebase';
@@ -19,8 +20,8 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview High-Fidelity Question Renderer v4.0.
- * Features: Integrated AI Rationalization Engine and Legacy Field Recovery.
+ * @fileOverview High-Fidelity Question Renderer v4.1.
+ * Optimized: Deep field scanning for existing explanations (Restores user data).
  */
 
 export default function QuestionRenderer({ question, language, showSolution = false }: QuestionRendererProps) {
@@ -31,11 +32,16 @@ export default function QuestionRenderer({ question, language, showSolution = fa
   const showEn = language === 'en' || language === 'bilingual';
   const showPa = language === 'pa' || language === 'bilingual';
   
-  // Legacy field mapping for recovered ICT nodes
-  const expEn = question.explanationEn || (question as any).explanation || "";
-  const expPa = question.explanationPa || "";
+  // Deep scan for existing explanations (Restores your 250+ ICT node data)
+  const expEn = useMemo(() => {
+     return question.explanationEn || (question as any).explanation || (question as any).solution || "";
+  }, [question]);
+
+  const expPa = useMemo(() => {
+     return question.explanationPa || (question as any).punjabiExplanation || "";
+  }, [question]);
+
   const hasExplanation = !!(expEn || expPa);
-  
   const isMissingPa = !question.questionPa || question.questionPa === question.questionEn;
 
   const handleGenerateAI = async () => {
@@ -203,3 +209,5 @@ export default function QuestionRenderer({ question, language, showSolution = fa
     </div>
   );
 }
+
+import { Wand2 } from 'lucide-react';

@@ -1,8 +1,9 @@
+
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, Database, Users, ShieldCheck, Rocket, Zap, Activity, ShieldAlert, Megaphone, ClipboardList, TrendingUp, DollarSign, RefreshCw, Layers, CreditCard, Globe, Newspaper, FileText, Gem, SearchCode, Settings, Target, ChevronRight, ListTree } from "lucide-react"
+import { Plus, Database, Users, ShieldCheck, Rocket, Zap, Activity, ShieldAlert, Megaphone, ClipboardList, TrendingUp, RefreshCw, Layers, FileText, Globe, Newspaper, ChevronRight, ListTree, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection, query, where } from "firebase/firestore"
@@ -10,24 +11,22 @@ import { useMemo, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { seedInitialData } from "@/services/seed-data"
 import { useToast } from "@/hooks/use-toast"
-import { Progress } from "@/components/ui/progress"
 
 /**
- * @fileOverview Final Command Center v7.1.
- * Features: Institutional Subject Breakdown & High-Fidelity Count Registry for upcoming exams.
+ * @fileOverview Final Command Center v7.2.
+ * Features: Dynamic Subject Detection & Real-time Institutional Counting.
  */
 
 export default function AdminDashboard() {
   const db = useFirestore()
-  const { user, profile } = useUser()
+  const { user } = useUser()
   const { toast } = useToast()
   const [isSyncing, setIsSyncing] = useState(false)
 
   // Real-time Collections - Global count for accurate recovery reporting
-  const { data: users } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]))
-  const { data: questions } = useCollection<any>(useMemo(() => (db ? collection(db, "questions") : null), [db]))
-  const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]))
-  const { data: reports } = useCollection<any>(useMemo(() => (db ? collection(db, "reports") : null), [db]))
+  const { data: users, loading: uLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]))
+  const { data: questions, loading: qLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "questions") : null), [db]))
+  const { data: mocks, loading: mLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]))
   const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
   const { data: notes } = useCollection<any>(useMemo(() => (db ? collection(db, "notes") : null), [db]))
@@ -35,7 +34,23 @@ export default function AdminDashboard() {
 
   const proUsers = useMemo(() => users?.filter((u: any) => u.status && u.status !== 'Free') || [], [users]);
 
-  // Exam-wise Content Matrix
+  // Dynamic Subject Matrix - Calculates counts for every section found in the database
+  const subjectBreakdown = useMemo(() => {
+    if (!questions) return [];
+    
+    // Extract unique subject IDs directly from questions to ensure 100% coverage
+    const uniqueSubjectIds = Array.from(new Set(questions.map((q: any) => q.subjectId))).filter(Boolean);
+    
+    return uniqueSubjectIds.map(id => {
+       const subjectName = subjects?.find((s: any) => s.id === id)?.name || id.replace('-', ' ').toUpperCase();
+       return {
+          id,
+          name: subjectName,
+          count: questions.filter((q: any) => q.subjectId === id).length
+       }
+    }).sort((a, b) => b.count - a.count);
+  }, [questions, subjects]);
+
   const examBreakdown = useMemo(() => {
     if (!exams || !questions) return [];
     return exams.map(e => ({
@@ -45,16 +60,6 @@ export default function AdminDashboard() {
       questionCount: questions.filter((q: any) => q.examId === e.id).length,
     })).sort((a, b) => b.questionCount - a.questionCount);
   }, [exams, mocks, questions]);
-
-  // Subject-wise Content Matrix (Essential for ICT nodes)
-  const subjectBreakdown = useMemo(() => {
-    if (!subjects || !questions) return [];
-    return subjects.map(s => ({
-       id: s.id,
-       name: s.name,
-       count: questions.filter((q: any) => q.subjectId === s.id).length
-    })).sort((a, b) => b.count - a.count);
-  }, [subjects, questions]);
 
   const handleSyncDatabase = async () => {
     if (!db) return
@@ -78,7 +83,9 @@ export default function AdminDashboard() {
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Live Registry Overview</span>
            </div>
           <h1 className="text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tight">Command Center</h1>
-          <p className="text-slate-500 mt-2 text-lg font-medium">Audit: {questions?.length || 0} Atomic Nodes Locked • {mocks?.filter((m: any) => m.published).length || 0} Live Mocks.</p>
+          <p className="text-slate-500 mt-2 text-lg font-medium">
+             Audit: {qLoading ? '...' : questions?.length || 0} Atomic Nodes Locked • {mLoading ? '...' : mocks?.filter((m: any) => m.published).length || 0} Live Mocks.
+          </p>
         </div>
         <div className="flex gap-4">
            <Button onClick={handleSyncDatabase} disabled={isSyncing} variant="outline" className="h-14 px-8 rounded-2xl font-black text-xs uppercase tracking-widest gap-3 border-slate-200 bg-white">
@@ -91,11 +98,11 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-         <StatCard label="MCQ Bank Volume" value={questions?.length || 0} icon={<Database className="text-blue-500" />} />
-         <StatCard label="Live Series" value={mocks?.filter((m: any) => m.published).length || 0} icon={<Zap className="text-primary" />} />
+         <StatCard label="MCQ Bank Volume" value={questions?.length ?? "..."} icon={<Database className="text-blue-500" />} />
+         <StatCard label="Live Series" value={mocks?.filter((m: any) => m.published).length ?? "..."} icon={<Zap className="text-primary" />} />
          <StatCard label="Pro Aspirants" value={proUsers.length} icon={<Users className="text-emerald-500" />} />
-         <StatCard label="Audit Archives" value={pyqs?.length || 0} icon={<FileText className="text-orange-500" />} />
-         <StatCard label="Study Notes" value={notes?.length || 0} icon={<Newspaper className="text-rose-500" />} />
+         <StatCard label="Audit Archives" value={pyqs?.length ?? "..."} icon={<FileText className="text-orange-500" />} />
+         <StatCard label="Study Notes" value={notes?.length ?? "..."} icon={<Newspaper className="text-rose-500" />} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -112,8 +119,13 @@ export default function AdminDashboard() {
                </div>
             </CardHeader>
             <CardContent className="p-0">
-               <div className="divide-y divide-slate-50 max-h-[500px] overflow-y-auto custom-scrollbar">
-                  {subjectBreakdown.map((s) => (
+               <div className="divide-y divide-slate-50 max-h-[600px] overflow-y-auto custom-scrollbar">
+                  {qLoading ? (
+                     <div className="p-20 flex flex-col items-center justify-center gap-4 text-slate-300">
+                        <Loader2 className="h-10 w-10 animate-spin" />
+                        <p className="font-black uppercase text-[10px]">Auditing Registry...</p>
+                     </div>
+                  ) : subjectBreakdown.length > 0 ? subjectBreakdown.map((s) => (
                      <div key={s.id} className="p-8 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
                         <div className="flex items-center gap-6">
                            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black uppercase text-xs">
@@ -131,7 +143,9 @@ export default function AdminDashboard() {
                            <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest mt-1">Registry Nodes</p>
                         </div>
                      </div>
-                  ))}
+                  )) : (
+                     <div className="p-20 text-center text-slate-400 italic">No nodes detected in global bank.</div>
+                  )}
                </div>
             </CardContent>
          </Card>
@@ -187,7 +201,9 @@ function StatCard({ label, value, icon }: any) {
                {icon}
             </div>
             <div className="min-w-0">
-               <p className="text-2xl font-headline font-black text-[#0F172A] leading-none">{value}</p>
+               <p className="text-2xl font-headline font-black text-[#0F172A] leading-none">
+                  {value === "..." ? <Loader2 className="h-4 w-4 animate-spin text-slate-300" /> : value}
+               </p>
                <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mt-1 truncate">{label}</p>
             </div>
          </div>
