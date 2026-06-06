@@ -13,15 +13,14 @@ import AntiCheat from "@/components/exam/AntiCheat";
 import QuestionRenderer from "@/components/questions/QuestionRenderer";
 import QuestionPalette from "@/components/mocks/QuestionPalette";
 import { Button } from "@/components/ui/button";
-import { Loader2, Clock, CheckCircle2, AlertCircle, HelpCircle, Eye, ShieldCheck, Play, Save } from "lucide-react";
+import { Loader2, Play, ShieldCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 /**
- * @fileOverview Professional CBT Engine v3.0.
- * Features: Viewport Locked, High-Fidelity Testbook-style layout.
- * Updated: Professional Resume Test Hub with Progress Audit.
+ * @fileOverview Professional CBT Engine v4.0.
+ * Optimized for maximum vertical density and zero whitespace.
  */
 export default function MockAttemptPage() {
   const params = useParams();
@@ -119,7 +118,6 @@ export default function MockAttemptPage() {
       <SubjectTabs />
 
       <main className="flex-1 flex overflow-hidden bg-white">
-        
         {/* LEFT ZONE: QUESTION CONTENT */}
         <div className="flex-1 overflow-y-auto custom-scrollbar relative">
            
@@ -169,14 +167,14 @@ export default function MockAttemptPage() {
              </div>
            )}
 
-           <div className="max-w-[1200px] mx-auto p-4 md:p-10 space-y-6 h-auto min-h-0">
+           <div className="max-w-[1200px] mx-auto p-4 md:p-6 space-y-4 h-auto min-h-0">
               <QuestionRenderer 
                  language={examStore.language} 
                  question={q} 
                  hideOptions={true}
               />
 
-              <div className="grid grid-cols-1 gap-3 pb-4">
+              <div className="grid grid-cols-1 gap-2 pb-2">
                  {['A', 'B', 'C', 'D'].map((key, i) => {
                     const isSelected = selectedOption === i;
                     const enVal = (q as any)[`option${key}English`];
@@ -187,25 +185,25 @@ export default function MockAttemptPage() {
                          key={i}
                          onClick={() => examStore.setAnswer(examStore.currentIdx, i)}
                          className={cn(
-                           "flex items-center gap-6 p-4 md:p-5 rounded-[16px] border-2 transition-all text-left shadow-sm min-h-[64px] group",
+                           "flex items-center gap-4 p-3 md:p-4 rounded-[12px] border-2 transition-all text-left shadow-sm min-h-[56px] group",
                            isSelected 
-                             ? "border-primary bg-primary/5 ring-4 ring-primary/10" 
+                             ? "border-primary bg-primary/5 ring-2 ring-primary/5" 
                              : "border-slate-100 bg-white hover:border-slate-300 hover:shadow-md"
                          )}
                        >
                           <div className={cn(
-                             "h-10 w-10 rounded-lg flex items-center justify-center font-black text-sm shrink-0 transition-all",
-                             isSelected ? "bg-primary text-white shadow-xl" : "bg-[#0F172A] text-white"
+                             "h-8 w-8 rounded-lg flex items-center justify-center font-black text-xs shrink-0 transition-all",
+                             isSelected ? "bg-primary text-white shadow-lg" : "bg-[#0F172A] text-white"
                           )}>
                              {key}
                           </div>
                           <div className="flex-1 overflow-hidden">
-                             {examStore.language === 'en' && <p className="font-[600] text-[18px] md:text-[20px] text-[#111111] leading-tight">{enVal}</p>}
-                             {examStore.language === 'pa' && <p className="font-[600] text-[18px] md:text-[20px] text-[#111111] leading-tight">{paVal || enVal}</p>}
+                             {examStore.language === 'en' && <p className="font-[600] text-[16px] md:text-[18px] text-[#111111] leading-tight">{enVal}</p>}
+                             {examStore.language === 'pa' && <p className="font-[600] text-[16px] md:text-[18px] text-[#111111] leading-tight">{paVal || enVal}</p>}
                              {examStore.language === 'bi' && (
-                                <div className="space-y-1">
-                                   <p className="font-[600] text-[18px] md:text-[20px] text-[#111111] leading-tight">{enVal}</p>
-                                   <p className="font-[600] text-[18px] md:text-[20px] text-[#111111] leading-tight">{paVal}</p>
+                                <div className="space-y-0.5">
+                                   <p className="font-[600] text-[16px] md:text-[18px] text-[#111111] leading-tight">{enVal}</p>
+                                   <p className="font-[600] text-[16px] md:text-[18px] text-[#111111] leading-tight">{paVal}</p>
                                 </div>
                              )}
                           </div>
