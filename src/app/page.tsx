@@ -19,7 +19,7 @@ import Link from "next/link";
 
 /**
  * @fileOverview High-Density Mobile-First Homepage.
- * Activated with real-time Firestore statistics.
+ * Activated with real-time Firestore statistics and correct branding.
  */
 
 export default function HomePage() {
@@ -52,7 +52,7 @@ export default function HomePage() {
                <TrustNode 
                  icon={<BookOpen className="text-primary h-3.5 w-3.5 md:h-6 md:w-6" />} 
                  label="MCQ Bank" 
-                 val={questions?.length ? questions.length.toLocaleString() : "0"} 
+                 val={questions?.length || "0"} 
                />
                <TrustNode 
                  icon={<Zap className="text-blue-500 h-3.5 w-3.5 md:h-6 md:w-6" />} 

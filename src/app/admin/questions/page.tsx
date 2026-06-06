@@ -26,8 +26,8 @@ import {
 } from "@/components/ui/tooltip"
 
 /**
- * @fileOverview Institutional Asset Ledger (Global Bank) v6.5.
- * Optimized for Massive Scale: Features index-resilience and graceful fallbacks.
+ * @fileOverview Institutional Asset Ledger (Global Bank) v7.0.
+ * Optimized for Massive Scale: Features Graceful Index Fallback and Index Provisioning UI.
  */
 
 export default function QuestionBank() {
@@ -51,13 +51,14 @@ export default function QuestionBank() {
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
 
-  // Fetch Logic - Index-resilient manual trigger
+  // Fetch Logic - Index-resilient with automatic fallback
   const fetchQuestions = useCallback(async (isNext = false) => {
     if (!db) return
     setLoading(true)
     setIndexErrorUrl(null)
     
     try {
+      // 1. Primary Attempt: Scalable Sorting (Requires Index)
       let constraints: any[] = [orderBy("createdAt", "desc"), limit(50)]
       
       if (examFilter !== "all") constraints.unshift(where("examId", "==", examFilter))
@@ -81,23 +82,32 @@ export default function QuestionBank() {
       setLastDoc(snap.docs[snap.docs.length - 1])
       setLastHasMore(snap.docs.length === 50)
     } catch (e: any) {
-      console.error("Fetch Error Context:", e)
+      console.error("Fetch Error:", e)
+      
+      // 2. Index Error Detected: Provide URL and attempt fallback
       if (e.code === 'failed-precondition') {
         const urlMatch = e.message.match(/https:\/\/console\.firebase\.google\.com[^\s]*/);
         if (urlMatch) setIndexErrorUrl(urlMatch[0]);
         
-        // Fallback: Try query without ordering if index is missing to at least show results
         try {
-           let simpleConstraints: any[] = [limit(50)]
-           if (examFilter !== "all") simpleConstraints.push(where("examId", "==", examFilter))
-           else if (boardFilter !== "all") simpleConstraints.push(where("boardId", "==", boardFilter))
+           // Fallback: Remove 'orderBy' to bypass index requirement
+           let fallbackConstraints: any[] = [limit(50)]
+           if (examFilter !== "all") fallbackConstraints.push(where("examId", "==", examFilter))
+           else if (boardFilter !== "all") fallbackConstraints.push(where("boardId", "==", boardFilter))
            
-           const qFallback = query(collection(db, "questions"), ...simpleConstraints)
+           if (isNext && lastDoc) fallbackConstraints.push(startAfter(lastDoc))
+
+           const qFallback = query(collection(db, "questions"), ...fallbackConstraints)
            const snapFallback = await getDocs(qFallback)
-           setQuestions(snapFallback.docs.map(d => ({ ...d.data(), id: d.id })))
-           setLastHasMore(false)
-        } catch (err) {
-           toast({ variant: "destructive", title: "Audit Failed", description: "Database query rejected." })
+           const fallbackQs = snapFallback.docs.map(d => ({ ...d.data(), id: d.id }))
+           
+           if (isNext) setQuestions(prev => [...prev, ...fallbackQs])
+           else setQuestions(fallbackQs)
+           
+           setLastDoc(snapFallback.docs[snapFallback.docs.length - 1])
+           setLastHasMore(snapFallback.docs.length === 50)
+        } catch (innerErr) {
+           toast({ variant: "destructive", title: "Registry Audit Failed", description: "Database rejected query." })
         }
       } else {
         toast({ variant: "destructive", title: "Fetch Error", description: e.message })
@@ -210,17 +220,17 @@ export default function QuestionBank() {
       </div>
 
       {indexErrorUrl && (
-         <div className="mx-4 bg-orange-50 border border-orange-200 p-6 rounded-[2rem] flex items-center justify-between animate-in fade-in zoom-in-95">
+         <div className="mx-4 bg-orange-50 border border-orange-200 p-6 rounded-[2rem] flex flex-col md:flex-row items-center justify-between animate-in fade-in zoom-in-95 gap-6">
             <div className="flex items-center gap-4">
-               <div className="h-12 w-12 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-600">
+               <div className="h-12 w-12 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-600 shrink-0">
                   <AlertTriangle className="h-6 w-6" />
                </div>
                <div className="text-left">
                   <p className="font-black text-orange-900 uppercase text-xs tracking-tight">Composite Index Required</p>
-                  <p className="text-[10px] text-orange-700 font-medium max-w-md">Sorting and filtering at scale requires a backend index. Sorting has been temporarily disabled.</p>
+                  <p className="text-[10px] text-orange-700 font-medium max-w-md">Query sorting is temporarily disabled. Click to provision the required backend index for maximum performance.</p>
                </div>
             </div>
-            <Button asChild className="bg-orange-600 hover:bg-orange-700 text-white rounded-xl h-11 px-6 font-black uppercase text-[10px] tracking-widest gap-2">
+            <Button asChild className="bg-orange-600 hover:bg-orange-700 text-white rounded-xl h-11 px-6 font-black uppercase text-[10px] tracking-widest gap-2 shadow-xl">
                <a href={indexErrorUrl} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-4 w-4" /> Provision Index</a>
             </Button>
          </div>
