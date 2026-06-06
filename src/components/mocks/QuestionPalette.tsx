@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { cn } from "@/lib/utils"
 
 interface QuestionPaletteProps {
@@ -15,8 +15,8 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Institutional CBT Matrix v10.0.
- * Design: High-fidelity legend with large touch-accurate grids.
+ * @fileOverview Institutional CBT Matrix v12.0.
+ * Design: No whitespace, statistics at top, dense grid (1-25 first view).
  */
 
 export default function QuestionPalette({
@@ -26,7 +26,6 @@ export default function QuestionPalette({
   flaggedIndices,
   visitedIndices,
   onSelect,
-  examName = "MOCK TEST"
 }: QuestionPaletteProps) {
   
   const totalQuestions = questions.length
@@ -46,25 +45,19 @@ export default function QuestionPalette({
   }, [totalQuestions, answeredIndices, flaggedIndices, visitedIndices])
 
   return (
-    <div className="space-y-10 flex flex-col h-full text-left font-body">
+    <div className="flex flex-col h-full text-left font-body space-y-6">
       
-      {/* 1. LEGEND HUB */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* 1. STATISTICS HUB - COMPACT */}
+      <div className="grid grid-cols-2 gap-2">
          <LegendItem count={summary.answered} label="Answered" color="bg-emerald-500" />
          <LegendItem count={summary.notAnswered} label="Not Answered" color="bg-rose-500" />
-         <LegendItem count={summary.review} label="Marked Review" color="bg-purple-600" />
+         <LegendItem count={summary.review} label="Review" color="bg-purple-600" />
          <LegendItem count={summary.notVisited} label="Not Visited" color="bg-slate-100" textColor="text-slate-400" />
       </div>
 
-      <div className="h-px w-full bg-slate-50" />
-
-      {/* 2. NAVIGATION GRID */}
-      <div className="flex-1 overflow-y-auto no-scrollbar">
-         <div className="flex items-center gap-3 mb-6">
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Pick a Node</span>
-            <div className="h-px flex-1 bg-slate-50" />
-         </div>
-         <div className="grid grid-cols-5 gap-3">
+      {/* 2. NAVIGATION GRID - HIGH DENSITY */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
+         <div className="grid grid-cols-5 gap-2.5">
             {questions.map((_, idx) => {
               const isCurrent = currentIndex === idx
               const isAnswered = answeredIndices.includes(idx)
@@ -76,11 +69,11 @@ export default function QuestionPalette({
                   key={idx}
                   onClick={() => onSelect(idx)}
                   className={cn(
-                    "w-11 h-11 rounded-xl text-[13px] font-black transition-all flex items-center justify-center border-2",
-                    isCurrent ? "border-primary bg-white text-primary shadow-xl scale-110 z-10" : "border-transparent",
-                    !isCurrent && isFlagged ? "bg-purple-600 text-white shadow-lg shadow-purple-200" :
-                    !isCurrent && isAnswered ? "bg-emerald-500 text-white shadow-lg shadow-emerald-100" :
-                    !isCurrent && isVisited ? "bg-rose-500 text-white shadow-lg shadow-rose-100" :
+                    "w-[48px] h-[48px] rounded-xl text-[14px] font-black transition-all flex items-center justify-center border-2",
+                    isCurrent ? "border-primary bg-white text-primary shadow-2xl scale-110 z-10" : "border-transparent",
+                    !isCurrent && isFlagged ? "bg-purple-600 text-white shadow-lg" :
+                    !isCurrent && isAnswered ? "bg-emerald-500 text-white shadow-lg" :
+                    !isCurrent && isVisited ? "bg-rose-500 text-white shadow-lg" :
                     !isCurrent && "bg-slate-50 text-slate-300 border-slate-100 hover:bg-slate-100"
                   )}
                 >
@@ -91,9 +84,9 @@ export default function QuestionPalette({
          </div>
       </div>
       
-      <div className="pt-6 border-t border-slate-50">
-         <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em] text-center">
-            MASTER REGISTRY v5.0
+      <div className="pt-4 border-t border-slate-100">
+         <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] text-center">
+            CRACKLIX CBT ENGINE
          </p>
       </div>
     </div>
@@ -102,11 +95,11 @@ export default function QuestionPalette({
 
 function LegendItem({ count, label, color, textColor = "text-white" }: any) {
   return (
-    <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-50 bg-white shadow-sm transition-all hover:border-primary/20">
-       <div className={cn("h-7 w-7 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 shadow-inner", color, textColor)}>
+    <div className="flex items-center gap-2 p-2 rounded-xl border border-slate-100 bg-white shadow-sm">
+       <div className={cn("h-6 w-6 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0", color, textColor)}>
           {count}
        </div>
-       <span className="text-[9px] font-black uppercase text-slate-500 tracking-tight leading-none">{label}</span>
+       <span className="text-[9px] font-black uppercase text-slate-400 tracking-tight">{label}</span>
     </div>
   )
 }

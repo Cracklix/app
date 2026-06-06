@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useEffect, useState, useRef } from "react"
@@ -12,8 +13,8 @@ interface TimerProps {
 }
 
 /**
- * @fileOverview Institutional Timer Node.
- * Fixed: Stabilized initialSeconds to prevent feedback loops and fixed setState re-render warning.
+ * @file Overview High-Visibility Timer Node.
+ * Design: Pure black background, white text, 24px bold.
  */
 
 export default function Timer({ onTimeUp, initialSeconds, onTick, isPaused }: TimerProps) {
@@ -22,12 +23,10 @@ export default function Timer({ onTimeUp, initialSeconds, onTick, isPaused }: Ti
   const onTickRef = useRef(onTick)
   const hasSubmitted = useRef(false)
 
-  // Keep onTick reference stable for the effect
   useEffect(() => {
     onTickRef.current = onTick
   }, [onTick])
 
-  // Sync parent only when timeLeft changes, handled via stable ref to avoid render conflict
   useEffect(() => {
     if (onTickRef.current && !isPaused) {
       onTickRef.current(timeLeft)
@@ -63,15 +62,15 @@ export default function Timer({ onTimeUp, initialSeconds, onTick, isPaused }: Ti
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
   }
 
-  const isLowTime = timeLeft < 600 // 10 minutes warning
+  const isLowTime = timeLeft < 600
 
   return (
     <div className={cn(
-      "flex items-center gap-3 px-5 py-2 rounded-xl font-black text-base border transition-all duration-500 tabular-nums shadow-xl",
-      isLowTime ? "bg-rose-600 border-rose-500 text-white animate-pulse" : "bg-white/5 border-white/10 text-white"
+      "flex items-center gap-4 px-6 h-14 rounded-2xl font-black transition-all duration-500 tabular-nums shadow-2xl border",
+      isLowTime ? "bg-rose-600 border-rose-500 text-white animate-pulse" : "bg-[#0F172A] border-white/15 text-white"
     )}>
-      <Clock className={cn("h-4 w-4", isLowTime ? "text-white" : "text-primary")} />
-      <span className="tracking-[0.1em]">{formatTime(timeLeft)}</span>
+      <Clock className={cn("h-5 w-5", isLowTime ? "text-white" : "text-[#F97316]")} />
+      <span className="text-[24px] tracking-widest leading-none">{formatTime(timeLeft)}</span>
     </div>
   )
 }
