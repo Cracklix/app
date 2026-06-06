@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -28,15 +29,11 @@ import { useFirestore, useCollection } from "@/firebase"
 import { collection, doc, writeBatch, serverTimestamp } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { parseBulkQuestions } from "@/lib/parser"
-import { Difficulty, Question, ContentStatus } from "@/types"
+import { Difficulty, ContentStatus } from "@/types"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 
-/**
- * @fileOverview Institutional Content Ingestion Hub v25.0.
- * Deterministic Regex Parsing with Per-Block Debug Audit.
- */
 export default function BulkImportPage() {
   const router = useRouter()
   const db = useFirestore()
@@ -72,9 +69,9 @@ export default function BulkImportPage() {
     setErrors(result.errors);
 
     if (result.questions.length > 0) {
-      toast({ title: "Extraction Success", description: `${result.questions.length} blocks mapped to registry.` });
+      toast({ title: "Extraction Success", description: `${result.questions.length} blocks mapped to discrete fields.` });
     } else {
-      toast({ variant: "destructive", title: "Audit Rejected", description: "No valid blocks identified. Check debug report." });
+      toast({ variant: "destructive", title: "Audit Rejected", description: "Check field validation reports." });
     }
   }
 
@@ -89,7 +86,7 @@ export default function BulkImportPage() {
     updated[editingIndex] = editForm
     setParsedQuestions(updated)
     setEditingIndex(null)
-    toast({ title: "Entry Tweak Synced" })
+    toast({ title: "Entry Node Tweaked" })
   }
 
   const handleDelete = (idx: number) => {
@@ -103,7 +100,6 @@ export default function BulkImportPage() {
     const batch = writeBatch(db)
 
     parsedQuestions.forEach(q => {
-      // Clean debug and metadata before storage
       const { debug, ...cleanQ } = q;
       const qRef = doc(collection(db, "questions"))
       batch.set(qRef, {
@@ -116,10 +112,10 @@ export default function BulkImportPage() {
 
     try {
       await batch.commit()
-      toast({ title: "Database Registry Synced", description: `${parsedQuestions.length} assets committed.` })
+      toast({ title: "Master Registry Synced", description: `${parsedQuestions.length} assets committed.` })
       router.push("/admin/questions")
     } catch (e) {
-      toast({ variant: "destructive", title: "Cloud Rejection", description: "Permission denied." })
+      toast({ variant: "destructive", title: "Cloud Rejection", description: "Check security permissions." })
     } finally {
       setIsSyncing(false)
     }
@@ -132,11 +128,11 @@ export default function BulkImportPage() {
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-xl border border-slate-200 h-12 w-12 bg-white"><ChevronLeft className="h-6 w-6" /></Button>
           <div>
             <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Content Paste Hub</h1>
-            <p className="text-slate-500 font-medium">Deterministic Ingestion Management.</p>
+            <p className="text-slate-500 font-medium">Explicit Bilingual Field Management.</p>
           </div>
         </div>
         <Button onClick={handleSaveToRegistry} disabled={isSyncing || parsedQuestions.length === 0} className="bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[11px] tracking-widest rounded-xl h-14 px-12 gap-3 shadow-2xl">
-          {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4 text-primary fill-current" />} Commit Staged Content
+          {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4 text-primary fill-current" />} Commit Staged Assets
         </Button>
       </div>
 
@@ -145,7 +141,7 @@ export default function BulkImportPage() {
           <Card className="border-none bg-white shadow-3xl rounded-[2.5rem] overflow-hidden">
             <div className="h-1.5 w-full bg-[#0F172A]" />
             <CardHeader className="p-10 pb-4 text-left">
-              <CardTitle className="font-headline font-black text-xl uppercase flex items-center gap-3"><ClipboardList className="h-5 w-5 text-primary" /> Authority Registry</CardTitle>
+              <CardTitle className="font-headline font-black text-xl uppercase flex items-center gap-3"><ClipboardList className="h-5 w-5 text-primary" /> Registry Config</CardTitle>
             </CardHeader>
             <CardContent className="p-10 pt-4 space-y-6">
               <div className="grid grid-cols-2 gap-4">
@@ -168,31 +164,26 @@ export default function BulkImportPage() {
           </Card>
           
           <div className="space-y-4">
-            <div className="relative group">
-               <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-[2.5rem] blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
-               <Textarea 
+            <Textarea 
                 value={rawText}
                 onChange={e => setRawText(e.target.value)}
                 placeholder="Paste Q1. English... Punjabi... (A) / (B) / (C) / (D)... Correct Answer... English Explanation... Punjabi Explanation..."
-                className="min-h-[550px] rounded-[2.5rem] bg-white border-none p-12 text-sm font-bold shadow-4xl leading-relaxed resize-none focus-visible:ring-primary relative z-10"
-              />
-            </div>
+                className="min-h-[550px] rounded-[2.5rem] bg-white border-none p-12 text-sm font-bold shadow-4xl leading-relaxed resize-none focus-visible:ring-primary"
+            />
             <Button onClick={handleImport} className="w-full h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.3em] text-[11px] rounded-[2rem] shadow-4xl gap-4 group">
-               Import Questions <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
+               Initialize Extraction <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
 
           {errors.length > 0 && (
-             <Card className="border-rose-100 bg-rose-50/50 p-8 rounded-[2rem] animate-in slide-in-from-top-4">
+             <Card className="border-rose-100 bg-rose-50/50 p-8 rounded-[2rem]">
                 <div className="flex items-center gap-3 text-rose-600 mb-6">
                    <AlertTriangle className="h-6 w-6" />
-                   <h4 className="font-black uppercase text-sm tracking-tight">Audit Failures ({errors.length})</h4>
+                   <h4 className="font-black uppercase text-sm tracking-tight">Validation Failures ({errors.length})</h4>
                 </div>
                 <div className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
                    {errors.map((err, i) => (
-                      <div key={i} className="p-3 bg-white/50 border border-rose-100 rounded-xl text-[10px] font-bold text-rose-500 leading-tight">
-                         {err}
-                      </div>
+                      <div key={i} className="p-3 bg-white/50 border border-rose-100 rounded-xl text-[10px] font-bold text-rose-500 leading-tight">{err}</div>
                    ))}
                 </div>
              </Card>
@@ -215,13 +206,13 @@ export default function BulkImportPage() {
                     <Card className="border-none shadow-3xl rounded-[3rem] bg-white p-12 text-left group overflow-visible h-auto min-h-0 border border-slate-50 transition-all hover:border-primary/20">
                        <div className="flex justify-between items-start mb-10 border-b border-slate-50 pb-8">
                           <div className="space-y-2">
-                             <Badge className="bg-[#0F172A] text-white border-none text-[10px] font-black px-6 py-2 rounded-xl uppercase tracking-widest">Question {idx + 1}</Badge>
+                             <Badge className="bg-[#0F172A] text-white border-none text-[10px] font-black px-6 py-2 rounded-xl uppercase tracking-widest">Asset {idx + 1}</Badge>
                              <div className="flex flex-wrap gap-2 pt-2">
-                                <DebugIndicator label="EN" active={q.debug.QuestionEnFound === 'YES'} />
-                                <DebugIndicator label="PA" active={q.debug.QuestionPaFound === 'YES'} />
-                                <DebugIndicator label="OPTIONS" active={q.debug.OptionAFound === 'YES' && q.debug.OptionDFound === 'YES'} />
-                                <DebugIndicator label="KEY" active={q.debug.CorrectAnswerFound === 'YES'} />
-                                <DebugIndicator label="LOGIC" active={q.debug.ExplanationEnFound === 'YES' && q.debug.ExplanationPaFound === 'YES'} />
+                                <DebugIndicator label="EN_Q" active={q.debug.EN_Q === 'YES'} />
+                                <DebugIndicator label="PA_Q" active={q.debug.PA_Q === 'YES'} />
+                                <DebugIndicator label="OPT" active={q.debug.OPT === 'YES'} />
+                                <DebugIndicator label="KEY" active={q.debug.KEY === 'YES'} />
+                                <DebugIndicator label="LOGIC" active={q.debug.LOGIC === 'YES'} />
                              </div>
                           </div>
                           <div className="flex gap-3">
@@ -244,12 +235,12 @@ export default function BulkImportPage() {
       </div>
 
       <Dialog open={editingIndex !== null} onOpenChange={open => !open && setEditingIndex(null)}>
-         <DialogContent className="sm:max-w-4xl max-h-[95vh] overflow-y-auto rounded-[3rem] bg-white border-none shadow-4xl p-0 text-left flex flex-col">
+         <DialogContent className="sm:max-w-5xl max-h-[95vh] overflow-y-auto rounded-[3rem] bg-white border-none shadow-4xl p-0 text-left flex flex-col">
             <div className="h-2 w-full bg-[#0F172A] shrink-0" />
             <DialogHeader className="p-10 pb-6 flex flex-row items-center justify-between shrink-0">
                <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600"><SearchCode className="h-7 w-7" /></div>
-                  <DialogTitle className="text-3xl font-black font-headline uppercase text-[#0F172A]">Modify Audit Node</DialogTitle>
+                  <DialogTitle className="text-3xl font-black font-headline uppercase text-[#0F172A]">Modify Explicit Fields</DialogTitle>
                </div>
                <Button variant="ghost" size="icon" onClick={() => setEditingIndex(null)} className="rounded-xl h-12 w-12"><X className="h-6 w-6 text-slate-400" /></Button>
             </DialogHeader>
@@ -257,44 +248,37 @@ export default function BulkImportPage() {
                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-3">
                      <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">English Statement</Label>
-                     <Textarea value={editForm?.questionEn || ""} onChange={e => setEditForm({...editForm, questionEn: e.target.value})} className="h-36 rounded-2xl bg-slate-50 border-none font-bold text-lg p-6 shadow-inner" />
+                     <Textarea value={editForm?.englishQuestion || ""} onChange={e => setEditForm({...editForm, englishQuestion: e.target.value})} className="h-36 rounded-2xl bg-slate-50 border-none font-bold text-lg p-6 shadow-inner" />
                   </div>
                   <div className="space-y-3">
                      <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">Punjabi Statement</Label>
-                     <Textarea value={editForm?.questionPa || ""} onChange={e => setEditForm({...editForm, questionPa: e.target.value})} className="h-36 rounded-2xl bg-slate-50 border-none font-bold text-lg p-6 shadow-inner" />
+                     <Textarea value={editForm?.punjabiQuestion || ""} onChange={e => setEditForm({...editForm, punjabiQuestion: e.target.value})} className="h-36 rounded-2xl bg-slate-50 border-none font-bold text-lg p-6 shadow-inner" />
                   </div>
                </div>
 
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-50">
+               <div className="grid grid-cols-1 gap-6 pt-4 border-t border-slate-50">
                   {['A','B','C','D'].map(opt => (
-                    <div key={opt} className="space-y-3">
-                       <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Option {opt} Value</Label>
-                       <Input value={editForm?.[`option${opt}En`] || ""} onChange={e => setEditForm({...editForm, [`option${opt}En`]: e.target.value})} className="h-14 rounded-xl bg-slate-50 border-none font-black px-6 shadow-inner text-[#0F172A]" />
+                    <div key={opt} className="grid grid-cols-2 gap-4 bg-slate-50/50 p-4 rounded-xl">
+                       <div className="space-y-2">
+                          <Label className="text-[9px] font-black uppercase text-slate-400">Option {opt} English</Label>
+                          <Input value={editForm?.[`option${opt}English`] || ""} onChange={e => setEditForm({...editForm, [`option${opt}English`]: e.target.value})} className="bg-white font-bold" />
+                       </div>
+                       <div className="space-y-2">
+                          <Label className="text-[9px] font-black uppercase text-slate-400">Option {opt} Punjabi</Label>
+                          <Input value={editForm?.[`option${opt}Punjabi`] || ""} onChange={e => setEditForm({...editForm, [`option${opt}Punjabi`]: e.target.value})} className="bg-white font-bold" />
+                       </div>
                     </div>
                   ))}
-               </div>
-
-               <div className="space-y-3 pt-4 border-t border-slate-50">
-                  <Label className="text-[10px] font-black uppercase text-emerald-600 tracking-widest ml-1">Correct Logic Key</Label>
-                  <Select value={editForm?.correctAnswer} onValueChange={v => setEditForm({...editForm, correctAnswer: v})}>
-                     <SelectTrigger className="h-14 rounded-xl bg-emerald-50 border-emerald-100 text-emerald-700 font-black px-6 shadow-sm"><SelectValue /></SelectTrigger>
-                     <SelectContent>
-                        <SelectItem value="A">OPTION A</SelectItem>
-                        <SelectItem value="B">OPTION B</SelectItem>
-                        <SelectItem value="C">OPTION C</SelectItem>
-                        <SelectItem value="D">OPTION D</SelectItem>
-                     </SelectContent>
-                  </Select>
                </div>
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-4 border-t border-slate-50">
                   <div className="space-y-3">
                      <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">English Logic Hub</Label>
-                     <Textarea value={editForm?.explanationEn || ""} onChange={e => setEditForm({...editForm, explanationEn: e.target.value})} className="h-64 rounded-2xl bg-slate-50 border-none font-medium p-8 leading-relaxed shadow-inner" />
+                     <Textarea value={editForm?.englishExplanation || ""} onChange={e => setEditForm({...editForm, englishExplanation: e.target.value})} className="h-64 rounded-2xl bg-slate-50 border-none font-medium p-8 leading-relaxed shadow-inner" />
                   </div>
                   <div className="space-y-3">
                      <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">Punjabi Logic Hub</Label>
-                     <Textarea value={editForm?.explanationPa || ""} onChange={e => setEditForm({...editForm, explanationPa: e.target.value})} className="h-64 rounded-2xl bg-slate-50 border-none font-medium p-8 leading-relaxed shadow-inner" />
+                     <Textarea value={editForm?.punjabiExplanation || ""} onChange={e => setEditForm({...editForm, punjabiExplanation: e.target.value})} className="h-64 rounded-2xl bg-slate-50 border-none font-medium p-8 leading-relaxed shadow-inner" />
                   </div>
                </div>
             </div>

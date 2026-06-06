@@ -1,6 +1,8 @@
+
 /**
- * @fileOverview Institutional High-Fidelity Regex Parser v32.0.
- * Deterministic extraction with mandatory explanation capturing and vertical preservation.
+ * @fileOverview Institutional High-Fidelity Explicit Parser v40.0.
+ * Strictly maps to discrete English and Punjabi fields. 
+ * Language detection is removed. split("/") only used for extraction.
  */
 
 export interface ParsedResults {
@@ -9,10 +11,7 @@ export interface ParsedResults {
 }
 
 export function parseBulkQuestions(rawText: string, metadata: any): ParsedResults {
-  // Normalize line endings and add padding for regex splitting
   const text = "\n" + rawText.replace(/\r\n/g, '\n').trim() + "\n";
-  
-  // Split blocks using Q1. or Question 1 etc. (Case Insensitive)
   const blocks = text.split(/\n(?=(?:Q|Question)\s*\d+[\.\s])/i).filter(b => b.trim().length > 10);
   
   const results: any[] = [];
@@ -21,7 +20,7 @@ export function parseBulkQuestions(rawText: string, metadata: any): ParsedResult
   blocks.forEach((block, index) => {
     try {
       const fullText = block.trim();
-      const lines = fullText.split('\n').map(l => l.trim());
+      const lines = fullText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       
       const q: any = { 
         ...metadata,
@@ -31,48 +30,37 @@ export function parseBulkQuestions(rawText: string, metadata: any): ParsedResult
         debug: {}
       };
 
-      // 1. Identify Question Statements (EN and PA)
-      // Logic: Everything before (A) is question statement. 
-      // Line 0 is EN, rest is PA.
+      // 1. Identify Questions (Everything before (A))
       const optionAIndex = lines.findIndex(l => /^\(A\)/i.test(l));
-      
       if (optionAIndex !== -1) {
-        q.questionEn = lines[0].replace(/^(?:Q|Question)\s*\d+[\.\s]*/i, '').trim();
-        q.questionPa = lines.slice(1, optionAIndex).filter(l => l.length > 0).join('\n').trim();
+        q.englishQuestion = lines[0].replace(/^(?:Q|Question)\s*\d+[\.\s]*/i, '').trim();
+        q.punjabiQuestion = lines.slice(1, optionAIndex).join('\n').trim();
       }
 
-      q.debug.QuestionEnFound = q.questionEn ? "YES" : "NO";
-      q.debug.QuestionPaFound = q.questionPa ? "YES" : "NO";
-
-      // 2. Extract Options (A-D)
-      // Logic: Extract text between markers, preserving slashes and combined text.
-      const getOption = (letter: string, next: string | null) => {
+      // 2. Extract Options (Explicitly split EN/PA during ingestion)
+      const getOptionPair = (letter: string, next: string | null) => {
         const regex = next 
           ? new RegExp(`\\(${letter}\\)\\s*([\\s\\S]*?)(?=\\(${next}\\)|Correct Answer|Answer|Answer Key|•|$)`, 'i')
           : new RegExp(`\\(${letter}\\)\\s*([\\s\\S]*?)(?=Correct Answer|Answer|Answer Key|•|$)`, 'i');
         
         const match = fullText.match(regex);
-        return match ? match[1].trim() : "";
+        if (!match) return ["", ""];
+        
+        const raw = match[1].trim();
+        const parts = raw.split('/').map(s => s.trim());
+        return [parts[0] || "", parts[1] || parts[0] || ""];
       };
 
-      q.optionAEn = getOption('A', 'B');
-      q.optionBEn = getOption('B', 'C');
-      q.optionCEn = getOption('C', 'D');
-      q.optionDEn = getOption('D', null);
+      [q.optionAEnglish, q.optionAPunjabi] = getOptionPair('A', 'B');
+      [q.optionBEnglish, q.optionBPunjabi] = getOptionPair('B', 'C');
+      [q.optionCEnglish, q.optionCPunjabi] = getOptionPair('C', 'D');
+      [q.optionDEnglish, q.optionDPunjabi] = getOptionPair('D', null);
 
-      q.debug.OptionAFound = q.optionAEn ? "YES" : "NO";
-      q.debug.OptionBFound = q.optionBEn ? "YES" : "NO";
-      q.debug.OptionCFound = q.optionCEn ? "YES" : "NO";
-      q.debug.OptionDFound = q.optionDEn ? "YES" : "NO";
-
-      // 3. Correct Answer Extraction (Code Only: A, B, C, or D)
+      // 3. Correct Answer
       const ansMatch = fullText.match(/(?:Correct Answer|Answer|Answer Key|Correct Option)[:\s]*\(?([A-D])\)?/i);
       if (ansMatch) q.correctAnswer = ansMatch[1].toUpperCase();
 
-      q.debug.CorrectAnswerFound = q.correctAnswer ? "YES" : "NO";
-
-      // 4. Explanation Extraction (EN / PA)
-      // Logic: Capture multi-line text between language markers
+      // 4. Explanations
       const enMarkerRegex = /(?:English\s+(?:Explanation|Logic|Rationale)[:\s]*)/i;
       const paMarkerRegex = /(?:(?:ਪੰਜਾਬੀ ਵਿਆਖਿਆ|Punjabi\s+(?:Explanation|Logic|Rationale))[:\s]*)/i;
 
@@ -82,31 +70,29 @@ export function parseBulkQuestions(rawText: string, metadata: any): ParsedResult
       if (enMatch && paMatch) {
         const enStartIndex = fullText.indexOf(enMatch[0]) + enMatch[0].length;
         const paStartIndex = fullText.indexOf(paMatch[0]);
-        
-        // Use full text to preserve all newlines/spacing
-        q.explanationEn = fullText.substring(enStartIndex, paStartIndex).trim();
-        
-        const finalPaStartIndex = paStartIndex + paMatch[0].length;
-        q.explanationPa = fullText.substring(finalPaStartIndex).trim();
-      } else if (enMatch) {
-         const enStartIndex = fullText.indexOf(enMatch[0]) + enMatch[0].length;
-         q.explanationEn = fullText.substring(enStartIndex).trim();
+        q.englishExplanation = fullText.substring(enStartIndex, paStartIndex).trim();
+        q.punjabiExplanation = fullText.substring(paStartIndex + paMatch[0].length).trim();
       }
 
-      q.debug.ExplanationEnFound = q.explanationEn ? "YES" : "NO";
-      q.debug.ExplanationPaFound = q.explanationPa ? "YES" : "NO";
+      // Debugging Matrix
+      q.debug = {
+        EN_Q: q.englishQuestion ? 'YES' : 'NO',
+        PA_Q: q.punjabiQuestion ? 'YES' : 'NO',
+        OPT: (q.optionAEnglish && q.optionAPunjabi) ? 'YES' : 'NO',
+        KEY: q.correctAnswer ? 'YES' : 'NO',
+        LOGIC: (q.englishExplanation && q.punjabiExplanation) ? 'YES' : 'NO'
+      };
 
-      // 5. Validation Check
       const missing = [];
-      if (!q.questionEn) missing.push("EN Question");
-      if (!q.questionPa) missing.push("PA Question");
-      if (!q.optionAEn) missing.push("Option A");
-      if (!q.optionBEn) missing.push("Option B");
-      if (!q.optionCEn) missing.push("Option C");
-      if (!q.optionDEn) missing.push("Option D");
-      if (!q.correctAnswer) missing.push("Answer Key");
-      if (!q.explanationEn) missing.push("EN Logic");
-      if (!q.explanationPa) missing.push("PA Logic");
+      if (!q.englishQuestion) missing.push("English Question");
+      if (!q.punjabiQuestion) missing.push("Punjabi Question");
+      if (!q.optionAEnglish || !q.optionAPunjabi) missing.push("Bilingual Option A");
+      if (!q.optionBEnglish || !q.optionBPunjabi) missing.push("Bilingual Option B");
+      if (!q.optionCEnglish || !q.optionCPunjabi) missing.push("Bilingual Option C");
+      if (!q.optionDEnglish || !q.optionDPunjabi) missing.push("Bilingual Option D");
+      if (!q.correctAnswer) missing.push("Correct Answer");
+      if (!q.englishExplanation) missing.push("English Explanation");
+      if (!q.punjabiExplanation) missing.push("Punjabi Explanation");
 
       if (missing.length === 0) {
         results.push(q);
@@ -114,7 +100,7 @@ export function parseBulkQuestions(rawText: string, metadata: any): ParsedResult
         errors.push(`Block ${index + 1} Reject: Missing ${missing.join(', ')}`);
       }
     } catch (err: any) {
-      errors.push(`Block ${index + 1} Logic Error: ${err.message}`);
+      errors.push(`Block ${index + 1} Parsing Error: ${err.message}`);
     }
   });
 

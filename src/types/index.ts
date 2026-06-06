@@ -46,7 +46,7 @@ export interface Pass {
   price: number;
   durationDays: number;
   features: string[];
-  allowedExams: string[]; // List of exam IDs this pass unlocks
+  allowedExams: string[]; 
   promotionBannerUrl?: string;
   active: boolean;
   displayOrder: number;
@@ -76,7 +76,7 @@ export interface UserProfile {
   state: 'Punjab';
   targetExam: string;
   createdAt: any;
-  status: string; // "Free" or a Pass ID
+  status: string; 
   subscriptions?: string[]; 
   passExpiryDate?: string;
 }
@@ -105,19 +105,19 @@ export interface MockTest {
 
 export interface Question {
   id: string;
-  questionEn: string;
-  questionPa?: string;
-  optionAEn: string;
-  optionAPa?: string;
-  optionBEn: string;
-  optionBPa?: string;
-  optionCEn: string;
-  optionCPa?: string;
-  optionDEn: string;
-  optionDPa?: string;
+  englishQuestion: string;
+  punjabiQuestion: string;
+  optionAEnglish: string;
+  optionAPunjabi: string;
+  optionBEnglish: string;
+  optionBPunjabi: string;
+  optionCEnglish: string;
+  optionCPunjabi: string;
+  optionDEnglish: string;
+  optionDPunjabi: string;
   correctAnswer: 'A' | 'B' | 'C' | 'D';
-  explanationEn?: string;
-  explanationPa?: string;
+  englishExplanation: string;
+  punjabiExplanation: string;
   subjectId: string;
   boardId: string;
   difficulty: Difficulty;
