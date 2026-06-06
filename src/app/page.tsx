@@ -63,8 +63,8 @@ function TrustNode({ icon, label, val }: any) {
       <div className="flex items-center gap-3 p-3 md:p-6 rounded-2xl bg-slate-50/50 border border-slate-50 transition-all hover:bg-white hover:shadow-xl">
          <div className="h-8 w-8 md:h-14 md:w-14 rounded-xl bg-white flex items-center justify-center shrink-0 border border-slate-100 shadow-sm">{icon}</div>
          <div className="text-left">
-            <p className="text-sm md:text-3xl font-headline font-black text-[#0F172A] leading-none">{val}</p>
-            <p className="text-[7px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">{label}</p>
+            <p className="text-sm md:text-3xl font-headline font-black text-[#0F172A] leading-none tracking-tight">{val}</p>
+            <p className="text-[7px] md:text-[9px] font-black uppercase tracking-widest text-slate-400 mt-1 truncate">{label}</p>
          </div>
       </div>
    )

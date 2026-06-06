@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -11,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { ChevronLeft, Save, Languages, Layers, Database, Eye, BarChart3 } from "lucide-react"
+import { ChevronLeft, Save, Languages, Layers, Database, Eye, BarChart3, Loader2 } from "lucide-react"
 import { useFirestore, useDoc, useCollection, useUser } from "@/firebase"
 import { doc, setDoc, serverTimestamp, collection } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
@@ -21,7 +20,7 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 export default function QuestionEntryPage() {
   return (
-    <Suspense fallback={<div className="h-screen flex items-center justify-center bg-white"><div className="h-10 w-10 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
+    <Suspense fallback={<div className="h-screen flex items-center justify-center bg-white"><Loader2 className="h-10 w-10 text-primary animate-spin" /></div>}>
       <QuestionEntryContent />
     </Suspense>
   )
@@ -56,80 +55,67 @@ function QuestionEntryContent() {
     explanationEn: "", explanationPa: "",
     instructionEn: "", instructionPa: "",
     passageEn: "", passagePa: "",
-    tableDataJson: "",
-    chartConfigJson: "",
     imageUrl: "",
     chapterId: ""
   })
 
   useEffect(() => {
     if (existingData) {
-      const sanitized = { ...existingData };
-      Object.keys(sanitized).forEach(key => {
-        if (sanitized[key] === null) sanitized[key] = "";
-      });
-
       setFormData({ 
-        ...sanitized,
-        tableDataJson: existingData.tableData ? JSON.stringify(existingData.tableData, null, 2) : "",
-        chartConfigJson: existingData.chartConfig ? JSON.stringify(existingData.chartConfig, null, 2) : ""
+        ...existingData,
+        // Ensure all fields are strings to avoid controlled/uncontrolled component errors
+        questionEn: existingData.questionEn || "",
+        questionPa: existingData.questionPa || "",
+        optionAEn: existingData.optionAEn || "",
+        optionAPa: existingData.optionAPa || "",
+        optionBEn: existingData.optionBEn || "",
+        optionBPa: existingData.optionBPa || "",
+        optionCEn: existingData.optionCEn || "",
+        optionCPa: existingData.optionCPa || "",
+        optionDEn: existingData.optionDEn || "",
+        optionDPa: existingData.optionDPa || "",
+        explanationEn: existingData.explanationEn || existingData.explanation || "",
+        explanationPa: existingData.explanationPa || "",
       })
     }
   }, [existingData])
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!db || isSaving) return
-    
-    let tableData = null;
-    let chartConfig = null;
-    
-    try {
-      if (formData.tableDataJson) tableData = JSON.parse(formData.tableDataJson);
-      if (formData.chartConfigJson) chartConfig = JSON.parse(formData.chartConfigJson);
-    } catch (e) {
-      toast({ variant: "destructive", title: "JSON Error", description: "Invalid Table or Chart data format." })
-      return
+    if (!formData.questionEn || !formData.subjectId) {
+       toast({ variant: "destructive", title: "Missing Node", description: "Subject and Question Statement are mandatory." })
+       return
     }
 
     setIsSaving(true)
     const finalId = questionId || `q-${Date.now()}`
     const questionRef = doc(db, "questions", finalId)
     
-    const basePayload: any = { 
+    const payload: any = { 
       ...formData, 
       id: finalId,
-      tableData,
-      chartConfig,
+      updatedAt: serverTimestamp(),
+      createdAt: isEditing ? (existingData?.createdAt || serverTimestamp()) : serverTimestamp(),
       isStandalone: true,
       author: existingData?.author || profile?.name || "Team Node"
     };
-    
-    delete basePayload.tableDataJson;
-    delete basePayload.chartConfigJson;
 
     // Purge undefined/null values
-    Object.keys(basePayload).forEach(key => (basePayload[key] === undefined || basePayload[key] === null) && delete basePayload[key]);
+    Object.keys(payload).forEach(key => (payload[key] === undefined || payload[key] === null) && delete payload[key]);
 
-    const finalPayload = {
-      ...basePayload,
-      updatedAt: serverTimestamp(),
-      createdAt: isEditing ? (existingData?.createdAt || serverTimestamp()) : serverTimestamp(),
-    };
-
-    setDoc(questionRef, finalPayload, { merge: true })
-      .then(() => {
-        toast({ title: "Node Synced", description: `Asset updated in Global Bank.` })
-        router.push("/admin/questions")
-      })
-      .catch(async (err) => {
-        const permissionError = new FirestorePermissionError({
-          path: questionRef.path,
-          operation: 'write',
-          requestResourceData: finalPayload,
-        } satisfies SecurityRuleContext);
-        errorEmitter.emit("permission-error", permissionError)
-      })
-      .finally(() => setIsSaving(false))
+    try {
+      await setDoc(questionRef, payload, { merge: true })
+      toast({ title: "Node Synced", description: `Asset updated in Global Bank.` })
+      router.push("/admin/questions")
+    } catch (err: any) {
+      errorEmitter.emit("permission-error", new FirestorePermissionError({
+        path: questionRef.path,
+        operation: 'write',
+        requestResourceData: payload,
+      } satisfies SecurityRuleContext))
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -152,19 +138,18 @@ function QuestionEntryContent() {
              </SelectContent>
            </Select>
            <Button className="bg-primary hover:bg-primary/90 gap-3 font-black px-10 h-14 shadow-xl rounded-2xl uppercase tracking-widest text-xs" onClick={handleSave} disabled={isSaving}>
-             <Save className="h-4 w-4" /> {isSaving ? "Syncing..." : "Commit Changes"}
+             {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} {isSaving ? "Syncing..." : "Commit Changes"}
            </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 text-[#0F172A]">
-        <div className="lg:col-span-7 space-y-8 text-left overflow-hidden">
+        <div className="lg:col-span-7 space-y-8 text-left">
           <Tabs defaultValue="content" className="w-full">
-            <TabsList className="bg-slate-100 rounded-2xl p-1.5 h-16 mb-6 flex flex-nowrap overflow-x-auto overflow-y-hidden custom-scrollbar max-w-full justify-start items-center">
-              <TabsTrigger value="content" className="rounded-xl px-8 font-black uppercase text-[10px] h-full shrink-0"><Database className="h-4 w-4 mr-2" /> Basic Content</TabsTrigger>
-              <TabsTrigger value="complex" className="rounded-xl px-8 font-black uppercase text-[10px] h-full shrink-0"><BarChart3 className="h-4 w-4 mr-2" /> Diagram/Data</TabsTrigger>
-              <TabsTrigger value="punjabi" className="rounded-xl px-8 font-black uppercase text-[10px] h-full shrink-0"><Languages className="h-4 w-4 mr-2" /> ਪੰਜਾਬੀ</TabsTrigger>
-              <TabsTrigger value="metadata" className="rounded-xl px-8 font-black uppercase text-[10px] h-full shrink-0"><Layers className="h-4 w-4 mr-2" /> Classification</TabsTrigger>
+            <TabsList className="bg-slate-100 rounded-2xl p-1.5 h-16 mb-6 flex gap-1 h-auto overflow-x-auto no-scrollbar">
+              <TabsTrigger value="content" className="rounded-xl px-8 font-black uppercase text-[10px] h-12 flex-1"><Database className="h-4 w-4 mr-2" /> English Hub</TabsTrigger>
+              <TabsTrigger value="punjabi" className="rounded-xl px-8 font-black uppercase text-[10px] h-12 flex-1"><Languages className="h-4 w-4 mr-2" /> ਪੰਜਾਬੀ ਸੈਕਸ਼ਨ</TabsTrigger>
+              <TabsTrigger value="metadata" className="rounded-xl px-8 font-black uppercase text-[10px] h-12 flex-1"><Layers className="h-4 w-4 mr-2" /> Classification</TabsTrigger>
             </TabsList>
 
             <TabsContent value="content" className="space-y-6">
@@ -176,9 +161,7 @@ function QuestionEntryContent() {
                            <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100"><SelectValue /></SelectTrigger>
                            <SelectContent>
                               <SelectItem value="MCQ">Standard MCQ</SelectItem>
-                              <SelectItem value="MATCHING">Match Following</SelectItem>
                               <SelectItem value="ASSERTION_REASON">Assertion Reason</SelectItem>
-                              <SelectItem value="DI_QUESTION">DI Question</SelectItem>
                               <SelectItem value="PASSAGE_QUESTION">Passage Question</SelectItem>
                            </SelectContent>
                         </Select>
@@ -228,39 +211,6 @@ function QuestionEntryContent() {
                </Card>
             </TabsContent>
 
-            <TabsContent value="complex" className="space-y-6">
-               <Card className="border-slate-100 bg-white shadow-2xl rounded-[3rem] p-12 space-y-10">
-                  <div className="grid grid-cols-2 gap-8">
-                     <div className="space-y-3 text-left">
-                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Visual Mode</Label>
-                        <Select value={formData.diagramType} onValueChange={(v: any) => setFormData({...formData, diagramType: v})}>
-                           <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100"><SelectValue /></SelectTrigger>
-                           <SelectContent>
-                              <SelectItem value="none">No Visual</SelectItem>
-                              <SelectItem value="image">Static Image / Map</SelectItem>
-                              <SelectItem value="table">Interactive Table</SelectItem>
-                              <SelectItem value="barGraph">Bar Graph</SelectItem>
-                              <SelectItem value="pieChart">Pie Chart</SelectItem>
-                           </SelectContent>
-                        </Select>
-                     </div>
-                     <div className="space-y-3 text-left">
-                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Image URI</Label>
-                        <Input value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100" placeholder="https://..." />
-                     </div>
-                  </div>
-
-                  <div className="space-y-3 text-left">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Passage / Caselet (English)</Label>
-                    <Textarea 
-                      value={formData.passageEn} 
-                      onChange={e => setFormData({...formData, passageEn: e.target.value})} 
-                      className="min-h-[250px] rounded-2xl bg-slate-900 border-none p-8 font-mono text-emerald-400 text-sm leading-relaxed" 
-                    />
-                  </div>
-               </Card>
-            </TabsContent>
-
             <TabsContent value="punjabi" className="space-y-6">
                <Card className="border-slate-100 bg-white shadow-2xl rounded-[3rem] p-12 space-y-10">
                   <div className="space-y-3 text-left">
@@ -275,6 +225,14 @@ function QuestionEntryContent() {
                       </div>
                     ))}
                   </div>
+                  <div className="space-y-3 pt-6 border-t border-slate-100 text-left">
+                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">ਵਿਆਖਿਆ (Punjabi Rationale)</Label>
+                    <Textarea 
+                      value={formData.explanationPa} 
+                      onChange={e => setFormData({...formData, explanationPa: e.target.value})} 
+                      className="min-h-[100px] rounded-2xl bg-emerald-50/30 border-emerald-100 p-6 font-medium" 
+                    />
+                  </div>
                </Card>
             </TabsContent>
 
@@ -282,7 +240,7 @@ function QuestionEntryContent() {
                <Card className="border-slate-100 bg-white shadow-2xl rounded-[3rem] p-12 space-y-8">
                   <div className="grid grid-cols-2 gap-8">
                      <div className="space-y-3 text-left">
-                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Board</Label>
+                        <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Board Hub</Label>
                         <Select value={formData.boardId} onValueChange={v => setFormData({...formData, boardId: v})}>
                            <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100"><SelectValue placeholder="Select" /></SelectTrigger>
                            <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
@@ -313,12 +271,16 @@ function QuestionEntryContent() {
                         </Select>
                      </div>
                   </div>
+                  <div className="space-y-3 text-left">
+                     <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Asset Image URL</Label>
+                     <Input value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100" placeholder="https://..." />
+                  </div>
                </Card>
             </TabsContent>
           </Tabs>
         </div>
 
-        <div className="lg:col-span-5 space-y-8">
+        <div className="lg:col-span-5">
           <Card className="border-none bg-white shadow-2xl rounded-[3.5rem] overflow-hidden sticky top-32">
              <div className="bg-[#0B1528] px-10 py-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -330,11 +292,7 @@ function QuestionEntryContent() {
              <CardContent className="p-10 space-y-10 h-[70vh] overflow-y-auto custom-scrollbar text-left">
                 <QuestionRenderer 
                    language="bilingual" 
-                   question={{
-                     ...formData,
-                     tableData: formData.tableDataJson ? (JSON.parse(formData.tableDataJson || '{}')) : null,
-                     chartConfig: formData.chartConfigJson ? (JSON.parse(formData.chartConfigJson || '{}')) : null
-                   }} 
+                   question={formData} 
                    showSolution={true}
                 />
              </CardContent>

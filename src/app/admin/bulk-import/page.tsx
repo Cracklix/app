@@ -62,13 +62,11 @@ export default function BulkImportPage() {
   const [confidence, setConfidence] = useState(0)
   const [isSyncing, setIsSyncing] = useState(false)
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null)
-  
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleAnalyze = async () => {
     if (!rawText.trim()) return
-    if (!metadata.boardId || !metadata.subjectId || !metadata.examId) {
-      toast({ variant: "destructive", title: "Config Required", description: "Select Board, Exam and Subject before analysis." })
+    if (!metadata.boardId || !metadata.subjectId) {
+      toast({ variant: "destructive", title: "Config Required", description: "Select Board and Subject before analysis." })
       return
     }
 
@@ -218,7 +216,7 @@ export default function BulkImportPage() {
               <Textarea 
                 value={rawText}
                 onChange={e => setRawText(e.target.value)}
-                placeholder="Q291. What is... A) ... | A) ... Answer: A Explanation: ..."
+                placeholder="Paste bilingual series text here..."
                 className="min-h-[550px] rounded-[3.5rem] bg-white border-none p-12 text-sm font-bold leading-relaxed shadow-4xl custom-scrollbar text-[#0F172A] whitespace-pre"
               />
               <Button onClick={handleAnalyze} className="w-full h-20 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.3em] rounded-[2.5rem] shadow-4xl mt-6 gap-4 transition-all active:scale-95">
