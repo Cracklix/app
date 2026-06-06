@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { Question } from '@/types';
 import { cn } from '@/lib/utils';
-import { CheckCircle2, BrainCircuit, LayoutGrid } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface QuestionRendererProps {
@@ -13,8 +13,8 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview High-Fidelity Question Renderer v8.0.
- * Optimized: Unified Bilingual Option Line with auto-cleaning of duplicate markers.
+ * @fileOverview High-Fidelity Question Renderer v9.0.
+ * Strictly enforces clean text rendering based on language toggle.
  */
 
 export default function QuestionRenderer({ question, language, showSolution = false }: QuestionRendererProps) {
@@ -24,63 +24,37 @@ export default function QuestionRenderer({ question, language, showSolution = fa
   const expEn = useMemo(() => question.explanationEn || (question as any).explanation || "", [question]);
   const expPa = useMemo(() => question.explanationPa || "", [question]);
 
+  // Utility to clean text artifacts
+  const cleanText = (text: string = "") => {
+    return text
+      .replace(/^\d+[\.\):\s-]*/, '') // Remove leading numbers (1. or 1))
+      .replace(/^\*\*|\*\*$/g, '')    // Remove bold markers
+      .trim();
+  };
+
   return (
     <div className="w-full text-left font-body">
-      <div className="flex items-center gap-3 mb-6">
-         <Badge className="bg-[#0F172A] text-white border-none text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg">
-            {question.displayId || 'NODE'}
-         </Badge>
-         <div className="h-px flex-1 bg-slate-100" />
-      </div>
-
       {question.imageUrl && (
         <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 mb-8 shadow-inner overflow-hidden">
            <img src={question.imageUrl} alt="Audit Asset" className="max-h-[400px] rounded-xl mx-auto object-contain" />
         </div>
       )}
 
-      {/* Question Statements */}
-      <div className="space-y-6 mb-10">
+      {/* Question Statements - High Contrast Black */}
+      <div className="space-y-4 mb-8">
         {showEn && question.questionEn && (
-           <div className="text-[18px] md:text-[22px] font-black leading-tight text-black whitespace-pre-wrap antialiased">
-              {question.questionEn.replace(/^\d+[\.\):\s-]*/, '')}
+           <div className="text-[20px] md:text-[24px] font-black leading-tight text-black whitespace-pre-wrap antialiased">
+              {cleanText(question.questionEn)}
            </div>
         )}
         {showPa && question.questionPa && (
            <div className={cn(
-              "text-[18px] md:text-[22px] font-black leading-tight text-black whitespace-pre-wrap antialiased",
-              showEn ? "pt-6 border-t border-slate-100 mt-6" : ""
+              "text-[20px] md:text-[24px] font-black leading-tight text-black whitespace-pre-wrap antialiased",
+              showEn ? "pt-4 border-t border-slate-100 mt-4" : ""
            )}>
-              {question.questionPa.replace(/^\d+[\.\):\s-]*/, '')}
+              {cleanText(question.questionPa)}
            </div>
         )}
-      </div>
-
-      {/* MCQ Options Rendering - Unified Line Format */}
-      <div className="grid grid-cols-1 gap-3 mb-10">
-        {['A', 'B', 'C', 'D'].map((key) => {
-          // Clean duplicate markers (e.g., A) Text -> Text)
-          const rawEn = (question as any)[`option${key}En`] || "";
-          const rawPa = (question as any)[`option${key}Pa`] || "";
-          
-          const optEn = rawEn.replace(/^[A-D][\.\):\s-]*/i, '').trim();
-          const optPa = rawPa.replace(/^[A-D][\.\):\s-]*/i, '').trim();
-          
-          if (!optEn && !optPa) return null;
-
-          return (
-            <div key={key} className="flex items-center gap-4 p-4 rounded-xl border border-slate-100 bg-slate-50/30">
-               <div className="h-7 w-7 rounded-lg bg-[#0F172A] text-white flex items-center justify-center text-xs font-black shrink-0 shadow-lg">
-                  {key}
-               </div>
-               <div className="flex-1">
-                  <p className="text-[15px] md:text-[16px] font-bold text-slate-800 leading-tight">
-                     {optEn}{optPa ? ` / ${optPa}` : ''}
-                  </p>
-               </div>
-            </div>
-          )
-        })}
       </div>
 
       {showSolution && (
@@ -94,13 +68,13 @@ export default function QuestionRenderer({ question, language, showSolution = fa
               {showEn && expEn && (
                 <div className="space-y-2">
                    <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Audit Rationale (EN)</p>
-                   <div className="text-[14px] text-slate-800 leading-relaxed font-bold bg-white/60 p-6 rounded-2xl whitespace-pre-wrap antialiased border border-emerald-100/50">{expEn}</div>
+                   <div className="text-[15px] text-slate-800 leading-relaxed font-bold bg-white/60 p-6 rounded-2xl whitespace-pre-wrap border border-emerald-100/50">{cleanText(expEn)}</div>
                 </div>
               )}
               {showPa && expPa && (
                 <div className="space-y-2">
                    <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">ਵਿਆਖਿਆ (PA)</p>
-                   <div className="text-[14px] text-slate-800 leading-relaxed font-bold bg-white/60 p-6 rounded-2xl whitespace-pre-wrap antialiased border border-emerald-100/50">{expPa}</div>
+                   <div className="text-[15px] text-slate-800 leading-relaxed font-bold bg-white/60 p-6 rounded-2xl whitespace-pre-wrap border border-emerald-100/50">{cleanText(expPa)}</div>
                 </div>
               )}
            </div>
