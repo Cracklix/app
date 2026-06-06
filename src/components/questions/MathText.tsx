@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useRef } from 'react';
@@ -11,12 +12,8 @@ interface MathTextProps {
 }
 
 /**
- * @fileOverview Precision Neat & Clean Math Renderer v10.0.
- * Optimized for high-visibility and maximum word spacing.
- * Rules:
- * 1. LINE-BY-LINE GAPS: Added py-3 to ensure vertical clarity.
- * 2. COLOR INTEGRITY: Uses text-inherit to prevent faint text on light backgrounds.
- * 3. MAXIMUM SPACING: Applied tracking-wide and line-height 2.2.
+ * @fileOverview Precision Neat & Clean Math Renderer v11.0.
+ * Uniform Typography Pass: Removed color overrides for symbols to ensure 100% #111111 consistency.
  */
 export default function MathText({ text, className }: MathTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,14 +58,14 @@ export default function MathText({ text, className }: MathTextProps) {
           const parts = trimmed.split('=');
           return `<div class="py-3 flex flex-wrap items-baseline gap-2">
             <span class="font-black text-inherit uppercase tracking-wide">${parts[0].trim()}</span>
-            <span class="text-primary font-black">=</span>
+            <span class="text-inherit font-black">=</span>
             <span class="font-black text-inherit">${parts[1].trim()}</span>
           </div>`;
         }
         
         // Header detection for "Formula:", "Calculation:", etc.
         if (trimmed.endsWith(':')) {
-           return `<div class="font-black text-primary mt-8 mb-4 uppercase tracking-[0.2em] text-xs md:text-sm border-l-4 border-primary/40 pl-4 bg-primary/5 py-2 rounded-r-lg">${trimmed}</div>`;
+           return `<div class="font-black text-inherit mt-8 mb-4 uppercase tracking-[0.2em] text-xs md:text-sm border-l-4 border-slate-300 pl-4 bg-slate-50 py-2 rounded-r-lg">${trimmed}</div>`;
         }
 
         // Standard neat text line with maximum spacing

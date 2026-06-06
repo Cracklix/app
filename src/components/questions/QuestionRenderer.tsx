@@ -15,9 +15,9 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview Institutional CBT Question Engine v55.0.
- * Redesign: Standardized large typography, compact bilingual spacing.
- * Optimized: Reduced vertical gaps between languages (12px) and options (24px).
+ * @fileOverview Institutional Uniform Typography Question Engine v60.0.
+ * Redesign: Strictly identical styling across EN, PA, and BI modes.
+ * Typography: #111111 color, 700 weight questions, 600 weight options.
  */
 export default function QuestionRenderer({ 
   question, 
@@ -30,36 +30,34 @@ export default function QuestionRenderer({
   const isPa = language === 'pa';
   const isBi = language === 'bilingual';
 
-  // Institutional Typography Standard
-  const typographyClass = "text-xl md:text-3xl lg:text-[36px] font-[700] leading-[1.4] antialiased tracking-tight text-[#000000]";
+  // Uniform Typography Standard
+  // Desktop 36px, Laptop 30px, Tablet 24px, Mobile 20px
+  const typographyClass = "text-[20px] md:text-[24px] lg:text-[30px] xl:text-[36px] font-[700] leading-[1.6] antialiased tracking-normal text-[#111111]";
 
   return (
     <div className="w-full text-left font-body bg-transparent h-auto min-h-0">
       
-      {/* 1. CORE QUESTION STATEMENT */}
-      <div className="space-y-3">
+      {/* 1. CORE QUESTION STATEMENT - UNIFORM TYPOGRAPHY */}
+      <div className="space-y-[12px]">
          {/* EN Mode or BI Mode */}
          {(isEn || isBi) && (
-            <div className={cn(typographyClass, "text-[#111827]")}>
+            <div className={typographyClass}>
                <MathText text={question.englishQuestion || ""} />
             </div>
          )}
          
          {/* PA Mode or BI Mode */}
          {(isPa || isBi) && (
-            <div className={cn(
-               typographyClass, 
-               "text-[#1E3A8A]",
-               isBi && "pt-3 border-t border-slate-50"
-            )}>
+            <div className={typographyClass}>
                <MathText text={question.punjabiQuestion || ""} />
             </div>
          )}
       </div>
 
-      <div className="h-6 md:h-8" />
+      {/* 24px Gap before options */}
+      <div className="h-[24px]" />
 
-      {/* 2. OPTION HUB */}
+      {/* 2. OPTION HUB - UNIFORM STYLING */}
       {!hideOptions && (
         <div className="flex flex-col space-y-4">
           {['A', 'B', 'C', 'D'].map(key => {
@@ -67,15 +65,15 @@ export default function QuestionRenderer({
             const pa = (question as any)[`option${key}Punjabi`];
 
             return (
-              <div key={key} className="flex gap-4 items-center group p-6 h-[72px] md:h-[88px] rounded-[16px] border-2 border-slate-100 hover:border-primary/20 transition-all bg-white shadow-sm">
+              <div key={key} className="flex gap-4 items-center group p-6 h-auto min-h-[72px] md:min-h-[88px] rounded-[16px] border-2 border-slate-100 hover:border-primary/20 transition-all bg-white shadow-sm">
                 <span className="shrink-0 font-black px-4 py-1 bg-[#0F172A] text-white rounded-xl text-xs md:text-lg">({key})</span>
-                <div className="flex-1 pt-0.5 overflow-hidden">
-                   {isEn && <p className="font-bold text-base md:text-xl text-[#111827] truncate">{en}</p>}
-                   {isPa && <p className="font-bold text-base md:text-xl text-[#1E3A8A] truncate">{pa || en}</p>}
+                <div className="flex-1 py-1 overflow-hidden space-y-2">
+                   {isEn && <p className="font-[600] text-[18px] md:text-[20px] text-[#111111] leading-tight">{en}</p>}
+                   {isPa && <p className="font-[600] text-[18px] md:text-[20px] text-[#111111] leading-tight">{pa || en}</p>}
                    {isBi && (
-                      <div className="flex flex-col leading-tight">
-                         <p className="font-bold text-sm md:text-base text-[#111827] truncate">{en}</p>
-                         <p className="font-bold text-sm md:text-base text-[#1E3A8A] truncate">{pa}</p>
+                      <div className="flex flex-col gap-2">
+                         <p className="font-[600] text-[18px] md:text-[20px] text-[#111111] leading-tight">{en}</p>
+                         <p className="font-[600] text-[18px] md:text-[20px] text-[#111111] leading-tight">{pa}</p>
                       </div>
                    )}
                 </div>
@@ -85,7 +83,7 @@ export default function QuestionRenderer({
         </div>
       )}
 
-      {/* 3. SUBMIT-GATED SOLUTION HUB */}
+      {/* 3. SUBMIT-GATED SOLUTION HUB - UNIFORM COLOR */}
       {showSolution && (
         <div className="mt-10 space-y-10 animate-in fade-in slide-in-from-top-4 duration-700">
            
@@ -101,36 +99,35 @@ export default function QuestionRenderer({
                  </div>
               </div>
               <div className="text-left md:text-right border-t md:border-t-0 md:border-l border-emerald-200 pt-6 md:pt-0 md:pl-12">
-                 <div className="space-y-1">
-                    <p className="font-black text-emerald-800 text-xl">{(question as any)[`option${question.correctAnswer}English`]}</p>
-                    <p className="font-bold text-emerald-600 text-base">{(question as any)[`option${question.correctAnswer}Punjabi`]}</p>
+                 <div className="space-y-2">
+                    <p className="font-[600] text-[#111111] text-[18px] md:text-[20px]">{(question as any)[`option${question.correctAnswer}English`]}</p>
+                    <p className="font-[600] text-[#111111] text-[18px] md:text-[20px]">{(question as any)[`option${question.correctAnswer}Punjabi`]}</p>
                  </div>
               </div>
            </div>
 
-           {/* Strategic Rationale */}
-           <div className="bg-[#121212] rounded-[2.5rem] p-8 md:p-12 text-white shadow-3xl relative overflow-hidden h-auto min-h-0">
-              <div className="absolute top-0 right-0 p-12 opacity-[0.03] rotate-12"><Zap className="h-64 w-64" /></div>
+           {/* Strategic Rationale - Uniform Black Text */}
+           <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-slate-200 shadow-3xl relative overflow-hidden h-auto min-h-0">
               <div className="relative z-10 space-y-10">
                  {(isEn || isBi) && (
                     <div className="space-y-6">
                        <div className="flex items-center gap-4">
-                          <span className="h-2.5 w-2.5 rounded-full bg-primary" />
-                          <p className="text-[11px] font-black uppercase tracking-[0.5em] text-primary">English Rationale</p>
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#111111]" />
+                          <p className="text-[11px] font-black uppercase tracking-[0.5em] text-[#111111]">English Rationale</p>
                        </div>
-                       <div className="text-[18px] md:text-[22px] text-slate-100 leading-[2.2] font-medium tracking-wide">
+                       <div className="text-[18px] md:text-[22px] text-[#111111] leading-[2.2] font-medium tracking-wide">
                           <MathText text={question.englishExplanation || ""} />
                        </div>
                     </div>
                  )}
 
                  {(isPa || isBi) && (
-                    <div className={cn("space-y-6", isBi && "pt-10 border-t border-white/5")}>
+                    <div className={cn("space-y-6", isBi && "pt-10 border-t border-slate-100")}>
                        <div className="flex items-center gap-4">
-                          <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                          <p className="text-[11px] font-black uppercase tracking-[0.5em] text-emerald-500">ਪੰਜਾਬੀ ਵਿਆਖਿਆ</p>
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#111111]" />
+                          <p className="text-[11px] font-black uppercase tracking-[0.5em] text-[#111111]">ਪੰਜਾਬੀ ਵਿਆਖਿਆ</p>
                        </div>
-                       <div className="text-[18px] md:text-[22px] text-slate-100 leading-[2.2] font-medium tracking-wide">
+                       <div className="text-[18px] md:text-[22px] text-[#111111] leading-[2.2] font-medium tracking-wide">
                           <MathText text={question.punjabiExplanation || ""} />
                        </div>
                     </div>
