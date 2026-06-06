@@ -17,12 +17,14 @@ export interface ParsedResults {
 
 /**
  * Strips Markdown artifacts, redundant dots, and extra whitespace.
+ * Specifically handles trailing stars (**) and bolding markers.
  */
 function cleanText(text: string): string {
   if (!text) return "";
   return text
-    .replace(/^[\s\d\.\*]+/, '') // Remove leading numbers, dots, stars
-    .replace(/[\*\_]{1,}/g, '')  // Remove Markdown bold/italic markers (*, **, _, __)
+    .replace(/^[\s\d\.\*]+/, '') // Remove leading numbers, dots, stars (e.g. "Q1. ", "**2.** ")
+    .replace(/\*+$/, '')         // Remove trailing stars/bold markers (e.g. "**")
+    .replace(/[\*\_]/g, '')      // Remove any remaining Markdown bold/italic markers (*, _)
     .replace(/\s+/g, ' ')        // Normalize whitespace
     .trim();
 }
