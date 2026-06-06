@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
@@ -16,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Play, ShieldCheck, CheckCircle2, History, Zap, Trophy, TrendingUp, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
   Dialog,
   DialogContent,
@@ -26,8 +25,8 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Final Production-Grade CBT Evaluation Hub v3.0.
- * Fixed: Variable initialization scoping for mockTitle and loading logic.
+ * @fileOverview Final Production-Grade CBT Evaluation Hub v3.5.
+ * Fixed: Accessibility console errors for Sheet component and reinforced section logic.
  */
 export default function MockAttemptPage() {
   const params = useParams();
@@ -233,6 +232,9 @@ export default function MockAttemptPage() {
       
       <Sheet open={isPaletteOpen} onOpenChange={setIsPaletteOpen}>
         <SheetContent side="right" className="w-[300px] p-0 border-none">
+          <SheetHeader className="sr-only">
+             <SheetTitle>Question Palette</SheetTitle>
+          </SheetHeader>
           <QuestionPalette onSelect={(idx) => { examStore.setCurrentIdx(idx); setIsPaletteOpen(false); }} />
         </SheetContent>
       </Sheet>
