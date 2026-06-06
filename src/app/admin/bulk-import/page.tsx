@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -10,7 +9,6 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { 
   Database, 
   ChevronLeft, 
@@ -27,7 +25,7 @@ import {
   FileWarning 
 } from "lucide-react"
 import { useFirestore, useCollection, useStorage } from "@/firebase"
-import { collection, doc, writeBatch, serverTimestamp, getDocs, query, where, limit } from "firebase/firestore"
+import { collection, doc, writeBatch, serverTimestamp } from "firebase/firestore"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { useToast } from "@/hooks/use-toast"
 import { parseBulkQuestions } from "@/lib/parser"
@@ -35,8 +33,8 @@ import { Difficulty, Question, ContentStatus } from "@/types"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Bulk Ingestion Hub v3.5.
- * Features: Automatic Question Splitting, Media Linkage, and Detection Preview.
+ * @fileOverview Institutional High-Fidelity Bulk Ingestion Hub.
+ * Features: Absolute Formatting Preservation, Media Uploads, and Matrix Preview.
  */
 
 export default function BulkImportPage() {
@@ -81,9 +79,9 @@ export default function BulkImportPage() {
     setConfidence(conf)
 
     if (errors.length > 0) {
-      toast({ variant: "destructive", title: "Split Warnings", description: `Found ${errors.length} parsing issues.` })
+      toast({ variant: "destructive", title: "Split Warnings", description: `Detected ${errors.length} parsing logic gaps.` })
     } else {
-      toast({ title: "Analysis Complete", description: `Detected ${questions.length} individual questions.` })
+      toast({ title: "Audit Complete", description: `Matrix ready with ${questions.length} high-fidelity nodes.` })
     }
   }
 
@@ -92,7 +90,7 @@ export default function BulkImportPage() {
     if (!file || !storage) return
 
     setUploadingIdx(idx)
-    const storageRef = ref(storage, `question_assets/${Date.now()}_${file.name}`)
+    const storageRef = ref(storage, `question_assets/${Date.now()}_${file.name.replace(/\s+/g, '_')}`)
 
     try {
       const snapshot = await uploadBytes(storageRef, file)
@@ -102,9 +100,9 @@ export default function BulkImportPage() {
       updated[idx].imageUrl = url
       setParsedQuestions(updated)
       
-      toast({ title: "Media Linked", description: "Image attached to question node." })
+      toast({ title: "Asset Synced", description: "Media linked to question node." })
     } catch (err) {
-      toast({ variant: "destructive", title: "Upload Failed" })
+      toast({ variant: "destructive", title: "Upload Rejected" })
     } finally {
       setUploadingIdx(null)
     }
@@ -125,14 +123,14 @@ export default function BulkImportPage() {
         isStandalone: true,
       };
       
-      // Cleanup
+      // Strict cleanup of undefined/null fields
       Object.keys(payload).forEach(key => (payload[key] === undefined || payload[key] === null) && delete payload[key]);
       batch.set(qRef, payload)
     })
 
     try {
       await batch.commit()
-      toast({ title: "Bank Sync Success", description: `${parsedQuestions.length} nodes successfully committed.` })
+      toast({ title: "Global Bank Synced", description: `${parsedQuestions.length} nodes committed to registry.` })
       router.push("/admin/questions")
     } catch (e: any) {
       toast({ variant: "destructive", title: "Sync Failed", description: e.message })
@@ -142,20 +140,20 @@ export default function BulkImportPage() {
   }
 
   return (
-    <div className="space-y-10 pb-24 text-left max-w-[1600px] mx-auto">
+    <div className="space-y-10 pb-32 text-left max-w-[1600px] mx-auto">
       <div className="flex items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl border bg-white h-12 w-12 shadow-sm"><ChevronLeft className="h-6 w-6" /></Button>
           <div className="text-left">
-            <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Bulk Ingestion Engine</h1>
-            <p className="text-slate-500 font-medium">Automatic boundary detection for massive scale datasets.</p>
+            <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Institutional Ingestion</h1>
+            <p className="text-slate-500 font-medium">Injecting high-fidelity metadata nodes into the Atomic Bank.</p>
           </div>
         </div>
         <div className="flex gap-4">
            <Button variant="outline" onClick={() => { setRawText(""); setParsedQuestions([]); }} className="h-16 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 shadow-sm bg-white">
-              Reset Buffer
+              Purge Buffer
            </Button>
-           <Button onClick={handleSaveToBank} disabled={isSyncing || parsedQuestions.length === 0} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl h-16 px-12 gap-3 shadow-3xl shadow-emerald-900/20">
+           <Button onClick={handleSaveToBank} disabled={isSyncing || parsedQuestions.length === 0} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl h-16 px-12 gap-3 shadow-3xl shadow-emerald-900/20 transition-all active:scale-95">
               {isSyncing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Rocket className="h-5 w-5" />} Commit {parsedQuestions.length} Nodes
            </Button>
         </div>
@@ -169,25 +167,25 @@ export default function BulkImportPage() {
               <CardTitle className="font-headline font-black text-2xl uppercase flex items-center gap-4"><Settings2 className="h-6 w-6 text-primary" /> Target Metadata</CardTitle>
             </CardHeader>
             <CardContent className="p-10 pt-4 space-y-6">
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Board</Label>
+              <div className="space-y-5">
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Authority Board</Label>
                   <Select value={metadata.boardId} onValueChange={v => setMetadata({...metadata, boardId: v, examId: ""})}>
-                    <SelectTrigger className="rounded-xl h-11 bg-slate-50 border-none font-bold text-[#0F172A]"><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none font-bold text-[#0F172A] shadow-inner"><SelectValue placeholder="Select" /></SelectTrigger>
                     <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Exam Hub</Label>
                   <Select value={metadata.examId} onValueChange={v => setMetadata({...metadata, examId: v})}>
-                    <SelectTrigger className="rounded-xl h-11 bg-slate-50 border-none font-bold text-[#0F172A]"><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none font-bold text-[#0F172A] shadow-inner"><SelectValue placeholder="Select" /></SelectTrigger>
                     <SelectContent>{exams?.filter(e => e.boardId === metadata.boardId).map((e: any) => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1">
-                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Subject Node</Label>
+                <div className="space-y-1.5">
+                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Subject Registry</Label>
                    <Select value={metadata.subjectId} onValueChange={v => setMetadata({...metadata, subjectId: v})}>
-                      <SelectTrigger className="rounded-xl h-11 bg-slate-50 border-none font-bold text-[#0F172A]"><SelectValue placeholder="Select" /></SelectTrigger>
+                      <SelectTrigger className="rounded-xl h-12 bg-slate-50 border-none font-bold text-[#0F172A] shadow-inner"><SelectValue placeholder="Select" /></SelectTrigger>
                       <SelectContent>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                    </Select>
                 </div>
@@ -195,19 +193,20 @@ export default function BulkImportPage() {
             </CardContent>
           </Card>
           
-          <div className="p-10 bg-[#0F172A] rounded-[3rem] text-white space-y-6">
-             <div className="flex items-center gap-4">
+          <div className="p-10 bg-[#0F172A] rounded-[3rem] text-white space-y-8 shadow-4xl overflow-hidden relative">
+             <div className="absolute top-0 right-0 p-8 opacity-5 rotate-12"><SearchCode className="h-48 w-48" /></div>
+             <div className="flex items-center gap-4 relative z-10">
                 <div className="h-10 w-10 bg-primary/20 rounded-xl flex items-center justify-center text-primary"><SearchCode className="h-6 w-6" /></div>
-                <h3 className="font-headline font-black uppercase">Detection Logic</h3>
+                <h3 className="font-headline font-black uppercase">Fidelity Scan</h3>
              </div>
-             <div className="space-y-4">
+             <div className="space-y-6 relative z-10">
                 <div className="flex justify-between items-center text-sm">
-                   <span className="text-slate-400">Questions Detected</span>
-                   <span className="font-black text-primary">{parsedQuestions.length}</span>
+                   <span className="text-slate-400 font-bold uppercase text-[10px]">Nodes Detected</span>
+                   <span className="font-black text-primary text-xl">{parsedQuestions.length}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
-                   <span className="text-slate-400">Parse Confidence</span>
-                   <span className="font-black text-emerald-400">{confidence}%</span>
+                   <span className="text-slate-400 font-bold uppercase text-[10px]">Parse Confidence</span>
+                   <span className="font-black text-emerald-400 text-xl">{confidence}%</span>
                 </div>
              </div>
           </div>
@@ -215,15 +214,15 @@ export default function BulkImportPage() {
 
         <div className="lg:col-span-8 space-y-8">
            <div className="space-y-3">
-              <Label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Ingestion Buffer (Paste content with Q1, Q2...)</Label>
+              <Label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">High-Fidelity Buffer (Paste exact original content)</Label>
               <Textarea 
                 value={rawText}
                 onChange={e => setRawText(e.target.value)}
-                placeholder="Q291. What is... A) Opt 1 B) Opt 2 ... Correct Answer: A"
-                className="min-h-[500px] rounded-[3.5rem] bg-white border-none p-12 text-sm font-mono shadow-4xl custom-scrollbar text-[#0F172A]"
+                placeholder="Q291. What is... A) ... | A) ... Answer: A Explanation: ..."
+                className="min-h-[550px] rounded-[3.5rem] bg-white border-none p-12 text-sm font-bold leading-relaxed shadow-4xl custom-scrollbar text-[#0F172A] whitespace-pre"
               />
-              <Button onClick={handleAnalyze} className="w-full h-20 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.3em] rounded-[2.5rem] shadow-4xl mt-6 gap-4">
-                 <Zap className="h-6 w-6 text-primary fill-current" /> Analyze & Detect Boundaries
+              <Button onClick={handleAnalyze} className="w-full h-20 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.3em] rounded-[2.5rem] shadow-4xl mt-6 gap-4 transition-all active:scale-95">
+                 <Zap className="h-6 w-6 text-primary fill-current" /> Initialize Audit & Matrix
               </Button>
            </div>
 
@@ -231,30 +230,22 @@ export default function BulkImportPage() {
              <Card className="border-none shadow-4xl rounded-[4rem] bg-white overflow-hidden text-left">
                 <CardHeader className="p-12 border-b border-slate-50 bg-slate-50/30 flex flex-row justify-between items-center">
                    <div className="space-y-2">
-                      <CardTitle className="font-headline font-black text-3xl uppercase">Detected Matrix ({parsedQuestions.length})</CardTitle>
-                      <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Verify answers and link media before bank sync.</p>
+                      <CardTitle className="font-headline font-black text-3xl uppercase">Validated Matrix ({parsedQuestions.length})</CardTitle>
+                      <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Formatting and paragraphs preserved in registry.</p>
                    </div>
-                   <Badge className="bg-emerald-100 text-emerald-600 border-none font-black px-6 py-2 rounded-xl text-xs uppercase tracking-widest">VALIDATED</Badge>
+                   <Badge className="bg-emerald-100 text-emerald-600 border-none font-black px-6 py-2 rounded-xl text-xs uppercase tracking-widest">FIDELITY SECURE</Badge>
                 </CardHeader>
-                <CardContent className="p-12 space-y-12 max-h-[800px] overflow-y-auto custom-scrollbar">
+                <CardContent className="p-12 space-y-12 max-h-[1000px] overflow-y-auto custom-scrollbar">
                    {parsedQuestions.map((q, idx) => (
-                      <div key={idx} className="p-10 bg-slate-50/50 rounded-[3rem] border border-slate-100 space-y-8 group/item">
+                      <div key={idx} className="p-10 bg-slate-50/30 rounded-[3rem] border border-slate-100 space-y-8 group/item relative hover:bg-white transition-all shadow-sm">
                          <div className="flex items-center justify-between">
-                            <Badge className="bg-primary text-white border-none text-[10px] font-black uppercase px-4 py-1 rounded-lg">Node {q.displayId}</Badge>
-                            <div className="flex gap-2">
-                               <input 
-                                 type="file" 
-                                 className="hidden" 
-                                 accept="image/*" 
-                                 ref={fileInputRef} 
-                                 onChange={(e) => handleImageUpload(idx, e)} 
-                               />
+                            <Badge className="bg-primary text-white border-none text-[11px] font-black uppercase px-5 py-1 rounded-xl shadow-lg">Node {q.displayId}</Badge>
+                            <div className="flex gap-3">
                                <Button 
                                  variant="outline" 
                                  size="sm" 
-                                 className="rounded-xl h-10 px-4 gap-2 bg-white font-bold uppercase text-[9px]"
+                                 className="rounded-xl h-11 px-6 gap-3 bg-white font-black uppercase text-[10px] tracking-widest shadow-sm hover:border-primary/30"
                                  onClick={() => {
-                                   // This is a simplification; ideally use a unique ref per row
                                    const input = document.createElement('input');
                                    input.type = 'file';
                                    input.accept = 'image/*';
@@ -263,13 +254,15 @@ export default function BulkImportPage() {
                                  }}
                                  disabled={uploadingIdx === idx}
                                >
-                                  {uploadingIdx === idx ? <Loader2 className="h-3 w-3 animate-spin" /> : <ImageIcon className="h-3 w-3 text-primary" />}
-                                  {q.imageUrl ? "Update Image" : "Add Image"}
+                                  {uploadingIdx === idx ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4 text-primary" />}
+                                  {q.imageUrl ? "Asset Synced" : "Add Image Node"}
                                </Button>
-                               <Button variant="ghost" size="icon" className="h-10 w-10 text-rose-500" onClick={() => setParsedQuestions(parsedQuestions.filter((_, i) => i !== idx))}><Trash2 className="h-4 w-4" /></Button>
+                               <Button variant="ghost" size="icon" className="h-11 w-11 text-rose-500 bg-rose-50 rounded-xl" onClick={() => setParsedQuestions(parsedQuestions.filter((_, i) => i !== idx))}><Trash2 className="h-5 w-5" /></Button>
                             </div>
                          </div>
-                         <QuestionRenderer question={q} language="bilingual" showSolution={true} />
+                         <div className="border-t border-slate-100 pt-8">
+                            <QuestionRenderer question={q} language="bilingual" showSolution={true} />
+                         </div>
                       </div>
                    ))}
                 </CardContent>

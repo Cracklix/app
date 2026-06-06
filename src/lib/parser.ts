@@ -1,11 +1,10 @@
-
 /**
- * @fileOverview Institutional Ultimate Hybrid Ingestion Engine v3.0.
- * Features: Automatic Boundary Detection (Q1, Q291, etc.), Multilingual Mapping,
- * and aggressive numbering artifacts purge.
+ * @fileOverview Institutional High-Fidelity Ingestion Engine v4.0.
+ * Features: Absolute Formatting Preservation, Bilingual Pipe Detection,
+ * and Original Numbering Extraction (Q291, etc.).
  */
 
-import { Question, Difficulty, ContentStatus, QuestionType } from "@/types";
+import { Question, Difficulty, ContentStatus } from "@/types";
 
 export interface ParsedResults {
   questions: Partial<Question>[];
@@ -14,47 +13,47 @@ export interface ParsedResults {
 }
 
 /**
- * Aggressively cleans imported text and purges formatting debris.
+ * Strips boundary markers from the start of a text block but preserves 
+ * internal formatting and whitespace.
  */
 function cleanText(text: string): string {
   if (!text) return "";
+  // Purge leading numbering artifacts specifically while keeping internal whitespace
   return text
-    .replace(/^(\s*\**\s*(?:Q|Question|QUESTION NO\.)?\s*\d+[\.\):-]*\s*\*?\s*)/i, '') // Strips leading 1., Q1., Question 1:
-    .replace(/^[\s\d\.\*]+/, '') 
-    .replace(/\*+$/, '')         
-    .replace(/[\*\_]/g, '')      
-    .replace(/\s+/g, ' ')        
+    .replace(/^(\s*\**\s*(?:Q|Question|QUESTION NO\.)?\s*\d+[\.\):-]*\s*\*?\s*)/i, '')
     .trim();
 }
 
 /**
- * Detects boundaries and splits text into individual question blocks.
- * Supports patterns: Q1, Q291, 1., Question 1, QUESTION NO. 1
+ * Splits text into blocks while preserving the original boundary markers 
+ * for extraction as display IDs.
  */
-function splitIntoBlocks(text: string): string[] {
-  // Pattern matches the start of a new question
-  const boundaryRegex = /(?:\n|^)\s*(?:Q|Question|QUESTION NO\.)?\s*(\d+)[\.\):\s-]/i;
+function splitIntoBlocks(text: string): { marker: string, content: string }[] {
+  // Look for patterns like Q291., 1., Question 1
+  const boundaryRegex = /(?:\n|^)\s*((?:Q|Question|QUESTION NO\.)?\s*(\d+)[\.\):\s-]*)/gi;
   
-  // We use a manual split to preserve content
-  const lines = text.split('\n');
-  const blocks: string[] = [];
-  let currentBlock: string[] = [];
+  const blocks: { marker: string, content: string }[] = [];
+  let match;
+  let lastIndex = 0;
+  let lastMarker = "";
 
-  lines.forEach(line => {
-    if (boundaryRegex.test(line) && currentBlock.length > 0) {
-      // If we see a new question marker and we have current content, save the block
-      blocks.push(currentBlock.join('\n').trim());
-      currentBlock = [line];
-    } else {
-      currentBlock.push(line);
+  while ((match = boundaryRegex.exec(text)) !== null) {
+    if (lastIndex !== 0 || text.substring(0, match.index).trim().length > 0) {
+      const content = text.substring(lastIndex, match.index).trim();
+      if (content || lastMarker) {
+        blocks.push({ marker: lastMarker, content });
+      }
     }
-  });
-
-  if (currentBlock.length > 0) {
-    blocks.push(currentBlock.join('\n').trim());
+    lastMarker = match[1].trim().replace(/\.$/, ''); // Store Q291 part
+    lastIndex = match.index + match[0].length;
   }
 
-  return blocks.filter(b => b.length > 10);
+  // Final block
+  if (lastIndex < text.length) {
+    blocks.push({ marker: lastMarker, content: text.substring(lastIndex).trim() });
+  }
+
+  return blocks.filter(b => b.content.length > 5);
 }
 
 export function parseBulkQuestions(
@@ -74,26 +73,22 @@ export function parseBulkQuestions(
   const blocks = splitIntoBlocks(rawText);
 
   if (blocks.length === 0) {
-    return { questions: [], errors: ["No valid question patterns detected. Ensure you use Q1, 1., or Question 1 format."], confidence: 0 };
+    return { questions: [], errors: ["No question patterns detected. Use Q1, Q291 or 1. at start of questions."], confidence: 0 };
   }
 
   blocks.forEach((block, index) => {
     try {
-      const parsed = parseComplexBlock(block, metadata);
-
-      // Generate Institutional Sequential ID
-      const prefix = metadata.examId.substring(0, 4).toUpperCase();
-      const displayId = `${prefix}-${Date.now().toString().slice(-4)}-${index + 1}`;
+      const parsed = parseFidelityBlock(block.content, metadata);
 
       questions.push({
         ...parsed,
-        displayId,
+        displayId: block.marker || `Q${index + 1}`,
         isStandalone: true,
-        status: metadata.status,
+        status: metadata.status || "PUBLISHED",
       });
 
     } catch (err: any) {
-      errors.push(`Block ${index + 1}: ${err.message}`);
+      errors.push(`Node ${block.marker || index + 1}: ${err.message}`);
     }
   });
 
@@ -101,49 +96,51 @@ export function parseBulkQuestions(
   return { questions, errors, confidence };
 }
 
-function parseComplexBlock(block: string, metadata: any): Partial<Question> {
-  // Regex patterns for various components
-  const optionRegex = /(?:\n|^)\s*\**([A-D])[\.\)]\s*\*?\s*([\s\S]*?)(?=\n\s*\**[A-D][\.\)]|\n\s*\**Correct Answer|\n\s*\**Answer|\n\s*\**Explanation|\n\s*\**ਵਿਆਖਿਆ|$)/gi;
+function parseFidelityBlock(block: string, metadata: any): Partial<Question> {
+  // Regex to extract options without collapsing internal whitespace
+  const optionRegex = /(?:\n|^)\s*\**([A-D])[\.\)]\s*\*?\s*([\s\S]*?)(?=\n\s*\**[A-D][\.\)]|\n\s*\**Correct Answer|\n\s*\**Answer|\n\s*\**Correct Option|\n\s*\**Explanation|\n\s*\**ਵਿਆਖਿਆ|$)/gi;
   const answerRegex = /(?:Correct Answer|Answer|Correct Option|ਜਵਾਬ):?\s*\**([A-D])\b/i;
   const explanationRegex = /(?:Explanation|ਵਿਆਖਿਆ):?\s*\**([\s\S]*)$/i;
 
-  // Extract Question Text (everything before the first option)
   const firstOptionMatch = optionRegex.exec(block);
-  optionRegex.lastIndex = 0; // Reset for later use
+  optionRegex.lastIndex = 0;
   
   const questionPart = firstOptionMatch 
     ? block.substring(0, firstOptionMatch.index).trim() 
     : block.split('\n')[0];
 
-  // Multilingual split for question
+  // Bilingual split for question - Detect first major script change or newline block
   const qLines = questionPart.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-  const questionEn = cleanText(qLines[0] || "");
-  const questionPa = qLines.length > 1 ? cleanText(qLines.slice(1).join('\n')) : "";
+  const questionEn = qLines[0] || "";
+  const questionPa = qLines.length > 1 ? qLines.slice(1).join('\n') : "";
 
-  // Extract Options
+  // Extract Options with pipe support
   const options: Record<string, { en: string; pa: string }> = {};
   let match;
   while ((match = optionRegex.exec(block)) !== null) {
     const label = match[1].toUpperCase();
     const content = match[2].trim();
     
-    // Check for bilingual pipe separator
     if (content.includes('|')) {
-      const [en, pa] = content.split('|').map(s => cleanText(s.trim()));
+      const [en, pa] = content.split('|').map(s => s.trim());
       options[label] = { en, pa };
     } else {
-      // Try to detect script or just use as EN
-      options[label] = { en: cleanText(content), pa: "" };
+      options[label] = { en: content, pa: "" };
     }
   }
 
-  // Extract Answer
+  // Answer
   const ansMatch = block.match(answerRegex);
   const correctAnswer = (ansMatch?.[1].toUpperCase() || "A") as 'A' | 'B' | 'C' | 'D';
 
-  // Extract Explanation
+  // Explanation
   const expMatch = block.match(explanationRegex);
-  const explanationEn = expMatch ? cleanText(expMatch[1]) : "Solution synced to bank.";
+  const explanationPart = expMatch ? expMatch[1].trim() : "";
+  
+  // Split explanation if bilingual
+  const expLines = explanationPart.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const explanationEn = expLines[0] || "";
+  const explanationPa = expLines.length > 1 ? expLines.slice(1).join('\n') : "";
 
   return {
     ...metadata,
@@ -160,6 +157,6 @@ function parseComplexBlock(block: string, metadata: any): Partial<Question> {
     optionDPa: options['D']?.pa || "",
     correctAnswer,
     explanationEn,
-    explanationPa: explanationPa ? explanationEn : "" // Simple mapping if single-lang
+    explanationPa: explanationPa || ""
   };
 }
