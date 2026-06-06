@@ -27,6 +27,7 @@ import {
 /**
  * @fileOverview Final Production-Grade CBT Evaluation Hub.
  * Strictly implements Auto-Save, Resume, and High-Density professional layout.
+ * FIXED: Resolved 'replace' error for undefined section IDs.
  */
 export default function MockAttemptPage() {
   const params = useParams();
@@ -96,7 +97,6 @@ export default function MockAttemptPage() {
     if (isInitializing) return;
     const interval = setInterval(() => {
       examStore.tick();
-      // Auto-submit if time expires
       if (examStore.timeLeft <= 0 && !isSubmittingFinal) {
          handleSubmitFinal();
       }
@@ -168,13 +168,14 @@ export default function MockAttemptPage() {
   );
 
   const q = examStore.questions[examStore.currentIdx];
+  const sectionIds = Array.from(new Set(examStore.questions.map(q => q.sectionId).filter(Boolean)));
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-slate-50 font-body select-none">
       <AntiCheat />
       <ExamHeader onPaletteToggle={() => setIsPaletteOpen(true)} />
       
-      {/* MULTI-SECTION NAVIGATION (Testbook Standard) */}
+      {/* MULTI-SECTION NAVIGATION */}
       <div className="h-14 bg-white border-b border-slate-200 flex items-center px-6 overflow-x-auto no-scrollbar gap-2 shrink-0 shadow-sm z-40">
          {['PART A', 'PART B'].map(part => (
            <button
@@ -188,7 +189,7 @@ export default function MockAttemptPage() {
            </button>
          ))}
          <div className="h-6 w-px bg-slate-200 mx-4" />
-         {Array.from(new Set(examStore.questions.map(q => q.sectionId))).map(sid => (
+         {sectionIds.map(sid => (
            <button
              key={sid}
              onClick={() => {
@@ -197,16 +198,16 @@ export default function MockAttemptPage() {
              }}
              className={cn(
                "px-6 h-full flex items-center justify-center text-[10px] font-bold uppercase tracking-wider border-b-2 transition-all whitespace-nowrap",
-               examStore.currentSectionId === sid ? "border-slate-800 text-slate-900 bg-slate-50" : "border-transparent text-slate-400 hover:text-slate-600"
+               examStore.currentSectionId === sid ? "border-[#F97316] text-[#F97316] bg-orange-50/50" : "border-transparent text-slate-400 hover:text-slate-600"
              )}
            >
-             {sid.replace(/-/g, ' ')}
+             {String(sid).replace(/-/g, ' ')}
            </button>
          ))}
       </div>
 
       <main className="flex-1 flex overflow-hidden relative">
-        {/* RESUME INTERFACE (Institutional Summary) */}
+        {/* RESUME INTERFACE */}
         {examStore.isPaused && (
            <div className="absolute inset-0 z-[100] bg-[#0B1528]/95 backdrop-blur-xl flex items-center justify-center animate-in fade-in duration-300 p-6">
               <div className="max-w-xl w-full bg-white rounded-[3rem] shadow-5xl overflow-hidden">
@@ -221,9 +222,9 @@ export default function MockAttemptPage() {
                  </div>
                  <div className="p-12 space-y-12">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                       <ResumeStat label="Answered" val={stats.answered} color="bg-blue-600" />
-                       <ResumeStat label="Not Answered" val={stats.notAnswered} color="bg-slate-400" />
-                       <ResumeStat label="Marked" val={stats.marked} color="bg-pink-500" />
+                       <ResumeStat label="Answered" val={stats.answered} color="bg-emerald-600" />
+                       <ResumeStat label="Not Answered" val={stats.notAnswered} color="bg-rose-600" />
+                       <ResumeStat label="Marked" val={stats.marked} color="bg-violet-600" />
                        <ResumeStat label="Remaining" val={stats.notVisited} color="bg-slate-100" textColor="text-slate-400" />
                     </div>
                     <div className="flex flex-col gap-4">
@@ -272,8 +273,8 @@ export default function MockAttemptPage() {
             </DialogHeader>
 
             <div className="py-10 grid grid-cols-2 gap-4">
-               <SubmissionNode label="Attempted Nodes" val={stats.answered + stats.ansMarked} color="text-blue-600" icon={<CheckCircle2 className="h-4 w-4" />} />
-               <SubmissionNode label="Logic Review" val={stats.marked + stats.ansMarked} color="text-pink-500" icon={<Zap className="h-4 w-4" />} />
+               <SubmissionNode label="Attempted Nodes" val={stats.answered + stats.ansMarked} color="text-emerald-600" icon={<CheckCircle2 className="h-4 w-4" />} />
+               <SubmissionNode label="Logic Review" val={stats.marked + stats.ansMarked} color="text-violet-600" icon={<Zap className="h-4 w-4" />} />
                <SubmissionNode label="Total Atomic Qs" val={examStore.questions.length} color="text-[#0F172A]" icon={<Trophy className="h-4 w-4" />} />
                <SubmissionNode label="Registry Time" val={`${Math.floor(examStore.timeLeft / 60)}m`} color="text-[#F97316]" icon={<History className="h-4 w-4" />} />
             </div>
