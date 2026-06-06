@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
@@ -7,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { 
@@ -31,8 +31,8 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
 /**
- * @fileOverview Deterministic Content Ingestion Hub v15.0.
- * Focus: High-Fidelity Validation and Exact Spacing Preview.
+ * @fileOverview Deterministic Content Ingestion Hub v20.0.
+ * Focus: High-Fidelity Validation and Accurate Multi-line Previews.
  */
 export default function BulkImportPage() {
   const router = useRouter()
@@ -71,7 +71,7 @@ export default function BulkImportPage() {
     if (result.questions.length > 0) {
       toast({ title: "Import Successful", description: `${result.questions.length} blocks validated.` });
     } else {
-      toast({ variant: "destructive", title: "Audit Validation Failure", description: "Check input markers and line breaks." });
+      toast({ variant: "destructive", title: "Audit Validation Failure", description: "Check input markers and markers." });
     }
   }
 
@@ -86,12 +86,12 @@ export default function BulkImportPage() {
     updated[editingIndex] = editForm
     setParsedQuestions(updated)
     setEditingIndex(null)
-    toast({ title: "Node Modified" })
+    toast({ title: "Entry Modified" })
   }
 
   const handleDelete = (idx: number) => {
     setParsedQuestions(parsedQuestions.filter((_, i) => i !== idx))
-    toast({ title: "Node Purged" })
+    toast({ title: "Entry Purged" })
   }
 
   const handleSaveToRegistry = async () => {
@@ -114,7 +114,7 @@ export default function BulkImportPage() {
       toast({ title: "Database Synchronized", description: `${parsedQuestions.length} assets committed to registry.` })
       router.push("/admin/questions")
     } catch (e) {
-      toast({ variant: "destructive", title: "Cloud Rejection", description: "Permission denied or network failure." })
+      toast({ variant: "destructive", title: "Cloud Rejection", description: "Permission denied." })
     } finally {
       setIsSyncing(false)
     }
@@ -127,7 +127,7 @@ export default function BulkImportPage() {
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-xl border border-slate-200 h-12 w-12 bg-white"><ChevronLeft className="h-6 w-6" /></Button>
           <div>
             <h1 className="text-4xl font-black font-headline text-[#0F172A] uppercase">Exam Content Paste</h1>
-            <p className="text-slate-500 font-medium">Deterministic Regex-Based Ingestion Hub.</p>
+            <p className="text-slate-500 font-medium">Deterministic High-Fidelity Ingestion Hub.</p>
           </div>
         </div>
         <Button onClick={handleSaveToRegistry} disabled={isSyncing || parsedQuestions.length === 0} className="bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[11px] tracking-widest rounded-xl h-14 px-12 gap-3 shadow-2xl">
@@ -194,7 +194,7 @@ export default function BulkImportPage() {
              <div className="space-y-12">
                 <div className="flex items-center justify-between px-2">
                    <h3 className="font-headline font-black text-2xl uppercase flex items-center gap-4 text-[#0F172A]">
-                      <Database className="h-6 w-6 text-primary" /> Staged Assets
+                      <Database className="h-6 w-6 text-primary" /> Staged Content
                    </h3>
                    <Badge className="bg-emerald-50 text-emerald-600 border-none font-black px-4">{parsedQuestions.length} Blocks Verified</Badge>
                 </div>
@@ -224,7 +224,7 @@ export default function BulkImportPage() {
          <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] bg-white border-none shadow-4xl p-0 text-left">
             <div className="h-2 w-full bg-[#0F172A] sticky top-0 z-20" />
             <DialogHeader className="p-8 pb-0 flex flex-row items-center justify-between">
-               <DialogTitle className="text-2xl font-black font-headline uppercase text-[#0F172A]">Modify Asset Node</DialogTitle>
+               <DialogTitle className="text-2xl font-black font-headline uppercase text-[#0F172A]">Modify Entry</DialogTitle>
                <Button variant="ghost" size="icon" onClick={() => setEditingIndex(null)}><X className="h-6 w-6" /></Button>
             </DialogHeader>
             <div className="p-8 space-y-8">
@@ -263,11 +263,11 @@ export default function BulkImportPage() {
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-2">
-                     <Label className="text-[10px] font-black uppercase text-slate-500">English Rationale</Label>
+                     <Label className="text-[10px] font-black uppercase text-slate-500">English Explanation</Label>
                      <Textarea value={editForm?.explanationEn || ""} onChange={e => setEditForm({...editForm, explanationEn: e.target.value})} className="h-48 rounded-xl bg-slate-50 font-medium" />
                   </div>
                   <div className="space-y-2">
-                     <Label className="text-[10px] font-black uppercase text-slate-500">Punjabi Rationale</Label>
+                     <Label className="text-[10px] font-black uppercase text-slate-500">Punjabi Explanation</Label>
                      <Textarea value={editForm?.explanationPa || ""} onChange={e => setEditForm({...editForm, explanationPa: e.target.value})} className="h-48 rounded-xl bg-slate-50 font-medium" />
                   </div>
                </div>

@@ -1,6 +1,6 @@
 /**
- * @fileOverview Institutional High-Fidelity Regex Parser v20.0.
- * Strictly enforces mandatory extraction of Bilingual Questions, Options, 
+ * @fileOverview Institutional High-Fidelity Regex Parser v25.0.
+ * Strictly enforces mandatory extraction of Bilingual Questions, Combined Options, 
  * Correct Answer Codes, and Multi-line Explanations.
  */
 
@@ -12,7 +12,7 @@ export interface ParsedResults {
 }
 
 export function parseBulkQuestions(rawText: string, metadata: any): ParsedResults {
-  const cleanRaw = "\n" + rawText.replace(/\r\n/g, '\n').trim();
+  const cleanRaw = "\n" + rawText.replace(/\r\n/g, '\n').trim() + "\n";
   
   // Split by Q followed by a number (e.g. Q1., Q24.)
   const blocks = cleanRaw.split(/\n(?=Q\d+[\.\s])/g).filter(b => b.trim().length > 10);
@@ -22,9 +22,9 @@ export function parseBulkQuestions(rawText: string, metadata: any): ParsedResult
 
   blocks.forEach((block, index) => {
     try {
-      const lines = block.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-      if (lines.length < 5) return;
-
+      const fullText = block.trim();
+      const lines = fullText.split('\n').map(l => l.trim());
+      
       const q: any = { 
         ...metadata,
         id: `q-node-${Date.now()}-${index}`,
@@ -41,48 +41,42 @@ export function parseBulkQuestions(rawText: string, metadata: any): ParsedResult
         explanationPa: ""
       };
 
-      // 1. Extract Question Lines
+      // 1. Extract Question Lines (Lines 1 and 2)
       q.questionEn = lines[0].replace(/^Q\d+[\.\s]*/i, '').trim();
-      
-      // The second line is usually the Punjabi version
       if (lines[1] && !lines[1].startsWith('(')) {
         q.questionPa = lines[1].replace(/^(ਪ੍ਰਸ਼ਨ|ਪ੍ਰਸ਼ਨ)\s*\d+[\.\s]*/, '').trim();
       }
 
-      // 2. Extract Options (Strictly remove (A), (B) etc from stored value)
-      const extractOption = (key: string) => {
-        const line = lines.find(l => l.startsWith(`(${key})`));
-        if (!line) return "";
-        return line.replace(/^\([A-D]\)[\s\/-]*/i, '').trim();
+      // 2. Extract Options (Combined EN/PA strings)
+      const extractOptionValue = (letter: string) => {
+        // Regex looks for (A) followed by text until the next option marker or newline
+        const regex = new RegExp(`\\(${letter}\\)\\s*([^\\n\\(]+)`, 'i');
+        const match = fullText.match(regex);
+        return match ? match[1].trim() : "";
       };
 
-      q.optionAEn = extractOption('A');
-      q.optionBEn = extractOption('B');
-      q.optionCEn = extractOption('C');
-      q.optionDEn = extractOption('D');
+      q.optionAEn = extractOptionValue('A');
+      q.optionBEn = extractOptionValue('B');
+      q.optionCEn = extractOptionValue('C');
+      q.optionDEn = extractOptionValue('D');
 
-      // 3. Extract Correct Answer (Only store the letter)
-      const ansLine = lines.find(l => /Correct Answer|ਸਹੀ ਉੱਤਰ/i.test(l));
-      if (ansLine) {
-        const match = ansLine.match(/Correct Answer[:\s]*\(?([A-D])\)?/i);
-        if (match) q.correctAnswer = match[1].toUpperCase();
-      }
+      // 3. Extract Correct Answer Code (Store only A, B, C, or D)
+      const ansMatch = fullText.match(/Correct Answer[:\s]*\(?([A-D])\)?/i);
+      if (ansMatch) q.correctAnswer = ansMatch[1].toUpperCase();
 
       // 4. Extract Explanations (Vertical Block Preservation)
-      const fullText = block.replace(/\r/g, '');
-      
       const enMarker = "• English Explanation:";
       const paMarker = "• ਪੰਜਾਬੀ ਵਿਆਖਿਆ:";
 
-      const enStart = fullText.indexOf(enMarker);
-      const paStart = fullText.indexOf(paMarker);
+      const enIndex = fullText.indexOf(enMarker);
+      const paIndex = fullText.indexOf(paMarker);
 
-      if (enStart !== -1 && paStart !== -1) {
-        q.explanationEn = fullText.substring(enStart + enMarker.length, paStart).trim();
-        q.explanationPa = fullText.substring(paStart + paMarker.length).trim();
+      if (enIndex !== -1 && paIndex !== -1) {
+        q.explanationEn = fullText.substring(enIndex + enMarker.length, paIndex).trim();
+        q.explanationPa = fullText.substring(paIndex + paMarker.length).trim();
       }
 
-      // 5. Validation Rule
+      // 5. Institutional Validation Rule
       const isValid = 
         q.questionEn && 
         q.questionPa && 
@@ -97,7 +91,7 @@ export function parseBulkQuestions(rawText: string, metadata: any): ParsedResult
       if (isValid) {
         results.push(q);
       } else {
-        errors.push(`Block ${index + 1}: Missing mandatory fields (Ensure Questions, A-D Options, Answer Key, and Both Explanations exist).`);
+        errors.push(`Block ${index + 1}: Missing mandatory fields. Check Q, PA statement, Options A-D, Answer Key, and both Explanation markers.`);
       }
     } catch (err: any) {
       errors.push(`Block ${index + 1}: Parsing rejection - ${err.message}`);
