@@ -13,7 +13,7 @@ import { collection } from "firebase/firestore";
 
 /**
  * @fileOverview High-Density Mobile-First Hero.
- * Updated: Action button changed to 'Mastery Hubs' for better differentiation.
+ * Updated: Action button changed to 'Mastery Hubs' with fixed text visibility.
  */
 
 export default function Hero() {
@@ -79,10 +79,10 @@ export default function Hero() {
             </form>
 
             <div className="flex flex-wrap gap-4 mt-6">
-              <Button asChild className="bg-primary hover:bg-orange-600 text-white px-10 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] h-14 shadow-xl shadow-primary/20 transition-all active:scale-95">
+              <Button asChild className="bg-primary hover:bg-orange-600 text-white px-10 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] h-14 shadow-xl shadow-primary/20 transition-all active:scale-95 border-none">
                  <Link href="/mocks">Start Practice <Zap className="ml-2 h-4 w-4" /></Link>
               </Button>
-              <Button asChild variant="outline" className="border-white/20 text-white hover:bg-white/5 px-10 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] h-14 transition-all backdrop-blur-sm">
+              <Button asChild className="bg-white hover:bg-slate-100 text-[#08152D] px-10 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] h-14 shadow-xl transition-all active:scale-95 border-none">
                  <Link href="/exams">Mastery Hubs <LayoutGrid className="ml-2 h-4 w-4" /></Link>
               </Button>
             </div>
