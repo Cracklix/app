@@ -14,8 +14,8 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Final High-Density Audit Matrix.
- * Removed pagination to allow direct access to all 150+ questions in a scrollable grid.
+ * @fileOverview Final High-Density Audit Matrix v2.0.
+ * Optimized: Compact sizing to fit more nodes in view.
  */
 
 export default function QuestionPalette({
@@ -45,20 +45,20 @@ export default function QuestionPalette({
   }, [totalQuestions, answeredIndices, flaggedIndices, visitedIndices])
 
   return (
-    <div className="space-y-6 flex flex-col h-full text-left">
-      <div className="grid grid-cols-2 gap-2">
-         <PaletteStat count={summary.answered} label="Answered" color="bg-emerald-600" />
-         <PaletteStat count={summary.notAnswered} label="Not Answered" color="bg-rose-500" />
-         <PaletteStat count={summary.notVisited} label="Not Visited" color="bg-slate-100" textColor="text-slate-400" />
-         <PaletteStat count={summary.review} label="Review" color="bg-amber-500" />
+    <div className="space-y-4 flex flex-col h-full text-left">
+      <div className="grid grid-cols-2 gap-1.5">
+         <PaletteStat count={summary.answered} label="Ans" color="bg-emerald-600" />
+         <PaletteStat count={summary.notAnswered} label="Unans" color="bg-rose-500" />
+         <PaletteStat count={summary.notVisited} label="Skip" color="bg-slate-100" textColor="text-slate-400" />
+         <PaletteStat count={summary.review} label="Rev" color="bg-amber-500" />
       </div>
 
-      <div className="space-y-4 pt-4 border-t border-slate-100 flex-1">
-         <div className="flex items-center justify-between px-1 mb-4">
-            <h4 className="text-[10px] font-black uppercase text-black tracking-widest">Audit Grid (Total {totalQuestions})</h4>
+      <div className="space-y-3 pt-3 border-t border-slate-100 flex-1">
+         <div className="flex items-center justify-between px-1">
+            <h4 className="text-[9px] font-black uppercase text-black tracking-[0.1em]">Audit Grid ({totalQuestions})</h4>
          </div>
 
-         <div className="grid grid-cols-5 gap-3 px-1 justify-items-center">
+         <div className="grid grid-cols-5 gap-2 px-0.5 justify-items-center">
             {allIndices.map((idx) => {
                const isCurrent = currentIndex === idx
                const isAnswered = answeredIndices.includes(idx)
@@ -71,8 +71,8 @@ export default function QuestionPalette({
                      key={idx}
                      onClick={() => onSelect(idx)}
                      className={cn(
-                        "h-10 w-10 rounded-full text-[10px] font-black transition-all border flex items-center justify-center shadow-sm shrink-0",
-                        isCurrent ? "ring-2 ring-primary ring-offset-2 scale-110 z-10 bg-white text-primary border-primary" : "",
+                        "h-8 w-8 md:h-9 md:w-9 rounded-full text-[9px] font-black transition-all border flex items-center justify-center shadow-sm shrink-0",
+                        isCurrent ? "ring-2 ring-primary ring-offset-2 scale-105 z-10 bg-white text-primary border-primary" : "",
                         !isCurrent && isBoth && "bg-purple-600 text-white border-purple-600",
                         !isCurrent && isAnswered && !isFlagged && "bg-emerald-600 text-white border-emerald-600",
                         !isCurrent && isFlagged && !isAnswered && "bg-amber-500 text-white border-amber-500",
@@ -92,11 +92,11 @@ export default function QuestionPalette({
 
 function PaletteStat({ count, label, color, textColor = "text-white" }: any) {
   return (
-    <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-slate-50 bg-white shadow-sm">
-       <div className={cn("h-5 w-5 rounded flex items-center justify-center text-[9px] font-black shrink-0", color, textColor)}>
+    <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg border border-slate-50 bg-white shadow-sm">
+       <div className={cn("h-4 w-4 rounded-md flex items-center justify-center text-[8px] font-black shrink-0", color, textColor)}>
           {count}
        </div>
-       <span className="text-[8px] font-black uppercase text-slate-500 tracking-tight truncate">{label}</span>
+       <span className="text-[7px] font-black uppercase text-slate-500 tracking-tight truncate">{label}</span>
     </div>
   )
 }

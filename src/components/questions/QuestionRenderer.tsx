@@ -1,10 +1,10 @@
+
 'use client';
 
 import React, { useMemo } from 'react';
 import { Question } from '@/types';
 import { cn } from '@/lib/utils';
 import { CheckCircle2 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 
 interface QuestionRendererProps {
   question: Partial<Question> & { displayId?: string };
@@ -13,8 +13,8 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview High-Fidelity Question Renderer v9.0.
- * Strictly enforces clean text rendering based on language toggle.
+ * @fileOverview High-Fidelity Question Renderer v10.0.
+ * Optimized: Reduced font sizes and margins for high-density viewport support.
  */
 
 export default function QuestionRenderer({ question, language, showSolution = false }: QuestionRendererProps) {
@@ -35,22 +35,22 @@ export default function QuestionRenderer({ question, language, showSolution = fa
   return (
     <div className="w-full text-left font-body">
       {question.imageUrl && (
-        <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 mb-8 shadow-inner overflow-hidden">
-           <img src={question.imageUrl} alt="Audit Asset" className="max-h-[400px] rounded-xl mx-auto object-contain" />
+        <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 mb-4 shadow-inner overflow-hidden">
+           <img src={question.imageUrl} alt="Audit Asset" className="max-h-[300px] rounded-lg mx-auto object-contain" />
         </div>
       )}
 
       {/* Question Statements - High Contrast Black */}
-      <div className="space-y-4 mb-8">
+      <div className="space-y-2 mb-4">
         {showEn && question.questionEn && (
-           <div className="text-[20px] md:text-[24px] font-black leading-tight text-black whitespace-pre-wrap antialiased">
+           <div className="text-[17px] md:text-[20px] font-black leading-snug text-black whitespace-pre-wrap antialiased">
               {cleanText(question.questionEn)}
            </div>
         )}
         {showPa && question.questionPa && (
            <div className={cn(
-              "text-[20px] md:text-[24px] font-black leading-tight text-black whitespace-pre-wrap antialiased",
-              showEn ? "pt-4 border-t border-slate-100 mt-4" : ""
+              "text-[17px] md:text-[20px] font-black leading-snug text-black whitespace-pre-wrap antialiased",
+              showEn ? "pt-2 border-t border-slate-50 mt-2" : ""
            )}>
               {cleanText(question.questionPa)}
            </div>
@@ -58,23 +58,23 @@ export default function QuestionRenderer({ question, language, showSolution = fa
       </div>
 
       {showSolution && (
-        <div className="mt-12 p-8 bg-emerald-50 rounded-[2.5rem] border border-emerald-100 space-y-6 shadow-xl">
-           <div className="flex items-center gap-4">
-              <div className="h-10 w-10 rounded-full bg-emerald-600 flex items-center justify-center text-white shadow-lg"><CheckCircle2 className="h-5 w-5" /></div>
-              <h4 className="text-[16px] text-[#0F172A] font-black uppercase tracking-tight">Verified Key: {question.correctAnswer}</h4>
+        <div className="mt-6 p-6 bg-emerald-50 rounded-2xl border border-emerald-100 space-y-4 shadow-lg">
+           <div className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-full bg-emerald-600 flex items-center justify-center text-white shadow-lg"><CheckCircle2 className="h-4 w-4" /></div>
+              <h4 className="text-sm text-[#0F172A] font-black uppercase tracking-tight">Verified Key: {question.correctAnswer}</h4>
            </div>
            
-           <div className="space-y-6 pt-6 border-t border-emerald-200/50">
+           <div className="space-y-4 pt-4 border-t border-emerald-200/30">
               {showEn && expEn && (
-                <div className="space-y-2">
-                   <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Audit Rationale (EN)</p>
-                   <div className="text-[15px] text-slate-800 leading-relaxed font-bold bg-white/60 p-6 rounded-2xl whitespace-pre-wrap border border-emerald-100/50">{cleanText(expEn)}</div>
+                <div className="space-y-1">
+                   <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Rationale (EN)</p>
+                   <div className="text-sm text-slate-800 leading-relaxed font-bold bg-white/60 p-4 rounded-xl whitespace-pre-wrap border border-emerald-100/50">{cleanText(expEn)}</div>
                 </div>
               )}
               {showPa && expPa && (
-                <div className="space-y-2">
-                   <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">ਵਿਆਖਿਆ (PA)</p>
-                   <div className="text-[15px] text-slate-800 leading-relaxed font-bold bg-white/60 p-6 rounded-2xl whitespace-pre-wrap border border-emerald-100/50">{cleanText(expPa)}</div>
+                <div className="space-y-1">
+                   <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">ਵਿਆਖਿਆ (PA)</p>
+                   <div className="text-sm text-slate-800 leading-relaxed font-bold bg-white/60 p-4 rounded-xl whitespace-pre-wrap border border-emerald-100/50">{cleanText(expPa)}</div>
                 </div>
               )}
            </div>
