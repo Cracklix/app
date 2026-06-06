@@ -5,7 +5,7 @@ import React from 'react';
 import { Question } from '@/types';
 import { cn } from '@/lib/utils';
 import MathText from './MathText';
-import { CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
+import { CheckCircle2, Zap } from 'lucide-react';
 
 interface QuestionRendererProps {
   question: Partial<Question> & { displayId?: string };
@@ -15,9 +15,9 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview Institutional CBT Question Engine v50.0.
- * Redesign: Standardized large typography (36px desktop), high-contrast bilingual logic.
- * BI Mode: English (#111827) and Punjabi (#1E3A8A) with 16px separation.
+ * @fileOverview Institutional CBT Question Engine v55.0.
+ * Redesign: Standardized large typography, compact bilingual spacing.
+ * Optimized: Reduced vertical gaps between languages (12px) and options (24px).
  */
 export default function QuestionRenderer({ 
   question, 
@@ -31,26 +31,26 @@ export default function QuestionRenderer({
   const isBi = language === 'bilingual';
 
   // Institutional Typography Standard
-  const typographyClass = "text-xl md:text-3xl lg:text-[36px] font-[700] leading-[1.6] antialiased tracking-tight";
+  const typographyClass = "text-xl md:text-3xl lg:text-[36px] font-[700] leading-[1.4] antialiased tracking-tight text-[#000000]";
 
   return (
-    <div className="w-full text-left font-body bg-transparent">
+    <div className="w-full text-left font-body bg-transparent h-auto min-h-0">
       
       {/* 1. CORE QUESTION STATEMENT */}
-      <div className="space-y-4">
-         {/* EN Mode or BI Mode (English Hub) */}
+      <div className="space-y-3">
+         {/* EN Mode or BI Mode */}
          {(isEn || isBi) && (
             <div className={cn(typographyClass, "text-[#111827]")}>
                <MathText text={question.englishQuestion || ""} />
             </div>
          )}
          
-         {/* PA Mode or BI Mode (Punjabi Hub) */}
+         {/* PA Mode or BI Mode */}
          {(isPa || isBi) && (
             <div className={cn(
                typographyClass, 
                "text-[#1E3A8A]",
-               isBi && "pt-4 border-t border-slate-100"
+               isBi && "pt-3 border-t border-slate-50"
             )}>
                <MathText text={question.punjabiQuestion || ""} />
             </div>
@@ -59,7 +59,7 @@ export default function QuestionRenderer({
 
       <div className="h-6 md:h-8" />
 
-      {/* 2. OPTION HUB - (Only shown outside attempt or handled by attempt logic) */}
+      {/* 2. OPTION HUB */}
       {!hideOptions && (
         <div className="flex flex-col space-y-4">
           {['A', 'B', 'C', 'D'].map(key => {
@@ -87,37 +87,33 @@ export default function QuestionRenderer({
 
       {/* 3. SUBMIT-GATED SOLUTION HUB */}
       {showSolution && (
-        <div className="mt-12 md:mt-20 space-y-12 animate-in fade-in slide-in-from-top-4 duration-700">
+        <div className="mt-10 space-y-10 animate-in fade-in slide-in-from-top-4 duration-700">
            
            {/* Unified Answer Key */}
-           <div className="bg-emerald-50 border-2 border-emerald-100 p-10 rounded-[2.5rem] flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
+           <div className="bg-emerald-50 border-2 border-emerald-100 p-8 rounded-[2rem] flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
               <div className="flex items-center gap-6">
-                 <div className="h-16 w-16 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-xl">
-                    <CheckCircle2 className="h-10 w-10" />
+                 <div className="h-14 w-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-xl">
+                    <CheckCircle2 className="h-8 w-8" />
                  </div>
                  <div className="text-left">
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 mb-1">CBT Answer Node</p>
-                    <h4 className="text-3xl md:text-4xl font-headline font-black text-emerald-900 uppercase">Option {question.correctAnswer}</h4>
+                    <h4 className="text-2xl md:text-3xl font-headline font-black text-emerald-900 uppercase">Option {question.correctAnswer}</h4>
                  </div>
               </div>
               <div className="text-left md:text-right border-t md:border-t-0 md:border-l border-emerald-200 pt-6 md:pt-0 md:pl-12">
-                 {isEn && <p className="font-black text-emerald-800 text-xl">{(question as any)[`option${question.correctAnswer}English`]}</p>}
-                 {isPa && <p className="font-black text-emerald-800 text-xl">{(question as any)[`option${question.correctAnswer}Punjabi`]}</p>}
-                 {isBi && (
-                    <div className="space-y-1">
-                       <p className="font-black text-emerald-800 text-xl">{(question as any)[`option${question.correctAnswer}English`]}</p>
-                       <p className="font-bold text-emerald-600 text-base">{(question as any)[`option${question.correctAnswer}Punjabi`]}</p>
-                    </div>
-                 )}
+                 <div className="space-y-1">
+                    <p className="font-black text-emerald-800 text-xl">{(question as any)[`option${question.correctAnswer}English`]}</p>
+                    <p className="font-bold text-emerald-600 text-base">{(question as any)[`option${question.correctAnswer}Punjabi`]}</p>
+                 </div>
               </div>
            </div>
 
            {/* Strategic Rationale */}
-           <div className="bg-[#121212] rounded-[3.5rem] p-10 md:p-16 text-white shadow-3xl relative overflow-hidden">
+           <div className="bg-[#121212] rounded-[2.5rem] p-8 md:p-12 text-white shadow-3xl relative overflow-hidden h-auto min-h-0">
               <div className="absolute top-0 right-0 p-12 opacity-[0.03] rotate-12"><Zap className="h-64 w-64" /></div>
-              <div className="relative z-10 space-y-16">
+              <div className="relative z-10 space-y-10">
                  {(isEn || isBi) && (
-                    <div className="space-y-10">
+                    <div className="space-y-6">
                        <div className="flex items-center gap-4">
                           <span className="h-2.5 w-2.5 rounded-full bg-primary" />
                           <p className="text-[11px] font-black uppercase tracking-[0.5em] text-primary">English Rationale</p>
@@ -129,7 +125,7 @@ export default function QuestionRenderer({
                  )}
 
                  {(isPa || isBi) && (
-                    <div className={cn("space-y-10", isBi && "pt-16 border-t border-white/5")}>
+                    <div className={cn("space-y-6", isBi && "pt-10 border-t border-white/5")}>
                        <div className="flex items-center gap-4">
                           <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
                           <p className="text-[11px] font-black uppercase tracking-[0.5em] text-emerald-500">ਪੰਜਾਬੀ ਵਿਆਖਿਆ</p>

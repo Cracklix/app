@@ -10,8 +10,7 @@ import QuestionPalette from "@/components/mocks/QuestionPalette"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import { Button } from "@/components/ui/button"
 import { RadioGroup } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import { Loader2, Target, LayoutGrid, ChevronRight, ChevronLeft, ShieldCheck, Pause, Play, LogOut, Info, Globe, CheckCircle2 } from "lucide-react"
+import { Loader2, ChevronRight, ChevronLeft, ShieldCheck, Pause, Play, LayoutGrid } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
@@ -19,9 +18,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/co
 type LangMode = 'en' | 'pa' | 'bilingual'
 
 /**
- * @fileOverview Institutional CBT Evaluation Engine v60.0.
- * Design Pattern: Testbook/SSC Official Style.
- * Features: Viewport locking (1366x768 optimized), Single-screen visibility, High-contrast Timer.
+ * @fileOverview Institutional CBT Evaluation Engine v65.0.
+ * Redesign: Standardized Testbook header, high-contrast timer, and compact layout.
  */
 
 export default function MockAttemptPage() {
@@ -122,7 +120,7 @@ export default function MockAttemptPage() {
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[#F8FAFC] text-[#0F172A] font-body select-none">
       
-      {/* 1. PROFESSIONAL CBT HEADER - TESTBOOK STYLE */}
+      {/* PROFESSIONAL CBT HEADER */}
       <header className="h-24 bg-[#0F172A] text-white flex items-center justify-between px-6 md:px-10 shrink-0 z-[100] shadow-xl border-b border-white/10">
         <div className="flex flex-col text-left space-y-0.5">
            <h1 className="text-[13px] md:text-base font-black uppercase tracking-tight truncate max-w-[200px] md:max-w-md text-white/90">{mock?.title}</h1>
@@ -133,7 +131,7 @@ export default function MockAttemptPage() {
         </div>
 
         <div className="hidden md:flex flex-col items-center">
-           <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Evaluation Node</span>
+           <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">CBT Registry</span>
            <p className="text-sm md:text-lg font-black uppercase tracking-tighter">QUESTION {currentIdx + 1} OF {questions.length}</p>
         </div>
 
@@ -152,12 +150,12 @@ export default function MockAttemptPage() {
            </div>
 
            <Button onClick={submitMock} disabled={isSubmitting} className="bg-[#F97316] hover:bg-orange-600 text-white font-black uppercase text-[10px] tracking-widest h-12 px-8 rounded-xl shadow-2xl transition-all active:scale-95">
-             FINISH TEST
+             FINISH
            </Button>
         </div>
       </header>
 
-      {/* 2. MAIN EVALUATION ZONE */}
+      {/* MAIN EVALUATION ZONE */}
       <main className="flex-1 flex overflow-hidden relative">
         {/* Pause Screen Overlay */}
         {isPaused && (
@@ -174,7 +172,7 @@ export default function MockAttemptPage() {
         {/* LEFT: QUESTION HUB */}
         <div className="flex-1 flex flex-col overflow-hidden bg-white">
           <div className="flex-1 overflow-y-auto custom-scrollbar">
-             <div className="max-w-[1000px] mx-auto p-6 md:p-12 lg:p-16 space-y-12">
+             <div className="max-w-[1000px] mx-auto p-6 md:p-12 lg:p-14 space-y-6">
                 <div className="flex items-center justify-between lg:hidden border-b border-slate-50 pb-4 mb-4">
                    <div className="space-y-1">
                       <p className="text-[10px] font-black uppercase text-slate-400">Section: {activeSubject}</p>
@@ -185,13 +183,13 @@ export default function MockAttemptPage() {
                          <Button variant="outline" size="sm" className="rounded-xl font-black text-[10px] uppercase h-10 px-6 gap-2 border-slate-200"><LayoutGrid className="h-4 w-4" /> Palette</Button>
                       </SheetTrigger>
                       <SheetContent side="right" className="p-0 border-none w-80">
-                         <SheetHeader className="sr-only"><SheetTitle>CBT Matrix Palette</SheetTitle></SheetHeader>
+                         <SheetHeader className="sr-only"><SheetTitle>CBT Palette</SheetTitle></SheetHeader>
                          <div className="p-8 pt-20 h-full bg-white"><QuestionPalette questions={questions} currentIndex={currentIdx} answeredIndices={Object.keys(answers).map(Number)} flaggedIndices={flagged} visitedIndices={visited} onSelect={(idx) => { setCurrentIdx(idx); if (!visited.includes(idx)) setVisited(p => [...p, idx]); }} /></div>
                       </SheetContent>
                    </Sheet>
                 </div>
 
-                <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <div className="animate-in fade-in slide-in-from-bottom-1 duration-500 min-h-0 h-auto">
                   <QuestionRenderer 
                      language={language}
                      question={q}
@@ -199,7 +197,7 @@ export default function MockAttemptPage() {
                   />
                 </div>
                 
-                <div className="space-y-4 pt-4">
+                <div className="space-y-4">
                    <RadioGroup 
                      value={answers[currentIdx]?.toString() || ""} 
                      onValueChange={(v) => setAnswers(prev => ({ ...prev, [currentIdx]: parseInt(v) }))} 
@@ -212,7 +210,7 @@ export default function MockAttemptPage() {
 
                        return (
                          <div key={i} className={cn(
-                           "flex items-center space-x-6 px-6 h-[72px] md:h-[88px] border-2 rounded-2xl transition-all cursor-pointer shadow-sm group",
+                           "flex items-center space-x-6 px-6 h-[72px] md:h-[84px] border-2 rounded-2xl transition-all cursor-pointer shadow-sm group",
                            isSelected ? 'border-primary bg-primary/5 ring-1 ring-primary/20' : 'border-slate-100 bg-white hover:border-slate-300'
                          )} onClick={() => setAnswers(prev => ({ ...prev, [currentIdx]: i }))}>
                             <div className={cn(
@@ -223,9 +221,9 @@ export default function MockAttemptPage() {
                             </div>
                             <div className="flex-1 select-none text-left overflow-hidden">
                                 {language === 'en' ? (
-                                  <p className="font-bold text-base md:text-xl text-[#111827] truncate">{enVal}</p>
+                                  <p className="font-bold text-base md:text-lg text-[#111827] truncate">{enVal}</p>
                                 ) : language === 'pa' ? (
-                                  <p className="font-bold text-base md:text-xl text-[#1E3A8A] truncate">{paVal || enVal}</p>
+                                  <p className="font-bold text-base md:text-lg text-[#1E3A8A] truncate">{paVal || enVal}</p>
                                 ) : (
                                   <div className="flex flex-col justify-center leading-tight">
                                     <p className="font-bold text-sm md:text-base text-[#111827] truncate">{enVal}</p>
@@ -244,12 +242,12 @@ export default function MockAttemptPage() {
           {/* TACTICAL NAVIGATION FOOTER */}
           <footer className="h-20 border-t bg-white px-6 md:px-12 flex items-center justify-between shrink-0 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
              <Button variant="outline" className="h-12 px-8 rounded-xl font-black uppercase text-[11px] tracking-widest gap-3 border-slate-200 text-slate-600 hover:bg-slate-50" onClick={() => currentIdx > 0 && setCurrentIdx(currentIdx - 1)} disabled={currentIdx === 0}>
-                <ChevronLeft className="h-4 w-4" /> PREVIOUS
+                <ChevronLeft className="h-4 w-4" /> PREV
              </Button>
              
              <div className="flex gap-4">
                 <Button variant="outline" className={cn("h-12 px-10 rounded-xl font-black uppercase text-[11px] tracking-widest transition-all", flagged.includes(currentIdx) ? "bg-purple-600 border-purple-600 text-white shadow-lg" : "text-amber-600 border-amber-200 bg-amber-50 hover:bg-amber-100")} onClick={() => { if(!flagged.includes(currentIdx)) setFlagged(p=>[...p, currentIdx]); else setFlagged(p=>p.filter(idx=>idx!==currentIdx)); }}>
-                   {flagged.includes(currentIdx) ? 'MARKED' : 'MARK FOR REVIEW'}
+                   {flagged.includes(currentIdx) ? 'MARKED' : 'REVIEW'}
                 </Button>
                 <Button className="bg-[#0B1528] hover:bg-black text-white h-12 px-14 rounded-xl font-black uppercase text-[11px] tracking-[0.2em] shadow-xl shadow-slate-900/20 transition-all active:scale-95" onClick={() => { if(currentIdx < questions.length-1) { const next = currentIdx + 1; setCurrentIdx(next); if(!visited.includes(next)) setVisited(v=>[...v, next])} }}>
                    SAVE & NEXT <ChevronRight className="h-4 w-4 ml-1" />
@@ -258,7 +256,7 @@ export default function MockAttemptPage() {
           </footer>
         </div>
 
-        {/* RIGHT: QUESTION PALETTE (FIXED DESKTOP) */}
+        {/* RIGHT: QUESTION PALETTE */}
         <aside className="hidden lg:block w-[320px] bg-white overflow-hidden shrink-0 shadow-[-10px_0_30px_rgba(0,0,0,0.02)] border-l">
            <div className="p-8 h-full flex flex-col">
               <QuestionPalette 
@@ -283,7 +281,7 @@ function LangToggle({ active, label, onClick }: any) {
       onClick={onClick} 
       className={cn(
         "px-5 py-1.5 rounded-lg text-[10px] font-black tracking-widest transition-all duration-200", 
-        active ? "bg-[#F97316] text-white shadow-lg scale-105" : "text-slate-400 hover:text-white"
+        active ? "bg-[#F97316] text-white shadow-lg scale-105" : "text-[#CBD5E1] hover:text-white"
       )}
     >
       {label}
