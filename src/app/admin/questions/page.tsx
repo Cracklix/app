@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Search, Edit, Trash2, Database, CheckSquare, Loader2, RefreshCw, ChevronRight, Layers } from "lucide-react"
+import { Plus, Search, Edit, Trash2, Database, CheckSquare, Loader2, RefreshCw, ChevronRight, Layers, Filter } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, deleteDoc, doc, where, writeBatch, limit, getDocs, startAfter } from "firebase/firestore"
@@ -27,8 +27,7 @@ import {
 
 /**
  * @fileOverview Institutional Asset Ledger (Global Bank).
- * Hardened: Robust Firestore instance validation to prevent runtime collection() errors.
- * Mobile: Fully responsive filter hub and horizontal scroll table.
+ * Optimized: Table-to-Card conversion for mobile responsiveness.
  */
 
 export default function QuestionBank() {
@@ -45,8 +44,8 @@ export default function QuestionBank() {
   const [questions, setQuestions] = useState<any[]>([])
   const [lastDoc, setLastDoc] = useState<any>(null)
   const [hasMore, setLastHasMore] = useState(true)
+  const [showFilters, setShowFilters] = useState(false)
 
-  // Hardened validation
   const isValidDb = db && typeof db === 'object';
 
   const mocksQuery = useMemo(() => (isValidDb ? query(collection(db, "mocks")) : null), [isValidDb, db])
@@ -62,7 +61,7 @@ export default function QuestionBank() {
     setLoading(true)
     
     try {
-      let constraints: any[] = [limit(100)]
+      let constraints: any[] = [limit(50)]
       
       if (examFilter !== "all") constraints.push(where("examId", "==", examFilter))
       else if (boardFilter !== "all") constraints.push(where("boardId", "==", boardFilter))
@@ -83,10 +82,9 @@ export default function QuestionBank() {
       }
       
       setLastDoc(snap.docs[snap.docs.length - 1])
-      setLastHasMore(snap.docs.length === 100)
+      setLastHasMore(snap.docs.length === 50)
     } catch (e: any) {
-      console.error("Fetch Rejection:", e)
-      toast({ variant: "destructive", title: "Fetch Error", description: "Registry sync rejected." })
+      toast({ variant: "destructive", title: "Fetch Error" })
     } finally {
       setLoading(false)
     }
@@ -95,18 +93,6 @@ export default function QuestionBank() {
   useEffect(() => {
     if (isValidDb) fetchQuestions()
   }, [boardFilter, examFilter, isValidDb, fetchQuestions])
-
-  const usageMap = useMemo(() => {
-    if (!questions || !allMocks) return {};
-    const map: Record<string, string[]> = {};
-    allMocks.forEach(m => {
-       m.questionIds?.forEach((qid: string) => {
-          if (!map[qid]) map[qid] = [];
-          map[qid].push(m.title);
-       });
-    });
-    return map;
-  }, [questions, allMocks]);
 
   const filteredQuestions = useMemo(() => {
     if (!questions) return []
@@ -120,63 +106,26 @@ export default function QuestionBank() {
       .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)) 
   }, [questions, searchTerm, subjectFilter])
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) setSelectedIds(filteredQuestions.map(q => q.id))
-    else setSelectedIds([])
-  }
-
-  const toggleSelection = (id: string) => {
-    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])
-  }
-
-  const handlePurgeIds = async (ids: string[]) => {
-    if (!isValidDb || ids.length === 0) return
-    if (!confirm(`Audit: Permanently purge ${ids.length} nodes from registry?`)) return
-
-    setIsDeleting(true)
-    try {
-      const batch = writeBatch(db)
-      ids.forEach(id => { batch.delete(doc(db, "questions", id)) })
-      await batch.commit()
-      toast({ title: "Audit Success", description: `${ids.length} items successfully purged.` })
-      setSelectedIds([])
-      fetchQuestions()
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Sync Failed" })
-    } finally {
-      setIsDeleting(false)
-    }
-  }
-
   const handleDeleteSingle = (id: string) => {
     if (!isValidDb) return;
     if (!confirm("Permanently purge this asset?")) return;
-    
     const qRef = doc(db, "questions", id)
-    deleteDoc(qRef)
-      .then(() => {
-        toast({ title: "Asset Purged" })
-        fetchQuestions()
-      })
-      .catch(async () => errorEmitter.emit('permission-error', new FirestorePermissionError({ path: qRef.path, operation: 'delete' })));
+    deleteDoc(qRef).then(() => fetchQuestions())
   }
 
-  const allSelected = filteredQuestions.length > 0 && selectedIds.length === filteredQuestions.length;
-
   return (
-    <div className="space-y-6 text-[#0F172A] text-left relative pb-32">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 px-2 md:px-4">
+    <div className="space-y-6 text-[#0F172A] text-left relative pb-32 px-4 md:px-0">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="text-left">
           <div className="flex items-center gap-3 mb-1.5">
             <Database className="h-5 w-5 text-primary" />
             <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">Atomic Asset Bank</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-black font-headline text-primary uppercase tracking-tight">Question Bank</h1>
-          <p className="text-muted-foreground mt-1 text-xs md:text-sm font-medium">Managing standalone MCQ nodes for official registry.</p>
+          <h1 className="text-2xl md:text-4xl font-black font-headline text-primary uppercase tracking-tight">Question Bank</h1>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <Button variant="outline" onClick={() => fetchQuestions()} className="h-11 md:h-12 px-6 rounded-xl md:rounded-2xl bg-white shadow-sm gap-2 w-full sm:w-auto">
-            <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} /> Refresh Hub
+          <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="md:hidden h-11 rounded-xl bg-white border-slate-200">
+             <Filter className="h-4 w-4 mr-2" /> Filters
           </Button>
           <Button asChild className="bg-[#0F172A] hover:bg-black text-white gap-2 font-black shadow-2xl h-11 md:h-12 px-8 rounded-xl md:rounded-2xl uppercase tracking-widest text-[9px] w-full sm:w-auto">
             <Link href="/admin/questions/add"><Plus className="h-4 w-4" /> Add Manual</Link>
@@ -184,38 +133,22 @@ export default function QuestionBank() {
         </div>
       </div>
 
-      {selectedIds.length > 0 && (
-         <div className="mx-2 md:mx-4 bg-[#0B1528] p-4 rounded-xl md:rounded-2xl flex flex-col sm:flex-row items-center justify-between animate-in fade-in slide-in-from-top-4 shadow-4xl text-white sticky top-2 z-[60] border border-white/10 gap-4">
-            <div className="flex items-center gap-6 px-2">
-               <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary shrink-0"><CheckSquare className="h-5 w-5" /></div>
-               <div>
-                  <p className="text-base md:text-lg font-headline font-black leading-none uppercase">{selectedIds.length} Nodes Selected</p>
-                  <p className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 mt-1">Bulk Audit Terminal</p>
-               </div>
-            </div>
-            <div className="flex items-center gap-3 px-2 w-full sm:w-auto">
-               <Button onClick={() => setSelectedIds([])} variant="ghost" className="flex-1 sm:flex-none text-slate-400 hover:text-white uppercase text-[9px] font-black">Cancel</Button>
-               <Button onClick={() => handlePurgeIds(selectedIds)} className="flex-1 sm:flex-none h-11 md:h-12 px-8 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black uppercase text-[9px] shadow-xl">{isDeleting ? "Purging..." : "Purge Selection"}</Button>
-            </div>
-         </div>
-      )}
-
-      <Card className="border-none shadow-3xl rounded-xl md:rounded-[2.5rem] overflow-hidden bg-white mx-2 md:mx-4">
-        <CardHeader className="p-4 md:p-8 border-b border-slate-50 bg-muted/20">
+      <Card className="border-none shadow-3xl rounded-2xl md:rounded-[2.5rem] overflow-hidden bg-white">
+        <CardHeader className={cn("p-4 md:p-8 border-b border-slate-50 bg-muted/20", !showFilters && "hidden md:block")}>
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
             <div className="relative w-full lg:w-[40%]">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input className="pl-12 h-11 md:h-12 rounded-xl bg-white border-none shadow-inner" placeholder="Search by ID or Text..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
             </div>
-            <div className="flex flex-wrap items-center gap-2 md:gap-3 w-full lg:w-auto">
+            <div className="flex flex-col sm:flex-row items-center gap-2 md:gap-3 w-full lg:w-auto">
               <Select value={boardFilter} onValueChange={v => setBoardFilter(v)}>
-                <SelectTrigger className="flex-1 lg:w-36 rounded-xl h-10 md:h-11 bg-white border-none shadow-sm font-bold text-[10px] md:text-xs">
+                <SelectTrigger className="w-full sm:w-36 rounded-xl h-11 bg-white border-none shadow-sm font-bold text-xs">
                   <SelectValue placeholder="Board" />
                 </SelectTrigger>
                 <SelectContent><SelectItem value="all">All Boards</SelectItem>{boards?.map(b => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
               </Select>
               <Select value={subjectFilter} onValueChange={setSubjectFilter}>
-                <SelectTrigger className="flex-1 lg:w-36 rounded-xl h-10 md:h-11 bg-white border-none shadow-sm font-bold text-[10px] md:text-xs">
+                <SelectTrigger className="w-full sm:w-36 rounded-xl h-11 bg-white border-none shadow-sm font-bold text-xs">
                   <SelectValue placeholder="Subject" />
                 </SelectTrigger>
                 <SelectContent className="max-h-60 overflow-y-auto"><SelectItem value="all">All Subjects</SelectItem>{subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
@@ -223,57 +156,37 @@ export default function QuestionBank() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-0 overflow-x-auto">
-          <Table className="min-w-[800px]">
-            <TableHeader className="bg-slate-50/50">
-              <TableRow className="border-white/5 h-16">
-                <TableHead className="w-[60px] px-6 text-center">
-                  <Checkbox checked={allSelected} onCheckedChange={(v) => handleSelectAll(!!v)} />
-                </TableHead>
-                <TableHead className="px-4 text-[9px] font-black uppercase text-slate-500">Identity & Content</TableHead>
-                <TableHead className="text-[9px] font-black uppercase text-slate-500 w-32">Context</TableHead>
-                <TableHead className="text-center text-[9px] font-black uppercase text-slate-500 w-24">Usage</TableHead>
-                <TableHead className="text-right px-8 text-[9px] font-black uppercase text-slate-500 w-32">Audit Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading && questions.length === 0 ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}><TableCell colSpan={5} className="px-8 py-6"><Skeleton className="h-12 w-full rounded-xl" /></TableCell></TableRow>
-                ))
-              ) : filteredQuestions.length > 0 ? filteredQuestions.map((q: any) => {
-                const usages = usageMap[q.id] || [];
-                return (
-                  <TableRow key={q.id} className={cn("hover:bg-slate-50 border-white/5 transition-colors group", selectedIds.includes(q.id) ? 'bg-primary/5' : '')}>
-                    <TableCell className="px-6 py-6 text-center"><Checkbox checked={selectedIds.includes(q.id)} onCheckedChange={() => toggleSelection(q.id)} /></TableCell>
-                    <TableCell className="px-4 py-6 text-left">
+
+        <CardContent className="p-0">
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-slate-50/50">
+                <TableRow className="h-16">
+                  <TableHead className="px-8 text-[9px] font-black uppercase text-slate-500">Identity & Content</TableHead>
+                  <TableHead className="text-[9px] font-black uppercase text-slate-500 w-32">Context</TableHead>
+                  <TableHead className="text-right px-8 text-[9px] font-black uppercase text-slate-500 w-32">Audit Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {loading && questions.length === 0 ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i}><TableCell colSpan={3} className="px-8 py-6"><Skeleton className="h-12 w-full rounded-xl" /></TableCell></TableRow>
+                  ))
+                ) : filteredQuestions.map((q: any) => (
+                  <TableRow key={q.id} className="hover:bg-slate-50 border-white/5 transition-colors group">
+                    <TableCell className="px-8 py-6">
                       <div className="flex items-center gap-3 mb-1.5">
                         <Badge className="bg-[#0F172A] text-white border-none text-[7px] font-black uppercase px-2 py-0.5">{q.displayId || 'NODE'}</Badge>
                         <code className="text-[7px] text-slate-400 font-mono">ID: {q.id.slice(-6)}</code>
                       </div>
                       <p className="font-bold text-[#000000] text-sm leading-snug line-clamp-2">{q.englishQuestion || q.questionEn}</p>
                     </TableCell>
-                    <TableCell className="text-left">
+                    <TableCell>
                        <div className="space-y-1">
                           <p className="text-[10px] font-black text-slate-800 uppercase">{q.boardId}</p>
                           <p className="text-[8px] font-bold text-slate-400 uppercase truncate">{q.subjectId}</p>
                        </div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                       <TooltipProvider>
-                          <Tooltip>
-                             <TooltipTrigger asChild>
-                                <div className={cn("inline-flex items-center gap-2 px-2 py-1 rounded-lg border transition-all cursor-help", usages.length > 0 ? "bg-blue-50 border-blue-100 text-blue-600" : "bg-slate-50 border-slate-100 text-slate-400")}>
-                                   <Layers className="h-2.5 w-2.5" />
-                                   <span className="text-[10px] font-black">{usages.length}</span>
-                                </div>
-                             </TooltipTrigger>
-                             <TooltipContent className="bg-[#0F172A] text-white p-4 rounded-xl border-white/10 shadow-4xl w-64">
-                                <p className="text-[9px] font-black uppercase text-primary mb-2">Usage Hub</p>
-                                {usages.length > 0 ? <ul className="space-y-1">{usages.map((name, i) => <li key={i} className="text-[9px] font-bold border-b border-white/5 pb-1">{name}</li>)}</ul> : <p className="text-[9px] italic">Standalone Node</p>}
-                             </TooltipContent>
-                          </Tooltip>
-                       </TooltipProvider>
                     </TableCell>
                     <TableCell className="text-right px-8">
                       <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100 transition-all">
@@ -282,22 +195,40 @@ export default function QuestionBank() {
                       </div>
                     </TableCell>
                   </TableRow>
-                )
-              }) : <TableRow><TableCell colSpan={5} className="h-60 text-center opacity-20 italic">No nodes matching filter.</TableCell></TableRow>}
-            </TableBody>
-          </Table>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Card List */}
+          <div className="md:hidden divide-y divide-slate-100">
+             {loading && questions.length === 0 ? (
+               Array.from({ length: 4 }).map((_, i) => <div key={i} className="p-6 space-y-4"><Skeleton className="h-6 w-1/4" /><Skeleton className="h-12 w-full" /></div>)
+             ) : filteredQuestions.map((q: any) => (
+                <div key={q.id} className="p-6 space-y-4 bg-white active:bg-slate-50 transition-all">
+                   <div className="flex items-center justify-between">
+                      <Badge className="bg-[#0F172A] text-white border-none text-[8px] font-black uppercase px-2">{q.boardId}</Badge>
+                      <span className="text-[9px] font-mono text-slate-400">ID: {q.id.slice(-6)}</span>
+                   </div>
+                   <p className="font-bold text-sm text-[#0F172A] leading-relaxed line-clamp-3">{q.englishQuestion || q.questionEn}</p>
+                   <div className="flex items-center justify-between pt-2 border-t border-slate-50">
+                      <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">{q.subjectId}</p>
+                      <div className="flex gap-2">
+                         <Button variant="outline" size="sm" className="h-9 w-9 p-0 rounded-xl" asChild><Link href={`/admin/questions/add?id=${q.id}`}><Edit className="h-4 w-4" /></Link></Button>
+                         <Button variant="outline" size="sm" className="h-9 w-9 p-0 rounded-xl text-rose-500 border-rose-100 bg-rose-50" onClick={() => handleDeleteSingle(q.id)}><Trash2 className="h-4 w-4" /></Button>
+                      </div>
+                   </div>
+                </div>
+             ))}
+          </div>
         </CardContent>
       </Card>
       
       {hasMore && (
         <div className="flex justify-center mt-6">
-          <Button 
-            onClick={() => fetchQuestions(true)} 
-            disabled={loading}
-            className="rounded-xl h-11 px-10 bg-white border border-slate-200 text-[#0F172A] font-black uppercase text-[10px] tracking-widest hover:bg-slate-50 shadow-sm gap-2"
-          >
+          <Button onClick={() => fetchQuestions(true)} disabled={loading} className="rounded-xl h-11 px-10 bg-white border border-slate-200 text-[#0F172A] font-black uppercase text-[10px] tracking-widest gap-2">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ChevronRight className="h-4 w-4 rotate-90" />}
-            Load More Assets
+            Load More
           </Button>
         </div>
       )}

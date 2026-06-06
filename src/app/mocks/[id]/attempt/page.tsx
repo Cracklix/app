@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
@@ -26,9 +27,8 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Final Institutional CBT Attempt Hub v11.0.
- * Optimized: Reduced width to 920px for high-density focus and ergonomics.
- * Scaling: Reduced Commit Assessment modal size for professional footprint.
+ * @fileOverview Final Institutional CBT Attempt Hub v12.0.
+ * Optimized: Fully responsive mobile-first architecture with bottom-sheet palette.
  */
 
 export default function MockAttemptPage() {
@@ -204,7 +204,7 @@ export default function MockAttemptPage() {
               <div className="max-w-md w-full bg-white rounded-[2rem] shadow-5xl overflow-hidden">
                  <div className="bg-slate-50 p-6 border-b border-slate-100 text-center space-y-3">
                     <div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto text-[#F97316] shadow-xl">
-                       <Play className="h-6 w-6 fill-current" />
+                       <Play className="h-6 v-6 fill-current" />
                     </div>
                     <div>
                        <h2 className="text-xl md:text-2xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-none">TEST PAUSED</h2>
@@ -263,11 +263,13 @@ export default function MockAttemptPage() {
       <TacticalFooter onSubmit={() => setShowSubmitModal(true)} />
       
       <Sheet open={isMobilePaletteOpen} onOpenChange={setIsMobilePaletteOpen}>
-        <SheetContent side="right" className="w-[320px] p-0 border-none">
-          <SheetHeader className="p-4 border-b">
-             <SheetTitle className="text-xs font-black uppercase tracking-[0.2em]">Navigation Palette</SheetTitle>
+        <SheetContent side="bottom" className="h-[85vh] p-0 border-none rounded-t-[2.5rem] overflow-hidden">
+          <SheetHeader className="p-6 border-b shrink-0">
+             <SheetTitle className="text-sm font-black uppercase tracking-[0.2em]">CBT Navigation Palette</SheetTitle>
           </SheetHeader>
-          <QuestionPalette onSelect={(idx) => { examStore.setCurrentIdx(idx); setIsMobilePaletteOpen(false); }} onSubmit={() => setShowSubmitModal(true)} />
+          <div className="flex-1 overflow-hidden">
+            <QuestionPalette onSelect={(idx) => { examStore.setCurrentIdx(idx); setIsMobilePaletteOpen(false); }} onSubmit={() => setShowSubmitModal(true)} />
+          </div>
         </SheetContent>
       </Sheet>
 
