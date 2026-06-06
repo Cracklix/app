@@ -1,8 +1,8 @@
 /**
- * @fileOverview Institutional High-Fidelity Ingestion Engine v17.0.
+ * @fileOverview Institutional High-Fidelity Ingestion Engine v18.0.
  * Rules Enforcement:
- * 1. NO DUAL NUMBERING: Strips "Q1." and "ਪ੍ਰਸ਼ਨ 1." strictly.
- * 2. SEGREGATED STORAGE: Maps to questionEn and questionPa even if joined in source.
+ * 1. STRICT SEGREGATION: Split multiline questions into EN and PA fields.
+ * 2. NO DUAL NUMBERING: Strips "Q1." and "ਪ੍ਰਸ਼ਨ 1." strictly.
  * 3. OPTION FORMATTING: Combine EN / PA on one line.
  */
 
@@ -31,7 +31,6 @@ export function parseBulkQuestions(
   rawText: string,
   metadata: any
 ): ParsedResults {
-  // Split by Question markers (Q1, Q2, etc.)
   const blocks = rawText.split(/(?=Q\d+[\.\):\s-])/g).filter(p => p.trim().length > 10);
   
   const parsed = blocks.map((block, index) => {
@@ -64,29 +63,23 @@ function parseStandardBlock(block: string, metadata: any): Partial<Question> {
   let explanationPa = "";
 
   lines.forEach((line, idx) => {
-    // English Question Detection (Starts with Q1.)
     if (line.match(/^Q\d+[\.\):\s-]/i)) {
       const fullText = line.replace(/^Q\d+[\.\):\s-]*/i, '').trim();
-      
-      // Check if Punjabi question is joined on the same line via marker
       if (fullText.includes('ਪ੍ਰਸ਼ਨ') || fullText.includes('ਪ੍ਰਸ਼ਨ')) {
         const parts = fullText.split(/ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]*|ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]*/);
         questionEn = sanitizeText(parts[0]);
         questionPa = sanitizeText(parts[1]);
       } else {
         questionEn = sanitizeText(fullText);
-        // Look for Punjabi text on the next line if it doesn't have an option marker
         const nextLine = lines[idx+1];
-        if (nextLine && !nextLine.match(/^\([A-D]\)/i) && !nextLine.toLowerCase().includes('correct answer')) {
+        if (nextLine && !nextLine.match(/^\([A-D]\)/i) && !nextLine.toLowerCase().includes('correct answer') && !nextLine.match(/^Q\d+/i)) {
           questionPa = sanitizeText(nextLine);
         }
       }
     } 
-    // Punjabi Question Detection (In case it's a separate block or start marker)
     else if (line.match(/^ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]*|^ਪ੍ਰਸ਼ਨ\s*\d+[\.\):\s-]*/) && !questionPa) {
       questionPa = sanitizeText(line);
     }
-    // Option Detection (A) Eng / Pun
     else if (line.match(/^\([A-D]\)/i)) {
       const labelMatch = line.match(/^\(([A-D])\)/i);
       if (labelMatch) {
@@ -100,7 +93,6 @@ function parseStandardBlock(block: string, metadata: any): Partial<Question> {
         }
       }
     } 
-    // Correct Answer & Explanation Detection
     else if (line.toLowerCase().includes('correct answer:')) {
       const ansMatch = line.match(/Correct Answer:\s*(?:\()?([A-D])(?:\))?/i);
       if (ansMatch) correctAnswer = ansMatch[1].toUpperCase() as any;
