@@ -34,8 +34,8 @@ import { cn } from "@/lib/utils"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Result Engine v2.0.
- * Optimized: Adaptive viewport scaling and high-density performance matrix.
+ * @fileOverview Institutional Result Engine v2.5.
+ * Optimized: High-density card layout for faster results review and mobile-friendly scaling.
  */
 export default function ResultPage() {
   const params = useParams()
@@ -124,49 +124,49 @@ export default function ResultPage() {
           <div className="lg:col-span-8 space-y-6 md:space-y-10 text-left">
             <Card className="border-none shadow-3xl rounded-2xl md:rounded-[3rem] overflow-hidden bg-white group">
                <div className="h-1.5 w-full bg-primary" />
-               <CardHeader className="p-6 md:p-12 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-6">
+               <CardHeader className="p-6 md:p-10 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-6">
                   <div className="space-y-3 text-center md:text-left">
                     <div className="flex items-center justify-center md:justify-start gap-3">
                        <ShieldCheck className="h-5 w-5 text-primary" />
                        <Badge className="bg-emerald-50 text-emerald-600 border-none px-3 py-1 rounded-lg font-black uppercase text-[8px] tracking-widest">AUDIT COMPLETE</Badge>
                     </div>
-                    <CardTitle className="font-headline text-2xl md:text-5xl font-black text-[#0F172A] uppercase leading-tight tracking-tight">{sessionData.mockTitle}</CardTitle>
+                    <CardTitle className="font-headline text-2xl md:text-4xl font-black text-[#0F172A] uppercase leading-tight tracking-tight">{sessionData.mockTitle}</CardTitle>
                     <p className="text-slate-400 font-bold uppercase tracking-widest text-[8px]">Verified Audit Registry v1.0</p>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                     <Button asChild className="bg-[#0F172A] hover:bg-black text-white rounded-xl h-12 md:h-14 px-8 font-black uppercase text-[9px] tracking-widest shadow-xl transition-all active:scale-95">
+                     <Button asChild className="bg-[#0F172A] hover:bg-black text-white rounded-xl h-12 px-8 font-black uppercase text-[9px] tracking-widest shadow-xl transition-all active:scale-95">
                         <Link href="/dashboard"><LayoutDashboard className="h-4 w-4 mr-2 text-primary" /> Dashboard</Link>
                      </Button>
                   </div>
                </CardHeader>
-               <CardContent className="p-6 md:p-12">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 text-center mb-12 md:mb-20">
-                    <ResultNode icon={<CheckCircle2 className="text-emerald-500 h-8 w-8" />} label="Correct" value={sessionData.score} color="text-emerald-600" />
-                    <ResultNode icon={<XCircle className="text-rose-500 h-8 w-8" />} label="Incorrect" value={Object.keys(sessionData.answers).length - sessionData.score} color="text-rose-600" />
-                    <ResultNode icon={<HelpCircle className="text-slate-300 h-8 w-8" />} label="Skipped" value={sessionData.totalQuestions - Object.keys(sessionData.answers).length} color="text-slate-400" />
-                    <ResultNode icon={<Target className="text-primary h-8 w-8" />} label="Accuracy" value={`${sessionData.accuracy}%`} color="text-primary" />
+               <CardContent className="p-6 md:p-10">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center mb-10 md:mb-16">
+                    <ResultNode icon={<CheckCircle2 className="text-emerald-500 h-6 w-6 md:h-8 md:w-8" />} label="Correct" value={sessionData.score} color="text-emerald-600" />
+                    <ResultNode icon={<XCircle className="text-rose-500 h-6 w-6 md:h-8 md:w-8" />} label="Incorrect" value={Object.keys(sessionData.answers).length - sessionData.score} color="text-rose-600" />
+                    <ResultNode icon={<HelpCircle className="text-slate-300 h-6 w-6 md:h-8 md:w-8" />} label="Skipped" value={sessionData.totalQuestions - Object.keys(sessionData.answers).length} color="text-slate-400" />
+                    <ResultNode icon={<Target className="text-primary h-6 w-6 md:h-8 md:w-8" />} label="Accuracy" value={`${sessionData.accuracy}%`} color="text-primary" />
                   </div>
 
-                  <div className="space-y-8 md:space-y-12">
-                     <h4 className="font-headline font-black text-xl md:text-3xl uppercase tracking-tight border-b border-slate-100 pb-6 flex items-center gap-4">
-                        <TrendingUp className="h-7 w-7 text-primary" /> Institutional Mastery Index
+                  <div className="space-y-6 md:space-y-8">
+                     <h4 className="font-headline font-black text-lg md:text-2xl uppercase tracking-tight border-b border-slate-100 pb-4 flex items-center gap-3">
+                        <TrendingUp className="h-6 w-6 text-primary" /> Mastery Index
                      </h4>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                         {chartData.map((subj, i) => (
-                           <div key={i} className="p-6 md:p-8 bg-slate-50 rounded-2xl md:rounded-[2rem] border border-slate-100 space-y-6 shadow-inner transition-all hover:border-primary/20">
+                           <div key={i} className="p-5 md:p-6 bg-slate-50/50 rounded-xl md:rounded-2xl border border-slate-100 space-y-4 shadow-inner transition-all hover:border-primary/20">
                               <div className="flex justify-between items-start">
-                                 <div className="space-y-1 min-w-0 flex-1">
-                                    <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest block">SUBJECT NODE</span>
-                                    <h5 className="text-sm md:text-base font-black text-[#0B1528] uppercase truncate">{subj.name}</h5>
+                                 <div className="space-y-0.5 min-w-0 flex-1">
+                                    <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest block">SUBJECT NODE</span>
+                                    <h5 className="text-[12px] md:text-sm font-black text-[#0B1528] uppercase truncate">{subj.name}</h5>
                                  </div>
-                                 <span className={cn("text-xl md:text-2xl font-headline font-black ml-3", subj.accuracy > 70 ? "text-emerald-600" : "text-rose-500")}>{subj.accuracy}%</span>
+                                 <span className={cn("text-lg md:text-xl font-headline font-black ml-2", subj.accuracy > 70 ? "text-emerald-600" : "text-rose-500")}>{subj.accuracy}%</span>
                               </div>
-                              <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden shadow-inner">
+                              <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden shadow-inner">
                                  <div className={cn("h-full transition-all duration-1000", subj.accuracy > 70 ? "bg-emerald-500" : "bg-rose-500")} style={{ width: `${subj.accuracy}%` }} />
                               </div>
-                              <div className="flex justify-between items-center text-[8px] font-black uppercase text-slate-400 tracking-widest">
+                              <div className="flex justify-between items-center text-[7px] font-black uppercase text-slate-400 tracking-widest">
                                  <p>Audit: {subj.score}</p>
-                                 <Badge variant="outline" className="border-slate-200 text-slate-400 text-[7px] font-black px-1.5 py-0">QUALIFIED</Badge>
+                                 <Badge variant="outline" className="border-slate-200 text-slate-400 text-[6px] font-black px-1.5 py-0">QUALIFIED</Badge>
                               </div>
                            </div>
                         ))}
@@ -178,8 +178,8 @@ export default function ResultPage() {
             {/* Solution Review Hub */}
             <div className="space-y-6">
                <div className="flex items-center justify-between px-2">
-                  <h3 className="font-headline font-black text-2xl md:text-4xl uppercase flex items-center gap-4">
-                     <BrainCircuit className="h-8 w-8 text-primary" /> Solutions
+                  <h3 className="font-headline font-black text-xl md:text-3xl uppercase flex items-center gap-4">
+                     <BrainCircuit className="h-7 w-7 text-primary" /> Solutions Hub
                   </h3>
                </div>
                
@@ -192,25 +192,25 @@ export default function ResultPage() {
                      const isExpanded = expandedQs[idx];
 
                      return (
-                        <Card key={idx} className="border-none shadow-2xl rounded-xl md:rounded-[2.5rem] overflow-hidden bg-white transition-all">
-                           <div className={cn("h-1.5 w-full", isCorrect ? "bg-emerald-500" : isSkipped ? "bg-slate-200" : "bg-rose-500")} />
-                           <CardContent className="p-6 md:p-10 space-y-6 md:space-y-10">
+                        <Card key={idx} className="border-none shadow-xl rounded-xl md:rounded-[2rem] overflow-hidden bg-white transition-all">
+                           <div className={cn("h-1 w-full", isCorrect ? "bg-emerald-500" : isSkipped ? "bg-slate-200" : "bg-rose-500")} />
+                           <CardContent className="p-5 md:p-8 space-y-5 md:space-y-8">
                               <div className="flex items-center justify-between">
-                                 <div className="flex items-center gap-4 md:gap-6">
+                                 <div className="flex items-center gap-4 md:gap-5">
                                     <div className={cn(
-                                       "h-10 w-10 md:h-12 md:w-12 rounded-xl flex items-center justify-center shadow-lg font-black text-sm md:text-lg transition-all",
+                                       "h-9 w-9 md:h-11 md:w-11 rounded-xl flex items-center justify-center shadow-lg font-black text-xs md:text-base transition-all",
                                        isCorrect ? "bg-emerald-500 text-white" : isSkipped ? "bg-slate-100 text-slate-300" : "bg-rose-500 text-white"
                                     )}>
                                        {idx + 1}
                                     </div>
                                     <div className="space-y-0.5 text-left">
-                                       <Badge className={cn("border-none px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest", isCorrect ? "bg-emerald-50 text-emerald-600" : isSkipped ? "bg-slate-100 text-slate-400" : "bg-rose-50 text-rose-600")}>
+                                       <Badge className={cn("border-none px-1.5 py-0.5 rounded-md text-[7px] font-black uppercase tracking-widest", isCorrect ? "bg-emerald-50 text-emerald-600" : isSkipped ? "bg-slate-100 text-slate-400" : "bg-rose-50 text-rose-600")}>
                                           {isCorrect ? 'Correct' : isSkipped ? 'Skipped' : 'Mismatched'}
                                        </Badge>
-                                       <p className="text-[8px] font-black uppercase text-slate-400 ml-1">Section: {q.subjectId || 'Audit Node'}</p>
+                                       <p className="text-[7px] font-black uppercase text-slate-400 ml-0.5">Section: {q.subjectId || 'Audit Node'}</p>
                                     </div>
                                  </div>
-                                 <Button variant="ghost" onClick={() => setExpandedQs(p => ({ ...p, [idx]: !p[idx] }))} className="rounded-xl h-10 w-10 p-0 hover:bg-slate-50 border border-slate-100 shadow-sm">
+                                 <Button variant="ghost" onClick={() => setExpandedQs(p => ({ ...p, [idx]: !p[idx] }))} className="rounded-xl h-9 w-9 p-0 hover:bg-slate-50 border border-slate-100 shadow-sm">
                                     {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                                  </Button>
                               </div>
@@ -220,24 +220,24 @@ export default function ResultPage() {
                               </div>
 
                               {isExpanded && (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-8 border-t border-slate-50 animate-in slide-in-from-top-4 duration-500">
-                                   <div className="space-y-2 text-left">
-                                      <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest ml-1">Aspirant Entry</p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-6 border-t border-slate-50 animate-in slide-in-from-top-2 duration-300">
+                                   <div className="space-y-1.5 text-left">
+                                      <p className="text-[7px] font-black uppercase text-slate-400 tracking-widest ml-0.5">Aspirant Entry</p>
                                       <div className={cn(
-                                         "p-4 rounded-xl border-2 font-black text-sm flex items-center justify-between shadow-inner",
+                                         "p-3 rounded-lg border font-black text-[12px] flex items-center justify-between shadow-inner",
                                          isSkipped ? "border-slate-100 bg-slate-50 text-slate-300" : 
                                          isCorrect ? "border-emerald-100 bg-emerald-50 text-emerald-700" : 
                                          "border-rose-100 bg-rose-50 text-rose-700"
                                       )}>
                                          {isSkipped ? 'NO ATTEMPT' : `Option ${['A','B','C','D'][studentAnsIdx]}`}
-                                         {!isSkipped && (isCorrect ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />)}
+                                         {!isSkipped && (isCorrect ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />)}
                                       </div>
                                    </div>
-                                   <div className="space-y-2 text-left">
-                                      <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest ml-1">Verified Audit Key</p>
-                                      <div className="p-4 rounded-xl border-2 border-emerald-500 bg-emerald-600 text-white font-black text-sm flex items-center justify-between shadow-lg">
+                                   <div className="space-y-1.5 text-left">
+                                      <p className="text-[7px] font-black uppercase text-slate-400 tracking-widest ml-0.5">Verified Audit Key</p>
+                                      <div className="p-3 rounded-lg border border-emerald-500 bg-emerald-600 text-white font-black text-[12px] flex items-center justify-between shadow-lg">
                                          Option {q.correctAnswer}
-                                         <CheckCircle2 className="h-4 w-4" />
+                                         <CheckCircle2 className="h-3 w-3" />
                                       </div>
                                    </div>
                                 </div>
@@ -252,31 +252,31 @@ export default function ResultPage() {
 
           {/* Institutional Sidebar */}
           <div className="lg:col-span-4 space-y-6 md:space-y-10">
-             <Card className="border-none bg-[#0F172A] text-white shadow-4xl rounded-2xl md:rounded-[3.5rem] p-8 md:p-12 text-center space-y-8 md:space-y-12 overflow-hidden relative group">
-                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-all duration-1000"><TrendingUp className="h-64 w-64 md:h-[400px] md:w-[400px]" /></div>
-                <div className="relative z-10 space-y-6 md:space-y-10">
-                   <Target className="h-12 w-12 md:h-16 md:w-16 text-primary mx-auto shadow-2xl" />
-                   <div className="space-y-2">
-                      <p className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-primary">Probability Index</p>
-                      <h3 className="text-6xl md:text-7xl font-headline font-black text-white tracking-tighter leading-none">{Math.min(98, sessionData.accuracy + 10)}%</h3>
+             <Card className="border-none bg-[#0F172A] text-white shadow-4xl rounded-2xl md:rounded-[2.5rem] p-8 md:p-10 text-center space-y-8 overflow-hidden relative group">
+                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-all duration-1000"><TrendingUp className="h-64 w-64 md:h-[300px] md:w-[300px]" /></div>
+                <div className="relative z-10 space-y-6">
+                   <Target className="h-10 w-10 md:h-12 md:w-12 text-primary mx-auto shadow-2xl" />
+                   <div className="space-y-1">
+                      <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-primary">Probability Index</p>
+                      <h3 className="text-5xl md:text-6xl font-headline font-black text-white tracking-tighter leading-none">{Math.min(98, sessionData.accuracy + 10)}%</h3>
                    </div>
-                   <p className="text-slate-400 font-medium text-sm md:text-base italic px-2 md:px-4 leading-relaxed antialiased">
+                   <p className="text-slate-400 font-medium text-xs md:text-sm italic px-2 leading-relaxed antialiased">
                       "Based on your audit trail, your readiness score is in the <strong>Top 8%</strong> of all Punjab aspirants."
                    </p>
-                   <Button asChild className="w-full h-12 md:h-14 bg-white text-black hover:bg-slate-100 font-black uppercase tracking-widest text-[9px] rounded-xl shadow-xl"><Link href="/dashboard">View Rankings</Link></Button>
+                   <Button asChild className="w-full h-11 md:h-12 bg-white text-black hover:bg-slate-100 font-black uppercase tracking-widest text-[8px] rounded-xl shadow-xl transition-all active:scale-95"><Link href="/dashboard">View Rankings</Link></Button>
                 </div>
              </Card>
 
-             <Card className="border-none shadow-3xl rounded-2xl md:rounded-[3rem] bg-white p-8 md:p-12 space-y-8 md:space-y-10 text-left relative overflow-hidden group">
-                <div className="absolute bottom-0 right-0 p-6 opacity-5 group-hover:rotate-12 transition-all"><ShieldCheck className="h-32 w-32 md:h-48 md:w-48" /></div>
-                <h4 className="font-headline font-black text-xl md:text-2xl text-[#0F172A] uppercase tracking-tight flex items-center gap-4"><Zap className="h-6 w-6 text-primary" /> Audit Meta</h4>
-                <div className="space-y-5 md:space-y-6 pt-4 md:pt-6 border-t border-slate-50">
+             <Card className="border-none shadow-3xl rounded-2xl md:rounded-[2rem] bg-white p-8 space-y-6 text-left relative overflow-hidden group">
+                <div className="absolute bottom-0 right-0 p-6 opacity-5 group-hover:rotate-12 transition-all"><ShieldCheck className="h-32 w-32 md:h-40 md:w-40" /></div>
+                <h4 className="font-headline font-black text-lg md:text-xl text-[#0F172A] uppercase tracking-tight flex items-center gap-3"><Zap className="h-5 w-5 text-primary" /> Audit Meta</h4>
+                <div className="space-y-4 pt-3 border-t border-slate-50">
                    <SummaryRow label="State Percentile" value="92.4%" />
-                   <SummaryRow label="Time Consumed" value={`${Math.floor(sessionData.timeTaken / 60)}m ${sessionData.timeTaken % 60}s`} icon={<Timer className="h-4 w-4" />} />
-                   <SummaryRow label="Audit Registered" value={new Date(sessionData.timestamp).toLocaleDateString('en-GB')} icon={<History className="h-4 w-4" />} />
+                   <SummaryRow label="Time Consumed" value={`${Math.floor(sessionData.timeTaken / 60)}m ${sessionData.timeTaken % 60}s`} icon={<Timer className="h-3.5 w-3.5" />} />
+                   <SummaryRow label="Audit Registered" value={new Date(sessionData.timestamp).toLocaleDateString('en-GB')} icon={<History className="h-3.5 w-3.5" />} />
                    <SummaryRow label="Evaluation" value={sessionData.accuracy > 45 ? "QUALIFIED" : "FAIL"} color={sessionData.accuracy > 45 ? "text-emerald-600" : "text-rose-600"} />
                 </div>
-                <Button variant="outline" className="w-full h-12 rounded-xl border-slate-200 font-black uppercase text-[8px] tracking-widest shadow-sm">Report Anomaly</Button>
+                <Button variant="outline" className="w-full h-11 rounded-xl border-slate-200 font-black uppercase text-[7px] tracking-widest shadow-sm">Report Anomaly</Button>
              </Card>
           </div>
         </div>
@@ -288,11 +288,11 @@ export default function ResultPage() {
 
 function ResultNode({ icon, label, value, color }: any) {
   return (
-    <div className="space-y-4 group">
+    <div className="space-y-2 group">
       <div className="flex justify-center transition-transform group-hover:scale-110 duration-500">{icon}</div>
-      <div className="space-y-1">
-         <p className={cn("text-3xl md:text-5xl font-headline font-black tracking-tighter leading-none", color)}>{value}</p>
-         <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mt-2">{label}</p>
+      <div className="space-y-0.5">
+         <p className={cn("text-2xl md:text-4xl font-headline font-black tracking-tighter leading-none", color)}>{value}</p>
+         <p className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 mt-1">{label}</p>
       </div>
     </div>
   )
@@ -300,13 +300,12 @@ function ResultNode({ icon, label, value, color }: any) {
 
 function SummaryRow({ label, value, color, icon }: any) {
    return (
-      <div className="flex justify-between items-center py-3 md:py-4 border-b border-slate-50 last:border-0 group">
-         <div className="flex items-center gap-3">
+      <div className="flex justify-between items-center py-2.5 border-b border-slate-50 last:border-0 group">
+         <div className="flex items-center gap-2">
             {icon && <span className="text-slate-300 group-hover:text-primary transition-colors">{icon}</span>}
-            <span className="text-[8px] md:text-[10px] font-black uppercase text-slate-400 tracking-widest">{label}</span>
+            <span className="text-[7px] md:text-[9px] font-black uppercase text-slate-400 tracking-widest">{label}</span>
          </div>
-         <span className={cn("text-sm md:text-lg font-black uppercase tracking-tight", color || "text-[#0F172A]")}>{value}</span>
+         <span className={cn("text-xs md:text-base font-black uppercase tracking-tight", color || "text-[#0F172A]")}>{value}</span>
       </div>
    )
 }
-
