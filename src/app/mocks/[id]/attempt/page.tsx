@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
@@ -27,8 +26,8 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Final Institutional CBT Attempt Hub v7.0.
- * Optimized: Unified black background for high-fidelity dark-mode box.
+ * @fileOverview Final Institutional CBT Attempt Hub v8.0.
+ * Optimized: Centered layout with tighter visual rhythm to minimize mouse travel.
  */
 
 export default function MockAttemptPage() {
@@ -227,8 +226,8 @@ export default function MockAttemptPage() {
           )}
         </AnimatePresence>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-10 bg-[#000000]">
-           <div className="max-w-[1000px] mx-auto pb-24">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-6 lg:p-8 bg-[#000000]">
+           <div className="max-w-[1000px] mx-auto pb-20">
               {q ? (
                 <QuestionRenderer 
                    language={examStore.language} 
