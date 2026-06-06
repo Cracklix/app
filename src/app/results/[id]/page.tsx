@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -24,21 +24,23 @@ import {
   ChevronUp,
   History,
   Timer,
-  ArrowRight
+  ArrowRight,
+  RefreshCw
 } from "lucide-react"
 import { useFirestore, useUser, useCollection } from "@/firebase"
-import { collection, query, where, doc, getDoc } from "firebase/firestore"
+import { collection, query, where, doc, getDoc, deleteDoc } from "firebase/firestore"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Result Engine v2.6.
- * Fixed: Infinite loading logic and missing dependency audit.
+ * @fileOverview Institutional Result Engine v2.7.
+ * Features: Re-attempt logic and Registry Purge.
  */
 export default function ResultPage() {
   const params = useParams()
+  const router = useRouter()
   const mockId = params.id as string
   const db = useFirestore()
   const { user } = useUser()
@@ -93,6 +95,22 @@ export default function ResultPage() {
     loadQuestions()
   }, [db, sessionData, mockId, toast, resultsLoading])
 
+  const handleReattempt = async () => {
+    if (!db || !user || !mockId) return;
+    const confirmMsg = "CRITICAL AUDIT: This will permanently purge your current results and restart the evaluation node. Proceed?";
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      await deleteDoc(doc(db, "attempts", `${user.uid}_${mockId}`));
+      await deleteDoc(doc(db, "results", `${user.uid}_${mockId}`));
+      
+      toast({ title: "Registry Reset", description: "Node cleared. Redirecting to instructions..." });
+      router.push(`/mocks/${mockId}/instructions`);
+    } catch (e) {
+      toast({ variant: "destructive", title: "Reset Failed", description: "Cloud registry rejected the purge." });
+    }
+  };
+
   const chartData = useMemo(() => {
     if (!sessionData?.subjectStats) return []
     return Object.entries(sessionData.subjectStats).map(([id, stats]: [string, any]) => ({
@@ -142,6 +160,9 @@ export default function ResultPage() {
                     <p className="text-slate-400 font-bold uppercase tracking-widest text-[8px]">Verified Audit Registry v1.0</p>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                     <Button onClick={handleReattempt} className="bg-primary hover:bg-orange-600 text-white rounded-xl h-12 px-8 font-black uppercase text-[9px] tracking-widest shadow-xl transition-all active:scale-95 gap-2">
+                        <RefreshCw className="h-4 w-4" /> Re-attempt Mock
+                     </Button>
                      <Button asChild className="bg-[#0F172A] hover:bg-black text-white rounded-xl h-12 px-8 font-black uppercase text-[9px] tracking-widest shadow-xl transition-all active:scale-95">
                         <Link href="/dashboard"><LayoutDashboard className="h-4 w-4 mr-2 text-primary" /> Dashboard</Link>
                      </Button>
@@ -160,7 +181,7 @@ export default function ResultPage() {
                         <TrendingUp className="h-6 w-6 text-primary" /> Mastery Index
                      </h4>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                        {chartData.map((subj, i) => (
+                        {chartData.length > 0 ? chartData.map((subj, i) => (
                            <div key={i} className="p-5 md:p-6 bg-slate-50/50 rounded-xl md:rounded-2xl border border-slate-100 space-y-4 shadow-inner transition-all hover:border-primary/20">
                               <div className="flex justify-between items-start">
                                  <div className="space-y-0.5 min-w-0 flex-1">
@@ -177,7 +198,9 @@ export default function ResultPage() {
                                  <Badge variant="outline" className="border-slate-200 text-slate-400 text-[6px] font-black px-1.5 py-0">QUALIFIED</Badge>
                               </div>
                            </div>
-                        ))}
+                        )) : (
+                           <div className="col-span-full py-10 text-center opacity-30 italic text-sm">Individual subject audit nodes not detected.</div>
+                        )}
                      </div>
                   </div>
                </CardContent>
@@ -214,7 +237,7 @@ export default function ResultPage() {
                                        <Badge className={cn("border-none px-1.5 py-0.5 rounded-md text-[7px] font-black uppercase tracking-widest", isCorrect ? "bg-emerald-50 text-emerald-600" : isSkipped ? "bg-slate-100 text-slate-400" : "bg-rose-50 text-rose-600")}>
                                           {isCorrect ? 'Correct' : isSkipped ? 'Skipped' : 'Mismatched'}
                                        </Badge>
-                                       <p className="text-[7px] font-black uppercase text-slate-400 ml-0.5">Section: {q.subjectId || 'Audit Node'}</p>
+                                       <p className="text-[7px] font-black uppercase text-slate-400 ml-0.5">Section: {q.sectionId || q.subjectId || 'Audit Node'}</p>
                                     </div>
                                  </div>
                                  <Button variant="ghost" onClick={() => setExpandedQs(p => ({ ...p, [idx]: !p[idx] }))} className="rounded-xl h-9 w-9 p-0 hover:bg-slate-50 border border-slate-100 shadow-sm">
