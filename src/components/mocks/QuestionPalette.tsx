@@ -15,9 +15,9 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Paginated Institutional Audit Matrix v5.0.
+ * @fileOverview Paginated Institutional Audit Matrix v6.0.
  * Rules Enforcement:
- * 1. FIXED CIRCLE OVERLAP: Explicit grid gaps and button sizing.
+ * 1. FIXED CIRCLE OVERLAP: Explicit gap-4 and w-10 h-10 nodes.
  * 2. EXACT 25 NODES: Pagination Hub calibrated.
  * 3. NO SCROLLING: Fits within standard mobile viewports.
  */
@@ -60,7 +60,7 @@ export default function QuestionPalette({
   }, [totalQuestions, answeredIndices, flaggedIndices, visitedIndices])
 
   return (
-    <div className="space-y-5 flex flex-col h-full text-left font-body">
+    <div className="space-y-6 flex flex-col h-full text-left font-body">
       {/* Dynamic Exam Branding */}
       <div className="space-y-1 pb-4 border-b border-slate-100">
          <p className="text-[7px] font-black text-primary uppercase tracking-[0.4em] leading-none">ACTIVE AUDIT</p>
@@ -70,7 +70,7 @@ export default function QuestionPalette({
       </div>
 
       {/* Stats Summary Grid (Compact) */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2.5">
          <PaletteStat count={summary.answered} label="Done" color="bg-emerald-600" />
          <PaletteStat count={summary.notAnswered} label="Missed" color="bg-rose-500" />
          <PaletteStat count={summary.notVisited} label="Left" color="bg-slate-50" textColor="text-slate-400" />
@@ -99,7 +99,7 @@ export default function QuestionPalette({
 
       {/* High-Density Matrix (FIXED OVERLAP) */}
       <div className="flex-1 overflow-y-auto no-scrollbar pt-2">
-         <div className="grid grid-cols-5 gap-y-3.5 gap-x-2.5">
+         <div className="grid grid-cols-5 gap-4">
             {currentQuestions.map((q) => {
               const idx = q.globalIdx;
               const isCurrent = currentIndex === idx
@@ -113,8 +113,8 @@ export default function QuestionPalette({
                   key={idx}
                   onClick={() => onSelect(idx)}
                   className={cn(
-                    "w-10 h-10 rounded-full text-[10px] font-black transition-all flex items-center justify-center shrink-0 border-2 relative",
-                    "hover:scale-105 active:scale-95 box-border",
+                    "w-10 h-10 rounded-full text-[10px] font-black transition-all flex items-center justify-center shrink-0 border-2 relative box-border",
+                    "hover:scale-105 active:scale-95",
                     isCurrent ? "border-primary bg-white text-primary z-20 shadow-xl ring-2 ring-primary ring-offset-2" : "border-transparent",
                     !isCurrent && isBoth && "bg-purple-600 text-white border-purple-600",
                     !isCurrent && isAnswered && !isFlagged && "bg-emerald-600 text-white border-emerald-600",
@@ -141,8 +141,8 @@ export default function QuestionPalette({
 
 function PaletteStat({ count, label, color, textColor = "text-white" }: any) {
   return (
-    <div className="flex items-center gap-2 p-2 rounded-xl border border-slate-100 bg-white shadow-sm overflow-hidden">
-       <div className={cn("h-3.5 w-3.5 rounded flex items-center justify-center text-[7px] font-black shrink-0", color, textColor)}>
+    <div className="flex items-center gap-2.5 p-2 rounded-xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+       <div className={cn("h-4 w-4 rounded flex items-center justify-center text-[7px] font-black shrink-0", color, textColor)}>
           {count}
        </div>
        <span className="text-[7px] font-black uppercase text-slate-500 tracking-tight truncate">{label}</span>

@@ -13,11 +13,11 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview Institutional High-Fidelity Question Renderer v27.0.
+ * @fileOverview Institutional High-Fidelity Question Renderer v28.0.
  * Rules Enforcement:
- * 1. STRICT SEGREGATION: "PA" mode renders ONLY Punjabi. "EN" mode renders ONLY English.
- * 2. BI MODE: Joined with "/" on ONE LINE.
- * 3. NO SCROLLING: Optimized font sizing for high-density mobile viewports.
+ * 1. STRICT ISOLATION: "EN" mode hides ALL Punjabi. "PA" mode hides ALL English.
+ * 2. BILINGUAL JOIN: Combined with "/" on a single line.
+ * 3. SUBJECT LOCKING: Language subjects (English/Punjabi) automatically lock to their respective tongue.
  */
 
 export default function QuestionRenderer({ 
@@ -55,12 +55,12 @@ export default function QuestionRenderer({
     if (isPunjabiSubject) return qPa || qEn;
 
     if (language === 'en') return qEn;
-    if (language === 'pa') return qPa || qEn;
+    if (language === 'pa') return qPa;
     
     // Bilingual Mode
     return (
       <div className="inline">
-        {qEn} {qPa && qPa !== qEn && <span className="text-primary mx-2">/</span>} {qPa !== qEn && qPa}
+        {qEn} {qPa && qPa !== qEn && <span className="text-primary/40 mx-2">/</span>} {qPa !== qEn && qPa}
       </div>
     );
   };
@@ -85,8 +85,6 @@ export default function QuestionRenderer({
             const en = (question as any)[`option${key}En`] || "";
             const pa = (question as any)[`option${key}Pa`] || "";
             
-            if (!en && !pa) return null;
-
             const cEn = cleanText(en);
             const cPa = cleanText(pa);
             
@@ -99,7 +97,7 @@ export default function QuestionRenderer({
                       {isEnglishSubject ? cEn : 
                        isPunjabiSubject ? (cPa || cEn) : 
                        language === 'en' ? cEn : 
-                       language === 'pa' ? (cPa || cEn) : 
+                       language === 'pa' ? cPa : 
                        (
                         <div className="inline">
                           {cEn} {cPa && cPa !== cEn && <span className="text-primary/40 mx-1.5">/</span>} {cPa !== cEn && cPa}
@@ -136,7 +134,7 @@ export default function QuestionRenderer({
                 </div>
               )}
               
-              {(isPunjabiSubject || (language !== 'en' && expPa && expPa !== expEn)) && (
+              {(isPunjabiSubject || (language !== 'en' && expPa)) && (
                 <div className="space-y-2 pt-4 border-t border-emerald-100/30">
                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-emerald-600/60">ਪੰਜਾਬੀ ਵਿਆਖਿਆ</p>
                    <p className="text-[14px] text-slate-700 font-medium leading-relaxed italic whitespace-pre-wrap">

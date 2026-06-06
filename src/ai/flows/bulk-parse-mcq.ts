@@ -12,23 +12,23 @@ import { z } from 'genkit';
 
 const QuestionOutputSchema = z.object({
   question_number: z.number().describe('The sequential index of the question.'),
-  question_english: z.string().describe('Clean English question text. Strip all prefixes like "Q1."'),
-  question_punjabi: z.string().describe('Clean Punjabi question text. Strip all prefixes like "ਪ੍ਰਸ਼ਨ 1." or "ਪ੍ਰਸ਼ਨ 01". NO NUMBERING.'),
-  option_a_english: z.string(),
-  option_a_punjabi: z.string(),
-  option_b_english: z.string(),
-  option_b_punjabi: z.string(),
-  option_c_english: z.string(),
-  option_c_punjabi: z.string(),
-  option_d_english: z.string(),
-  option_d_punjabi: z.string(),
+  question_english: z.string().describe('Clean English question text. Strip all prefixes like "Q1.", "Question 1.", etc.'),
+  question_punjabi: z.string().describe('Clean Punjabi question text. Strip all prefixes like "ਪ੍ਰਸ਼ਨ 1.", "ਪ੍ਰਸ਼ਨ 01", or "ਸਵਾਲ 1". NO NUMBERING.'),
+  option_a_english: z.string().describe('Clean English text for Option A.'),
+  option_a_punjabi: z.string().describe('Clean Punjabi text for Option A.'),
+  option_b_english: z.string().describe('Clean English text for Option B.'),
+  option_b_punjabi: z.string().describe('Clean Punjabi text for Option B.'),
+  option_c_english: z.string().describe('Clean English text for Option C.'),
+  option_c_punjabi: z.string().describe('Clean Punjabi text for Option C.'),
+  option_d_english: z.string().describe('Clean English text for Option D.'),
+  option_d_punjabi: z.string().describe('Clean Punjabi text for Option D.'),
   correct_option: z.enum(['A', 'B', 'C', 'D']),
-  explanation_english: z.string().describe('Detailed English derivation. Ensure a clear newline between logical points.'),
-  explanation_punjabi: z.string().describe('Detailed Punjabi rationale. Ensure clear spacing.'),
+  explanation_english: z.string().describe('Full Step-by-step English logic. Use newlines between steps.'),
+  explanation_punjabi: z.string().describe('Full Step-by-step Punjabi logic. Use newlines between steps.'),
 });
 
 const BulkParseInputSchema = z.object({
-  rawText: z.string().describe('The large block of raw bilingual MCQ text.'),
+  rawText: z.string().describe('The block of raw bilingual MCQ text.'),
 });
 
 const BulkParseOutputSchema = z.array(QuestionOutputSchema);
@@ -44,18 +44,18 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert bilingual data-formatting AI specializing in bulk ingestion for competitive exams. 
 
 ### DATA EXTRACTION RULES:
-1. NO DUAL NUMBERING IN QUESTIONS: Extract the English and Punjabi statements cleanly. You MUST strip prefixes like "Q1.", "ਪ੍ਰਸ਼ਨ 1.", or "ਪ੍ਰਸ਼ਨ 01" from the text content. The fields should contain ONLY the question statement.
-2. NO SLASHES IN QUESTION STATEMENTS: Do not use a slash to separate languages in the question_english or question_punjabi fields. Put them in their respective fields.
-3. CLEAN OPTIONS: Separate the English and Punjabi options from strings like "(A) 15 days / 15 ਦਿਨ". Strip the (A) label and provide clean text for each language field.
-4. EXPLANATION SPACING: In explanation_english and explanation_punjabi, ensure you include clear spacing and mathematical steps. Use newlines to separate logical blocks.
+1. NO DUAL NUMBERING OR SLASHES IN QUESTIONS: Extract English and Punjabi questions into their separate fields. You MUST strip prefixes like "Q1.", "ਪ੍ਰਸ਼ਨ 1.", or "ਪ੍ਰਸ਼ਨ 01" from the content. The fields should contain ONLY the question statement.
+2. NO SLASHES IN STATEMENTS: Do not use a slash to separate languages within a single field.
+3. CLEAN OPTIONS: Separate English and Punjabi options from strings like "(A) Geometry / ਰੇਖਾਗਣਿਤ (Geometry)". Strip labels and redundant brackets. Punjabi field should only have Punjabi text, English field only English text.
+4. EXPLANATION SPACING: Extract full step-by-step logic. Ensure a clear newline exists between logical steps in the explanation fields.
 
 ---
 ### INPUT DATA FOR BULK INGESTION:
 {{{rawText}}}
 ---
 
-Please parse the entire dataset at once without omitting any questions or solutions. 
-Return a valid JSON array of objects matching the specified schema.`,
+Parse the entire dataset at once without omitting any questions or solutions. 
+Return ONLY a valid JSON array of objects matching the specified schema.`,
 });
 
 const bulkParseMCQFlow = ai.defineFlow(
