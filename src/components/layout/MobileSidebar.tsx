@@ -18,7 +18,8 @@ import {
   Home,
   LogOut,
   ChevronDown,
-  Info
+  Info,
+  LayoutGrid
 } from "lucide-react";
 import Link from "next/link";
 import { useUser, useAuth } from "@/firebase";
@@ -36,7 +37,7 @@ import { useState } from "react";
 
 /**
  * @fileOverview Responsive Mobile Navigation Hub.
- * Updated: Replaced 'Exams' with 'Exam Calendar' for differentiation.
+ * Updated: Analysis replaced with 'Free Hub'.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -56,9 +57,9 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
 
   const primaryMenu = [
     { label: "Home", href: "/", icon: Home },
+    { label: "Free Hub", href: "/current-affairs", icon: LayoutGrid },
     { label: "Practice Series", href: "/mocks", icon: Zap },
     { label: "Exam Calendar", href: "/exam-calendar", icon: CalendarDays },
-    { label: "Daily Analysis", href: "/current-affairs", icon: Newspaper },
     { label: "Study Notes", href: "/notes", icon: FileText },
     { label: "Performance", href: "/dashboard", icon: BarChart3 },
     { label: "PYQ Hub", href: "/pyqs", icon: FileStack },
