@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -15,8 +14,8 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview Institutional Uniform Typography Question Engine v70.0.
- * Scale: Desktop 36px, Laptop 30px, Tablet 24px, Mobile 20px.
+ * @fileOverview Institutional Uniform Typography Question Engine v71.0.
+ * Standard Scale: Desktop 28px, Mobile 18px (Optimized for readability).
  * Rule: Identical typography (#111111, 700 weight) across all modes.
  */
 export default function QuestionRenderer({ 
@@ -31,14 +30,12 @@ export default function QuestionRenderer({
   const isHi = language === 'hi';
   const isBi = language === 'bilingual';
 
-  // Uniform Typography Standard
-  const desktopSize = "xl:text-[36px] lg:text-[30px]";
-  const tabletSize = "md:text-[24px]";
-  const mobileSize = "text-[20px]";
+  // Uniform Typography Standard - Professional CBT Scale
+  const desktopSize = "lg:text-[28px]";
+  const mobileSize = "text-[18px]";
   
   const typographyClass = cn(
     mobileSize, 
-    tabletSize, 
     desktopSize, 
     "font-[700] leading-[1.6] antialiased tracking-tight text-[#111111]"
   );
@@ -55,9 +52,9 @@ export default function QuestionRenderer({
             </div>
          )}
          
-         {/* PA Mode or BI Mode */}
+         {/* PA Mode or BI Mode - Color locked to #111111 */}
          {(isPa || isBi) && (
-            <div className={cn(typographyClass, isBi && "text-[#1E3A8A]")}>
+            <div className={typographyClass}>
                <MathText text={question.punjabiQuestion || ""} />
             </div>
          )}
@@ -70,7 +67,7 @@ export default function QuestionRenderer({
          )}
       </div>
 
-      {/* Spacing before options */}
+      {/* Spacing before options - Reduced for vertical rhythm */}
       <div className="h-[24px]" />
 
       {/* 2. OPTION HUB */}
@@ -82,16 +79,16 @@ export default function QuestionRenderer({
             const hi = (question as any)[`option${key}Hindi`];
 
             return (
-              <div key={key} className="flex gap-4 items-center group p-4 h-auto min-h-[72px] md:min-h-[88px] rounded-[16px] border-2 border-slate-100 hover:border-primary/20 transition-all bg-white shadow-sm">
+              <div key={key} className="flex gap-4 items-center group p-4 h-auto min-h-[68px] md:min-h-[72px] rounded-[16px] border-2 border-slate-100 hover:border-primary/20 transition-all bg-white shadow-sm">
                 <span className="shrink-0 font-black px-3 py-1 bg-[#0F172A] text-white rounded-lg text-xs md:text-sm">({key})</span>
                 <div className="flex-1 py-1 overflow-hidden">
-                   {isEn && <p className="font-[600] text-[20px] text-[#111111] leading-tight">{en}</p>}
-                   {isPa && <p className="font-[600] text-[20px] text-[#111111] leading-tight">{pa || en}</p>}
-                   {isHi && <p className="font-[600] text-[20px] text-[#111111] leading-tight">{hi || en}</p>}
+                   {isEn && <p className="font-[600] text-[18px] text-[#111111] leading-tight">{en}</p>}
+                   {isPa && <p className="font-[600] text-[18px] text-[#111111] leading-tight">{pa || en}</p>}
+                   {isHi && <p className="font-[600] text-[18px] text-[#111111] leading-tight">{hi || en}</p>}
                    {isBi && (
                       <div className="flex flex-col gap-1">
-                         <p className="font-[600] text-[20px] text-[#111111] leading-tight">{en}</p>
-                         <p className="font-[600] text-[20px] text-[#1E3A8A] leading-tight">{pa || hi}</p>
+                         <p className="font-[600] text-[18px] text-[#111111] leading-tight">{en}</p>
+                         <p className="font-[600] text-[18px] text-[#111111] leading-tight">{pa || hi}</p>
                       </div>
                    )}
                 </div>
@@ -110,9 +107,7 @@ export default function QuestionRenderer({
                     <CheckCircle2 className="h-6 w-6" />
                  </div>
                  <div className="text-left">
-                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-600">
-                      {isPa ? 'ਸਹੀ ਉੱਤਰ' : 'Verified Answer'}
-                    </p>
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-600">Verified Answer</p>
                     <h4 className="text-xl font-headline font-black text-emerald-900 uppercase">Option {question.correctAnswer}</h4>
                  </div>
               </div>
@@ -122,17 +117,15 @@ export default function QuestionRenderer({
               {(isEn || isBi) && (
                 <div className="mb-8">
                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-4">English Rationale</p>
-                  <div className="text-[18px] md:text-[20px] text-[#111111] leading-[2] font-medium">
+                  <div className="text-[18px] text-[#111111] leading-[2] font-medium">
                     <MathText text={question.englishExplanation || ""} />
                   </div>
                 </div>
               )}
               {(isPa || isBi) && (
                 <div className={cn(isBi && "pt-8 border-t border-slate-200")}>
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-4">
-                    {isPa ? 'ਪੰਜਾਬੀ ਵਿਆਖਿਆ' : 'Punjabi Explanation'}
-                  </p>
-                  <div className="text-[18px] md:text-[20px] text-[#111111] leading-[2] font-medium">
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-4">Punjabi Explanation</p>
+                  <div className="text-[18px] text-[#111111] leading-[2] font-medium">
                     <MathText text={question.punjabiExplanation || ""} />
                   </div>
                 </div>
