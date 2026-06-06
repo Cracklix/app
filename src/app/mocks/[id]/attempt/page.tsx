@@ -26,8 +26,8 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Final Institutional CBT Attempt Hub v9.0.
- * Optimized: Centered layout with tighter visual rhythm to minimize mouse travel.
+ * @fileOverview Final Institutional CBT Attempt Hub v10.0.
+ * Optimized: Reduced width to 920px for high-density focus and ergonomics.
  * Hardened: Robust Firestore guards to prevent runtime crashes.
  */
 
@@ -228,7 +228,7 @@ export default function MockAttemptPage() {
         </AnimatePresence>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-6 lg:p-8 bg-[#000000] flex flex-col items-center">
-           <div className="w-full max-w-[1000px] pb-20">
+           <div className="w-full max-w-[920px] pb-10">
               {q ? (
                 <QuestionRenderer 
                    language={examStore.language} 
