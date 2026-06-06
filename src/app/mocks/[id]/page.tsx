@@ -1,11 +1,12 @@
+
 "use client"
 
 import { useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
-import { useDoc, useFirestore, useUser } from "@/firebase"
-import { doc } from "firebase/firestore"
+import { useDoc, useFirestore, useUser, useCollection } from "@/firebase"
+import { doc, collection } from "firebase/firestore"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
@@ -28,8 +29,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Mock Overview Node with Simplified Binary Access.
- * FREE content is open to all. PREMIUM requires any active pass.
+ * @fileOverview Mock Overview Node with Tiered Pass Enforcement.
+ * FREE content is open to all. PREMIUM requires specific tier or any active pass.
  */
 
 export default function MockOverviewPage() {
@@ -40,6 +41,12 @@ export default function MockOverviewPage() {
   const mockId = params.id as string
   
   const { data: mock, loading: mockLoading } = useDoc<any>(useMemo(() => (db ? doc(db, "mocks", mockId) : null), [db, mockId]))
+  const { data: passes } = useCollection<any>(useMemo(() => (db ? collection(db, "passes") : null), [db]))
+
+  const requiredPass = useMemo(() => {
+    if (!mock?.passId || !passes) return null;
+    return passes.find((p: any) => p.id === mock.passId);
+  }, [mock, passes])
 
   const isAuthority = useMemo(() => {
     if (!profile) return false;
@@ -54,11 +61,18 @@ export default function MockOverviewPage() {
     // Content level is Free - Everyone enters
     if (mock.accessType === 'FREE') return false;
     
-    // Content is Premium - Check if user has an active pass (status is not 'Free')
+    // Content is Premium
     const userPassStatus = profile.status || 'Free';
-    if (userPassStatus !== 'Free') return false;
+    if (userPassStatus === 'Free') return true;
 
-    return true;
+    // Specific Pass Check: If mock requires a specific tier (e.g. Gold)
+    if (mock.passId && userPassStatus !== mock.passId) {
+      // NOTE: Here we could add "Heirarchy" logic, but as per current MVP, 
+      // we check for specific Tier ID or match.
+      return true;
+    }
+
+    return false;
   }, [mock, profile, isAuthority])
 
   if (mockLoading) return <div className="h-screen flex items-center justify-center bg-white"><Skeleton className="h-20 w-20 rounded-full" /></div>
@@ -95,7 +109,7 @@ export default function MockOverviewPage() {
                     </Badge>
                     {mock.accessType === 'PREMIUM' && (
                       <Badge className="bg-amber-100 text-amber-600 border-none px-3 py-1 rounded-lg font-black uppercase text-[9px] tracking-widest flex items-center gap-1.5">
-                         <Lock className="h-3 w-3" /> PREMIUM NODE
+                         <Lock className="h-3 w-3" /> {requiredPass?.name || 'PREMIUM'} NODE
                       </Badge>
                     )}
                  </div>
@@ -113,7 +127,9 @@ export default function MockOverviewPage() {
               <div className="w-full md:w-auto">
                  {isLocked ? (
                     <Button asChild className="w-full h-16 md:h-20 md:px-12 bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-2xl shadow-amber-900/20 gap-4">
-                      <Link href="/pass"><Lock className="h-5 w-5" /> Get Premium Pass</Link>
+                      <Link href={requiredPass ? `/checkout?plan=${requiredPass.id}` : "/pass"}>
+                        <Lock className="h-5 w-5" /> Get {requiredPass?.name || 'Premium'} Pass
+                      </Link>
                     </Button>
                  ) : (
                     <Button asChild className="w-full h-16 md:h-20 md:px-12 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-2xl shadow-slate-300 gap-4 group">
@@ -138,9 +154,9 @@ export default function MockOverviewPage() {
                  </div>
                  
                  <div className="space-y-4">
-                    <h2 className="text-4xl font-headline font-black text-[#0F172A] uppercase">Premium Content Gated</h2>
+                    <h2 className="text-4xl font-headline font-black text-[#0F172A] uppercase">{requiredPass?.name || 'Premium'} Vault Gated</h2>
                     <p className="text-slate-500 text-lg font-medium max-w-xl mx-auto">
-                       This high-fidelity practice series is part of the institutional premium vault. Upgrade your pass to unlock upcoming exam patterns and AI rationalizations.
+                       This high-fidelity practice series requires the {requiredPass?.name || 'Premium'} tier. Upgrade your pass to unlock upcoming exam patterns and AI rationalizations.
                     </p>
                  </div>
 
@@ -151,7 +167,7 @@ export default function MockOverviewPage() {
                  </div>
 
                  <Button asChild className="h-16 px-16 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl shadow-3xl shadow-primary/30">
-                    <Link href="/pass">View Premium Plans</Link>
+                    <Link href={requiredPass ? `/checkout?plan=${requiredPass.id}` : "/pass"}>Unlock {requiredPass?.name || 'Premium'} Now</Link>
                  </Button>
               </div>
            </div>

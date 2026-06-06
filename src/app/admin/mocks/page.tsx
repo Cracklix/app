@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Eye, MoreVertical, Search, Filter, Trash2, Edit, ClipboardList, Layers, History, CheckCircle2, XCircle, Copy } from "lucide-react"
+import { Plus, Eye, MoreVertical, Search, Filter, Trash2, Edit, ClipboardList, Layers, History, CheckCircle2, XCircle, Copy, Gem } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, deleteDoc, doc, setDoc, serverTimestamp } from "firebase/firestore"
@@ -19,8 +19,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Ultimate Mock Management Ledger v4.5.
- * Features: High-Fidelity Table, Duplicate Engine, and Exam Filtering.
+ * @fileOverview Ultimate Mock Management Ledger v5.0.
+ * Features: Pass Tier Visibility, High-Fidelity Table, Duplicate Engine.
  */
 
 export default function MockManagement() {
@@ -38,6 +38,7 @@ export default function MockManagement() {
 
   const { data: rawMocks, loading } = useCollection<any>(mocksQuery)
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
+  const { data: passes } = useCollection<any>(useMemo(() => (db ? collection(db, "passes") : null), [db]))
 
   const mocks = useMemo(() => {
     if (!rawMocks) return []
@@ -132,7 +133,7 @@ export default function MockManagement() {
             <TableHeader className="bg-slate-50/50">
               <TableRow className="border-slate-50 h-20">
                 <TableHead className="px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Mock Identity & Context</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Matrix</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Access Tier</TableHead>
                 <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Status</TableHead>
                 <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Last Audit</TableHead>
                 <TableHead className="text-right px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Control</TableHead>
@@ -144,57 +145,69 @@ export default function MockManagement() {
                   <TableRow key={i} className="border-slate-50"><TableCell colSpan={5} className="px-10 py-8"><Skeleton className="h-16 w-full rounded-2xl" /></TableCell></TableRow>
                 ))
               ) : mocks.length > 0 ? (
-                mocks.map((mock: any) => (
-                  <TableRow key={mock.id} className="hover:bg-slate-50 group border-slate-50 transition-colors">
-                    <TableCell className="px-10 py-10">
-                      <div className="flex items-center gap-6">
-                        <div className="h-16 w-16 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-                          <ClipboardList className="h-7 w-7 text-slate-400 group-hover:text-primary transition-colors" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <p className="font-black text-[#0F172A] text-xl uppercase tracking-tight leading-none">{mock.title}</p>
-                          <div className="flex items-center gap-3">
-                             <Badge variant="outline" className="border-slate-200 text-[8px] font-black uppercase px-2 py-0.5">{mock.boardId}</Badge>
-                             <div className="h-1 w-1 rounded-full bg-slate-300" />
-                             <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">{mock.mockType} NODE</span>
+                mocks.map((mock: any) => {
+                   const passName = passes?.find((p: any) => p.id === mock.passId)?.name || 'Any Premium';
+                   return (
+                    <TableRow key={mock.id} className="hover:bg-slate-50 group border-slate-50 transition-colors">
+                      <TableCell className="px-10 py-10">
+                        <div className="flex items-center gap-6">
+                          <div className="h-16 w-16 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                            <ClipboardList className="h-7 w-7 text-slate-400 group-hover:text-primary transition-colors" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <p className="font-black text-[#0F172A] text-xl uppercase tracking-tight leading-none">{mock.title}</p>
+                            <div className="flex items-center gap-3">
+                               <Badge variant="outline" className="border-slate-200 text-[8px] font-black uppercase px-2 py-0.5">{mock.boardId}</Badge>
+                               <div className="h-1 w-1 rounded-full bg-slate-200" />
+                               <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">{mock.totalQuestions} Questions</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                       <div className="space-y-1">
-                          <p className="font-headline font-black text-[#0F172A] text-2xl leading-none">{mock.totalQuestions}</p>
-                          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Questions Indexed</p>
-                       </div>
-                    </TableCell>
-                    <TableCell>
-                       <button onClick={() => togglePublish(mock.id, mock.published)} className="flex items-center gap-3 group/status">
-                          <div className={cn("h-2.5 w-2.5 rounded-full", mock.published ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-slate-300')} />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover/status:text-primary transition-colors">{mock.published ? 'PUBLISHED' : 'DRAFT NODE'}</span>
-                       </button>
-                    </TableCell>
-                    <TableCell>
-                       <div className="space-y-1">
-                          <p className="text-xs font-bold text-slate-500">{new Date(mock.updatedAt?.seconds * 1000 || Date.now()).toLocaleDateString()}</p>
-                          <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Cloud Synced</p>
-                       </div>
-                    </TableCell>
-                    <TableCell className="text-right px-10">
-                      <div className="flex justify-end gap-3 opacity-20 group-hover:opacity-100 transition-all">
-                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl hover:bg-white hover:text-primary shadow-sm" asChild title="View Student Hub">
-                          <Link href={`/mocks/${mock.id}`}><Eye className="h-5 w-5" /></Link>
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl hover:bg-white hover:text-blue-500 shadow-sm" onClick={() => handleDuplicate(mock)} title="Clone Blueprint">
-                          <Copy className="h-5 w-5" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl hover:bg-white hover:text-primary shadow-sm" asChild title="Edit Blueprint">
-                          <Link href={`/admin/mocks/builder?id=${mock.id}`}><Edit className="h-5 w-5" /></Link>
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl hover:bg-rose-50 hover:text-rose-600 shadow-sm" onClick={() => handleDelete(mock.id)} title="Purge Module"><Trash2 className="h-5 w-5" /></Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
+                      </TableCell>
+                      <TableCell>
+                         <div className="flex flex-col gap-1.5">
+                            <Badge className={cn(
+                               "border-none text-[8px] font-black uppercase px-3 py-1 rounded-lg w-fit",
+                               mock.accessType === 'FREE' ? "bg-slate-100 text-slate-500" : "bg-amber-100 text-amber-600"
+                            )}>
+                               {mock.accessType}
+                            </Badge>
+                            {mock.accessType === 'PREMIUM' && (
+                               <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                  <Gem className="h-3 w-3 text-amber-500" /> {passName}
+                               </div>
+                            )}
+                         </div>
+                      </TableCell>
+                      <TableCell>
+                         <button onClick={() => togglePublish(mock.id, mock.published)} className="flex items-center gap-3 group/status">
+                            <div className={cn("h-2.5 w-2.5 rounded-full", mock.published ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-slate-300')} />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover/status:text-primary transition-colors">{mock.published ? 'PUBLISHED' : 'DRAFT NODE'}</span>
+                         </button>
+                      </TableCell>
+                      <TableCell>
+                         <div className="space-y-1">
+                            <p className="text-xs font-bold text-slate-500">{new Date(mock.updatedAt?.seconds * 1000 || Date.now()).toLocaleDateString()}</p>
+                            <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Cloud Synced</p>
+                         </div>
+                      </TableCell>
+                      <TableCell className="text-right px-10">
+                        <div className="flex justify-end gap-3 opacity-20 group-hover:opacity-100 transition-all">
+                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl hover:bg-white hover:text-primary shadow-sm" asChild title="View Student Hub">
+                            <Link href={`/mocks/${mock.id}`}><Eye className="h-5 w-5" /></Link>
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl hover:bg-white hover:text-blue-500 shadow-sm" onClick={() => handleDuplicate(mock)} title="Clone Blueprint">
+                            <Copy className="h-5 w-5" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl hover:bg-white hover:text-primary shadow-sm" asChild title="Edit Blueprint">
+                            <Link href={`/admin/mocks/builder?id=${mock.id}`}><Edit className="h-5 w-5" /></Link>
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl hover:bg-rose-50 hover:text-rose-600 shadow-sm" onClick={() => handleDelete(mock.id)} title="Purge Module"><Trash2 className="h-5 w-5" /></Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })
               ) : (
                 <TableRow><TableCell colSpan={5} className="h-80 text-center opacity-20 font-black uppercase text-xs tracking-widest">No mocks matched the current audit filter.</TableCell></TableRow>
               )}

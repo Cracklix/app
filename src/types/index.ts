@@ -126,6 +126,7 @@ export interface MockTest {
   subjectId?: string;
   mockType: MockType;
   accessType: AccessType;
+  passId?: string; // Links to a specific Pass node
   duration: number;
   totalQuestions: number;
   questionIds: string[];

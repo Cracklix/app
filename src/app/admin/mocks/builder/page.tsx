@@ -34,7 +34,8 @@ import {
   MinusCircle,
   PlusCircle,
   XCircle,
-  CheckSquare
+  CheckSquare,
+  Gem
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, where, orderBy, limit, getDocs } from "firebase/firestore"
@@ -65,6 +66,7 @@ function MockBuilderContent() {
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
   const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
+  const { data: passes } = useCollection<any>(useMemo(() => (db ? query(collection(db, "passes"), where("active", "==", true)) : null), [db]))
   
   const [bankLoading, setBankLoading] = useState(false)
   const [questionBank, setQuestionBank] = useState<any[]>([])
@@ -79,6 +81,7 @@ function MockBuilderContent() {
     difficulty: "Medium" as Difficulty, 
     mockType: "FULL" as MockType, 
     accessType: "FREE" as AccessType,
+    passId: "", // Linked Pass Tier
     published: false,
     positiveMarks: 1,
     negativeMarks: 0.25,
@@ -88,13 +91,12 @@ function MockBuilderContent() {
   const [selectedQuestions, setSelectedQuestions] = useState<any[]>([])
   const [bankSelection, setBankSelection] = useState<string[]>([])
 
-  // Fetch Bank Nodes (Limit 100 for performance)
   useEffect(() => {
     async function fetchBank() {
       if (!db) return
       setBankLoading(true)
       try {
-        const q = query(collection(db, "questions"), limit(100))
+        const q = query(collection(db, "questions"), limit(250))
         const snap = await getDocs(q)
         setQuestionBank(snap.docs.map(d => ({ ...d.data(), id: d.id })))
       } finally {
@@ -106,7 +108,11 @@ function MockBuilderContent() {
 
   useEffect(() => {
     if (existingMock) {
-      setMockData(prev => ({ ...prev, ...existingMock }));
+      setMockData(prev => ({ 
+        ...prev, 
+        ...existingMock,
+        passId: existingMock.passId || ""
+      }));
       if (existingMock.questionIds && questionBank.length > 0) {
         const staged = questionBank.filter(q => existingMock.questionIds.includes(q.id))
         setSelectedQuestions(staged)
@@ -229,7 +235,7 @@ function MockBuilderContent() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase text-slate-500">Access Protocol</Label>
-                    <Select value={mockData.accessType} onValueChange={(v: AccessType) => setMockData({...mockData, accessType: v})}>
+                    <Select value={mockData.accessType} onValueChange={(v: AccessType) => setMockData({...mockData, accessType: v, passId: v === 'FREE' ? '' : mockData.passId})}>
                       <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-slate-50 font-black uppercase text-[10px]"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="FREE">Free Node</SelectItem>
@@ -238,6 +244,22 @@ function MockBuilderContent() {
                     </Select>
                   </div>
                </div>
+
+               {mockData.accessType === 'PREMIUM' && (
+                  <div className="space-y-2 animate-in slide-in-from-top-4 duration-500">
+                    <Label className="text-[10px] font-black uppercase text-primary flex items-center gap-2"><Gem className="h-3 w-3" /> Required Pass Tier</Label>
+                    <Select value={mockData.passId} onValueChange={(v: string) => setMockData({...mockData, passId: v})}>
+                      <SelectTrigger className="rounded-xl h-14 bg-primary/5 border-primary/20 font-black uppercase text-[10px] text-primary"><SelectValue placeholder="Any Premium Pass" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Any Premium Pass</SelectItem>
+                        {passes?.map((p: any) => (
+                           <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest px-1">Selected pass will be required to unlock this test.</p>
+                  </div>
+               )}
 
                <div className="pt-8 border-t border-slate-50 flex items-center justify-between p-6 bg-slate-50/50 rounded-3xl">
                   <div className="space-y-1">
