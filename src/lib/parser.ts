@@ -1,7 +1,7 @@
 
 /**
  * @fileOverview Institutional Ultimate Hybrid Ingestion Engine.
- * Features: Automatic Subject Normalization via Alias Mapping.
+ * Features: Automated Numbering Purge & Sequential ID Generation.
  */
 
 import { Question, Difficulty, ContentStatus, QuestionType } from "@/types";
@@ -12,9 +12,14 @@ export interface ParsedResults {
   confidence: number;
 }
 
+/**
+ * Aggressively cleans imported text.
+ * Strips artifacts like "1.", "Q1.", "Question 1:", "**2.**"
+ */
 function cleanText(text: string): string {
   if (!text) return "";
   return text
+    .replace(/^(\s*\**\s*(?:Q|Question)?\s*\d+[\.\):-]*\s*\*?\s*)/i, '') // Strips leading 1., Q1., Question 1:
     .replace(/^[\s\d\.\*]+/, '') 
     .replace(/\*+$/, '')         
     .replace(/[\*\_]/g, '')      
@@ -24,23 +29,19 @@ function cleanText(text: string): string {
 
 /**
  * Intelligent Subject Normalizer.
- * Matches input string against Canonical Subjects and their Aliases.
  */
 export function normalizeSubjectId(input: string, masterSubjects: any[]): string {
   if (!input || !masterSubjects) return 'general-knowledge';
   const cleanInput = input.trim().toLowerCase();
   
-  // 1. Check Exact Matches
   const exact = masterSubjects.find(s => s.name.toLowerCase() === cleanInput || s.id.toLowerCase() === cleanInput);
   if (exact) return exact.id;
   
-  // 2. Check Alias Registry
   const aliasMatch = masterSubjects.find(s => 
     s.aliases?.some((a: string) => a.toLowerCase() === cleanInput)
   );
   if (aliasMatch) return aliasMatch.id;
   
-  // 3. Fallback
   return 'general-knowledge';
 }
 
@@ -79,10 +80,18 @@ export function parseBulkQuestions(
         parsed = parseSimpleBlock(block, metadata);
       }
 
+      // Generate Sequential ID Placeholder
+      const prefix = metadata.examId.substring(0, 4).toUpperCase();
+      const timestamp = Date.now().toString().slice(-6);
+      const displayId = `${prefix}-${timestamp}-${index + 1}`;
+
       questions.push({
         ...parsed,
+        displayId, // Automated Sequential ID
         isStandalone: true,
-        status: metadata.status
+        status: metadata.status,
+        questionEn: cleanText(parsed.questionEn || ""),
+        questionPa: cleanText(parsed.questionPa || "")
       });
 
     } catch (err: any) {
@@ -102,8 +111,6 @@ function parseTaggedBlock(block: string, metadata: any, masterSubjects: any[]): 
   };
 
   const qType = (getTag("QUESTION_TYPE") || "MCQ").toUpperCase() as QuestionType;
-  
-  // Dynamic Normalization for per-question subjects if tagged
   const blockSubject = getTag("SUBJECT");
   const finalSubjectId = blockSubject 
     ? normalizeSubjectId(blockSubject, masterSubjects) 
