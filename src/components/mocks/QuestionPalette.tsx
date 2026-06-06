@@ -1,26 +1,21 @@
 
 'use client';
 
-import { useMemo, useState, useEffect } from "react"
+import { useMemo, useState } from "react"
 import { cn } from "@/lib/utils"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, LayoutGrid, List, FileText, Info } from "lucide-react"
 import { useExamStore } from '@/store/useExamStore';
 
 /**
- * @fileOverview Institutional CBT Matrix v18.0.
- * Optimized for Testbook-style high density.
- * Fixed 5x5 grid (25 questions) per view.
- * Zero redundant whitespace.
+ * @fileOverview Professional CBT Palette Node v25.0.
+ * Strictly mirrors Testbook/SSC Grid View.
+ * 5-column matrix with official color-coded logic.
  */
 export default function QuestionPalette({ onSelect }: { onSelect: (index: number) => void }) {
   const { questions, status, currentIdx, visited } = useExamStore();
-  const totalQuestions = questions.length;
-  const pageSize = 25;
+  const [viewMode, setViewViewMode] = useState<'grid' | 'list'>('grid');
   const [currentPage, setCurrentPage] = useState(0);
-
-  useEffect(() => {
-    setCurrentPage(Math.floor(currentIdx / pageSize));
-  }, [currentIdx]);
+  const pageSize = 25;
 
   const summary = useMemo(() => {
     const s = { answered: 0, marked: 0, notAnswered: 0, notVisited: 0, ansMarked: 0 };
@@ -35,31 +30,60 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
     return s;
   }, [questions, status, visited]);
 
-  const visibleQuestions = useMemo(() => {
-    return questions.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
-  }, [questions, currentPage]);
-
-  const totalPages = Math.ceil(totalQuestions / pageSize);
+  const totalPages = Math.ceil(questions.length / pageSize);
+  const visibleQuestions = questions.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
 
   return (
-    <div className="flex flex-col h-full bg-white text-left font-body p-4">
+    <div className="flex flex-col h-full bg-white text-left font-body">
       
-      {/* 1. STATISTICS HUB - Compact & High Density */}
-      <div className="grid grid-cols-2 gap-2 mb-4 shrink-0">
-         <LegendItem count={summary.answered} label="Answered" color="bg-emerald-500" />
-         <LegendItem count={summary.notAnswered} label="Not Answered" color="bg-rose-500" />
-         <LegendItem count={summary.marked} label="Marked" color="bg-purple-600" />
-         <LegendItem count={summary.notVisited} label="Not Visited" color="bg-slate-100" textColor="text-slate-400" />
-         <LegendItem count={summary.ansMarked} label="Ans & Marked" color="bg-indigo-600" colSpan={2} />
+      {/* 1. PALETTE HEADER TABS */}
+      <div className="flex border-b border-slate-100">
+         <button 
+           onClick={() => setViewViewMode('grid')}
+           className={cn(
+             "flex-1 h-12 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border-b-2 transition-all",
+             viewMode === 'grid' ? "border-primary text-primary bg-primary/5" : "border-transparent text-slate-400"
+           )}
+         >
+            <LayoutGrid className="h-3.5 w-3.5" /> Grid View
+         </button>
+         <button 
+           onClick={() => setViewViewMode('list')}
+           className={cn(
+             "flex-1 h-12 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border-b-2 transition-all",
+             viewMode === 'list' ? "border-primary text-primary bg-primary/5" : "border-transparent text-slate-400"
+           )}
+         >
+            <List className="h-3.5 w-3.5" /> List View
+         </button>
       </div>
 
-      <div className="h-px w-full bg-slate-100 mb-4 shrink-0" />
+      {/* 2. TACTICAL LINKS */}
+      <div className="grid grid-cols-2 divide-x divide-slate-100 border-b border-slate-100">
+         <button className="h-10 flex items-center justify-center gap-2 text-[9px] font-black uppercase text-slate-500 hover:bg-slate-50">
+            <Info className="h-3 w-3 text-primary" /> Instructions
+         </button>
+         <button className="h-10 flex items-center justify-center gap-2 text-[9px] font-black uppercase text-slate-500 hover:bg-slate-50">
+            <FileText className="h-3 w-3 text-primary" /> Question Paper
+         </button>
+      </div>
 
-      {/* 2. NAVIGATION GRID - 5x5 Matrix (Locked) */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-         <div className="grid grid-cols-5 gap-2 justify-items-center pb-4">
+      {/* 3. LEGEND / STATISTICS */}
+      <div className="p-4 grid grid-cols-2 gap-2 bg-slate-50/50">
+         <LegendItem count={summary.answered} label="Answered" color="bg-blue-600" />
+         <LegendItem count={summary.notAnswered} label="Not Answered" color="bg-slate-400" />
+         <LegendItem count={summary.marked} label="Marked" color="bg-pink-500" />
+         <LegendItem count={summary.notVisited} label="Not Visited" color="bg-white border-slate-200" textColor="text-slate-400" />
+         <LegendItem count={summary.ansMarked} label="Ans & Marked" color="bg-violet-600" colSpan={2} />
+      </div>
+
+      <div className="h-px w-full bg-slate-100" />
+
+      {/* 4. GRID MATRIX (5x5 Locked) */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
+         <div className="grid grid-cols-5 gap-2.5">
             {visibleQuestions.map((_, i) => {
-              const idx = currentPage * pageSize + i
+              const idx = currentPage * pageSize + i;
               const st = status[idx];
               const isVisited = visited.includes(idx);
               const isCurrent = currentIdx === idx;
@@ -69,13 +93,13 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
                   key={idx}
                   onClick={() => onSelect(idx)}
                   className={cn(
-                    "w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center font-black text-xs md:text-sm transition-all border-2",
-                    isCurrent ? "border-primary bg-white text-primary scale-105 shadow-md z-10" : "border-transparent",
-                    !isCurrent && st === 'answered' ? "bg-emerald-500 text-white" :
-                    !isCurrent && st === 'marked' ? "bg-purple-600 text-white" :
-                    !isCurrent && st === 'answered-marked' ? "bg-indigo-600 text-white" :
-                    !isCurrent && isVisited ? "bg-rose-500 text-white" :
-                    !isCurrent && "bg-slate-100 text-slate-400"
+                    "w-10 h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center font-black text-xs transition-all border-2",
+                    isCurrent ? "border-primary bg-white text-primary scale-110 shadow-lg z-10" : "border-transparent",
+                    !isCurrent && st === 'answered' ? "bg-blue-600 text-white" :
+                    !isCurrent && st === 'marked' ? "bg-pink-500 text-white" :
+                    !isCurrent && st === 'answered-marked' ? "bg-violet-600 text-white" :
+                    !isCurrent && isVisited ? "bg-slate-400 text-white" :
+                    !isCurrent && "bg-slate-50 text-slate-400 border-slate-100"
                   )}
                 >
                   {idx + 1}
@@ -85,32 +109,32 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
          </div>
       </div>
 
-      {/* 3. PAGINATION HUB */}
+      {/* 5. PAGINATION NAV */}
       {totalPages > 1 && (
-        <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between shrink-0">
+        <div className="p-4 border-t border-slate-100 bg-white flex items-center justify-between">
            <button 
-              disabled={currentPage === 0}
-              onClick={() => setCurrentPage(p => p - 1)}
-              className="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-50 hover:bg-slate-100 disabled:opacity-30 transition-all border border-slate-200"
+             disabled={currentPage === 0}
+             onClick={() => setCurrentPage(p => p - 1)}
+             className="h-9 w-9 rounded-lg border border-slate-200 flex items-center justify-center disabled:opacity-30 hover:bg-slate-50"
            >
               <ChevronLeft className="h-4 w-4" />
            </button>
-           <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
-             {currentPage + 1} / {totalPages}
+           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              Palette {currentPage + 1} / {totalPages}
            </span>
            <button 
-              disabled={currentPage === totalPages - 1}
-              onClick={() => setCurrentPage(p => p + 1)}
-              className="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-50 hover:bg-slate-100 disabled:opacity-30 transition-all border border-slate-200"
+             disabled={currentPage === totalPages - 1}
+             onClick={() => setCurrentPage(p => p + 1)}
+             className="h-9 w-9 rounded-lg border border-slate-200 flex items-center justify-center disabled:opacity-30 hover:bg-slate-50"
            >
               <ChevronRight className="h-4 w-4" />
            </button>
         </div>
       )}
 
-      <div className="mt-4">
-         <p className="text-[8px] font-black text-slate-300 uppercase tracking-[0.4em] text-center">
-            CRACKLIX CBT
+      <div className="pb-4 pt-2">
+         <p className="text-[7px] font-black text-slate-300 uppercase tracking-[0.4em] text-center">
+            CRACKLIX INSTITUTIONAL CBT
          </p>
       </div>
     </div>
@@ -120,7 +144,7 @@ export default function QuestionPalette({ onSelect }: { onSelect: (index: number
 function LegendItem({ count, label, color, textColor = "text-white", colSpan = 1 }: any) {
   return (
     <div className={cn("flex items-center gap-2 p-1.5 rounded-lg border border-slate-100 bg-white shadow-sm", colSpan > 1 && "col-span-2")}>
-       <div className={cn("h-5 w-5 rounded-md flex items-center justify-center text-[9px] font-black shrink-0", color, textColor)}>
+       <div className={cn("h-5 w-5 rounded-md flex items-center justify-center text-[9px] font-black shrink-0 border", color, textColor)}>
           {count}
        </div>
        <span className="text-[8px] font-black uppercase text-slate-500 tracking-tight truncate">{label}</span>
