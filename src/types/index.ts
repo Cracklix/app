@@ -164,3 +164,16 @@ export interface Question {
   createdAt: any;
   updatedAt: any;
 }
+
+export interface FreeContent {
+  id: string;
+  title: string;
+  description: string;
+  slug: string;
+  type: 'mock' | 'pdf' | 'current' | 'pyq' | 'note';
+  link: string;
+  fileUrl?: string;
+  category: string;
+  createdAt: any;
+  updatedAt: any;
+}

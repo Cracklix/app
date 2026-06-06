@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,16 +9,17 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Trash2, Edit, Save, Search, LayoutGrid, FileText, Zap, Globe, FileStack, Loader2, X, Sparkles, TrendingUp } from "lucide-react"
+import { Plus, Trash2, Edit, Save, Search, Sparkles, FileText, Zap, TrendingUp, FileStack, Loader2, X, Link as LinkIcon } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc, query, orderBy, serverTimestamp } from "firebase/firestore"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Free Content CMS Node v2.0.
- * Optimized for "Gagan Pratap" style high-fidelity data distribution.
+ * @fileOverview Institutional Free Content CMS v3.0.
+ * Features: Slug Generation, SEO Metadata, and High-Fidelity Dialog UI.
  */
 
 export default function AdminFreeContent() {
@@ -30,6 +31,16 @@ export default function AdminFreeContent() {
 
   const [editingItem, setEditingItem] = useState<any>(null)
   const [searchTerm, setSearchTerm] = useState("")
+
+  // Auto-generate slug from title
+  useEffect(() => {
+    if (editingItem && !editingItem.id && editingItem.title) {
+       const slug = editingItem.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+       if (editingItem.slug !== slug) {
+          setEditingItem({ ...editingItem, slug });
+       }
+    }
+  }, [editingItem]);
 
   const handleSave = async () => {
     if (!db || !editingItem) return
@@ -83,7 +94,7 @@ export default function AdminFreeContent() {
           <h1 className="text-5xl font-black font-headline text-[#0F172A] uppercase tracking-tight leading-none">Free Hub CMS</h1>
           <p className="text-slate-500 mt-2 text-lg font-medium">Coordinate high-fidelity Mocks, PDFs, and News for the public feed.</p>
         </div>
-        <Button onClick={() => setEditingItem({ title: "", description: "", type: "pdf", link: "", fileUrl: "" })} className="bg-primary hover:bg-orange-600 gap-3 h-16 px-10 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl transition-all active:scale-95">
+        <Button onClick={() => setEditingItem({ title: "", description: "", slug: "", type: "pdf", link: "", fileUrl: "" })} className="bg-primary hover:bg-orange-600 gap-3 h-16 px-10 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl transition-all active:scale-95">
           <Plus className="h-5 w-5" /> Initialize Free Content
         </Button>
       </div>
@@ -106,13 +117,14 @@ export default function AdminFreeContent() {
               <TableRow className="border-slate-50 h-20">
                 <TableHead className="px-10 text-[10px] font-black uppercase text-slate-500">Asset Identity</TableHead>
                 <TableHead className="text-[10px] font-black uppercase text-slate-500">Hub Type</TableHead>
+                <TableHead className="text-[10px] font-black uppercase text-slate-500">URL / Slug</TableHead>
                 <TableHead className="text-right px-10 text-[10px] font-black uppercase text-slate-500">Audit Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}><TableCell colSpan={3} className="px-10 py-8"><Skeleton className="h-14 w-full rounded-2xl bg-slate-50" /></TableCell></TableRow>
+                  <TableRow key={i}><TableCell colSpan={4} className="px-10 py-8"><Skeleton className="h-14 w-full rounded-2xl bg-slate-50" /></TableCell></TableRow>
                 ))
               ) : filteredContent.map((item) => (
                 <TableRow key={item.id} className="hover:bg-slate-50 border-slate-50 transition-all group">
@@ -136,6 +148,9 @@ export default function AdminFreeContent() {
                     <Badge variant="outline" className="bg-white border-slate-200 text-slate-500 text-[9px] font-black uppercase px-3 py-1 rounded-lg">
                        {item.type?.toUpperCase()} HUB
                     </Badge>
+                  </TableCell>
+                  <TableCell className="text-left">
+                     <code className="text-[10px] font-mono text-primary font-bold">/{item.slug || 'no-slug'}</code>
                   </TableCell>
                   <TableCell className="text-right px-10">
                     <div className="flex justify-end gap-3 opacity-20 group-hover:opacity-100 transition-all">
@@ -168,6 +183,11 @@ export default function AdminFreeContent() {
             </div>
 
             <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Asset Slug (SEO URL)</Label>
+              <Input value={editingItem?.slug || ""} onChange={e => setEditingItem({...editingItem, slug: e.target.value})} className="h-12 rounded-xl border-slate-100 bg-slate-50 font-mono text-xs text-primary" placeholder="e.g. punjab-gk-mock-1" />
+            </div>
+
+            <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Marketing Abstract (Description)</Label>
               <Textarea value={editingItem?.description || ""} onChange={e => setEditingItem({...editingItem, description: e.target.value})} className="rounded-xl border-slate-100 bg-slate-50 h-24 font-medium" />
             </div>
@@ -190,13 +210,21 @@ export default function AdminFreeContent() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Asset Link (Test URI or PDF URL)</Label>
-              <Input value={editingItem?.link || ""} onChange={e => setEditingItem({...editingItem, link: e.target.value})} className="h-14 rounded-xl border-slate-100 bg-slate-50 font-bold text-primary" placeholder="https://..." />
+              <Label className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2">
+                 <LinkIcon className="h-3 w-3" /> Asset Link (Test Path or PDF URL)
+              </Label>
+              <Input 
+                value={editingItem?.link || ""} 
+                onChange={e => setEditingItem({...editingItem, link: e.target.value})} 
+                className="h-14 rounded-xl border-slate-100 bg-slate-50 font-bold text-primary" 
+                placeholder="e.g. /mocks/mock-id-here or https://..." 
+              />
+              <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest px-1">Tip: Use '/mocks/ID' for internal tests or 'https://' for external files.</p>
             </div>
           </div>
 
           <DialogFooter className="p-10 pt-0 flex gap-4">
-            <Button variant="ghost" onClick={() => setEditingItem(null)} className="rounded-xl h-14 font-black uppercase text-[10px]">Cancel Draft</Button>
+            <button onClick={() => setEditingItem(null)} className="rounded-xl h-14 px-8 font-black uppercase text-[10px] text-slate-400 hover:text-[#0F172A]">Cancel Draft</button>
             <Button onClick={handleSave} className="bg-[#0F172A] hover:bg-black h-14 px-10 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 shadow-xl transition-all active:scale-95">
               Commit to Registry
             </Button>
