@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo, useCallback } from "react"
@@ -19,8 +18,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/co
 type LangMode = 'en' | 'pa' | 'bilingual'
 
 /**
- * @fileOverview Institutional High-Fidelity CBT Engine v13.0.
- * Optimized: Unified bilingual selection logic and sanitized artifacts.
+ * @fileOverview Institutional High-Fidelity CBT Engine v14.0.
+ * Permanent Fix: Removed double-rendering of options and hardened bilingual joining.
  */
 
 export default function MockAttemptPage() {
@@ -77,7 +76,18 @@ export default function MockAttemptPage() {
   }, [currentIdx, questions, subjects, exams, mock])
 
   const cleanText = (text: string = "") => {
-    return text.replace(/^[A-D][\.\):\s-]*/i, '').trim();
+    return text.replace(/^[A-D][\.\):\s-]*/i, '').replace(/\*\*/g, '').trim();
+  };
+
+  const renderOptionContent = (qNode: any, key: string) => {
+    const en = qNode[`option${key}En`] || "";
+    const pa = qNode[`option${key}Pa`] || "";
+    const cEn = cleanText(en);
+    const cPa = cleanText(pa);
+
+    if (language === 'en') return cEn;
+    if (language === 'pa') return cPa || cEn;
+    return `${cEn}${cPa ? ` / ${cPa}` : ''}`;
   };
 
   const submitMock = useCallback(async () => {
@@ -200,43 +210,36 @@ export default function MockAttemptPage() {
              </Sheet>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar">
-             <div className="max-w-3xl mx-auto pb-10">
+          <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+             <div className="max-w-4xl mx-auto pb-10">
                 <QuestionRenderer 
                    language={language}
                    question={q}
+                   hideOptions={true}
                 />
                 
-                <div className="mt-6 space-y-2">
+                <div className="mt-8 space-y-3">
                    <RadioGroup 
                      value={answers[currentIdx]?.toString() || ""} 
                      onValueChange={(v) => setAnswers(prev => ({ ...prev, [currentIdx]: parseInt(v) }))} 
-                     className="grid grid-cols-1 gap-2"
+                     className="grid grid-cols-1 gap-3"
                    >
                      {['A', 'B', 'C', 'D'].map((k, i) => {
                        const isSelected = answers[currentIdx] === i;
-                       const rawEn = q?.[`option${k}En`] || "";
-                       const rawPa = q?.[`option${k}Pa`] || "";
-                       const cEn = cleanText(rawEn);
-                       const cPa = cleanText(rawPa);
-
-                       let displayVal = "";
-                       if (language === 'en') displayVal = cEn;
-                       else if (language === 'pa') displayVal = cPa || cEn;
-                       else displayVal = `${cEn}${cPa ? ` / ${cPa}` : ''}`;
+                       const displayVal = renderOptionContent(q, k);
 
                        return (
                          <div key={i} className={cn(
-                           "flex items-center space-x-3 p-3 md:p-4 border-2 rounded-xl transition-all cursor-pointer shadow-sm",
+                           "flex items-center space-x-4 p-4 md:p-6 border-2 rounded-2xl transition-all cursor-pointer shadow-sm",
                            isSelected ? 'border-primary bg-primary/5' : 'border-slate-100 bg-white hover:border-slate-200'
                          )} onClick={() => setAnswers(prev => ({ ...prev, [currentIdx]: i }))}>
                             <div className={cn(
-                               "h-6 w-6 md:h-8 md:w-8 rounded-full border-2 flex items-center justify-center font-black text-[10px] md:text-xs shrink-0",
+                               "h-8 w-8 md:h-10 md:w-10 rounded-full border-2 flex items-center justify-center font-black text-xs md:text-sm shrink-0",
                                isSelected ? "bg-primary border-primary text-white" : "border-slate-200 text-slate-300"
                             )}>
                                {k}
                             </div>
-                            <Label className="flex-1 cursor-pointer select-none text-sm md:text-base font-bold text-black text-left leading-snug">
+                            <Label className="flex-1 cursor-pointer select-none text-base md:text-lg font-bold text-black text-left leading-snug">
                                {displayVal || "N/A"}
                             </Label>
                          </div>
@@ -247,26 +250,26 @@ export default function MockAttemptPage() {
              </div>
           </div>
 
-          <footer className="h-14 md:h-16 border-t border-slate-100 bg-white px-4 md:px-8 flex items-center justify-between shrink-0 shadow-sm">
-             <div className="flex gap-2">
-                <Button variant="outline" className="h-9 md:h-11 px-4 text-[9px] font-black uppercase rounded-lg border-slate-200" onClick={() => currentIdx > 0 && setCurrentIdx(currentIdx - 1)} disabled={currentIdx === 0}>
-                   <ChevronLeft className="h-3 w-3 mr-1" /> Prev
+          <footer className="h-14 md:h-20 border-t border-slate-100 bg-white px-4 md:px-12 flex items-center justify-between shrink-0 shadow-sm">
+             <div className="flex gap-2 md:gap-4">
+                <Button variant="outline" className="h-10 md:h-13 px-6 text-[10px] font-black uppercase rounded-xl border-slate-200" onClick={() => currentIdx > 0 && setCurrentIdx(currentIdx - 1)} disabled={currentIdx === 0}>
+                   <ChevronLeft className="h-4 w-4 mr-2" /> Prev
                 </Button>
-                <Button variant="ghost" className="h-9 md:h-11 px-3 text-[9px] font-black uppercase text-slate-300 rounded-lg hidden sm:flex" onClick={() => setAnswers(p => { const n={...p}; delete n[currentIdx]; return n; })}>Clear</Button>
+                <Button variant="ghost" className="h-10 md:h-13 px-4 text-[10px] font-black uppercase text-slate-300 rounded-xl hidden sm:flex" onClick={() => setAnswers(p => { const n={...p}; delete n[currentIdx]; return n; })}>Clear</Button>
              </div>
-             <div className="flex gap-2">
-                <Button variant="outline" className={cn("h-9 md:h-11 px-4 text-[9px] font-black uppercase rounded-lg border-2 transition-all", flagged.includes(currentIdx) ? "bg-amber-500 border-amber-500 text-white" : "text-amber-500 border-amber-100 hover:bg-amber-50")} onClick={() => { if(!flagged.includes(currentIdx)) setFlagged(p=>[...p, currentIdx]); else setFlagged(p=>p.filter(idx=>idx!==currentIdx)); }}>
+             <div className="flex gap-2 md:gap-4">
+                <Button variant="outline" className={cn("h-10 md:h-13 px-6 text-[10px] font-black uppercase rounded-xl border-2 transition-all", flagged.includes(currentIdx) ? "bg-amber-500 border-amber-500 text-white" : "text-amber-500 border-amber-100 hover:bg-amber-50")} onClick={() => { if(!flagged.includes(currentIdx)) setFlagged(p=>[...p, currentIdx]); else setFlagged(p=>p.filter(idx=>idx!==currentIdx)); }}>
                    {flagged.includes(currentIdx) ? 'FLAGGED' : 'REVIEW'}
                 </Button>
-                <Button className="bg-black hover:bg-slate-900 text-white h-9 md:h-11 px-6 md:px-8 rounded-lg font-black uppercase text-[9px] tracking-widest shadow-xl transition-all active:scale-95" onClick={() => { if(currentIdx < questions.length-1) { const next = currentIdx + 1; setCurrentIdx(next); if(!visited.includes(next)) setVisited(v=>[...v, next])} }}>
-                   Next <ChevronRight className="h-3 w-3 ml-1" />
+                <Button className="bg-black hover:bg-slate-900 text-white h-10 md:h-13 px-8 md:px-12 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl transition-all active:scale-95" onClick={() => { if(currentIdx < questions.length-1) { const next = currentIdx + 1; setCurrentIdx(next); if(!visited.includes(next)) setVisited(v=>[...v, next])} }}>
+                   Next <ChevronRight className="h-4 w-4 ml-2" />
                 </Button>
              </div>
           </footer>
         </div>
 
-        <aside className="w-[280px] border-l border-slate-50 bg-white hidden lg:flex flex-col shrink-0 overflow-hidden">
-           <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+        <aside className="w-[300px] border-l border-slate-50 bg-white hidden lg:flex flex-col shrink-0 overflow-hidden">
+           <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
               <QuestionPalette 
                 totalQuestions={questions.length} currentIndex={currentIdx} 
                 answeredIndices={Object.keys(answers).map(Number)} 
@@ -282,6 +285,6 @@ export default function MockAttemptPage() {
 
 function LangTab({ label, active, onClick }: any) {
   return (
-    <button onClick={onClick} className={cn("px-3 py-1 rounded-lg text-[8px] font-black tracking-widest transition-all", active ? "bg-primary text-white shadow-lg" : "text-white/40 hover:text-white hover:bg-white/5")}>{label}</button>
+    <button onClick={onClick} className={cn("px-3.5 py-1.5 rounded-lg text-[9px] font-black tracking-widest transition-all", active ? "bg-primary text-white shadow-lg" : "text-white/40 hover:text-white hover:bg-white/5")}>{label}</button>
   )
 }
