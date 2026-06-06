@@ -9,23 +9,26 @@ import { ChevronLeft, ChevronRight, RotateCcw, ShieldCheck } from 'lucide-react'
  * @fileOverview Testbook-style Fixed Footer with functional CBT logic.
  */
 export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
-  const { currentIdx, questions, setAnswer, markForReview, saveAndNext, setCurrentIdx } = useExamStore();
+  const { currentIdx, questions, clearAnswer, markForReview, saveAndNext, setCurrentIdx } = useExamStore();
 
   const isLast = currentIdx === questions.length - 1;
 
   return (
     <footer className="h-20 bg-white border-t border-slate-200 px-4 md:px-8 flex items-center justify-between shrink-0 sticky bottom-0 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
-      <div className="flex items-center gap-2">
+      
+      {/* LEFT NODE: PREVIOUS */}
+      <div className="flex items-center">
         <Button 
           variant="outline" 
           onClick={() => setCurrentIdx(Math.max(0, currentIdx - 1))}
           disabled={currentIdx === 0}
-          className="h-12 px-6 rounded-xl font-black uppercase text-[10px] tracking-widest border-slate-200 text-slate-500"
+          className="h-12 px-6 rounded-xl font-black uppercase text-[10px] tracking-widest border-slate-200 text-slate-500 hover:bg-slate-50"
         >
           <ChevronLeft className="h-4 w-4 mr-1" /> Previous
         </Button>
       </div>
 
+      {/* RIGHT GROUP: MARK, CLEAR, SAVE */}
       <div className="flex items-center gap-3">
         <Button 
           variant="outline" 
@@ -34,10 +37,11 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
         >
           Mark for Review & Next
         </Button>
+        
         <Button 
           variant="outline" 
-          onClick={() => setAnswer(currentIdx, null)}
-          className="h-12 px-6 md:px-10 rounded-xl font-black uppercase text-[10px] tracking-widest border-slate-200 text-slate-500"
+          onClick={() => clearAnswer(currentIdx)}
+          className="h-12 px-6 md:px-10 rounded-xl font-black uppercase text-[10px] tracking-widest border-slate-200 text-slate-500 hover:bg-slate-50"
         >
           <RotateCcw className="h-3.5 w-3.5 mr-2" /> Clear Response
         </Button>
@@ -45,14 +49,14 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
         {isLast ? (
           <Button 
             onClick={onSubmit}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white h-12 px-10 md:px-16 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white h-12 px-10 md:px-16 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl border-none"
           >
             Submit Test <ShieldCheck className="ml-2 h-4 w-4" />
           </Button>
         ) : (
           <Button 
             onClick={saveAndNext}
-            className="bg-[#0B1528] hover:bg-black text-white h-12 px-10 md:px-16 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl"
+            className="bg-[#0B1528] hover:bg-black text-white h-12 px-10 md:px-16 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl border-none"
           >
             Save & Next <ChevronRight className="h-4 w-4 ml-1" />
           </Button>

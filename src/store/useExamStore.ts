@@ -6,17 +6,19 @@ import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 interface ExamStore extends AttemptState {
   questions: Question[];
   mockId: string;
+  mockTitle: string;
   userId: string;
   language: ExamLanguage;
   isPaused: boolean;
   isSubmitting: boolean;
 
   // Actions
-  initExam: (mockId: string, userId: string, questions: Question[], duration: number, savedState?: Partial<AttemptState>) => void;
+  initExam: (mockId: string, mockTitle: string, userId: string, questions: Question[], duration: number, savedState?: Partial<AttemptState>) => void;
   setLanguage: (lang: ExamLanguage) => void;
   setPaused: (paused: boolean) => void;
   setCurrentIdx: (idx: number) => void;
   setAnswer: (idx: number, optionIdx: number | null) => void;
+  clearAnswer: (idx: number) => void;
   toggleBookmark: (idx: number) => void;
   markForReview: (idx: number) => void;
   saveAndNext: () => void;
@@ -28,6 +30,7 @@ interface ExamStore extends AttemptState {
 export const useExamStore = create<ExamStore>((set, get) => ({
   questions: [],
   mockId: '',
+  mockTitle: '',
   userId: '',
   language: 'bilingual',
   isPaused: false,
@@ -43,15 +46,19 @@ export const useExamStore = create<ExamStore>((set, get) => ({
   currentPartId: '',
   violations: 0,
 
-  initExam: (mockId, userId, questions, duration, savedState) => {
+  initExam: (mockId, mockTitle, userId, questions, duration, savedState) => {
+    const startIdx = savedState?.currentIdx || 0;
     set({
       mockId,
+      mockTitle,
       userId,
       questions,
       timeLeft: duration * 60,
       ...savedState,
-      currentPartId: questions[savedState?.currentIdx || 0]?.partId || 'PART A',
-      currentSectionId: questions[savedState?.currentIdx || 0]?.subjectId || '',
+      currentIdx: startIdx,
+      visited: Array.from(new Set([...(savedState?.visited || []), startIdx])),
+      currentPartId: questions[startIdx]?.partId || 'PART A',
+      currentSectionId: questions[startIdx]?.subjectId || '',
     });
   },
 
@@ -81,6 +88,15 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       newStatus[idx] = 'answered';
     }
 
+    set({ answers: newAnswers, status: newStatus });
+  },
+
+  clearAnswer: (idx) => {
+    const { answers, status } = get();
+    const newAnswers = { ...answers };
+    const newStatus = { ...status };
+    delete newAnswers[idx];
+    newStatus[idx] = 'not-answered';
     set({ answers: newAnswers, status: newStatus });
   },
 
