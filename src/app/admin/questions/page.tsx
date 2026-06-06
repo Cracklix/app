@@ -28,9 +28,9 @@ import {
 } from "@/components/ui/tooltip"
 
 /**
- * @fileOverview Institutional Asset Ledger (Global Bank) v5.1.
- * Features: Massive Scale Pagination, ID-Based Search, and Usage Detection.
- * Fixed: Redundant SelectValue tag, corrected Checkbox props, and optimized Scalable Query.
+ * @fileOverview Institutional Asset Ledger (Global Bank) v5.2.
+ * Fixed: Removed strict 'isStandalone' filter to recover legacy questions.
+ * Added: Comprehensive search including document ID.
  */
 
 export default function QuestionBank() {
@@ -46,12 +46,10 @@ export default function QuestionBank() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [pageLimit, setPageLimit] = useState(50)
 
-  // Optimized Scalable Query
-  // Note: Combined where/orderBy requires a composite index. 
-  // Please click the link in your console to create it.
+  // Optimized Scalable Query - Removed strict 'isStandalone' to show legacy data
   const qQuery = useMemo(() => {
     if (!db) return null
-    let constraints: any[] = [where("isStandalone", "==", true), orderBy("createdAt", "desc"), limit(pageLimit)];
+    let constraints: any[] = [orderBy("createdAt", "desc"), limit(pageLimit)];
     
     if (examFilter !== "all") constraints.unshift(where("examId", "==", examFilter));
     else if (boardFilter !== "all") constraints.unshift(where("boardId", "==", boardFilter));
@@ -86,7 +84,8 @@ export default function QuestionBank() {
       .filter(q => {
         const term = searchTerm.toLowerCase();
         const matchesSearch = (q.questionEn || q.titleEn || "").toLowerCase().includes(term) || 
-                             (q.displayId || "").toLowerCase().includes(term);
+                             (q.displayId || "").toLowerCase().includes(term) ||
+                             (q.id || "").toLowerCase().includes(term);
         const matchesSub = subjectFilter === "all" || q.subjectId === subjectFilter
         const usageCount = usageMap[q.id]?.length || 0;
         const matchesUnused = !showUnusedOnly || usageCount === 0
@@ -189,7 +188,7 @@ export default function QuestionBank() {
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
             <div className="relative w-full lg:w-[40%]">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input className="pl-12 h-12 rounded-xl bg-white border-none shadow-inner" placeholder="Search by Question ID (e.g. PP-001) or Text..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+              <Input className="pl-12 h-12 rounded-xl bg-white border-none shadow-inner" placeholder="Search by ID or Text..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <Select value={boardFilter} onValueChange={v => { setBoardFilter(v); setExamFilter("all"); }}>
@@ -240,6 +239,7 @@ export default function QuestionBank() {
                       <div className="flex items-center gap-3 mb-2">
                         <Badge className="bg-[#0F172A] text-white border-none text-[8px] font-black uppercase px-2 py-0.5">{q.displayId || 'Q-NODE'}</Badge>
                         <Badge variant="outline" className="text-[7px] font-bold uppercase">{q.questionType}</Badge>
+                        <code className="text-[7px] text-slate-400 font-mono">ID: {q.id}</code>
                       </div>
                       <p className="font-bold text-[#000000] text-base leading-snug line-clamp-2">{q.questionEn}</p>
                     </TableCell>

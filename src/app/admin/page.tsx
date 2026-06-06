@@ -14,9 +14,9 @@ import { useToast } from "@/hooks/use-toast"
 import { Progress } from "@/components/ui/progress"
 
 /**
- * @fileOverview Final Command Center v5.0.
- * Features: High-Fidelity Exam Breakdown and Live Content Statistics.
- * Fixed: Question count synced to match Atomic Bank filter (isStandalone == true).
+ * @fileOverview Final Command Center v5.1.
+ * Features: Synchronized Statistics with Global Database Volume.
+ * Fixed: Removed 'isStandalone' filter to show actual recovered question count.
  */
 
 export default function AdminDashboard() {
@@ -25,9 +25,9 @@ export default function AdminDashboard() {
   const { toast } = useToast()
   const [isSyncing, setIsSyncing] = useState(false)
 
-  // Real-time Collections with Strict Filtering for Atomic Bank
+  // Real-time Collections - Global count for accurate recovery reporting
   const { data: users } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]))
-  const { data: questions } = useCollection<any>(useMemo(() => (db ? query(collection(db, "questions"), where("isStandalone", "==", true)) : null), [db]))
+  const { data: questions } = useCollection<any>(useMemo(() => (db ? collection(db, "questions") : null), [db]))
   const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]))
   const { data: reports } = useCollection<any>(useMemo(() => (db ? collection(db, "reports") : null), [db]))
   const { data: results } = useCollection<any>(useMemo(() => (db ? collection(db, "results") : null), [db]))
@@ -99,7 +99,6 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-         {/* Exam Distribution Matrix */}
          <Card className="lg:col-span-8 border-none shadow-3xl bg-white rounded-[3.5rem] overflow-hidden text-left">
             <CardHeader className="p-12 border-b border-slate-50 bg-slate-50/30">
                <div className="flex items-center justify-between">
@@ -152,8 +151,8 @@ export default function AdminDashboard() {
                         <span className="text-rose-500 font-black">{reports?.filter(r => r.status === 'PENDING').length || 0}</span>
                      </div>
                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-slate-400 font-bold">Unused Questions</span>
-                        <span className="text-emerald-500 font-black">{questions?.filter(q => (q.usageCount || 0) === 0).length || 0}</span>
+                        <span className="text-slate-400 font-bold">Registry Volume</span>
+                        <span className="text-emerald-500 font-black">{questions?.length || 0} Nodes</span>
                      </div>
                   </div>
                   <Button asChild className="w-full bg-primary hover:bg-orange-600 text-white font-black uppercase h-14 rounded-2xl text-[10px] tracking-widest shadow-2xl">
