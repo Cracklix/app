@@ -39,7 +39,7 @@ import ShareButton from "@/components/navigation/ShareButton"
 
 /**
  * @fileOverview Student Dashboard v11.0.
- * Updated: Developer credit synced to Deep Grewal.
+ * Updated: Developer credit corrected to Arsh Grewal.
  */
 
 export default function StudentDashboard() {
@@ -137,7 +137,7 @@ export default function StudentDashboard() {
 
               {/* RECENT TESTS */}
               <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden text-left border border-slate-100">
-                 <CardHeader className="p-8 md:p-12 border-b border-slate-50 bg-slate-50/50 flex flex-row items-center justify-between">
+                 <CardHeader className="p-8 md:p-12 border-b border-slate-50 bg-slate-50/30 flex flex-row items-center justify-between">
                     <div className="space-y-1">
                        <h3 className="font-headline text-xl md:text-2xl font-black text-[#0F172A] uppercase">Recent Tests</h3>
                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Your latest performance records</p>
@@ -223,7 +223,7 @@ export default function StudentDashboard() {
 
               <div className="py-12 flex flex-col items-center gap-3 text-center border-t border-slate-100">
                  <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">
-                    Developed by <span className="text-[#0F172A] font-black">Deep Grewal</span>
+                    Developed by <span className="text-[#0F172A] font-black">Arsh Grewal</span>
                  </p>
               </div>
            </div>

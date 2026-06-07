@@ -11,7 +11,7 @@ import ShareButton from "@/components/navigation/ShareButton";
 
 /**
  * @fileOverview Final Institutional Footer Node v8.1.
- * Updated: Developer credit synced to Deep Grewal.
+ * Updated: Developer credit corrected to Arsh Grewal.
  */
 
 export default function Footer() {
@@ -108,7 +108,7 @@ export default function Footer() {
               © 2026 {content.platformName} | All Rights Reserved.
             </p>
             <p className="text-primary text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">
-               Founder & Lead Developer: Deep Grewal
+               Founder & Lead Developer: Arsh Grewal
             </p>
           </div>
           

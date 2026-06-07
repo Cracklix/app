@@ -13,13 +13,13 @@ import { Badge } from "@/components/ui/badge"
 
 /**
  * @fileOverview Institutional About Hub v3.2.
- * Updated: Founder Identity synced to Deep Grewal.
+ * Updated: Founder Identity corrected to Arsh Grewal.
  */
 
 export default function AboutPage() {
   const psssbPromo = PlaceHolderImages.find(img => img.id === 'promo-psssb')?.imageUrl;
   const armyHero = PlaceHolderImages.find(img => img.id === 'hero-army')?.imageUrl;
-  const founderImg = PlaceHolderImages.find(img => img.id === 'founder-deep')?.imageUrl;
+  const founderImg = PlaceHolderImages.find(img => img.id === 'founder-arsh')?.imageUrl;
 
   return (
     <div className="min-h-screen bg-white font-body">
@@ -65,7 +65,7 @@ export default function AboutPage() {
                  <div className="md:w-1/2 relative h-[500px] md:h-auto bg-slate-800 group">
                     <img 
                       src={founderImg!} 
-                      alt="Deep Grewal" 
+                      alt="Arsh Grewal" 
                       className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000"
                       referrerPolicy="no-referrer"
                       onError={(e) => {
@@ -75,7 +75,7 @@ export default function AboutPage() {
                     <div className="absolute inset-0 bg-primary/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="absolute bottom-10 left-10 z-10 flex flex-col gap-2">
                        <Badge className="bg-primary text-white border-none px-4 py-1 rounded-lg font-black uppercase text-[10px] tracking-widest w-fit shadow-xl">Lead Developer</Badge>
-                       <p className="text-white font-headline font-black text-4xl uppercase tracking-tight">Deep Grewal</p>
+                       <p className="text-white font-headline font-black text-4xl uppercase tracking-tight">Arsh Grewal</p>
                     </div>
                  </div>
                  <div className="md:w-1/2 p-12 md:p-24 flex flex-col justify-center space-y-10 text-left">
@@ -93,7 +93,7 @@ export default function AboutPage() {
                     </blockquote>
                     <div className="pt-8 border-t border-white/5 flex items-center gap-10">
                        <div className="text-left">
-                          <p className="text-white font-black uppercase tracking-widest text-2xl">Deep Grewal</p>
+                          <p className="text-white font-black uppercase tracking-widest text-2xl">Arsh Grewal</p>
                           <div className="flex items-center gap-3 mt-1.5">
                              <Badge variant="outline" className="border-primary/30 text-primary text-[8px] font-black uppercase tracking-widest">Founder</Badge>
                              <Badge variant="outline" className="border-blue-500/30 text-blue-400 text-[8px] font-black uppercase tracking-widest">Lead Developer</Badge>

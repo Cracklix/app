@@ -20,12 +20,12 @@ import { motion } from "framer-motion";
 
 /**
  * @fileOverview Institutional Landing Hub v27.0.
- * Updated: Added Founder & Developer section above footer.
+ * Updated: Founder & Developer identity corrected to Arsh Grewal.
  */
 
 export default function HomePage() {
   const db = useFirestore();
-  const founderImg = PlaceHolderImages.find(img => img.id === 'founder-deep')?.imageUrl;
+  const founderImg = PlaceHolderImages.find(img => img.id === 'founder-arsh')?.imageUrl;
 
   const usersQuery = useMemo(() => (db ? collection(db, "users") : null), [db]);
   const questionsQuery = useMemo(() => (db ? collection(db, "questions") : null), [db]);
@@ -71,16 +71,16 @@ export default function HomePage() {
                <div className="md:w-2/5 relative min-h-[400px] bg-slate-800">
                   <img 
                     src={founderImg!} 
-                    alt="Deep Grewal" 
+                    alt="Arsh Grewal" 
                     className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                     onError={(e) => {
-                       (e.target as HTMLImageElement).src = "https://picsum.photos/seed/deep/600/800";
+                       (e.target as HTMLImageElement).src = "https://picsum.photos/seed/arsh/600/800";
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0B1528] via-transparent to-transparent opacity-60" />
                   <div className="absolute bottom-10 left-10 z-10">
                      <Badge className="bg-primary text-white border-none px-4 py-1 rounded-lg font-black uppercase text-[10px] tracking-widest mb-2 shadow-xl">Lead Developer</Badge>
-                     <h3 className="text-white font-headline font-black text-3xl md:text-5xl uppercase tracking-tight leading-none">Deep Grewal</h3>
+                     <h3 className="text-white font-headline font-black text-3xl md:text-5xl uppercase tracking-tight leading-none">Arsh Grewal</h3>
                   </div>
                </div>
                <div className="md:w-3/5 p-10 md:p-24 flex flex-col justify-center space-y-8 md:space-y-12 text-left">
