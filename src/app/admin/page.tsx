@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, Database, Users, ShieldCheck, Zap, RefreshCw, Loader2, Landmark, BookOpen, Send } from "lucide-react"
+import { Plus, Database, Users, ShieldCheck, Zap, RefreshCw, Loader2, Landmark, BookOpen, Send, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, query } from "firebase/firestore"
@@ -11,16 +11,18 @@ import { useMemo, useState } from "react"
 import { seedInitialData } from "@/services/seed-data"
 import { useToast } from "@/hooks/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { motion, AnimatePresence } from "framer-motion"
 
 /**
  * @fileOverview Institutional Command Center.
- * Features: High-Fidelity Registry Volume Audits per Vertical.
+ * Enhanced Feedback Hub: Provides visible status for Registry Sync protocol.
  */
 
 export default function AdminDashboard() {
   const db = useFirestore()
   const { toast } = useToast()
   const [isSyncing, setIsSyncing] = useState(false)
+  const [lastSyncStatus, setLastSyncStatus] = useState<'idle' | 'success'>('idle')
 
   const usersQuery = useMemo(() => (db ? collection(db, "users") : null), [db])
   const questionsQuery = useMemo(() => (db ? collection(db, "questions") : null), [db])
@@ -61,9 +63,12 @@ export default function AdminDashboard() {
   const handlePushToRegistry = async () => {
     if (!db) return
     setIsSyncing(true)
+    setLastSyncStatus('idle')
     try {
       await seedInitialData(db)
-      toast({ title: "Registry Synced", description: "Official Punjab Exam hierarchy pushed to live registry." })
+      toast({ title: "Registry Synced", description: "Official Punjab Exam hierarchy pushed to live database." })
+      setLastSyncStatus('success')
+      setTimeout(() => setLastSyncStatus('idle'), 5000)
     } catch (e: any) {
       toast({ variant: "destructive", title: "Sync Failed", description: e.message })
     } finally {
@@ -77,14 +82,22 @@ export default function AdminDashboard() {
         <div>
            <div className="flex items-center gap-3 mb-2">
               <ShieldCheck className="h-5 w-5 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Live Registry Overview</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Live Database Overview</span>
            </div>
-          <h1 className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tight">Command Center</h1>
-          <p className="text-slate-500 mt-2 text-sm md:text-lg font-medium">Registry Volume: {questions?.length || 0} Atomic Nodes Locked.</p>
+          <h1 className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tight">Admin Center</h1>
+          <p className="text-slate-500 mt-2 text-sm md:text-lg font-medium">Database Volume: {questions?.length || 0} Questions Locked.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-           <Button onClick={handlePushToRegistry} disabled={isSyncing} className="bg-emerald-600 hover:bg-emerald-700 h-12 md:h-14 px-6 md:px-8 rounded-xl md:rounded-2xl font-black text-xs uppercase tracking-widest gap-3 shadow-xl text-white w-full sm:w-auto">
-              {isSyncing ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Push to Registry
+           <Button 
+             onClick={handlePushToRegistry} 
+             disabled={isSyncing} 
+             className={cn(
+               "h-12 md:h-14 px-6 md:px-8 rounded-xl md:rounded-2xl font-black text-xs uppercase tracking-widest gap-3 shadow-xl text-white w-full sm:w-auto transition-all",
+               lastSyncStatus === 'success' ? 'bg-emerald-500' : 'bg-emerald-600 hover:bg-emerald-700'
+             )}
+           >
+              {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : lastSyncStatus === 'success' ? <CheckCircle2 className="h-4 w-4" /> : <Send className="h-4 w-4" />} 
+              {isSyncing ? 'Syncing...' : lastSyncStatus === 'success' ? 'Sync Complete' : 'Push to Registry'}
            </Button>
            <Button asChild className="bg-[#0F172A] hover:bg-black text-white rounded-xl md:rounded-2xl h-12 md:h-14 px-8 md:px-10 font-black shadow-xl uppercase tracking-widest text-xs w-full sm:w-auto">
             <Link href="/admin/bulk-import"><Plus className="mr-2 h-4 w-4" /> Bulk Import</Link>
@@ -94,9 +107,9 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6 px-2 md:px-0">
          <StatCard label="Atomic Bank" value={questions?.length ?? "..."} icon={<Database className="text-blue-500" />} />
-         <StatCard label="Live Series" value={mocks?.filter((m: any) => m.published).length ?? "..."} icon={<Zap className="text-primary" />} />
-         <StatCard label="Pro Aspirants" value={proUsers.length} icon={<Users className="text-emerald-500" />} />
-         <StatCard label="PYQ Archives" value={pyqs?.length ?? "..."} icon={<Landmark className="text-orange-500" />} />
+         <StatCard label="Live Tests" value={mocks?.filter((m: any) => m.published).length ?? "..."} icon={<Zap className="text-primary" />} />
+         <StatCard label="Active Students" value={users?.length || "0"} icon={<Users className="text-emerald-500" />} />
+         <StatCard label="PYQ Papers" value={pyqs?.length ?? "..."} icon={<Landmark className="text-orange-500" />} />
          <StatCard label="Study Notes" value={notes?.length ?? "..."} icon={<BookOpen className="text-rose-500" />} />
       </div>
 
@@ -105,8 +118,8 @@ export default function AdminDashboard() {
             <Tabs defaultValue="subjects">
                <CardHeader className="p-6 md:p-12 border-b border-slate-50 bg-slate-50/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
-                    <CardTitle className="text-xl md:text-2xl font-headline font-black uppercase text-[#0F172A]">Mastery Hubs</CardTitle>
-                    <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Sectional and Vertical Registry Audit.</CardDescription>
+                    <CardTitle className="text-xl md:text-2xl font-headline font-black uppercase text-[#0F172A]">Mastery Centers</CardTitle>
+                    <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Subject and Board Database Audit.</CardDescription>
                   </div>
                   <TabsList className="bg-white border p-1 rounded-xl h-10 md:h-12 shadow-sm shrink-0">
                     <TabsTrigger value="subjects" className="font-black uppercase text-[8px] md:text-[9px] px-4 md:px-6 h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white">Subjects</TabsTrigger>
@@ -119,7 +132,7 @@ export default function AdminDashboard() {
                         {qLoading ? (
                            <div className="p-20 flex flex-col items-center justify-center gap-4 text-slate-300">
                               <Loader2 className="h-10 w-10 animate-spin" />
-                              <p className="font-black uppercase text-[10px]">Auditing Registry...</p>
+                              <p className="font-black uppercase text-[10px]">Auditing Database...</p>
                            </div>
                         ) : subjectBreakdown.map((s) => (
                            <div key={s.id} className="p-6 md:p-8 flex items-center justify-between hover:bg-slate-50/50 transition-colors">

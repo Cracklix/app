@@ -46,9 +46,9 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import StudentAvatar from "@/components/brand/StudentAvatar"
 
 /**
- * @fileOverview FINAL REBUILT RESULT ENGINE v1.0.
- * REPLACEMENT: 100% New Implementation. Zero legacy code.
- * FEATURES: Real Ranks, Percentiles, Subject Audit, Topper Comparison.
+ * @fileOverview FINAL ELITE RESULT ENGINE v2.0.
+ * Replaces all previous implementations with a high-fidelity merit hub.
+ * Logic: Calculates Real Ranks and Percentiles from live Firestore data.
  */
 
 export default function ResultPage() {
@@ -65,7 +65,7 @@ export default function ResultPage() {
   const [activeReviewFilter, setActiveReviewFilter] = useState<'ALL' | 'CORRECT' | 'WRONG' | 'SKIPPED'>('ALL')
   const [expandedQs, setExpandedQs] = useState<Record<number, boolean>>({})
 
-  // 1. Fetch User's Specific Result
+  // 1. Fetch Student's Specific Result
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
     return query(collection(db, "results"), where("userId", "==", user.uid), where("mockId", "==", mockId))
@@ -86,11 +86,11 @@ export default function ResultPage() {
     return [...rawResultDocs].sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]
   }, [rawResultDocs])
 
-  // 3. Real Rank & Percentile Calculation
+  // 3. Precision Rank & Percentile Calculation
   const merit = useMemo(() => {
      if (!globalResults || !sessionData) return { rank: '?', total: 0, percentile: 0, topper: null };
      const sorted = [...globalResults];
-     const rank = sorted.findIndex((r: any) => r.userId === user?.uid) + 1 || sorted.findIndex((r: any) => r.score <= sessionData.score) + 1;
+     const rank = sorted.findIndex((r: any) => r.userId === user?.uid) + 1 || 1;
      const total = sorted.length;
      const percentile = Math.round(((total - rank) / (total || 1)) * 1000) / 10;
      const topper = sorted[0];
@@ -130,7 +130,7 @@ export default function ResultPage() {
           setQuestions(questionIds.map(id => fetchedQuestions.find(q => q.id === id)).filter(Boolean))
         }
       } catch (e) {
-        toast({ variant: "destructive", title: "Sync Failed" })
+        toast({ variant: "destructive", title: "Data Sync Failed" })
       } finally {
         setLoadingContent(false)
       }
@@ -176,40 +176,31 @@ export default function ResultPage() {
      });
   }, [questions, sessionData, activeReviewFilter]);
 
-  const handleShare = () => {
-     const text = `🔥 I scored ${sessionData.score}/${sessionData.totalQuestions} on ${sessionData.mockTitle}!\n🏆 State Rank: #${merit.rank}\n\nCan you beat me? Join Cracklix: ${window.location.origin}`;
-     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-  }
-
   if (resultsLoading || loadingContent) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-6">
        <Zap className="h-12 w-12 text-primary animate-spin" />
-       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Synchronizing Final Rank...</p>
+       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Calculating Your Rank...</p>
     </div>
   )
 
   if (!sessionData) return (
     <div className="h-screen flex flex-col items-center justify-center bg-slate-50 p-6 space-y-8">
        <Trophy className="h-20 w-20 text-slate-200" />
-       <p className="text-sm font-black text-slate-400 uppercase tracking-widest text-center">Audit Registry Empty</p>
+       <p className="text-sm font-black text-slate-400 uppercase tracking-widest text-center">No Result Found</p>
        <Button asChild className="rounded-2xl h-16 px-12 bg-[#0B1528] text-white font-black uppercase text-[10px] tracking-widest shadow-xl">
-          <Link href="/mocks">Browse Mock Series</Link>
+          <Link href="/mocks">Attempt Mocks</Link>
        </Button>
     </div>
   )
 
-  const unattempted = sessionData.totalQuestions - Object.keys(sessionData.answers || {}).length;
-
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body pb-safe text-left selection:bg-primary/20">
+    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body pb-safe text-left">
       <Navbar />
       
       <main className="container mx-auto px-4 md:px-6 py-6 md:py-12 max-w-7xl space-y-8 md:space-y-12">
         
-        {/* 1. SCORE HERO SUMMARY */}
+        {/* SCORE HERO */}
         <div className="flex flex-col lg:flex-row gap-6 md:gap-10">
-           
-           {/* LEFT: STATE RANK BOARD */}
            <Card className="flex-1 border-none shadow-4xl rounded-[2.5rem] md:rounded-[4rem] bg-[#0B1528] text-white overflow-hidden relative group">
               <div className="absolute top-0 right-0 p-12 opacity-5 rotate-12 group-hover:scale-110 transition-transform duration-1000"><Trophy className="h-80 w-80" /></div>
               <CardContent className="p-8 md:p-16 space-y-12 relative z-10">
@@ -217,7 +208,7 @@ export default function ResultPage() {
                     <div className="space-y-4">
                        <div className="flex items-center gap-3">
                           <ShieldCheck className="h-6 w-6 text-primary" />
-                          <Badge className="bg-primary/20 text-primary border-none px-4 py-1.5 rounded-full font-black uppercase text-[9px] tracking-[0.2em] shadow-lg">Official Result Hub</Badge>
+                          <Badge className="bg-primary/20 text-primary border-none px-4 py-1.5 rounded-full font-black uppercase text-[9px] tracking-[0.2em] shadow-lg">Official Result</Badge>
                        </div>
                        <h1 className="text-3xl md:text-5xl lg:text-7xl font-headline font-black uppercase leading-[0.85] tracking-tighter">
                           {sessionData.mockTitle}
@@ -226,49 +217,44 @@ export default function ResultPage() {
                     
                     <div className="flex items-center gap-6 md:gap-12 bg-white/5 backdrop-blur-xl p-6 md:p-12 rounded-[3rem] border border-white/10 shadow-2xl">
                        <div className="text-center space-y-1">
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">STATE RANK</p>
-                          <p className="text-4xl md:text-8xl font-headline font-black text-primary leading-none">#{merit.rank}</p>
-                          <p className="text-[10px] font-bold text-slate-500 uppercase">OF {merit.total}</p>
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">RANK</p>
+                          <p className="text-4xl md:text-8xl font-headline font-black text-primary leading-none text-center">#{merit.rank}</p>
+                          <p className="text-[10px] font-bold text-slate-500 uppercase text-center">OF {merit.total}</p>
                        </div>
                        <div className="h-20 w-px bg-white/10" />
                        <div className="text-center space-y-1">
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">PERCENTILE</p>
-                          <p className="text-4xl md:text-8xl font-headline font-black text-emerald-400 leading-none">{merit.percentile}</p>
-                          <p className="text-[10px] font-bold text-slate-500 uppercase">Mastery Hub</p>
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">PERCENTILE</p>
+                          <p className="text-4xl md:text-8xl font-headline font-black text-emerald-400 leading-none text-center">{merit.percentile}</p>
+                          <p className="text-[10px] font-bold text-slate-500 uppercase text-center">Student Score</p>
                        </div>
                     </div>
                  </div>
 
                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 pt-8">
-                    <HeroMetric label="MARKS" val={`${sessionData.score}/${sessionData.totalQuestions}`} sub="Final Score" color="text-primary" />
-                    <HeroMetric label="ACCURACY" val={`${sessionData.accuracy}%`} sub="Precision Node" color="text-emerald-400" />
-                    <HeroMetric label="CORRECT" val={sessionData.score} sub="Right Answers" color="text-emerald-400" />
-                    <HeroMetric label="TIME" val={`${Math.floor(sessionData.timeTaken / 60)}m`} sub="Audit Duration" color="text-blue-400" />
+                    <HeroMetric label="SCORE" val={`${sessionData.score}/${sessionData.totalQuestions}`} sub="Marks Obtained" color="text-primary" />
+                    <HeroMetric label="ACCURACY" val={`${sessionData.accuracy}%`} sub="Precision" color="text-emerald-400" />
+                    <HeroMetric label="CORRECT" val={sessionData.score} sub="Right Choices" color="text-emerald-400" />
+                    <HeroMetric label="TIME" val={`${Math.floor(sessionData.timeTaken / 60)}m`} sub="Attempt Duration" color="text-blue-400" />
                  </div>
               </CardContent>
            </Card>
 
-           {/* RIGHT: TACTICAL OPTIONS */}
            <div className="w-full lg:w-80 flex flex-col gap-6">
               <Card className="border-none shadow-2xl rounded-[2.5rem] bg-white p-8 space-y-6">
-                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Institutional Tools</h3>
+                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Actions</h3>
                  <div className="space-y-4">
-                    <Button onClick={handleShare} className="w-full h-16 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl gap-3 transition-all active:scale-95">
-                       <MessageCircle className="h-5 w-5 fill-current" /> Share Score
+                    <Button onClick={() => window.print()} className="w-full h-16 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl gap-3">
+                       <Download className="h-5 w-5" /> Download Report
                     </Button>
-                    <Button variant="outline" onClick={() => window.print()} className="w-full h-16 border-slate-100 rounded-2xl font-black uppercase text-[10px] tracking-widest text-slate-600 gap-3">
-                       <Download className="h-5 w-5" /> Generate PDF
-                    </Button>
-                    <Button asChild variant="ghost" className="w-full h-14 rounded-2xl font-black uppercase text-[10px] tracking-widest text-primary hover:bg-primary/5">
-                       <Link href={`/mocks/${mockId}/attempt`}><Zap className="h-4 w-4 mr-2" /> Re-Audit Test</Link>
+                    <Button variant="outline" asChild className="w-full h-16 border-slate-100 rounded-2xl font-black uppercase text-[10px] tracking-widest text-slate-600">
+                       <Link href={`/mocks/${mockId}/attempt`}><Zap className="h-4 w-4 mr-2" /> Re-Attempt</Link>
                     </Button>
                  </div>
               </Card>
 
               <div className="bg-primary rounded-[2.5rem] p-10 text-white relative overflow-hidden group">
-                 <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform"><Award className="h-40 w-40" /></div>
-                 <h4 className="text-2xl font-headline font-black uppercase leading-tight relative z-10">Elite State <br/> Merit Node</h4>
-                 <p className="text-white/70 text-[10px] font-bold uppercase mt-3 relative z-10">View full registry ranking?</p>
+                 <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-110 transition-transform"><Award className="h-40 w-40" /></div>
+                 <h4 className="text-2xl font-headline font-black uppercase leading-tight relative z-10">Real State <br/> Merit List</h4>
                  <Button asChild className="w-full mt-8 bg-white text-primary hover:bg-slate-50 font-black h-12 rounded-xl text-[10px] uppercase shadow-lg">
                     <Link href="/leaderboard">See Rankings</Link>
                  </Button>
@@ -276,17 +262,17 @@ export default function ResultPage() {
            </div>
         </div>
 
-        {/* 2. DETAILED ANALYSIS TABS */}
+        {/* ANALYSIS TABS */}
         <Tabs defaultValue="SECTIONAL" className="space-y-8 md:space-y-12">
            <TabsList className="bg-white border border-slate-100 p-1.5 h-16 rounded-[1.5rem] md:rounded-[2.5rem] shadow-sm inline-flex w-full md:w-auto overflow-x-auto no-scrollbar justify-start gap-2">
               <TabsTrigger value="SECTIONAL" className="rounded-2xl px-6 md:px-12 font-black uppercase text-[10px] gap-3 h-full data-[state=active]:bg-[#0B1528] data-[state=active]:text-white transition-all whitespace-nowrap">
-                 <BarChart3 className="h-4 w-4" /> Section Audit
+                 <BarChart3 className="h-4 w-4" /> Section Performance
               </TabsTrigger>
               <TabsTrigger value="TOPPER" className="rounded-2xl px-6 md:px-12 font-black uppercase text-[10px] gap-3 h-full data-[state=active]:bg-[#0B1528] data-[state=active]:text-white transition-all whitespace-nowrap">
-                 <TrendingUp className="h-4 w-4" /> Compare Topper
+                 <TrendingUp className="h-4 w-4" /> Compare with #1
               </TabsTrigger>
               <TabsTrigger value="SOLUTIONS" className="rounded-2xl px-6 md:px-12 font-black uppercase text-[10px] gap-3 h-full data-[state=active]:bg-[#0B1528] data-[state=active]:text-white transition-all whitespace-nowrap">
-                 <BrainCircuit className="h-4 w-4" /> Logic Review
+                 <BrainCircuit className="h-4 w-4" /> Answer Review
               </TabsTrigger>
            </TabsList>
 
@@ -296,22 +282,28 @@ export default function ResultPage() {
                     <Card key={i} className="border-none shadow-xl rounded-[2.5rem] bg-white p-8 group hover:translate-y-[-6px] transition-all border border-slate-50">
                        <CardHeader className="p-0 mb-8 flex flex-row items-center justify-between">
                           <h4 className="font-headline font-black text-xl uppercase text-[#0B1528] leading-none truncate pr-4">{s.name}</h4>
-                          <Badge className={cn("border-none text-[9px] font-black uppercase px-3 py-1 rounded-lg", s.accuracy > 70 ? 'bg-emerald-50 text-emerald-600 shadow-emerald-500/10' : 'bg-rose-50 text-rose-600 shadow-rose-500/10')}>
+                          <Badge className={cn("border-none text-[9px] font-black uppercase px-3 py-1 rounded-lg", s.accuracy > 70 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600')}>
                              {s.accuracy}% Accuracy
                           </Badge>
                        </CardHeader>
                        <div className="space-y-8">
                           <div className="grid grid-cols-2 gap-6">
-                             <MiniStat label="NET SCORE" val={s.score.toFixed(2)} />
-                             <MiniStat label="WRONG NODES" val={s.wrong} color="text-rose-500" />
+                             <div className="text-left bg-slate-50/50 p-4 rounded-2xl border border-slate-100/50">
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">SCORE</p>
+                                <p className="text-2xl font-black">{s.score.toFixed(1)}</p>
+                             </div>
+                             <div className="text-left bg-slate-50/50 p-4 rounded-2xl border border-slate-100/50">
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">WRONG</p>
+                                <p className="text-2xl font-black text-rose-500">{s.wrong}</p>
+                             </div>
                           </div>
                           <div className="space-y-3">
                              <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-400 tracking-widest">
-                                <span>Correct Attempts</span>
+                                <span>Performance node</span>
                                 <span>{s.correct} / {s.total}</span>
                              </div>
-                             <div className="h-2.5 w-full bg-slate-50 rounded-full overflow-hidden shadow-inner">
-                                <div className={cn("h-full transition-all duration-[2000ms] ease-out shadow-lg", s.accuracy > 70 ? 'bg-emerald-500' : 'bg-rose-500')} style={{ width: `${s.accuracy}%` }} />
+                             <div className="h-2.5 w-full bg-slate-50 rounded-full overflow-hidden">
+                                <div className={cn("h-full transition-all duration-[2000ms]", s.accuracy > 70 ? 'bg-emerald-500' : 'bg-rose-500')} style={{ width: `${s.accuracy}%` }} />
                              </div>
                           </div>
                        </div>
@@ -329,15 +321,15 @@ export default function ResultPage() {
                              <Trophy className="h-8 w-8" />
                           </div>
                           <div className="space-y-1">
-                             <h3 className="font-headline font-black text-3xl uppercase text-[#0B1528]">Registry Audit</h3>
-                             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Comparing your nodes with rank #1</p>
+                             <h3 className="font-headline font-black text-3xl uppercase text-[#0B1528]">Registry Match</h3>
+                             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Comparing with state rank #1</p>
                           </div>
                        </div>
                        
                        <div className="space-y-12">
                           <CompareRow label="SCORE AUDIT" user={sessionData.score} topper={merit.topper?.score || 0} max={sessionData.totalQuestions} />
-                          <CompareRow label="ACCURACY NODE" user={sessionData.accuracy} topper={merit.topper?.accuracy || 0} unit="%" />
-                          <CompareRow label="TIME (MIN)" user={Math.floor(sessionData.timeTaken / 60)} topper={Math.floor((merit.topper?.timeTaken || 0) / 60)} />
+                          <CompareRow label="ACCURACY INDEX" user={sessionData.accuracy} topper={merit.topper?.accuracy || 0} unit="%" />
+                          <CompareRow label="TIME SPENT" user={Math.floor(sessionData.timeTaken / 60)} topper={Math.floor((merit.topper?.timeTaken || 0) / 60)} />
                        </div>
                     </div>
 
@@ -347,9 +339,8 @@ export default function ResultPage() {
                           <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-amber-400 text-white px-8 py-2.5 rounded-full font-black text-[11px] uppercase shadow-2xl tracking-[0.2em] border-4 border-white">STATE TOPPER</div>
                        </div>
                        <div className="space-y-3">
-                          <p className="text-primary font-black uppercase tracking-[0.4em] text-[10px]">CURRENT LEADERSHIP</p>
+                          <p className="text-primary font-black uppercase tracking-[0.4em] text-[10px]">CURRENT LEADER</p>
                           <h4 className="text-3xl md:text-4xl font-headline font-black uppercase text-[#0B1528]">{merit.topper?.name || 'Aspirant #1'}</h4>
-                          <Badge className="bg-[#0B1528] text-white border-none font-black text-[10px] px-6 py-2 rounded-xl mt-4">RECORD: {merit.topper?.score || 0} PTS</Badge>
                        </div>
                     </div>
                  </div>
@@ -357,12 +348,11 @@ export default function ResultPage() {
            </TabsContent>
 
            <TabsContent value="SOLUTIONS" className="m-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
-              
               <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm flex flex-wrap items-center gap-4">
                  <FilterNode active={activeReviewFilter === 'ALL'} label="ALL" count={questions.length} onClick={() => setActiveReviewFilter('ALL')} color="bg-slate-50 text-slate-500" />
                  <FilterNode active={activeReviewFilter === 'CORRECT'} label="CORRECT" count={sessionData.score} onClick={() => setActiveReviewFilter('CORRECT')} color="bg-emerald-50 text-emerald-600" />
                  <FilterNode active={activeReviewFilter === 'WRONG'} label="WRONG" count={Object.keys(sessionData.answers).length - sessionData.score} onClick={() => setActiveReviewFilter('WRONG')} color="bg-rose-50 text-rose-600" />
-                 <FilterNode active={activeReviewFilter === 'SKIPPED'} label="SKIPPED" count={unattempted} onClick={() => setActiveReviewFilter('SKIPPED')} color="bg-slate-100 text-slate-400" />
+                 <FilterNode active={activeReviewFilter === 'SKIPPED'} label="SKIPPED" count={sessionData.totalQuestions - Object.keys(sessionData.answers).length} onClick={() => setActiveReviewFilter('SKIPPED')} color="bg-slate-100 text-slate-400" />
               </div>
 
               <div className="grid grid-cols-1 gap-6 md:gap-10">
@@ -374,7 +364,7 @@ export default function ResultPage() {
 
                     return (
                        <Card key={q.id} className="border-none shadow-xl rounded-[2.5rem] overflow-hidden bg-white group hover:shadow-4xl transition-all border border-slate-100">
-                          <div className={cn("h-2.5 w-full transition-colors", isCorrect ? 'bg-emerald-500' : isSkipped ? 'bg-slate-200' : 'bg-rose-500')} />
+                          <div className={cn("h-2 w-full transition-colors", isCorrect ? 'bg-emerald-500' : isSkipped ? 'bg-slate-200' : 'bg-rose-500')} />
                           <CardContent className="p-8 md:p-16 space-y-10">
                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                                 <div className="flex items-center gap-8">
@@ -389,9 +379,9 @@ export default function ResultPage() {
                                          "border-none text-[10px] font-black uppercase px-4 py-1 rounded-lg shadow-sm", 
                                          isCorrect ? 'bg-emerald-50 text-emerald-600' : isSkipped ? 'bg-slate-100 text-slate-400' : 'bg-rose-50 text-rose-600'
                                       )}>
-                                         {isCorrect ? 'CORRECT AUDIT' : isSkipped ? 'SKIPPED NODE' : 'WRONG CHOICE'}
+                                         {isCorrect ? 'RIGHT' : isSkipped ? 'SKIPPED' : 'WRONG'}
                                       </Badge>
-                                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">{q.sectionId || 'General Registry'}</p>
+                                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">{q.sectionId || 'GK'}</p>
                                    </div>
                                 </div>
                                 <Button 
@@ -399,7 +389,7 @@ export default function ResultPage() {
                                    variant="ghost" 
                                    className="h-14 px-10 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 bg-slate-50 text-[#0B1528] hover:bg-[#0B1528] hover:text-white transition-all shadow-sm"
                                 >
-                                   {isExpanded ? 'Hide Analysis' : 'View Rationale'}
+                                   {isExpanded ? 'Hide Solution' : 'View Rationale'}
                                    {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
                                 </Button>
                              </div>
@@ -421,7 +411,7 @@ export default function ResultPage() {
            </TabsContent>
         </Tabs>
 
-        {/* 3. FINAL BRANDING AUDIT */}
+        {/* BRANDING */}
         <div className="pt-32 border-t border-slate-200 flex flex-col items-center gap-6 text-center">
            <div className="h-12 w-12 rounded-2xl bg-[#0B1528] flex items-center justify-center text-primary shadow-2xl">
               <ShieldCheck className="h-6 w-6" />
@@ -430,7 +420,6 @@ export default function ResultPage() {
               <p className="text-slate-500 text-xs font-bold uppercase tracking-[0.2em]">© 2026 Cracklix Technologies</p>
               <div className="flex flex-col items-center gap-1">
                  <p className="text-sm font-black text-[#0B1528] uppercase tracking-widest">Developed by <span className="text-primary">Arsh Grewal</span></p>
-                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.4em]">Institutional Prep v1.0</p>
               </div>
            </div>
         </div>
@@ -442,19 +431,10 @@ export default function ResultPage() {
 
 function HeroMetric({ label, val, sub, color }: any) {
    return (
-      <div className="space-y-2 md:space-y-4 p-6 md:p-10 bg-white/5 border border-white/5 rounded-[2.5rem] transition-all hover:bg-white/10 group shadow-xl">
+      <div className="space-y-2 md:space-y-4 p-6 md:p-10 bg-white/5 border border-white/5 rounded-[2.5rem] transition-all hover:bg-white/10 group shadow-xl text-left">
          <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{label}</p>
          <p className={cn("text-3xl md:text-5xl font-headline font-black leading-none", color)}>{val}</p>
          <p className="text-[9px] font-bold text-slate-600 uppercase tracking-tighter group-hover:text-slate-400">{sub}</p>
-      </div>
-   )
-}
-
-function MiniStat({ label, val, color = "text-[#0B1528]" }: any) {
-   return (
-      <div className="text-left bg-slate-50/50 p-4 rounded-2xl border border-slate-100/50">
-         <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{label}</p>
-         <p className={cn("text-2xl font-black leading-none", color)}>{val}</p>
       </div>
    )
 }
@@ -473,8 +453,8 @@ function CompareRow({ label, user, topper, max, unit = "" }: any) {
             </div>
          </div>
          <div className="relative h-3 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
-            <div className="absolute inset-0 bg-amber-400 transition-all duration-[1500ms] ease-out" style={{ width: `${topperPer}%` }} />
-            <div className="absolute inset-0 bg-primary/40 border-r-4 border-primary transition-all duration-[1200ms] ease-out" style={{ width: `${userPer}%` }} />
+            <div className="absolute inset-0 bg-amber-400 transition-all duration-[1500ms]" style={{ width: `${topperPer}%` }} />
+            <div className="absolute inset-0 bg-primary/40 border-r-4 border-primary transition-all duration-[1200ms]" style={{ width: `${userPer}%` }} />
          </div>
       </div>
    )
