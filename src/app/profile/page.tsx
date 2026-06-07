@@ -33,7 +33,9 @@ import {
   Edit,
   Save,
   X,
-  TrendingUp
+  TrendingUp,
+  Award,
+  History
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
@@ -44,8 +46,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Aspirant Profile Hub v9.1 (Testbook Inspired).
- * Fixed: Imported missing TrendingUp icon to resolve runtime ReferenceError.
+ * @fileOverview Elite Aspirant Profile Hub v9.2 (Testbook Inspired).
+ * Fixed: Added missing Award and History icon imports to resolve runtime ReferenceErrors.
  */
 
 export default function ProfilePage() {
