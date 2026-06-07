@@ -274,7 +274,7 @@ export default function ResultPage() {
 
               {profile?.status === 'Free' && (
                 <div className="bg-primary rounded-[2.5rem] p-8 text-white relative overflow-hidden group shadow-4xl cursor-pointer">
-                   <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-125 transition-transform duration-[2s]"><Award className="h-48 w-48" /></div>
+                   <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-125 transition-transform duration-[2000ms]"><Award className="h-48 w-48" /></div>
                    <div className="relative z-10 space-y-3 text-left">
                       <h4 className="text-xl font-headline font-black uppercase leading-[1.1]">Join Elite</h4>
                       <p className="text-white/70 text-[9px] font-bold uppercase tracking-widest leading-relaxed">Unlock complete solutions and rank analysis.</p>
