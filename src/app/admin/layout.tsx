@@ -38,9 +38,8 @@ import { Button } from "@/components/ui/button";
 import BackButton from "@/components/navigation/BackButton";
 
 /**
- * @fileOverview Administrative Security Hub v6.5.
- * Fixed: Missing Button import.
- * Restored all management functions for full institutional control.
+ * @fileOverview Administrative Security Hub v7.0.
+ * Restored: All management functions for total institutional control.
  */
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -92,6 +91,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <AdminNavItem icon={<Layers className="text-amber-500" />} label="Exam List" href="/admin/exam-registry" active={pathname === "/admin/exam-registry"} />
               <AdminNavItem icon={<Database />} label="Question Bank" href="/admin/questions" active={pathname === "/admin/questions"} />
               <AdminNavItem icon={<SearchCode className="text-emerald-400" />} label="Subject List" href="/admin/subjects" active={pathname === "/admin/subjects"} />
+              <AdminNavItem icon={<Plus className="text-emerald-400" />} label="Bulk Ingestion" href="/admin/bulk-import" active={pathname === "/admin/bulk-import"} />
             </SidebarMenu>
           </SidebarGroup>
 
@@ -210,3 +210,5 @@ function AdminNavItem({ icon, label, href, active }: { icon: React.ReactNode, la
     </SidebarMenuItem>
   )
 }
+
+import { Plus } from "lucide-react";

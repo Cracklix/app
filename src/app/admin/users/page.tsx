@@ -32,9 +32,9 @@ import { cn } from "@/lib/utils"
 import React from "react"
 
 /**
- * @fileOverview Student Registry v14.0.
- * Fixed: Added missing Label, Input, and Loader2 imports.
- * Features: Manual Pass & Test Controls with Unlock Everything logic.
+ * @fileOverview Student Registry v15.0.
+ * Hardened: Fully resolved all ReferenceErrors and imports.
+ * Features: Manual Pass & Test Controls with Master Unlock logic.
  */
 export default function AspirantsManagement() {
   const db = useFirestore()
@@ -111,7 +111,7 @@ export default function AspirantsManagement() {
           passExpiryDate: expiry.toISOString(),
           updatedAt: serverTimestamp()
        });
-       toast({ title: "Master Unlock Activated", description: "Aspirant now has access to every mock list." });
+       toast({ title: "Master Unlock Activated", description: "Aspirant now has access to everything." });
     } catch (e) {
        toast({ variant: "destructive", title: "Unlock Failed" });
     }
@@ -179,10 +179,10 @@ export default function AspirantsManagement() {
                        </DropdownMenuTrigger>
                        <DropdownMenuContent align="end" className="w-64 bg-[#0F172A] border-white/10 text-white rounded-[2.5rem] p-4 shadow-5xl">
                           <DropdownMenuItem onClick={() => setGrantDialogUser(aspirant)} className="rounded-xl px-4 py-3 gap-3 focus:bg-primary/20 text-primary">
-                             <Gem className="h-4 w-4" /> Grant Premium Pass
+                             <Gem className="h-4 w-4" /> Grant Pass
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleUnlockEverything(aspirant.id)} className="rounded-xl px-4 py-3 gap-3 focus:bg-emerald-500/20 text-emerald-400">
-                             <Unlock className="h-4 w-4" /> Pass Unlock Everything
+                             <Unlock className="h-4 w-4" /> Unlock Everything
                           </DropdownMenuItem>
                           <DropdownMenuSeparator className="bg-white/5 my-2" />
                           <DropdownMenuItem onClick={async () => { if(confirm("Permanently delete this student?")) await deleteDoc(doc(db!, "users", aspirant.id)) }} className="rounded-xl px-4 py-3 gap-3 text-rose-500">
@@ -200,9 +200,9 @@ export default function AspirantsManagement() {
 
       {/* GRANT PASS DIALOG */}
       <Dialog open={!!grantDialogUser} onOpenChange={o => !o && setGrantDialogUser(null)}>
-         <DialogContent className="bg-[#0F172A] text-white border-white/10 rounded-[3rem] max-w-md p-10 shadow-5xl">
+         <DialogContent className="bg-[#0F172A] text-white border-white/10 rounded-[3rem] max-w-md p-10 shadow-5xl text-left">
             <DialogHeader className="text-center space-y-4">
-               <DialogTitle className="text-2xl font-headline font-black uppercase text-primary">Manual Authorization</DialogTitle>
+               <DialogTitle className="text-2xl font-headline font-black uppercase text-primary">Authorize Pass</DialogTitle>
                <p className="text-slate-400 text-sm">Grant premium access to {grantDialogUser?.name}.</p>
             </DialogHeader>
             <div className="py-8 space-y-6">

@@ -263,7 +263,7 @@ function MockBuilderContent() {
                    </Select>
                  </div>
                  <div className="space-y-2">
-                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Exam Hub</Label>
+                   <Label className="text-[10px) font-black uppercase text-slate-500 ml-1">Exam Hub</Label>
                    <Select value={mockData.examId} onValueChange={v => setMockData({...mockData, examId: v})}>
                      <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-none"><SelectValue placeholder="Exam" /></SelectTrigger>
                      <SelectContent>{exams?.filter((e: any) => e.boardId === mockData.boardId).map((e: any) => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent>
@@ -328,7 +328,7 @@ function MockBuilderContent() {
                     </TabsTrigger>
                  </TabsList>
 
-                 <TabsContent value="bank" className="p-8 md:p-10 flex-1 flex flex-col m-0">
+                 <TabsContent value="bank" className="p-8 md:p-10 flex-1 flex flex-col m-0 text-left">
                     <div className="flex flex-wrap items-center gap-4 mb-8">
                        <div className="relative flex-1 min-w-[200px]">
                           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -401,7 +401,7 @@ function MockBuilderContent() {
                     </div>
                  </TabsContent>
 
-                 <TabsContent value="assembly" className="p-10 flex-1 flex flex-col m-0">
+                 <TabsContent value="assembly" className="p-10 flex-1 flex flex-col m-0 text-left">
                     <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 space-y-10">
                        {sections.map((section, sIdx) => (
                           <div key={section.id} className="space-y-4">
