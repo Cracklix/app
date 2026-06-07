@@ -1,10 +1,9 @@
-
 import { NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 
 /**
- * @fileOverview Production-Grade Razorpay Order Node v9.0.
- * Hardened: Strict integer paise conversion and 20-char receipt validation.
+ * @fileOverview Production-Grade Razorpay Order Node v10.0.
+ * Hardened: Strict integer paise conversion and credential validation.
  */
 
 export async function POST(request: Request) {

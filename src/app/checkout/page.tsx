@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useSearchParams, useRouter } from "next/navigation"
@@ -19,9 +18,9 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Institutional Checkout Hub v30.0.
- * FIXED: Aggressively forced UPI VPA (ID) entry field by suppressing all default blocks and defining a custom instrument set.
- * This ensures the text input for 'test@razorpay' is shown immediately.
+ * @fileOverview Institutional Checkout Hub v31.0.
+ * FIXED: Aggressively forced UPI VPA (ID) entry field by suppressing all default blocks.
+ * Reordered sequence to show UPI ID first, followed by Cards.
  */
 
 export default function CheckoutPage() {
@@ -71,9 +70,11 @@ function CheckoutContent() {
       const orderData = await orderRes.json();
       if (orderData.error) throw new Error(orderData.error);
 
-      // Aggressive Sanitization
+      // Aggressive Sanitization (Only letters and spaces)
       const rawName = profile?.name || user?.displayName || 'Aspirant';
       const sanitizedName = rawName.replace(/[^a-zA-Z\s]/g, '').trim().slice(0, 40) || "Student";
+      
+      // Strict 10-digit mobile extraction
       const phoneDigits = (profile?.phone || '').replace(/\D/g, '').slice(-10);
 
       const options = {
@@ -117,23 +118,31 @@ function CheckoutContent() {
           contact: phoneDigits.length === 10 ? `+91${phoneDigits}` : ''
         },
         theme: { color: "#F97316" },
-        // CRITICAL FIX: FORCE VPA (UPI ID) INPUT FIELD AND HIDE QR
+        // CRITICAL FIX: FORCE VPA (UPI ID) INPUT FIELD AND SHOW CARDS
         config: {
           display: {
             blocks: {
-              vpa_input: {
-                name: "Pay using UPI ID",
+              upi: {
+                name: "Pay via UPI ID",
                 instruments: [
                   {
                     method: "upi",
-                    protocols: ["vpa"] // Explicitly requesting VPA (input field)
+                    protocols: ["vpa"] // Forces text entry for test@razorpay
+                  }
+                ]
+              },
+              card: {
+                name: "Debit / Credit Card",
+                instruments: [
+                  {
+                    method: "card"
                   }
                 ]
               }
             },
-            sequence: ["block.vpa_input", "method.card", "method.netbanking"],
+            sequence: ["block.upi", "block.card"],
             preferences: {
-              show_default_blocks: false // HIDE standard QR to force VPA entry screen
+              show_default_blocks: false // Forces manual entry field to show first
             }
           }
         },
