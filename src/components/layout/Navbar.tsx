@@ -25,8 +25,8 @@ import MobileSidebar from "./MobileSidebar";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Elite Global Navigation Hub v5.2.
- * Updated: Prioritized "PASS" node with distinct background and Gem icon.
+ * @fileOverview Elite Global Navigation Hub v5.5.
+ * FIXED: Sidebar width adjusted to 75vw (half-screen feel) for mobile mode.
  */
 
 export default function Navbar() {
@@ -72,8 +72,8 @@ export default function Navbar() {
                  <SheetContent 
                    side="left" 
                    className={cn(
-                     "p-0 border-r border-slate-100 !w-[220px] lg:!w-[300px] overflow-hidden shadow-4xl transition-all duration-500",
-                     "top-[60px] h-[calc(100vh-60px)]"
+                     "p-0 border-r border-white/5 !w-[75vw] lg:!w-[400px] overflow-hidden shadow-5xl transition-all duration-500 bg-[#0F172A]",
+                     "top-0 h-screen"
                    )}
                  >
                    <SheetHeader className="sr-only">
