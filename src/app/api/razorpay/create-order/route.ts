@@ -1,17 +1,18 @@
+
 import { NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 
 /**
- * @fileOverview Production-Grade Razorpay Order Node v15.0.
- * Hardened: Strict integer paise conversion and short receipt ID protocol.
+ * @fileOverview Production-Grade Razorpay Order Node v16.0.
+ * Hardened: Strict integer paise conversion and credential audit.
  */
 
 export async function POST(request: Request) {
   try {
     const { amount } = await request.json();
 
-    const key_id = process.env.RAZORPAY_KEY_ID || 'rzp_test_Synv8cGJNAB23X';
-    const key_secret = process.env.RAZORPAY_KEY_SECRET || 'l2sDZOg2Ypc6QbIlDAivUDfc';
+    const key_id = process.env.RAZORPAY_KEY_ID || 'rzp_test_Syo3XlvkICdGYd';
+    const key_secret = process.env.RAZORPAY_KEY_SECRET || 'KZiaT67ZZEqNgex081ELoSZW';
 
     if (!key_id || !key_secret) {
       return NextResponse.json({ error: 'Gateway credentials missing in registry.' }, { status: 500 });

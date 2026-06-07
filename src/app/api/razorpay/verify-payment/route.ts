@@ -1,10 +1,11 @@
+
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { initializeFirebase } from '@/firebase';
 import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Razorpay Verification Hub v12.0.
+ * @fileOverview Institutional Razorpay Verification Hub v13.0.
  * Hardened: Secure signature verification and automatic user registry update.
  */
 
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
       planId
     } = await request.json();
 
-    const secret = process.env.RAZORPAY_KEY_SECRET || 'l2sDZOg2Ypc6QbIlDAivUDfc';
+    const secret = process.env.RAZORPAY_KEY_SECRET || 'KZiaT67ZZEqNgex081ELoSZW';
     
     // 1. HMAC-SHA256 Signature Verification
     const hmac = crypto.createHmac('sha256', secret);

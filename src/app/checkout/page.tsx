@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useSearchParams, useRouter } from "next/navigation"
@@ -18,8 +19,8 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Institutional Checkout Hub v38.0.
- * FIXED: Forced UPI ID (VPA) entry field and Aggressive Customer Metadata Sanitization.
+ * @fileOverview Institutional Checkout Hub v40.0.
+ * FIXED: Forced UPI ID (VPA) entry and Aggressive Customer Metadata Sanitization.
  */
 
 export default function CheckoutPage() {
@@ -69,7 +70,6 @@ function CheckoutContent() {
       if (orderData.error) throw new Error(orderData.error);
 
       // 1. AGGRESSIVE NAME SANITIZATION (Only A-Z and spaces)
-      // Prevents "Invalid Name Format" errors in Razorpay domestic node.
       const rawName = profile?.name || user?.displayName || 'Aspirant';
       const sanitizedName = rawName.replace(/[^a-zA-Z\s]/g, '').trim().slice(0, 40) || "Aspirant";
       
@@ -77,7 +77,7 @@ function CheckoutContent() {
       const phoneDigits = (profile?.phone || '').replace(/\D/g, '').slice(-10);
 
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_Synv8cGJNAB23X',
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_Syo3XlvkICdGYd',
         amount: orderData.amount,
         currency: "INR",
         name: "CRACKLIX Hub",
@@ -126,7 +126,7 @@ function CheckoutContent() {
                 instruments: [
                   {
                     method: "upi",
-                    protocols: ["vpa"] // Forces the "Enter UPI ID" text field for test@razorpay
+                    protocols: ["vpa"] // Forces the "Enter UPI ID" text field
                   }
                 ]
               },
@@ -141,7 +141,7 @@ function CheckoutContent() {
             },
             sequence: ["block.upi", "block.card"],
             preferences: {
-              show_default_blocks: false // Hides the automated QR code to prioritize manual entry
+              show_default_blocks: false 
             }
           }
         },
