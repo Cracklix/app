@@ -10,8 +10,8 @@ import { useMemo } from "react";
 import ShareButton from "@/components/navigation/ShareButton";
 
 /**
- * @fileOverview Final Institutional Footer Node v6.0.
- * Updated: Standardized Founder & Developer branding for Arsh Grewal.
+ * @fileOverview Final Institutional Footer Node v7.0.
+ * Updated: Streamlined branding to avoid repetition while maintaining founder credits.
  */
 
 export default function Footer() {
@@ -89,10 +89,6 @@ export default function Footer() {
                {content.fb !== "#" && <SocialIcon icon={<Facebook />} href={content.fb} label="Facebook" />}
             </div>
             <div className="mt-8 space-y-4">
-               <div className="space-y-1">
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none">FOUNDER & DEVELOPER</p>
-                  <p className="text-xl font-black text-white uppercase tracking-tight">Arsh Grewal</p>
-               </div>
                <a 
                  href={`https://wa.me/${content.phone.replace(/[^0-9]/g, '')}`} 
                  target="_blank" 
@@ -100,39 +96,25 @@ export default function Footer() {
                >
                  {content.phone}
                </a>
+               <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none">Official Support Channel</p>
             </div>
           </div>
         </div>
 
         {/* INSTITUTIONAL CREDITS BAR */}
-        <div className="mt-24 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex flex-col md:flex-row items-center gap-6">
-             <div className="flex flex-col items-center md:items-start">
-                <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">
-                  © 2026 {content.platformName} | All Rights Reserved.
-                </p>
-                <p className="text-primary text-[10px] font-black uppercase tracking-[0.2em] mt-1">
-                   Founder & Developer: Arsh Grewal
-                </p>
-             </div>
-             <div className="hidden md:block h-8 w-px bg-white/10" />
-             <div className="flex items-center gap-3 px-5 py-2 bg-white/5 rounded-full border border-white/5">
-                <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Registry Secure</span>
-             </div>
+        <div className="mt-24 pt-12 border-t border-white/5 flex flex-col items-center gap-6">
+          <div className="flex flex-col items-center text-center">
+            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">
+              © 2026 {content.platformName} | All Rights Reserved.
+            </p>
+            <p className="text-primary text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">
+               Founder & Developer: Arsh Grewal
+            </p>
           </div>
           
-          <div className="flex flex-col items-center md:items-end gap-2 group">
-             <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-xl shadow-primary/20">
-                   <User className="h-5 w-5" />
-                </div>
-                <div className="text-left">
-                   <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none">PLATFORM ARCHITECT</p>
-                   <p className="text-sm font-black text-white uppercase tracking-tighter">Arsh Grewal</p>
-                </div>
-             </div>
-             <p className="text-[8px] font-black text-slate-600 uppercase tracking-[0.5em] mt-1">Authority Node Punjab</p>
+          <div className="flex items-center gap-3 px-6 py-2.5 bg-white/5 rounded-full border border-white/5 opacity-50">
+             <ShieldCheck className="h-3.5 w-3.5 text-slate-400" />
+             <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Registry Secure Punjab</span>
           </div>
         </div>
       </div>

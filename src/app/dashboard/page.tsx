@@ -33,8 +33,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import ShareButton from "@/components/navigation/ShareButton"
 
 /**
- * @fileOverview Institutional Dashboard v7.5 (Audit Enhanced).
- * Updated: Standardized "Powered by Arsh Grewal" branding badge.
+ * @fileOverview Institutional Dashboard v7.6 (UI Refined).
+ * Optimized: Clean branding at bottom to avoid repetition.
  */
 
 export default function StudentDashboard() {
@@ -62,7 +62,6 @@ export default function StudentDashboard() {
     if (!results || results.length === 0) return { total: 0, avgAccuracy: 0, streak: 0, readiness: 45, hours: "0h" }
     const total = results.length
     const avgAcc = Math.round(results.reduce((acc: number, r: any) => acc + (r.accuracy || 0), 0) / total)
-    // Engagement Logic: Readiness increases with accuracy and volume
     const readiness = Math.min(98, Math.max(30, avgAcc + Math.floor(total / 2)));
     return { 
       total, 
@@ -76,7 +75,7 @@ export default function StudentDashboard() {
   if (loading) return null;
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-32">
+    <div className="min-h-screen bg-slate-50 pb-32 text-left">
       <Navbar />
       
       <main className="mobile-app-shell py-4 px-2 space-y-4">
@@ -173,14 +172,11 @@ export default function StudentDashboard() {
             </Card>
 
             {/* POWERED BY BRANDING */}
-            <div className="py-8 flex flex-col items-center gap-3">
-               <div className="flex items-center gap-3 px-6 py-2.5 bg-slate-50 rounded-full border border-slate-100 shadow-sm group hover:border-primary/20 transition-all">
-                  <User className="h-3 w-3 text-primary group-hover:animate-pulse" />
-                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
-                     Powered by <span className="text-[#0F172A] font-black group-hover:text-primary transition-colors">Arsh Grewal</span>
-                  </p>
-               </div>
-               <p className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Cracklix v7.5 • Punjab Registry</p>
+            <div className="py-8 flex flex-col items-center gap-2">
+               <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
+                  Powered by <span className="text-[#0F172A]">Arsh Grewal</span>
+               </p>
+               <p className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Cracklix v7.6 • Registry Secure</p>
             </div>
         </div>
       </main>
