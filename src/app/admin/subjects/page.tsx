@@ -31,7 +31,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Subject Master Registry & Normalization Tool.
- * Hardened: Validates Firestore instance before collection reference calls.
+ * Standardized: Standardized Firestore instance validation.
  */
 
 export default function SubjectRegistryPage() {
@@ -46,9 +46,7 @@ export default function SubjectRegistryPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [editingSubject, setEditingSubject] = useState<any>(null)
 
-  const isValidDb = !!(db && typeof db === 'object' && 'type' in db === false);
-
-  const { data: subjects, loading } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "subjects") : null), [isValidDb, db]))
+  const { data: subjects, loading } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
 
   const filteredSubjects = useMemo(() => {
     if (!subjects) return []
@@ -59,7 +57,7 @@ export default function SubjectRegistryPage() {
   }, [subjects, searchTerm])
 
   const handleSaveSubject = async () => {
-    if (!isValidDb || !editingSubject.name) return
+    if (!db || !editingSubject.name) return
     setIsSaving(true)
     const id = editingSubject.id || editingSubject.name.toLowerCase().replace(/\s+/g, '-')
     const subjectRef = doc(db, "subjects", id)
@@ -85,7 +83,7 @@ export default function SubjectRegistryPage() {
   }
 
   const handleDeepMerge = async () => {
-    if (!isValidDb || !mergeSource || !mergeTarget || mergeSource === mergeTarget) {
+    if (!db || !mergeSource || !mergeTarget || mergeSource === mergeTarget) {
       toast({ variant: "destructive", title: "Invalid Audit Selection" })
       return
     }
@@ -173,7 +171,7 @@ export default function SubjectRegistryPage() {
                   <TableCell className="px-10 py-8">
                     <div className="flex items-center gap-6">
                        <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black text-xs">
-                          {s.name[0].toUpperCase()}
+                          {s.name?.[0]?.toUpperCase() || 'S'}
                        </div>
                        <div>
                           <p className="font-black text-[#0F172A] text-xl uppercase tracking-tight leading-none">{s.name}</p>

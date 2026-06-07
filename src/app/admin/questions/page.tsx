@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Hardened Institutional Asset Ledger (Global Bank).
- * Optimized: Infinite scroll pagination, multi-node filtering, and strict instance validation.
+ * Standardized: Standardized Firestore instance validation.
  */
 
 export default function QuestionBank() {
@@ -35,16 +35,11 @@ export default function QuestionBank() {
   const [hasMore, setLastHasMore] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
 
-  const isValidDb = db && typeof db === 'object';
-
-  const boardsQuery = useMemo(() => (isValidDb ? query(collection(db, "boards")) : null), [isValidDb, db])
-  const subjectsQuery = useMemo(() => (isValidDb ? query(collection(db, "subjects")) : null), [isValidDb, db])
-
-  const { data: boards } = useCollection<any>(boardsQuery)
-  const { data: subjects } = useCollection<any>(subjectsQuery)
+  const { data: boards } = useCollection<any>(useMemo(() => (db ? query(collection(db, "boards")) : null), [db]))
+  const { data: subjects } = useCollection<any>(useMemo(() => (db ? query(collection(db, "subjects")) : null), [db]))
 
   const fetchQuestions = useCallback(async (isNext = false) => {
-    if (!isValidDb) return
+    if (!db) return
     setLoading(true)
     
     try {
@@ -76,11 +71,11 @@ export default function QuestionBank() {
     } finally {
       setLoading(false)
     }
-  }, [isValidDb, db, boardFilter, examFilter, lastDoc, toast])
+  }, [db, boardFilter, examFilter, lastDoc, toast])
 
   useEffect(() => {
-    if (isValidDb) fetchQuestions()
-  }, [boardFilter, examFilter, isValidDb, fetchQuestions])
+    if (db) fetchQuestions()
+  }, [boardFilter, examFilter, db, fetchQuestions])
 
   const filteredQuestions = useMemo(() => {
     if (!questions) return []
@@ -94,7 +89,7 @@ export default function QuestionBank() {
   }, [questions, searchTerm, subjectFilter])
 
   const handleDeleteSingle = async (id: string) => {
-    if (!isValidDb) return;
+    if (!db) return;
     if (!confirm("Permanently purge this asset?")) return;
     try {
       await deleteDoc(doc(db, "questions", id))
@@ -169,7 +164,7 @@ export default function QuestionBank() {
                     <TableCell className="px-8 py-6">
                       <div className="flex items-center gap-3 mb-1.5">
                         <Badge className="bg-[#0F172A] text-white border-none text-[7px] font-black uppercase px-2 py-0.5">NODE</Badge>
-                        <code className="text-[7px] text-slate-400 font-mono">ID: {q.id.slice(-6)}</code>
+                        <code className="text-[7px] text-slate-400 font-mono">ID: {q.id?.slice(-6)}</code>
                       </div>
                       <p className="font-bold text-[#000000] text-sm leading-snug line-clamp-2">{q.englishQuestion || q.questionEn}</p>
                     </TableCell>
@@ -198,7 +193,7 @@ export default function QuestionBank() {
                 <div key={q.id} className="p-6 space-y-4 bg-white active:bg-slate-50 transition-all">
                    <div className="flex items-center justify-between">
                       <Badge className="bg-[#0F172A] text-white border-none text-[8px] font-black uppercase px-2">{q.boardId}</Badge>
-                      <span className="text-[9px] font-mono text-slate-400">ID: {q.id.slice(-6)}</span>
+                      <span className="text-[9px] font-mono text-slate-400">ID: {q.id?.slice(-6)}</span>
                    </div>
                    <p className="font-bold text-sm text-[#0F172A] leading-relaxed line-clamp-3">{q.englishQuestion || q.questionEn}</p>
                    <div className="flex items-center justify-between pt-2 border-t border-slate-50">

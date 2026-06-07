@@ -34,7 +34,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Exam Master Registry.
- * Hardened: Enforced Firestore instance validation on all collection calls.
+ * Standardized: Standardized Firestore instance validation.
  */
 
 export default function ExamRegistryPage() {
@@ -49,11 +49,9 @@ export default function ExamRegistryPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [editingExam, setEditingExam] = useState<any>(null)
 
-  const isValidDb = !!(db && typeof db === 'object' && 'type' in db === false);
-
-  const { data: exams, loading } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "exams") : null), [isValidDb, db]))
-  const { data: boards } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "boards") : null), [isValidDb, db]))
-  const { data: questions } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "questions") : null), [isValidDb, db]))
+  const { data: exams, loading } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
+  const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
+  const { data: questions } = useCollection<any>(useMemo(() => (db ? collection(db, "questions") : null), [db]))
 
   const stats = useMemo(() => {
     if (!exams || !questions) return {}
@@ -73,7 +71,7 @@ export default function ExamRegistryPage() {
   }, [exams, searchTerm])
 
   const handleSaveExam = async () => {
-    if (!isValidDb || !editingExam.name || !editingExam.boardId) {
+    if (!db || !editingExam.name || !editingExam.boardId) {
       toast({ variant: "destructive", title: "Audit Blocked", description: "Config incomplete." })
       return
     }
@@ -99,7 +97,7 @@ export default function ExamRegistryPage() {
   }
 
   const handleDeepMerge = async () => {
-    if (!isValidDb || !mergeSource || !mergeTarget || mergeSource === mergeTarget) {
+    if (!db || !mergeSource || !mergeTarget || mergeSource === mergeTarget) {
       toast({ variant: "destructive", title: "Selection Error" })
       return
     }
@@ -186,7 +184,7 @@ export default function ExamRegistryPage() {
                   <TableCell className="px-10 py-8">
                     <div className="flex items-center gap-6">
                        <div className="h-12 w-12 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 font-black text-xs shadow-inner">
-                          {e.name[0].toUpperCase()}
+                          {e.name?.[0]?.toUpperCase() || 'E'}
                        </div>
                        <div>
                           <p className="font-black text-[#0F172A] text-xl uppercase tracking-tight leading-none">{e.name}</p>

@@ -14,8 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 /**
  * @fileOverview Institutional Command Center.
- * Hardened: Verified Firestore instance checks to prevent runtime collection() errors.
- * Mobile-Friendly: Responsive stat grid and stacked tactical actions.
+ * Standardized: Verified Firestore instance checks to prevent runtime collection() errors.
  */
 
 export default function AdminDashboard() {
@@ -23,16 +22,21 @@ export default function AdminDashboard() {
   const { toast } = useToast()
   const [isSyncing, setIsSyncing] = useState(false)
 
-  // Hardened DB Validation
-  const isValidDb = !!(db && typeof db === 'object' && 'type' in db === false);
+  const usersQuery = useMemo(() => (db ? collection(db, "users") : null), [db])
+  const questionsQuery = useMemo(() => (db ? collection(db, "questions") : null), [db])
+  const mocksQuery = useMemo(() => (db ? collection(db, "mocks") : null), [db])
+  const subjectsQuery = useMemo(() => (db ? collection(db, "subjects") : null), [db])
+  const examsQuery = useMemo(() => (db ? collection(db, "exams") : null), [db])
+  const notesQuery = useMemo(() => (db ? collection(db, "notes") : null), [db])
+  const pyqsQuery = useMemo(() => (db ? collection(db, "pyqs") : null), [db])
 
-  const { data: users } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "users") : null), [isValidDb, db]))
-  const { data: questions, loading: qLoading } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "questions") : null), [isValidDb, db]))
-  const { data: mocks } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "mocks") : null), [isValidDb, db]))
-  const { data: subjects } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "subjects") : null), [isValidDb, db]))
-  const { data: exams } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "exams") : null), [isValidDb, db]))
-  const { data: notes } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "notes") : null), [isValidDb, db]))
-  const { data: pyqs } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "pyqs") : null), [isValidDb, db]))
+  const { data: users } = useCollection<any>(usersQuery)
+  const { data: questions, loading: qLoading } = useCollection<any>(questionsQuery)
+  const { data: mocks } = useCollection<any>(mocksQuery)
+  const { data: subjects } = useCollection<any>(subjectsQuery)
+  const { data: exams } = useCollection<any>(examsQuery)
+  const { data: notes } = useCollection<any>(notesQuery)
+  const { data: pyqs } = useCollection<any>(pyqsQuery)
 
   const proUsers = useMemo(() => users?.filter((u: any) => u.status && u.status !== 'Free') || [], [users]);
 
@@ -55,7 +59,7 @@ export default function AdminDashboard() {
   }, [questions, exams]);
 
   const handlePushToRegistry = async () => {
-    if (!isValidDb) return
+    if (!db) return
     setIsSyncing(true)
     try {
       await seedInitialData(db)

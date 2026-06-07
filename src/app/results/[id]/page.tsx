@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useMemo, useEffect, useCallback } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
@@ -15,18 +15,11 @@ import {
   Trophy, 
   Target, 
   Zap, 
-  LayoutDashboard, 
   Loader2, 
-  TrendingUp, 
   BrainCircuit, 
   ShieldCheck,
   ChevronDown,
   ChevronUp,
-  History,
-  Timer,
-  ArrowRight,
-  RefreshCw,
-  LayoutGrid
 } from "lucide-react"
 import { useFirestore, useUser, useCollection } from "@/firebase"
 import { collection, query, where, doc, getDoc, deleteDoc, documentId, getDocs } from "firebase/firestore"
@@ -35,6 +28,10 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import BackButton from "@/components/navigation/BackButton"
+
+/**
+ * @fileOverview Standardized Results Hub with Firestore instance validation.
+ */
 
 export default function ResultPage() {
   const params = useParams()
@@ -49,12 +46,10 @@ export default function ResultPage() {
   const [loadingContent, setLoadingContent] = useState(true)
   const [mockLanguageMode, setMockLanguageMode] = useState<any>('ENGLISH_PUNJABI')
 
-  const isValidDb = !!(db && typeof db === 'object' && 'type' in db === false);
-
   const resultsQuery = useMemo(() => {
-    if (!isValidDb || !user) return null
+    if (!db || !user) return null
     return query(collection(db, "results"), where("userId", "==", user.uid))
-  }, [isValidDb, db, user])
+  }, [db, user])
 
   const { data: rawResultDocs, loading: resultsLoading } = useCollection<any>(resultsQuery)
   
@@ -72,7 +67,7 @@ export default function ResultPage() {
 
   useEffect(() => {
     async function loadQuestions() {
-      if (resultsLoading || !isValidDb) return;
+      if (resultsLoading || !db) return;
       if (!sessionData) {
         setLoadingContent(false);
         return;
@@ -109,16 +104,24 @@ export default function ResultPage() {
       }
     }
     loadQuestions()
-  }, [isValidDb, db, sessionData, mockId, toast, resultsLoading])
+  }, [db, sessionData, mockId, toast, resultsLoading])
 
-  const handleReattempt = () => {
-    if (!isValidDb || !user || !mockId) return;
+  const handleReattempt = async () => {
+    if (!db || !user || !mockId) return;
     if (!window.confirm("Restart evaluation node?")) return;
 
+    console.log("Reattempt clicked");
+    console.log("Mock ID:", mockId);
+
     const attemptId = `${user.uid}_${mockId}`;
+    
+    // Non-blocking background reset
     deleteDoc(doc(db, "attempts", attemptId)).catch(() => {});
     deleteDoc(doc(db, "results", attemptId)).catch(() => {});
     
+    localStorage.removeItem(`attempt_${mockId}`);
+    localStorage.removeItem(`result_${mockId}`);
+
     toast({ title: "Registry Reset" });
     router.push(`/mocks/${mockId}/instructions`);
   };
@@ -160,7 +163,7 @@ export default function ResultPage() {
               <CardTitle className="text-lg font-black text-[#0F172A] uppercase leading-tight">{sessionData.mockTitle}</CardTitle>
               
               <div className="flex gap-2 pt-2">
-                 <Button onClick={handleReattempt} className="flex-1 h-10 bg-primary text-white rounded-lg font-black uppercase text-[8px] tracking-widest">Re-Attempt</Button>
+                 <Button onClick={handleReattempt} type="button" className="flex-1 h-10 bg-primary text-white rounded-lg font-black uppercase text-[8px] tracking-widest relative z-10">Re-Attempt</Button>
                  <Button asChild className="flex-1 h-10 bg-[#0F172A] text-white rounded-lg font-black uppercase text-[8px] tracking-widest"><Link href="/dashboard">Dashboard</Link></Button>
               </div>
            </CardHeader>
