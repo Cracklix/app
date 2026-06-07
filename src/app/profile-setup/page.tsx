@@ -17,8 +17,8 @@ import { Phone, User as UserIcon, GraduationCap, Calendar, MapPin } from "lucide
 import { Gender } from "@/types"
 
 /**
- * @fileOverview Student Profile Setup v11.0.
- * Simplified Language: Removed technical jargon (Node, Registry, Hub) for better user experience.
+ * @fileOverview Student Profile Setup v12.0.
+ * UPDATED: Added a "Skip for now" option to make setup non-mandatory.
  */
 export default function ProfileSetup() {
   const router = useRouter()
@@ -47,7 +47,7 @@ export default function ProfileSetup() {
   const handleSubmit = async () => {
     if (!user) return;
 
-    // Strict Validation
+    // Strict Validation for Submission
     const requiredFields = [
       { key: 'name', label: 'Full Name' },
       { key: 'phone', label: 'Mobile Number' },
@@ -124,7 +124,7 @@ export default function ProfileSetup() {
         <CardHeader className="text-center pt-10 pb-6">
           <CardTitle className="font-headline font-black text-3xl text-[#0F172A] uppercase">Set Up Your Profile</CardTitle>
           <CardDescription className="text-slate-500 font-medium px-4">
-            Finish setting up your student profile to access mock tests.
+            Finish setting up your student profile to access personalized mock tests.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 px-10 pb-12">
@@ -158,7 +158,7 @@ export default function ProfileSetup() {
               </div>
 
               <div className="space-y-2 text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Date of Birth</Label>
+                <Label className="text-[10px) font-black uppercase tracking-widest text-slate-400 ml-1">Date of Birth</Label>
                 <div className="relative">
                   <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input 
@@ -215,16 +215,27 @@ export default function ProfileSetup() {
              </div>
           </div>
 
-          <Button 
-            className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl rounded-2xl mt-4 transition-all active:scale-95"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Saving Profile..." : "Complete My Profile"}
-          </Button>
+          <div className="space-y-4 pt-4">
+             <Button 
+               className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl rounded-2xl transition-all active:scale-95"
+               onClick={handleSubmit}
+               disabled={isSubmitting}
+             >
+               {isSubmitting ? "Saving Profile..." : "Complete My Profile"}
+             </Button>
+             
+             <Button 
+               variant="ghost"
+               className="w-full h-12 text-slate-400 font-black uppercase tracking-widest text-[9px] hover:text-[#0F172A]"
+               onClick={() => router.push("/dashboard")}
+               disabled={isSubmitting}
+             >
+               Skip for now
+             </Button>
+          </div>
           
           <p className="text-[9px] text-center text-slate-400 uppercase font-bold tracking-widest leading-relaxed">
-            Your details are used only for generating rankings and official alerts.
+            Your details are used only for generating accurate state-level rankings.
           </p>
         </CardContent>
       </Card>

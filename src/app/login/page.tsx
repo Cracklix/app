@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, Suspense, useEffect } from "react"
@@ -20,13 +21,13 @@ import {
 import { doc, setDoc, getDoc } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Login & Sign Up Hub v1.6.
- * FEATURE: Integrated Forgot Password with official backend registry.
+ * @fileOverview Login & Sign Up Hub v1.7.
+ * UPDATED: Profile setup is now optional; users redirect to dashboard immediately.
  */
 
 export default function LoginPage() {
@@ -84,7 +85,8 @@ function LoginContent() {
           status: 'Free',
           pinnedExams: []
         })
-        router.push("/profile-setup")
+        toast({ title: "Account Created", description: "Welcome to Cracklix!" })
+        router.push(returnUrl)
       }
     } catch (error: any) {
       toast({ variant: "destructive", title: "Error", description: error.message })
@@ -107,7 +109,7 @@ function LoginContent() {
           state: "Punjab", createdAt: new Date().toISOString(), status: 'Free',
           pinnedExams: []
         })
-        router.push("/profile-setup")
+        router.push(returnUrl)
       } else {
         router.push(returnUrl)
       }
