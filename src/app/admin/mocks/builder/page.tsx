@@ -38,24 +38,12 @@ import { useToast } from "@/hooks/use-toast"
 import { MockType, Difficulty, AccessType, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
 
-const PSSSB_SECTIONS = [
-  "General Knowledge & Current Affairs",
-  "Punjab History & Culture",
-  "Logical Reasoning & Mental Ability",
-  "Quantitative Aptitude",
-  "Punjabi (Qualifying - Part A)",
-  "Punjabi (Part B)",
-  "English Language",
-  "Information Technology (ICT)",
-  "Agriculture & General Economy"
-];
-
 const LANGUAGE_MODES: { label: string, value: LanguageDisplayMode }[] = [
-  { label: "English Only", value: "ENGLISH" },
-  { label: "Punjabi Only", value: "PUNJABI" },
-  { label: "Hindi Only", value: "HINDI" },
-  { label: "English + Punjabi", value: "ENGLISH_PUNJABI" },
-  { label: "English + Hindi", value: "ENGLISH_HINDI" },
+  { label: "ENGLISH ONLY", value: "ENGLISH" },
+  { label: "PUNJABI ONLY", value: "PUNJABI" },
+  { label: "HINDI ONLY", value: "HINDI" },
+  { label: "BILINGUAL (EN+PA)", value: "ENGLISH_PUNJABI" },
+  { label: "BILINGUAL (EN+HI)", value: "ENGLISH_HINDI" },
 ];
 
 export default function MockBuilderPage() {
@@ -165,12 +153,6 @@ function MockBuilderContent() {
     })
   }, [questionBank, bankFilter, sections])
 
-  const handleAddSection = (presetName?: string) => {
-    const newId = `sec-${Date.now()}`;
-    setSections([...sections, { id: newId, name: presetName || `New Section ${sections.length + 1}`, questions: [] }]);
-    setActiveSectionId(newId);
-  }
-
   const handleBulkLink = () => {
     const toAdd = questionBank.filter(q => bankSelection.includes(q.id))
     setSections(sections.map(s => s.id === activeSectionId ? { ...s, questions: [...s.questions, ...toAdd] } : s));
@@ -264,7 +246,7 @@ function MockBuilderContent() {
                      </SelectTrigger>
                      <SelectContent>
                         {LANGUAGE_MODES.map(mode => (
-                           <SelectItem key={mode.value} value={mode.value} className="font-bold text-xs">
+                           <SelectItem key={mode.value} value={mode.value} className="font-bold text-[10px] uppercase tracking-wider">
                               {mode.label}
                            </SelectItem>
                         ))}
@@ -383,7 +365,7 @@ function MockBuilderContent() {
                                 {section.questions.map((q: any) => (
                                    <div key={q.id} className="p-3.5 bg-white border border-slate-50 rounded-xl flex items-center justify-between group/q shadow-sm hover:border-primary/20">
                                       <p className="font-bold text-xs text-[#0F172A] truncate flex-1">{q.englishQuestion || q.questionEn}</p>
-                                      <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-300 hover:text-rose-500 opacity-0 group-hover/q:opacity-100" onClick={() => setSections(sections.map(s => s.id === section.id ? { ...s, questions: s.questions.filter((item: any) => item.id !== q.id) } : s))}>
+                                      <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-300 hover:text-rose-50 opacity-0 group-hover/q:opacity-100" onClick={() => setSections(sections.map(s => s.id === section.id ? { ...s, questions: s.questions.filter((item: any) => item.id !== q.id) } : s))}>
                                          <Trash2 className="h-4 w-4" />
                                       </Button>
                                    </div>

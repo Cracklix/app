@@ -14,10 +14,11 @@ import { ShieldCheck, Info, CheckCircle2, Clock, BookOpen, Zap, Globe, Languages
 import Link from "next/link";
 import { useExamStore } from "@/store/useExamStore";
 import { cn } from "@/lib/utils";
+import { LanguageDisplayMode } from "@/types";
 
 /**
- * @fileOverview Testbook-Style Entrance Hub.
- * Features: Institutional instructions and language preference nodes.
+ * @fileOverview Testbook-Style Entrance Hub v2.0.
+ * Updated: Language nodes match Admin terminology.
  */
 export default function InstructionsPage() {
   const params = useParams();
@@ -25,9 +26,15 @@ export default function InstructionsPage() {
   const db = useFirestore();
   const mockId = params.id as string;
   const { setLanguage } = useExamStore();
-  const [prefLang, setPrefLang] = useState<'en' | 'pa' | 'hi' | 'bilingual'>('bilingual');
+  const [prefLang, setPrefLang] = useState<LanguageDisplayMode>('ENGLISH_PUNJABI');
 
   const { data: mock, loading } = useDoc<any>(useMemo(() => (db ? doc(db, "mocks", mockId) : null), [db, mockId]));
+
+  useEffect(() => {
+    if (mock?.languageMode) {
+      setPrefLang(mock.languageMode);
+    }
+  }, [mock]);
 
   if (loading) return <div className="h-screen flex items-center justify-center bg-white"><Zap className="h-10 w-10 text-[#F97316] animate-pulse" /></div>;
   if (!mock) return null;
@@ -79,10 +86,11 @@ export default function InstructionsPage() {
                        <p className="text-sm font-black text-[#0F172A] uppercase tracking-widest">Select Default Assessment Language</p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-4">
-                       <LangBtn label="English" val="en" active={prefLang === 'en'} onClick={setPrefLang} />
-                       <LangBtn label="Punjabi" val="pa" active={prefLang === 'pa'} onClick={setPrefLang} />
-                       <LangBtn label="Hindi" val="hi" active={prefLang === 'hi'} onClick={setPrefLang} />
-                       <LangBtn label="Bilingual" val="bilingual" active={prefLang === 'bilingual'} onClick={setPrefLang} />
+                       <LangBtn label="English Only" val="ENGLISH" active={prefLang === 'ENGLISH'} onClick={setPrefLang} />
+                       <LangBtn label="Punjabi Only" val="PUNJABI" active={prefLang === 'PUNJABI'} onClick={setPrefLang} />
+                       <LangBtn label="Hindi Only" val="HINDI" active={prefLang === 'HINDI'} onClick={setPrefLang} />
+                       <LangBtn label="BILINGUAL (EN+PA)" val="ENGLISH_PUNJABI" active={prefLang === 'ENGLISH_PUNJABI'} onClick={setPrefLang} />
+                       <LangBtn label="BILINGUAL (EN+HI)" val="ENGLISH_HINDI" active={prefLang === 'ENGLISH_HINDI'} onClick={setPrefLang} />
                     </div>
                  </div>
 
@@ -137,7 +145,7 @@ function LangBtn({ label, val, active, onClick }: any) {
     <button 
       onClick={() => onClick(val)}
       className={cn(
-        "px-10 py-4 rounded-xl border-2 font-black uppercase text-[10px] tracking-widest transition-all shadow-sm active:scale-95",
+        "px-6 py-4 rounded-xl border-2 font-black uppercase text-[9px] tracking-widest transition-all shadow-sm active:scale-95",
         active ? "border-[#F97316] bg-orange-50 text-[#F97316] shadow-lg shadow-orange-500/10" : "border-slate-100 text-slate-400 hover:border-slate-300"
       )}
     >

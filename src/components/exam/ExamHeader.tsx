@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useExamStore } from '@/store/useExamStore';
@@ -14,8 +15,8 @@ import {
 import { LanguageDisplayMode } from '@/types';
 
 /**
- * @fileOverview Institutional CBT Header v9.0.
- * Features: Unified Timer, Progress Node, and Runtime Language Translator.
+ * @fileOverview Institutional CBT Header v10.0.
+ * Updated: Runtime labels match Admin labels for terminology consistency.
  */
 export default function ExamHeader({ 
   onPaletteToggle, 
@@ -35,11 +36,11 @@ export default function ExamHeader({
   } = useExamStore();
 
   const langModes: { label: string, value: LanguageDisplayMode }[] = [
-    { label: "English Only", value: "ENGLISH" },
-    { label: "Punjabi Only", value: "PUNJABI" },
-    { label: "Hindi Only", value: "HINDI" },
-    { label: "Bilingual (EN+PA)", value: "ENGLISH_PUNJABI" },
-    { label: "Bilingual (EN+HI)", value: "ENGLISH_HINDI" },
+    { label: "ENGLISH ONLY", value: "ENGLISH" },
+    { label: "PUNJABI ONLY", value: "PUNJABI" },
+    { label: "HINDI ONLY", value: "HINDI" },
+    { label: "BILINGUAL (EN+PA)", value: "ENGLISH_PUNJABI" },
+    { label: "BILINGUAL (EN+HI)", value: "ENGLISH_HINDI" },
   ];
 
   return (
@@ -75,13 +76,13 @@ export default function ExamHeader({
                     <Languages className="h-3.5 w-3.5 text-primary" />
                  </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-[#0F172A] border-white/10 text-white rounded-xl shadow-2xl p-1">
+              <DropdownMenuContent align="end" className="w-56 bg-[#0F172A] border-white/10 text-white rounded-xl shadow-2xl p-1">
                  {langModes.map((mode) => (
                     <DropdownMenuItem 
                       key={mode.value} 
                       onClick={() => setLanguage(mode.value)}
                       className={cn(
-                        "text-[10px] font-black uppercase px-3 py-2.5 rounded-lg cursor-pointer",
+                        "text-[10px] font-black uppercase px-4 py-3.5 rounded-lg cursor-pointer tracking-wider",
                         language === mode.value ? "bg-primary text-white" : "hover:bg-white/5 text-slate-400"
                       )}
                     >
