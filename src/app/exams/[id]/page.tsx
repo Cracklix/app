@@ -36,8 +36,8 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 
 /**
- * @fileOverview Institutional Exam Hub v7.1.
- * UPDATED: Logo priority fix for specialized exams like CTET.
+ * @fileOverview Institutional Exam Hub v7.2.
+ * FIXED: Moved published filter to client-side to bypass Firestore index requirements.
  */
 
 export default function ExamHubPage() {
@@ -50,10 +50,10 @@ export default function ExamHubPage() {
 
   const { data: exam, loading: examLoading } = useDoc<any>(useMemo(() => (db && examId ? doc(db, "exams", examId) : null), [db, examId]))
   
-  // 1. Fetch all mocks for this exam
+  // 1. Fetch all mocks for this exam (Simple query, no index needed)
   const mocksQuery = useMemo(() => {
     if (!db || !examId) return null;
-    return query(collection(db, "mocks"), where("examId", "==", examId), where("published", "==", true));
+    return query(collection(db, "mocks"), where("examId", "==", examId));
   }, [db, examId]);
 
   // 2. Fetch all study notes/syllabus for this exam
@@ -72,9 +72,9 @@ export default function ExamHubPage() {
   const { data: userResults } = useCollection<any>(resultsQuery)
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
 
-  // 3. Grouping Content Nodes
+  // 3. Grouping Content Nodes with Client-Side Published Filter
   const groupedContent = useMemo(() => {
-    const mocks = rawMocks || [];
+    const mocks = (rawMocks || []).filter(m => m.published === true);
     const notes = rawNotes || [];
 
     return {
@@ -97,7 +97,6 @@ export default function ExamHubPage() {
     b.abbreviation?.toLowerCase() === exam.boardId?.toLowerCase()
   );
 
-  // PRIORITY: Specific exam icon > Generic board icon
   const logoUrl = exam.iconUrl || activeBoard?.iconUrl;
   const isArmy = exam.boardId?.toLowerCase() === 'army' || exam.id?.toLowerCase().includes('army');
 

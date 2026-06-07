@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Mock Node with Authentication Guards.
- * Optimized: Horizontal back button layout and high-density UI.
+ * FIXED: Hardened access-check logic to prevent infinite skeleton screens.
  */
 
 export default function MockOverviewPage() {
@@ -45,7 +45,12 @@ export default function MockOverviewPage() {
 
   useEffect(() => {
     async function checkAccess() {
-      if (mockLoading || !mock || !db) return;
+      if (mockLoading) return;
+
+      if (!mock || !db) {
+        setAccessChecked(true);
+        return;
+      }
 
       if (mock.accessType === 'FREE') {
         setIsLocked(false);
@@ -77,7 +82,9 @@ export default function MockOverviewPage() {
         if (!subSnap.empty) {
           const subData = subSnap.docs[0].data();
           const expiry = new Date(subData.expiryDate);
-          if (expiry > new Date()) setIsLocked(false);
+          if (expiry > new Date()) {
+            setIsLocked(false);
+          }
         }
       } catch (e) {
         console.error("Access Audit Error:", e);
@@ -95,8 +102,23 @@ export default function MockOverviewPage() {
     }
   };
 
-  if (mockLoading || userLoading || (user && !accessChecked)) return <div className="h-screen flex items-center justify-center bg-white"><Skeleton className="h-16 w-16 rounded-full animate-pulse" /></div>
-  if (!mock) return <div className="h-screen flex items-center justify-center text-slate-400 font-black uppercase tracking-widest text-xs">Registry node missing</div>
+  const showSkeleton = mockLoading || userLoading || (user && !accessChecked);
+
+  if (showSkeleton) return (
+    <div className="h-screen flex items-center justify-center bg-white">
+      <Skeleton className="h-16 w-16 rounded-full animate-pulse" />
+    </div>
+  );
+
+  if (!mock) return (
+    <div className="h-screen flex flex-col items-center justify-center text-slate-400 gap-4">
+      <Info className="h-12 w-12 opacity-10" />
+      <p className="font-black uppercase tracking-widest text-xs">Registry node missing</p>
+      <Button asChild variant="ghost" className="text-primary font-black uppercase text-[10px]">
+        <Link href="/mocks">Back to List</Link>
+      </Button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-body">
