@@ -37,8 +37,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import ShareButton from "@/components/navigation/ShareButton"
 
 /**
- * @fileOverview FINAL ELITE STUDENT DASHBOARD v8.1.
- * Updated: Simplified Language, Fixed Loader2 import.
+ * @fileOverview Final Professional Student Dashboard v8.2.
+ * Updated: Simplified Language, Fixed Loader2 import error.
  */
 
 export default function StudentDashboard() {
@@ -79,6 +79,7 @@ export default function StudentDashboard() {
   if (loading) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-4">
        <Loader2 className="h-10 w-10 text-primary animate-spin" />
+       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Loading Dashboard...</p>
     </div>
   );
 
