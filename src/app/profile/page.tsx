@@ -30,7 +30,8 @@ import {
   Award,
   History,
   User as UserIcon,
-  ChevronRight
+  ChevronRight,
+  CreditCard
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
