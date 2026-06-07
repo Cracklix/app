@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
+import { cn } from "@/lib/utils"
 
 export default function QuestionEntryPage() {
   return (
