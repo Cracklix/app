@@ -34,8 +34,8 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 
 /**
- * @file Overview Final Exam-Specific Mastery Hub v4.0.
- * HARDENED: Robust Board Logo lookup logic with Referrer Policy bypass for Govt Assets.
+ * @file Overview Final Exam-Specific Mastery Hub v5.0.
+ * HARDENED: Robust Board Logo lookup logic with specialized scaling for circular emblems (Army).
  */
 
 export default function ExamHubPage() {
@@ -83,6 +83,7 @@ export default function ExamHubPage() {
   );
 
   const logoUrl = activeBoard?.iconUrl || exam.iconUrl;
+  const isArmy = exam.boardId?.toLowerCase() === 'army' || exam.id?.toLowerCase().includes('army');
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body">
@@ -99,7 +100,7 @@ export default function ExamHubPage() {
                   {logoUrl && !imgFailed ? (
                     <img 
                       src={logoUrl} 
-                      className="w-full h-full object-contain p-1.5" 
+                      className={cn("w-full h-full object-contain p-1.5", isArmy ? "scale-150" : "")} 
                       alt="Board Logo" 
                       referrerPolicy="no-referrer" 
                       onError={() => setImgFailed(true)}
