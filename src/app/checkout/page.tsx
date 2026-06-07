@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useSearchParams, useRouter } from "next/navigation"
@@ -19,8 +18,8 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Institutional Checkout Hub v12.0.
- * HARDENED: Precise customer name sanitization and high-fidelity script loading.
+ * @fileOverview Institutional Checkout Hub v13.0.
+ * HARDENED: Aggressive Name/Phone sanitization to resolve domestic/international flagging issues.
  */
 
 export default function CheckoutPage() {
@@ -55,14 +54,14 @@ function CheckoutContent() {
     if (!user || !planData) return;
     
     if (!(window as any).Razorpay) {
-      toast({ variant: "destructive", title: "Gateway Hub Offline", description: "Razorpay script loading. Please retry in 2 seconds." });
+      toast({ variant: "destructive", title: "Gateway Hub Offline", description: "Razorpay script loading. Please retry." });
       return;
     }
 
     setProcessing(true);
 
     try {
-      // 1. Create secure order node on backend
+      // 1. Create order
       const orderRes = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -72,20 +71,20 @@ function CheckoutContent() {
       const orderData = await orderRes.json();
       if (orderData.error) throw new Error(orderData.error);
 
-      // 2. Sanitize Customer Name (Razorpay character protocol)
+      // 2. Strict Metadata Sanitization (Prevents International Card flags)
       const rawName = profile?.name || user?.displayName || 'Aspirant';
-      const sanitizedName = rawName.replace(/[^a-zA-Z0-9\s]/g, '').slice(0, 40).trim() || "Student";
+      const sanitizedName = rawName.replace(/[^a-zA-Z\s]/g, '').slice(0, 40).trim() || "Student";
+      const sanitizedPhone = profile?.phone?.replace(/\D/g, '').slice(-10) || "";
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: orderData.amount,
-        currency: orderData.currency,
+        currency: "INR",
         name: "CRACKLIX",
-        description: `Institutional Pass: ${planData.name}`,
+        description: `${planData.name} Activation`,
         image: "https://i.ibb.co/5hkxTtKS/Whats-App-Image-2026-05-28-at-10-31-36-AM.jpg",
         order_id: orderData.order_id,
         handler: async function (response: any) {
-          // 3. Institutional signature verification
           setProcessing(true);
           try {
             const verifyRes = await fetch('/api/razorpay/verify-payment', {
@@ -102,38 +101,37 @@ function CheckoutContent() {
 
             const verifyData = await verifyRes.json();
             if (verifyData.success) {
-              toast({ title: "Pass Activated", description: "Your preparation hub is now unlocked." });
+              toast({ title: "Pass Activated" });
               router.push(`/payment/success?plan=${planData.name}`);
             } else {
-              throw new Error(verifyData.error || "Verification node rejected.");
+              throw new Error("Verification Node Rejected");
             }
           } catch (e: any) {
-            toast({ variant: "destructive", title: "Verification Failed", description: e.message });
+            toast({ variant: "destructive", title: "Security Error", description: "Could not verify signature." });
             setProcessing(false);
           }
         },
         prefill: {
           name: sanitizedName,
           email: user.email,
-          contact: profile?.phone?.replace(/\D/g, '').slice(-10) || ""
+          contact: sanitizedPhone
         },
         theme: { color: "#F97316" },
         modal: {
           ondismiss: function() { 
             setProcessing(false); 
-            toast({ title: "Transaction Closed", description: "Checkout was cancelled by user." });
           }
         }
       };
 
       const rzp = new (window as any).Razorpay(options);
       rzp.on('payment.failed', function (response: any) {
-        toast({ variant: "destructive", title: "Transaction Refused", description: response.error.description });
+        toast({ variant: "destructive", title: "Gateway Failure", description: response.error.description });
         setProcessing(false);
       });
       rzp.open();
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Gateway Hub Error", description: e.message });
+      toast({ variant: "destructive", title: "Order Hub Error", description: e.message });
       setProcessing(false);
     }
   };
@@ -141,7 +139,7 @@ function CheckoutContent() {
   const handleManualPayment = async () => {
     if (!user || !profile || !planData) return
     if (!utr || utr.length < 10) {
-       toast({ variant: "destructive", title: "UTR ID Missing", description: "Please enter your 12-digit transaction number." })
+       toast({ variant: "destructive", title: "UTR Missing", description: "Check your banking app for the 12-digit code." })
        return
     }
 
@@ -154,10 +152,10 @@ function CheckoutContent() {
           planId: planId,
           transactionId: utr
        })
-       toast({ title: "Audit Logged", description: "Manual verification pending. Takes 1-2 hours." })
+       toast({ title: "Audit Logged", description: "Verification pending." })
        router.push("/dashboard")
     } catch (e: any) {
-       toast({ variant: "destructive", title: "Audit Rejection", description: e.message })
+       toast({ variant: "destructive", title: "Audit Failed" })
     } finally {
        setProcessing(false)
     }
@@ -176,7 +174,7 @@ function CheckoutContent() {
       
       <main className="container mx-auto px-4 md:px-6 py-12 md:py-24 max-w-5xl">
         <div className="flex items-center gap-6 mb-12">
-           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl h-14 w-14 border border-slate-200 bg-white shadow-sm hover:bg-slate-50">
+           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl h-14 w-14 border border-slate-200 bg-white shadow-sm">
              <ArrowLeft className="h-6 w-6 text-[#0F172A]" />
            </Button>
            <div className="text-left">
@@ -197,7 +195,7 @@ function CheckoutContent() {
                     <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden">
                        <CardHeader className="p-10 bg-slate-50/50 border-b border-slate-100">
                           <CardTitle className="font-headline font-black text-xl uppercase text-[#0F172A]">Instant Unlock</CardTitle>
-                          <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Cards, UPI, Netbanking via Razorpay Hub</CardDescription>
+                          <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Secure transaction via Razorpay domestic gateway</CardDescription>
                        </CardHeader>
                        <CardContent className="p-10 space-y-10">
                           <div className="flex items-center gap-6 p-6 bg-emerald-50/50 rounded-3xl border border-emerald-100">
@@ -205,7 +203,7 @@ function CheckoutContent() {
                                 <ShieldCheck className="h-6 w-6" />
                              </div>
                              <p className="text-sm font-medium text-emerald-800 leading-relaxed uppercase">
-                                Your Elite Pass will be activated <strong>immediately</strong> upon successful audit.
+                                Use standard test credentials for **INR** domestic payments only.
                              </p>
                           </div>
                           <Button 
