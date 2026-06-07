@@ -15,8 +15,8 @@ import { useMemo } from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Final Cracklix Elite Pass Hub v16.0.
- * Rebuilt to match High-Fidelity screenshot: Dark Navy & Orange aesthetic.
+ * @fileOverview Final Elite Pass Hub v16.0.
+ * Directly mirrors Admin registry configurations for pricing and features.
  */
 export default function PassPage() {
   const db = useFirestore()
@@ -32,7 +32,6 @@ export default function PassPage() {
     <div className="min-h-screen bg-[#020817] font-body pb-safe overflow-x-hidden text-white">
       <Navbar />
       
-      {/* Dynamic Background Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
 
       <main className="container mx-auto px-4 py-16 md:py-24 max-w-7xl relative z-10">
@@ -57,7 +56,7 @@ export default function PassPage() {
            </div>
         ) : (
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch justify-center">
-              {passes?.map((plan: any, idx: number) => (
+              {passes.map((plan: any, idx: number) => (
                 <motion.div 
                   key={plan.id} 
                   initial={{ opacity: 0, y: 30 }} 
@@ -117,7 +116,6 @@ export default function PassPage() {
            </div>
         )}
 
-        {/* Institutional CTA */}
         <motion.div 
            initial={{ opacity: 0 }} 
            whileInView={{ opacity: 1 }} 

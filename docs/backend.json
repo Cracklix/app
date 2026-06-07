@@ -19,26 +19,10 @@
         "createdAt": { "type": "string", "format": "date-time" },
         "status": { "type": "string", "description": "The ID of the active pass or 'Free'" },
         "passExpiryDate": { "type": "string", "format": "date-time" },
-        "pinnedExams": { "type": "array", "items": { "type": "string" } }
+        "pinnedExams": { "type": "array", "items": { "type": "string" } },
+        "unlockedMocks": { "type": "array", "items": { "type": "string" }, "description": "Specific mocks unlocked for this user manually." }
       },
-      "required": ["id", "name", "email", "phone", "dob", "address", "role"]
-    },
-    "Exam": {
-      "title": "Exam Vertical",
-      "description": "A recruitment hub (e.g., PSSSB Patwari).",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "boardId": { "type": "string" },
-        "description": { "type": "string" },
-        "category": { "type": "string" },
-        "totalFullMocks": { "type": "number" },
-        "totalSubjects": { "type": "number" },
-        "totalPyqs": { "type": "number" },
-        "totalSectional": { "type": "number" },
-        "iconUrl": { "type": "string" }
-      }
+      "required": ["id", "name", "email", "phone", "role"]
     },
     "Pass": {
       "title": "Institutional Pass",
@@ -49,22 +33,12 @@
         "name": { "type": "string" },
         "price": { "type": "number" },
         "durationDays": { "type": "number" },
-        "allowedExams": { "type": "array", "items": { "type": "string" } },
-        "promotionBannerUrl": { "type": "string" },
+        "description": { "type": "string" },
+        "features": { "type": "array", "items": { "type": "string" } },
+        "displayOrder": { "type": "number" },
+        "type": { "type": "string", "enum": ["FREE", "PREMIUM"] },
+        "adFree": { "type": "boolean" },
         "active": { "type": "boolean" }
-      }
-    },
-    "Subscription": {
-      "title": "User Subscription",
-      "description": "Ledger of pass purchases.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "userId": { "type": "string" },
-        "passId": { "type": "string" },
-        "status": { "type": "string", "enum": ["ACTIVE", "EXPIRED"] },
-        "expiryDate": { "type": "string", "format": "date-time" },
-        "purchaseDate": { "type": "string", "format": "date-time" }
       }
     }
   },
@@ -75,14 +49,8 @@
     "/users/{userId}": {
       "schema": { "$ref": "#/backend/entities/UserProfile" }
     },
-    "/exams/{examId}": {
-      "schema": { "$ref": "#/backend/entities/Exam" }
-    },
     "/passes/{passId}": {
       "schema": { "$ref": "#/backend/entities/Pass" }
-    },
-    "/subscriptions/{subId}": {
-      "schema": { "$ref": "#/backend/entities/Subscription" }
     }
   }
 }
