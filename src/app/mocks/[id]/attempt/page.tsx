@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -17,8 +16,7 @@ import { Loader2, Play, ShieldCheck, CheckCircle2, Trophy, AlertTriangle, LogOut
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { motion, AnimatePresence } from "framer-motion";
-import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors";
+import { initializeFirebase } from "@/firebase";
 import {
   Dialog,
   DialogContent,
@@ -181,7 +179,7 @@ export default function MockAttemptPage() {
         </AnimatePresence>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar bg-slate-50 flex flex-col items-center">
-           <div className="mobile-app-shell p-2 space-y-2">
+           <div className="w-full max-w-4xl p-2 md:p-6 space-y-4">
               {q && (
                 <>
                   <QuestionRenderer 
@@ -196,17 +194,19 @@ export default function MockAttemptPage() {
            </div>
         </div>
 
-        <aside className="hidden lg:block w-[320px] bg-white border-l h-full">
+        {/* DESKTOP DOCKED PALETTE */}
+        <aside className="hidden lg:block w-[320px] bg-white border-l h-full shrink-0">
            <QuestionPalette onSelect={(idx) => examStore.setCurrentIdx(idx)} onSubmit={() => setShowSubmitModal(true)} />
         </aside>
       </main>
       
+      {/* MOBILE OVERLAY PALETTE */}
       <Sheet open={isMobilePaletteOpen} onOpenChange={setIsMobilePaletteOpen}>
         <SheetContent 
           side="right" 
           className={cn(
             "p-0 border-none overflow-hidden shadow-2xl transition-all duration-300",
-            "!w-[180px] !max-w-[180px] h-full"
+            "!w-[200px] !max-w-[200px] h-full"
           )}
         >
           <SheetHeader className="sr-only">
@@ -216,7 +216,7 @@ export default function MockAttemptPage() {
         </SheetContent>
       </Sheet>
 
-      {/* PAUSE / EXIT CONFIRMATION MODAL (High-Fidelity Match) */}
+      {/* PAUSE / EXIT CONFIRMATION MODAL */}
       <Dialog open={showExitModal} onOpenChange={setShowExitModal}>
          <DialogContent className="max-w-[90%] sm:max-w-[400px] rounded-2xl p-0 bg-white overflow-hidden border-none shadow-[0_20px_50px_rgba(0,0,0,0.2)]">
             <div className="p-8 space-y-10 text-center">
