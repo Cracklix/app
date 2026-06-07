@@ -1,12 +1,12 @@
+
 import { create } from 'zustand';
 import { AttemptState, ExamLanguage, QuestionStatus, Question } from '@/types';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
 
 /**
- * @fileOverview Enterprise CBT Global Store v17.0.
- * Hardened: atomic state updates and stable Firestore registry access.
- * Replaced window fallback with official initialization node.
+ * @fileOverview Enterprise CBT Global Store v18.0.
+ * Optimized: All Firestore updates are non-blocking and UI-first to ensure high-velocity preparation.
  */
 
 interface ExamStore extends AttemptState {
@@ -26,9 +26,9 @@ interface ExamStore extends AttemptState {
   setPaletteVisible: (visible: boolean) => void;
   togglePalette: () => void;
   setCurrentIdx: (idx: number) => void;
-  setAnswer: (idx: number, optionIdx: number | null, db: any) => Promise<void>;
-  clearAnswer: (idx: number, db: any) => Promise<void>;
-  markForReview: (idx: number, db: any) => Promise<void>;
+  setAnswer: (idx: number, optionIdx: number | null, db: any) => void;
+  clearAnswer: (idx: number, db: any) => void;
+  markForReview: (idx: number, db: any) => void;
   saveAndNext: (db: any) => void;
   tick: () => void;
   addViolation: (db: any) => void;
@@ -99,6 +99,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     
     if (userId && mockId) {
       const { firestore: db } = initializeFirebase();
+      // Non-blocking status update
       updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), {
          currentIdx: idx,
          visited: newVisited,
@@ -107,7 +108,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     }
   },
 
-  setAnswer: async (idx, optionIdx, db) => {
+  setAnswer: (idx, optionIdx, db) => {
     const { answers, status, userId, mockId } = get();
     if (!userId || !mockId) return;
 
@@ -132,7 +133,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     }).catch(() => {});
   },
 
-  clearAnswer: async (idx, db) => {
+  clearAnswer: (idx, db) => {
     const { answers, status, userId, mockId } = get();
     if (!userId || !mockId) return;
 
@@ -150,7 +151,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     }).catch(() => {});
   },
 
-  markForReview: async (idx, db) => {
+  markForReview: (idx, db) => {
     const { status, answers, userId, mockId } = get();
     if (!userId || !mockId) return;
 
@@ -201,7 +202,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     }
   },
 
-  addViolation: async (db) => {
+  addViolation: (db) => {
     const { violations, userId, mockId } = get();
     if (!userId || !mockId) return;
     
@@ -213,7 +214,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     }).catch(() => {});
   },
 
-  toggleBookmark: async (idx, db) => {
+  toggleBookmark: (idx, db) => {
     const { bookmarks, userId, mockId } = get();
     if (!userId || !mockId) return;
 

@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useFirestore, useUser } from "@/firebase";
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp, collection, query, where, documentId, getDocs } from "firebase/firestore";
 import { useExamStore } from "@/store/useExamStore";
 import ExamHeader from "@/components/exam/ExamHeader";
 import SubjectTabs from "@/components/exam/SubjectTabs";
@@ -17,6 +17,8 @@ import { Loader2, Play, ShieldCheck, CheckCircle2, Trophy, AlertTriangle, LogOut
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { motion, AnimatePresence } from "framer-motion";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors";
 import {
   Dialog,
   DialogContent,
@@ -26,8 +28,8 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Final CBT Attempt Node v18.0.
- * Fixed: Compact content area to remove vacant space and sit footer inline.
+ * @fileOverview Final CBT Attempt Node v19.0.
+ * Optimized: Implemented chunked batch fetching and non-blocking submission for high-velocity preparation.
  */
 
 export default function MockAttemptPage() {
@@ -54,11 +56,25 @@ export default function MockAttemptPage() {
         if (!mockSnap.exists()) throw new Error("Mock series not found in registry.");
         const mockData = mockSnap.data();
 
-        const qSnaps = await Promise.all(
-          (mockData.questionIds || []).map((id: string) => getDoc(doc(db, "questions", id)))
-        );
+        const questionIds = mockData.questionIds || [];
+        const fetchedQuestions: any[] = [];
         
-        let questions = qSnaps.map(s => s.exists() ? ({ ...s.data(), id: s.id }) : null).filter(Boolean) as any[];
+        // Optimization: Chunked batch fetching (max 30 per 'in' query)
+        const chunks = [];
+        for (let i = 0; i < questionIds.length; i += 30) {
+          chunks.push(questionIds.slice(i, i + 30));
+        }
+
+        const chunkSnaps = await Promise.all(
+          chunks.map(chunk => getDocs(query(collection(db, "questions"), where(documentId(), "in", chunk))))
+        );
+
+        chunkSnaps.forEach(snap => {
+          snap.docs.forEach(d => fetchedQuestions.push({ ...d.data(), id: d.id }));
+        });
+
+        // Restore registry order
+        const questions = questionIds.map(id => fetchedQuestions.find(q => q.id === id)).filter(Boolean);
 
         if (mockData.sections && mockData.sections.length > 0) {
            let currentIndex = 0;
@@ -82,7 +98,8 @@ export default function MockAttemptPage() {
            const startTime = Date.now();
            const endTime = startTime + (mockData.duration * 60 * 1000);
            
-           await setDoc(attemptRef, {
+           // Non-blocking initialization
+           setDoc(attemptRef, {
               userId: user.uid,
               mockId,
               mockTitle: mockData.title,
@@ -95,10 +112,12 @@ export default function MockAttemptPage() {
               startTime,
               endTime,
               violations: 0
-           });
+           }).catch(() => {});
+           
+           examStore.initExam(mockId, mockData.title || "Evaluation Series", user.uid, questions, mockData.duration || 120, { startTime, endTime });
+        } else {
+           examStore.initExam(mockId, mockData.title || "Evaluation Series", user.uid, questions, mockData.duration || 120, savedState);
         }
-
-        examStore.initExam(mockId, mockData.title || "Evaluation Series", user.uid, questions, mockData.duration || 120, savedState);
       } catch (err: any) {
         toast({ variant: "destructive", title: "CBT Sync Failure", description: err.message });
         router.push(`/mocks/${mockId}`);
@@ -113,7 +132,7 @@ export default function MockAttemptPage() {
     if (isInitializing) return;
     const interval = setInterval(() => {
       examStore.tick();
-      if (examStore.timeLeft <= 0 && !isSubmittingFinal && !isInitializing) {
+      if (examStore.timeLeft <= 0 && !isSubmittingFinal) {
          handleSubmitFinal();
       }
     }, 1000);
@@ -137,42 +156,47 @@ export default function MockAttemptPage() {
     if (!db || typeof db !== 'object' || !user || isSubmittingFinal) return;
     setIsSubmittingFinal(true);
     
-    try {
-      let score = 0;
-      examStore.questions.forEach((q, idx) => {
-        const studentAnsIdx = examStore.answers[idx];
-        const correctAnsIdx = ['A', 'B', 'C', 'D'].indexOf(q.correctAnswer);
-        if (studentAnsIdx === correctAnsIdx) score += 1;
-        else if (studentAnsIdx !== undefined) score -= 0.25;
-      });
+    let score = 0;
+    examStore.questions.forEach((q, idx) => {
+      const studentAnsIdx = examStore.answers[idx];
+      const correctAnsIdx = ['A', 'B', 'C', 'D'].indexOf(q.correctAnswer);
+      if (studentAnsIdx === correctAnsIdx) score += 1;
+      else if (studentAnsIdx !== undefined) score -= 0.25;
+    });
 
-      const attempted = Object.keys(examStore.answers).length;
-      const accuracy = attempted > 0 ? Math.round((score / attempted) * 100) : 0;
+    const attempted = Object.keys(examStore.answers).length;
+    const accuracy = attempted > 0 ? Math.round((score / attempted) * 100) : 0;
 
-      const resultPayload = {
-        userId: user.uid,
-        mockId: examStore.mockId,
-        mockTitle: examStore.mockTitle,
-        score,
-        totalQuestions: examStore.questions.length,
-        accuracy,
-        answers: examStore.answers,
-        timestamp: new Date().toISOString(),
-        timeTaken: (examStore.questions.length * 60) - examStore.timeLeft,
-        createdAt: serverTimestamp()
-      };
+    const resultPayload = {
+      userId: user.uid,
+      mockId: examStore.mockId,
+      mockTitle: examStore.mockTitle,
+      score,
+      totalQuestions: examStore.questions.length,
+      accuracy,
+      answers: examStore.answers,
+      timestamp: new Date().toISOString(),
+      timeTaken: (examStore.questions.length * 60) - examStore.timeLeft,
+      createdAt: serverTimestamp()
+    };
 
-      await setDoc(doc(db, "results", `${user.uid}_${mockId}`), resultPayload);
-      await updateDoc(doc(db, "attempts", `${user.uid}_${mockId}`), { status: 'COMPLETED', updatedAt: serverTimestamp() });
-      
-      toast({ title: "Audit Synchronized" });
-      router.push(`/results/${mockId}`);
-    } catch (e) {
-      toast({ variant: "destructive", title: "Cloud Registry Sync Error" });
-    } finally {
-      setIsSubmittingFinal(false);
-      setShowSubmitModal(false);
-    }
+    // Optimization: Non-blocking submission
+    const resultRef = doc(db, "results", `${user.uid}_${mockId}`);
+    setDoc(resultRef, resultPayload).catch(async (err) => {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: resultRef.path,
+        operation: 'write',
+        requestResourceData: resultPayload
+      }));
+    });
+
+    updateDoc(doc(db, "attempts", `${user.uid}_${mockId}`), { 
+      status: 'COMPLETED', 
+      updatedAt: serverTimestamp() 
+    }).catch(() => {});
+    
+    toast({ title: "Audit Synchronized" });
+    router.push(`/results/${mockId}`);
   }, [db, user, isSubmittingFinal, examStore, router, toast, mockId]);
 
   if (isInitializing) return (
@@ -232,7 +256,6 @@ export default function MockAttemptPage() {
           )}
         </AnimatePresence>
 
-        {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto custom-scrollbar bg-black flex flex-col items-center">
            <div className="w-full max-w-[920px] p-2 md:p-6 lg:p-8 space-y-2">
               {q && (
@@ -243,7 +266,6 @@ export default function MockAttemptPage() {
                     selectedAnswer={selectedAnswer}
                     onSelect={(idx) => examStore.setAnswer(examStore.currentIdx, idx, db)}
                   />
-                  {/* RELOCATED FOOTER: Direct Flow below question */}
                   <TacticalFooter onSubmit={() => setShowSubmitModal(true)} />
                 </>
               )}
