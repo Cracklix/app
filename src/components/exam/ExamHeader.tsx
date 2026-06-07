@@ -23,8 +23,8 @@ const ALL_LANG_MODES: { label: string, value: LanguageDisplayMode }[] = [
 ];
 
 /**
- * @fileOverview Institutional CBT Header v25.0.
- * UPDATED: Streamlined mobile layout to prevent timer overlap. Removed Progress/Hub labels.
+ * @fileOverview Institutional CBT Header v26.0.
+ * FIXED: Removed Progress/Exam labels entirely to prevent timer overlap on mobile.
  */
 export default function ExamHeader({ 
   onPaletteToggle, 
@@ -65,11 +65,11 @@ export default function ExamHeader({
               <ChevronLeft className="h-5 w-5" />
            </button>
            
-           <div className="flex items-baseline gap-1 min-w-0">
-              <p className="text-[16px] md:text-[20px] font-black text-white shrink-0">
+           <div className="flex items-baseline gap-1 min-w-0 ml-1">
+              <p className="text-[16px] md:text-[22px] font-black text-white shrink-0">
                  {currentIdx + 1}
               </p>
-              <p className="text-slate-500 text-[10px] md:text-[13px] font-bold uppercase tracking-widest">
+              <p className="text-slate-500 text-[10px] md:text-[14px] font-bold uppercase tracking-widest opacity-60">
                  /{questionsCount}
               </p>
            </div>

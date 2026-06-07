@@ -17,8 +17,8 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Institutional CBT Palette Hub v25.0.
- * MATCHED: Strictly aligns with screenshot (Rounded Cards, Specific Status Colors, Orange Bullet Headers).
+ * @fileOverview Institutional CBT Palette Hub v26.0.
+ * FIXED: Adjusted SummaryCard internal spacing to prevent text overflow on mobile.
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const questions = useExamStore(s => s.questions);
@@ -61,7 +61,7 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
         {/* Anti-Clipping padding calibrated for screenshot visibility */}
         <div className="p-3 md:p-8 pt-24 md:pt-28 space-y-8 md:space-y-10 pb-32">
            
-           {/* 1. STATUS LEGEND HUB (Screenshot Match) */}
+           {/* 1. STATUS LEGEND HUB */}
            <div className="grid grid-cols-2 gap-2 md:gap-4">
               <SummaryCard count={stats.answered} label="ANSWERED" color="bg-[#1E5EFF]" />
               <SummaryCard count={stats.notAnswered} label="NOT ANSWERED" color="bg-[#94A3B8]" />
@@ -119,14 +119,14 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
 function SummaryCard({ count, label, color, textColor = "text-white", colSpan = 1, border = "border-transparent" }: any) {
   return (
     <div className={cn(
-      "flex items-center gap-3 p-3 md:p-4 rounded-2xl md:rounded-[2rem] bg-white border border-slate-100 shadow-2xl",
+      "flex items-center gap-2 md:gap-3 p-2 md:p-4 rounded-xl md:rounded-[2rem] bg-white border border-slate-100 shadow-2xl",
       colSpan > 1 && "col-span-2"
     )}>
-       <div className={cn("h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center text-sm md:text-lg font-black shrink-0 shadow-lg border-[3px] border-white", color, textColor, border)}>
+       <div className={cn("h-8 w-8 md:h-12 md:w-12 rounded-full flex items-center justify-center text-xs md:text-lg font-black shrink-0 shadow-lg border-[2px] md:border-[3px] border-white", color, textColor, border)}>
           {count}
        </div>
        <div className="min-w-0">
-          <span className="text-[9px] md:text-[11px] font-black uppercase text-slate-400 tracking-tighter block leading-[1.1]">{label}</span>
+          <span className="text-[7px] md:text-[11px] font-black uppercase text-slate-400 tracking-tighter block leading-tight truncate">{label}</span>
        </div>
     </div>
   )
