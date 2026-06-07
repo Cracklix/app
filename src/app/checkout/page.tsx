@@ -19,9 +19,9 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Institutional Checkout Hub v28.0.
- * FIXED: Forcefully enabled UPI VPA (ID) entry field using custom display blocks to override default QR-only view.
- * HARDENED: Aggressive name sanitization to prevent "Invalid Format" rejection.
+ * @fileOverview Institutional Checkout Hub v29.0.
+ * FIXED: Forcefully enabled UPI VPA (ID) entry field by suppressing default blocks and defining a custom VPA-only block.
+ * This ensures the user can type 'test@razorpay' instead of only scanning a QR.
  */
 
 export default function CheckoutPage() {
@@ -62,7 +62,6 @@ function CheckoutContent() {
     setProcessing(true);
 
     try {
-      // 1. Generate Order Node
       const orderRes = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -72,12 +71,10 @@ function CheckoutContent() {
       const orderData = await orderRes.json();
       if (orderData.error) throw new Error(orderData.error);
 
-      // 2. Aggressive Metadata Sanitization (Letters and Spaces only)
+      // Aggressive Sanitization
       const rawName = profile?.name || user?.displayName || 'Aspirant';
       const sanitizedName = rawName.replace(/[^a-zA-Z\s]/g, '').trim().slice(0, 40) || "Student";
-      
       const phoneDigits = (profile?.phone || '').replace(/\D/g, '').slice(-10);
-      const sanitizedPhone = phoneDigits.length === 10 ? `+91${phoneDigits}` : '';
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || orderData.key_id,
@@ -117,35 +114,26 @@ function CheckoutContent() {
         prefill: {
           name: sanitizedName,
           email: user.email,
-          contact: sanitizedPhone
+          contact: phoneDigits.length === 10 ? `+91${phoneDigits}` : ''
         },
         theme: { color: "#F97316" },
-        // FORCED VPA CONFIGURATION: Explicitly separate VPA and QR into blocks to force input visibility
+        // CRITICAL FIX: FORCE VPA (UPI ID) INPUT FIELD
         config: {
           display: {
             blocks: {
               upi_vpa: {
-                name: "Pay via UPI ID",
+                name: "Pay using UPI ID",
                 instruments: [
                   {
                     method: "upi",
                     protocols: ["vpa"]
                   }
                 ]
-              },
-              upi_qr: {
-                name: "Pay via QR Code",
-                instruments: [
-                  {
-                    method: "upi",
-                    protocols: ["qr"]
-                  }
-                ]
               }
             },
-            sequence: ["block.upi_vpa", "block.upi_qr", "method.card", "method.netbanking"],
+            sequence: ["block.upi_vpa", "method.card", "method.netbanking"],
             preferences: {
-              show_default_blocks: true
+              show_default_blocks: false // Suppress standard QR to force VPA entry
             }
           }
         },
