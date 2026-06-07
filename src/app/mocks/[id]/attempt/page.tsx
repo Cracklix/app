@@ -27,8 +27,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 /**
- * @fileOverview Production Hardened CBT Attempt Engine v28.0.
- * UPDATED: Sheet width set to 85vw to match user screenshot exactly.
+ * @fileOverview Production Hardened CBT Attempt Engine v29.0.
+ * UPDATED: Adjusted palette width to 75vw for a perfect half-screen feel.
  */
 
 export default function MockAttemptPage() {
@@ -248,7 +248,7 @@ export default function MockAttemptPage() {
       <Sheet open={isPaletteOpen} onOpenChange={setIsPaletteOpen}>
         <SheetContent 
           side="right" 
-          className="p-0 border-none overflow-hidden shadow-5xl w-[85vw] md:w-[400px] h-full"
+          className="p-0 border-none overflow-hidden shadow-5xl w-[75vw] md:w-[400px] h-full"
         >
           <SheetHeader className="sr-only">
              <SheetTitle>Registry Palette</SheetTitle>

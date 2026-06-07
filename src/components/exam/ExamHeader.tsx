@@ -24,8 +24,8 @@ const ALL_LANG_MODES: { label: string, value: LanguageDisplayMode }[] = [
 ];
 
 /**
- * @fileOverview Institutional CBT Header v22.0.
- * Adjusted for maximum density to match user screenshot hierarchy perfectly.
+ * @fileOverview Institutional CBT Header v23.0.
+ * UPDATED: Removed Exam Name per user request to match high-fidelity screenshot.
  */
 export default function ExamHeader({ 
   onPaletteToggle, 
@@ -42,7 +42,6 @@ export default function ExamHeader({
   const currentIdx = useExamStore(s => s.currentIdx);
   const questionsCount = useExamStore(s => s.questions.length);
   const setLanguage = useExamStore(s => s.setLanguage);
-  const mockTitle = useExamStore(s => s.mockTitle);
 
   const availableModes = useMemo(() => {
     if (baseLanguageMode === 'ENGLISH_PUNJABI') {
@@ -58,7 +57,7 @@ export default function ExamHeader({
     <header className="bg-[#0B1528] text-white flex flex-col shrink-0 z-[100] border-b border-white/5 shadow-lg">
       <div className="h-14 md:h-16 flex items-center justify-between px-2 md:px-6">
         
-        {/* LEFT: BACK & PROGRESS & TITLE */}
+        {/* LEFT: BACK & PROGRESS */}
         <div className="flex items-center gap-2 md:gap-4 shrink-0 min-w-0 flex-1">
            <button 
              onClick={onExitRequest} 
@@ -76,7 +75,6 @@ export default function ExamHeader({
                  <p className="text-[14px] md:text-[18px] font-black text-white shrink-0">
                     {currentIdx + 1}<span className="text-slate-500 text-[10px] md:text-[12px] font-bold">/{questionsCount}</span>
                  </p>
-                 <p className="text-[10px] md:text-[13px] font-black text-white uppercase truncate max-w-[120px] md:max-w-[240px]">{mockTitle}</p>
               </div>
            </div>
         </div>
