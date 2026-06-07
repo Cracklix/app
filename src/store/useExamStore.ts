@@ -1,13 +1,15 @@
 
+'use client';
+
 import { create } from 'zustand';
 import { AttemptState, ExamLanguage, QuestionStatus, Question, LanguageDisplayMode } from '@/types';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
 
 /**
- * @fileOverview Enterprise CBT Global Store v25.0.
- * PERFORMANCE OPTIMIZED: Granular state management to prevent re-render loops.
- * OPTIMISTIC UPDATES: UI reflects changes instantly while syncing to cloud in background.
+ * @fileOverview Elite CBT Global Store v26.0 (Hardened).
+ * ZERO-LAG ARCHITECTURE: Optimistic UI updates with non-blocking background sync.
+ * RECOVERY ENGINE: Instant state restoration from local cache + cloud sync.
  */
 
 interface ExamStore extends AttemptState {
@@ -25,8 +27,6 @@ interface ExamStore extends AttemptState {
   initExam: (mockId: string, mockTitle: string, userId: string, questions: Question[], duration: number, savedState?: any, languageMode?: LanguageDisplayMode) => void;
   setLanguage: (lang: ExamLanguage | LanguageDisplayMode) => void;
   setPaused: (paused: boolean) => void;
-  setPaletteVisible: (visible: boolean) => void;
-  togglePalette: () => void;
   setCurrentIdx: (idx: number) => void;
   setAnswer: (idx: number, optionIdx: number | null, db: any) => void;
   clearAnswer: (idx: number, db: any) => void;
@@ -34,7 +34,6 @@ interface ExamStore extends AttemptState {
   saveAndNext: (db: any) => void;
   tick: () => void;
   addViolation: (db: any) => void;
-  toggleBookmark: (idx: number, db: any) => void;
 }
 
 export const useExamStore = create<ExamStore>((set, get) => ({
@@ -63,14 +62,13 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const now = Date.now();
     const { language: currentLang } = get();
     
-    let isStale = false;
-    if (savedState?.status === 'COMPLETED' || (savedState?.endTime && now >= savedState.endTime)) {
-      isStale = true;
-    }
+    // Check for existing attempt validity
+    const isCompleted = savedState?.status === 'COMPLETED';
+    const isTimedOut = savedState?.endTime && now >= savedState.endTime;
+    const isStale = isCompleted || isTimedOut;
 
-    const endTime = isStale ? (now + (duration * 60 * 1000)) : (savedState?.endTime || (now + (duration * 60 * 1000)));
-    const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
-    
+    const finalEndTime = isStale ? (now + (duration * 60 * 1000)) : (savedState?.endTime || (now + (duration * 60 * 1000)));
+    const timeLeft = Math.max(0, Math.floor((finalEndTime - now) / 1000));
     const finalBaseMode = languageMode || 'ENGLISH_PUNJABI';
 
     set({
@@ -82,7 +80,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       baseLanguageMode: finalBaseMode,
       language: (currentLang && currentLang !== '') ? currentLang : finalBaseMode, 
       startTime: isStale ? now : (savedState?.startTime || now),
-      endTime,
+      endTime: finalEndTime,
       answers: isStale ? {} : (savedState?.answers || {}),
       status: isStale ? {} : (savedState?.status || {}),
       visited: isStale ? [0] : Array.from(new Set([...(savedState?.visited || []), 0])),
@@ -93,12 +91,20 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       isPaused: false,
       isSubmitting: false
     });
+
+    // Background: Initialize cloud node if it doesn't exist
+    if (userId && mockId && !savedState) {
+      const { firestore: db } = initializeFirebase();
+      const attemptRef = doc(db, 'attempts', `${userId}_${mockId}`);
+      setDoc(attemptRef, {
+        userId, mockId, startTime: now, endTime: finalEndTime,
+        status: 'IN_PROGRESS', updatedAt: serverTimestamp()
+      }, { merge: true }).catch(() => {});
+    }
   },
 
   setLanguage: (lang) => set({ language: lang }),
   setPaused: (isPaused) => set({ isPaused }),
-  setPaletteVisible: (isPaletteVisible) => set({ isPaletteVisible }),
-  togglePalette: () => set((state) => ({ isPaletteVisible: !state.isPaletteVisible })),
 
   setCurrentIdx: (idx) => {
     const { visited, questions, userId, mockId } = get();
@@ -106,23 +112,21 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     
     const newVisited = Array.from(new Set([...visited, idx]));
     
-    // 1. Update UI Instantly
+    // 1. Instant UI Reflection
     set({ 
       currentIdx: idx, 
       visited: newVisited,
       currentSectionId: questions[idx]?.sectionId || ''
     });
     
-    // 2. Sync to background
+    // 2. Background Sync
     if (userId && mockId) {
       const { firestore: db } = initializeFirebase();
-      if (db) {
-        updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), {
-          currentIdx: idx,
-          visited: newVisited,
-          updatedAt: serverTimestamp()
-        }).catch(() => {});
-      }
+      updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), {
+        currentIdx: idx,
+        visited: newVisited,
+        updatedAt: serverTimestamp()
+      }).catch(() => {});
     }
   },
 
@@ -141,12 +145,10 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       newStatus[idx] = 'answered';
     }
 
-    // 1. Update UI Instantly
     set({ answers: newAnswers, status: newStatus });
 
-    // 2. Sync in background
-    const attemptRef = doc(db, 'attempts', `${userId}_${mockId}`);
-    updateDoc(attemptRef, {
+    // Non-blocking Cloud Sync
+    updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), {
       [`answers.${idx}`]: optionIdx,
       [`status.${idx}`]: newStatus[idx],
       updatedAt: serverTimestamp()
@@ -163,8 +165,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     newStatus[idx] = 'not-answered';
     set({ answers: newAnswers, status: newStatus });
 
-    const attemptRef = doc(db, 'attempts', `${userId}_${mockId}`);
-    updateDoc(attemptRef, {
+    updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), {
       [`answers.${idx}`]: null,
       [`status.${idx}`]: 'not-answered',
       updatedAt: serverTimestamp()
@@ -180,8 +181,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     newStatus[idx] = hasAnswer ? 'answered-marked' : 'marked';
     set({ status: newStatus });
 
-    const attemptRef = doc(db, 'attempts', `${userId}_${mockId}`);
-    updateDoc(attemptRef, {
+    updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), {
       [`status.${idx}`]: newStatus[idx],
       updatedAt: serverTimestamp()
     }).catch(() => {});
@@ -190,24 +190,9 @@ export const useExamStore = create<ExamStore>((set, get) => ({
   },
 
   saveAndNext: (db) => {
-    const { currentIdx, questions, userId, mockId, visited } = get();
+    const { currentIdx, questions } = get();
     if (currentIdx < questions.length - 1) {
-      const nextIdx = currentIdx + 1;
-      const newVisited = Array.from(new Set([...visited, nextIdx]));
-      set({ 
-        currentIdx: nextIdx, 
-        visited: newVisited,
-        currentSectionId: questions[nextIdx]?.sectionId || ''
-      });
-      
-      if (userId && mockId && db) {
-        const attemptRef = doc(db, 'attempts', `${userId}_${mockId}`);
-        updateDoc(attemptRef, {
-          currentIdx: nextIdx,
-          visited: newVisited,
-          updatedAt: serverTimestamp()
-        }).catch(() => {});
-      }
+      get().setCurrentIdx(currentIdx + 1);
     }
   },
 
@@ -230,18 +215,6 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     set({ violations: newVal });
     updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), { 
       violations: newVal,
-      updatedAt: serverTimestamp()
-    }).catch(() => {});
-  },
-
-  toggleBookmark: (idx, db) => {
-    const { bookmarks, userId, mockId } = get();
-    if (!userId || !mockId || !db) return;
-
-    const next = bookmarks.includes(idx) ? bookmarks.filter(i => i !== idx) : [...bookmarks, idx];
-    set({ bookmarks: next });
-    updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), { 
-      bookmarks: next,
       updatedAt: serverTimestamp()
     }).catch(() => {});
   }

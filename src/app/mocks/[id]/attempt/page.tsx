@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -12,7 +13,7 @@ import AntiCheat from "@/components/exam/AntiCheat";
 import QuestionRenderer from "@/components/questions/QuestionRenderer";
 import QuestionPalette from "@/components/mocks/QuestionPalette";
 import { Button } from "@/components/ui/button";
-import { Loader2, Play, ShieldCheck, CheckCircle2, Trophy, AlertTriangle, LogOut } from "lucide-react";
+import { Loader2, Play, ShieldCheck, CheckCircle2, Trophy, AlertTriangle, LogOut, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,10 +27,11 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Institutional CBT Attempt Node v16.0.
- * Optimized: Increased mobile palette width to 280px for full data visibility.
- * Fixed: Robust Firebase guards (removed hallucinations).
+ * @fileOverview Elite CBT Attempt Engine v17.0.
+ * OPTIMIZED: Zero-lag question transitions and backgrounded auto-save.
+ * UI: High-fidelity focus mode with immersive dark-palette header.
  */
+
 export default function MockAttemptPage() {
   const params = useParams();
   const router = useRouter();
@@ -51,12 +53,13 @@ export default function MockAttemptPage() {
       if (!db || !user || !mockId) return;
       try {
         const mockSnap = await getDoc(doc(db, "mocks", mockId));
-        if (!mockSnap.exists()) throw new Error("Mock series not found.");
+        if (!mockSnap.exists()) throw new Error("Mock series not found in registry.");
         const mockData = mockSnap.data();
 
         const questionIds = mockData.questionIds || [];
         const fetchedQuestions: any[] = [];
         
+        // Elite Chunking: Max 30 IDs per query to bypass Firestore limits
         const chunks = [];
         for (let i = 0; i < questionIds.length; i += 30) {
           chunks.push(questionIds.slice(i, i + 30));
@@ -70,6 +73,7 @@ export default function MockAttemptPage() {
           snap.docs.forEach(d => fetchedQuestions.push({ ...d.data(), id: d.id }));
         });
 
+        // Maintain strict ordering as defined in mock questionIds
         const questions = questionIds.map(id => fetchedQuestions.find(q => q.id === id)).filter(Boolean);
 
         if (mockData.sections && mockData.sections.length > 0) {
@@ -84,13 +88,13 @@ export default function MockAttemptPage() {
            });
         }
 
-        if (questions.length === 0) throw new Error("Question bank node empty.");
+        if (questions.length === 0) throw new Error("Question bank nodes empty.");
 
         const attemptRef = doc(db, "attempts", `${user.uid}_${mockId}`);
         const attemptSnap = await getDoc(attemptRef);
         const savedState = attemptSnap.exists() ? attemptSnap.data() : undefined;
 
-        examStore.initExam(mockId, mockData.title || "Evaluation Series", user.uid, questions, mockData.duration || 120, savedState, mockData.languageMode);
+        examStore.initExam(mockId, mockData.title || "Elite Series", user.uid, questions, mockData.duration || 120, savedState, mockData.languageMode);
       } catch (err: any) {
         toast({ variant: "destructive", title: "Sync Failure", description: err.message });
         router.push(`/mocks/${mockId}`);
@@ -113,6 +117,7 @@ export default function MockAttemptPage() {
     if (!db || isSubmittingFinal || !user) return;
     setIsSubmittingFinal(true);
     
+    // Performance Marking Engine
     let score = 0;
     examStore.questions.forEach((q, idx) => {
       const studentAnsIdx = examStore.answers[idx];
@@ -133,7 +138,7 @@ export default function MockAttemptPage() {
       accuracy,
       answers: examStore.answers,
       timestamp: new Date().toISOString(),
-      timeTaken: (examStore.questions.length * 60) - examStore.timeLeft,
+      timeTaken: (examStore.timeLeft < (examStore.questions.length * 60)) ? (examStore.startTime + (examStore.questions.length * 60000) - Date.now()) : 0,
       createdAt: serverTimestamp()
     };
 
@@ -141,14 +146,17 @@ export default function MockAttemptPage() {
     setDoc(resultRef, resultPayload).catch(() => {});
     updateDoc(doc(db, "attempts", `${user.uid}_${mockId}`), { status: 'COMPLETED', updatedAt: serverTimestamp() }).catch(() => {});
     
-    toast({ title: "Assessment Synced" });
+    toast({ title: "Assessment Synchronized" });
     router.push(`/results/${mockId}`);
   }, [db, user, isSubmittingFinal, examStore, router, toast, mockId]);
 
   if (isInitializing) return (
-    <div className="h-full w-full flex flex-col items-center justify-center bg-white space-y-4">
-       <Loader2 className="h-8 w-8 text-primary animate-spin" />
-       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Synchronizing Hub...</p>
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-[#0B1528] space-y-8">
+       <div className="relative">
+          <Zap className="h-16 w-16 text-primary animate-pulse" />
+          <div className="absolute -inset-4 bg-primary/20 blur-xl rounded-full animate-ping" />
+       </div>
+       <p className="text-[11px] font-black uppercase tracking-[0.5em] text-primary">Initializing Elite CBT Hub...</p>
     </div>
   );
 
@@ -156,7 +164,7 @@ export default function MockAttemptPage() {
   const selectedAnswer = examStore.answers[examStore.currentIdx];
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-slate-50 font-body select-none overflow-hidden relative">
+    <div className="flex flex-col h-[100dvh] bg-white font-body select-none overflow-hidden relative">
       <AntiCheat />
       <ExamHeader 
         onPaletteToggle={() => setIsMobilePaletteOpen(true)} 
@@ -164,41 +172,50 @@ export default function MockAttemptPage() {
       />
       <SubjectTabs />
 
-      <main className="flex-1 flex overflow-hidden relative">
+      <main className="flex-1 flex overflow-hidden relative bg-slate-50/30">
         <AnimatePresence>
           {examStore.isPaused && (
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 z-[100] bg-white/95 backdrop-blur-md flex items-center justify-center p-4"
+              className="absolute inset-0 z-[100] bg-[#0B1528]/95 backdrop-blur-xl flex items-center justify-center p-6"
             >
-              <div className="bg-white rounded-[2rem] shadow-2xl p-8 space-y-6 text-center max-w-sm w-full">
-                 <div className="h-14 w-14 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto text-primary">
-                    <Play className="h-7 w-7 fill-current" />
+              <div className="bg-white rounded-[3rem] shadow-5xl p-12 space-y-8 text-center max-w-sm w-full">
+                 <div className="h-20 w-20 bg-orange-50 rounded-[2rem] flex items-center justify-center mx-auto text-primary shadow-2xl">
+                    <Play className="h-10 w-10 fill-current" />
                  </div>
-                 <h2 className="text-xl font-headline font-black text-[#0F172A] uppercase">Test Paused</h2>
-                 <Button onClick={() => examStore.setPaused(false)} className="w-full h-14 bg-primary text-white rounded-xl font-black uppercase tracking-widest">Resume Attempt</Button>
+                 <div className="space-y-2">
+                    <h2 className="text-2xl font-headline font-black text-[#0F172A] uppercase tracking-tight">Attempt Paused</h2>
+                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Time Node Locked</p>
+                 </div>
+                 <Button onClick={() => examStore.setPaused(false)} className="w-full h-16 bg-primary text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] shadow-3xl">Resume Assessment</Button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar bg-slate-50 flex flex-col items-center">
-           <div className="w-full max-w-4xl p-2 md:p-8 space-y-4">
+        <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center">
+           <div className="w-full max-w-4xl p-3 md:p-10 space-y-6">
               {q && (
-                <>
+                <motion.div 
+                   key={examStore.currentIdx}
+                   initial={{ opacity: 0, x: 10 }}
+                   animate={{ opacity: 1, x: 0 }}
+                   transition={{ duration: 0.2 }}
+                >
                   <QuestionRenderer 
                     language={examStore.language as any} 
                     question={{...q, displayId: (examStore.currentIdx + 1).toString()}} 
                     selectedAnswer={selectedAnswer}
                     onSelect={(idx) => examStore.setAnswer(examStore.currentIdx, idx, db)}
+                    className="shadow-xl border-none p-6 md:p-12 rounded-[2.5rem]"
                   />
-                  <TacticalFooter onSubmit={() => setShowSubmitModal(true)} />
-                </>
+                </motion.div>
               )}
+              <TacticalFooter onSubmit={() => setShowSubmitModal(true)} />
            </div>
         </div>
 
-        <aside className="hidden lg:block w-[380px] bg-white border-l h-full shrink-0 shadow-2xl">
+        <aside className="hidden lg:block w-[400px] bg-white border-l border-slate-100 h-full shrink-0 shadow-2xl z-20">
            <QuestionPalette onSelect={(idx) => examStore.setCurrentIdx(idx)} onSubmit={() => setShowSubmitModal(true)} />
         </aside>
       </main>
@@ -206,40 +223,35 @@ export default function MockAttemptPage() {
       <Sheet open={isMobilePaletteOpen} onOpenChange={setIsMobilePaletteOpen}>
         <SheetContent 
           side="right" 
-          className={cn(
-            "p-0 border-none overflow-hidden shadow-2xl transition-all duration-300",
-            "!w-[280px] !max-w-[280px] h-full"
-          )}
+          className="p-0 border-none overflow-hidden shadow-5xl w-[320px] max-w-[85vw] h-full"
         >
           <SheetHeader className="sr-only">
-             <SheetTitle>Question Palette</SheetTitle>
+             <SheetTitle>Registry Palette</SheetTitle>
           </SheetHeader>
           <QuestionPalette onSelect={(idx) => { examStore.setCurrentIdx(idx); setIsMobilePaletteOpen(false); }} onSubmit={() => setShowSubmitModal(true)} />
         </SheetContent>
       </Sheet>
 
       <Dialog open={showExitModal} onOpenChange={setShowExitModal}>
-         <DialogContent className="max-w-[90%] sm:max-w-[400px] rounded-2xl p-0 bg-white overflow-hidden border-none shadow-[0_20px_50px_rgba(0,0,0,0.2)]">
-            <div className="p-8 space-y-10 text-center">
-               <h2 className="text-xl font-bold text-[#0F172A] leading-tight px-2">
-                  Are you sure you want to pause the test?
-               </h2>
-               
+         <DialogContent className="max-w-[400px] rounded-[2.5rem] p-12 bg-white border-none shadow-5xl text-center">
+            <div className="space-y-8">
+               <div className="h-16 w-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400">
+                  <LogOut className="h-8 w-8" />
+               </div>
+               <div className="space-y-2">
+                  <DialogTitle className="text-2xl font-headline font-black uppercase text-[#0F172A]">Pause Assessment?</DialogTitle>
+                  <p className="text-sm font-medium text-slate-500">Your current state will be safely cached in the registry. You can resume from any device.</p>
+               </div>
                <div className="flex gap-4">
+                  <Button variant="ghost" onClick={() => setShowExitModal(false)} className="flex-1 h-14 rounded-xl font-black uppercase text-[10px]">Cancel</Button>
                   <Button 
                     onClick={() => {
                        setShowExitModal(false);
                        router.push('/dashboard');
                     }}
-                    className="flex-1 h-14 bg-[#3B82F6] hover:bg-blue-600 text-white rounded-md font-bold text-lg shadow-md transition-all active:scale-95"
+                    className="flex-1 h-14 bg-[#0F172A] hover:bg-black text-white rounded-xl font-black uppercase text-[10px] shadow-xl"
                   >
-                     Yes
-                  </Button>
-                  <Button 
-                    onClick={() => setShowExitModal(false)}
-                    className="flex-1 h-14 bg-[#94A3B8] hover:bg-slate-500 text-white rounded-md font-bold text-lg shadow-md transition-all active:scale-95"
-                  >
-                     No
+                     Yes, Pause
                   </Button>
                </div>
             </div>
@@ -247,24 +259,24 @@ export default function MockAttemptPage() {
       </Dialog>
 
       <Dialog open={showSubmitModal} onOpenChange={setShowSubmitModal}>
-         <DialogContent className="max-w-[90%] sm:max-w-[440px] rounded-3xl p-10 bg-[#0F172A] text-white border-none shadow-4xl text-center">
-            <div className="space-y-8">
-               <div className="h-20 w-20 bg-primary/20 rounded-[2.5rem] flex items-center justify-center mx-auto text-primary shadow-2xl">
-                  <ShieldCheck className="h-10 w-10" />
+         <DialogContent className="max-w-[440px] rounded-[3rem] p-12 bg-[#0F172A] text-white border-none shadow-5xl text-center">
+            <div className="space-y-10">
+               <div className="h-24 w-24 bg-primary/20 rounded-[3rem] flex items-center justify-center mx-auto text-primary shadow-3xl">
+                  <ShieldCheck className="h-12 w-12" />
                </div>
-               <div className="space-y-2">
-                  <DialogTitle className="text-3xl font-headline font-black uppercase text-white">Commit Assessment?</DialogTitle>
-                  <p className="text-slate-400 font-medium">Finalize your evaluation nodes for this series. This action is irreversible.</p>
+               <div className="space-y-3">
+                  <DialogTitle className="text-3xl font-headline font-black uppercase text-white tracking-tight">Final Registry Submission</DialogTitle>
+                  <p className="text-slate-400 font-medium leading-relaxed">Commit your evaluation nodes for this series? This action finalizes your rank index.</p>
                </div>
                <div className="flex gap-4 pt-4">
-                  <Button variant="ghost" onClick={() => setShowSubmitModal(false)} className="flex-1 h-16 rounded-2xl text-slate-400 hover:text-white font-black uppercase text-[10px]">Cancel</Button>
+                  <Button variant="ghost" onClick={() => setShowSubmitModal(false)} className="flex-1 h-16 rounded-2xl text-slate-500 hover:text-white font-black uppercase text-[10px] tracking-widest">Cancel</Button>
                   <Button 
                      onClick={handleSubmitFinal}
                      disabled={isSubmittingFinal}
-                     className="flex-1 h-16 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl shadow-primary/20 gap-3"
+                     className="flex-1 h-16 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl shadow-3xl shadow-primary/20 gap-3"
                   >
                      {isSubmittingFinal ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-                     Commit Final
+                     Commit Hub
                   </Button>
                </div>
             </div>
