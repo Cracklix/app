@@ -12,16 +12,11 @@ import MeetFounder from "@/components/home/MeetFounder";
 import Footer from "@/components/layout/Footer";
 import { useCollection, useFirestore } from "@/firebase";
 import { collection } from "firebase/firestore";
-import { BookOpen, Zap, Users, Target, ShieldCheck, ArrowRight, Code } from "lucide-react";
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { motion } from "framer-motion";
+import { BookOpen, Zap, Users, Target } from "lucide-react";
 
 /**
- * @fileOverview Institutional Landing Hub v28.0.
- * Updated: Founder identity Arsh Grewal with high-fidelity MeetFounder component.
+ * @fileOverview Institutional Landing Hub v29.0.
+ * Features real-time trust metrics and the official Arsh Grewal founder profile.
  */
 
 export default function HomePage() {
