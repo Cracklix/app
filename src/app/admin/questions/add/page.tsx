@@ -88,10 +88,9 @@ function QuestionEntryContent() {
   const handleSave = async () => {
     if (!db || isSaving) return
     
-    // Strict Validation: Audit primary nodes
     const mandatory = ['englishQuestion', 'optionAEnglish', 'correctAnswer', 'subjectId'];
-
     const missing = mandatory.filter(key => !formData[key]?.trim());
+    
     if (missing.length > 0) {
        toast({ variant: "destructive", title: "Validation Error", description: `Field missing: ${missing[0].replace(/([A-Z])/g, ' $1')}` })
        return
@@ -110,19 +109,20 @@ function QuestionEntryContent() {
       author: existingData?.author || profile?.name || "Team Node"
     };
 
-    // Purge undefined
-    Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
+    // Strict Purge of undefined/null for Firestore Registry
+    Object.keys(payload).forEach(key => (payload[key] === undefined || payload[key] === null) && delete payload[key]);
 
     try {
       await setDoc(questionRef, payload, { merge: true })
       toast({ title: "Registry Synced", description: "Node securely locked." })
       router.push("/admin/questions")
     } catch (err: any) {
-      errorEmitter.emit("permission-error", new FirestorePermissionError({
+      const permissionError = new FirestorePermissionError({
         path: questionRef.path,
         operation: 'write',
         requestResourceData: payload,
-      } satisfies SecurityRuleContext))
+      } satisfies SecurityRuleContext);
+      errorEmitter.emit("permission-error", permissionError);
     } finally {
       setIsSaving(false)
     }

@@ -16,9 +16,9 @@ import { BookOpen, Zap, Users, Target } from "lucide-react";
 export default function HomePage() {
   const db = useFirestore();
 
-  const usersQuery = useMemo(() => (db && db.type === 'firestore' ? collection(db, "users") : null), [db]);
-  const questionsQuery = useMemo(() => (db && db.type === 'firestore' ? collection(db, "questions") : null), [db]);
-  const mocksQuery = useMemo(() => (db && db.type === 'firestore' ? collection(db, "mocks") : null), [db]);
+  const usersQuery = useMemo(() => (db ? collection(db, "users") : null), [db]);
+  const questionsQuery = useMemo(() => (db ? collection(db, "questions") : null), [db]);
+  const mocksQuery = useMemo(() => (db ? collection(db, "mocks") : null), [db]);
 
   const { data: users } = useCollection<any>(usersQuery);
   const { data: questions } = useCollection<any>(questionsQuery);
