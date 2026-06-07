@@ -33,19 +33,13 @@ import {
   History,
   Target,
   AlertTriangle,
-  ChevronDown,
-  Languages
+  ChevronDown
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, where, limit, getDocs, documentId } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { MockType, Difficulty, AccessType, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
-
-/**
- * @fileOverview Institutional Mock Architect v34.0.
- * FEATURES: Restored High-Fidelity Blueprint with Subject Selection Hub in the dark action bar.
- */
 
 const MOCK_TYPES: { label: string, value: MockType, icon: any }[] = [
   { label: "FULL LENGTH MOCK", value: "FULL", icon: <Zap className="h-3 w-3" /> },
@@ -82,8 +76,8 @@ function MockBuilderContent() {
   const [hideUsed, setHideUsed] = useState(true)
   const [bankFilter, setBankFilter] = useState({ 
     boardId: "all",
-    subjectId: "all",
-    examId: "all"
+    examId: "all",
+    subjectId: "all"
   })
 
   const [isPublishing, setIsPublishing] = useState(false)
@@ -158,12 +152,12 @@ function MockBuilderContent() {
     const allSelectedIds = sections.flatMap(s => s.questions.map(q => q.id));
     return questionBank.filter((q: any) => {
       const matchesBoard = bankFilter.boardId === "all" || q.boardId === bankFilter.boardId
-      const matchesSubject = bankFilter.subjectId === "all" || q.subjectId === bankFilter.subjectId
       const matchesExam = bankFilter.examId === "all" || q.examId === bankFilter.examId
+      const matchesSubject = bankFilter.subjectId === "all" || q.subjectId === bankFilter.subjectId
       const notAlreadySelected = !allSelectedIds.includes(q.id)
       const passesUsageCheck = !hideUsed || !usedQuestionIds.has(q.id);
 
-      return matchesBoard && matchesSubject && matchesExam && notAlreadySelected && passesUsageCheck
+      return matchesBoard && matchesExam && matchesSubject && notAlreadySelected && passesUsageCheck
     })
   }, [questionBank, bankFilter, sections, hideUsed, usedQuestionIds])
 
@@ -238,7 +232,7 @@ function MockBuilderContent() {
                     </SelectTrigger>
                     <SelectContent>
                        <SelectItem value="new">Create New +</SelectItem>
-                       {allMocks?.map((m: any) => <SelectItem key={m.id} value={m.id}>{m.title}</SelectItem>)}
+                       {allMocks?.sort((a:any, b:any) => a.title.localeCompare(b.title)).map((m: any) => <SelectItem key={m.id} value={m.id}>{m.title}</SelectItem>)}
                     </SelectContent>
                  </Select>
                </div>
@@ -250,17 +244,21 @@ function MockBuilderContent() {
 
                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Authority</Label>
+                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Authority Hub</Label>
                    <Select value={mockData.boardId} onValueChange={v => setMockData({...mockData, boardId: v})}>
                      <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-none"><SelectValue placeholder="Board" /></SelectTrigger>
                      <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
                    </Select>
                  </div>
                  <div className="space-y-2">
-                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Exam Hub</Label>
+                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Recruitment Vertical</Label>
                    <Select value={mockData.examId} onValueChange={v => setMockData({...mockData, examId: v})}>
                      <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-none"><SelectValue placeholder="Exam" /></SelectTrigger>
-                     <SelectContent>{exams?.filter((e: any) => e.boardId === mockData.boardId).map((e: any) => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent>
+                     <SelectContent>
+                        {exams?.filter((e: any) => e.boardId === mockData.boardId).sort((a:any, b:any) => a.name.localeCompare(b.name)).map((e: any) => (
+                           <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
+                        ))}
+                     </SelectContent>
                    </Select>
                  </div>
                </div>
@@ -323,9 +321,9 @@ function MockBuilderContent() {
                  <TabsContent value="bank" className="p-8 md:p-10 flex-1 flex flex-col m-0 text-left">
                     
                     <div className="bg-[#0F172A] p-6 rounded-[2.5rem] mb-8 flex flex-col gap-6 text-white shadow-2xl overflow-hidden shrink-0 border border-white/5">
-                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-end">
                           <div className="space-y-2">
-                             <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1 flex items-center gap-2"><Filter className="h-3 w-3" /> Filter Board</p>
+                             <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1 flex items-center gap-2"><Filter className="h-3 w-3" /> Board Hub</p>
                              <Select value={bankFilter.boardId} onValueChange={v => setBankFilter({...bankFilter, boardId: v})}>
                                 <SelectTrigger className="h-12 w-full bg-white/5 border-white/10 text-white font-bold text-xs rounded-xl focus:ring-0"><SelectValue placeholder="All Boards" /></SelectTrigger>
                                 <SelectContent>
@@ -335,7 +333,19 @@ function MockBuilderContent() {
                              </Select>
                           </div>
                           <div className="space-y-2">
-                             <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1 flex items-center gap-2"><BookOpen className="h-3 w-3" /> Filter Subject</p>
+                             <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1 flex items-center gap-2"><Landmark className="h-3 w-3" /> Recruitment Vertical</p>
+                             <Select value={bankFilter.examId} onValueChange={v => setBankFilter({...bankFilter, examId: v})}>
+                                <SelectTrigger className="h-12 w-full bg-white/5 border-white/10 text-white font-bold text-xs rounded-xl focus:ring-0"><SelectValue placeholder="All Exams" /></SelectTrigger>
+                                <SelectContent>
+                                   <SelectItem value="all">All Exams</SelectItem>
+                                   {exams?.filter(e => bankFilter.boardId === 'all' || e.boardId === bankFilter.boardId).sort((a:any, b:any) => a.name.localeCompare(b.name)).map((e: any) => (
+                                      <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
+                                   ))}
+                                </SelectContent>
+                             </Select>
+                          </div>
+                          <div className="space-y-2">
+                             <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1 flex items-center gap-2"><BookOpen className="h-3 w-3" /> Subject Node</p>
                              <Select value={bankFilter.subjectId} onValueChange={v => setBankFilter({...bankFilter, subjectId: v})}>
                                 <SelectTrigger className="h-12 w-full bg-white/5 border-white/10 text-white font-bold text-xs rounded-xl focus:ring-0"><SelectValue placeholder="All Subjects" /></SelectTrigger>
                                 <SelectContent className="max-h-60">
@@ -343,10 +353,6 @@ function MockBuilderContent() {
                                    {subjects?.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                                 </SelectContent>
                              </Select>
-                          </div>
-                          <div className="flex items-center gap-3 bg-white/5 px-4 h-12 rounded-xl border border-white/10">
-                             <span className="text-[8px] font-black uppercase text-slate-400">Hide Used</span>
-                             <Switch checked={hideUsed} onCheckedChange={setHideUsed} className="scale-75" />
                           </div>
                        </div>
 
@@ -360,7 +366,13 @@ function MockBuilderContent() {
                                    <SelectContent>{sections.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                                 </Select>
                           </div>
-                          <Button disabled={bankSelection.length === 0} onClick={handleBulkLink} className="bg-emerald-600 hover:bg-emerald-700 h-14 px-10 rounded-xl text-[10px] uppercase font-black tracking-[0.2em] shadow-xl w-full md:w-auto">Link {bankSelection.length} Questions</Button>
+                          <div className="flex items-center gap-4">
+                             <div className="flex items-center gap-3 bg-white/5 px-4 h-12 rounded-xl border border-white/10">
+                                <span className="text-[8px] font-black uppercase text-slate-400">Hide Used</span>
+                                <Switch checked={hideUsed} onCheckedChange={setHideUsed} className="scale-75" />
+                             </div>
+                             <Button disabled={bankSelection.length === 0} onClick={handleBulkLink} className="bg-emerald-600 hover:bg-emerald-700 h-14 px-10 rounded-xl text-[10px] uppercase font-black tracking-[0.2em] shadow-xl">Link {bankSelection.length} Questions</Button>
+                          </div>
                        </div>
                     </div>
 

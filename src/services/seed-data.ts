@@ -2,8 +2,8 @@
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Engine v38.0 (Teacher & Child Dev Hub Restored).
- * Features: Hardened Unique Hub Registry with High-Fidelity Official Assets.
+ * @fileOverview Institutional Seeding Engine v40.0.
+ * Features: Expanded PSSSB Vertical Registry (Clerk, VDO, JE, Senior Assistant).
  * ReferrerPolicy Hardening is applied at the rendering layer.
  */
 export async function seedInitialData(db: Firestore) {
@@ -17,9 +17,7 @@ export async function seedInitialData(db: Firestore) {
   const pspclLogo = "https://pspcl.in/assets/images/logo.png";
   const anganwadiLogo = "https://sswcd.punjab.gov.in/sites/default/files/download.png";
   const armyEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Indian_Army_Insignia_circular.png/1280px-Indian_Army_Insignia_circular.png";
-  const ibpsLogo = "https://careeravenues.info/wp-content/uploads/2023/05/Introduction.jpg";
   const punjabEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
-  const cbseLogo = "https://upload.wikimedia.org/wikipedia/en/thumb/3/30/CBSE_Official_Logo.svg/512px-CBSE_Official_Logo.svg.png";
 
   // 1. BOARDS REGISTRY
   const boards = [
@@ -29,33 +27,31 @@ export async function seedInitialData(db: Firestore) {
     { id: 'high-court', abbreviation: 'SSSC', name: 'High Court of Punjab & Haryana (SSSC)', region: 'Punjab/Haryana', category: 'JUDICIAL_BOARD', iconUrl: ssscLogo },
     { id: 'sswcd', abbreviation: 'SSWCD', name: 'Social Security and Women & Child Development', region: 'Punjab', category: 'STATE_BOARD', iconUrl: anganwadiLogo },
     { id: 'pspcl', abbreviation: 'PSPCL', name: 'Punjab State Power Corporation Ltd', region: 'Punjab', category: 'TECHNICAL_BOARD', iconUrl: pspclLogo },
-    { id: 'ibps', abbreviation: 'IBPS', name: 'Institute of Banking Personnel Selection', region: 'National', category: 'BANKING_BOARD', iconUrl: ibpsLogo },
     { id: 'army', abbreviation: 'ARMY', name: 'Indian Army Recruitment', region: 'National', category: 'CENTRAL_BOARD', iconUrl: armyEmblem },
-    { id: 'education', abbreviation: 'EDUCATION', name: 'Education Recruitment Board Punjab', region: 'Punjab', category: 'TEACHING_BOARD', iconUrl: punjabEmblem },
-    { id: 'cbse', abbreviation: 'CBSE', name: 'Central Board of Secondary Education', region: 'National', category: 'CENTRAL_BOARD', iconUrl: cbseLogo }
+    { id: 'education', abbreviation: 'EDUCATION', name: 'Education Recruitment Board Punjab', region: 'Punjab', category: 'TEACHING_BOARD', iconUrl: punjabEmblem }
   ];
 
   for (const b of boards) {
     await setDoc(doc(db, 'boards', b.id), { ...b, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 2. CANONICAL EXAM MASTER HUBS
+  // 2. CANONICAL EXAM MASTER HUBS (Expanded PSSSB sequence)
   const exams = [
+    { id: 'psssb-clerk-gen', boardId: 'psssb', name: 'PSSSB Clerk (General/IT/Accounts)', category: 'STATE', description: 'Clerical recruitment for multi-departmental Punjab govt posts.', totalFullMocks: 60, iconUrl: psssbSvg },
+    { id: 'psssb-vdo', boardId: 'psssb', name: 'VDO / Gram Sevak', category: 'STATE', description: 'Village Development Officer recruitment series.', totalFullMocks: 30, iconUrl: psssbSvg },
     { id: 'punjab-patwari', boardId: 'psssb', name: 'Revenue Patwari 2026', category: 'STATE', description: 'Prepare for Revenue Patwari, Canal Patwari and Ziladar recruitment.', totalFullMocks: 45, iconUrl: psssbSvg },
-    { id: 'psssb-clerk', boardId: 'psssb', name: 'Subordinate Clerk (PSSSB)', category: 'STATE', description: 'Clerical recruitment for multi-departmental Punjab govt posts.', totalFullMocks: 60, iconUrl: psssbSvg },
+    { id: 'psssb-senior-asst-insp', boardId: 'psssb', name: 'Senior Assistant cum Inspector', category: 'STATE', description: 'Official mock series for Senior Assistant level posts.', totalFullMocks: 25, iconUrl: psssbSvg },
+    { id: 'psssb-senior-asst', boardId: 'psssb', name: 'Senior Assistant', category: 'STATE', description: 'Mastery hub for Senior Assistant recruitment.', totalFullMocks: 20, iconUrl: psssbSvg },
+    { id: 'psssb-je', boardId: 'psssb', name: 'PSSSB Junior Engineer (JE)', category: 'STATE', description: 'Technical JE recruitment series.', totalFullMocks: 25, iconUrl: psssbSvg },
+    { id: 'psssb-steno', boardId: 'psssb', name: 'Steno-Typist / Junior Scale Stenographer', category: 'STATE', description: 'Shorthand and Typing recruitment hub.', totalFullMocks: 15, iconUrl: psssbSvg },
+    { id: 'psssb-group-d', boardId: 'psssb', name: 'PSSSB Group D (Sewadar/Chowkidar)', category: 'STATE', description: 'Class IV recruitment preparation matrix.', totalFullMocks: 10, iconUrl: psssbSvg },
+    { id: 'psssb-technical', boardId: 'psssb', name: 'Technical / Field Posts (Librarian/Storekeeper)', category: 'STATE', description: 'Specialized field post recruitment series.', totalFullMocks: 12, iconUrl: psssbSvg },
     { id: 'psssb-excise', boardId: 'psssb', name: 'Excise & Taxation Inspector', category: 'STATE', description: 'Official mock series for PSSSB Excise Inspector recruitment.', totalFullMocks: 25, iconUrl: psssbSvg },
-    { id: 'psssb-auditor', boardId: 'psssb', name: 'Junior Auditor', category: 'STATE', description: 'Institutional preparation for Junior Auditor and Accounts posts.', totalFullMocks: 20, iconUrl: psssbSvg },
-    { id: 'court-clerk', boardId: 'high-court', name: 'High Court Clerk (SSSC)', category: 'JUDICIAL', description: 'Subordinate Court clerical recruitment for Punjab and Haryana.', totalFullMocks: 35, iconUrl: ssscLogo },
+    
     { id: 'police-si', boardId: 'punjab-police', name: 'Sub-Inspector (Dist/Armed)', category: 'POLICE', description: 'District and Armed Cadre recruitment for Punjab Police.', totalFullMocks: 30, iconUrl: policeEmblem },
     { id: 'police-constable', boardId: 'punjab-police', name: 'Constable Recruitment', category: 'POLICE', description: 'Direct recruitment for Constable posts in Punjab Police.', totalFullMocks: 50, iconUrl: policeEmblem },
     { id: 'ppsc-pcs', boardId: 'ppsc', name: 'PCS Executive Prelims', category: 'CIVIL', description: 'Higher Class A & B services including DSP and Tehsildar posts.', totalFullMocks: 20, iconUrl: ppscJpg },
-    { id: 'naib-tehsildar', boardId: 'ppsc', name: 'Naib Tehsildar', category: 'CIVIL', description: 'PPSC recruitment series for revenue executive posts.', totalFullMocks: 15, iconUrl: ppscJpg },
-    { id: 'punjab-anganwadi', boardId: 'sswcd', name: 'Punjab Anganwadi / NTT', category: 'STATE', description: 'Official syllabus and preparation matrix for Supervisor and NTT posts.', totalFullMocks: 15, iconUrl: anganwadiLogo },
-    { id: 'ctet-paper-1', boardId: 'cbse', name: 'CTET Paper 1 (Primary)', category: 'TEACHING', description: 'Central Teacher Eligibility Test for classes I to V.', totalFullMocks: 25, iconUrl: cbseLogo },
-    { id: 'ctet-paper-2', boardId: 'cbse', name: 'CTET Paper 2 (Upper Primary)', category: 'TEACHING', description: 'Central Teacher Eligibility Test for classes VI to VIII.', totalFullMocks: 25, iconUrl: cbseLogo },
-    { id: 'pspcl-je', boardId: 'pspcl', name: 'PSPCL Junior Engineer', category: 'TECHNICAL', description: 'Electrical, Civil and IT JE recruitment for Punjab Power Board.', totalFullMocks: 25, iconUrl: pspclLogo },
-    { id: 'master-cadre', boardId: 'education', name: 'Master Cadre', category: 'TEACHING', description: 'Subject-wise teacher recruitment for Punjab Government Schools.', totalFullMocks: 40, iconUrl: punjabEmblem },
-    { id: 'indian-army', boardId: 'army', name: 'Agniveer GD / Tech', category: 'CENTRAL', description: 'High-fidelity preparation series for Indian Army Agniveer.', totalFullMocks: 10, iconUrl: armyEmblem }
+    { id: 'master-cadre', boardId: 'education', name: 'Master Cadre', category: 'TEACHING', description: 'Subject-wise teacher recruitment for Punjab Government Schools.', totalFullMocks: 40, iconUrl: punjabEmblem }
   ];
 
   for (const e of exams) {
