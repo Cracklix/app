@@ -4,6 +4,10 @@ import { useExamStore } from '@/store/useExamStore';
 import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 
+/**
+ * @fileOverview High-Density Subject Navigation.
+ * Optimized: Reduced font size and tracking for section names to prevent mobile overflow.
+ */
 export default function SubjectTabs() {
   const { questions, currentIdx, setCurrentIdx, status } = useExamStore();
 
@@ -36,21 +40,21 @@ export default function SubjectTabs() {
   const activeSectionId = questions[currentIdx]?.sectionId || '';
 
   return (
-    <nav className="bg-white border-b border-slate-100 h-10 flex items-center px-2 overflow-x-auto no-scrollbar gap-1.5 shrink-0 sticky top-0 z-40">
+    <nav className="bg-white border-b border-slate-100 h-9 flex items-center px-2 overflow-x-auto no-scrollbar gap-1 shrink-0 sticky top-0 z-40">
       {sections.map((s) => (
         <button
           key={s.id}
           onClick={() => setCurrentIdx(s.startIdx)}
           className={cn(
-            "px-4 h-full flex items-center justify-center gap-2 transition-all whitespace-nowrap border-b-2",
+            "px-3 h-full flex items-center justify-center gap-1.5 transition-all whitespace-nowrap border-b-2",
             activeSectionId === s.id 
-              ? "border-primary text-primary bg-orange-50/50" 
+              ? "border-primary text-primary bg-orange-50/30" 
               : "border-transparent text-slate-400"
           )}
         >
-          <span className="text-[9px] font-black uppercase tracking-widest">{s.name}</span>
+          <span className="text-[8px] font-black uppercase tracking-tighter leading-none">{s.name}</span>
           <span className={cn(
-            "text-[8px] font-bold px-1.5 py-0.5 rounded-full",
+            "text-[7px] font-bold px-1 py-0.5 rounded-full",
             activeSectionId === s.id ? "bg-primary text-white" : "bg-slate-100 text-slate-400"
           )}>
             {s.answered}/{s.total}
