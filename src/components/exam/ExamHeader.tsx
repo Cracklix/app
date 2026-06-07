@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useExamStore } from '@/store/useExamStore';
@@ -24,8 +23,8 @@ const ALL_LANG_MODES: { label: string, value: LanguageDisplayMode }[] = [
 ];
 
 /**
- * @fileOverview Institutional CBT Header v18.0.
- * UPDATED: Optimized for high visibility of Mock Title and Palette Button across all breakpoints.
+ * @fileOverview Institutional CBT Header v19.0.
+ * UPDATED: Palette button visible on all devices; Exam Title restored.
  */
 export default function ExamHeader({ 
   onPaletteToggle, 
@@ -76,9 +75,9 @@ export default function ExamHeader({
 
            <div className="hidden sm:flex h-8 w-px bg-white/10 mx-2" />
 
-           <div className="hidden sm:flex flex-col items-start leading-none min-w-0 max-w-[240px]">
+           <div className="flex flex-col items-start leading-none min-w-0 max-w-[140px] md:max-w-[240px]">
               <p className="text-[7px] md:text-[9px] font-black uppercase text-slate-500 tracking-[0.2em] mb-0.5">EXAM HUB</p>
-              <p className="text-[11px] md:text-[13px] font-black text-white uppercase truncate w-full">{mockTitle}</p>
+              <p className="text-[10px] md:text-[13px] font-black text-white uppercase truncate w-full">{mockTitle}</p>
            </div>
         </div>
 
@@ -92,13 +91,13 @@ export default function ExamHeader({
         </div>
 
         {/* RIGHT: ACTIONS HUB */}
-        <div className="flex items-center justify-end gap-2 md:gap-5 shrink-0 flex-1">
+        <div className="flex items-center justify-end gap-1.5 md:gap-5 shrink-0 flex-1">
            {availableModes.length > 1 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                   <Button variant="ghost" size="icon" className="h-9 w-9 md:h-11 md:w-11 bg-white/5 text-white hover:bg-white/10 border border-white/10 rounded-xl transition-all active:scale-95">
+                   <button className="h-9 w-9 md:h-11 md:w-11 bg-white/5 text-white hover:bg-white/10 border border-white/10 rounded-xl transition-all active:scale-95 flex items-center justify-center">
                       <Languages className="h-4 w-4 md:h-5 md:w-5 text-primary" />
-                   </Button>
+                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-[#0F172A] border-white/10 text-white rounded-xl shadow-2xl p-1">
                    {availableModes.map((mode) => (
@@ -117,19 +116,17 @@ export default function ExamHeader({
               </DropdownMenu>
            )}
 
-           <Button 
-             variant="ghost" 
-             size="icon" 
+           <button 
              onClick={() => setPaused(!isPaused)}
-             className="h-9 w-9 md:h-11 md:w-11 bg-white/5 text-white hover:bg-white/10 shrink-0 border border-white/10 rounded-xl active:scale-95"
+             className="h-9 w-9 md:h-11 md:w-11 bg-white/5 text-white hover:bg-white/10 shrink-0 border border-white/10 rounded-xl active:scale-95 flex items-center justify-center"
            >
              {isPaused ? <Play className="h-4 w-4 md:h-5 md:w-5 fill-current text-primary" /> : <Pause className="h-4 w-4 md:h-5 md:w-5 fill-current" />}
-           </Button>
+           </button>
            
            <Button 
              variant="ghost"
              onClick={onPaletteToggle}
-             className="bg-[#F97316] hover:bg-orange-600 h-9 md:h-12 px-3 md:px-6 rounded-xl font-black uppercase text-[8px] md:text-[11px] tracking-widest gap-2 md:gap-3 shadow-xl transition-all active:scale-95"
+             className="bg-[#F97316] hover:bg-orange-600 h-9 md:h-12 px-2 md:px-6 rounded-xl font-black uppercase text-[8px] md:text-[11px] tracking-widest gap-1.5 md:gap-3 shadow-xl transition-all active:scale-95"
            >
               <Menu className="h-4 w-4" />
               <span className="hidden xs:inline">Palette</span>

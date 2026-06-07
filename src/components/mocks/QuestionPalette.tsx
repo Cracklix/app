@@ -1,12 +1,10 @@
-
 'use client';
 
 import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { 
   CheckCircle2, 
-  ShieldCheck,
-  ChevronDown
+  ShieldCheck
 } from "lucide-react";
 import { useExamStore } from '@/store/useExamStore';
 import { Button } from "@/components/ui/button";
@@ -18,8 +16,8 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Professional CBT Question Palette Hub v16.0.
- * UPDATED: Legend at top, removed section headers for a single high-density grid.
+ * @fileOverview Professional CBT Question Palette Hub v17.0.
+ * UPDATED: Legend at top, Unified grid below. High-density design.
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const questions = useExamStore(s => s.questions);
@@ -43,26 +41,26 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
   return (
     <div className="flex flex-col h-full bg-white text-left font-body select-none pointer-events-auto">
       <ScrollArea className="h-full">
-        <div className="p-3 md:p-6 pt-6 md:pt-8 space-y-6 md:space-y-10 pb-32">
+        <div className="p-4 md:p-6 pt-6 md:pt-8 space-y-8 pb-32">
            
-           {/* 1. STATUS SUMMARY HUB (AT TOP) */}
+           {/* 1. STATUS LEGEND HUB (TOP) */}
            <div className="space-y-4">
               <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">LEGEND</p>
               <div className="grid grid-cols-2 gap-2">
-                 <SummaryCard count={stats.answered} label="ANSWERED" color="bg-blue-600" />
+                 <SummaryCard count={stats.answered} label="ANSWERED" color="bg-blue-600" shadow="shadow-blue-500/20" />
                  <SummaryCard count={stats.notAnswered} label="NOT ANSWERED" color="bg-slate-400" />
-                 <SummaryCard count={stats.marked} label="MARKED" color="bg-pink-500" />
+                 <SummaryCard count={stats.marked} label="MARKED" color="bg-pink-500" shadow="shadow-pink-500/20" />
                  <SummaryCard count={stats.notVisited} label="NOT VISITED" color="bg-white" textColor="text-slate-400" border="border-slate-200" />
-                 <SummaryCard count={stats.ansMarked} label="ANS & MARKED" color="bg-violet-600" colSpan={2} />
+                 <SummaryCard count={stats.ansMarked} label="ANS & MARKED" color="bg-violet-600" shadow="shadow-violet-500/20" colSpan={2} />
               </div>
            </div>
 
            <div className="h-px w-full bg-slate-50" />
 
-           {/* 2. UNIFIED QUESTION GRID (No Section Headers) */}
+           {/* 2. UNIFIED QUESTION GRID */}
            <div className="space-y-4">
               <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">QUESTIONS</p>
-              <div className="grid grid-cols-4 md:grid-cols-5 gap-2.5">
+              <div className="grid grid-cols-5 gap-2.5">
                  {questions.map((_, idx) => (
                     <QuestionNode 
                       key={idx} 
@@ -94,17 +92,17 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
   );
 }
 
-function SummaryCard({ count, label, color, textColor = "text-white", colSpan = 1, border = "border-transparent" }: any) {
+function SummaryCard({ count, label, color, textColor = "text-white", colSpan = 1, border = "border-transparent", shadow = "" }: any) {
   return (
     <div className={cn(
-      "flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100 shadow-sm",
+      "flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 border border-slate-100 shadow-sm",
       colSpan > 1 && "col-span-2"
     )}>
-       <div className={cn("h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm border", color, textColor, border)}>
+       <div className={cn("h-7 w-7 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 shadow-md border", color, textColor, border, shadow)}>
           {count}
        </div>
        <div className="min-w-0">
-          <span className="text-[8px] md:text-[9px] font-black uppercase text-slate-500 tracking-tighter block leading-tight">{label}</span>
+          <span className="text-[9px] font-black uppercase text-slate-500 tracking-tighter block leading-tight">{label}</span>
        </div>
     </div>
   )
@@ -117,9 +115,9 @@ function QuestionNode({ index, isActive, status, isVisited, onClick }: any) {
   
   const colorClass = isActive 
     ? "ring-2 ring-orange-500/20 z-10 bg-white text-[#F97316] border-[#F97316] border-2" 
-    : isAnswered ? "bg-blue-600 text-white border-blue-600"
-    : isMarked ? "bg-pink-500 text-white border-pink-500"
-    : isAnsMarked ? "bg-violet-600 text-white border-violet-600"
+    : isAnswered ? "bg-blue-600 text-white border-blue-600 shadow-blue-500/10"
+    : isMarked ? "bg-pink-500 text-white border-pink-500 shadow-pink-500/10"
+    : isAnsMarked ? "bg-violet-600 text-white border-violet-600 shadow-violet-500/10"
     : isVisited ? "bg-slate-400 text-white border-slate-400"
     : "bg-white text-slate-400 border-slate-200";
 
@@ -127,14 +125,14 @@ function QuestionNode({ index, isActive, status, isVisited, onClick }: any) {
     <button
       onClick={onClick}
       className={cn(
-        "relative w-full aspect-square rounded-full flex items-center justify-center font-black text-[11px] md:text-[13px] transition-all border shadow-sm shrink-0 active:scale-90 md:h-10 md:w-10 mx-auto cursor-pointer",
+        "relative aspect-square rounded-lg flex items-center justify-center font-black text-[12px] md:text-[14px] transition-all border shadow-sm shrink-0 active:scale-90 w-full cursor-pointer",
         colorClass
       )}
     >
       {index + 1}
       {isAnsMarked && (
-        <div className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 md:h-3 md:w-3 bg-emerald-500 rounded-full border border-white flex items-center justify-center shadow-md">
-           <CheckCircle2 className="h-1.5 w-1.5 text-white" />
+        <div className="absolute -top-1 -right-1 h-3 w-3 bg-emerald-500 rounded-full border border-white flex items-center justify-center shadow-md">
+           <CheckCircle2 className="h-2 w-2 text-white" />
         </div>
       )}
     </button>

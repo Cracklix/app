@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -27,8 +26,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 /**
- * @fileOverview Production Hardened CBT Attempt Engine v21.0.
- * UPDATED: Integrated SubjectTabs with dual-visibility constraints.
+ * @fileOverview Production Hardened CBT Attempt Engine v22.0.
+ * UPDATED: Replaced static sidebar with universal button-triggered palette.
  */
 
 export default function MockAttemptPage() {
@@ -40,7 +39,7 @@ export default function MockAttemptPage() {
   const mockId = params.id as string;
 
   const [isInitializing, setIsInitializing] = useState(true);
-  const [isMobilePaletteOpen, setIsMobilePaletteOpen] = useState(false);
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
   const [isSubmittingFinal, setIsSubmittingFinal] = useState(false);
@@ -176,7 +175,7 @@ export default function MockAttemptPage() {
     <div className="flex flex-col h-[100dvh] bg-white font-body select-none overflow-hidden relative">
       <AntiCheat />
       <ExamHeader 
-        onPaletteToggle={() => setIsMobilePaletteOpen(true)} 
+        onPaletteToggle={() => setIsPaletteOpen(true)} 
         onExitRequest={() => setShowExitModal(true)}
       />
 
@@ -201,44 +200,38 @@ export default function MockAttemptPage() {
           )}
         </AnimatePresence>
 
-        <div className="flex-1 flex overflow-hidden">
-          <div className="flex-1 flex flex-col overflow-hidden">
-             <SubjectTabs />
-             <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center">
-                <div className="w-full max-w-4xl p-2 md:p-6 space-y-3 md:space-y-4">
-                   {q ? (
-                     <motion.div 
-                        key={examStore.currentIdx}
-                        initial={{ opacity: 0, x: 5 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.15 }}
-                     >
-                       <QuestionRenderer 
-                         language={examStore.language as any} 
-                         question={{...q, displayId: (examStore.currentIdx + 1).toString()}} 
-                         selectedAnswer={selectedAnswer}
-                         onSelect={(idx) => examStore.setAnswer(examStore.currentIdx, idx, db)}
-                         className="shadow-md border-none p-4 md:p-10 rounded-[1.5rem] md:rounded-[2rem]"
-                       />
-                     </motion.div>
-                   ) : (
-                     <div className="p-20 text-center opacity-20">
-                        <Loader2 className="h-10 w-10 animate-spin mx-auto mb-4" />
-                        <p className="text-[10px] font-black uppercase">Loading node...</p>
-                     </div>
-                   )}
-                   <TacticalFooter onSubmit={() => setShowSubmitModal(true)} />
-                </div>
-             </div>
-          </div>
-
-          <aside className="hidden lg:block w-[320px] md:w-[380px] bg-white border-l border-slate-100 h-full shrink-0 shadow-2xl z-20">
-             <QuestionPalette onSelect={(idx) => examStore.setCurrentIdx(idx)} onSubmit={() => setShowSubmitModal(true)} />
-          </aside>
+        <div className="flex-1 flex flex-col overflow-hidden">
+           <SubjectTabs />
+           <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center">
+              <div className="w-full max-w-4xl p-2 md:p-6 space-y-3 md:space-y-4">
+                 {q ? (
+                   <motion.div 
+                      key={examStore.currentIdx}
+                      initial={{ opacity: 0, x: 5 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.15 }}
+                   >
+                     <QuestionRenderer 
+                       language={examStore.language as any} 
+                       question={{...q, displayId: (examStore.currentIdx + 1).toString()}} 
+                       selectedAnswer={selectedAnswer}
+                       onSelect={(idx) => examStore.setAnswer(examStore.currentIdx, idx, db)}
+                       className="shadow-md border-none p-4 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem]"
+                     />
+                   </motion.div>
+                 ) : (
+                   <div className="p-20 text-center opacity-20">
+                      <Loader2 className="h-10 w-10 animate-spin mx-auto mb-4" />
+                      <p className="text-[10px] font-black uppercase">Loading node...</p>
+                   </div>
+                 )}
+                 <TacticalFooter onSubmit={() => setShowSubmitModal(true)} />
+              </div>
+           </div>
         </div>
       </main>
       
-      <Sheet open={isMobilePaletteOpen} onOpenChange={setIsMobilePaletteOpen}>
+      <Sheet open={isPaletteOpen} onOpenChange={setIsPaletteOpen}>
         <SheetContent 
           side="right" 
           className="p-0 border-none overflow-hidden shadow-5xl w-[320px] max-w-[85vw] h-full"
@@ -246,7 +239,7 @@ export default function MockAttemptPage() {
           <SheetHeader className="sr-only">
              <SheetTitle>Registry Palette</SheetTitle>
           </SheetHeader>
-          <QuestionPalette onSelect={(idx) => { examStore.setCurrentIdx(idx); setIsMobilePaletteOpen(false); }} onSubmit={() => setShowSubmitModal(true)} />
+          <QuestionPalette onSelect={(idx) => { examStore.setCurrentIdx(idx); setIsPaletteOpen(false); }} onSubmit={() => setShowSubmitModal(true)} />
         </SheetContent>
       </Sheet>
 
