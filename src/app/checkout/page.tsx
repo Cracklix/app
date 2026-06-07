@@ -18,8 +18,8 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Aspirant Checkout Hub v10.0.
- * HARDENED: Sanitized name fields to resolve Razorpay "Name format is invalid" error.
+ * @fileOverview Aspirant Checkout Hub v11.0.
+ * HARDENED: Precise name sanitization and key-injection checks.
  */
 
 export default function CheckoutPage() {
@@ -71,8 +71,12 @@ function CheckoutContent() {
       const orderData = await orderRes.json();
       if (orderData.error) throw new Error(orderData.error);
 
-      // 2. Launch Razorpay Checkout with sanitized name fields
-      const sanitizedCustomerName = (profile?.name || user?.displayName || 'Aspirant').replace(/[^\w\s]/gi, '').slice(0, 40).trim();
+      // 2. Launch Razorpay Checkout with strictly sanitized name
+      // Razorpay 'name' fields reject most non-alphanumeric symbols
+      const sanitizedCustomerName = (profile?.name || user?.displayName || 'Aspirant')
+        .replace(/[^a-zA-Z0-9\s]/g, '')
+        .slice(0, 40)
+        .trim();
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -117,7 +121,10 @@ function CheckoutContent() {
         },
         theme: { color: "#F97316" },
         modal: {
-          ondismiss: function() { setProcessing(false); }
+          ondismiss: function() { 
+            setProcessing(false); 
+            toast({ title: "Payment Cancelled", description: "The transaction was closed by user." });
+          }
         }
       };
 

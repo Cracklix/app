@@ -14,6 +14,7 @@ export async function POST(request: Request) {
     const key_secret = process.env.RAZORPAY_KEY_SECRET;
 
     if (!key_id || !key_secret) {
+      console.error('[GATEWAY_ERROR]: Missing Razorpay Credentials in .env');
       return NextResponse.json({ error: 'Razorpay keys missing in environment.' }, { status: 500 });
     }
 
@@ -23,10 +24,11 @@ export async function POST(request: Request) {
     });
 
     // 1. Convert to whole integer paise (Razorpay requirement)
+    // Using Math.round to ensure we don't send float values
     const amountInPaise = Math.round(Number(amount) * 100);
 
     if (isNaN(amountInPaise) || amountInPaise < 100) {
-      return NextResponse.json({ error: 'Invalid transaction amount.' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid transaction amount. Minimum 1 INR required.' }, { status: 400 });
     }
 
     // 2. Generate sanitized receipt (Strict < 40 chars, alphanumeric/underscore only)
@@ -46,7 +48,7 @@ export async function POST(request: Request) {
       currency: order.currency,
     });
   } catch (error: any) {
-    console.error('[RAZORPAY_ORDER_ERROR]:', error);
+    console.error('[RAZORPAY_ORDER_FAILURE]:', error);
     return NextResponse.json({ error: error.message || 'Order generation failed' }, { status: 500 });
   }
 }
