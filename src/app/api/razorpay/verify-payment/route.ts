@@ -1,11 +1,10 @@
-
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { initializeFirebase } from '@/firebase';
 import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Razorpay Verification Hub v8.0.
+ * @fileOverview Institutional Razorpay Verification Hub v9.0.
  * Hardened: Domestic signature audit and automatic user registry update.
  */
 
@@ -43,7 +42,7 @@ export async function POST(request: Request) {
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + duration);
 
-    // Update Registry
+    // Update User Status
     await updateDoc(userRef, {
       status: planId,
       passExpiryDate: expiryDate.toISOString(),
@@ -51,6 +50,19 @@ export async function POST(request: Request) {
     });
 
     // Log Transaction Audit
+    await addDoc(collection(db, 'payments'), {
+      userId,
+      userEmail: (await getDoc(userRef)).data()?.email || 'N/A',
+      planId,
+      planName: planData.name,
+      amount: planData.price,
+      paymentId: razorpay_payment_id,
+      orderId: razorpay_order_id,
+      status: 'VERIFIED',
+      createdAt: serverTimestamp()
+    });
+
+    // Create Subscription Node
     await addDoc(collection(db, 'subscriptions'), {
       userId,
       planId,
@@ -58,15 +70,13 @@ export async function POST(request: Request) {
       status: 'active',
       startDate: serverTimestamp(),
       expiryDate: expiryDate.toISOString(),
-      paymentId: razorpay_payment_id,
-      orderId: razorpay_order_id,
-      amount: planData.price,
-      gateway: 'RAZORPAY_DOMESTIC',
+      transactionId: razorpay_payment_id,
       verified: true
     });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
+    console.error('[VERIFICATION_FAILURE]:', error);
     return NextResponse.json({ error: error.message || 'Verification failure.' }, { status: 500 });
   }
 }
