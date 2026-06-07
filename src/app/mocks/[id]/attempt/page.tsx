@@ -214,7 +214,7 @@ export default function MockAttemptPage() {
       </main>
       
       <Sheet open={isMobilePaletteOpen} onOpenChange={setIsMobilePaletteOpen}>
-        <SheetContent side="bottom" className="h-[65dvh] p-0 border-none rounded-t-[2.5rem] overflow-hidden">
+        <SheetContent side="right" className="w-[180px] lg:w-[320px] p-0 border-none overflow-hidden">
           <SheetHeader className="sr-only">
              <SheetTitle>Question Palette</SheetTitle>
           </SheetHeader>
