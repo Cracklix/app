@@ -16,7 +16,6 @@ import { Loader2, Play, ShieldCheck, CheckCircle2, Trophy, AlertTriangle, LogOut
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { motion, AnimatePresence } from "framer-motion";
-import { initializeFirebase } from "@/firebase";
 import {
   Dialog,
   DialogContent,
@@ -27,8 +26,9 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Institutional CBT Attempt Node v15.0.
- * Optimized: Split-view for desktop (380px Sidebar) and Native App feel for mobile.
+ * @fileOverview Institutional CBT Attempt Node v16.0.
+ * Optimized: Increased mobile palette width to 280px for full data visibility.
+ * Fixed: Robust Firebase guards (removed hallucinations).
  */
 export default function MockAttemptPage() {
   const params = useParams();
@@ -48,7 +48,7 @@ export default function MockAttemptPage() {
 
   useEffect(() => {
     async function loadExam() {
-      if (!db || typeof db !== 'object' || !user || !mockId) return;
+      if (!db || !user || !mockId) return;
       try {
         const mockSnap = await getDoc(doc(db, "mocks", mockId));
         if (!mockSnap.exists()) throw new Error("Mock series not found.");
@@ -99,7 +99,7 @@ export default function MockAttemptPage() {
       }
     }
     loadExam();
-  }, [db, user, mockId, router, toast]);
+  }, [db, user, mockId, router, toast, examStore]);
 
   useEffect(() => {
     if (isInitializing) return;
@@ -171,7 +171,7 @@ export default function MockAttemptPage() {
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="absolute inset-0 z-[100] bg-white/95 backdrop-blur-md flex items-center justify-center p-4"
             >
-              <div className="mobile-app-shell bg-white rounded-[2rem] shadow-2xl p-8 space-y-6 text-center">
+              <div className="bg-white rounded-[2rem] shadow-2xl p-8 space-y-6 text-center max-w-sm w-full">
                  <div className="h-14 w-14 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto text-primary">
                     <Play className="h-7 w-7 fill-current" />
                  </div>
@@ -182,7 +182,6 @@ export default function MockAttemptPage() {
           )}
         </AnimatePresence>
 
-        {/* MAIN QUESTION FEED */}
         <div className="flex-1 overflow-y-auto custom-scrollbar bg-slate-50 flex flex-col items-center">
            <div className="w-full max-w-4xl p-2 md:p-8 space-y-4">
               {q && (
@@ -199,19 +198,17 @@ export default function MockAttemptPage() {
            </div>
         </div>
 
-        {/* DESKTOP DOCKED PALETTE (Match reference) */}
         <aside className="hidden lg:block w-[380px] bg-white border-l h-full shrink-0 shadow-2xl">
            <QuestionPalette onSelect={(idx) => examStore.setCurrentIdx(idx)} onSubmit={() => setShowSubmitModal(true)} />
         </aside>
       </main>
       
-      {/* MOBILE OVERLAY PALETTE */}
       <Sheet open={isMobilePaletteOpen} onOpenChange={setIsMobilePaletteOpen}>
         <SheetContent 
           side="right" 
           className={cn(
             "p-0 border-none overflow-hidden shadow-2xl transition-all duration-300",
-            "!w-[180px] !max-w-[180px] h-full"
+            "!w-[280px] !max-w-[280px] h-full"
           )}
         >
           <SheetHeader className="sr-only">
@@ -221,7 +218,6 @@ export default function MockAttemptPage() {
         </SheetContent>
       </Sheet>
 
-      {/* PAUSE / EXIT CONFIRMATION MODAL */}
       <Dialog open={showExitModal} onOpenChange={setShowExitModal}>
          <DialogContent className="max-w-[90%] sm:max-w-[400px] rounded-2xl p-0 bg-white overflow-hidden border-none shadow-[0_20px_50px_rgba(0,0,0,0.2)]">
             <div className="p-8 space-y-10 text-center">
@@ -250,7 +246,6 @@ export default function MockAttemptPage() {
          </DialogContent>
       </Dialog>
 
-      {/* FINAL SUBMISSION MODAL */}
       <Dialog open={showSubmitModal} onOpenChange={setShowSubmitModal}>
          <DialogContent className="max-w-[90%] sm:max-w-[440px] rounded-3xl p-10 bg-[#0F172A] text-white border-none shadow-4xl text-center">
             <div className="space-y-8">

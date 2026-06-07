@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useState, useEffect, useCallback } from "react"
@@ -6,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Search, Edit, Trash2, Database, Loader2, RefreshCw, ChevronRight, Filter } from "lucide-react"
+import { Plus, Search, Edit, Trash2, Database, Loader2, RefreshCw, Filter } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, deleteDoc, doc, where, limit, getDocs, startAfter } from "firebase/firestore"
@@ -18,7 +17,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Hardened Institutional Asset Ledger (Global Bank).
- * Standardized: Standardized Firestore instance validation.
+ * Fixed: Robust Firebase instance validation (removed HALLUCINATED .type checks).
  */
 
 export default function QuestionBank() {
@@ -35,14 +34,14 @@ export default function QuestionBank() {
   const [hasMore, setLastHasMore] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
 
-  const boardsQuery = useMemo(() => (db && db.type === 'firestore' ? query(collection(db, "boards")) : null), [db])
-  const subjectsQuery = useMemo(() => (db && db.type === 'firestore' ? query(collection(db, "subjects")) : null), [db])
+  const boardsQuery = useMemo(() => (db ? query(collection(db, "boards")) : null), [db])
+  const subjectsQuery = useMemo(() => (db ? query(collection(db, "subjects")) : null), [db])
 
   const { data: boards } = useCollection<any>(boardsQuery)
   const { data: subjects } = useCollection<any>(subjectsQuery)
 
   const fetchQuestions = useCallback(async (isNext = false) => {
-    if (!db || db.type !== 'firestore') return
+    if (!db) return
     setLoading(true)
     
     try {

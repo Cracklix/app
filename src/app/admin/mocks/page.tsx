@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useState } from "react"
@@ -6,10 +5,10 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Eye, Search, Trash2, Edit, ClipboardList, Layers, Copy, Gem, Loader2, Calendar, FileText } from "lucide-react"
+import { Plus, Search, Trash2, Edit, ClipboardList, Layers, ChevronRight, Clock, FileText, Calendar } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, deleteDoc, doc, setDoc, serverTimestamp } from "firebase/firestore"
+import { collection, query, deleteDoc, doc, setDoc, serverTimestamp, where } from "firebase/firestore"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/hooks/use-toast"
@@ -18,7 +17,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Ultimate Mock Management Ledger.
- * Optimized: Full Mobile-First Responsive Card conversion.
+ * Fixed: Robust Firebase instance validation (removed HALLUCINATED .type checks).
  */
 
 export default function MockManagement() {
@@ -28,8 +27,8 @@ export default function MockManagement() {
   const [searchTerm, setSearchTerm] = useState("")
   const [boardFilter, setBoardFilter] = useState("all")
 
-  const mocksQuery = useMemo(() => (db && db.type === 'firestore' ? query(collection(db, "mocks")) : null), [db])
-  const boardsQuery = useMemo(() => (db && db.type === 'firestore' ? collection(db, "boards") : null), [db])
+  const mocksQuery = useMemo(() => (db ? collection(db, "mocks") : null), [db])
+  const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db])
 
   const { data: rawMocks, loading } = useCollection<any>(mocksQuery)
   const { data: boards } = useCollection<any>(boardsQuery)
@@ -46,14 +45,14 @@ export default function MockManagement() {
   }, [rawMocks, searchTerm, boardFilter])
 
   const handleDelete = async (id: string) => {
-    if (!db || db.type !== 'firestore') return
+    if (!db) return
     if (!confirm("Audit: Permanently purge this mock blueprint?")) return
     await deleteDoc(doc(db, "mocks", id))
     toast({ title: "Series Purged" })
   }
 
   const togglePublish = async (id: string, current: boolean) => {
-    if (!db || db.type !== 'firestore') return
+    if (!db) return
     await setDoc(doc(db, "mocks", id), { published: !current, updatedAt: serverTimestamp() }, { merge: true })
     toast({ title: "Registry Updated" })
   }
@@ -92,7 +91,6 @@ export default function MockManagement() {
         </CardHeader>
 
         <CardContent className="p-0">
-          {/* Desktop View */}
           <div className="hidden md:block overflow-x-auto">
             <Table>
               <TableHeader className="bg-slate-50/50">
@@ -143,7 +141,6 @@ export default function MockManagement() {
             </Table>
           </div>
 
-          {/* Mobile View: High-Density Cards */}
           <div className="md:hidden divide-y divide-slate-100">
              {loading ? (
                 Array.from({ length: 3 }).map((_, i) => <div key={i} className="p-6 space-y-4"><Skeleton className="h-24 w-full rounded-2xl" /></div>)

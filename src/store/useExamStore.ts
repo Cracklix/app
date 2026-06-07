@@ -1,12 +1,12 @@
-
 import { create } from 'zustand';
 import { AttemptState, ExamLanguage, QuestionStatus, Question, LanguageDisplayMode } from '@/types';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
 
 /**
- * @fileOverview Enterprise CBT Global Store v22.0.
- * Updated: Filtered Language Registry logic to support Admin-defined base modes.
+ * @fileOverview Enterprise CBT Global Store v23.0.
+ * Updated: Hardened mutation handlers with explicit Firestore guards.
+ * Fixed: Robust document reference handling for attempts.
  */
 
 interface ExamStore extends AttemptState {
@@ -78,7 +78,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       questions,
       timeLeft,
       baseLanguageMode: finalBaseMode,
-      language: finalBaseMode, // Aspirant defaults to Admin's choice
+      language: finalBaseMode, 
       startTime: isStale ? now : (savedState?.startTime || now),
       endTime,
       answers: isStale ? {} : (savedState?.answers || {}),
@@ -111,17 +111,19 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     
     if (userId && mockId) {
       const { firestore: db } = initializeFirebase();
-      updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), {
-         currentIdx: idx,
-         visited: newVisited,
-         updatedAt: serverTimestamp()
-      }).catch(() => {});
+      if (db) {
+        updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), {
+          currentIdx: idx,
+          visited: newVisited,
+          updatedAt: serverTimestamp()
+        }).catch(() => {});
+      }
     }
   },
 
   setAnswer: (idx, optionIdx, db) => {
     const { answers, status, userId, mockId } = get();
-    if (!userId || !mockId) return;
+    if (!userId || !mockId || !db) return;
 
     const newAnswers = { ...answers };
     const newStatus = { ...status };
@@ -146,7 +148,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
 
   clearAnswer: (idx, db) => {
     const { answers, status, userId, mockId } = get();
-    if (!userId || !mockId) return;
+    if (!userId || !mockId || !db) return;
 
     const newAnswers = { ...answers };
     const newStatus = { ...status };
@@ -164,7 +166,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
 
   markForReview: (idx, db) => {
     const { status, answers, userId, mockId } = get();
-    if (!userId || !mockId) return;
+    if (!userId || !mockId || !db) return;
 
     const newStatus = { ...status };
     const hasAnswer = answers[idx] !== undefined;
@@ -191,7 +193,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
         currentSectionId: questions[nextIdx]?.sectionId || ''
       });
       
-      if (userId && mockId) {
+      if (userId && mockId && db) {
         const attemptRef = doc(db, 'attempts', `${userId}_${mockId}`);
         updateDoc(attemptRef, {
           currentIdx: nextIdx,
@@ -215,7 +217,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
 
   addViolation: (db) => {
     const { violations, userId, mockId } = get();
-    if (!userId || !mockId) return;
+    if (!userId || !mockId || !db) return;
     
     const newVal = (violations || 0) + 1;
     set({ violations: newVal });
@@ -227,7 +229,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
 
   toggleBookmark: (idx, db) => {
     const { bookmarks, userId, mockId } = get();
-    if (!userId || !mockId) return;
+    if (!userId || !mockId || !db) return;
 
     const next = bookmarks.includes(idx) ? bookmarks.filter(i => i !== idx) : [...bookmarks, idx];
     set({ bookmarks: next });
