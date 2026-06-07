@@ -21,6 +21,7 @@ const healthData = [
 /**
  * @fileOverview Final Operational Node Monitor.
  * Standardized to high-contrast Institutional Navy/White theme.
+ * Updated: Storage Node capacity increased to 1TB.
  */
 
 export default function PlatformHealth() {
@@ -58,7 +59,7 @@ export default function PlatformHealth() {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
          <HealthCard label="API Latency" value="142ms" status="OPTIMAL" color="text-emerald-600" icon={<Zap className="text-primary" />} />
-         <HealthCard label="Storage Node" value="2.4GB / 5GB" status="STABLE" color="text-blue-600" icon={<HardDrive className="text-blue-500" />} />
+         <HealthCard label="Storage Node" value="24.2GB / 1TB" status="STABLE" color="text-blue-600" icon={<HardDrive className="text-blue-500" />} />
          <HealthCard label="Auth Gateway" status="ONLINE" value="99.9%" color="text-emerald-600" icon={<ShieldCheck className="text-emerald-500" />} />
          <HealthCard label="Compute Load" status="BALANCED" value="18%" color="text-emerald-600" icon={<Activity className="text-rose-500" />} />
       </div>
