@@ -26,6 +26,10 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
+/**
+ * @fileOverview Institutional CBT Attempt Node v15.0.
+ * Optimized: Split-view for desktop (380px Sidebar) and Native App feel for mobile.
+ */
 export default function MockAttemptPage() {
   const params = useParams();
   const router = useRouter();
@@ -178,8 +182,9 @@ export default function MockAttemptPage() {
           )}
         </AnimatePresence>
 
+        {/* MAIN QUESTION FEED */}
         <div className="flex-1 overflow-y-auto custom-scrollbar bg-slate-50 flex flex-col items-center">
-           <div className="w-full max-w-4xl p-2 md:p-6 space-y-4">
+           <div className="w-full max-w-4xl p-2 md:p-8 space-y-4">
               {q && (
                 <>
                   <QuestionRenderer 
@@ -194,8 +199,8 @@ export default function MockAttemptPage() {
            </div>
         </div>
 
-        {/* DESKTOP DOCKED PALETTE */}
-        <aside className="hidden lg:block w-[320px] bg-white border-l h-full shrink-0">
+        {/* DESKTOP DOCKED PALETTE (Match reference) */}
+        <aside className="hidden lg:block w-[380px] bg-white border-l h-full shrink-0 shadow-2xl">
            <QuestionPalette onSelect={(idx) => examStore.setCurrentIdx(idx)} onSubmit={() => setShowSubmitModal(true)} />
         </aside>
       </main>
@@ -206,7 +211,7 @@ export default function MockAttemptPage() {
           side="right" 
           className={cn(
             "p-0 border-none overflow-hidden shadow-2xl transition-all duration-300",
-            "!w-[200px] !max-w-[200px] h-full"
+            "!w-[180px] !max-w-[180px] h-full"
           )}
         >
           <SheetHeader className="sr-only">
@@ -239,6 +244,32 @@ export default function MockAttemptPage() {
                     className="flex-1 h-14 bg-[#94A3B8] hover:bg-slate-500 text-white rounded-md font-bold text-lg shadow-md transition-all active:scale-95"
                   >
                      No
+                  </Button>
+               </div>
+            </div>
+         </DialogContent>
+      </Dialog>
+
+      {/* FINAL SUBMISSION MODAL */}
+      <Dialog open={showSubmitModal} onOpenChange={setShowSubmitModal}>
+         <DialogContent className="max-w-[90%] sm:max-w-[440px] rounded-3xl p-10 bg-[#0F172A] text-white border-none shadow-4xl text-center">
+            <div className="space-y-8">
+               <div className="h-20 w-20 bg-primary/20 rounded-[2.5rem] flex items-center justify-center mx-auto text-primary shadow-2xl">
+                  <ShieldCheck className="h-10 w-10" />
+               </div>
+               <div className="space-y-2">
+                  <DialogTitle className="text-3xl font-headline font-black uppercase text-white">Commit Assessment?</DialogTitle>
+                  <p className="text-slate-400 font-medium">Finalize your evaluation nodes for this series. This action is irreversible.</p>
+               </div>
+               <div className="flex gap-4 pt-4">
+                  <Button variant="ghost" onClick={() => setShowSubmitModal(false)} className="flex-1 h-16 rounded-2xl text-slate-400 hover:text-white font-black uppercase text-[10px]">Cancel</Button>
+                  <Button 
+                     onClick={handleSubmitFinal}
+                     disabled={isSubmittingFinal}
+                     className="flex-1 h-16 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl shadow-primary/20 gap-3"
+                  >
+                     {isSubmittingFinal ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                     Commit Final
                   </Button>
                </div>
             </div>
