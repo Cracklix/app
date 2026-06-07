@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 
 /**
- * @fileOverview Hardened Razorpay Order Node.
- * Ensures amount is in whole paise and receipt ID is strictly alphanumeric.
+ * @fileOverview Hardened Razorpay Order Node v2.0.
+ * Ensures amount is in whole paise and receipt ID is strictly alphanumeric and short.
  */
 
 export async function POST(request: Request) {
@@ -14,8 +14,8 @@ export async function POST(request: Request) {
     const key_secret = process.env.RAZORPAY_KEY_SECRET;
 
     if (!key_id || !key_secret) {
-      console.error('[GATEWAY_ERROR]: Missing Razorpay Credentials');
-      return NextResponse.json({ error: 'Gateway keys missing.' }, { status: 500 });
+      console.error('[GATEWAY_ERROR]: Missing Razorpay Credentials in .env');
+      return NextResponse.json({ error: 'Gateway keys missing on server.' }, { status: 500 });
     }
 
     const razorpay = new Razorpay({
@@ -27,11 +27,11 @@ export async function POST(request: Request) {
     const amountInPaise = Math.round(Number(amount) * 100);
 
     if (isNaN(amountInPaise) || amountInPaise < 100) {
-      return NextResponse.json({ error: 'Min 1 INR required.' }, { status: 400 });
+      return NextResponse.json({ error: 'Minimum amount 1 INR required.' }, { status: 400 });
     }
 
-    // 2. Alphanumeric short receipt (Strictly Alphanumeric)
-    const receipt = `rcpt_${Date.now().toString().slice(-6)}_${planId.slice(0, 5)}`.replace(/[^a-zA-Z0-9_]/g, '');
+    // 2. Ultra-short alphanumeric receipt (Max 40, but we stay under 20 for safety)
+    const receipt = `rcpt_${Date.now().toString().slice(-10)}`;
 
     const options = {
       amount: amountInPaise,

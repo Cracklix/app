@@ -18,7 +18,7 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Institutional Checkout Hub v13.0.
+ * @fileOverview Institutional Checkout Hub v14.0.
  * HARDENED: Aggressive Name/Phone sanitization to resolve domestic/international flagging issues.
  */
 
@@ -54,7 +54,7 @@ function CheckoutContent() {
     if (!user || !planData) return;
     
     if (!(window as any).Razorpay) {
-      toast({ variant: "destructive", title: "Gateway Hub Offline", description: "Razorpay script loading. Please retry." });
+      toast({ variant: "destructive", title: "Gateway Hub Offline", description: "Razorpay script is still loading. Please wait 5 seconds and retry." });
       return;
     }
 
@@ -71,9 +71,12 @@ function CheckoutContent() {
       const orderData = await orderRes.json();
       if (orderData.error) throw new Error(orderData.error);
 
-      // 2. Strict Metadata Sanitization (Prevents International Card flags)
+      // 2. STRICT SANITIZATION Protocol (Crucial for domestic verification)
+      // Remove all special characters from name, keep only letters and spaces
       const rawName = profile?.name || user?.displayName || 'Aspirant';
       const sanitizedName = rawName.replace(/[^a-zA-Z\s]/g, '').slice(0, 40).trim() || "Student";
+      
+      // Contact must be exactly 10 digits, no prefix
       const sanitizedPhone = profile?.phone?.replace(/\D/g, '').slice(-10) || "";
 
       const options = {
@@ -107,7 +110,7 @@ function CheckoutContent() {
               throw new Error("Verification Node Rejected");
             }
           } catch (e: any) {
-            toast({ variant: "destructive", title: "Security Error", description: "Could not verify signature." });
+            toast({ variant: "destructive", title: "Security Error", description: "Signature verification failed." });
             setProcessing(false);
           }
         },
@@ -126,12 +129,16 @@ function CheckoutContent() {
 
       const rzp = new (window as any).Razorpay(options);
       rzp.on('payment.failed', function (response: any) {
-        toast({ variant: "destructive", title: "Gateway Failure", description: response.error.description });
+        toast({ 
+          variant: "destructive", 
+          title: "Payment Failed", 
+          description: response.error.description || "The transaction was declined by the bank." 
+        });
         setProcessing(false);
       });
       rzp.open();
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Order Hub Error", description: e.message });
+      toast({ variant: "destructive", title: "Order Generation Error", description: e.message });
       setProcessing(false);
     }
   };
@@ -139,7 +146,7 @@ function CheckoutContent() {
   const handleManualPayment = async () => {
     if (!user || !profile || !planData) return
     if (!utr || utr.length < 10) {
-       toast({ variant: "destructive", title: "UTR Missing", description: "Check your banking app for the 12-digit code." })
+       toast({ variant: "destructive", title: "UTR Missing", description: "Please enter the valid 12-digit transaction ID." })
        return
     }
 
@@ -152,10 +159,10 @@ function CheckoutContent() {
           planId: planId,
           transactionId: utr
        })
-       toast({ title: "Audit Logged", description: "Verification pending." })
+       toast({ title: "Request Submitted", description: "Admin will verify your payment within 24 hours." })
        router.push("/dashboard")
     } catch (e: any) {
-       toast({ variant: "destructive", title: "Audit Failed" })
+       toast({ variant: "destructive", title: "Submission Failed" })
     } finally {
        setProcessing(false)
     }
@@ -169,7 +176,7 @@ function CheckoutContent() {
       <Navbar />
       <Script 
         src="https://checkout.razorpay.com/v1/checkout.js" 
-        strategy="lazyOnload" 
+        strategy="afterInteractive" 
       />
       
       <main className="container mx-auto px-4 md:px-6 py-12 md:py-24 max-w-5xl">
@@ -203,7 +210,7 @@ function CheckoutContent() {
                                 <ShieldCheck className="h-6 w-6" />
                              </div>
                              <p className="text-sm font-medium text-emerald-800 leading-relaxed uppercase">
-                                Use standard test credentials for **INR** domestic payments only.
+                                Use the test credentials shown in your Razorpay dashboard for this transaction.
                              </p>
                           </div>
                           <Button 
