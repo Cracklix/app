@@ -42,8 +42,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import Logo from "@/components/brand/Logo"
 
 /**
- * @fileOverview Test Results Hub v7.0 (Hardened Report).
- * UPDATED: Professional Print Logic for Official Result Certificate.
+ * @fileOverview Test Results Hub v7.1 (Hardened Report).
+ * FIXED: Filter bar overlap on mobile. Compact horizontal scroll implemented.
  */
 
 export default function ResultPage() {
@@ -382,14 +382,14 @@ export default function ResultPage() {
            </TabsContent>
 
            <TabsContent value="SOLUTIONS" className="m-0 space-y-8 animate-in fade-in duration-500">
-              <div className="bg-white border border-slate-100 rounded-[2.5rem] p-4 md:p-6 shadow-2xl flex flex-wrap items-center gap-3 md:gap-6 sticky top-24 z-30 backdrop-blur-3xl bg-opacity-95 print:hidden">
+              <div className="bg-white border border-slate-100 rounded-[2.5rem] p-4 md:p-6 shadow-2xl flex flex-nowrap items-center gap-3 md:gap-6 sticky top-[72px] z-[40] backdrop-blur-3xl bg-opacity-95 overflow-x-auto no-scrollbar print:hidden">
                  <FilterPill active={activeReviewFilter === 'ALL'} label="ALL NODES" count={questions.length} onClick={() => setActiveReviewFilter('ALL')} color="bg-slate-100 text-slate-500" />
                  <FilterPill active={activeReviewFilter === 'CORRECT'} label="CORRECT" count={Math.floor(sessionData.score || 0)} onClick={() => setActiveReviewFilter('CORRECT')} color="bg-emerald-50 text-emerald-600" />
                  <FilterPill active={activeReviewFilter === 'WRONG'} label="WRONG" count={Object.keys(sessionData.answers || {}).length - Math.floor(sessionData.score || 0)} onClick={() => setActiveReviewFilter('WRONG')} color="bg-rose-50 text-rose-600" />
                  <FilterPill active={activeReviewFilter === 'SKIPPED'} label="SKIPPED" count={sessionData.totalQuestions - Object.keys(sessionData.answers || {}).length} onClick={() => setActiveReviewFilter('SKIPPED')} color="bg-slate-100 text-slate-300" />
               </div>
 
-              <div className="grid grid-cols-1 gap-6 md:gap-10 print:gap-4">
+              <div className="grid grid-cols-1 gap-6 md:gap-10 print:gap-4 pt-4">
                  {filteredQuestions.map((q) => {
                     const isExpanded = expandedQs[q.index];
                     const studentAns = sessionData.answers?.[q.index];
@@ -484,7 +484,7 @@ function MetricCard({ label, val, sub, color }: any) {
             </p>
          </div>
          <div className="flex items-center gap-3 pt-3 border-t border-white/5 mt-4 print:hidden">
-            <div className={cn("h-1.5 w-1.5 rounded-full animate-pulse shrink-0", valStr.includes('NaN') ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]')} />
+            <div className={cn("h-1.5 w-1.5 rounded-full animate-pulse shrink-0", valStr.includes('NaN') ? 'bg-rose-50 shadow-[0_0_8px_rgba(244,63,94,0.6)]' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]')} />
             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
                {valStr.includes('NaN') ? 'SYNCING ERROR' : 'NODE ACTIVE'}
             </p>
@@ -533,12 +533,12 @@ function FilterPill({ active, label, count, onClick, color }: any) {
       <button 
          onClick={onClick}
          className={cn(
-            "flex items-center gap-3 md:gap-5 px-5 md:px-10 py-3 md:py-5 rounded-[1.5rem] transition-all active:scale-95 border-2 shadow-sm shrink-0",
+            "flex items-center gap-2 md:gap-5 px-3 md:px-10 py-2 md:py-5 rounded-xl md:rounded-[1.5rem] transition-all active:scale-95 border-2 shadow-sm shrink-0",
             active ? 'bg-[#0B1528] border-[#0B1528] text-white shadow-2xl' : 'bg-white border-slate-50 text-slate-400 hover:border-slate-200'
          )}
       >
-         <span className={cn("h-7 w-7 md:h-9 md:w-9 rounded-xl flex items-center justify-center font-black text-[11px] md:text-sm shadow-inner", color)}>{count}</span>
-         <span className="text-[10px] md:text-[12px] font-black uppercase tracking-widest">{label}</span>
+         <span className={cn("h-6 w-6 md:h-9 md:w-9 rounded-lg md:rounded-xl flex items-center justify-center font-black text-[9px] md:text-sm shadow-inner", color)}>{count}</span>
+         <span className="text-[8px] md:text-[12px] font-black uppercase tracking-widest">{label}</span>
       </button>
    )
 }
