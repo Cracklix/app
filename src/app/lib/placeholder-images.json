@@ -42,6 +42,12 @@
       "description": "Punjab Police Operational Readiness",
       "imageUrl": "https://punjabpolice.gov.in/media/images/pp7.original.jpg",
       "imageHint": "punjab police"
+    },
+    {
+      "id": "founder-deep",
+      "description": "Deep Grewal - Founder & Lead Developer",
+      "imageUrl": "/deep-grewal.jpg",
+      "imageHint": "professional man"
     }
   ]
 }

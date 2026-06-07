@@ -38,8 +38,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import ShareButton from "@/components/navigation/ShareButton"
 
 /**
- * @fileOverview Student Dashboard.
- * Simplified Language: Replaced 'Node' with 'Item' and 'Audit' with 'Check'.
+ * @fileOverview Student Dashboard v11.0.
+ * Updated: Developer credit synced to Deep Grewal.
  */
 
 export default function StudentDashboard() {
@@ -223,7 +223,7 @@ export default function StudentDashboard() {
 
               <div className="py-12 flex flex-col items-center gap-3 text-center border-t border-slate-100">
                  <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">
-                    Developed by <span className="text-[#0F172A] font-black">Arsh Grewal</span>
+                    Developed by <span className="text-[#0F172A] font-black">Deep Grewal</span>
                  </p>
               </div>
            </div>
