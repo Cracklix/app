@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo } from "react";
@@ -18,8 +17,8 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Institutional CBT Palette Hub v20.0.
- * HARDENED: Matches user screenshot exactly with bold cards and sectional bullet headers.
+ * @fileOverview Institutional CBT Palette Hub v21.0.
+ * FIXED: Added top padding to prevent legend cards from hiding. Adjusted width for screenshot alignment.
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const questions = useExamStore(s => s.questions);
@@ -59,7 +58,8 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
   return (
     <div className="flex flex-col h-full bg-white text-left font-body select-none pointer-events-auto">
       <ScrollArea className="h-full">
-        <div className="p-4 md:p-8 pt-8 md:pt-10 space-y-8 md:space-y-10 pb-32">
+        {/* Added pt-12 to ensure top legend isn't hidden */}
+        <div className="p-4 md:p-8 pt-12 md:pt-16 space-y-8 md:space-y-10 pb-32">
            
            {/* 1. HIGH-FIDELITY LEGEND HUB */}
            <div className="grid grid-cols-2 gap-2 md:gap-3">
@@ -77,7 +77,7 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
               {sections.map((section, sIdx) => (
                 <div key={sIdx} className="space-y-5 md:space-y-6">
                    <div className="flex items-center gap-3">
-                      <div className="h-2 w-2 rounded-full bg-primary shrink-0" />
+                      <div className="h-2.5 w-2.5 rounded-full bg-primary shrink-0" />
                       <h4 className="text-[10px] md:text-xs font-black uppercase text-[#0F172A] tracking-wider leading-none">
                          {section.name}
                       </h4>
@@ -137,6 +137,7 @@ function QuestionNode({ index, isActive, status, isVisited, onClick }: any) {
   const isMarked = status === 'marked';
   const isAnsMarked = status === 'answered-marked';
   
+  // MATCHING SCREENSHOT: Active = bold orange border, others = white or status color
   const colorClass = isActive 
     ? "bg-white text-primary border-primary border-[3px] shadow-lg scale-105 z-10" 
     : isAnswered ? "bg-[#1E5EFF] text-white border-transparent"

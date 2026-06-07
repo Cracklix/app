@@ -26,8 +26,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 /**
- * @fileOverview Production Hardened CBT Attempt Engine v31.0.
- * FIXED: Language specific subjects (Punjabi/English) now force single-language display.
+ * @fileOverview Production Hardened CBT Attempt Engine v32.0.
+ * UPDATED: Palette width adjusted to 75vw for the perfect half-screen overlap.
  */
 
 export default function MockAttemptPage() {
@@ -190,7 +190,6 @@ export default function MockAttemptPage() {
     if (!q) return language;
     const sectionName = (q.sectionId || "").toUpperCase();
     
-    // Strict Subject Overrides: Language sections are never bilingual
     if (sectionName.includes("PUNJABI")) return "PUNJABI";
     if (sectionName.includes("ENGLISH")) return "ENGLISH";
     if (sectionName.includes("HINDI")) return "HINDI";
