@@ -18,7 +18,8 @@ import {
   ShieldCheck,
   LayoutGrid,
   Clock,
-  Sparkles
+  Sparkles,
+  GraduationCap
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -27,7 +28,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 /**
- * @fileOverview Institutional "My Exams" Dashboard.
+ * @fileOverview Institutional "My Exams" Dashboard v2.0.
+ * Fixed: Official logo lookup for pinned hubs.
  * Optimized: Client-side sorting for Results to bypass composite index requirements.
  */
 
@@ -43,7 +45,10 @@ export default function MyExamsPage() {
   }, [user, userLoading, router])
 
   const examsQuery = useMemo(() => (db ? collection(db, "exams") : null), [db])
+  const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db])
+  
   const { data: allExams } = useCollection<any>(examsQuery)
+  const { data: boards } = useCollection<any>(boardsQuery)
 
   // Simplified query to bypass index requirement
   const resultsQuery = useMemo(() => {
@@ -101,17 +106,31 @@ export default function MyExamsPage() {
            </div>
            
            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-              {pinnedExams.length > 0 ? pinnedExams.map((exam) => (
-                 <Link key={exam.id} href={`/exams/${exam.id}`}>
-                    <Card className="border-none shadow-sm hover:shadow-xl transition-all duration-300 rounded-2xl bg-white p-4 md:p-6 text-left group">
-                       <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center mb-3 md:mb-4 group-hover:bg-primary/10 transition-colors">
-                          <LayoutGrid className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-                       </div>
-                       <h4 className="font-black text-[13px] md:text-lg text-[#0F172A] uppercase leading-tight line-clamp-1">{exam.name}</h4>
-                       <p className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase mt-1">Registry Active</p>
-                    </Card>
-                 </Link>
-              )) : (
+              {pinnedExams.length > 0 ? pinnedExams.map((exam) => {
+                 const board = boards?.find((b: any) => b.id === exam.boardId);
+                 const logoUrl = exam.iconUrl || board?.iconUrl;
+
+                 return (
+                  <Link key={exam.id} href={`/exams/${exam.id}`}>
+                      <Card className="border-none shadow-sm hover:shadow-xl transition-all duration-300 rounded-2xl bg-white p-4 md:p-6 text-left group relative overflow-hidden h-full flex flex-col">
+                        <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center mb-3 md:mb-4 group-hover:bg-primary/10 transition-colors relative overflow-hidden shrink-0 border border-slate-100 shadow-inner">
+                            {logoUrl ? (
+                              <img 
+                                src={logoUrl} 
+                                className="w-full h-full object-contain p-1.5" 
+                                referrerPolicy="no-referrer" 
+                                alt={exam.name} 
+                              />
+                            ) : (
+                              <GraduationCap className="h-5 w-5 md:h-6 md:w-6 text-slate-300" />
+                            )}
+                        </div>
+                        <h4 className="font-black text-[13px] md:text-lg text-[#0F172A] uppercase leading-tight line-clamp-2 flex-1">{exam.name}</h4>
+                        <p className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase mt-2">Registry Active</p>
+                      </Card>
+                  </Link>
+                 )
+              }) : (
                  <Card className="col-span-full border-2 border-dashed border-slate-200 bg-white/50 p-10 rounded-[2.5rem] flex flex-col items-center justify-center text-center">
                     <Sparkles className="h-8 w-8 text-slate-200 mb-3" />
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">No target exams pinned.</p>
@@ -129,7 +148,7 @@ export default function MyExamsPage() {
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {attemptsLoading ? (
                  Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)
-              ) : recentAttempts?.slice(0, 4).map((r: any) => (
+              ) : recentAttempts.length > 0 ? recentAttempts.slice(0, 4).map((r: any) => (
                  <Link key={r.id} href={`/results/${r.mockId}`}>
                     <Card className="border-none shadow-sm hover:shadow-lg transition-all rounded-2xl bg-white p-5 flex items-center justify-between group overflow-hidden relative">
                        <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
@@ -148,7 +167,11 @@ export default function MyExamsPage() {
                        <ChevronRight className="h-5 w-5 text-slate-200 group-hover:text-primary transition-all" />
                     </Card>
                  </Link>
-              ))}
+              )) : (
+                <div className="col-span-full py-12 text-center opacity-20 border-2 border-dashed border-slate-100 rounded-2xl">
+                   <p className="font-black uppercase tracking-widest text-[9px]">Awaiting your first attempt</p>
+                </div>
+              )}
            </div>
         </section>
 
