@@ -5,8 +5,9 @@ import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 
 /**
- * @fileOverview High-Density Subject Navigation v4.0.
- * UPDATED: Restricts visibility to exactly two subject nodes at a time for high-fidelity horizontal scroll.
+ * @fileOverview Adaptive Institutional Subject Navigation v5.0.
+ * TESTBOOK STYLE: 2 sections visible on mobile, 3+ on desktop.
+ * Optimized for high-density evaluation hubs.
  */
 export default function SubjectTabs() {
   const questions = useExamStore(s => s.questions);
@@ -18,7 +19,7 @@ export default function SubjectTabs() {
     const map = new Map<string, { id: string, name: string, startIdx: number, total: number, answered: number }>();
     
     (questions || []).forEach((q, idx) => {
-      const sid = q.sectionId || 'General Content';
+      const sid = q.sectionId || 'General Knowledge';
       const st = status[idx];
       const isAnswered = st === 'answered' || st === 'answered-marked';
 
@@ -40,10 +41,10 @@ export default function SubjectTabs() {
     return Array.from(map.values());
   }, [questions, status]);
 
-  const activeSectionId = questions[currentIdx]?.sectionId || 'General Content';
+  const activeSectionId = questions[currentIdx]?.sectionId || 'General Knowledge';
 
   return (
-    <nav className="bg-white border-b border-slate-200 h-11 flex items-center px-1 overflow-x-auto no-scrollbar gap-1 shrink-0 sticky top-0 z-40 pointer-events-auto">
+    <nav className="bg-white border-b border-slate-200 h-12 flex items-center px-1 overflow-x-auto no-scrollbar gap-1 shrink-0 sticky top-0 z-40 pointer-events-auto">
       {sections.map((s) => {
         const isActive = activeSectionId === s.id;
         return (
@@ -51,20 +52,22 @@ export default function SubjectTabs() {
             key={s.id}
             onClick={() => setCurrentIdx(s.startIdx)}
             className={cn(
-              "h-full flex items-center justify-between gap-2 transition-all whitespace-nowrap border-b-2 px-3 cursor-pointer active:scale-95 min-w-[48%] max-w-[49%]",
+              "h-full flex items-center justify-between gap-3 transition-all whitespace-nowrap border-b-2 px-4 cursor-pointer active:scale-95",
+              // MOBILE: 2 sections (48%) | DESKTOP: Fit 3+ (min 200px)
+              "min-w-[48%] md:min-w-[200px] md:flex-1 md:max-w-[300px]",
               isActive 
-                ? "border-primary text-primary bg-primary/5" 
-                : "border-transparent text-slate-400 hover:text-slate-600"
+                ? "border-primary text-primary bg-primary/5 shadow-[inset_0_-2px_0_0_hsl(var(--primary))]" 
+                : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50"
             )}
           >
-            <span className="text-[9px] font-[900] uppercase tracking-tighter leading-none truncate flex-1 text-left">
+            <span className="text-[10px] md:text-[11px] font-[900] uppercase tracking-tighter leading-none truncate flex-1 text-left">
                {s.name.replace(/-/g, ' ')}
             </span>
             <span className={cn(
-              "text-[8px] font-black px-1.5 py-0.5 rounded-md shrink-0",
+              "text-[9px] font-black px-2 py-0.5 rounded-md shrink-0 shadow-sm border",
               isActive 
-                ? "bg-primary text-white shadow-sm" 
-                : "bg-slate-100 text-slate-400"
+                ? "bg-primary text-white border-primary" 
+                : "bg-white text-slate-400 border-slate-100"
             )}>
               {s.answered}/{s.total}
             </span>

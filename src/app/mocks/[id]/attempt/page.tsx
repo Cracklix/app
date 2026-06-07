@@ -26,8 +26,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 /**
- * @fileOverview Production Hardened CBT Attempt Engine v23.0.
- * UPDATED: Optimized Sheet width for adaptive mobile/desktop palettes.
+ * @fileOverview Production Hardened CBT Attempt Engine v24.0.
+ * TESTBOOK STYLE: Optimized layout for adaptive subject visibility and dense content.
  */
 
 export default function MockAttemptPage() {
@@ -203,7 +203,8 @@ export default function MockAttemptPage() {
         <div className="flex-1 flex flex-col overflow-hidden">
            <SubjectTabs />
            <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center">
-              <div className="w-full max-w-4xl p-2 md:p-6 space-y-3 md:space-y-4">
+              {/* Responsive Container: Max width 5xl for better desktop balance */}
+              <div className="w-full max-w-5xl p-2 md:p-6 space-y-3 md:space-y-4">
                  {q ? (
                    <motion.div 
                       key={examStore.currentIdx}
