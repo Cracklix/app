@@ -10,6 +10,8 @@ export type ExamLanguage = 'en' | 'pa' | 'hi' | 'bilingual';
 
 export type LanguageDisplayMode = 'ENGLISH' | 'PUNJABI' | 'HINDI' | 'ENGLISH_PUNJABI' | 'ENGLISH_HINDI';
 
+export type CurrentAffairType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'SPECIAL';
+
 export interface Subject {
   id: string;
   name: string;
@@ -38,6 +40,22 @@ export interface MockTest {
   sections: ExamSection[];
   published: boolean;
   languageMode: LanguageDisplayMode;
+  createdAt: any;
+  updatedAt: any;
+}
+
+export interface CurrentAffairHubItem {
+  id: string;
+  title: string;
+  month: string;
+  year: string;
+  language: string;
+  category: string;
+  type: CurrentAffairType;
+  pdfUrl?: string;
+  status: 'PUBLISHED' | 'DRAFT';
+  quizId?: string;
+  questions?: Partial<Question>[];
   createdAt: any;
   updatedAt: any;
 }

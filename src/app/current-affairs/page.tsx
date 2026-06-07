@@ -4,7 +4,7 @@
 import { useMemo, useState } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
-import { useCollection, useFirestore } from "@/firebase"
+import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection, query, orderBy, limit, where } from "firebase/firestore"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -23,64 +23,55 @@ import {
   Bell,
   Medal,
   Users,
-  Loader2
+  Loader2,
+  Calendar,
+  Download,
+  BookOpen
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 
 /**
- * @fileOverview Institutional Free Hub v9.0.
- * UPDATED: 100% Dynamic Registry. Removed all hardcoded stats and rankings.
- * All data is now live-synced from Firestore.
+ * @fileOverview Institutional Current Affairs Hub v10.0.
+ * Dynamic tabs for Daily, Weekly, Monthly, Quiz, and PDFs.
  */
 
-const CATEGORIES = [
-  { id: "all", label: "All Hubs", icon: <Globe className="h-5 w-5 md:h-6 md:w-6" />, color: "bg-blue-50 text-blue-600" },
-  { id: "mock", label: "Free Mocks", icon: <Zap className="h-5 w-5 md:h-6 md:w-6" />, color: "bg-orange-50 text-primary" },
-  { id: "note", label: "Study Notes", icon: <FileText className="h-5 w-5 md:h-6 md:w-6" />, color: "bg-emerald-50 text-emerald-600" },
-  { id: "ca", label: "Current Affairs", icon: <Newspaper className="h-5 w-5 md:h-6 md:w-6" />, color: "bg-amber-50 text-amber-600" },
-  { id: "pyq", label: "Previous Papers", icon: <FileStack className="h-5 w-5 md:h-6 md:w-6" />, color: "bg-rose-50 text-rose-600" }
+const HUB_TYPES = [
+  { id: "DAILY", label: "Daily Hub", icon: <Calendar className="h-5 w-5" /> },
+  { id: "WEEKLY", label: "Weekly Hub", icon: <Layers className="h-5 w-5" /> },
+  { id: "MONTHLY", label: "Monthly Hub", icon: <Newspaper className="h-5 w-5" /> },
+  { id: "QUIZ", label: "Live Quizzes", icon: <Zap className="h-5 w-5" /> },
+  { id: "PDF", label: "PDF Archives", icon: <FileText className="h-5 w-5" /> }
 ]
 
 export default function FreeContentHub() {
   const db = useFirestore()
-  const [activeFilter, setActiveFilter] = useState("all")
+  const { user } = useUser()
+  const [activeType, setActiveType] = useState("DAILY")
   const [searchTerm, setSearchTerm] = useState("")
 
-  // 1. Live Content Registry
-  const contentQuery = useMemo(() => (db ? query(collection(db, "free_content"), orderBy("updatedAt", "desc")) : null), [db])
-  const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true)) : null), [db])
-  const usersQuery = useMemo(() => (db ? collection(db, "users") : null), [db])
-  const pyqQuery = useMemo(() => (db ? collection(db, "pyqs") : null), [db])
+  const hubQuery = useMemo(() => (db ? query(collection(db, "current_affairs_hub"), where("status", "==", "PUBLISHED"), orderBy("updatedAt", "desc")) : null), [db])
+  const { data: hubItems, loading } = useCollection<any>(hubQuery)
   
-  // Top Rankers Query (Live State Merit)
+  const { data: users } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]))
   const rankingQuery = useMemo(() => (db ? query(collection(db, "results"), orderBy("score", "desc"), limit(3)) : null), [db])
-
-  const { data: content, loading: contentLoading } = useCollection<any>(contentQuery)
-  const { data: mocks } = useCollection<any>(mocksQuery)
-  const { data: users } = useCollection<any>(usersQuery)
-  const { data: pyqs } = useCollection<any>(pyqQuery)
-  const { data: topRankers, loading: rankLoading } = useCollection<any>(rankingQuery)
-
-  const stats = useMemo(() => ({
-    mocks: mocks?.length || 0,
-    notes: content?.filter((c: any) => c.type === 'note' || c.type === 'pdf').length || 0,
-    aspirants: users?.length || 0,
-    pyqs: pyqs?.length || 0
-  }), [mocks, content, users, pyqs])
+  const { data: topRankers } = useCollection<any>(rankingQuery)
 
   const filteredItems = useMemo(() => {
-    if (!content) return []
-    return content.filter(item => {
-      const matchesType = activeFilter === "all" || item.type === activeFilter
-      const matchesSearch = item.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                           item.description?.toLowerCase().includes(searchTerm.toLowerCase())
-      return matchesType && matchesSearch
+    if (!hubItems) return []
+    return hubItems.filter(item => {
+      const matchesSearch = item.title?.toLowerCase().includes(searchTerm.toLowerCase())
+      
+      if (activeType === 'QUIZ') return matchesSearch && !!item.quizId
+      if (activeType === 'PDF') return matchesSearch && !!item.pdfUrl
+      
+      return matchesSearch && item.type === activeType
     })
-  }, [content, activeFilter, searchTerm])
+  }, [hubItems, activeType, searchTerm])
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body">
@@ -89,178 +80,149 @@ export default function FreeContentHub() {
       <main className="container mx-auto px-4 md:px-6 py-8 md:py-12 max-w-7xl">
         <div className="space-y-10 md:space-y-16 text-left">
           
-          {/* HERO HUB - DYNAMIC STATS */}
-          <div className="flex flex-col lg:flex-row justify-between items-center gap-12 bg-[#0B1528] p-8 md:p-16 rounded-[2.5rem] md:rounded-[4rem] text-white relative overflow-hidden shadow-4xl group">
-            <div className="absolute top-0 right-0 p-12 opacity-5 rotate-12 group-hover:scale-110 transition-transform duration-1000"><Trophy className="h-80 w-80" /></div>
+          <div className="bg-[#0B1528] p-8 md:p-16 rounded-[2.5rem] md:rounded-[4rem] text-white relative overflow-hidden shadow-4xl group">
+            <div className="absolute top-0 right-0 p-12 opacity-5 rotate-12 group-hover:scale-110 transition-transform duration-1000"><Newspaper className="h-80 w-80" /></div>
             <div className="space-y-8 relative z-10 max-w-3xl">
               <div className="flex items-center gap-3">
                  <Badge className="bg-primary text-white border-none px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-[0.2em] shadow-xl">
-                    Official Free Hub
-                 </Badge>
-                 <Badge className="bg-white/10 text-white border border-white/20 px-3 py-1.5 rounded-full font-bold uppercase text-[9px]">
-                    100% Free Nodes
+                    CURRENT AFFAIRS HUB
                  </Badge>
               </div>
               <h1 className="text-4xl md:text-8xl font-headline font-black tracking-tighter uppercase leading-[0.85]">
-                PUNJAB EXAM <br/>
-                <span className="text-primary">FREE HUB</span>
+                PUNJAB <br/>
+                <span className="text-primary">PREP HUB</span>
               </h1>
               <p className="text-slate-400 font-medium text-base md:text-xl max-w-2xl leading-relaxed">
-                Access high-fidelity mocks, study notes, and recruitment updates verified by Arsh Grewal Management.
+                Strategic Daily, Weekly, and Monthly coverage verified for all upcoming Punjab recruitment cycles.
               </p>
               
               <div className="relative w-full md:w-[480px]">
                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-slate-500" />
                  <Input 
-                   className="h-16 pl-16 rounded-[1.5rem] bg-white/10 border-white/10 text-white placeholder:text-slate-500 text-lg font-medium backdrop-blur-md focus-visible:ring-primary shadow-2xl" 
-                   placeholder="Search free repository..." 
+                   className="h-16 pl-16 rounded-[1.5rem] bg-white/10 border-white/10 text-white placeholder:text-slate-500 text-lg font-medium backdrop-blur-md shadow-2xl" 
+                   placeholder="Search CA archives..." 
                    value={searchTerm}
                    onChange={e => setSearchTerm(e.target.value)}
                  />
               </div>
             </div>
-
-            <div className="hidden lg:grid grid-cols-2 gap-4 relative z-10">
-               <HeroStat val={`${stats.mocks}+`} label="Free Mocks" />
-               <HeroStat val={`${stats.notes}+`} label="PDF Nodes" />
-               <HeroStat val={`${(stats.aspirants / 1000).toFixed(1)}k+`} label="Aspirants" />
-               <HeroStat val={stats.pyqs > 0 ? "Live" : "Real"} label="PYQ Archive" />
-            </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-             {/* LEFT: CONTENT HUB */}
-             <div className="lg:col-span-8 space-y-12">
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 md:gap-4">
-                   {CATEGORIES.map(cat => (
-                     <button 
-                      key={cat.id}
-                      onClick={() => setActiveFilter(cat.id)}
-                      className={cn(
-                        "p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] transition-all flex flex-col items-center justify-center gap-3 md:gap-4 shadow-sm hover:shadow-2xl border-2 shrink-0",
-                        activeFilter === cat.id ? 'bg-[#0B1528] border-[#0B1528] text-white' : 'bg-white border-white text-slate-400 hover:border-primary/20'
-                      )}
-                     >
-                       <div className={cn(
-                         "h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl flex items-center justify-center shadow-inner",
-                         activeFilter === cat.id ? 'bg-white/10 text-primary' : cat.color
-                       )}>
-                         {cat.icon}
-                       </div>
-                       <span className="text-[7px] md:text-[10px] font-black uppercase tracking-widest text-center leading-tight">{cat.label}</span>
-                     </button>
-                   ))}
-                </div>
+          <Tabs value={activeType} onValueChange={setActiveType} className="space-y-10">
+             <TabsList className="bg-white border border-slate-100 p-1.5 h-16 rounded-2xl shadow-sm flex w-full md:w-auto overflow-x-auto no-scrollbar justify-start gap-2">
+                {HUB_TYPES.map(hub => (
+                   <TabsTrigger key={hub.id} value={hub.id} className="rounded-xl px-6 md:px-8 font-black uppercase text-[10px] gap-3 h-full shrink-0 data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
+                      {hub.icon} {hub.label}
+                   </TabsTrigger>
+                ))}
+             </TabsList>
 
-                <div className="grid grid-cols-1 gap-6 md:gap-8">
-                  {contentLoading ? (
-                    Array.from({ length: 4 }).map((_, i) => (
-                      <Skeleton key={i} className="h-40 w-full rounded-[2.5rem]" />
-                    ))
-                  ) : filteredItems.length > 0 ? (
-                    filteredItems.map((item) => {
-                      const isInternal = item.link?.startsWith('/');
-                      return (
-                        <Card key={item.id} className="bg-white border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2.5rem] overflow-hidden group text-left">
-                          <CardContent className="p-8 md:p-10 flex flex-col md:flex-row items-center gap-8">
-                             <div className={cn(
-                                "h-16 w-16 md:h-20 md:w-20 rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform",
-                                item.type === 'mock' ? 'bg-orange-50 text-primary' : 
-                                item.type === 'pyq' ? 'bg-rose-50 text-rose-600' : 
-                                item.type === 'ca' ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600'
-                             )}>
-                                {item.type === 'mock' ? <Zap className="h-8 md:h-10 md:w-10" /> : 
-                                 item.type === 'pyq' ? <FileStack className="h-8 md:h-10 md:w-10" /> : 
-                                 item.type === 'ca' ? <Newspaper className="h-8 md:h-10 md:w-10" /> : <FileText className="h-8 md:h-10 md:w-10" />}
-                             </div>
-                             <div className="flex-1 space-y-3 w-full">
-                                <div className="flex items-center justify-between">
-                                   <Badge className="bg-slate-100 text-slate-400 border-none px-3 py-1 font-black uppercase text-[8px] tracking-widest">
-                                      {item.type?.toUpperCase()}
-                                   </Badge>
-                                   <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
-                                      <Bell className="h-3 w-3 text-primary" /> New Registry
-                                   </span>
-                                </div>
-                                <h2 className="text-xl md:text-2xl font-headline font-black text-[#0F172A] group-hover:text-primary transition-colors uppercase leading-tight">{item.title}</h2>
-                                <p className="text-slate-400 text-sm font-medium line-clamp-2">{item.description}</p>
-                             </div>
-                             <div className="shrink-0 w-full md:w-auto">
-                                <Button asChild className="w-full md:w-auto h-14 px-10 bg-[#0F172A] hover:bg-primary text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl shadow-xl transition-all active:scale-95">
-                                   {isInternal ? (
-                                     <Link href={item.link}>
-                                        Attempt Now <ArrowRight className="ml-2 h-4 w-4" />
-                                     </Link>
-                                   ) : (
-                                     <a href={item.link || "#"} target="_blank" rel="noopener noreferrer">
-                                        Open PDF <ArrowRight className="ml-2 h-4 w-4" />
-                                     </a>
-                                   )}
-                                </Button>
-                             </div>
-                          </CardContent>
-                        </Card>
-                      )
-                    })
-                  ) : (
-                    <div className="py-24 text-center border-2 border-dashed border-slate-100 rounded-[3rem] opacity-20">
-                       <Sparkles className="h-12 w-12 mx-auto mb-4" />
-                       <p className="font-headline font-black text-xl uppercase">Registry Empty</p>
-                    </div>
-                  )}
-                </div>
-             </div>
-
-             {/* RIGHT: REAL-TIME RANKING PODIUM */}
-             <div className="lg:col-span-4 space-y-12">
-                <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden">
-                   <div className="bg-[#0F172A] p-8 text-white">
-                      <div className="flex items-center gap-4 mb-2">
-                         <Medal className="h-6 w-6 text-primary" />
-                         <h3 className="font-headline font-black text-xl uppercase">State Merit Index</h3>
+             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                <div className="lg:col-span-8 space-y-8">
+                   {loading ? (
+                      Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-40 w-full rounded-[2.5rem]" />)
+                   ) : filteredItems.length > 0 ? (
+                      <div className="grid grid-cols-1 gap-6">
+                         {filteredItems.map((item) => (
+                            <Card key={item.id} className="bg-white border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2.5rem] overflow-hidden group text-left">
+                               <CardContent className="p-8 md:p-10 flex flex-col md:flex-row items-center gap-8">
+                                  <div className={cn(
+                                     "h-16 w-16 md:h-20 md:w-20 rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform",
+                                     item.type === 'DAILY' ? 'bg-orange-50 text-primary' : 
+                                     item.type === 'WEEKLY' ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'
+                                  )}>
+                                     {activeType === 'QUIZ' ? <Zap className="h-8 md:h-10" /> : <BookOpen className="h-8 md:h-10" />}
+                                  </div>
+                                  <div className="flex-1 space-y-3 w-full">
+                                     <div className="flex items-center justify-between">
+                                        <Badge className="bg-slate-100 text-slate-400 border-none px-3 py-1 font-black uppercase text-[8px] tracking-widest">
+                                           {item.type} HUB
+                                        </Badge>
+                                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
+                                           <Calendar className="h-3 w-3 text-primary" /> {item.month} {item.year}
+                                        </span>
+                                     </div>
+                                     <h2 className="text-xl md:text-2xl font-headline font-black text-[#0F172A] group-hover:text-primary transition-colors uppercase leading-tight">{item.title}</h2>
+                                     <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                        <Globe className="h-3 w-3" /> Language: {item.language || "Bilingual"}
+                                     </div>
+                                  </div>
+                                  <div className="shrink-0 w-full md:w-auto flex flex-col gap-3">
+                                     {item.quizId && (
+                                        <Button asChild className="w-full md:w-auto h-12 px-8 bg-[#0F172A] hover:bg-primary text-white font-black uppercase text-[10px] tracking-widest rounded-xl shadow-xl transition-all active:scale-95">
+                                           <Link href={`/mocks/${item.quizId}/instructions`}>
+                                              Attempt Quiz <Zap className="ml-2 h-4 w-4" />
+                                           </Link>
+                                        </Button>
+                                     )}
+                                     {item.pdfUrl && (
+                                        <Button asChild variant="outline" className="w-full md:w-auto h-12 px-8 border-slate-200 text-[#0F172A] font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-slate-50">
+                                           <a href={item.pdfUrl} target="_blank" rel="noopener noreferrer">
+                                              Download PDF <Download className="ml-2 h-4 w-4" />
+                                           </a>
+                                        </Button>
+                                     )}
+                                  </div>
+                               </CardContent>
+                            </Card>
+                         ))}
                       </div>
-                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Hall of Rankers (Live Sync)</p>
-                   </div>
-                   <CardContent className="p-8 space-y-6">
-                      {rankLoading ? (
-                        Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14 w-full rounded-xl" />)
-                      ) : topRankers && topRankers.length > 0 ? (
-                        topRankers.map((res: any, idx: number) => (
-                          <RankingItem 
-                            key={res.id}
-                            rank={idx + 1} 
-                            name={res.userName || "Aspirant Node"} 
-                            score={`${Math.floor(res.score)}/${res.totalQuestions}`} 
-                            color={idx === 0 ? "bg-amber-400" : idx === 1 ? "bg-slate-300" : "bg-orange-400"} 
-                          />
-                        ))
-                      ) : (
-                        <div className="py-10 text-center text-slate-300 text-xs font-bold uppercase tracking-widest">Awaiting Merit Nodes</div>
-                      )}
-                      
-                      <div className="pt-4 border-t border-slate-50">
-                         <Button asChild variant="ghost" className="w-full font-black uppercase text-[9px] tracking-widest text-primary gap-2">
-                            <Link href="/leaderboard">Full Registry Hub <ChevronRight className="h-3 w-3" /></Link>
+                   ) : (
+                      <div className="py-24 text-center border-2 border-dashed border-slate-100 rounded-[3rem] opacity-20">
+                         <Sparkles className="h-12 w-12 mx-auto mb-4" />
+                         <p className="font-headline font-black text-xl uppercase tracking-widest">Repository Empty</p>
+                      </div>
+                   )}
+                </div>
+
+                <div className="lg:col-span-4 space-y-12">
+                   <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden">
+                      <div className="bg-[#0F172A] p-8 text-white">
+                         <div className="flex items-center gap-4 mb-2">
+                            <Medal className="h-6 w-6 text-primary" />
+                            <h3 className="font-headline font-black text-xl uppercase">State Merit Index</h3>
+                         </div>
+                         <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Aspirant Rankings</p>
+                      </div>
+                      <CardContent className="p-8 space-y-6">
+                         {topRankers?.map((res: any, idx: number) => (
+                           <div key={res.id} className="flex items-center justify-between">
+                              <div className="flex items-center gap-4 text-left">
+                                 <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center text-white font-black text-xs shadow-lg", idx === 0 ? "bg-amber-400" : idx === 1 ? "bg-slate-300" : "bg-orange-400")}>
+                                    #{idx + 1}
+                                 </div>
+                                 <div>
+                                    <p className="font-bold text-[#0F172A] text-sm uppercase truncate max-w-[120px]">{res.userName || "Aspirant"}</p>
+                                    <p className="text-[8px] font-black text-slate-400 uppercase">Score: {res.score}</p>
+                                 </div>
+                              </div>
+                              <span className="text-xs font-black text-emerald-600">{res.accuracy}%</span>
+                           </div>
+                         ))}
+                         <div className="pt-4 border-t border-slate-50">
+                            <Button asChild variant="ghost" className="w-full font-black uppercase text-[9px] tracking-widest text-primary gap-2">
+                               <Link href="/leaderboard">Full Registry Hub <ChevronRight className="h-3 w-3" /></Link>
+                            </Button>
+                         </div>
+                      </CardContent>
+                   </Card>
+
+                   <Card className="border-none bg-primary text-white shadow-4xl rounded-[3rem] p-10 space-y-8 relative overflow-hidden group cursor-pointer">
+                      <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-110 transition-transform"><MessageCircle className="h-40 w-40" /></div>
+                      <div className="relative z-10 space-y-6 text-left">
+                         <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center text-primary shadow-2xl">
+                            <MessageCircle className="h-8 w-8 fill-current" />
+                         </div>
+                         <h3 className="text-3xl font-headline font-black uppercase leading-tight">Join Official <br/> Telegram</h3>
+                         <p className="text-white/80 text-sm font-medium leading-relaxed">Direct recruitment updates verified by Arsh Grewal Management.</p>
+                         <Button asChild className="w-full h-14 bg-white text-black hover:bg-slate-100 font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-2xl border-none">
+                            <a href="https://t.me/cracklixapp" target="_blank">Join Aspirant Node</a>
                          </Button>
                       </div>
-                   </CardContent>
-                </Card>
-
-                <Card className="border-none bg-primary text-white shadow-4xl rounded-[3rem] p-10 space-y-8 relative overflow-hidden group cursor-pointer">
-                   <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-110 transition-transform"><MessageCircle className="h-40 w-40" /></div>
-                   <div className="relative z-10 space-y-6">
-                      <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center text-primary shadow-2xl">
-                         <MessageCircle className="h-8 w-8 fill-current" />
-                      </div>
-                      <h3 className="text-3xl font-headline font-black uppercase leading-tight">Join Official <br/> Telegram</h3>
-                      <p className="text-white/80 text-sm font-medium leading-relaxed">Direct recruitment updates verified by Arsh Grewal Management.</p>
-                      <Button asChild className="w-full h-14 bg-white text-black hover:bg-slate-100 font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-2xl">
-                         <a href="https://t.me/cracklixapp" target="_blank">Join Aspirant Node</a>
-                      </Button>
-                   </div>
-                </Card>
+                   </Card>
+                </div>
              </div>
-          </div>
+          </Tabs>
         </div>
       </main>
       <Footer />
@@ -268,28 +230,12 @@ export default function FreeContentHub() {
   )
 }
 
-function HeroStat({ val, label }: any) {
+function Layers({ className }: { className?: string }) {
    return (
-      <div className="bg-white/5 border border-white/10 p-5 rounded-3xl backdrop-blur-sm group hover:border-primary/50 transition-all">
-         <p className="text-3xl font-headline font-black text-white leading-none">{val}</p>
-         <p className="text-[9px] font-black uppercase text-slate-500 tracking-widest mt-1.5">{label}</p>
-      </div>
-   )
-}
-
-function RankingItem({ rank, name, score, color }: any) {
-   return (
-      <div className="flex items-center justify-between group cursor-pointer">
-         <div className="flex items-center gap-4">
-            <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center text-white font-black text-xs shadow-lg", color)}>
-               {rank}
-            </div>
-            <div className="text-left">
-               <p className="font-bold text-[#0F172A] text-sm uppercase truncate max-w-[120px]">{name}</p>
-               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Regional Node 0{rank}</p>
-            </div>
-         </div>
-         <span className="text-xs font-black text-emerald-600">{score}</span>
-      </div>
-   )
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+         <polygon points="12 2 2 7 12 12 22 7 12 2" />
+         <polyline points="2 17 12 22 22 17" />
+         <polyline points="2 12 12 17 22 12" />
+      </svg>
+   );
 }

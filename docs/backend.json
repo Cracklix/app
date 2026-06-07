@@ -40,6 +40,25 @@
         "adFree": { "type": "boolean" },
         "active": { "type": "boolean" }
       }
+    },
+    "CurrentAffairHubItem": {
+      "title": "Current Affair Hub Item",
+      "description": "Daily, weekly, or monthly current affairs package.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "month": { "type": "string" },
+        "year": { "type": "string" },
+        "language": { "type": "string" },
+        "category": { "type": "string" },
+        "type": { "type": "string", "enum": ["DAILY", "WEEKLY", "MONTHLY", "SPECIAL"] },
+        "pdfUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["PUBLISHED", "DRAFT"] },
+        "quizId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
     }
   },
   "auth": {
@@ -51,6 +70,9 @@
     },
     "/passes/{passId}": {
       "schema": { "$ref": "#/backend/entities/Pass" }
+    },
+    "/current_affairs_hub/{caId}": {
+      "schema": { "$ref": "#/backend/entities/CurrentAffairHubItem" }
     }
   }
 }
