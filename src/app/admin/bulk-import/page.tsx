@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -36,7 +37,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview High-Fidelity Bulk Ingestion v4.0.
- * Features: Direct Paste Protocol with Staged Hub for tweaking field mapping.
+ * RESTORED: Direct Paste Protocol with Staged Hub for tweaking field mapping.
  */
 
 export default function BulkImportPage() {
@@ -99,10 +100,7 @@ export default function BulkImportPage() {
       optionCHindi: parsedQuestions[idx].optionCHindi || "",
       optionDEnglish: parsedQuestions[idx].optionDEnglish || "",
       optionDPunjabi: parsedQuestions[idx].optionDPunjabi || "",
-      optionDHindi: parsedQuestions[idx].optionDHindi || "",
-      englishExplanation: parsedQuestions[idx].englishExplanation || "",
-      punjabiExplanation: parsedQuestions[idx].punjabiExplanation || "",
-      hindiExplanation: parsedQuestions[idx].hindiExplanation || ""
+      optionDHindi: parsedQuestions[idx].optionDHindi || ""
     })
   }
 
@@ -206,7 +204,7 @@ export default function BulkImportPage() {
             <Textarea 
                 value={rawText}
                 onChange={e => setRawText(e.target.value)}
-                placeholder={`Paste Q1. English Statement...\n${isHindiMode ? 'Hindi Statement...' : 'Punjabi Statement...'}\n(A) EN / ${isHindiMode ? 'HI' : 'PA'}...\nCorrect Answer: A\nEnglish Explanation: ...\n${isHindiMode ? 'Hindi Explanation' : 'Punjabi Explanation'}: ...`}
+                placeholder={`Paste Q1. English Statement...\n${isHindiMode ? 'Hindi Statement...' : 'Punjabi Statement...'}\n(A) EN / ${isHindiMode ? 'HI' : 'PA'}...\nCorrect Answer: A`}
                 className="min-h-[550px] rounded-[2.5rem] bg-white border-none p-12 text-sm font-bold shadow-4xl leading-relaxed resize-none focus-visible:ring-primary text-[#0F172A]"
             />
             <Button onClick={handleImport} className="w-full h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.3em] text-[11px] rounded-[2rem] shadow-4xl gap-4 group transition-all active:scale-95">
@@ -251,7 +249,6 @@ export default function BulkImportPage() {
                                 <DebugIndicator label={isHindiMode ? "HI" : "PA"} active={q.debug.SEC_Q === 'YES'} />
                                 <DebugIndicator label="OPTS" active={q.debug.OPT === 'YES'} />
                                 <DebugIndicator label="KEY" active={q.debug.KEY === 'YES'} />
-                                <DebugIndicator label="LOGIC" active={q.debug.LOGIC === 'YES'} />
                              </div>
                           </div>
                           <div className="flex gap-3">
@@ -316,21 +313,6 @@ export default function BulkImportPage() {
                        </div>
                     </div>
                   ))}
-               </div>
-
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-4 border-t border-slate-50">
-                  <div className="space-y-3">
-                     <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">English Logic Hub</Label>
-                     <Textarea value={editForm?.englishExplanation || ""} onChange={e => setEditForm({...editForm, englishExplanation: e.target.value})} className="h-64 rounded-2xl bg-slate-50 border-none font-medium p-8 leading-relaxed shadow-inner text-[#0F172A]" />
-                  </div>
-                  <div className="space-y-3">
-                     <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">{isHindiMode ? 'Hindi Logic Hub' : 'Punjabi Logic Hub'}</Label>
-                     <Textarea 
-                        value={isHindiMode ? (editForm?.hindiExplanation || "") : (editForm?.punjabiExplanation || "")} 
-                        onChange={e => setEditForm({...editForm, [isHindiMode ? 'hindiExplanation' : 'punjabiExplanation']: e.target.value})} 
-                        className="h-64 rounded-2xl bg-slate-50 border-none font-medium p-8 leading-relaxed shadow-inner text-[#0F172A]" 
-                     />
-                  </div>
                </div>
             </div>
             <DialogFooter className="p-10 pt-6 bg-slate-50 flex gap-6 shrink-0">
