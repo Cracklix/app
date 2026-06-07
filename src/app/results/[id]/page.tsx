@@ -20,6 +20,10 @@ import {
   ShieldCheck,
   ChevronDown,
   ChevronUp,
+  BarChart3,
+  Clock,
+  TrendingUp,
+  Activity
 } from "lucide-react"
 import { useFirestore, useUser, useCollection } from "@/firebase"
 import { collection, query, where, doc, getDoc, deleteDoc, documentId, getDocs } from "firebase/firestore"
@@ -30,8 +34,8 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import BackButton from "@/components/navigation/BackButton"
 
 /**
- * @fileOverview Institutional Results Hub v21.0.
- * Updated: Side-aligned back button to minimize vertical space usage.
+ * @fileOverview Institutional Results Hub v21.0 (Audit Enhanced).
+ * Features: Sectional Mastery Index and Precision Scorecards.
  */
 
 export default function ResultPage() {
@@ -111,19 +115,33 @@ export default function ResultPage() {
     loadQuestions()
   }, [db, sessionData, mockId, toast, resultsLoading])
 
+  const sectionalAudit = useMemo(() => {
+     if (!questions.length || !sessionData) return [];
+     const sections: Record<string, { total: number, correct: number }> = {};
+     questions.forEach((q, i) => {
+        const sid = q.sectionId || 'General';
+        if (!sections[sid]) sections[sid] = { total: 0, correct: 0 };
+        sections[sid].total++;
+        const studentAns = sessionData.answers?.[i];
+        if (studentAns !== undefined && ['A','B','C','D'][studentAns] === q.correctAnswer) {
+           sections[sid].correct++;
+        }
+     });
+     return Object.entries(sections).map(([name, data]) => ({
+        name,
+        accuracy: Math.round((data.correct / data.total) * 100),
+        color: (data.correct / data.total) > 0.7 ? 'bg-emerald-500' : (data.correct / data.total) > 0.4 ? 'bg-amber-500' : 'bg-rose-500'
+     }));
+  }, [questions, sessionData]);
+
   const handleReattempt = async () => {
     if (!db || !user || !mockId) return;
     if (!window.confirm("Restart evaluation node?")) return;
 
     const attemptId = `${user.uid}_${mockId}`;
-    
-    // Non-blocking background reset
     deleteDoc(doc(db, "attempts", attemptId)).catch(() => {});
     deleteDoc(doc(db, "results", attemptId)).catch(() => {});
     
-    localStorage.removeItem(`attempt_${mockId}`);
-    localStorage.removeItem(`result_${mockId}`);
-
     toast({ title: "Registry Reset" });
     router.push(`/mocks/${mockId}/instructions`);
   };
@@ -149,9 +167,8 @@ export default function ResultPage() {
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body pb-32">
       <Navbar />
       
-      <main className="container mx-auto px-4 md:px-6 py-8 md:py-12 max-w-6xl space-y-8 text-left animate-in fade-in duration-700">
+      <main className="container mx-auto px-4 md:px-6 py-8 md:py-12 max-w-6xl space-y-10 text-left animate-in fade-in duration-700">
         
-        {/* Navigation Breadcrumb (Side Aligned) */}
         <div className="flex items-center gap-3">
            <BackButton label="Home" fallback="/dashboard" className="p-0 h-auto" />
            <div className="h-4 w-px bg-slate-200" />
@@ -161,7 +178,6 @@ export default function ResultPage() {
            </div>
         </div>
 
-        {/* Master Scoreboard Node */}
         <Card className="border-none shadow-3xl rounded-[3rem] overflow-hidden bg-white">
            <div className="h-2 w-full bg-primary" />
            <CardHeader className="p-10 md:p-16 border-b border-slate-50 space-y-6 text-center md:text-left">
@@ -195,13 +211,51 @@ export default function ResultPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
                 <MetricNode icon={<CheckCircle2 className="text-emerald-500 h-6 w-6" />} val={sessionData.score} label="CORRECT AUDIT" sub="Success Points" />
                 <MetricNode icon={<XCircle className="text-rose-500 h-6 w-6" />} val={Object.keys(sessionData.answers).length - sessionData.score} label="WRONG NODES" sub="Logic Failures" />
-                <MetricNode icon={<HelpCircle className="text-slate-400 h-6 w-6" />} val={sessionData.totalQuestions - Object.keys(sessionData.answers).length} label="SKIPPED ASSETS" sub="Untouched" />
+                <MetricNode icon={<Clock className="text-slate-400 h-6 w-6" />} val={`${Math.floor(sessionData.timeTaken / 60)}m`} label="TIME DEPTH" sub="Pace Factor" />
                 <MetricNode icon={<Target className="text-primary h-6 w-6" />} val={`${sessionData.accuracy}%`} label="PRECISION INDEX" sub="Registry Mastery" />
               </div>
            </CardContent>
         </Card>
 
-        {/* Detailed Performance Node */}
+        {/* Sectional Mastery Audit */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+           <Card className="lg:col-span-8 border-none shadow-xl rounded-[2.5rem] bg-white p-10 md:p-12 space-y-10">
+              <div className="flex items-center gap-4 border-b border-slate-50 pb-6">
+                 <BarChart3 className="h-6 w-6 text-primary" />
+                 <h3 className="text-2xl font-headline font-black uppercase text-[#0F172A]">Sectional Mastery Index</h3>
+              </div>
+              <div className="space-y-8">
+                 {sectionalAudit.map((s, i) => (
+                    <div key={i} className="space-y-3">
+                       <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
+                          <span>{s.name}</span>
+                          <span className="text-[#0F172A]">{s.accuracy}%</span>
+                       </div>
+                       <div className="h-2 w-full bg-slate-50 rounded-full overflow-hidden shadow-inner">
+                          <div className={cn("h-full transition-all duration-1000", s.color)} style={{ width: `${s.accuracy}%` }} />
+                       </div>
+                    </div>
+                 ))}
+              </div>
+           </Card>
+
+           <Card className="lg:col-span-4 border-none shadow-xl rounded-[2.5rem] bg-[#0F172A] text-white p-10 space-y-10 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform"><TrendingUp className="h-40 w-40" /></div>
+              <div className="relative z-10 space-y-8">
+                 <div className="h-14 w-14 bg-white/10 rounded-2xl flex items-center justify-center text-primary shadow-2xl">
+                    <Activity className="h-8 w-8" />
+                 </div>
+                 <div className="space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Strategic Insight</p>
+                    <h4 className="text-3xl font-headline font-black uppercase leading-tight">Precision <br/> Variance</h4>
+                 </div>
+                 <p className="text-slate-400 text-sm font-medium leading-relaxed">
+                    Based on your pace, you spend <strong>{Math.round(sessionData.timeTaken / (Object.keys(sessionData.answers).length || 1))}s</strong> per node. Fix logic gaps in your weak sections to improve the index.
+                 </p>
+              </div>
+           </Card>
+        </div>
+
         <div className="space-y-8">
            <div className="flex items-center justify-between border-b border-slate-200 pb-6">
               <h3 className="font-headline font-black text-2xl md:text-3xl uppercase text-[#0F172A] flex items-center gap-4">
