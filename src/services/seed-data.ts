@@ -2,9 +2,9 @@
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Engine v30.0.
+ * @fileOverview Institutional Seeding Engine v31.0.
  * Features: Hardened Unique Hub Registry with SSSC & IBPS Expansion.
- * Updated: Official PSSSB, Police, IBPS, and SSSC (High Court) assets.
+ * Updated: Official Chandigarh High Court, PSSSB, Police, and IBPS assets.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('[AUDIT] Initializing Cracklix Global Registry Sync...');
@@ -13,7 +13,7 @@ export async function seedInitialData(db: Firestore) {
   const psssbSvg = "https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg";
   const ppscJpg = "https://upload.wikimedia.org/wikipedia/en/a/a1/Punjab_Public_Service_Commission.jpg";
   const policeEmblem = "https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png";
-  const ssscLogo = "https://sssc.gov.in/images/logo.png";
+  const ssscLogo = "https://highcourtchd.gov.in/images/logo.png";
   const pspclLogo = "https://pspcl.in/assets/images/logo.png";
   const anganwadiLogo = "https://sswcd.punjab.gov.in/sites/default/files/download.png";
   const armyEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Indian_Army_Logo.png/400px-Indian_Army_Logo.png";
@@ -41,10 +41,13 @@ export async function seedInitialData(db: Firestore) {
   const exams = [
     { id: 'punjab-patwari', boardId: 'psssb', name: 'Revenue Patwari 2026', category: 'STATE', description: 'Prepare for Revenue Patwari, Canal Patwari and Ziladar recruitment.', totalFullMocks: 45, iconUrl: psssbSvg },
     { id: 'psssb-clerk', boardId: 'psssb', name: 'Subordinate Clerk (PSSSB)', category: 'STATE', description: 'Clerical recruitment for multi-departmental Punjab govt posts.', totalFullMocks: 60, iconUrl: psssbSvg },
+    { id: 'psssb-excise', boardId: 'psssb', name: 'Excise & Taxation Inspector', category: 'STATE', description: 'Official mock series for PSSSB Excise Inspector recruitment.', totalFullMocks: 25, iconUrl: psssbSvg },
+    { id: 'psssb-auditor', boardId: 'psssb', name: 'Junior Auditor', category: 'STATE', description: 'Institutional preparation for Junior Auditor and Accounts posts.', totalFullMocks: 20, iconUrl: psssbSvg },
     { id: 'court-clerk', boardId: 'high-court', name: 'High Court Clerk (SSSC)', category: 'JUDICIAL', description: 'Subordinate Court clerical recruitment for Punjab and Haryana.', totalFullMocks: 35, iconUrl: ssscLogo },
     { id: 'police-si', boardId: 'punjab-police', name: 'Sub-Inspector (Dist/Armed)', category: 'POLICE', description: 'District and Armed Cadre recruitment for Punjab Police.', totalFullMocks: 30, iconUrl: policeEmblem },
     { id: 'police-constable', boardId: 'punjab-police', name: 'Constable Recruitment', category: 'POLICE', description: 'Direct recruitment for Constable posts in Punjab Police.', totalFullMocks: 50, iconUrl: policeEmblem },
     { id: 'ppsc-pcs', boardId: 'ppsc', name: 'PCS Executive Prelims', category: 'CIVIL', description: 'Higher Class A & B services including DSP and Tehsildar posts.', totalFullMocks: 20, iconUrl: ppscJpg },
+    { id: 'naib-tehsildar', boardId: 'ppsc', name: 'Naib Tehsildar', category: 'CIVIL', description: 'PPSC recruitment series for revenue executive posts.', totalFullMocks: 15, iconUrl: ppscJpg },
     { id: 'punjab-anganwadi', boardId: 'sswcd', name: 'Punjab Anganwadi / NTT', category: 'STATE', description: 'Official syllabus and preparation matrix for Supervisor and NTT posts.', totalFullMocks: 15, iconUrl: anganwadiLogo },
     { id: 'ibps-po-clerk', boardId: 'ibps', name: 'IBPS PO / Clerk', category: 'BANKING', description: 'Complete mock series for Bank Probationary Officers and Clerical posts.', totalFullMocks: 40, iconUrl: ibpsLogo },
     { id: 'pspcl-je', boardId: 'pspcl', name: 'PSPCL Junior Engineer', category: 'TECHNICAL', description: 'Electrical, Civil and IT JE recruitment for Punjab Power Board.', totalFullMocks: 25, iconUrl: pspclLogo },
