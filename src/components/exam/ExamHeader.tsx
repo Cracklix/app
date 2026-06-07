@@ -24,8 +24,8 @@ const ALL_LANG_MODES: { label: string, value: LanguageDisplayMode }[] = [
 ];
 
 /**
- * @fileOverview Institutional CBT Header v16.0.
- * PERFORMANCE OPTIMIZED: Redundant Palette button hidden on large screens.
+ * @fileOverview Institutional CBT Header v17.0.
+ * UPDATED: Added Mock Title and restored Palette button visibility.
  */
 export default function ExamHeader({ 
   onPaletteToggle, 
@@ -42,6 +42,7 @@ export default function ExamHeader({
   const currentIdx = useExamStore(s => s.currentIdx);
   const questionsCount = useExamStore(s => s.questions.length);
   const setLanguage = useExamStore(s => s.setLanguage);
+  const mockTitle = useExamStore(s => s.mockTitle);
 
   const availableModes = useMemo(() => {
     if (baseLanguageMode === 'ENGLISH_PUNJABI') {
@@ -57,11 +58,11 @@ export default function ExamHeader({
     <header className="bg-[#0B1528] text-white flex flex-col shrink-0 z-[100] border-b border-white/5 shadow-lg">
       <div className="h-12 md:h-16 flex items-center justify-between px-3 md:px-6">
         
-        {/* LEFT: BACK & PROGRESS */}
-        <div className="flex items-center gap-2 md:gap-8 shrink-0">
+        {/* LEFT: BACK & PROGRESS & TITLE */}
+        <div className="flex items-center gap-2 md:gap-6 shrink-0 min-w-0 flex-1">
            <button 
              onClick={onExitRequest} 
-             className="p-1 text-slate-400 hover:text-white active:scale-90 transition-all cursor-pointer pointer-events-auto"
+             className="p-1 text-slate-400 hover:text-white active:scale-90 transition-all cursor-pointer"
            >
               <ChevronLeft className="h-6 w-6" />
            </button>
@@ -71,6 +72,13 @@ export default function ExamHeader({
               <p className="text-[14px] md:text-[18px] font-black text-white">
                  {currentIdx + 1}<span className="text-slate-500 text-[10px] md:text-[12px] font-bold">/{questionsCount}</span>
               </p>
+           </div>
+
+           <div className="hidden sm:flex h-8 w-px bg-white/10 mx-2" />
+
+           <div className="hidden sm:flex flex-col items-start leading-none min-w-0 max-w-[240px]">
+              <p className="text-[7px] md:text-[9px] font-black uppercase text-slate-500 tracking-[0.2em] mb-0.5">EXAM HUB</p>
+              <p className="text-[11px] md:text-[13px] font-black text-white uppercase truncate w-full">{mockTitle}</p>
            </div>
         </div>
 
@@ -84,7 +92,7 @@ export default function ExamHeader({
         </div>
 
         {/* RIGHT: ACTIONS HUB */}
-        <div className="flex items-center gap-2 md:gap-5 shrink-0">
+        <div className="flex items-center justify-end gap-2 md:gap-5 shrink-0 flex-1">
            {availableModes.length > 1 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -121,10 +129,10 @@ export default function ExamHeader({
            <Button 
              variant="ghost"
              onClick={onPaletteToggle}
-             className="bg-[#F97316] hover:bg-orange-600 h-9 md:h-12 px-4 md:px-6 rounded-xl font-black uppercase text-[9px] md:text-[11px] tracking-widest gap-2 md:gap-3 shadow-xl transition-all active:scale-95 pointer-events-auto lg:hidden"
+             className="bg-[#F97316] hover:bg-orange-600 h-9 md:h-12 px-3 md:px-6 rounded-xl font-black uppercase text-[8px] md:text-[11px] tracking-widest gap-2 md:gap-3 shadow-xl transition-all active:scale-95"
            >
               <Menu className="h-4 w-4" />
-              <span>Palette</span>
+              <span className="hidden xs:inline">Palette</span>
            </Button>
         </div>
       </div>

@@ -18,8 +18,8 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Professional CBT Question Palette Hub v15.0.
- * UPDATED: Legend moved to the absolute top of the sidebar per institutional request.
+ * @fileOverview Professional CBT Question Palette Hub v16.0.
+ * UPDATED: Legend at top, removed section headers for a single high-density grid.
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const questions = useExamStore(s => s.questions);
@@ -40,26 +40,6 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
     return s;
   }, [questions, status, visited]);
 
-  const sections = useMemo(() => {
-    const groups: Record<string, { name: string, startIdx: number, endIdx: number, questions: number[] }> = {};
-    
-    (questions || []).forEach((q, idx) => {
-      const sectionId = String(q.sectionId || 'General');
-      if (!groups[sectionId]) {
-        groups[sectionId] = {
-          name: sectionId.replace(/-/g, ' ').toUpperCase(),
-          startIdx: idx + 1,
-          endIdx: idx + 1,
-          questions: []
-        };
-      }
-      groups[sectionId].questions.push(idx);
-      groups[sectionId].endIdx = idx + 1;
-    });
-    
-    return Object.entries(groups);
-  }, [questions]);
-
   return (
     <div className="flex flex-col h-full bg-white text-left font-body select-none pointer-events-auto">
       <ScrollArea className="h-full">
@@ -79,30 +59,21 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
 
            <div className="h-px w-full bg-slate-50" />
 
-           {/* 2. SECTIONAL GRIDS */}
-           <div className="space-y-8">
-              {sections.map(([secId, data]) => (
-                <div key={secId} className="space-y-4">
-                   <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                      <h4 className="text-[10px] font-black text-[#0B1528] tracking-tight uppercase flex items-center gap-2">
-                        <ChevronDown className="h-3 w-3 text-primary" /> {data.name}
-                      </h4>
-                   </div>
-                   
-                   <div className="grid grid-cols-4 md:grid-cols-5 gap-2.5">
-                      {data.questions.map((idx) => (
-                         <QuestionNode 
-                           key={idx} 
-                           index={idx} 
-                           isActive={currentIdx === idx} 
-                           status={status[idx]} 
-                           isVisited={visited.includes(idx)}
-                           onClick={() => onSelect(idx)}
-                         />
-                      ))}
-                   </div>
-                </div>
-              ))}
+           {/* 2. UNIFIED QUESTION GRID (No Section Headers) */}
+           <div className="space-y-4">
+              <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">QUESTIONS</p>
+              <div className="grid grid-cols-4 md:grid-cols-5 gap-2.5">
+                 {questions.map((_, idx) => (
+                    <QuestionNode 
+                      key={idx} 
+                      index={idx} 
+                      isActive={currentIdx === idx} 
+                      status={status[idx]} 
+                      isVisited={visited.includes(idx)}
+                      onClick={() => onSelect(idx)}
+                    />
+                 ))}
+              </div>
            </div>
 
            {/* 3. TACTICAL SUBMIT BUTTON */}

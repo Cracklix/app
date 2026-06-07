@@ -7,7 +7,6 @@ import { useFirestore, useUser } from "@/firebase";
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp, collection, query, where, documentId, getDocs } from "firebase/firestore";
 import { useExamStore } from "@/store/useExamStore";
 import ExamHeader from "@/components/exam/ExamHeader";
-import SubjectTabs from "@/components/exam/SubjectTabs";
 import TacticalFooter from "@/components/exam/TacticalFooter";
 import AntiCheat from "@/components/exam/AntiCheat";
 import QuestionRenderer from "@/components/questions/QuestionRenderer";
@@ -27,8 +26,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 /**
- * @fileOverview Production Hardened CBT Attempt Engine v19.0.
- * UPDATED: Reduced padding and spacing for a more compact, high-density interface.
+ * @fileOverview Production Hardened CBT Attempt Engine v20.0.
+ * UPDATED: Removed SubjectTabs to maximize vertical space as requested.
  */
 
 export default function MockAttemptPage() {
@@ -179,7 +178,6 @@ export default function MockAttemptPage() {
         onPaletteToggle={() => setIsMobilePaletteOpen(true)} 
         onExitRequest={() => setShowExitModal(true)}
       />
-      <SubjectTabs />
 
       <main className="flex-1 flex overflow-hidden relative bg-slate-50/30">
         <AnimatePresence>
