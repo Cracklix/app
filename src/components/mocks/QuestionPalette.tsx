@@ -17,8 +17,9 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Institutional CBT Palette Hub v22.0.
- * FIXED: Height and padding calibration to prevent clipping on diverse mobile screens.
+ * @fileOverview Institutional CBT Palette Hub v23.0.
+ * FIXED: Colors precisely matched to user screenshot (Grey for Not Answered, White for Not Visited).
+ * FIXED: Header padding to prevent clipping.
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const questions = useExamStore(s => s.questions);
@@ -59,10 +60,10 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
     <div className="flex flex-col h-full bg-white text-left font-body select-none pointer-events-auto overflow-hidden">
       <ScrollArea className="h-full">
         {/* Anti-Clipping padding for mobile headers */}
-        <div className="p-4 md:p-8 pt-16 md:pt-20 space-y-8 md:space-y-10 pb-32">
+        <div className="p-4 md:p-8 pt-20 md:pt-24 space-y-8 md:space-y-10 pb-32">
            
            {/* 1. HIGH-FIDELITY LEGEND HUB */}
-           <div className="grid grid-cols-2 gap-2 md:gap-3">
+           <div className="grid grid-cols-2 gap-2 md:gap-4">
               <SummaryCard count={stats.answered} label="ANSWERED" color="bg-[#1E5EFF]" />
               <SummaryCard count={stats.notAnswered} label="NOT ANSWERED" color="bg-[#94A3B8]" />
               <SummaryCard count={stats.marked} label="MARKED" color="bg-[#F43F5E]" />
@@ -119,14 +120,14 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
 function SummaryCard({ count, label, color, textColor = "text-white", colSpan = 1, border = "border-transparent" }: any) {
   return (
     <div className={cn(
-      "flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl bg-white border border-slate-50 shadow-xl",
+      "flex items-center gap-3 md:gap-4 p-4 rounded-[1.5rem] bg-white border border-slate-100 shadow-2xl",
       colSpan > 1 && "col-span-2"
     )}>
-       <div className={cn("h-8 w-8 md:h-10 md:w-10 rounded-full flex items-center justify-center text-xs md:text-sm font-black shrink-0 shadow-lg border-4 border-white", color, textColor, border)}>
+       <div className={cn("h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center text-sm md:text-lg font-black shrink-0 shadow-lg border-4 border-white", color, textColor, border)}>
           {count}
        </div>
        <div className="min-w-0">
-          <span className="text-[9px] md:text-[10px] font-black uppercase text-slate-400 tracking-tight block leading-tight">{label}</span>
+          <span className="text-[10px] md:text-[12px] font-black uppercase text-slate-400 tracking-tight block leading-tight">{label}</span>
        </div>
     </div>
   )
@@ -137,7 +138,9 @@ function QuestionNode({ index, isActive, status, isVisited, onClick }: any) {
   const isMarked = status === 'marked';
   const isAnsMarked = status === 'answered-marked';
   
-  // MATCHING SCREENSHOT: Active = bold orange border, others = white or status color
+  // MATCHING SCREENSHOT COLORS:
+  // Node 1 (Grey): Not Answered (Visited but no selection)
+  // Node 2 (White): Not Visited
   const colorClass = isActive 
     ? "bg-white text-[#F97316] border-[#F97316] border-[3px] shadow-lg scale-105 z-10" 
     : isAnswered ? "bg-[#1E5EFF] text-white border-transparent"

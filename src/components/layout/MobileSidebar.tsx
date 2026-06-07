@@ -34,8 +34,8 @@ import ShareButton from "@/components/navigation/ShareButton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 /**
- * @fileOverview High-Fidelity Mobile Sidebar v3.1.
- * FIXED: Added missing ShieldCheck import to resolve ReferenceError.
+ * @fileOverview High-Fidelity Mobile Sidebar v3.2.
+ * FIXED: Icons set to h-6 and font to 15px extra-bold for premium feel.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -81,19 +81,19 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
               <div className="relative w-fit">
                 <StudentAvatar 
                   profile={profile} 
-                  className="h-20 w-20 md:h-24 md:w-24 border-4 border-white/10 rounded-[2rem] shadow-3xl bg-[#0F172A]" 
+                  className="h-24 w-24 md:h-28 md:w-28 border-4 border-white/10 rounded-[2.5rem] shadow-3xl bg-[#0F172A]" 
                 />
-                <div className="absolute -bottom-1 -right-1 bg-emerald-500 h-7 w-7 rounded-lg border-4 border-[#0B1528] flex items-center justify-center shadow-xl">
-                   <ShieldCheck className="h-3.5 w-3.5 text-white" />
+                <div className="absolute -bottom-1 -right-1 bg-emerald-500 h-8 w-8 rounded-lg border-4 border-[#0B1528] flex items-center justify-center shadow-xl">
+                   <ShieldCheck className="h-4 w-4 text-white" />
                 </div>
               </div>
               
-              <div className="space-y-5 text-left">
-                <div className="flex flex-col gap-3">
+              <div className="space-y-4 text-left">
+                <div className="flex flex-col gap-2">
                   <h2 className="font-headline font-black text-3xl md:text-4xl text-white uppercase tracking-tight break-words leading-none">
                     {profile?.name || "Student Node"}
                   </h2>
-                  <Badge className="bg-primary text-white border-none text-[9px] font-black uppercase px-4 py-1.5 rounded-lg shadow-2xl w-fit tracking-wider">
+                  <Badge className="bg-primary text-white border-none text-[10px] font-black uppercase px-4 py-1.5 rounded-lg shadow-2xl w-fit tracking-wider">
                     {(profile?.status || 'Free').toUpperCase()} PASS
                   </Badge>
                 </div>
@@ -111,7 +111,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
 
           {/* 2. MENU LIST */}
           <div className="flex-1 py-10">
-            <div className="space-y-2">
+            <div className="space-y-1">
               {primaryMenu.map((item) => (
                 <MenuLink 
                   key={item.href} 
@@ -136,8 +136,8 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                   onClick={handleLogout}
                   className="w-full flex items-center gap-5 px-14 h-16 text-rose-500 hover:bg-rose-500/10 transition-all group"
                 >
-                  <LogOut className="h-5 w-5 shrink-0" />
-                  <span className="text-[14px] font-black uppercase tracking-tight">Logout</span>
+                  <LogOut className="h-6 w-6 shrink-0" />
+                  <span className="text-[15px] font-[900] uppercase tracking-tight">Logout</span>
                 </button>
               </CollapsibleGroup>
 
@@ -180,7 +180,7 @@ function MenuLink({ item, active, onClick, indent = false }: any) {
       <div className="flex items-center gap-6 min-w-0 flex-1">
         <item.icon className={cn("h-6 w-6 shrink-0 transition-transform group-active:scale-90", active ? "text-primary" : "text-slate-500 group-hover:text-primary")} />
         <span className={cn(
-          "text-[15px] font-black uppercase tracking-tight transition-colors truncate",
+          "text-[15px] font-[900] uppercase tracking-tight transition-colors truncate",
           active ? "text-white" : "group-hover:text-white"
         )}>
           {item.label}

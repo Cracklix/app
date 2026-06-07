@@ -26,9 +26,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 /**
- * @fileOverview Production Hardened CBT Attempt Engine v33.0.
- * FIXED: Rules of Hooks violation by moving useMemo to top-level.
- * FIXED: Palette width set to 75vw for half-screen overlap.
+ * @fileOverview Production Hardened CBT Attempt Engine v34.0.
+ * FIXED: Palette width set to 65vw for standard half-screen feel.
  */
 
 export default function MockAttemptPage() {
@@ -59,7 +58,7 @@ export default function MockAttemptPage() {
   const startTime = useExamStore(s => s.startTime);
   const language = useExamStore(s => s.language); 
 
-  // SUBJECT-SPECIFIC LANGUAGE OVERRIDE LOGIC (Moved to top-level to satisfy React Rules of Hooks)
+  // SUBJECT-SPECIFIC LANGUAGE OVERRIDE LOGIC
   const q = questions[currentIdx];
   const selectedAnswer = answers[currentIdx];
   
@@ -261,7 +260,7 @@ export default function MockAttemptPage() {
       <Sheet open={isPaletteOpen} onOpenChange={setIsPaletteOpen}>
         <SheetContent 
           side="right" 
-          className="p-0 border-none overflow-hidden shadow-5xl w-[75vw] md:w-[400px] h-full"
+          className="p-0 border-none overflow-hidden shadow-5xl w-[65vw] md:w-[400px] h-full"
         >
           <SheetHeader className="sr-only">
              <SheetTitle>Registry Palette</SheetTitle>
