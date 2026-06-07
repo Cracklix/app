@@ -33,7 +33,10 @@ import {
   Globe,
   EyeOff,
   BookOpen,
-  FileStack
+  FileStack,
+  Gem,
+  Lock,
+  Unlock
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, where, limit, getDocs, documentId } from "firebase/firestore"
@@ -42,11 +45,11 @@ import { MockType, Difficulty, AccessType, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
 
 const LANGUAGE_MODES: { label: string, value: LanguageDisplayMode }[] = [
+  { label: "BILINGUAL (EN+PA)", value: "ENGLISH_PUNJABI" },
+  { label: "BILINGUAL (EN+HI)", value: "ENGLISH_HINDI" },
   { label: "ENGLISH ONLY", value: "ENGLISH" },
   { label: "PUNJABI ONLY", value: "PUNJABI" },
   { label: "HINDI ONLY", value: "HINDI" },
-  { label: "BILINGUAL (EN+PA)", value: "ENGLISH_PUNJABI" },
-  { label: "BILINGUAL (EN+HI)", value: "ENGLISH_HINDI" },
 ];
 
 const MOCK_TYPES: { label: string, value: MockType, icon: any }[] = [
@@ -245,7 +248,7 @@ function MockBuilderContent() {
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl border bg-white h-12 w-12 shadow-sm"><ChevronLeft className="h-6 w-6" /></Button>
           <div className="text-left">
             <h1 className="text-4xl font-black font-headline uppercase tracking-tight text-[#0F172A]">{isEditing ? "Modify Mock" : "Mock Architect"}</h1>
-            <p className="text-[10px] uppercase font-black tracking-[0.2em] text-slate-400 mt-1">Design High-Fidelity Test Series</p>
+            <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mt-1">Design High-Fidelity Test Series</p>
           </div>
         </div>
         <Button className="bg-primary hover:bg-orange-600 font-black px-12 h-16 rounded-2xl uppercase text-[11px] tracking-[0.2em] gap-3 shadow-3xl" onClick={handlePublish} disabled={isPublishing}>
@@ -281,7 +284,7 @@ function MockBuilderContent() {
 
                <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2">
-                     <Layers className="h-3 w-3" /> Mock Category
+                     <Layers className="h-3 w-3" /> Test Category
                   </Label>
                   <Select value={mockData.mockType} onValueChange={(v: MockType) => setMockData({...mockData, mockType: v})}>
                      <SelectTrigger className="h-14 rounded-xl bg-slate-50/50 border-none font-bold">
@@ -299,7 +302,7 @@ function MockBuilderContent() {
 
                <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2">
-                     <Globe className="h-3 w-3" /> Language Mode
+                     <Globe className="h-3 w-3" /> Default Language
                   </Label>
                   <Select value={mockData.languageMode} onValueChange={(v: LanguageDisplayMode) => setMockData({...mockData, languageMode: v})}>
                      <SelectTrigger className="h-14 rounded-xl bg-slate-50/50 border-none font-bold">
@@ -315,28 +318,43 @@ function MockBuilderContent() {
                   </Select>
                </div>
 
+               <div className="space-y-2 pt-2">
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2">
+                     <Gem className="h-3 w-3" /> Student Access Level
+                  </Label>
+                  <div className="grid grid-cols-2 gap-4">
+                     <button 
+                       onClick={() => setMockData({...mockData, accessType: 'FREE'})}
+                       className={cn(
+                         "h-14 rounded-xl font-black uppercase text-[10px] flex items-center justify-center gap-2 border-2 transition-all",
+                         mockData.accessType === 'FREE' ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-lg" : "bg-white border-slate-100 text-slate-400"
+                       )}
+                     >
+                        <Unlock className="h-3.5 w-3.5" /> Public Free
+                     </button>
+                     <button 
+                       onClick={() => setMockData({...mockData, accessType: 'PREMIUM'})}
+                       className={cn(
+                         "h-14 rounded-xl font-black uppercase text-[10px] flex items-center justify-center gap-2 border-2 transition-all",
+                         mockData.accessType === 'PREMIUM' ? "bg-amber-50 border-amber-500 text-amber-700 shadow-lg" : "bg-white border-slate-100 text-slate-400"
+                       )}
+                     >
+                        <Lock className="h-3.5 w-3.5" /> Elite Pass
+                     </button>
+                  </div>
+               </div>
+
                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Clock className="h-3 w-3" /> Duration (Mins)</Label>
                     <Input type="number" value={mockData.duration} onChange={e => setMockData({...mockData, duration: parseInt(e.target.value) || 0})} className="h-12 rounded-xl text-center border-slate-100 text-[#0F172A]" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Access Tier</Label>
-                    <Select value={mockData.accessType} onValueChange={(v: AccessType) => setMockData({...mockData, accessType: v})}>
-                      <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-none"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="FREE">Public / Free</SelectItem>
-                        <SelectItem value="PREMIUM">Elite / Pass Only</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Live Status</Label>
+                    <div className="h-12 flex items-center justify-center bg-slate-50 rounded-xl px-4 border border-slate-100">
+                       <Switch checked={mockData.published} onCheckedChange={val => setMockData({...mockData, published: val})} />
+                    </div>
                   </div>
-               </div>
-
-               <div className="pt-8 border-t border-slate-50 flex items-center justify-between p-6 bg-slate-50/50 rounded-3xl">
-                  <div className="space-y-0.5">
-                     <p className="font-black text-[11px] uppercase text-[#0F172A]">Live Status</p>
-                  </div>
-                  <Switch checked={mockData.published} onCheckedChange={val => setMockData({...mockData, published: val})} />
                </div>
             </div>
           </Card>
@@ -447,7 +465,10 @@ function MockBuilderContent() {
                              <div className="space-y-2 pl-11">
                                 {section.questions.map((q: any) => (
                                    <div key={q.id} className="p-3.5 bg-white border border-slate-50 rounded-xl flex items-center justify-between group/q shadow-sm hover:border-primary/20">
-                                      <p className="font-bold text-xs text-[#0F172A] truncate flex-1">{q.englishQuestion || q.questionEn}</p>
+                                      <div className="flex-1 min-w-0">
+                                         <p className="font-bold text-xs text-[#0F172A] truncate">{q.englishQuestion || q.questionEn}</p>
+                                         <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1">BILINGUAL NODE</p>
+                                      </div>
                                       <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-300 hover:text-rose-50 opacity-0 group-hover/q:opacity-100" onClick={() => setSections(sections.map(s => s.id === section.id ? { ...s, questions: s.questions.filter((item: any) => item.id !== q.id) } : s))}>
                                          <Trash2 className="h-4 w-4" />
                                       </Button>
