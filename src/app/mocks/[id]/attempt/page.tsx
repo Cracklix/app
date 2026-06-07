@@ -26,8 +26,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 /**
- * @fileOverview Production Hardened CBT Attempt Engine v22.0.
- * UPDATED: Replaced static sidebar with universal button-triggered palette.
+ * @fileOverview Production Hardened CBT Attempt Engine v23.0.
+ * UPDATED: Optimized Sheet width for adaptive mobile/desktop palettes.
  */
 
 export default function MockAttemptPage() {

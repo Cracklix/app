@@ -4,7 +4,8 @@ import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { 
   CheckCircle2, 
-  ShieldCheck
+  ShieldCheck,
+  LayoutGrid
 } from "lucide-react";
 import { useExamStore } from '@/store/useExamStore';
 import { Button } from "@/components/ui/button";
@@ -16,8 +17,8 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Professional CBT Question Palette Hub v17.0.
- * UPDATED: Legend at top, Unified grid below. High-density design.
+ * @fileOverview Professional CBT Question Palette Hub v18.0.
+ * UPDATED: Legend at top, Grouped Sectional Grids below for high-fidelity navigation.
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const questions = useExamStore(s => s.questions);
@@ -25,6 +26,7 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
   const currentIdx = useExamStore(s => s.currentIdx);
   const visited = useExamStore(s => s.visited);
 
+  // Status Aggregation for Legend
   const stats = useMemo(() => {
     const s = { answered: 0, marked: 0, notAnswered: 0, notVisited: 0, ansMarked: 0 };
     (questions || []).forEach((_, i) => {
@@ -37,6 +39,21 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
     });
     return s;
   }, [questions, status, visited]);
+
+  // Group Questions by Section Label
+  const sections = useMemo(() => {
+    const groups: Record<string, { name: string, questions: any[] }> = {};
+    
+    questions.forEach((q, idx) => {
+      const sid = q.sectionId || 'General Knowledge';
+      if (!groups[sid]) {
+        groups[sid] = { name: sid.toUpperCase(), questions: [] };
+      }
+      groups[sid].questions.push({ ...q, globalIdx: idx });
+    });
+    
+    return Object.values(groups);
+  }, [questions]);
 
   return (
     <div className="flex flex-col h-full bg-white text-left font-body select-none pointer-events-auto">
@@ -57,25 +74,34 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
 
            <div className="h-px w-full bg-slate-50" />
 
-           {/* 2. UNIFIED QUESTION GRID */}
-           <div className="space-y-4">
-              <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">QUESTIONS</p>
-              <div className="grid grid-cols-5 gap-2.5">
-                 {questions.map((_, idx) => (
-                    <QuestionNode 
-                      key={idx} 
-                      index={idx} 
-                      isActive={currentIdx === idx} 
-                      status={status[idx]} 
-                      isVisited={visited.includes(idx)}
-                      onClick={() => onSelect(idx)}
-                    />
-                 ))}
-              </div>
+           {/* 2. GROUPED SECTIONAL GRIDS */}
+           <div className="space-y-10">
+              {sections.map((section, sIdx) => (
+                <div key={sIdx} className="space-y-4">
+                   <div className="flex items-center gap-3 ml-1">
+                      <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                      <h4 className="text-[10px] font-black uppercase text-[#0F172A] tracking-widest leading-none">
+                         {section.name}
+                      </h4>
+                   </div>
+                   <div className="grid grid-cols-5 gap-2.5">
+                      {section.questions.map((q) => (
+                         <QuestionNode 
+                           key={q.globalIdx} 
+                           index={q.globalIdx} 
+                           isActive={currentIdx === q.globalIdx} 
+                           status={status[q.globalIdx]} 
+                           isVisited={visited.includes(q.globalIdx)}
+                           onClick={() => onSelect(q.globalIdx)}
+                         />
+                      ))}
+                   </div>
+                </div>
+              ))}
            </div>
 
            {/* 3. TACTICAL SUBMIT BUTTON */}
-           <div className="pt-4">
+           <div className="pt-6">
               <Button 
                 onClick={(e) => {
                    e.preventDefault();
