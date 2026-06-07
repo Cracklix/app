@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -26,17 +25,11 @@ import {
   PlusCircle,
   Filter,
   Landmark,
-  ListTree,
-  Globe,
-  EyeOff,
   BookOpen,
   FileStack,
-  Gem,
   Lock,
   Unlock,
   History,
-  LayoutGrid,
-  FileBox,
   Target,
   AlertTriangle,
   ChevronDown
@@ -46,14 +39,17 @@ import { collection, doc, setDoc, serverTimestamp, query, where, limit, getDocs,
 import { useToast } from "@/hooks/use-toast"
 import { MockType, Difficulty, AccessType, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
-import { ScrollArea } from "@/components/ui/scroll-area"
+
+/**
+ * @fileOverview Institutional Mock Architect v32.0.
+ * FEATURES: Restored Old Blueprint (Sidebar + Tabs), Subject Selector (Replaces Search), and dynamic context filtering.
+ */
 
 const MOCK_TYPES: { label: string, value: MockType, icon: any }[] = [
   { label: "FULL LENGTH MOCK", value: "FULL", icon: <Zap className="h-3 w-3" /> },
   { label: "SUBJECT TEST", value: "SUBJECT", icon: <BookOpen className="h-3 w-3" /> },
-  { label: "CHAPTER TEST", value: "CHAPTER", icon: <ListTree className="h-3 w-3" /> },
+  { label: "CHAPTER TEST", value: "CHAPTER", icon: <Layers className="h-3 w-3" /> },
   { label: "OFFICIAL PYQ", value: "PYQ", icon: <FileStack className="h-3 w-3" /> },
-  { label: "SECTIONAL TEST", value: "SECTIONAL", icon: <Layers className="h-3 w-3" /> },
 ];
 
 export default function MockBuilderPage() {
@@ -135,12 +131,7 @@ function MockBuilderContent() {
 
   useEffect(() => {
     if (existingMock && questionBank.length > 0) {
-      setMockData(prev => ({ 
-        ...prev, 
-        ...existingMock,
-        positiveMarks: existingMock.positiveMarks || 1,
-        negativeMarks: existingMock.negativeMarks || 0.25
-      }));
+      setMockData(prev => ({ ...prev, ...existingMock }));
 
       if (existingMock.sections && existingMock.sections.length > 0 && existingMock.questionIds) {
         let currentIndex = 0;
@@ -156,12 +147,6 @@ function MockBuilderContent() {
         });
         setSections(hydratedSections);
         if (hydratedSections[0]) setActiveSectionId(hydratedSections[0].id);
-      } else if (existingMock.questionIds) {
-        setSections([{
-           id: 'sec-1',
-           name: 'Main Assessment',
-           questions: questionBank.filter(q => existingMock.questionIds.includes(q.id))
-        }]);
       }
     }
   }, [existingMock, questionBank])
@@ -354,7 +339,6 @@ function MockBuilderContent() {
                           </Select>
                        </div>
                        <div className="md:col-span-3 flex items-center gap-3 bg-slate-50 px-4 rounded-xl border border-slate-100">
-                          <EyeOff className="h-4 w-4 text-slate-400" />
                           <span className="text-[8px] font-black uppercase text-slate-500">Hide Used</span>
                           <Switch checked={hideUsed} onCheckedChange={setHideUsed} className="scale-75" />
                        </div>
@@ -417,7 +401,17 @@ function MockBuilderContent() {
                              </div>
                           </div>
                        ))}
-                       <Button onClick={() => setSections([...sections, { id: `sec-${Date.now()}`, name: 'New Subject Hub', questions: [] }])} className="h-14 border-2 border-dashed border-slate-100 text-slate-400 hover:text-primary hover:border-primary/50 transition-all rounded-2xl bg-white font-black uppercase text-[10px] tracking-widest gap-2 w-full"><PlusCircle className="h-4 w-4" /> Add Subject Hub</Button>
+                       
+                       <div className="pt-4 border-t border-slate-50">
+                          <Select onValueChange={(val) => setSections([...sections, { id: `sec-${Date.now()}`, name: val, questions: [] }])}>
+                             <SelectTrigger className="h-14 border-2 border-dashed border-slate-200 text-slate-400 hover:text-primary hover:border-primary/50 transition-all rounded-2xl bg-white font-black uppercase text-[10px] tracking-widest gap-2 w-full">
+                                <PlusCircle className="h-4 w-4" /> Add Subject Hub
+                             </SelectTrigger>
+                             <SelectContent>
+                                {subjects?.map((s: any) => <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>)}
+                             </SelectContent>
+                          </Select>
+                       </div>
                     </div>
                  </TabsContent>
               </Tabs>

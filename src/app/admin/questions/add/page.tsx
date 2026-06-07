@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -11,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { ChevronLeft, Save, Languages, Layers, Database, Eye, BarChart3, Loader2, Info } from "lucide-react"
+import { ChevronLeft, Save, Languages, Layers, Database, Eye, BarChart3, Loader2, Info, Globe } from "lucide-react"
 import { useFirestore, useDoc, useCollection, useUser } from "@/firebase"
 import { doc, setDoc, serverTimestamp, collection } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
@@ -19,6 +18,11 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import { cn } from "@/lib/utils"
+
+/**
+ * @fileOverview Hardened Manual Question Entry v15.2.
+ * Resolved: Globe reference error and optimized side-by-side bilingual option editing.
+ */
 
 export default function QuestionEntryPage() {
   return (
