@@ -38,8 +38,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import ShareButton from "@/components/navigation/ShareButton"
 
 /**
- * @fileOverview FINAL STUDENT DASHBOARD Hub.
- * Simplified Language: Replaced jargon like "Registry" and "Trajectory" with clear terms.
+ * @fileOverview Student Dashboard Hub v8.0.
+ * Simplified Language: Replaced technical jargon with clear words.
  */
 
 export default function StudentDashboard() {
@@ -90,7 +90,7 @@ export default function StudentDashboard() {
       
       <main className="container mx-auto px-4 md:px-6 py-6 md:py-12 max-w-7xl space-y-8 md:space-y-12">
         
-        {/* PROFILE HEADER */}
+        {/* PROFILE CARD */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
            
            <div className="lg:col-span-8 space-y-8">
@@ -111,7 +111,7 @@ export default function StudentDashboard() {
                              {profile?.status || 'Free'} Pass
                            </Badge>
                            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] flex items-center gap-2">
-                             <Target className="h-3.5 w-3.5 text-primary" /> {profile?.targetExam || 'General Studies'}
+                             <Target className="h-3.5 w-3.5 text-primary" /> {profile?.targetExam || 'General Prep'}
                            </p>
                         </div>
                      </div>
@@ -127,11 +127,11 @@ export default function StudentDashboard() {
                 </div>
               </section>
 
-              {/* STATS GRID */}
+              {/* METRICS */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-                 <MetricNode label="PREPARATION SCORE" val={`${stats.readiness}%`} icon={<TrendingUp className="text-primary h-4 w-4" />} />
+                 <MetricNode label="READINESS SCORE" val={`${stats.readiness}%`} icon={<TrendingUp className="text-primary h-4 w-4" />} />
                  <MetricNode label="AVG ACCURACY" val={`${stats.avgAccuracy}%`} icon={<Target className="text-emerald-500 h-4 w-4" />} />
-                 <MetricNode label="TESTS COMPLETED" val={stats.total} icon={<ClipboardList className="text-blue-500 h-4 w-4" />} />
+                 <MetricNode label="TESTS DONE" val={stats.total} icon={<ClipboardList className="text-blue-500 h-4 w-4" />} />
                  <MetricNode label="TIME SPENT" val={stats.hours} icon={<Clock className="text-amber-500 h-4 w-4" />} />
               </div>
 
@@ -139,8 +139,8 @@ export default function StudentDashboard() {
               <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden text-left border border-slate-50">
                  <CardHeader className="p-8 md:p-12 border-b border-slate-50 bg-slate-50/50 flex flex-row items-center justify-between">
                     <div className="space-y-1">
-                       <h3 className="font-headline text-xl md:text-2xl font-black text-[#0F172A] uppercase">Test History</h3>
-                       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Your recent exam performance</p>
+                       <h3 className="font-headline text-xl md:text-2xl font-black text-[#0F172A] uppercase">Recent Tests</h3>
+                       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Your latest performance records</p>
                     </div>
                     <Button asChild variant="ghost" className="h-10 text-[9px] font-black uppercase tracking-widest text-primary gap-2">
                        <Link href="/my-exams">View All <ChevronRight className="h-4 w-4" /></Link>
@@ -169,7 +169,7 @@ export default function StudentDashboard() {
                              </Link>
                           ))
                        ) : (
-                          <div className="p-24 text-center opacity-30 italic text-[11px] uppercase font-black tracking-widest text-slate-400">No test history found.</div>
+                          <div className="p-24 text-center opacity-30 italic text-[11px] uppercase font-black tracking-widest text-slate-400">No tests completed yet.</div>
                        )}
                     </div>
                  </CardContent>
@@ -182,7 +182,7 @@ export default function StudentDashboard() {
               <Card className="border-none shadow-4xl bg-gradient-to-br from-orange-500 to-primary text-white p-10 rounded-[3rem] relative overflow-hidden group">
                  <div className="absolute bottom-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-[2s]"><Flame className="h-64 w-64" /></div>
                  <div className="relative z-10 space-y-6">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/70">Practice Streak</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/70">Learning Streak</p>
                     <div className="flex items-baseline gap-4">
                        <p className="text-7xl md:text-9xl font-headline font-black leading-none">{stats.streak}</p>
                        <div className="space-y-1">
@@ -200,7 +200,7 @@ export default function StudentDashboard() {
 
               <div className="grid grid-cols-2 gap-4 md:gap-6">
                  <DashboardTile icon={<Bookmark className="text-primary" />} label="SAVED ITEMS" href="/revision" />
-                 <DashboardTile icon={<Trophy className="text-amber-500" />} label="STATE RANKINGS" href="/leaderboard" />
+                 <DashboardTile icon={<Trophy className="text-amber-500" />} label="RANKINGS" href="/leaderboard" />
                  <DashboardTile icon={<LayoutGrid className="text-blue-500" />} label="ALL EXAMS" href="/exams" />
                  <DashboardTile icon={<Activity className="text-emerald-500" />} label="MY ANALYSIS" href="/analytics" />
               </div>
@@ -225,7 +225,6 @@ export default function StudentDashboard() {
                  <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">
                     Developed by <span className="text-[#0F172A] font-black">Arsh Grewal</span>
                  </p>
-                 <Badge className="bg-slate-50 text-slate-300 border-none text-[8px] font-bold uppercase px-3 py-1">Cracklix v8.2 • Stable</Badge>
               </div>
            </div>
         </div>
