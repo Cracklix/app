@@ -35,8 +35,8 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 
 /**
- * @fileOverview Final Exam-Specific Mastery Hub v2.0.
- * Strictly mirrors the "Unlock Test" and "FREE" badging pattern from user screenshot.
+ * @fileOverview Final Exam-Specific Mastery Hub v2.1.
+ * Optimized: Removed title truncation and improved mobile tab navigation.
  */
 
 export default function ExamHubPage() {
@@ -89,17 +89,17 @@ export default function ExamHubPage() {
   const activeBoard = boards?.find((b: any) => b.id === exam.boardId);
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 font-body">
+    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body">
       <Navbar />
       
       <section className="bg-white border-b border-slate-200 py-6 md:py-10">
          <div className="container mx-auto px-6 max-w-7xl text-left">
-            <div className="flex flex-col md:flex-row md:items-center gap-6">
-               <button onClick={() => router.back()} className="h-10 w-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:text-black transition-colors shrink-0">
-                  <ChevronLeft className="h-6 w-6" />
+            <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
+               <button onClick={() => router.back()} className="h-10 w-10 md:h-12 md:w-12 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:text-black transition-all active:scale-95 shrink-0">
+                  <ChevronLeft className="h-6 w-6 md:h-7 md:w-7" />
                </button>
-               <div>
-                  <h1 className="text-xl md:text-2xl font-black text-[#0F172A] uppercase leading-tight truncate">
+               <div className="min-w-0 flex-1">
+                  <h1 className="text-xl md:text-3xl font-black text-[#0F172A] uppercase leading-tight tracking-tight">
                      {activeBoard?.abbreviation || 'PSSSB'} {exam.name}
                   </h1>
                </div>
@@ -107,17 +107,17 @@ export default function ExamHubPage() {
          </div>
       </section>
 
-      <main className="container mx-auto px-4 py-8 max-w-4xl relative z-20 pb-32">
+      <main className="container mx-auto px-4 py-8 max-w-5xl relative z-20 pb-40">
          <Tabs defaultValue="FULL" className="space-y-8">
             <div className="flex items-center border-b border-slate-200">
-               <TabsList className="bg-transparent border-none p-0 flex gap-8 h-auto w-full justify-start rounded-none overflow-x-auto no-scrollbar">
+               <TabsList className="bg-transparent border-none p-0 flex gap-6 md:gap-12 h-auto w-full justify-start rounded-none overflow-x-auto no-scrollbar scroll-smooth">
                   <TabTrigger value="FULL" label="Full Tests" />
                   <TabTrigger value="SECTIONAL" label="Subject Tests" />
                   <TabTrigger value="PYQ" label="Previous Papers" />
                </TabsList>
             </div>
 
-            <TabsContent value="FULL" className="space-y-4">
+            <TabsContent value="FULL" className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                <HubGrid 
                  mocks={groupedMocks.FULL} 
                  results={userResults} 
@@ -125,7 +125,7 @@ export default function ExamHubPage() {
                />
             </TabsContent>
 
-            <TabsContent value="SECTIONAL" className="space-y-4">
+            <TabsContent value="SECTIONAL" className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                <HubGrid 
                  mocks={groupedMocks.SECTIONAL} 
                  results={userResults} 
@@ -133,7 +133,7 @@ export default function ExamHubPage() {
                />
             </TabsContent>
 
-            <TabsContent value="PYQ" className="space-y-4">
+            <TabsContent value="PYQ" className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                <HubGrid 
                  mocks={groupedMocks.PYQ} 
                  results={userResults} 
@@ -145,8 +145,8 @@ export default function ExamHubPage() {
 
       {/* Institutional Conversion Node (Sticky Footer) */}
       {!hasPass && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 p-4 md:px-[20%] flex items-center justify-center shadow-[0_-10px_30px_rgba(0,0,0,0.05)] animate-in slide-in-from-bottom duration-500">
-           <Button asChild className="w-full h-14 bg-[#10B981] hover:bg-emerald-600 text-white font-black uppercase tracking-widest text-sm rounded-xl shadow-xl transition-all active:scale-95">
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 p-4 md:p-6 md:px-[25%] flex items-center justify-center shadow-[0_-10px_30px_rgba(0,0,0,0.08)] animate-in slide-in-from-bottom duration-500 backdrop-blur-sm bg-opacity-95">
+           <Button asChild className="w-full h-14 md:h-16 bg-[#10B981] hover:bg-emerald-600 text-white font-black uppercase tracking-widest text-sm md:text-base rounded-xl shadow-xl transition-all active:scale-95">
               <Link href="/pass">Unlock Test Series</Link>
            </Button>
         </div>
@@ -161,7 +161,7 @@ function TabTrigger({ value, label }: any) {
    return (
       <TabsTrigger 
          value={value} 
-         className="px-0 h-12 font-bold text-sm text-slate-400 data-[state=active]:text-black data-[state=active]:border-b-2 data-[state=active]:border-black rounded-none transition-all"
+         className="px-0 h-12 font-black text-[12px] md:text-[14px] uppercase tracking-widest text-slate-400 data-[state=active]:text-black data-[state=active]:border-b-2 data-[state=active]:border-black rounded-none transition-all whitespace-nowrap"
       >
          {label}
       </TabsTrigger>
@@ -184,43 +184,43 @@ function HubGrid({ mocks, results, hasPass }: any) {
            const locked = !isFree && !hasPass;
 
            return (
-              <Card key={mock.id} className="border-none shadow-sm rounded-3xl bg-white overflow-hidden text-left relative transition-all hover:shadow-md">
-                 <CardContent className="p-6 md:p-8">
+              <Card key={mock.id} className="border-none shadow-sm rounded-3xl bg-white overflow-hidden text-left relative transition-all hover:shadow-md hover:border-primary/20 border border-transparent">
+                 <CardContent className="p-6 md:p-10">
                     {isFree && (
-                       <Badge className="bg-[#10B981] text-white border-none text-[8px] font-black uppercase px-2 py-0.5 rounded-md mb-4">
+                       <Badge className="bg-[#10B981] text-white border-none text-[8px] md:text-[10px] font-black uppercase px-2 py-0.5 rounded-md mb-4 shadow-sm">
                           FREE
                        </Badge>
                     )}
                     
-                    <div className="flex justify-between items-start">
-                       <div className="space-y-2 flex-1 pr-4">
-                          <h3 className="text-lg md:text-xl font-black text-[#0F172A] leading-tight uppercase">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                       <div className="space-y-2 flex-1">
+                          <h3 className="text-lg md:text-2xl font-black text-[#0F172A] leading-tight uppercase">
                              {mock.title}
                           </h3>
-                          <div className="flex items-center gap-2 text-slate-300 font-bold text-sm">
+                          <div className="flex items-center gap-2 text-slate-300 font-bold text-sm md:text-base">
                              {result ? (
                                 <p className="text-slate-400">
-                                   {result.score || 0}/{mock.totalQuestions}.0 Marks . {Math.floor(Math.random()*10)}K/{Math.floor(Math.random()*10)}K Rank
+                                   {result.score || 0}/{mock.totalQuestions}.0 Marks • {Math.floor(Math.random()*10)}K/{Math.floor(Math.random()*10)}K Rank
                                 </p>
                              ) : (
                                 <p className="text-slate-300">
-                                   {mock.totalQuestions} Qs . {mock.duration} mins . {mock.totalQuestions}.0 Marks
+                                   {mock.totalQuestions} Qs • {mock.duration} Mins • {mock.totalQuestions}.0 Marks
                                 </p>
                              )}
                           </div>
                        </div>
 
-                       <div className="shrink-0 pt-1">
+                       <div className="shrink-0 pt-1 w-full sm:w-auto">
                           {locked ? (
-                             <Link href="/pass" className="text-[#3B82F6] font-black uppercase text-sm hover:underline">
+                             <Link href="/pass" className="text-[#3B82F6] font-black uppercase text-sm md:text-base hover:underline block text-center sm:text-right">
                                 Unlock Test
                              </Link>
                           ) : result ? (
-                             <Link href={`/results/${mock.id}`} className="text-[#3B82F6] font-black uppercase text-sm hover:underline">
+                             <Link href={`/results/${mock.id}`} className="text-[#3B82F6] font-black uppercase text-sm md:text-base hover:underline block text-center sm:text-right">
                                 View Results
                              </Link>
                           ) : (
-                             <Link href={`/mocks/${mock.id}`} className="text-[#3B82F6] font-black uppercase text-sm hover:underline">
+                             <Link href={`/mocks/${mock.id}`} className="text-[#3B82F6] font-black uppercase text-sm md:text-base hover:underline block text-center sm:text-right">
                                 Attempt Now
                              </Link>
                           )}
@@ -229,17 +229,17 @@ function HubGrid({ mocks, results, hasPass }: any) {
 
                     <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
                        <div className="flex items-center gap-4">
-                          <span className="text-[10px] font-black uppercase text-[#3B82F6]">Syllabus</span>
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">English, Punjabi</span>
+                          <span className="text-[10px] md:text-[11px] font-black uppercase text-[#3B82F6] tracking-widest">Syllabus</span>
+                          <span className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase tracking-tight">English, Punjabi</span>
                        </div>
                        
                        {result && (
                           <div className="flex items-center gap-4">
-                             <span className="text-[10px] font-bold text-slate-300 uppercase">
+                             <span className="hidden md:inline text-[10px] font-bold text-slate-300 uppercase">
                                 Attempted on {new Date(result.timestamp).toLocaleDateString('en-GB', { month: 'short', day: 'numeric', year: 'numeric' })}
                              </span>
-                             <Link href={`/mocks/${mock.id}/instructions`} className="text-[#3B82F6] font-black uppercase text-[10px] flex items-center gap-1 hover:gap-2 transition-all">
-                                Reattempt <ChevronRight className="h-3 w-3" />
+                             <Link href={`/mocks/${mock.id}/instructions`} className="text-[#3B82F6] font-black uppercase text-[10px] md:text-[11px] flex items-center gap-1 hover:gap-2 transition-all tracking-widest">
+                                Reattempt <ChevronRight className="h-3 w-3 md:h-4 md:w-4" />
                              </Link>
                           </div>
                        )}
