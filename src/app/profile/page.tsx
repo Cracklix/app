@@ -32,7 +32,8 @@ import {
   User as UserIcon,
   ChevronRight,
   CreditCard,
-  Loader2
+  Loader2,
+  X
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
@@ -44,8 +45,9 @@ import { cn } from "@/lib/utils"
 import React from "react"
 
 /**
- * @fileOverview Student Profile Hub v14.0.
- * Simplified language: Removed technical jargon (Node, Registry, Hub) for better user experience.
+ * @fileOverview Student Profile Hub v15.0.
+ * Simplified language: Replaced technical jargon with common student terms.
+ * Features: Editable Target Board and fixed Accuracy icon.
  */
 export default function ProfilePage() {
   const { user, profile, loading } = useUser()
@@ -91,11 +93,7 @@ export default function ProfilePage() {
 
   const results = useMemo(() => {
     if (!allResults) return []
-    return [...allResults].sort((a, b) => {
-      const timeA = new Date(a.timestamp).getTime()
-      const timeB = new Date(b.timestamp).getTime()
-      return timeB - timeA
-    })
+    return [...allResults].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
   }, [allResults])
 
   const stats = useMemo(() => {
@@ -108,14 +106,14 @@ export default function ProfilePage() {
   const handleUpdateProfile = async () => {
     if (!db || !user || !editForm) return
 
-    const mandatory = ['name', 'phone', 'dob', 'address'];
+    const mandatory = ['name', 'phone', 'dob', 'address', 'targetExam'];
     const missing = mandatory.find(key => !editForm[key]?.trim());
     
     if (missing) {
       toast({ 
         variant: "destructive", 
         title: "Update Blocked", 
-        description: `The ${missing.toUpperCase()} field is required.` 
+        description: `Please fill in your ${missing === 'targetExam' ? 'Target Board' : missing.toUpperCase()}.` 
       });
       return;
     }
@@ -135,7 +133,7 @@ export default function ProfilePage() {
           phone: finalPhone,
           updatedAt: serverTimestamp()
        })
-       toast({ title: "Profile Updated", description: "Your details have been saved." })
+       toast({ title: "Details Saved", description: "Your profile has been updated." })
        setIsEditing(false)
     } catch (e: any) {
        toast({ variant: "destructive", title: "Update Failed", description: e.message })
@@ -145,7 +143,7 @@ export default function ProfilePage() {
   }
 
   const formatPhone = (phone: string) => {
-    if (!phone) return "Not Linked";
+    if (!phone) return "Not Added";
     if (phone.startsWith('+91')) return phone;
     const digits = phone.replace(/\D/g, '');
     if (digits.length === 10) return `+91 ${digits}`;
@@ -220,7 +218,7 @@ export default function ProfilePage() {
                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2">
                        <HeaderInfo icon={<Mail className="h-3.5 w-3.5 text-primary" />} text={profile.email} />
                        <HeaderInfo icon={<Phone className="h-3.5 w-3.5 text-primary" />} text={formatPhone(profile.phone)} />
-                       <HeaderInfo icon={<GraduationCap className="h-3.5 w-3.5 text-primary" />} text={`Target: ${profile.targetExam || 'General Hub'}`} />
+                       <HeaderInfo icon={<GraduationCap className="h-3.5 w-3.5 text-primary" />} text={`Target Board: ${profile.targetExam || 'General'}`} />
                     </div>
                  </div>
 
@@ -239,9 +237,9 @@ export default function ProfilePage() {
               {/* LEFT: PERFORMANCE & STATS */}
               <div className="lg:col-span-8 space-y-6 md:space-y-8">
                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6">
-                    <StatsCard icon={<ClipboardList />} label="TESTS COMPLETED" value={stats.total} color="text-blue-500" />
-                    <StatsCard icon={<Target />} label="AVERAGE ACCURACY" value={`${stats.avgAccuracy}%`} color="text-primary" />
-                    <StatsCard icon={<Trophy />} label="STATE RANKING" value={stats.rank} color="text-emerald-500" className="hidden sm:flex" />
+                    <StatsCard icon={<ClipboardList className="h-5 w-5 text-blue-500" />} label="TESTS COMPLETED" value={stats.total} color="text-blue-500" />
+                    <StatsCard icon={<Target className="h-5 w-5 text-primary" />} label="AVERAGE ACCURACY" value={`${stats.avgAccuracy}%`} color="text-primary" />
+                    <StatsCard icon={<Trophy className="h-5 w-5 text-emerald-500" />} label="STATE RANKING" value={stats.rank} color="text-emerald-500" className="hidden sm:flex" />
                  </div>
 
                  <Card className="border-none shadow-xl rounded-[2.5rem] bg-white p-8 md:p-10 space-y-8">
@@ -254,9 +252,9 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                        <ProfileDataNode icon={<Calendar className="text-blue-500" />} label="DATE OF BIRTH" value={formatDOB(profile.dob)} />
                        <ProfileDataNode icon={<Phone className="text-emerald-500" />} label="MOBILE NUMBER" value={formatPhone(profile.phone)} />
-                       <ProfileDataNode icon={<MapPin className="text-rose-500" />} label="ADDRESS" value={profile.address || "No address provided"} colSpan={2} />
+                       <ProfileDataNode icon={<MapPin className="text-rose-500" />} label="HOME ADDRESS" value={profile.address || "Not provided"} colSpan={2} />
                        <ProfileDataNode icon={<ShieldCheck className="text-primary" />} label="ACCOUNT TYPE" value={`${profile.role || 'STUDENT'}`} />
-                       <ProfileDataNode icon={<Activity className="text-orange-500" />} label="MEMBER SINCE" value={memberSince} />
+                       <ProfileDataNode icon={<Activity className="text-orange-500" />} label="JOINED" value={memberSince} />
                     </div>
                  </Card>
 
@@ -265,7 +263,7 @@ export default function ProfilePage() {
                     <CardHeader className="p-8 md:p-10 border-b border-slate-50 flex flex-row items-center justify-between">
                        <div className="space-y-1">
                           <CardTitle className="text-sm md:text-lg font-black uppercase tracking-tight text-[#0F172A] flex items-center gap-2">
-                             <TrendingUp className="h-5 w-5 text-primary" /> Test History
+                             <History className="h-5 w-5 text-primary" /> Test History
                           </CardTitle>
                        </div>
                        <Button asChild variant="ghost" className="h-10 text-[9px] font-black uppercase tracking-widest text-primary gap-2">
@@ -337,9 +335,12 @@ export default function ProfilePage() {
          <DialogContent className="sm:max-w-xl w-[95vw] max-h-[90vh] bg-white rounded-[2.5rem] border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
             <div className="h-1.5 w-full bg-[#0B1528] shrink-0" />
             <DialogHeader className="p-6 md:p-8 pb-2 md:pb-4 shrink-0">
-               <DialogTitle className="text-xl md:text-3xl font-black font-headline uppercase text-[#0F172A] flex items-center gap-4">
-                  <ShieldCheck className="h-6 w-6 md:h-8 md:w-8 text-primary" /> Edit Profile Details
-               </DialogTitle>
+               <div className="flex justify-between items-center">
+                  <DialogTitle className="text-xl md:text-3xl font-black font-headline uppercase text-[#0F172A] flex items-center gap-4">
+                     <ShieldCheck className="h-6 w-6 md:h-8 md:w-8 text-primary" /> Update Your Profile
+                  </DialogTitle>
+                  <button onClick={() => setIsEditing(false)} className="p-2 rounded-xl hover:bg-slate-50 transition-colors"><X className="h-5 w-5 text-slate-400" /></button>
+               </div>
             </DialogHeader>
             
             <div className="px-6 md:px-8 pb-6 md:pb-8 space-y-5 overflow-y-auto custom-scrollbar flex-1">
@@ -354,21 +355,38 @@ export default function ProfilePage() {
                   </div>
                </div>
                
-               <div className="space-y-1.5 text-left">
-                  <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Mobile Number</Label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-slate-400">+91</span>
-                    <Input 
-                      value={editForm?.phone || ""} 
-                      onChange={e => setEditForm({...editForm, phone: e.target.value.replace(/\D/g, '').slice(0,10)})} 
-                      className="h-11 pl-14 rounded-xl bg-slate-50 border-none font-black text-lg tracking-wider" 
-                      placeholder="10-digit mobile number" 
-                    />
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5 text-left">
+                     <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Mobile Number</Label>
+                     <div className="relative">
+                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-slate-400">+91</span>
+                       <Input 
+                         value={editForm?.phone || ""} 
+                         onChange={e => setEditForm({...editForm, phone: e.target.value.replace(/\D/g, '').slice(0,10)})} 
+                         className="h-11 pl-14 rounded-xl bg-slate-50 border-none font-black text-lg tracking-wider" 
+                         placeholder="10-digit number" 
+                       />
+                     </div>
+                  </div>
+                  <div className="space-y-1.5 text-left">
+                     <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Target Exam Board</Label>
+                     <select 
+                        value={editForm?.targetExam || ""} 
+                        onChange={e => setEditForm({...editForm, targetExam: e.target.value})}
+                        className="w-full h-11 rounded-xl bg-slate-50 border-none font-bold text-sm px-4 outline-none"
+                     >
+                        <option value="" disabled>Select Board</option>
+                        <option value="PSSSB">PSSSB</option>
+                        <option value="PPSC">PPSC</option>
+                        <option value="Punjab Police">Punjab Police</option>
+                        <option value="Army">Indian Army</option>
+                        <option value="High Court">High Court</option>
+                     </select>
                   </div>
                </div>
 
                <div className="space-y-1.5 text-left">
-                  <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Full Residential Address</Label>
+                  <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Full Home Address</Label>
                   <Textarea 
                     value={editForm?.address || ""} 
                     onChange={e => setEditForm({...editForm, address: e.target.value})} 
@@ -385,7 +403,7 @@ export default function ProfilePage() {
                 disabled={isSaving} 
                 className="bg-primary hover:bg-orange-600 text-white h-12 md:h-14 px-8 md:px-12 rounded-xl font-black uppercase text-[10px] md:text-[11px] tracking-[0.2em] flex-1 shadow-xl transition-all active:scale-95 gap-3"
                >
-                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save Profile Details
+                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save Details
                </Button>
             </DialogFooter>
          </DialogContent>
@@ -407,10 +425,10 @@ function StatsCard({ icon, label, value, color, className }: any) {
    return (
       <Card className={cn("border-none shadow-lg rounded-[1.5rem] p-6 md:p-8 bg-white group hover:translate-y-[-4px] transition-all", className)}>
          <div className="flex flex-col gap-4">
-            <div className={cn("h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center transition-all group-hover:scale-110", color.replace('text-', 'bg-').replace('500', '50'))}>
-               {React.cloneElement(icon as React.ReactElement, { className: cn("h-5 w-5", color) })}
+            <div className={cn("h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center transition-all group-hover:scale-110 shadow-sm", color.replace('text-', 'bg-').replace('500', '50'))}>
+               {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: cn("h-5 w-5", color) }) : icon}
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1 text-left">
                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{label}</p>
                <p className={cn("text-2xl md:text-4xl font-headline font-black leading-none", color)}>{value}</p>
             </div>
