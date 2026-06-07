@@ -2,9 +2,9 @@
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Engine v31.0.
- * Features: Hardened Unique Hub Registry with SSSC & IBPS Expansion.
- * Updated: Official Chandigarh High Court, PSSSB, Police, and IBPS assets.
+ * @fileOverview Institutional Seeding Engine v33.0.
+ * Features: Hardened Unique Hub Registry with High-Fidelity Official Assets.
+ * Updated: Official Agniveer Army Circular Insignia and Board Mappings.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('[AUDIT] Initializing Cracklix Global Registry Sync...');
@@ -16,7 +16,7 @@ export async function seedInitialData(db: Firestore) {
   const ssscLogo = "https://highcourtchd.gov.in/images/logo.png";
   const pspclLogo = "https://pspcl.in/assets/images/logo.png";
   const anganwadiLogo = "https://sswcd.punjab.gov.in/sites/default/files/download.png";
-  const armyEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Indian_Army_Logo.png/400px-Indian_Army_Logo.png";
+  const armyEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Indian_Army_Circular_Insignia.svg/250px-Indian_Army_Circular_Insignia.svg.png";
   const ibpsLogo = "https://careeravenues.info/wp-content/uploads/2023/05/Introduction.jpg";
   const punjabEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
 
