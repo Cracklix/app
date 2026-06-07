@@ -22,7 +22,11 @@ import {
   Upload, 
   FileCode,
   Calendar,
-  Layers
+  Layers,
+  Database,
+  CheckCircle2,
+  Rocket,
+  Info
 } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc, query, serverTimestamp, writeBatch } from "firebase/firestore"
@@ -31,11 +35,11 @@ import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CurrentAffairHubItem, Question } from "@/types"
 import { cn } from "@/lib/utils"
-import * as XLSX from 'xlsx';
+import { parseBulkQuestions } from "@/lib/parser"
 
 /**
- * @fileOverview Institutional Current Affairs Management Hub v1.1.
- * FIXED: Removed Firestore orderBy to bypass potential index errors; sorting handled client-side.
+ * @fileOverview Institutional Current Affairs Management Hub v2.0.
+ * UPDATED: Integrated high-fidelity Bulk Ingestion System and fixed dialog geometry.
  */
 
 export default function AdminCurrentAffairs() {
@@ -48,7 +52,7 @@ export default function AdminCurrentAffairs() {
   const [editingItem, setEditingItem] = useState<any>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [isSaving, setIsSaving] = useState(false)
-  const [isImporting, setIsImporting] = useState(false)
+  const [bulkText, setBulkText] = useState("")
 
   const caItems = useMemo(() => {
      if (!rawCaItems) return [];
@@ -58,6 +62,23 @@ export default function AdminCurrentAffairs() {
         return tB - tA;
      });
   }, [rawCaItems]);
+
+  const handleProcessBulk = () => {
+    if (!bulkText.trim()) return;
+    const metadata = { boardId: 'current-affairs', subjectId: 'gk-ca', status: 'PUBLISHED' };
+    const result = parseBulkQuestions(bulkText, metadata);
+    
+    if (result.questions.length > 0) {
+      setEditingItem({
+        ...editingItem,
+        questions: [...(editingItem.questions || []), ...result.questions]
+      });
+      setBulkText("");
+      toast({ title: "Extraction Success", description: `${result.questions.length} questions staged.` });
+    } else {
+      toast({ variant: "destructive", title: "Parse Failed", description: "Check format: Q1, PA Statement, (A) EN/PA" });
+    }
+  };
 
   const handleSave = async () => {
     if (!db || !editingItem) return
@@ -76,13 +97,14 @@ export default function AdminCurrentAffairs() {
       const batch = writeBatch(db)
       const qIds: string[] = []
 
-      editingItem.questions.forEach((q: any, idx: number) => {
-        const qRef = q.id ? doc(db, "questions", q.id) : doc(collection(db, "questions"))
+      editingItem.questions.forEach((q: any) => {
+        const qRef = q.id && !q.id.includes('q-node') ? doc(db, "questions", q.id) : doc(collection(db, "questions"))
         const qId = qRef.id
         qIds.push(qId)
         
+        const { debug, ...cleanQ } = q;
         batch.set(qRef, {
-          ...q,
+          ...cleanQ,
           id: qId,
           examId: 'current-affairs',
           sectionId: editingItem.title,
@@ -117,10 +139,11 @@ export default function AdminCurrentAffairs() {
       createdAt: editingItem.createdAt || serverTimestamp()
     }
 
-    delete payload.questions // Don't store full question array in the hub item
+    const cleanPayload = { ...payload };
+    delete cleanPayload.questions;
 
     try {
-      await setDoc(caRef, payload, { merge: true })
+      await setDoc(caRef, cleanPayload, { merge: true })
       toast({ title: "Registry Updated", description: "Current Affairs node successfully synced." })
       setEditingItem(null)
     } catch (e: any) {
@@ -134,45 +157,6 @@ export default function AdminCurrentAffairs() {
     if (!confirm("Permanently purge this Current Affairs node?")) return
     await deleteDoc(doc(db!, "current_affairs_hub", id))
     toast({ title: "Node Purged", description: "Asset removed from cloud." })
-  }
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setIsImporting(true)
-    const reader = new FileReader()
-    reader.onload = (evt) => {
-      try {
-        const data = evt.target?.result
-        const workbook = XLSX.read(data, { type: 'binary' })
-        const sheetName = workbook.SheetNames[0]
-        const sheet = workbook.Sheets[sheetName]
-        const rows = XLSX.utils.sheet_to_json(sheet)
-
-        const mappedQuestions = rows.map((r: any) => ({
-          englishQuestion: r.Question || r.question || "",
-          optionAEnglish: r.A || r.OptionA || "",
-          optionBEnglish: r.B || r.OptionB || "",
-          optionCEnglish: r.C || r.OptionC || "",
-          optionDEnglish: r.D || r.OptionD || "",
-          correctAnswer: r.CorrectAnswer || r.Answer || "A",
-          englishExplanation: r.Explanation || ""
-        }))
-
-        setEditingItem({
-          ...editingItem,
-          questions: [...(editingItem.questions || []), ...mappedQuestions]
-        })
-        toast({ title: "Bulk Extraction Success", description: `${mappedQuestions.length} MCQs staged.` })
-      } catch (err) {
-        toast({ variant: "destructive", title: "Parse Error", description: "Check file structure." })
-      } finally {
-        setIsImporting(false)
-        e.target.value = ""
-      }
-    }
-    reader.readAsBinaryString(file)
   }
 
   const filteredItems = useMemo(() => {
@@ -276,123 +260,147 @@ export default function AdminCurrentAffairs() {
       </Card>
 
       <Dialog open={!!editingItem} onOpenChange={(open) => !open && !isSaving && setEditingItem(null)}>
-        <DialogContent className="sm:max-w-5xl max-h-[95vh] rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
+        <DialogContent className="sm:max-w-7xl max-h-[95vh] rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
           <div className="h-2 w-full bg-[#0F172A] shrink-0" />
           <DialogHeader className="p-10 pb-4 shrink-0 flex flex-row items-center justify-between">
-            <DialogTitle className="text-3xl font-black font-headline uppercase text-[#0F172A]">CA Hub Node Configuration</DialogTitle>
+            <DialogTitle className="text-3xl font-black font-headline uppercase text-[#0F172A]">CA Hub Configuration</DialogTitle>
             <button onClick={() => setEditingItem(null)} className="p-2 hover:bg-slate-100 rounded-xl transition-colors"><X className="h-6 w-6 text-slate-400" /></button>
           </DialogHeader>
           
           <div className="flex-1 overflow-y-auto custom-scrollbar px-10 pb-10 space-y-10">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                {/* Metadata Column */}
-               <div className="space-y-6">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Package Title</Label>
-                    <Input value={editingItem?.title || ""} onChange={e => setEditingItem({...editingItem, title: e.target.value})} className="h-14 rounded-xl border-slate-100 font-black text-lg text-[#0F172A]" placeholder="e.g. Daily CA - 25 Oct 2026" />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Package Type</Label>
-                      <select value={editingItem?.type} onChange={e => setEditingItem({...editingItem, type: e.target.value})} className="w-full h-14 bg-slate-50 border-none rounded-xl px-4 font-black uppercase text-[10px] outline-none">
-                        <option value="DAILY">DAILY HUB</option>
-                        <option value="WEEKLY">WEEKLY HUB</option>
-                        <option value="MONTHLY">MONTHLY HUB</option>
-                        <option value="SPECIAL">SPECIAL NODE</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Language Node</Label>
-                      <Input value={editingItem?.language || "English + Punjabi"} onChange={e => setEditingItem({...editingItem, language: e.target.value})} className="h-14 rounded-xl border-slate-100 bg-slate-50 font-bold uppercase text-[10px]" />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-6">
+               <div className="lg:col-span-4 space-y-6">
+                  <Card className="border-none bg-slate-50/50 p-8 rounded-[2.5rem] space-y-6">
+                     <p className="text-[10px] font-black uppercase text-primary tracking-[0.3em] ml-1">Archive Metadata</p>
                      <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Month</Label>
-                        <select value={editingItem?.month} onChange={e => setEditingItem({...editingItem, month: e.target.value})} className="w-full h-14 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none">
-                          {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(m => <option key={m} value={m}>{m}</option>)}
+                        <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Package Title</Label>
+                        <Input value={editingItem?.title || ""} onChange={e => setEditingItem({...editingItem, title: e.target.value})} className="h-14 rounded-xl border-slate-100 bg-white font-black text-lg text-[#0F172A]" placeholder="e.g. Daily CA - 25 Oct 2026" />
+                     </div>
+
+                     <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Package Type</Label>
+                        <select value={editingItem?.type} onChange={e => setEditingItem({...editingItem, type: e.target.value})} className="w-full h-14 bg-white border-none rounded-xl px-4 font-black uppercase text-[10px] outline-none shadow-sm">
+                           <option value="DAILY">DAILY HUB</option>
+                           <option value="WEEKLY">WEEKLY HUB</option>
+                           <option value="MONTHLY">MONTHLY HUB</option>
+                           <option value="SPECIAL">SPECIAL NODE</option>
                         </select>
+                        </div>
+                        <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Language</Label>
+                        <Input value={editingItem?.language || "English + Punjabi"} onChange={e => setEditingItem({...editingItem, language: e.target.value})} className="h-14 rounded-xl border-none bg-white font-bold uppercase text-[10px] shadow-sm" />
+                        </div>
                      </div>
-                     <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Year</Label>
-                        <Input value={editingItem?.year} onChange={e => setEditingItem({...editingItem, year: e.target.value})} className="h-14 rounded-xl border-slate-100 font-bold" />
-                     </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2">
-                       <Upload className="h-3 w-3" /> PDF Material Link
-                    </Label>
-                    <Input 
-                      value={editingItem?.pdfUrl || ""} 
-                      onChange={e => setEditingItem({...editingItem, pdfUrl: e.target.value.trim()})} 
-                      className="h-14 rounded-xl border-slate-100 bg-slate-50 font-bold text-primary" 
-                      placeholder="https://..." 
-                    />
-                  </div>
+                     <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                           <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Month</Label>
+                           <select value={editingItem?.month} onChange={e => setEditingItem({...editingItem, month: e.target.value})} className="w-full h-14 bg-white border-none rounded-xl px-4 font-bold text-sm outline-none shadow-sm">
+                           {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(m => <option key={m} value={m}>{m}</option>)}
+                           </select>
+                        </div>
+                        <div className="space-y-2">
+                           <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Year</Label>
+                           <Input value={editingItem?.year} onChange={e => setEditingItem({...editingItem, year: e.target.value})} className="h-14 rounded-xl border-none bg-white font-bold shadow-sm" />
+                        </div>
+                     </div>
+
+                     <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2">
+                           <Upload className="h-3 w-3" /> PDF Material Link
+                        </Label>
+                        <Input 
+                        value={editingItem?.pdfUrl || ""} 
+                        onChange={e => setEditingItem({...editingItem, pdfUrl: e.target.value.trim()})} 
+                        className="h-14 rounded-xl border-none bg-white font-bold text-primary shadow-sm" 
+                        placeholder="https://..." 
+                        />
+                     </div>
+                  </Card>
                </div>
 
-               {/* Quiz / MCQs Column */}
-               <div className="bg-slate-50/50 rounded-[3rem] p-10 border border-slate-100 space-y-8 flex flex-col">
-                  <div className="flex items-center justify-between">
-                     <div className="flex items-center gap-4">
-                        <Zap className="h-6 w-6 text-primary" />
-                        <h4 className="font-headline font-black text-xl uppercase text-[#0F172A]">Quiz Architect</h4>
-                     </div>
-                     <Badge className="bg-[#0F172A] text-white border-none font-black px-4 py-1.5 rounded-xl text-[10px]">{editingItem?.questions?.length || 0} Questions</Badge>
-                  </div>
-
-                  <div className="flex gap-4">
-                     <div className="relative flex-1">
-                        <Button asChild variant="outline" className="w-full h-14 rounded-2xl border-2 border-dashed border-slate-200 text-slate-400 font-black uppercase text-[10px] tracking-widest gap-3 bg-white hover:text-primary hover:border-primary/50 transition-all">
-                           <label className="cursor-pointer">
-                              <FileCode className="h-4 w-4" /> Bulk Upload (Excel)
-                              <input type="file" className="hidden" accept=".xlsx,.xls,.csv" onChange={handleFileUpload} />
-                           </label>
-                        </Button>
-                     </div>
-                  </div>
-
-                  <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-4 max-h-[400px]">
-                     {editingItem?.questions?.map((q: Question, idx: number) => (
-                        <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative group/q">
-                           <button onClick={() => {
-                              const qs = [...editingItem.questions];
-                              qs.splice(idx, 1);
-                              setEditingItem({...editingItem, questions: qs});
-                           }} className="absolute top-4 right-4 text-rose-300 hover:text-rose-500 opacity-0 group-hover/q:opacity-100 transition-opacity"><Trash2 className="h-4 w-4" /></button>
-                           <p className="text-[9px] font-black text-primary uppercase tracking-widest mb-1.5">Q{idx+1} Statement</p>
-                           <p className="font-bold text-sm text-[#0F172A] leading-relaxed mb-4">{q.englishQuestion}</p>
-                           <div className="grid grid-cols-2 gap-2">
-                              {['A','B','C','D'].map(opt => (
-                                 <div key={opt} className={cn("px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase", q.correctAnswer === opt ? "bg-emerald-50 border-emerald-100 text-emerald-700" : "bg-slate-50 border-transparent text-slate-400")}>
-                                    {opt}: {q[`option${opt}English` as keyof Question]}
-                                 </div>
-                              ))}
+               {/* Quiz / MCQs Bulk Architect */}
+               <div className="lg:col-span-8 space-y-8">
+                  <Card className="border-none bg-white shadow-xl rounded-[3rem] p-10 space-y-10 border border-slate-100">
+                     <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                           <Zap className="h-8 w-8 text-primary" />
+                           <div className="text-left">
+                              <h4 className="font-headline font-black text-2xl uppercase text-[#0F172A]">Quiz Architect</h4>
+                              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Institutional Bulk Ingestion Protocol</p>
                            </div>
                         </div>
-                     ))}
-                     {editingItem?.questions?.length === 0 && (
-                        <div className="h-full flex flex-col items-center justify-center opacity-20 text-center py-20">
-                           <Layers className="h-12 w-12 mb-4" />
-                           <p className="font-black uppercase text-[10px]">Staging hub empty.</p>
-                        </div>
-                     )}
-                  </div>
+                        <Badge className="bg-[#0F172A] text-white border-none font-black px-6 py-2 rounded-xl text-[10px]">{editingItem?.questions?.length || 0} Questions Staged</Badge>
+                     </div>
 
-                  <Button onClick={() => setEditingItem({...editingItem, questions: [...(editingItem.questions || []), { englishQuestion: "New Question Statement?", optionAEnglish: "Option A", optionBEnglish: "Option B", optionCEnglish: "Option C", optionDEnglish: "Option D", correctAnswer: "A", englishExplanation: "Explanation here..." }]})} variant="ghost" className="w-full h-12 text-[#0F172A] hover:bg-slate-100 rounded-xl font-black uppercase text-[10px] tracking-widest border border-slate-200">
-                     <Plus className="h-4 w-4 mr-2" /> Add Manual Question
-                  </Button>
+                     <div className="space-y-6">
+                        <div className="space-y-3">
+                           <div className="flex items-center justify-between ml-1">
+                              <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Pasted Blocks Hub</Label>
+                              <Badge variant="outline" className="text-[8px] font-black uppercase border-primary/20 text-primary flex items-center gap-1">
+                                 <Database className="h-2 w-2" /> Q1 EN / Q1 PA Format
+                              </Badge>
+                           </div>
+                           <Textarea 
+                              value={bulkText}
+                              onChange={e => setBulkText(e.target.value)}
+                              placeholder={`Q1. Question Statement EN...\nਪ੍ਰਸ਼ਨ 1. ਸਟੇਟਮੈਂਟ PA...\n(A) Option EN / ਵਿਕਲਪ PA\n(B) Option EN / ਵਿਕਲਪ PA\nCorrect Answer: A`}
+                              className="min-h-[250px] rounded-[2rem] bg-slate-50 border-none p-8 text-sm font-bold shadow-inner custom-scrollbar resize-none focus-visible:ring-primary"
+                           />
+                           <Button onClick={handleProcessBulk} disabled={!bulkText.trim()} className="w-full h-16 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.3em] text-[11px] rounded-xl shadow-2xl gap-4 group transition-all active:scale-95 border-none">
+                              Initialize Bulk Extraction <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                           </Button>
+                        </div>
+
+                        {editingItem?.questions?.length > 0 && (
+                           <div className="pt-6 border-t border-slate-50">
+                              <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-6 ml-1">Review Staged Assets</p>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                                 {editingItem.questions.map((q: any, idx: number) => (
+                                    <div key={idx} className="bg-slate-50/50 p-6 rounded-2xl border border-slate-100 group/q relative transition-all hover:bg-white hover:shadow-lg">
+                                       <button 
+                                          onClick={() => {
+                                             const qs = [...editingItem.questions];
+                                             qs.splice(idx, 1);
+                                             setEditingItem({...editingItem, questions: qs});
+                                          }} 
+                                          className="absolute top-4 right-4 text-rose-300 hover:text-rose-500 opacity-0 group-hover/q:opacity-100 transition-opacity"
+                                       >
+                                          <Trash2 className="h-4 w-4" />
+                                       </button>
+                                       <div className="flex items-center gap-3 mb-3">
+                                          <div className="h-6 w-6 rounded-lg bg-[#0F172A] text-white flex items-center justify-center font-black text-[10px]">{idx + 1}</div>
+                                          <span className="text-[8px] font-black uppercase text-slate-400">NODE_VERIFIED</span>
+                                       </div>
+                                       <p className="font-bold text-xs text-[#0F172A] line-clamp-2">{q.englishQuestion}</p>
+                                       <div className="mt-3 flex items-center gap-2">
+                                          <Badge className="bg-emerald-50 text-emerald-600 border-none text-[8px] font-black">KEY: {q.correctAnswer}</Badge>
+                                          {q.punjabiQuestion && <Badge className="bg-blue-50 text-blue-600 border-none text-[8px] font-black">BILINGUAL</Badge>}
+                                       </div>
+                                    </div>
+                                 ))}
+                              </div>
+                              <Button 
+                                 variant="ghost" 
+                                 onClick={() => setEditingItem({...editingItem, questions: []})}
+                                 className="mt-6 text-rose-500 hover:bg-rose-50 font-black uppercase text-[10px] tracking-widest gap-2"
+                              >
+                                 <Trash2 className="h-4 w-4" /> Purge Staging Hub
+                              </Button>
+                           </div>
+                        )}
+                     </div>
+                  </Card>
                </div>
             </div>
           </div>
 
           <DialogFooter className="p-10 pt-4 bg-slate-50 flex gap-4 shrink-0 border-t border-slate-100">
             <button onClick={() => setEditingItem(null)} className="rounded-xl h-14 px-8 font-black uppercase text-[10px] text-slate-400 hover:text-[#0F172A]">Cancel Draft</button>
-            <Button onClick={handleSave} disabled={isSaving} className="bg-[#0F172A] hover:bg-black text-white h-14 px-10 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 shadow-xl transition-all active:scale-95 gap-3">
-              {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Commit CA Hub to Registry
+            <Button onClick={handleSave} disabled={isSaving} className="bg-[#0F172A] hover:bg-black text-white h-14 px-10 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 shadow-xl transition-all active:scale-95 gap-3 border-none">
+              {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4 text-primary fill-current" />} Commit CA Hub to Registry
             </Button>
           </DialogFooter>
         </DialogContent>
