@@ -36,8 +36,8 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 
 /**
- * @fileOverview Institutional Exam Hub v7.0.
- * Dynamic: All tabs (Mocks, Notes, Syllabus) are now live synced with Admin Firestore.
+ * @fileOverview Institutional Exam Hub v7.1.
+ * UPDATED: Logo priority fix for specialized exams like CTET.
  */
 
 export default function ExamHubPage() {
@@ -97,7 +97,8 @@ export default function ExamHubPage() {
     b.abbreviation?.toLowerCase() === exam.boardId?.toLowerCase()
   );
 
-  const logoUrl = activeBoard?.iconUrl || exam.iconUrl;
+  // PRIORITY: Specific exam icon > Generic board icon
+  const logoUrl = exam.iconUrl || activeBoard?.iconUrl;
   const isArmy = exam.boardId?.toLowerCase() === 'army' || exam.id?.toLowerCase().includes('army');
 
   return (

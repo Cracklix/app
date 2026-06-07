@@ -18,8 +18,8 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @file Overview High-Density Responsive Exam Catalog v6.0.
- * HARDENED: Robust Board Logo lookup logic with specialized scaling for circular insignias (Army).
+ * @file Overview High-Density Responsive Exam Catalog v6.1.
+ * HARDENED: Prioritized Exam-Specific logos over Board logos for better visual fidelity (e.g. CTET).
  */
 
 export default function ExamsCatalog() {
@@ -114,13 +114,13 @@ function CatalogContent() {
            {examsLoading || mocksLoading ? (
               Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[3.5rem]" />)
            ) : filteredExams.map((exam: any) => {
-              // ROBUST LOOKUP: Cross-reference Board ID
               const board = boards?.find((b: any) => 
                 b.id.toLowerCase() === exam.boardId?.toLowerCase() || 
                 b.abbreviation?.toLowerCase() === exam.boardId?.toLowerCase()
               );
               
-              const logoUrl = board?.iconUrl || exam.iconUrl;
+              // PRIORITY: Exam-specific iconUrl first, then fallback to Board icon
+              const logoUrl = exam.iconUrl || board?.iconUrl;
               const stats = statsMap[exam.id] || { full: 0, pyq: 0, sectional: 0, subjects: new Set() };
               const isPinned = profile?.pinnedExams?.includes(exam.id);
               const isImgFailed = failedImages[exam.id];

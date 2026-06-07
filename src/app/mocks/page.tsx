@@ -28,8 +28,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @file Overview Final Exam Gateway Node v6.0.
- * HARDENED: Robust Board Logo lookup logic with Referrer Policy bypass for Government Assets.
+ * @file Overview Final Exam Gateway Node v6.1.
+ * HARDENED: Fixed logo priority to show exam-specific icons first.
  */
 
 export default function MocksGatewayPage() {
@@ -90,13 +90,13 @@ export default function MocksGatewayPage() {
            {examsLoading || mocksLoading ? (
              Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-[450px] w-full rounded-[3.5rem]" />)
            ) : exams?.sort((a: any, b: any) => a.name.localeCompare(b.name)).map((exam: any) => {
-             // HARDENED BOARD LOOKUP: Matches exams to their respective board icons
              const board = boards?.find((b: any) => 
                b.id.toLowerCase() === exam.boardId?.toLowerCase() || 
                b.abbreviation?.toLowerCase() === exam.boardId?.toLowerCase()
              );
              
-             const logoUrl = board?.iconUrl || exam.iconUrl;
+             // PRIORITY: Exam-specific logo first
+             const logoUrl = exam.iconUrl || board?.iconUrl;
              const stats = statsMap[exam.id] || { full: 0, pyq: 0, sectional: 0, subjects: new Set() };
              const isImgFailed = failedImages[exam.id];
              const isArmy = exam.boardId?.toLowerCase() === 'army' || exam.id?.toLowerCase().includes('army');

@@ -34,8 +34,8 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Master Registry.
- * Updated: High-Fidelity Board Logo lookup with specialized scaling for circular emblems (Army).
+ * @fileOverview Institutional Exam Master Registry v2.1.
+ * Updated: Prioritized exam-specific icons (like CTET) over generic board icons.
  */
 
 export default function ExamRegistryPage() {
@@ -186,7 +186,9 @@ export default function ExamRegistryPage() {
                   b.id.toLowerCase() === e.boardId?.toLowerCase() || 
                   b.abbreviation?.toLowerCase() === e.boardId?.toLowerCase()
                 );
-                const logoUrl = board?.iconUrl || e.iconUrl;
+                
+                // PRIORITY: Exam-specific iconUrl first
+                const logoUrl = e.iconUrl || board?.iconUrl;
                 const isArmy = e.boardId?.toLowerCase() === 'army' || e.id?.toLowerCase().includes('army');
 
                 return (
@@ -231,7 +233,7 @@ export default function ExamRegistryPage() {
                     </TableCell>
                     <TableCell className="text-right px-10">
                       <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100 transition-all">
-                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-white shadow-sm" onClick={() => setEditingExam(e)}>
+                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-white shadow-sm" onClick={() => setEditingSubject(e)}>
                             <Edit className="h-5 w-5" />
                         </Button>
                         <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-rose-50 hover:text-rose-600 shadow-sm" onClick={async () => {
