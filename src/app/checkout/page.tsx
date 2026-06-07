@@ -19,8 +19,8 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Aspirant Checkout Hub v8.0.
- * Unified Terminal: Integrated Razorpay Standard Gateway & Manual UPI Audit.
+ * @fileOverview Aspirant Checkout Hub v8.1.
+ * FIXED: Added window.Razorpay check and improved script reliability.
  */
 
 export default function CheckoutPage() {
@@ -53,6 +53,12 @@ function CheckoutContent() {
 
   const handleRazorpayPayment = async () => {
     if (!user || !profile || !planData) return;
+    
+    if (!(window as any).Razorpay) {
+      toast({ variant: "destructive", title: "Gateway Offline", description: "Razorpay script is still loading. Please wait a second." });
+      return;
+    }
+
     setProcessing(true);
 
     try {
@@ -148,7 +154,7 @@ function CheckoutContent() {
   return (
     <div className="min-h-screen bg-slate-50/50 font-body">
       <Navbar />
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="beforeInteractive" />
       
       <main className="container mx-auto px-4 md:px-6 py-12 md:py-24 max-w-5xl">
         <div className="flex items-center gap-6 mb-12">
