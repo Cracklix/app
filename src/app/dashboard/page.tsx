@@ -33,8 +33,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import ShareButton from "@/components/navigation/ShareButton"
 
 /**
- * @fileOverview Institutional Dashboard v7.6 (UI Refined).
- * Optimized: Clean branding at bottom to avoid repetition.
+ * @fileOverview Student Dashboard v7.7.
+ * Simplified Language: Replaced technical terms with common words.
  */
 
 export default function StudentDashboard() {
@@ -80,12 +80,12 @@ export default function StudentDashboard() {
       
       <main className="mobile-app-shell py-4 px-2 space-y-4">
         
-        {/* Momentum & Readiness Hub */}
+        {/* Progress Hub */}
         <section className="grid grid-cols-2 gap-3">
            <Card className="border-none shadow-xl bg-gradient-to-br from-orange-500 to-primary text-white p-5 rounded-[2rem] relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform"><Flame className="h-20 w-20" /></div>
               <div className="relative z-10 space-y-2 text-left">
-                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Prep Streak</p>
+                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Practice Streak</p>
                  <div className="flex items-baseline gap-2">
                     <p className="text-4xl font-headline font-black leading-none">{stats.streak}</p>
                     <span className="text-[10px] font-bold uppercase">Days</span>
@@ -95,7 +95,7 @@ export default function StudentDashboard() {
            <Card className="border-none shadow-xl bg-[#0F172A] text-white p-5 rounded-[2rem] relative overflow-hidden group text-left">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform"><Award className="h-20 w-20" /></div>
               <div className="relative z-10 space-y-2">
-                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Readiness</p>
+                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Readiness Score</p>
                  <div className="flex items-baseline gap-2">
                     <p className="text-4xl font-headline font-black leading-none">{stats.readiness}%</p>
                     <ShieldCheck className="h-3 w-3 text-emerald-400" />
@@ -114,7 +114,7 @@ export default function StudentDashboard() {
                   <Badge className="bg-primary text-white border-none text-[8px] font-black uppercase px-2 py-0.5 rounded-md">
                     {profile?.status || 'Free'} PASS
                   </Badge>
-                  <p className="text-slate-400 font-bold uppercase tracking-widest text-[8px] truncate">{profile?.targetExam || 'General'}</p>
+                  <p className="text-slate-400 font-bold uppercase tracking-widest text-[8px] truncate">{profile?.targetExam || 'General Hub'}</p>
                </div>
             </div>
           </div>
@@ -122,14 +122,14 @@ export default function StudentDashboard() {
 
         <section className="grid grid-cols-3 gap-2">
           <CompactStat label="Accuracy" val={`${stats.avgAccuracy}%`} icon={<Target className="text-primary h-3.5 w-3.5" />} />
-          <CompactStat label="Attempts" val={stats.total} icon={<ClipboardList className="text-blue-500 h-3.5 w-3.5" />} />
-          <CompactStat label="Learning" val={stats.hours} icon={<Activity className="text-emerald-500 h-3.5 w-3.5" />} />
+          <CompactStat label="Tests" val={stats.total} icon={<ClipboardList className="text-blue-500 h-3.5 w-3.5" />} />
+          <CompactStat label="Time Spent" val={stats.hours} icon={<Activity className="text-emerald-500 h-3.5 w-3.5" />} />
         </section>
 
         <div className="space-y-4">
             <Card className="border-none shadow-sm rounded-[2rem] bg-white overflow-hidden text-left">
                <CardHeader className="p-5 border-b border-slate-50 flex flex-row items-center justify-between">
-                  <h3 className="font-headline text-sm font-black text-[#0F172A] uppercase">Test History</h3>
+                  <h3 className="font-headline text-sm font-black text-[#0F172A] uppercase">Recent Tests</h3>
                   <History className="h-4 w-4 text-slate-300" />
                </CardHeader>
                <CardContent className="p-0">
@@ -152,18 +152,18 @@ export default function StudentDashboard() {
                            </Link>
                         ))
                      ) : (
-                        <div className="p-12 text-center opacity-30 italic text-[10px] uppercase font-black tracking-widest text-slate-300">No nodes recorded.</div>
+                        <div className="p-12 text-center opacity-30 italic text-[10px] uppercase font-black tracking-widest text-slate-300">No tests taken yet.</div>
                      )}
                   </div>
                </CardContent>
             </Card>
 
             <Card className="border-none shadow-sm rounded-[2.5rem] bg-white p-6 space-y-4 text-left">
-               <h3 className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">Tactical Access</h3>
+               <h3 className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">Quick Links</h3>
                <div className="grid grid-cols-2 gap-3">
-                  <ActionTile icon={<Bookmark className="text-primary h-5 w-5" />} label="REVISION" href="/revision" />
-                  <ActionTile icon={<Trophy className="text-amber-500 h-5 w-5" />} label="RANKS" href="/leaderboard" />
-                  <ActionTile icon={<LayoutGrid className="text-orange-500 h-5 w-5" />} label="HUBS" href="/exams" />
+                  <ActionTile icon={<Bookmark className="text-primary h-5 w-5" />} label="SAVED ITEMS" href="/revision" />
+                  <ActionTile icon={<Trophy className="text-amber-500 h-5 w-5" />} label="RANKINGS" href="/leaderboard" />
+                  <ActionTile icon={<LayoutGrid className="text-orange-500 h-5 w-5" />} label="EXAM HUBS" href="/exams" />
                   <div className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
                      <ShareButton showLabel={false} variant="ghost" className="p-0 h-10 w-10 text-slate-400" />
                      <span className="text-[8px] font-black uppercase text-slate-500">SHARE</span>
@@ -171,12 +171,11 @@ export default function StudentDashboard() {
                </div>
             </Card>
 
-            {/* POWERED BY BRANDING */}
             <div className="py-8 flex flex-col items-center gap-2">
                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
-                  Powered by <span className="text-[#0F172A]">Arsh Grewal</span>
+                  Built by <span className="text-[#0F172A]">Arsh Grewal</span>
                </p>
-               <p className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Cracklix v7.6 • Registry Secure</p>
+               <p className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Cracklix v7.7 • Secure Portal</p>
             </div>
         </div>
       </main>

@@ -44,9 +44,8 @@ import { cn } from "@/lib/utils"
 import React from "react"
 
 /**
- * @fileOverview Elite Aspirant Profile Hub v13.0.
- * COMPACT: High-density registry modification dialog.
- * RESPONSIVE: Hardened for mobile (360px+) and professional desktop workstations.
+ * @fileOverview Student Profile Hub v14.0.
+ * Simplified language: Removed technical jargon (Node, Registry, Hub) for better user experience.
  */
 export default function ProfilePage() {
   const { user, profile, loading } = useUser()
@@ -103,7 +102,7 @@ export default function ProfilePage() {
     if (!results || results.length === 0) return { total: 0, avgAccuracy: 0, rank: "N/A" }
     const total = results.length
     const avgAccuracy = Math.round(results.reduce((acc: number, curr: any) => acc + (curr.accuracy || 0), 0) / total)
-    return { total, avgAccuracy, rank: total > 5 ? "Top 12%" : "Audit Active" }
+    return { total, avgAccuracy, rank: total > 5 ? "Top 12%" : "Live" }
   }, [results])
 
   const handleUpdateProfile = async () => {
@@ -116,13 +115,13 @@ export default function ProfilePage() {
       toast({ 
         variant: "destructive", 
         title: "Update Blocked", 
-        description: `The field '${missing.toUpperCase()}' is mandatory.` 
+        description: `The ${missing.toUpperCase()} field is required.` 
       });
       return;
     }
 
     if (editForm.phone.replace(/\D/g, '').length < 10) {
-      toast({ variant: "destructive", title: "Invalid Contact", description: "Enter 10-digit mobile number." });
+      toast({ variant: "destructive", title: "Invalid Number", description: "Enter 10-digit mobile number." });
       return;
     }
 
@@ -136,10 +135,10 @@ export default function ProfilePage() {
           phone: finalPhone,
           updatedAt: serverTimestamp()
        })
-       toast({ title: "Registry Synced", description: "Identity node updated." })
+       toast({ title: "Profile Updated", description: "Your details have been saved." })
        setIsEditing(false)
     } catch (e: any) {
-       toast({ variant: "destructive", title: "Sync Failed", description: e.message })
+       toast({ variant: "destructive", title: "Update Failed", description: e.message })
     } finally {
        setIsSaving(false)
     }
@@ -154,7 +153,7 @@ export default function ProfilePage() {
   };
 
   const formatDOB = (dob: string) => {
-    if (!dob) return "Audit Pending";
+    if (!dob) return "Not Added";
     const parts = dob.split('-'); 
     if (parts.length === 3) {
       return `${parts[2]}/${parts[1]}/${parts[0]}`;
@@ -163,13 +162,14 @@ export default function ProfilePage() {
   };
 
   const memberSince = useMemo(() => {
-     if (!profile?.createdAt) return "Registry Active";
+     const fallback = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+     if (!profile?.createdAt) return fallback;
      try {
         const date = new Date(profile.createdAt);
-        if (isNaN(date.getTime())) return "Registry Node";
+        if (isNaN(date.getTime())) return fallback;
         return date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
      } catch (e) {
-        return "Active Hub";
+        return fallback;
      }
   }, [profile]);
 
@@ -177,7 +177,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center space-y-4">
         <Loader2 className="h-10 w-10 text-primary animate-spin" />
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Syncing Aspirant Hub...</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Syncing Profile...</p>
       </div>
     )
   }
@@ -226,7 +226,7 @@ export default function ProfilePage() {
 
                  <div className="shrink-0 w-full md:w-auto pt-4 md:pt-0">
                     <Button onClick={() => setIsEditing(true)} className="w-full md:w-auto h-12 md:h-14 px-8 bg-white/10 hover:bg-white/20 text-white border border-white/10 rounded-xl font-black uppercase text-[10px] tracking-widest gap-3 shadow-2xl">
-                       <Edit className="h-4 w-4 text-primary" /> Modify Registry
+                       <Edit className="h-4 w-4 text-primary" /> Edit Profile
                     </Button>
                  </div>
               </div>
@@ -239,23 +239,23 @@ export default function ProfilePage() {
               {/* LEFT: PERFORMANCE & STATS */}
               <div className="lg:col-span-8 space-y-6 md:space-y-8">
                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6">
-                    <StatsCard icon={<ClipboardList />} label="TESTS ATTEMPTED" value={stats.total} color="text-blue-500" />
-                    <StatsCard icon={<Target />} label="AVG ACCURACY" value={`${stats.avgAccuracy}%`} color="text-primary" />
+                    <StatsCard icon={<ClipboardList />} label="TESTS COMPLETED" value={stats.total} color="text-blue-500" />
+                    <StatsCard icon={<Target />} label="AVERAGE ACCURACY" value={`${stats.avgAccuracy}%`} color="text-primary" />
                     <StatsCard icon={<Trophy />} label="STATE RANKING" value={stats.rank} color="text-emerald-500" className="hidden sm:flex" />
                  </div>
 
                  <Card className="border-none shadow-xl rounded-[2.5rem] bg-white p-8 md:p-10 space-y-8">
                     <div className="flex items-center justify-between border-b border-slate-50 pb-6">
                        <h3 className="font-headline font-black text-xl md:text-2xl uppercase flex items-center gap-4 text-[#0F172A]">
-                          <UserIcon className="h-6 w-6 text-primary" /> Personal Repository
+                          <UserIcon className="h-6 w-6 text-primary" /> Personal Information
                        </h3>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                        <ProfileDataNode icon={<Calendar className="text-blue-500" />} label="DATE OF BIRTH" value={formatDOB(profile.dob)} />
-                       <ProfileDataNode icon={<Phone className="text-emerald-500" />} label="VERIFIED MOBILE" value={formatPhone(profile.phone)} />
-                       <ProfileDataNode icon={<MapPin className="text-rose-500" />} label="FULL CORRESPONDENCE ADDRESS" value={profile.address || "No address node synced"} colSpan={2} />
-                       <ProfileDataNode icon={<ShieldCheck className="text-primary" />} label="REGISTRY STATUS" value={`${profile.role || 'STUDENT'} Node`} />
+                       <ProfileDataNode icon={<Phone className="text-emerald-500" />} label="MOBILE NUMBER" value={formatPhone(profile.phone)} />
+                       <ProfileDataNode icon={<MapPin className="text-rose-500" />} label="ADDRESS" value={profile.address || "No address provided"} colSpan={2} />
+                       <ProfileDataNode icon={<ShieldCheck className="text-primary" />} label="ACCOUNT TYPE" value={`${profile.role || 'STUDENT'}`} />
                        <ProfileDataNode icon={<Activity className="text-orange-500" />} label="MEMBER SINCE" value={memberSince} />
                     </div>
                  </Card>
@@ -265,11 +265,11 @@ export default function ProfilePage() {
                     <CardHeader className="p-8 md:p-10 border-b border-slate-50 flex flex-row items-center justify-between">
                        <div className="space-y-1">
                           <CardTitle className="text-sm md:text-lg font-black uppercase tracking-tight text-[#0F172A] flex items-center gap-2">
-                             <TrendingUp className="h-5 w-5 text-primary" /> Analysis History
+                             <TrendingUp className="h-5 w-5 text-primary" /> Test History
                           </CardTitle>
                        </div>
                        <Button asChild variant="ghost" className="h-10 text-[9px] font-black uppercase tracking-widest text-primary gap-2">
-                          <Link href="/dashboard">Full Audit <ChevronRight className="h-4 w-4" /></Link>
+                          <Link href="/dashboard">View All <ChevronRight className="h-4 w-4" /></Link>
                        </Button>
                     </CardHeader>
                     <CardContent className="p-0">
@@ -294,7 +294,7 @@ export default function ProfilePage() {
                                 </Link>
                              ))
                           ) : (
-                             <div className="p-20 text-center text-slate-300 font-bold uppercase text-xs">No attempt nodes synced.</div>
+                             <div className="p-20 text-center text-slate-300 font-bold uppercase text-xs">No tests completed yet.</div>
                           )}
                        </div>
                     </CardContent>
@@ -304,13 +304,13 @@ export default function ProfilePage() {
               {/* RIGHT: BILLING & QUICK ACTIONS */}
               <div className="lg:col-span-4 space-y-6 md:space-y-8">
                  <Card className="border-none shadow-xl rounded-[2.5rem] bg-white p-8 space-y-8">
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Tactical Access</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Quick Actions</h3>
                     <div className="space-y-4">
                        <Button asChild className="w-full h-14 bg-[#0F172A] hover:bg-black text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl gap-3">
-                          <Link href="/pass"><CreditCard className="h-5 w-5 text-primary" /> Subscription Hub</Link>
+                          <Link href="/pass"><CreditCard className="h-5 w-5 text-primary" /> Unlock Elite Pass</Link>
                        </Button>
                        <Button asChild variant="outline" className="w-full h-14 border-slate-100 bg-slate-50/50 rounded-2xl font-black uppercase text-[10px] tracking-widest text-slate-600 gap-3">
-                          <Link href="/dashboard"><History className="h-5 w-5" /> Detailed History</Link>
+                          <Link href="/dashboard"><History className="h-5 w-5" /> Detailed Analysis</Link>
                        </Button>
                     </div>
                  </Card>
@@ -318,10 +318,10 @@ export default function ProfilePage() {
                  <div className="bg-primary rounded-[3rem] p-10 text-white space-y-6 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-110 transition-transform"><Award className="h-40 w-40" /></div>
                     <div className="relative z-10 space-y-4">
-                       <h4 className="text-2xl font-headline font-black uppercase leading-tight">Mastery Index <br/> Sync High</h4>
-                       <p className="text-white/70 text-[11px] font-bold uppercase tracking-tight">Your readiness audit is complete.</p>
+                       <h4 className="text-2xl font-headline font-black uppercase leading-tight">State Ranking <br/> Is Live</h4>
+                       <p className="text-white/70 text-[11px] font-bold uppercase tracking-tight">Check your standing among thousands.</p>
                        <Button asChild className="w-full bg-white text-primary hover:bg-slate-100 font-black h-12 rounded-xl text-[10px] uppercase shadow-lg">
-                          <Link href="/leaderboard">View Rankings</Link>
+                          <Link href="/leaderboard">See Rankings</Link>
                        </Button>
                     </div>
                  </div>
@@ -332,20 +332,20 @@ export default function ProfilePage() {
 
       <Footer />
 
-      {/* EDIT REGISTRY DIALOG - COMPACT VERSION */}
+      {/* EDIT PROFILE DIALOG */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
          <DialogContent className="sm:max-w-xl w-[95vw] max-h-[90vh] bg-white rounded-[2.5rem] border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
             <div className="h-1.5 w-full bg-[#0B1528] shrink-0" />
             <DialogHeader className="p-6 md:p-8 pb-2 md:pb-4 shrink-0">
                <DialogTitle className="text-xl md:text-3xl font-black font-headline uppercase text-[#0F172A] flex items-center gap-4">
-                  <ShieldCheck className="h-6 w-6 md:h-8 md:w-8 text-primary" /> Modify Audit Node
+                  <ShieldCheck className="h-6 w-6 md:h-8 md:w-8 text-primary" /> Edit Profile Details
                </DialogTitle>
             </DialogHeader>
             
             <div className="px-6 md:px-8 pb-6 md:pb-8 space-y-5 overflow-y-auto custom-scrollbar flex-1">
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5 text-left">
-                     <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Identity Name</Label>
+                     <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Full Name</Label>
                      <Input value={editForm?.name || ""} onChange={e => setEditForm({...editForm, name: e.target.value})} className="h-11 rounded-xl bg-slate-50 border-none font-bold text-sm" />
                   </div>
                   <div className="space-y-1.5 text-left">
@@ -355,7 +355,7 @@ export default function ProfilePage() {
                </div>
                
                <div className="space-y-1.5 text-left">
-                  <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Verified Contact Node (Mobile)</Label>
+                  <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Mobile Number</Label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-slate-400">+91</span>
                     <Input 
@@ -368,24 +368,24 @@ export default function ProfilePage() {
                </div>
 
                <div className="space-y-1.5 text-left">
-                  <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Permanent Correspondence Address</Label>
+                  <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Full Residential Address</Label>
                   <Textarea 
                     value={editForm?.address || ""} 
                     onChange={e => setEditForm({...editForm, address: e.target.value})} 
                     className="min-h-[100px] md:min-h-[120px] rounded-2xl bg-slate-50 border-none font-medium p-4 text-xs md:text-sm leading-relaxed shadow-inner resize-none" 
-                    placeholder="Complete address for institutional records..." 
+                    placeholder="Enter your complete home address..." 
                   />
                </div>
             </div>
 
             <DialogFooter className="p-6 md:p-8 pt-4 md:pt-6 bg-slate-50 border-t border-slate-100 shrink-0 flex flex-row gap-4 items-center justify-between">
-               <Button variant="ghost" onClick={() => setIsEditing(false)} className="h-12 md:h-14 px-4 md:px-8 font-black uppercase text-[10px] text-slate-400 tracking-widest hover:text-slate-900 transition-colors">Abort Audit</Button>
+               <Button variant="ghost" onClick={() => setIsEditing(false)} className="h-12 md:h-14 px-4 md:px-8 font-black uppercase text-[10px] text-slate-400 tracking-widest hover:text-slate-900 transition-colors">Cancel</Button>
                <Button 
                 onClick={handleUpdateProfile} 
                 disabled={isSaving} 
                 className="bg-primary hover:bg-orange-600 text-white h-12 md:h-14 px-8 md:px-12 rounded-xl font-black uppercase text-[10px] md:text-[11px] tracking-[0.2em] flex-1 shadow-xl transition-all active:scale-95 gap-3"
                >
-                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save Registry
+                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save Profile Details
                </Button>
             </DialogFooter>
          </DialogContent>
@@ -398,7 +398,7 @@ function HeaderInfo({ icon, text }: { icon: React.ReactNode, text: string }) {
    return (
       <div className="flex items-center gap-3 text-white/60 font-bold uppercase text-[11px] tracking-tight">
          <span className="shrink-0">{icon}</span>
-         <span className="truncate max-w-[240px]">{text || 'Pending'}</span>
+         <span className="truncate max-w-[240px]">{text || 'Not Added'}</span>
       </div>
    )
 }

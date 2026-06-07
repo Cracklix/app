@@ -47,8 +47,8 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tool
 import StudentAvatar from "@/components/brand/StudentAvatar"
 
 /**
- * @fileOverview Elite Institutional Results Hub v25.0.
- * Rebuilt for Testbook-Level Experience with Real-Time State Ranking.
+ * @fileOverview Test Result Summary v26.0.
+ * Simplified Language: Removed "Audit", "Registry", "Node" for better clarity.
  */
 
 export default function ResultPage() {
@@ -65,7 +65,6 @@ export default function ResultPage() {
   const [activeReviewFilter, setActiveReviewFilter] = useState<'ALL' | 'CORRECT' | 'WRONG' | 'SKIPPED'>('ALL')
   const [expandedQs, setExpandedQs] = useState<Record<number, boolean>>({})
 
-  // 1. Fetch User Result
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
     return query(collection(db, "results"), where("userId", "==", user.uid), where("mockId", "==", mockId))
@@ -73,7 +72,6 @@ export default function ResultPage() {
 
   const { data: rawResultDocs, loading: resultsLoading } = useCollection<any>(resultsQuery)
   
-  // 2. Fetch Global Results for this mock to calculate Rank
   const globalResultsQuery = useMemo(() => {
     if (!db || !mockId) return null
     return query(collection(db, "results"), where("mockId", "==", mockId), orderBy("score", "desc"))
@@ -86,7 +84,6 @@ export default function ResultPage() {
     return [...rawResultDocs].sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]
   }, [rawResultDocs])
 
-  // 3. Merit Stats Engine
   const merit = useMemo(() => {
      if (!globalResults || !sessionData) return { rank: '?', total: 0, percentile: 0, topper: null };
      const sorted = [...globalResults].sort((a, b) => b.score - a.score);
@@ -130,7 +127,7 @@ export default function ResultPage() {
           setQuestions(questionIds.map(id => fetchedQuestions.find(q => q.id === id)).filter(Boolean))
         }
       } catch (e) {
-        toast({ variant: "destructive", title: "Audit Sync Failed" })
+        toast({ variant: "destructive", title: "Sync Failed" })
       } finally {
         setLoadingContent(false)
       }
@@ -177,26 +174,23 @@ export default function ResultPage() {
   }, [questions, sessionData, activeReviewFilter]);
 
   const handleShare = () => {
-     const text = `🔥 I just attempted ${sessionData.mockTitle} on Cracklix!\n\n🏆 Rank: #${merit.rank} of ${merit.total}\n🎯 Score: ${sessionData.score}/${sessionData.totalQuestions}\n📈 Percentile: ${merit.percentile}%\n\nPrepare for Punjab Government Exams here: ${window.location.origin}`;
+     const text = `🔥 I just finished ${sessionData.mockTitle} on Cracklix!\n\n🏆 State Rank: #${merit.rank} of ${merit.total}\n🎯 Marks: ${sessionData.score}/${sessionData.totalQuestions}\n\nJoin here: ${window.location.origin}`;
      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   }
 
   if (resultsLoading || loadingContent) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-6">
-       <div className="relative">
-          <Zap className="h-16 w-16 text-primary animate-pulse" />
-          <div className="absolute -inset-4 bg-primary/20 blur-xl rounded-full animate-ping" />
-       </div>
-       <p className="text-[12px] font-black uppercase tracking-[0.4em] text-primary">Synchronizing State Rank Index...</p>
+       <Zap className="h-12 w-12 text-primary animate-spin" />
+       <p className="text-[12px] font-black uppercase tracking-[0.4em] text-primary">Calculating Ranking...</p>
     </div>
   )
 
   if (!sessionData) return (
     <div className="h-screen flex flex-col items-center justify-center bg-slate-50 p-6 space-y-8">
        <Trophy className="h-20 w-20 text-slate-200" />
-       <p className="text-lg font-bold text-slate-400 uppercase tracking-widest text-center">Result Audit Missing</p>
+       <p className="text-lg font-bold text-slate-400 uppercase tracking-widest text-center">No Result Found</p>
        <Button asChild className="rounded-2xl h-16 px-12 bg-[#0B1528] text-white font-black uppercase text-[10px] tracking-widest shadow-xl">
-          <Link href="/mocks">Browse Mock Series</Link>
+          <Link href="/mocks">Browse Tests</Link>
        </Button>
     </div>
   )
@@ -209,10 +203,10 @@ export default function ResultPage() {
       
       <main className="container mx-auto px-4 md:px-6 py-6 md:py-12 max-w-7xl space-y-8 md:space-y-12">
         
-        {/* 1. ELITE PERFORMANCE HUD */}
+        {/* 1. PERFORMANCE SUMMARY */}
         <div className="flex flex-col lg:flex-row gap-6 md:gap-10">
            
-           {/* LEFT: MERIT HERO */}
+           {/* LEFT: RANK HERO */}
            <Card className="flex-1 border-none shadow-3xl rounded-[2.5rem] md:rounded-[3.5rem] bg-[#0B1528] text-white overflow-hidden relative group">
               <div className="absolute top-0 right-0 p-12 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><Trophy className="h-64 w-64" /></div>
               <CardContent className="p-8 md:p-16 space-y-12 relative z-10">
@@ -220,7 +214,7 @@ export default function ResultPage() {
                     <div className="space-y-4">
                        <div className="flex items-center gap-3">
                           <ShieldCheck className="h-6 w-6 text-primary" />
-                          <Badge className="bg-primary/20 text-primary border-none px-4 py-1.5 rounded-full font-black uppercase text-[9px] tracking-[0.2em] shadow-lg">Official Audit Node</Badge>
+                          <Badge className="bg-primary/20 text-primary border-none px-4 py-1.5 rounded-full font-black uppercase text-[9px] tracking-[0.2em] shadow-lg">Official Result</Badge>
                        </div>
                        <h1 className="text-3xl md:text-5xl lg:text-6xl font-headline font-black uppercase leading-[0.9] tracking-tighter">
                           {sessionData.mockTitle}
@@ -243,10 +237,10 @@ export default function ResultPage() {
                  </div>
 
                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 pt-6">
-                    <HeroMetric label="SCORE" val={`${sessionData.score}/${sessionData.totalQuestions}`} sub="Registry Pts" color="text-primary" />
+                    <HeroMetric label="MARKS" val={`${sessionData.score}/${sessionData.totalQuestions}`} sub="Total Score" color="text-primary" />
                     <HeroMetric label="ACCURACY" val={`${sessionData.accuracy}%`} sub="Precision" color="text-emerald-400" />
-                    <HeroMetric label="CORRECT" val={sessionData.score} sub="Audit Success" color="text-emerald-400" />
-                    <HeroMetric label="TIME" val={`${Math.floor(sessionData.timeTaken / 60)}m`} sub="Pace Index" color="text-blue-400" />
+                    <HeroMetric label="CORRECT" val={sessionData.score} sub="Right Answers" color="text-emerald-400" />
+                    <HeroMetric label="TIME" val={`${Math.floor(sessionData.timeTaken / 60)}m`} sub="Time Spent" color="text-blue-400" />
                  </div>
               </CardContent>
            </Card>
@@ -254,45 +248,42 @@ export default function ResultPage() {
            {/* RIGHT: QUICK ACTIONS */}
            <div className="w-full lg:w-80 flex flex-col gap-6">
               <Card className="border-none shadow-xl rounded-[2.5rem] bg-white p-8 space-y-6">
-                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Institutional Access</h3>
+                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Options</h3>
                  <div className="space-y-4">
                     <Button onClick={handleShare} className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl gap-3">
-                       <MessageCircle className="h-5 w-5 fill-current" /> Share Result
+                       <MessageCircle className="h-5 w-5 fill-current" /> Share Score
                     </Button>
                     <Button variant="outline" onClick={() => window.print()} className="w-full h-14 border-slate-100 rounded-2xl font-black uppercase text-[10px] tracking-widest text-slate-600 gap-3">
-                       <Download className="h-5 w-5" /> Audit PDF
+                       <Download className="h-5 w-5" /> Save as PDF
                     </Button>
                     <Button asChild variant="ghost" className="w-full h-14 rounded-2xl font-black uppercase text-[10px] tracking-widest text-primary hover:bg-primary/5">
-                       <Link href={`/mocks/${mockId}/attempt`}><Zap className="h-4 w-4 mr-2" /> Re-attempt Node</Link>
+                       <Link href={`/mocks/${mockId}/attempt`}><Zap className="h-4 w-4 mr-2" /> Try Again</Link>
                     </Button>
                  </div>
               </Card>
 
               <div className="bg-primary rounded-[2.5rem] p-8 text-white relative overflow-hidden group">
                  <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform"><Award className="h-24 w-24" /></div>
-                 <h4 className="text-xl font-headline font-black uppercase leading-tight relative z-10">Sync Your <br/> Success.</h4>
-                 <p className="text-white/70 text-[10px] font-bold uppercase mt-2 relative z-10">Joined Hall of Rankers?</p>
+                 <h4 className="text-xl font-headline font-black uppercase leading-tight relative z-10">See Your <br/> Progress.</h4>
+                 <p className="text-white/70 text-[10px] font-bold uppercase mt-2 relative z-10">Check full state list?</p>
                  <Button asChild className="w-full mt-6 bg-white text-primary hover:bg-slate-50 font-black h-12 rounded-xl text-[10px] uppercase shadow-lg">
-                    <Link href="/leaderboard">View Leaderboard</Link>
+                    <Link href="/leaderboard">Leaderboard</Link>
                  </Button>
               </div>
            </div>
         </div>
 
-        {/* 2. TABBED ANALYSIS MODULE */}
+        {/* 2. ANALYSIS TABS */}
         <Tabs defaultValue="SECTIONAL" className="space-y-8">
            <TabsList className="bg-white border border-slate-100 p-1.5 h-16 rounded-[1.5rem] md:rounded-[2rem] shadow-sm inline-flex w-full md:w-auto overflow-x-auto no-scrollbar justify-start gap-2">
               <TabsTrigger value="SECTIONAL" className="rounded-xl px-6 md:px-10 font-black uppercase text-[10px] gap-3 h-full data-[state=active]:bg-[#0B1528] data-[state=active]:text-white transition-all whitespace-nowrap">
-                 <BarChart3 className="h-4 w-4" /> Sectional Audit
+                 <BarChart3 className="h-4 w-4" /> Section Analysis
               </TabsTrigger>
               <TabsTrigger value="TOPPER" className="rounded-xl px-6 md:px-10 font-black uppercase text-[10px] gap-3 h-full data-[state=active]:bg-[#0B1528] data-[state=active]:text-white transition-all whitespace-nowrap">
-                 <TrendingUp className="h-4 w-4" /> Topper Analysis
+                 <TrendingUp className="h-4 w-4" /> Compare with Topper
               </TabsTrigger>
               <TabsTrigger value="SOLUTIONS" className="rounded-xl px-6 md:px-10 font-black uppercase text-[10px] gap-3 h-full data-[state=active]:bg-[#0B1528] data-[state=active]:text-white transition-all whitespace-nowrap">
-                 <BrainCircuit className="h-4 w-4" /> Solution Review
-              </TabsTrigger>
-              <TabsTrigger value="LEADERBOARD" className="rounded-xl px-6 md:px-10 font-black uppercase text-[10px] gap-3 h-full data-[state=active]:bg-[#0B1528] data-[state=active]:text-white transition-all whitespace-nowrap">
-                 <Medal className="h-4 w-4" /> Mock Rankers
+                 <BrainCircuit className="h-4 w-4" /> Answer Review
               </TabsTrigger>
            </TabsList>
 
@@ -313,7 +304,7 @@ export default function ResultPage() {
                           </div>
                           <div className="space-y-2">
                              <div className="flex justify-between items-center text-[9px] font-black uppercase text-slate-400">
-                                <span>Mastery Progress</span>
+                                <span>Progress</span>
                                 <span>{s.correct}/{s.total}</span>
                              </div>
                              <div className="h-2 w-full bg-slate-50 rounded-full overflow-hidden">
@@ -334,11 +325,11 @@ export default function ResultPage() {
                           <div className="h-12 w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 shadow-inner">
                              <Trophy className="h-6 w-6" />
                           </div>
-                          <h3 className="font-headline font-black text-2xl uppercase">Topper Comparison</h3>
+                          <h3 className="font-headline font-black text-2xl uppercase">You vs Topper</h3>
                        </div>
                        
                        <div className="space-y-10">
-                          <CompareRow label="SCORE" user={sessionData.score} topper={merit.topper?.score || 0} max={sessionData.totalQuestions} />
+                          <CompareRow label="MARKS" user={sessionData.score} topper={merit.topper?.score || 0} max={sessionData.totalQuestions} />
                           <CompareRow label="ACCURACY" user={sessionData.accuracy} topper={merit.topper?.accuracy || 0} unit="%" />
                           <CompareRow label="TIME (MIN)" user={Math.floor(sessionData.timeTaken / 60)} topper={Math.floor((merit.topper?.timeTaken || 0) / 60)} />
                        </div>
@@ -351,47 +342,8 @@ export default function ResultPage() {
                        </div>
                        <div className="space-y-2">
                           <h4 className="text-2xl font-headline font-black uppercase text-[#0B1528]">{merit.topper?.name || 'Aspirant #1'}</h4>
-                          <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">REGISTRY SCORE: {merit.topper?.score || 0} PTS</p>
+                          <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">TOP SCORE: {merit.topper?.score || 0}</p>
                        </div>
-                    </div>
-                 </div>
-              </Card>
-           </TabsContent>
-
-           <TabsContent value="LEADERBOARD" className="m-0 animate-in fade-in slide-in-from-bottom-2 duration-500">
-              <Card className="border-none shadow-xl rounded-[3rem] bg-white overflow-hidden">
-                 <div className="p-8 md:p-12 border-b border-slate-50 bg-slate-50/50 flex flex-row items-center justify-between">
-                    <div className="flex items-center gap-4">
-                       <Users className="h-6 w-6 text-primary" />
-                       <h3 className="font-headline font-black text-xl uppercase">Mock Leaderboard</h3>
-                    </div>
-                    <Badge className="bg-primary/10 text-primary border-none font-black text-[10px] px-4 py-1.5 rounded-full">{merit.total} Candidates</Badge>
-                 </div>
-                 <div className="p-0">
-                    <div className="divide-y divide-slate-50">
-                       {globalResults?.slice(0, 10).map((r: any, idx: number) => (
-                          <div key={r.id} className={cn(
-                             "p-6 md:p-10 flex items-center justify-between transition-all",
-                             r.userId === user?.uid ? "bg-primary/5 border-l-4 border-primary" : "hover:bg-slate-50/50"
-                          )}>
-                             <div className="flex items-center gap-6 md:gap-10">
-                                <span className="font-headline font-black text-xl md:text-3xl text-slate-200">#{idx + 1}</span>
-                                <div className="flex items-center gap-5">
-                                   <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-300 font-black">
-                                      {idx === 0 ? <Medal className="h-6 w-6 text-amber-500" /> : <Users className="h-5 w-5" />}
-                                   </div>
-                                   <div className="text-left">
-                                      <p className="font-black text-[#0B1528] text-sm md:text-lg uppercase leading-none">{r.userId === user?.uid ? 'You' : `Candidate ${r.userId.slice(-6)}`}</p>
-                                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5">{r.accuracy}% Accuracy</p>
-                                   </div>
-                                </div>
-                             </div>
-                             <div className="text-right">
-                                <p className="text-xl md:text-3xl font-headline font-black text-[#0B1528] leading-none">{r.score}</p>
-                                <p className="text-[8px] font-black text-slate-300 uppercase mt-1">POINTS</p>
-                             </div>
-                          </div>
-                       ))}
                     </div>
                  </div>
               </Card>
@@ -399,7 +351,6 @@ export default function ResultPage() {
 
            <TabsContent value="SOLUTIONS" className="m-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
               
-              {/* PALETTE FILTER */}
               <div className="bg-white border border-slate-100 rounded-[2rem] p-6 shadow-sm flex flex-wrap items-center gap-4">
                  <FilterNode active={activeReviewFilter === 'ALL'} label="ALL" count={questions.length} onClick={() => setActiveReviewFilter('ALL')} color="bg-slate-50 text-slate-500" />
                  <FilterNode active={activeReviewFilter === 'CORRECT'} label="CORRECT" count={sessionData.score} onClick={() => setActiveReviewFilter('CORRECT')} color="bg-emerald-50 text-emerald-600" />
@@ -425,7 +376,7 @@ export default function ResultPage() {
                                    </div>
                                    <div className="space-y-1">
                                       <Badge className={cn("border-none text-[9px] font-black uppercase px-3 py-1 rounded-lg", isCorrect ? 'bg-emerald-50 text-emerald-600' : isSkipped ? 'bg-slate-100 text-slate-400' : 'bg-rose-50 text-rose-600')}>
-                                         {isCorrect ? 'SUCCESS' : isSkipped ? 'SKIPPED' : 'FAILURE'}
+                                         {isCorrect ? 'RIGHT' : isSkipped ? 'SKIPPED' : 'WRONG'}
                                       </Badge>
                                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest px-1">{q.sectionId || 'General'}</p>
                                    </div>
@@ -435,7 +386,7 @@ export default function ResultPage() {
                                    variant="ghost" 
                                    className="h-12 px-8 rounded-xl font-black uppercase text-[10px] tracking-widest gap-2 bg-slate-50 text-primary hover:bg-primary/10"
                                 >
-                                   {isExpanded ? 'Hide Rationale' : 'Audit Rationale'}
+                                   {isExpanded ? 'Hide Solution' : 'View Solution'}
                                    {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                                 </Button>
                              </div>
@@ -455,12 +406,12 @@ export default function ResultPage() {
            </TabsContent>
         </Tabs>
 
-        {/* INSTITUTIONAL BRANDING */}
+        {/* FOOTER BRANDING */}
         <div className="pt-24 border-t border-slate-200 flex flex-col items-center gap-4 text-center">
-           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Cracklix v25.0 • Audit Complete</p>
+           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Cracklix v26.0 • Results Processed</p>
            <div className="flex flex-col items-center gap-1">
               <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Developed by <span className="text-[#0B1528]">Arsh Grewal</span></p>
-              <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em]">Founder & Lead Engineer</p>
+              <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em]">Platform Founder</p>
            </div>
         </div>
       </main>

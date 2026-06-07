@@ -25,8 +25,8 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 
 /**
- * @fileOverview Professional Login & Registration Node.
- * Updated: Subtle Developer branding for Arsh Grewal.
+ * @fileOverview Login & Sign Up Hub v1.0.
+ * Simplified Language: Replaced "Registry Access" with "Login".
  */
 
 export default function LoginPage() {
@@ -59,7 +59,7 @@ function LoginContent() {
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault()
     if (mode === 'register' && password !== confirmPassword) {
-      toast({ variant: "destructive", title: "Audit Blocked", description: "Passwords must match." })
+      toast({ variant: "destructive", title: "Wait", description: "Passwords must match." })
       return
     }
 
@@ -67,7 +67,7 @@ function LoginContent() {
     try {
       if (mode === 'login') {
         await signInWithEmailAndPassword(auth, email, password)
-        toast({ title: "Audit Success", description: "Node synchronized." })
+        toast({ title: "Login Successful", description: "Welcome back!" })
         router.push(returnUrl)
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
@@ -86,7 +86,7 @@ function LoginContent() {
         router.push("/profile-setup")
       }
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Audit Rejected", description: error.message })
+      toast({ variant: "destructive", title: "Error", description: error.message })
     } finally {
       setLoading(false)
     }
@@ -101,7 +101,7 @@ function LoginContent() {
       if (!userSnap.exists()) {
         const isSuperAdmin = user.email?.toLowerCase() === 'arshdeepgrewal1122@gmail.com';
         await setDoc(doc(db, 'users', user.uid), {
-          id: user.uid, name: user.displayName || "Aspirant",
+          id: user.uid, name: user.displayName || "Student",
           email: user.email, role: isSuperAdmin ? 'SUPER_ADMIN' : 'STUDENT',
           state: "Punjab", createdAt: new Date().toISOString(), status: 'Free',
           pinnedExams: []
@@ -111,7 +111,7 @@ function LoginContent() {
         router.push(returnUrl)
       }
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Sync Failed", description: error.message })
+      toast({ variant: "destructive", title: "Login Failed", description: error.message })
     }
   }
 
@@ -124,42 +124,42 @@ function LoginContent() {
         {returnUrl !== "/dashboard" && (
            <div className="bg-primary/10 border border-primary/20 p-4 rounded-xl mb-6 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
               <AlertCircle className="h-5 w-5 text-primary shrink-0" />
-              <p className="text-[11px] font-black uppercase tracking-widest text-primary">Login required to access high-fidelity content.</p>
+              <p className="text-[11px] font-black uppercase tracking-widest text-primary">Please login to continue.</p>
            </div>
         )}
 
         <Card className="border-white/10 bg-white/[0.03] backdrop-blur-2xl shadow-2xl rounded-[2.5rem] overflow-hidden">
           <div className="h-1.5 w-full bg-primary" />
           <CardHeader className="text-center pt-10">
-            <CardTitle className="text-2xl font-headline font-black uppercase tracking-tight">{mode === 'login' ? "Registry Access" : "Join Registry"}</CardTitle>
-            <CardDescription className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-2">Personalize your preparation journey.</CardDescription>
+            <CardTitle className="text-2xl font-headline font-black uppercase tracking-tight">{mode === 'login' ? "Login" : "Create Account"}</CardTitle>
+            <CardDescription className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-2">Manage your study progress.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pb-12">
             <form onSubmit={handleEmailAuth} className="space-y-4">
               {mode === 'register' && (
                 <div className="space-y-4">
-                   <Input value={name} onChange={e => setName(e.target.value)} required className="h-12 rounded-xl bg-white/5 border-white/10" placeholder="Full Name" />
+                   <Input value={name} onChange={e => setName(e.target.value)} required className="h-12 rounded-xl bg-white/5 border-white/10" placeholder="Your Full Name" />
                    <Input value={phone} onChange={e => setPhone(e.target.value)} required maxLength={10} className="h-12 rounded-xl bg-white/5 border-white/10" placeholder="Mobile Number" />
                 </div>
               )}
-              <Input type="email" value={email} onChange={e => setEmail(e.target.value)} required className="h-12 rounded-xl bg-white/5 border-white/10" placeholder="Email Node" />
-              <Input type="password" value={password} onChange={e => setPassword(e.target.value)} required className="h-12 rounded-xl bg-white/5 border-white/10" placeholder="Security Key" />
-              {mode === 'register' && <Input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required className="h-12 rounded-xl bg-white/5 border-white/10" placeholder="Verify Key" />}
+              <Input type="email" value={email} onChange={e => setEmail(e.target.value)} required className="h-12 rounded-xl bg-white/5 border-white/10" placeholder="Email Address" />
+              <Input type="password" value={password} onChange={e => setPassword(e.target.value)} required className="h-12 rounded-xl bg-white/5 border-white/10" placeholder="Password" />
+              {mode === 'register' && <Input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required className="h-12 rounded-xl bg-white/5 border-white/10" placeholder="Confirm Password" />}
               
               <Button type="submit" className="w-full h-14 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-xl shadow-xl" disabled={loading}>
-                {loading ? "Syncing..." : (mode === 'login' ? "Enter Hub" : "Create Node")}
+                {loading ? "Please Wait..." : (mode === 'login' ? "Login" : "Sign Up")}
               </Button>
             </form>
             
             <Button variant="outline" className="w-full h-12 border-white/10 bg-white/5 text-white gap-3 rounded-xl font-bold text-xs" onClick={handleGoogleSignIn}>
-              Sign in with Google
+              Continue with Google
             </Button>
 
             <div className="text-center text-[10px] font-black uppercase text-slate-500 tracking-widest">
                {mode === 'login' ? (
-                 <p>New Aspirant? <button onClick={() => setMode('register')} className="text-primary hover:underline">Register Now</button></p>
+                 <p>New Student? <button onClick={() => setMode('register')} className="text-primary hover:underline">Register Now</button></p>
                ) : (
-                 <p>Active Node? <button onClick={() => setMode('login')} className="text-primary hover:underline">Log In</button></p>
+                 <p>Already a student? <button onClick={() => setMode('login')} className="text-primary hover:underline">Login</button></p>
                )}
             </div>
           </CardContent>

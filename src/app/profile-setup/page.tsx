@@ -17,8 +17,8 @@ import { Phone, User as UserIcon, GraduationCap, Calendar, MapPin } from "lucide
 import { Gender } from "@/types"
 
 /**
- * @fileOverview High-Fidelity Aspirant Onboarding v10.0.
- * Mandatory Fields: Name, Phone, Gender, DOB, Address, Target Board.
+ * @fileOverview Student Profile Setup v11.0.
+ * Simplified Language: Removed technical jargon (Node, Registry, Hub) for better user experience.
  */
 export default function ProfileSetup() {
   const router = useRouter()
@@ -47,13 +47,13 @@ export default function ProfileSetup() {
   const handleSubmit = async () => {
     if (!user) return;
 
-    // Strict Validation Node
+    // Strict Validation
     const requiredFields = [
       { key: 'name', label: 'Full Name' },
       { key: 'phone', label: 'Mobile Number' },
-      { key: 'gender', label: 'Gender Identity' },
+      { key: 'gender', label: 'Gender' },
       { key: 'dob', label: 'Date of Birth' },
-      { key: 'address', label: 'Full Address' },
+      { key: 'address', label: 'Home Address' },
       { key: 'targetExam', label: 'Target Board' }
     ];
 
@@ -62,14 +62,14 @@ export default function ProfileSetup() {
     if (missing) {
       toast({
         variant: "destructive",
-        title: "Audit Blocked",
-        description: `${missing.label} is mandatory for institutional registration.`
+        title: "Setup Blocked",
+        description: `${missing.label} is required to continue.`
       })
       return
     }
 
     if (formData.phone.length < 10) {
-      toast({ variant: "destructive", title: "Invalid Contact", description: "Mobile number must be exactly 10 digits." })
+      toast({ variant: "destructive", title: "Invalid Number", description: "Mobile number must be 10 digits." })
       return
     }
 
@@ -96,15 +96,15 @@ export default function ProfileSetup() {
       await setDoc(userRef, payload, { merge: true })
 
       toast({
-        title: "Registry Synced",
-        description: "Your preparation journey has been initialized."
+        title: "Profile Created",
+        description: "Welcome to Cracklix! Your setup is complete."
       })
       router.push("/dashboard")
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Sync Failed",
-        description: error.message || "Cloud registry rejection."
+        title: "Setup Failed",
+        description: error.message || "Please try again later."
       })
     } finally {
       setIsSubmitting(false)
@@ -122,14 +122,14 @@ export default function ProfileSetup() {
       <Card className="w-full max-w-xl border-none shadow-2xl rounded-[2.5rem] overflow-hidden z-10">
         <div className="h-2 w-full bg-primary" />
         <CardHeader className="text-center pt-10 pb-6">
-          <CardTitle className="font-headline font-black text-3xl text-[#0F172A] uppercase">Aspirant Onboarding</CardTitle>
+          <CardTitle className="font-headline font-black text-3xl text-[#0F172A] uppercase">Set Up Your Profile</CardTitle>
           <CardDescription className="text-slate-500 font-medium px-4">
-            Initialize your identity node to access the high-fidelity mock registry.
+            Finish setting up your student profile to access mock tests.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 px-10 pb-12">
           <div className="space-y-2 text-left">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Full Identity Name</Label>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Your Full Name</Label>
             <div className="relative">
               <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input 
@@ -143,7 +143,7 @@ export default function ProfileSetup() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              <div className="space-y-2 text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Mobile Contact</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Mobile Number</Label>
                 <div className="relative">
                   <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input 
@@ -173,41 +173,41 @@ export default function ProfileSetup() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2 text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Gender Node</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Gender</Label>
                 <Select onValueChange={(val: Gender) => setFormData(prev => ({ ...prev, gender: val }))}>
                   <SelectTrigger className="h-12 rounded-xl border-slate-200 bg-slate-50/50 font-bold">
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Male">Male Student</SelectItem>
-                    <SelectItem value="Female">Female Student</SelectItem>
+                    <SelectItem value="Male">Male</SelectItem>
+                    <SelectItem value="Female">Female</SelectItem>
                     <SelectItem value="Other">Other</SelectItem>
                   </SelectContent>
                 </Select>
             </div>
             <div className="space-y-2 text-left">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Primary Target Hub</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Target Exam Board</Label>
               <Select onValueChange={(val) => setFormData(prev => ({ ...prev, targetExam: val }))}>
                 <SelectTrigger className="h-12 rounded-xl border-slate-200 bg-slate-50/50 font-bold">
                   <SelectValue placeholder="Select Board" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="PSSSB">PSSSB Boards</SelectItem>
-                  <SelectItem value="PPSC">PPSC Gazetted</SelectItem>
+                  <SelectItem value="PSSSB">PSSSB</SelectItem>
+                  <SelectItem value="PPSC">PPSC</SelectItem>
                   <SelectItem value="Punjab Police">Punjab Police</SelectItem>
                   <SelectItem value="Army">Indian Army</SelectItem>
-                  <SelectItem value="High Court">High Court Clerk</SelectItem>
+                  <SelectItem value="High Court">High Court</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="space-y-2 text-left">
-             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Correspondence Address</Label>
+             <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Residential Address</Label>
              <div className="relative">
                 <MapPin className="absolute left-4 top-4 h-4 w-4 text-slate-400" />
                 <Textarea 
-                   placeholder="Enter your complete residential address for records..." 
+                   placeholder="Enter your full home address..." 
                    className="pl-12 min-h-[100px] rounded-xl border-slate-200 bg-slate-50/50 font-bold"
                    value={formData.address}
                    onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
@@ -220,11 +220,11 @@ export default function ProfileSetup() {
             onClick={handleSubmit}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Syncing Identity..." : "Initialize Registry Node"}
+            {isSubmitting ? "Saving Profile..." : "Complete My Profile"}
           </Button>
           
           <p className="text-[9px] text-center text-slate-400 uppercase font-bold tracking-widest leading-relaxed">
-            By initializing, you authorize Arsh Grewal Management to verify your institutional audit nodes.
+            Your details are used only for generating rankings and official alerts.
           </p>
         </CardContent>
       </Card>
