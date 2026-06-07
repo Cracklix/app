@@ -19,9 +19,9 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Institutional Checkout Hub v29.0.
- * FIXED: Forcefully enabled UPI VPA (ID) entry field by suppressing default blocks and defining a custom VPA-only block.
- * This ensures the user can type 'test@razorpay' instead of only scanning a QR.
+ * @fileOverview Institutional Checkout Hub v30.0.
+ * FIXED: Aggressively forced UPI VPA (ID) entry field by suppressing all default blocks and defining a custom instrument set.
+ * This ensures the text input for 'test@razorpay' is shown immediately.
  */
 
 export default function CheckoutPage() {
@@ -117,23 +117,23 @@ function CheckoutContent() {
           contact: phoneDigits.length === 10 ? `+91${phoneDigits}` : ''
         },
         theme: { color: "#F97316" },
-        // CRITICAL FIX: FORCE VPA (UPI ID) INPUT FIELD
+        // CRITICAL FIX: FORCE VPA (UPI ID) INPUT FIELD AND HIDE QR
         config: {
           display: {
             blocks: {
-              upi_vpa: {
+              vpa_input: {
                 name: "Pay using UPI ID",
                 instruments: [
                   {
                     method: "upi",
-                    protocols: ["vpa"]
+                    protocols: ["vpa"] // Explicitly requesting VPA (input field)
                   }
                 ]
               }
             },
-            sequence: ["block.upi_vpa", "method.card", "method.netbanking"],
+            sequence: ["block.vpa_input", "method.card", "method.netbanking"],
             preferences: {
-              show_default_blocks: false // Suppress standard QR to force VPA entry
+              show_default_blocks: false // HIDE standard QR to force VPA entry screen
             }
           }
         },
