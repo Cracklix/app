@@ -18,8 +18,8 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Professional CBT Question Palette Hub v14.0.
- * UPDATED: Order strictly maintained with Palette above Status Legend.
+ * @fileOverview Professional CBT Question Palette Hub v15.0.
+ * UPDATED: Legend moved to the absolute top of the sidebar per institutional request.
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const questions = useExamStore(s => s.questions);
@@ -63,19 +63,33 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
   return (
     <div className="flex flex-col h-full bg-white text-left font-body select-none pointer-events-auto">
       <ScrollArea className="h-full">
-        <div className="p-3 md:p-6 pt-6 md:pt-8 space-y-6 md:space-y-8 pb-32">
+        <div className="p-3 md:p-6 pt-6 md:pt-8 space-y-6 md:space-y-10 pb-32">
            
-           {/* 1. SECTIONAL GRIDS (AT TOP) */}
-           <div className="space-y-6">
+           {/* 1. STATUS SUMMARY HUB (AT TOP) */}
+           <div className="space-y-4">
+              <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">LEGEND</p>
+              <div className="grid grid-cols-2 gap-2">
+                 <SummaryCard count={stats.answered} label="ANSWERED" color="bg-blue-600" />
+                 <SummaryCard count={stats.notAnswered} label="NOT ANSWERED" color="bg-slate-400" />
+                 <SummaryCard count={stats.marked} label="MARKED" color="bg-pink-500" />
+                 <SummaryCard count={stats.notVisited} label="NOT VISITED" color="bg-white" textColor="text-slate-400" border="border-slate-200" />
+                 <SummaryCard count={stats.ansMarked} label="ANS & MARKED" color="bg-violet-600" colSpan={2} />
+              </div>
+           </div>
+
+           <div className="h-px w-full bg-slate-50" />
+
+           {/* 2. SECTIONAL GRIDS */}
+           <div className="space-y-8">
               {sections.map(([secId, data]) => (
-                <div key={secId} className="space-y-3">
-                   <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-                      <h4 className="text-[9px] md:text-[10px] font-black text-[#0B1528] tracking-tight uppercase flex items-center gap-2">
+                <div key={secId} className="space-y-4">
+                   <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                      <h4 className="text-[10px] font-black text-[#0B1528] tracking-tight uppercase flex items-center gap-2">
                         <ChevronDown className="h-3 w-3 text-primary" /> {data.name}
                       </h4>
                    </div>
                    
-                   <div className="grid grid-cols-4 md:grid-cols-5 gap-2">
+                   <div className="grid grid-cols-4 md:grid-cols-5 gap-2.5">
                       {data.questions.map((idx) => (
                          <QuestionNode 
                            key={idx} 
@@ -91,18 +105,6 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
               ))}
            </div>
 
-           {/* 2. STATUS SUMMARY HUB (BELOW) */}
-           <div className="space-y-3 pt-4 border-t border-slate-50">
-              <p className="text-[9px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Evaluation Status</p>
-              <div className="grid grid-cols-2 gap-2">
-                 <SummaryCard count={stats.answered} label="ANSWERED" color="bg-blue-600" />
-                 <SummaryCard count={stats.notAnswered} label="NOT ANSWERED" color="bg-slate-400" />
-                 <SummaryCard count={stats.marked} label="MARKED" color="bg-pink-500" />
-                 <SummaryCard count={stats.notVisited} label="NOT VISITED" color="bg-white" textColor="text-slate-400" border="border-slate-200" />
-                 <SummaryCard count={stats.ansMarked} label="ANS & MARKED" color="bg-violet-600" colSpan={2} />
-              </div>
-           </div>
-
            {/* 3. TACTICAL SUBMIT BUTTON */}
            <div className="pt-4">
               <Button 
@@ -110,7 +112,7 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
                    e.preventDefault();
                    onSubmit();
                 }}
-                className="w-full h-12 md:h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-[0.2em] text-[9px] md:text-[10px] rounded-xl shadow-xl shadow-emerald-900/10 gap-3 group transition-all active:scale-95"
+                className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-xl shadow-xl shadow-emerald-900/10 gap-3 group transition-all active:scale-95"
               >
                  <ShieldCheck className="h-4 w-4 group-hover:scale-110 transition-transform" /> SUBMIT TEST
               </Button>
@@ -124,10 +126,10 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
 function SummaryCard({ count, label, color, textColor = "text-white", colSpan = 1, border = "border-transparent" }: any) {
   return (
     <div className={cn(
-      "flex items-center gap-2 p-1.5 rounded-xl bg-slate-50 border border-slate-100 shadow-sm",
+      "flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100 shadow-sm",
       colSpan > 1 && "col-span-2"
     )}>
-       <div className={cn("h-6 w-6 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 shadow-sm border", color, textColor, border)}>
+       <div className={cn("h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm border", color, textColor, border)}>
           {count}
        </div>
        <div className="min-w-0">
