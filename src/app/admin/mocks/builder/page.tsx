@@ -120,6 +120,20 @@ function MockBuilderContent() {
   const [activeSectionId, setActiveSectionId] = useState('sec-1')
   const [bankSelection, setBankSelection] = useState<string[]>([])
 
+  // Dynamic Subject Filtering Logic: Only show subjects that have questions for this board/exam
+  const relevantSubjects = useMemo(() => {
+    if (!subjects || !questionBank.length) return [];
+    if (!mockData.boardId && !mockData.examId) return subjects;
+
+    return subjects.filter((s: any) => {
+      return questionBank.some((q: any) => 
+        q.subjectId === s.id && 
+        (!mockData.boardId || q.boardId === mockData.boardId) &&
+        (!mockData.examId || q.examId === mockData.examId)
+      );
+    }).sort((a: any, b: any) => a.name.localeCompare(b.name));
+  }, [subjects, questionBank, mockData.boardId, mockData.examId]);
+
   const usedQuestionIds = useMemo(() => {
     if (!allMocks) return new Set<string>();
     const ids = new Set<string>();
@@ -135,7 +149,7 @@ function MockBuilderContent() {
       if (!db) return
       setBankLoading(true)
       try {
-        const q = query(collection(db, "questions"), limit(2000))
+        const q = query(collection(db, "questions"), limit(3000))
         const snap = await getDocs(q)
         setQuestionBank(snap.docs.map(d => ({ ...d.data(), id: d.id })))
       } finally {
@@ -253,15 +267,18 @@ function MockBuilderContent() {
   };
 
   const handleAutoGenerateSections = () => {
-    if (!subjects || subjects.length === 0) return;
-    const newSections = subjects.map((s: any, idx: number) => ({
+    if (!relevantSubjects.length) {
+      toast({ variant: "destructive", title: "Audit Blocked", description: "No questions found for this board/exam registry." });
+      return;
+    }
+    const newSections = relevantSubjects.map((s: any, idx: number) => ({
       id: `sec-sub-${idx}`,
       name: s.name,
       questions: []
     }));
     setSections(newSections);
     if (newSections[0]) setActiveSectionId(newSections[0].id);
-    toast({ title: "Sections Generated", description: `${subjects.length} subject hubs added to assembly.` });
+    toast({ title: "Sections Generated", description: `${relevantSubjects.length} specific hubs added to assembly.` });
   }
 
   return (
@@ -481,7 +498,7 @@ function MockBuilderContent() {
                           >
                              All Subjects
                           </button>
-                          {subjects?.sort((a:any, b:any) => a.name.localeCompare(b.name)).map((s: any) => (
+                          {relevantSubjects.map((s: any) => (
                              <button 
                                key={s.id}
                                onClick={() => setBankFilter({...bankFilter, subjectId: s.id})}
@@ -605,7 +622,7 @@ function MockBuilderContent() {
                              </Button>
                              
                              <Select onValueChange={(val) => {
-                                const sub = subjects?.find((s:any) => s.id === val);
+                                const sub = relevantSubjects.find((s:any) => s.id === val);
                                 if (sub) {
                                    setSections([...sections, { id: `sec-${Date.now()}`, name: sub.name, questions: [] }]);
                                    toast({ title: "Hub Added", description: `${sub.name} appended to assembly.` });
@@ -615,7 +632,7 @@ function MockBuilderContent() {
                                    <div className="flex items-center gap-2"><FileBox className="h-4 w-4" /> <SelectValue placeholder="Add Subject Hub" /></div>
                                 </SelectTrigger>
                                 <SelectContent>
-                                   {subjects?.filter((s:any) => !sections.some(sec => sec.name === s.name)).map((s:any) => (
+                                   {relevantSubjects.filter((s:any) => !sections.some(sec => sec.name === s.name)).map((s:any) => (
                                       <SelectItem key={s.id} value={s.id} className="font-bold uppercase text-[10px]">{s.name}</SelectItem>
                                    ))}
                                 </SelectContent>
