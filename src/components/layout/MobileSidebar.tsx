@@ -34,8 +34,8 @@ import ShareButton from "@/components/navigation/ShareButton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 /**
- * @fileOverview High-Fidelity Mobile Sidebar v3.2.
- * FIXED: Icons set to h-6 and font to 15px extra-bold for premium feel.
+ * @fileOverview High-Fidelity Mobile Sidebar v4.0.
+ * UPDATED: Strictly follows the dark navy screenshot with large bold name and orange pill pass.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -66,34 +66,34 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
       <ScrollArea className="h-full w-full">
         <div className="flex flex-col min-h-full">
           
-          {/* 1. HIGH-FIDELITY PROFILE HEADER */}
-          <div className="px-6 md:px-10 pt-16 pb-12 bg-[#0B1528] relative overflow-hidden text-left border-b border-white/5">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 blur-[100px] rounded-full" />
+          {/* 1. HIGH-FIDELITY PROFILE HEADER (Matches Screenshot) */}
+          <div className="px-8 pt-20 pb-16 bg-[#0B1528] relative overflow-hidden text-left border-b border-white/5">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full" />
             
             <button 
               onClick={onClose}
-              className="absolute top-6 right-6 p-2 rounded-xl bg-white/5 text-slate-400 hover:text-white transition-all active:scale-90 z-20"
+              className="absolute top-8 right-8 p-2.5 rounded-2xl bg-white/5 text-slate-400 hover:text-white transition-all active:scale-90 z-20"
             >
-              <X className="h-6 w-6" />
+              <X className="h-7 w-7" />
             </button>
 
-            <div className="flex flex-col gap-8 relative z-10">
+            <div className="flex flex-col gap-10 relative z-10">
               <div className="relative w-fit">
                 <StudentAvatar 
                   profile={profile} 
-                  className="h-24 w-24 md:h-28 md:w-28 border-4 border-white/10 rounded-[2.5rem] shadow-3xl bg-[#0F172A]" 
+                  className="h-28 w-28 md:h-36 md:w-36 border-[6px] border-white/10 rounded-[3rem] shadow-4xl bg-[#0F172A]" 
                 />
-                <div className="absolute -bottom-1 -right-1 bg-emerald-500 h-8 w-8 rounded-lg border-4 border-[#0B1528] flex items-center justify-center shadow-xl">
-                   <ShieldCheck className="h-4 w-4 text-white" />
+                <div className="absolute -bottom-1 -right-1 bg-emerald-500 h-9 w-9 rounded-xl border-[4px] border-[#0B1528] flex items-center justify-center shadow-2xl">
+                   <ShieldCheck className="h-5 w-5 text-white" />
                 </div>
               </div>
               
-              <div className="space-y-4 text-left">
-                <div className="flex flex-col gap-2">
-                  <h2 className="font-headline font-black text-3xl md:text-4xl text-white uppercase tracking-tight break-words leading-none">
+              <div className="space-y-6 text-left">
+                <div className="space-y-4">
+                  <h2 className="font-headline font-black text-4xl md:text-5xl text-white uppercase tracking-tight break-words leading-[0.9]">
                     {profile?.name || "Student Node"}
                   </h2>
-                  <Badge className="bg-primary text-white border-none text-[10px] font-black uppercase px-4 py-1.5 rounded-lg shadow-2xl w-fit tracking-wider">
+                  <Badge className="bg-primary hover:bg-primary text-white border-none text-[11px] font-black uppercase px-6 py-2.5 rounded-full shadow-4xl w-fit tracking-[0.1em]">
                     {(profile?.status || 'Free').toUpperCase()} PASS
                   </Badge>
                 </div>
@@ -101,9 +101,9 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                 <Link 
                   href="/profile" 
                   onClick={onClose}
-                  className="text-[11px] font-black uppercase tracking-[0.4em] text-primary hover:text-white transition-colors flex items-center gap-2 group"
+                  className="text-[12px] font-black uppercase tracking-[0.4em] text-primary hover:text-white transition-all flex items-center gap-3 group pt-2"
                 >
-                  VIEW PROFILE <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  VIEW PROFILE <ChevronRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
                 </Link>
               </div>
             </div>
@@ -134,16 +134,16 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                 
                 <button 
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-5 px-14 h-16 text-rose-500 hover:bg-rose-500/10 transition-all group"
+                  className="w-full flex items-center gap-6 px-14 h-16 text-rose-500 hover:bg-rose-500/10 transition-all group"
                 >
                   <LogOut className="h-6 w-6 shrink-0" />
                   <span className="text-[15px] font-[900] uppercase tracking-tight">Logout</span>
                 </button>
               </CollapsibleGroup>
 
-              <div className="px-10 mt-8 pb-12">
+              <div className="px-10 mt-10 pb-16">
                  <ShareButton 
-                   className="w-full h-16 bg-white/5 border border-white/10 shadow-none text-slate-300 hover:bg-primary hover:text-white rounded-[1.5rem] font-black" 
+                   className="w-full h-16 bg-white/5 border border-white/10 shadow-none text-slate-300 hover:bg-primary hover:text-white rounded-[2rem] font-black text-[11px] tracking-widest" 
                    variant="ghost" 
                  />
               </div>
@@ -151,12 +151,12 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
           </div>
 
           {/* 3. SIGNATURE FOOTER */}
-          <div className="px-8 py-12 border-t border-white/5 bg-black/20 flex flex-col items-center gap-2 mt-auto shrink-0">
-             <div className="flex items-center gap-2 text-[11px] font-black text-white uppercase tracking-[0.3em]">
-                <UserIcon className="h-4 w-4 text-primary" /> 
+          <div className="px-8 py-12 border-t border-white/5 bg-black/20 flex flex-col items-center gap-3 mt-auto shrink-0">
+             <div className="flex items-center gap-2 text-[11px] font-black text-white/40 uppercase tracking-[0.4em]">
+                <UserIcon className="h-4 w-4 text-primary/50" /> 
                 DEVELOPED BY ARSH GREWAL
              </div>
-             <p className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.5em]">
+             <p className="text-[9px] font-bold text-slate-600 uppercase tracking-[0.6em]">
                 OFFICIAL HUB 2026
              </p>
           </div>
