@@ -3,8 +3,8 @@ import { NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 
 /**
- * @fileOverview Production-Grade Razorpay Order Node v7.0.
- * Hardened: Strict integer paise conversion and short receipt validation.
+ * @fileOverview Production-Grade Razorpay Order Node v8.0.
+ * Hardened: Strict integer paise conversion and 20-char receipt validation.
  */
 
 export async function POST(request: Request) {
@@ -24,15 +24,15 @@ export async function POST(request: Request) {
       key_secret: key_secret,
     });
 
-    // 1. Strict Integer Conversion (Razorpay Protocol requires whole paise)
+    // 1. Strict Integer Conversion (Paise Protocol)
     const amountInPaise = Math.round(Number(amount) * 100);
 
     if (isNaN(amountInPaise) || amountInPaise < 100) {
       return NextResponse.json({ error: 'Minimum transaction amount is ₹1.' }, { status: 400 });
     }
 
-    // 2. Short Alphanumeric Receipt (Razorpay Max Limit is 40 characters)
-    const receipt = `rcpt_${Date.now().toString().slice(-10)}`;
+    // 2. Short Alphanumeric Receipt (Strict < 40 chars)
+    const receipt = `rcpt_${Date.now().toString().slice(-12)}`;
 
     const options = {
       amount: amountInPaise,

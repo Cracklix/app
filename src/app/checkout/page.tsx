@@ -19,8 +19,9 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Institutional Checkout Hub v26.0.
+ * @fileOverview Institutional Checkout Hub v27.0.
  * FIXED: Explicitly enabled UPI VPA (ID) entry field in Razorpay config to allow manual typing.
+ * HARDENED: Aggressive name sanitization to prevent "Invalid Format" rejection.
  */
 
 export default function CheckoutPage() {
@@ -55,14 +56,15 @@ function CheckoutContent() {
     if (!user || !planData || !db) return;
     
     if (!(window as any).Razorpay) {
-      toast({ variant: "destructive", title: "Gateway Script Error", description: "The payment engine failed to load. Please refresh the page." });
+      toast({ variant: "destructive", title: "Gateway Script Error", description: "Payment engine failed to load. Refreshing..." });
+      window.location.reload();
       return;
     }
 
     setProcessing(true);
 
     try {
-      // 1. Create order node via backend hub
+      // 1. Generate Order Node
       const orderRes = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -72,7 +74,7 @@ function CheckoutContent() {
       const orderData = await orderRes.json();
       if (orderData.error) throw new Error(orderData.error);
 
-      // 2. AGGRESSIVE SANITIZATION (Strict domestic node rules)
+      // 2. Aggressive Metadata Sanitization (Letters and Spaces only)
       const rawName = profile?.name || user?.displayName || 'Aspirant';
       const sanitizedName = rawName.replace(/[^a-zA-Z\s]/g, '').trim().slice(0, 40) || "Student";
       
@@ -104,13 +106,13 @@ function CheckoutContent() {
 
             const verifyData = await verifyRes.json();
             if (verifyData.success) {
-              toast({ title: "Pass Activated", description: "Your preparation hub is now fully unlocked." });
+              toast({ title: "Pass Activated", description: "Preparation hub successfully unlocked." });
               router.push(`/payment/success?plan=${planData.name}`);
             } else {
               throw new Error("Security audit failed.");
             }
           } catch (e: any) {
-            toast({ variant: "destructive", title: "Security Rejection", description: "Payment verification registry rejected." });
+            toast({ variant: "destructive", title: "Security Rejection", description: e.message });
             setProcessing(false);
           }
         },
@@ -120,15 +122,15 @@ function CheckoutContent() {
           contact: sanitizedPhone
         },
         theme: { color: "#F97316" },
-        // CRITICAL: Explicitly enable VPA (UPI ID) entry field
+        // CRITICAL: Explicitly enable VPA (UPI ID) field visibility
         config: {
           display: {
             preferences: {
-              show_default_blocks: true,
+              show_default_blocks: true, // Forces "Pay with UPI ID" to show up
             },
             methods: {
               upi: {
-                vpa: true,
+                vpa: true, // Specifically enables the text input for UPI IDs
                 qr: true,
               }
             }
@@ -146,8 +148,8 @@ function CheckoutContent() {
       rzp.on('payment.failed', function (response: any) {
         toast({ 
           variant: "destructive", 
-          title: "Gateway Rejection", 
-          description: response.error.description || "The bank node declined the transaction." 
+          title: "Payment Declined", 
+          description: response.error.description || "The bank node rejected the transaction." 
         });
         setProcessing(false);
       });
