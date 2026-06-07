@@ -18,8 +18,8 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview High-Density Responsive Exam Catalog v3.6.
- * Optimized: Enhanced Institutional Logo rendering with full visibility and fallbacks.
+ * @file Overview High-Density Responsive Exam Catalog v3.6.
+ * Optimized: Enhanced Institutional Logo rendering with full visibility and Referrer policies.
  */
 
 export default function ExamsCatalog() {
@@ -135,7 +135,7 @@ function CatalogContent() {
                              {logoUrl && !isImgFailed ? (
                                 <img 
                                   src={logoUrl} 
-                                  className="w-full h-full object-contain p-1.5 md:p-2" 
+                                  className="w-full h-full object-contain p-2 md:p-3" 
                                   alt="Logo" 
                                   referrerPolicy="no-referrer" 
                                   crossOrigin="anonymous"
