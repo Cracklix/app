@@ -14,12 +14,12 @@ import { useEffect, useState, Suspense, useMemo } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { submitManualPayment } from "@/app/actions/payment"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { doc } from "firebase/firestore"
+import { doc, setDoc, updateDoc, collection, addDoc, serverTimestamp } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Institutional Checkout Hub v14.0.
- * HARDENED: Aggressive Name/Phone sanitization to resolve domestic/international flagging issues.
+ * @fileOverview Institutional Checkout Hub v15.0.
+ * HARDENED: Aggressive Alphanumeric Sanitization for names to resolve gateway rejections.
  */
 
 export default function CheckoutPage() {
@@ -51,10 +51,10 @@ function CheckoutContent() {
   const upiId = settings?.upiId || "arshdeepgrewal1122@okaxis";
 
   const handleRazorpayPayment = async () => {
-    if (!user || !planData) return;
+    if (!user || !planData || !db) return;
     
     if (!(window as any).Razorpay) {
-      toast({ variant: "destructive", title: "Gateway Hub Offline", description: "Razorpay script is still loading. Please wait 5 seconds and retry." });
+      toast({ variant: "destructive", title: "Gateway Hub Offline", description: "Razorpay script is still loading. Please wait 5 seconds." });
       return;
     }
 
@@ -71,13 +71,14 @@ function CheckoutContent() {
       const orderData = await orderRes.json();
       if (orderData.error) throw new Error(orderData.error);
 
-      // 2. STRICT SANITIZATION Protocol (Crucial for domestic verification)
-      // Remove all special characters from name, keep only letters and spaces
+      // 2. AGGRESSIVE SANITIZATION (Strict Alphanumeric only)
+      // Removing all symbols that might trigger "Invalid Name" or "International" flags
       const rawName = profile?.name || user?.displayName || 'Aspirant';
       const sanitizedName = rawName.replace(/[^a-zA-Z\s]/g, '').slice(0, 40).trim() || "Student";
       
-      // Contact must be exactly 10 digits, no prefix
-      const sanitizedPhone = profile?.phone?.replace(/\D/g, '').slice(-10) || "";
+      // Contact must be exactly 10 digits
+      const phoneDigits = profile?.phone?.replace(/\D/g, '').slice(-10) || "";
+      const sanitizedPhone = phoneDigits.length === 10 ? `+91${phoneDigits}` : phoneDigits;
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -90,6 +91,7 @@ function CheckoutContent() {
         handler: async function (response: any) {
           setProcessing(true);
           try {
+            // 3. Verify Server-side
             const verifyRes = await fetch('/api/razorpay/verify-payment', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -104,13 +106,23 @@ function CheckoutContent() {
 
             const verifyData = await verifyRes.json();
             if (verifyData.success) {
+              // 4. Perform Client-side Registry Update (Ensures Owner permission)
+              const expiryDate = new Date();
+              expiryDate.setDate(expiryDate.getDate() + (planData.durationDays || 30));
+
+              await updateDoc(doc(db, 'users', user.uid), {
+                status: planId,
+                passExpiryDate: expiryDate.toISOString(),
+                updatedAt: serverTimestamp()
+              });
+
               toast({ title: "Pass Activated" });
               router.push(`/payment/success?plan=${planData.name}`);
             } else {
               throw new Error("Verification Node Rejected");
             }
           } catch (e: any) {
-            toast({ variant: "destructive", title: "Security Error", description: "Signature verification failed." });
+            toast({ variant: "destructive", title: "Security Error", description: "Verification failed." });
             setProcessing(false);
           }
         },
@@ -132,13 +144,13 @@ function CheckoutContent() {
         toast({ 
           variant: "destructive", 
           title: "Payment Failed", 
-          description: response.error.description || "The transaction was declined by the bank." 
+          description: response.error.description || "The transaction was declined." 
         });
         setProcessing(false);
       });
       rzp.open();
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Order Generation Error", description: e.message });
+      toast({ variant: "destructive", title: "Gateway Error", description: e.message });
       setProcessing(false);
     }
   };
@@ -146,7 +158,7 @@ function CheckoutContent() {
   const handleManualPayment = async () => {
     if (!user || !profile || !planData) return
     if (!utr || utr.length < 10) {
-       toast({ variant: "destructive", title: "UTR Missing", description: "Please enter the valid 12-digit transaction ID." })
+       toast({ variant: "destructive", title: "UTR Missing", description: "Enter the 12-digit transaction ID." })
        return
     }
 
@@ -159,7 +171,7 @@ function CheckoutContent() {
           planId: planId,
           transactionId: utr
        })
-       toast({ title: "Request Submitted", description: "Admin will verify your payment within 24 hours." })
+       toast({ title: "Request Submitted", description: "Admin will verify within 24 hours." })
        router.push("/dashboard")
     } catch (e: any) {
        toast({ variant: "destructive", title: "Submission Failed" })
