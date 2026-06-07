@@ -35,11 +35,6 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 
-/**
- * @fileOverview High-Fidelity Bulk Ingestion v4.0.
- * RESTORED: Direct Paste Protocol with Staged Hub for tweaking field mapping.
- */
-
 export default function BulkImportPage() {
   const router = useRouter()
   const db = useFirestore()
@@ -211,20 +206,6 @@ export default function BulkImportPage() {
                Initialize Extraction <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
-
-          {errors.length > 0 && (
-             <Card className="border-rose-100 bg-rose-50/50 p-8 rounded-[2rem]">
-                <div className="flex items-center gap-3 text-rose-600 mb-6">
-                   <AlertTriangle className="h-6 w-6" />
-                   <h4 className="font-black uppercase text-sm tracking-tight">Validation Failures ({errors.length})</h4>
-                </div>
-                <div className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
-                   {errors.map((err, i) => (
-                      <div key={i} className="p-3 bg-white/50 border border-rose-100 rounded-xl text-[10px] font-bold text-rose-500 leading-tight">{err}</div>
-                   ))}
-                </div>
-             </Card>
-          )}
         </div>
 
         <div className="lg:col-span-7 space-y-10">
@@ -240,7 +221,7 @@ export default function BulkImportPage() {
                 </div>
                 {parsedQuestions.map((q, idx) => (
                   <div key={idx} className="relative group">
-                    <Card className="border-none shadow-3xl rounded-[3rem] bg-white p-12 text-left group overflow-visible h-auto min-h-0 border border-slate-50 transition-all hover:border-primary/20">
+                    <Card className="border-none shadow-3xl rounded-[3rem] bg-white p-12 text-left group overflow-visible border border-slate-50 transition-all hover:border-primary/20">
                        <div className="flex justify-between items-start mb-10 border-b border-slate-50 pb-8">
                           <div className="space-y-2">
                              <Badge className="bg-[#0F172A] text-white border-none text-[10px] font-black px-6 py-2 rounded-xl uppercase tracking-widest">Asset {idx + 1}</Badge>
@@ -294,25 +275,6 @@ export default function BulkImportPage() {
                         className="h-36 rounded-2xl bg-slate-50 border-none font-bold text-lg p-6 shadow-inner text-[#0F172A]" 
                      />
                   </div>
-               </div>
-
-               <div className="grid grid-cols-1 gap-6 pt-4 border-t border-slate-50">
-                  {['A','B','C','D'].map(opt => (
-                    <div key={opt} className="grid grid-cols-2 gap-4 bg-slate-50/50 p-4 rounded-xl">
-                       <div className="space-y-2">
-                          <Label className="text-[9px] font-black uppercase text-slate-400">Option {opt} English</Label>
-                          <Input value={editForm?.[`option${opt}English`] || ""} onChange={e => setEditForm({...editForm, [`option${opt}English`]: e.target.value})} className="bg-white font-bold text-[#0F172A]" />
-                       </div>
-                       <div className="space-y-2">
-                          <Label className="text-[9px] font-black uppercase text-slate-400">Option {opt} {isHindiMode ? 'Hindi' : 'Punjabi'}</Label>
-                          <Input 
-                            value={isHindiMode ? (editForm?.[`option${opt}Hindi`] || "") : (editForm?.[`option${opt}Punjabi`] || "")} 
-                            onChange={e => setEditForm({...editForm, [isHindiMode ? `option${opt}Hindi` : `option${opt}Punjabi`]: e.target.value})} 
-                            className="bg-white font-bold text-[#0F172A]" 
-                          />
-                       </div>
-                    </div>
-                  ))}
                </div>
             </div>
             <DialogFooter className="p-10 pt-6 bg-slate-50 flex gap-6 shrink-0">

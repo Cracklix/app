@@ -47,14 +47,6 @@ import { MockType, Difficulty, AccessType, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
-const LANGUAGE_MODES: { label: string, value: LanguageDisplayMode }[] = [
-  { label: "BILINGUAL (EN+PA)", value: "ENGLISH_PUNJABI" },
-  { label: "BILINGUAL (EN+HI)", value: "ENGLISH_HINDI" },
-  { label: "ENGLISH ONLY", value: "ENGLISH" },
-  { label: "PUNJABI ONLY", value: "PUNJABI" },
-  { label: "HINDI ONLY", value: "HINDI" },
-];
-
 const MOCK_TYPES: { label: string, value: MockType, icon: any }[] = [
   { label: "FULL LENGTH MOCK", value: "FULL", icon: <Zap className="h-3 w-3" /> },
   { label: "SUBJECT TEST", value: "SUBJECT", icon: <BookOpen className="h-3 w-3" /> },

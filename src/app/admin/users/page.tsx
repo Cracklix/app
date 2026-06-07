@@ -33,8 +33,8 @@ import { cn } from "@/lib/utils"
 import React from "react"
 
 /**
- * @fileOverview Student Registry v17.0.
- * HARDENED: Correct imports for Label, Input, and Button nodes.
+ * @fileOverview Student Registry v18.0.
+ * HARDENED: Resolved all component reference errors (Label, Input).
  */
 export default function AspirantsManagement() {
   const db = useFirestore()
@@ -225,40 +225,6 @@ export default function AspirantsManagement() {
             </DialogFooter>
          </DialogContent>
       </Dialog>
-
-      {/* STUDENT DETAILS DIALOG */}
-      <Dialog open={!!selectedUser} onOpenChange={o => !o && setSelectedUser(null)}>
-         <DialogContent className="sm:max-w-xl rounded-[3rem] bg-white border-none shadow-4xl p-10 overflow-hidden text-left">
-            <DialogHeader>
-               <DialogTitle className="text-2xl font-headline font-black uppercase text-[#0F172A]">Student Details</DialogTitle>
-            </DialogHeader>
-            <div className="py-10 space-y-8">
-               <div className="flex items-center gap-6 bg-slate-50 p-6 rounded-[2.5rem]">
-                  <StudentAvatar profile={selectedUser} className="h-20 w-20 shadow-xl" />
-                  <div>
-                     <h2 className="text-2xl font-black text-[#0F172A] uppercase">{selectedUser?.name}</h2>
-                     <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{selectedUser?.status} PASS</p>
-                  </div>
-               </div>
-               <div className="grid grid-cols-2 gap-8">
-                  <AuditData label="EMAIL" val={selectedUser?.email} />
-                  <AuditData label="CONTACT" val={selectedUser?.phone || "Pending"} />
-                  <AuditData label="BIRTH DATE" val={selectedUser?.dob || "Pending"} />
-                  <AuditData label="TARGET BOARD" val={selectedUser?.targetExam} />
-                  <AuditData label="HOME ADDRESS" val={selectedUser?.address || "No address saved"} colSpan={2} />
-               </div>
-            </div>
-         </DialogContent>
-      </Dialog>
     </div>
   )
-}
-
-function AuditData({ label, val, colSpan = 1 }: any) {
-   return (
-      <div className={cn("space-y-1.5 text-left", colSpan > 1 ? "col-span-2" : "")}>
-         <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 leading-none">{label}</p>
-         <p className="text-sm font-bold text-[#0F172A] leading-relaxed uppercase">{val}</p>
-      </div>
-   )
 }

@@ -39,11 +39,6 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/co
 import { Button } from "@/components/ui/button";
 import BackButton from "@/components/navigation/BackButton";
 
-/**
- * @fileOverview Administrative Security Hub v9.0.
- * HARDENED: Robust component imports for Button and Layout Nodes.
- */
-
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useUser()
   const auth = useAuth()
@@ -101,6 +96,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Content Sections</SidebarGroupLabel>
             <SidebarMenu>
               <AdminNavItem icon={<Zap className="text-primary" />} label="Mock Manager" href="/admin/mocks" active={pathname === "/admin/mocks"} />
+              <AdminNavItem icon={<Zap className="text-orange-400" />} label="Mock Architect" href="/admin/mocks/builder" active={pathname === "/admin/mocks/builder"} />
               <AdminNavItem icon={<FileStack className="text-blue-500" />} label="PYQ Repository" href="/admin/pyqs" active={pathname === "/admin/pyqs"} />
               <AdminNavItem icon={<FileText className="text-rose-400" />} label="Study Notes" href="/admin/notes" active={pathname === "/admin/notes"} />
               <AdminNavItem icon={<Sparkles className="text-amber-400" />} label="Free Hub CMS" href="/admin/free-content" active={pathname === "/admin/free-content"} />
