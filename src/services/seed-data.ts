@@ -1,9 +1,9 @@
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Engine v41.0.
- * Features: Expanded PSSSB Vertical Registry (Clerk, VDO, JE, Senior Assistant).
- * ReferrerPolicy Hardening is applied at the rendering layer.
+ * @fileOverview Institutional Seeding Engine v42.0.
+ * Features: Expanded PSSSB Vertical Registry and Official CTET/ETT Teaching Nodes.
+ * UPDATED: Fixed CTET logos with official CBSE/Waas URIs.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('[AUDIT] Initializing Cracklix Global Registry Sync...');
@@ -17,6 +17,7 @@ export async function seedInitialData(db: Firestore) {
   const anganwadiLogo = "https://sswcd.punjab.gov.in/sites/default/files/download.png";
   const armyEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Indian_Army_Insignia_circular.png/1280px-Indian_Army_Insignia_circular.png";
   const punjabEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
+  const ctetLogo = "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png";
 
   // 1. BOARDS REGISTRY
   const boards = [
@@ -34,7 +35,7 @@ export async function seedInitialData(db: Firestore) {
     await setDoc(doc(db, 'boards', b.id), { ...b, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 2. CANONICAL EXAM MASTER HUBS (Expanded PSSSB sequence)
+  // 2. CANONICAL EXAM MASTER HUBS
   const exams = [
     { id: 'psssb-clerk-gen', boardId: 'psssb', name: 'PSSSB Clerk (General/IT/Accounts)', category: 'STATE', description: 'Clerical recruitment for multi-departmental Punjab govt posts.', totalFullMocks: 60, iconUrl: psssbSvg },
     { id: 'psssb-vdo', boardId: 'psssb', name: 'VDO / Gram Sevak', category: 'STATE', description: 'Village Development Officer recruitment series.', totalFullMocks: 30, iconUrl: psssbSvg },
@@ -43,13 +44,16 @@ export async function seedInitialData(db: Firestore) {
     { id: 'psssb-senior-asst', boardId: 'psssb', name: 'Senior Assistant', category: 'STATE', description: 'Mastery hub for Senior Assistant recruitment.', totalFullMocks: 20, iconUrl: psssbSvg },
     { id: 'psssb-je', boardId: 'psssb', name: 'PSSSB Junior Engineer (JE)', category: 'STATE', description: 'Technical JE recruitment series.', totalFullMocks: 25, iconUrl: psssbSvg },
     { id: 'psssb-steno', boardId: 'psssb', name: 'Steno-Typist / Junior Scale Stenographer', category: 'STATE', description: 'Shorthand and Typing recruitment hub.', totalFullMocks: 15, iconUrl: psssbSvg },
-    { id: 'psssb-group-d', boardId: 'psssb', name: 'PSSSB Group D (Sewadar/Chowkidar)', category: 'STATE', description: 'Class IV recruitment preparation matrix.', totalFullMocks: 10, iconUrl: psssbSvg },
-    { id: 'psssb-technical', boardId: 'psssb', name: 'Technical / Field Posts (Librarian/Storekeeper)', category: 'STATE', description: 'Specialized field post recruitment series.', totalFullMocks: 12, iconUrl: psssbSvg },
     { id: 'psssb-excise', boardId: 'psssb', name: 'Excise & Taxation Inspector', category: 'STATE', description: 'Official mock series for PSSSB Excise Inspector recruitment.', totalFullMocks: 25, iconUrl: psssbSvg },
     
     { id: 'police-si', boardId: 'punjab-police', name: 'Sub-Inspector (Dist/Armed)', category: 'POLICE', description: 'District and Armed Cadre recruitment for Punjab Police.', totalFullMocks: 30, iconUrl: policeEmblem },
     { id: 'police-constable', boardId: 'punjab-police', name: 'Constable Recruitment', category: 'POLICE', description: 'Direct recruitment for Constable posts in Punjab Police.', totalFullMocks: 50, iconUrl: policeEmblem },
     { id: 'ppsc-pcs', boardId: 'ppsc', name: 'PCS Executive Prelims', category: 'CIVIL', description: 'Higher Class A & B services including DSP and Tehsildar posts.', totalFullMocks: 20, iconUrl: ppscJpg },
+    
+    // Teaching Nodes (CTET & ETT)
+    { id: 'ctet-paper-1', boardId: 'education', name: 'CTET Paper 1', category: 'TEACHING', description: 'Central Teacher Eligibility Test (Primary Stage).', totalFullMocks: 25, iconUrl: ctetLogo },
+    { id: 'ctet-paper-2', boardId: 'education', name: 'CTET Paper 2', category: 'TEACHING', description: 'Central Teacher Eligibility Test (Elementary Stage).', totalFullMocks: 25, iconUrl: ctetLogo },
+    { id: 'ett-cadre', boardId: 'education', name: 'ETT Cadre', category: 'TEACHING', description: 'Elementary Teacher Training recruitment hub.', totalFullMocks: 40, iconUrl: punjabEmblem },
     { id: 'master-cadre', boardId: 'education', name: 'Master Cadre', category: 'TEACHING', description: 'Subject-wise teacher recruitment for Punjab Government Schools.', totalFullMocks: 40, iconUrl: punjabEmblem }
   ];
 
