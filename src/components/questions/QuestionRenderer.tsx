@@ -1,10 +1,11 @@
+
 'use client';
 
 import React from 'react';
 import { Question, LanguageDisplayMode } from '@/types';
 import { cn } from '@/lib/utils';
 import MathText from './MathText';
-import { Clock, AlertTriangle, Bookmark, Star } from 'lucide-react';
+import { Clock, AlertTriangle, Bookmark, Star, Info } from 'lucide-react';
 import { useExamStore } from '@/store/useExamStore';
 import { Badge } from '@/components/ui/badge';
 
@@ -19,8 +20,8 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview High-Fidelity Question Engine v28.0.
- * MATCHED: Diagnostic row and button hierarchy perfectly aligned with provided screenshot.
+ * @fileOverview High-Fidelity Question Engine v29.0.
+ * UPDATED: Responsive font sizes and Integrated Solution Node directly below options.
  */
 export default function QuestionRenderer({ 
   question, 
@@ -53,41 +54,41 @@ export default function QuestionRenderer({
   const OPT_LABELS = ['A', 'B', 'C', 'D'];
 
   return (
-    <div className={cn("w-full text-left font-body bg-white text-[#0F172A] p-6 md:p-10 flex flex-col select-none rounded-[2.5rem] shadow-sm", className)}>
+    <div className={cn("w-full text-left font-body bg-white text-[#0F172A] p-5 md:p-10 flex flex-col select-none rounded-[2.5rem] shadow-sm", className)}>
       
-      {/* 1. DIAGNOSTIC INFO ROW (MATCHED TO SCREENSHOT) */}
+      {/* 1. DIAGNOSTIC INFO ROW */}
       {!showSolution && (
-        <div className="flex items-center justify-between mb-8 md:mb-10">
-           <div className="flex items-center gap-4">
-              <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-[#94A3B8] flex items-center justify-center text-white font-black text-sm md:text-lg shadow-inner">
+        <div className="flex items-center justify-between mb-6 md:mb-10">
+           <div className="flex items-center gap-3 md:gap-4">
+              <div className="h-9 w-9 md:h-12 md:w-12 rounded-full bg-[#94A3B8] flex items-center justify-center text-white font-black text-sm md:text-lg shadow-inner">
                  {q.displayId || '1'}
               </div>
-              <div className="flex items-center gap-2 text-[#94A3B8] font-bold text-xs md:text-sm">
-                 <Clock className="h-4 w-4 md:h-5 md:w-5" />
+              <div className="flex items-center gap-1.5 text-[#94A3B8] font-bold text-[10px] md:text-sm">
+                 <Clock className="h-3.5 w-3.5 md:h-5 md:w-5" />
                  <span className="tabular-nums tracking-widest">{formatTime(timeLeft)}</span>
               </div>
-              <div className="flex items-center gap-2">
-                 <Badge className="bg-[#ECFDF5] text-[#059669] border-none font-black text-[9px] md:text-[11px] px-2.5 py-1 rounded tracking-widest">+ 1.0</Badge>
-                 <Badge className="bg-[#FFF1F2] text-[#E11D48] border-none font-black text-[9px] md:text-[11px] px-2.5 py-1 rounded tracking-widest">- 0.25</Badge>
+              <div className="flex items-center gap-1.5">
+                 <Badge className="bg-[#ECFDF5] text-[#059669] border-none font-black text-[8px] md:text-[10px] px-2 py-0.5 rounded tracking-widest">+ 1.0</Badge>
+                 <Badge className="bg-[#FFF1F2] text-[#E11D48] border-none font-black text-[8px] md:text-[10px] px-2 py-0.5 rounded tracking-widest">- 0.25</Badge>
               </div>
            </div>
-           <div className="flex items-center gap-4 md:gap-6 text-slate-200">
-              <AlertTriangle className="h-5 w-5 md:h-6 md:w-6 hover:text-rose-500 cursor-pointer transition-colors" />
-              <Bookmark className="h-5 w-5 md:h-6 md:w-6 hover:text-[#F97316] cursor-pointer transition-colors" />
-              <Star className="h-5 w-5 md:h-6 md:w-6 hover:text-amber-500 cursor-pointer transition-colors" />
+           <div className="flex items-center gap-3 md:gap-6 text-slate-200">
+              <AlertTriangle className="h-4 w-4 md:h-6 md:w-6 hover:text-rose-500 cursor-pointer transition-colors" />
+              <Bookmark className="h-4 w-4 md:h-6 md:w-6 hover:text-[#F97316] cursor-pointer transition-colors" />
+              <Star className="h-4 w-4 md:h-6 md:w-6 hover:text-amber-500 cursor-pointer transition-colors" />
            </div>
         </div>
       )}
 
       {/* 2. QUESTION STATEMENTS */}
-      <div className="space-y-6 mb-10">
+      <div className="space-y-4 md:space-y-6 mb-8 md:mb-10">
          {showEn && englishQ && (
-           <div className="font-bold text-lg md:text-2xl text-[#0F172A] antialiased leading-relaxed tracking-tight">
+           <div className="font-bold text-base md:text-xl text-[#0F172A] antialiased leading-relaxed tracking-tight">
              <MathText text={englishQ} />
            </div>
          )}
          {showPa && punjabiQ && (
-           <div className="font-bold text-lg md:text-2xl text-[#0F172A] antialiased leading-relaxed tracking-tight">
+           <div className="font-bold text-base md:text-xl text-[#0F172A] antialiased leading-relaxed tracking-tight">
              <MathText text={punjabiQ} />
            </div>
          )}
@@ -95,7 +96,7 @@ export default function QuestionRenderer({
 
       {/* 3. OPTIONS MATRIX */}
       {!hideOptions && (
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-3 md:space-y-4">
           {OPT_LABELS.map((key, idx) => {
             const en = q[`option${key}English`];
             const pa = q[`option${key}Punjabi`];
@@ -108,7 +109,7 @@ export default function QuestionRenderer({
                 key={key} 
                 onClick={() => onSelect?.(idx)} 
                 className={cn(
-                  "flex items-center gap-6 p-5 md:p-6 rounded-2xl border-2 transition-all cursor-pointer group/opt",
+                  "flex items-center gap-4 md:gap-6 p-4 md:p-6 rounded-2xl border-2 transition-all cursor-pointer group/opt",
                   showSolution 
                     ? isCorrect ? "bg-[#F0FDF4] border-[#10B981]" 
                       : isSelected ? "bg-[#FEF2F2] border-[#F43F5E]"
@@ -118,14 +119,14 @@ export default function QuestionRenderer({
                 )}
               >
                 <span className={cn(
-                  "font-black text-lg md:text-2xl shrink-0 w-8 text-left transition-colors",
+                  "font-black text-base md:text-2xl shrink-0 w-6 md:w-8 text-left transition-colors",
                   isSelected ? "text-[#F97316]" : "text-[#94A3B8] group-hover/opt:text-[#0F172A]"
                 )}>
                   {key}
                 </span>
-                <div className="flex flex-col flex-1 min-w-0 space-y-1.5">
-                  {showEn && en && <div className={cn("font-bold text-base md:text-xl", isSelected ? "text-[#F97316]" : "text-[#0F172A]")}><MathText text={en} /></div>}
-                  {showPa && pa && <div className={cn("font-bold text-base md:text-xl", isSelected ? "text-[#F97316]" : "text-[#0F172A]")}><MathText text={pa} /></div>}
+                <div className="flex flex-col flex-1 min-w-0 space-y-1">
+                  {showEn && en && <div className={cn("font-bold text-sm md:text-lg", isSelected ? "text-[#F97316]" : "text-[#0F172A]")}><MathText text={en} /></div>}
+                  {showPa && pa && <div className={cn("font-bold text-sm md:text-lg", isSelected ? "text-[#F97316]" : "text-[#0F172A]")}><MathText text={pa} /></div>}
                 </div>
               </div>
             )
@@ -135,11 +136,17 @@ export default function QuestionRenderer({
 
       {/* 4. SOLUTION HUB */}
       {showSolution && (
-        <div className="mt-10 pt-10 border-t border-slate-100 space-y-5 animate-in fade-in slide-in-from-top-4">
+        <div className="mt-8 md:mt-10 pt-8 md:pt-10 border-t border-slate-100 space-y-4 md:space-y-5 animate-in fade-in slide-in-from-top-2 duration-500">
            <div className="flex items-center gap-3">
-              <Badge className="bg-[#F0FDF4] text-[#047857] border-none font-black text-xs uppercase px-5 py-1.5 rounded-lg shadow-sm">Official Key: ({q.correctAnswer})</Badge>
+              <Badge className="bg-[#F0FDF4] text-[#047857] border-none font-black text-[10px] md:text-xs uppercase px-4 md:px-5 py-1.5 rounded-lg shadow-sm">
+                <Info className="h-3 w-3 mr-2 inline" /> Institutional Solution
+              </Badge>
            </div>
-           <div className="bg-[#F8FAFC] p-8 rounded-3xl border border-[#F1F5F9] italic text-[#475569] leading-relaxed font-medium">
+           <div className="bg-[#F8FAFC] p-6 md:p-8 rounded-[2rem] border border-[#F1F5F9] text-[#475569] leading-relaxed font-medium text-sm md:text-base">
+              <div className="mb-4 flex items-center gap-2">
+                 <span className="font-black text-[#0B1528] uppercase text-[10px] tracking-widest">Official Key:</span>
+                 <span className="h-6 w-6 rounded-lg bg-[#0B1528] text-white flex items-center justify-center font-black text-xs">{q.correctAnswer}</span>
+              </div>
               <MathText text={q.englishExplanation || "Institutional rationale pending audit."} />
            </div>
         </div>
@@ -147,3 +154,4 @@ export default function QuestionRenderer({
     </div>
   );
 }
+
