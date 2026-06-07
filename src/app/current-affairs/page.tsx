@@ -5,7 +5,7 @@ import { useMemo, useState } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, orderBy } from "firebase/firestore"
+import { collection, query, orderBy, limit, where } from "firebase/firestore"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { 
@@ -16,13 +16,14 @@ import {
   FileStack, 
   Globe, 
   Newspaper,
-  Library,
   ChevronRight,
   MessageCircle,
   Trophy,
   Sparkles,
   Bell,
-  Medal
+  Medal,
+  Users,
+  Loader2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -31,8 +32,9 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 
 /**
- * @fileOverview Institutional Free Hub v8.0.
- * UPDATED: Replaced Blueprints with Current Affairs and added Notes category.
+ * @fileOverview Institutional Free Hub v9.0.
+ * UPDATED: 100% Dynamic Registry. Removed all hardcoded stats and rankings.
+ * All data is now live-synced from Firestore.
  */
 
 const CATEGORIES = [
@@ -48,12 +50,27 @@ export default function FreeContentHub() {
   const [activeFilter, setActiveFilter] = useState("all")
   const [searchTerm, setSearchTerm] = useState("")
 
-  const contentQuery = useMemo(() => {
-    if (!db) return null
-    return query(collection(db, "free_content"), orderBy("updatedAt", "desc"))
-  }, [db])
+  // 1. Live Content Registry
+  const contentQuery = useMemo(() => (db ? query(collection(db, "free_content"), orderBy("updatedAt", "desc")) : null), [db])
+  const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true)) : null), [db])
+  const usersQuery = useMemo(() => (db ? collection(db, "users") : null), [db])
+  const pyqQuery = useMemo(() => (db ? collection(db, "pyqs") : null), [db])
+  
+  // Top Rankers Query (Live State Merit)
+  const rankingQuery = useMemo(() => (db ? query(collection(db, "results"), orderBy("score", "desc"), limit(3)) : null), [db])
 
-  const { data: content, loading } = useCollection<any>(contentQuery)
+  const { data: content, loading: contentLoading } = useCollection<any>(contentQuery)
+  const { data: mocks } = useCollection<any>(mocksQuery)
+  const { data: users } = useCollection<any>(usersQuery)
+  const { data: pyqs } = useCollection<any>(pyqQuery)
+  const { data: topRankers, loading: rankLoading } = useCollection<any>(rankingQuery)
+
+  const stats = useMemo(() => ({
+    mocks: mocks?.length || 0,
+    notes: content?.filter((c: any) => c.type === 'note' || c.type === 'pdf').length || 0,
+    aspirants: users?.length || 0,
+    pyqs: pyqs?.length || 0
+  }), [mocks, content, users, pyqs])
 
   const filteredItems = useMemo(() => {
     if (!content) return []
@@ -72,7 +89,7 @@ export default function FreeContentHub() {
       <main className="container mx-auto px-4 md:px-6 py-8 md:py-12 max-w-7xl">
         <div className="space-y-10 md:space-y-16 text-left">
           
-          {/* HERO HUB */}
+          {/* HERO HUB - DYNAMIC STATS */}
           <div className="flex flex-col lg:flex-row justify-between items-center gap-12 bg-[#0B1528] p-8 md:p-16 rounded-[2.5rem] md:rounded-[4rem] text-white relative overflow-hidden shadow-4xl group">
             <div className="absolute top-0 right-0 p-12 opacity-5 rotate-12 group-hover:scale-110 transition-transform duration-1000"><Trophy className="h-80 w-80" /></div>
             <div className="space-y-8 relative z-10 max-w-3xl">
@@ -89,7 +106,7 @@ export default function FreeContentHub() {
                 <span className="text-primary">FREE HUB</span>
               </h1>
               <p className="text-slate-400 font-medium text-base md:text-xl max-w-2xl leading-relaxed">
-                Access high-fidelity mocks, current affairs, and study notes curated by Arsh Grewal Management.
+                Access high-fidelity mocks, study notes, and recruitment updates verified by Arsh Grewal Management.
               </p>
               
               <div className="relative w-full md:w-[480px]">
@@ -104,10 +121,10 @@ export default function FreeContentHub() {
             </div>
 
             <div className="hidden lg:grid grid-cols-2 gap-4 relative z-10">
-               <HeroStat val="500+" label="Free Mocks" />
-               <HeroStat val="1.2k+" label="PDF Nodes" />
-               <HeroStat val="15k+" label="Aspirants" />
-               <HeroStat val="Real" label="PYQ Archive" />
+               <HeroStat val={`${stats.mocks}+`} label="Free Mocks" />
+               <HeroStat val={`${stats.notes}+`} label="PDF Nodes" />
+               <HeroStat val={`${(stats.aspirants / 1000).toFixed(1)}k+`} label="Aspirants" />
+               <HeroStat val={stats.pyqs > 0 ? "Live" : "Real"} label="PYQ Archive" />
             </div>
           </div>
 
@@ -136,7 +153,7 @@ export default function FreeContentHub() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 md:gap-8">
-                  {loading ? (
+                  {contentLoading ? (
                     Array.from({ length: 4 }).map((_, i) => (
                       <Skeleton key={i} className="h-40 w-full rounded-[2.5rem]" />
                     ))
@@ -159,10 +176,10 @@ export default function FreeContentHub() {
                              <div className="flex-1 space-y-3 w-full">
                                 <div className="flex items-center justify-between">
                                    <Badge className="bg-slate-100 text-slate-400 border-none px-3 py-1 font-black uppercase text-[8px] tracking-widest">
-                                      {item.type === 'ca' ? 'DAILY ANALYSIS' : item.type?.toUpperCase()}
+                                      {item.type?.toUpperCase()}
                                    </Badge>
                                    <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
-                                      <Bell className="h-3 w-3 text-primary" /> New Entry
+                                      <Bell className="h-3 w-3 text-primary" /> New Registry
                                    </span>
                                 </div>
                                 <h2 className="text-xl md:text-2xl font-headline font-black text-[#0F172A] group-hover:text-primary transition-colors uppercase leading-tight">{item.title}</h2>
@@ -172,11 +189,11 @@ export default function FreeContentHub() {
                                 <Button asChild className="w-full md:w-auto h-14 px-10 bg-[#0F172A] hover:bg-primary text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl shadow-xl transition-all active:scale-95">
                                    {isInternal ? (
                                      <Link href={item.link}>
-                                        {item.type === 'mock' ? 'Attempt Now' : 'View Content'} <ArrowRight className="ml-2 h-4 w-4" />
+                                        Attempt Now <ArrowRight className="ml-2 h-4 w-4" />
                                      </Link>
                                    ) : (
                                      <a href={item.link || "#"} target="_blank" rel="noopener noreferrer">
-                                        {item.type === 'mock' ? 'Attempt' : item.type === 'ca' ? 'Read Analysis' : 'Open PDF'} <ArrowRight className="ml-2 h-4 w-4" />
+                                        Open PDF <ArrowRight className="ml-2 h-4 w-4" />
                                      </a>
                                    )}
                                 </Button>
@@ -194,7 +211,7 @@ export default function FreeContentHub() {
                 </div>
              </div>
 
-             {/* RIGHT: RANKING PODIUM & TELEGRAM */}
+             {/* RIGHT: REAL-TIME RANKING PODIUM */}
              <div className="lg:col-span-4 space-y-12">
                 <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden">
                    <div className="bg-[#0F172A] p-8 text-white">
@@ -202,12 +219,25 @@ export default function FreeContentHub() {
                          <Medal className="h-6 w-6 text-primary" />
                          <h3 className="font-headline font-black text-xl uppercase">State Merit Index</h3>
                       </div>
-                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Hall of Rankers (Live)</p>
+                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Hall of Rankers (Live Sync)</p>
                    </div>
                    <CardContent className="p-8 space-y-6">
-                      <RankingItem rank={1} name="Harmanjit Kaur" score="145/150" color="bg-amber-400" />
-                      <RankingItem rank={2} name="Amritpal Singh" score="142/150" color="bg-slate-300" />
-                      <RankingItem rank={3} name="Gursewak Singh" score="139/150" color="bg-orange-400" />
+                      {rankLoading ? (
+                        Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14 w-full rounded-xl" />)
+                      ) : topRankers && topRankers.length > 0 ? (
+                        topRankers.map((res: any, idx: number) => (
+                          <RankingItem 
+                            key={res.id}
+                            rank={idx + 1} 
+                            name={res.userName || "Aspirant Node"} 
+                            score={`${Math.floor(res.score)}/${res.totalQuestions}`} 
+                            color={idx === 0 ? "bg-amber-400" : idx === 1 ? "bg-slate-300" : "bg-orange-400"} 
+                          />
+                        ))
+                      ) : (
+                        <div className="py-10 text-center text-slate-300 text-xs font-bold uppercase tracking-widest">Awaiting Merit Nodes</div>
+                      )}
+                      
                       <div className="pt-4 border-t border-slate-50">
                          <Button asChild variant="ghost" className="w-full font-black uppercase text-[9px] tracking-widest text-primary gap-2">
                             <Link href="/leaderboard">Full Registry Hub <ChevronRight className="h-3 w-3" /></Link>
@@ -225,7 +255,7 @@ export default function FreeContentHub() {
                       <h3 className="text-3xl font-headline font-black uppercase leading-tight">Join Official <br/> Telegram</h3>
                       <p className="text-white/80 text-sm font-medium leading-relaxed">Direct recruitment updates verified by Arsh Grewal Management.</p>
                       <Button asChild className="w-full h-14 bg-white text-black hover:bg-slate-100 font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-2xl">
-                         <a href="https://t.me/cracklixapp" target="_blank">Join 15k+ Aspirants</a>
+                         <a href="https://t.me/cracklixapp" target="_blank">Join Aspirant Node</a>
                       </Button>
                    </div>
                 </Card>
@@ -255,7 +285,7 @@ function RankingItem({ rank, name, score, color }: any) {
                {rank}
             </div>
             <div className="text-left">
-               <p className="font-bold text-[#0F172A] text-sm uppercase">{name}</p>
+               <p className="font-bold text-[#0F172A] text-sm uppercase truncate max-w-[120px]">{name}</p>
                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Regional Node 0{rank}</p>
             </div>
          </div>
