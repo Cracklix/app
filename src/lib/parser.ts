@@ -1,12 +1,12 @@
 /**
- * @fileOverview Institutional High-Fidelity Explicit Parser v46.0.
- * UPDATED: Supports multi-line bilingual patterns and explicit language markers.
+ * @fileOverview Institutional High-Fidelity Explicit Parser v47.0.
+ * UPDATED: Optimized for multi-line stacked bilingual patterns.
  * 
  * Format Supported:
  * Q15. English Question
  * Punjabi Question
- * A. Padma Shri
- * ਪਦਮ ਸ਼੍ਰੀ
+ * A. Option EN
+ * ਪੰਜਾਬੀ ਆਪਸ਼ਨ
  * Answer: C. Bharat Ratna
  * ਉੱਤਰ: C. ਭਾਰਤ ਰਤਨ
  * Explanation (English): Text...
@@ -89,15 +89,15 @@ export function parseBulkQuestions(rawText: string, metadata: any): ParsedResult
       const ansMatch = fullText.match(/(?:Correct Answer|Answer|Answer Key|ਉੱਤਰ|Sahi Uttar)[:\s]*\(?([A-D])\)?/i);
       if (ansMatch) q.correctAnswer = ansMatch[1].toUpperCase();
 
-      // 4. BILINGUAL EXPLANATIONS
+      // 4. BILINGUAL EXPLANATIONS (Strict Labeling)
       const enExpMatch = fullText.match(/(?:Explanation\s*\(English\)|Explanation|Rationale)[:\s]*([\s\S]*?)(?=\n(?:ਵਿਆਖਿਆ|Punjabi|Hindi|ਉੱਤਰ)|$)/i);
       const secExpMatch = fullText.match(/(?:ਵਿਆਖਿਆ\s*\(Punjabi\)|Explanation\s*\(Punjabi\)|Explanation\s*\(Hindi\))[:\s]*([\s\S]*?)(?=$)/i);
 
       if (enExpMatch) q.englishExplanation = enExpMatch[1].trim();
       if (secExpMatch) q[expField] = secExpMatch[1].trim();
 
-      // Fallback for older interleaved explanations
-      if (!q.englishExplanation) {
+      // Fallback for interleaved or label-less explanations
+      if (!q.englishExplanation && !q[expField]) {
         const expMarkerIndex = lines.findIndex(l => /^(?:English\s+)?Explanation|Logic|Rationale/i.test(l));
         if (expMarkerIndex !== -1) {
           q.englishExplanation = lines[expMarkerIndex].replace(/^(?:English\s+)?Explanation|Logic|Rationale[:\s]*/i, '').trim();
@@ -112,7 +112,9 @@ export function parseBulkQuestions(rawText: string, metadata: any): ParsedResult
         EN_Q: q.englishQuestion ? 'YES' : 'NO',
         SEC_Q: q[qField] ? 'YES' : 'NO',
         OPT: (q.optionAEnglish && q[`optionA${optSuffix}`]) ? 'YES' : 'NO',
-        KEY: q.correctAnswer ? 'YES' : 'NO'
+        KEY: q.correctAnswer ? 'YES' : 'NO',
+        EN_EXP: q.englishExplanation ? 'YES' : 'NO',
+        PA_EXP: q[expField] ? 'YES' : 'NO'
       };
 
       // Validation

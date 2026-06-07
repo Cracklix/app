@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
@@ -23,7 +22,9 @@ import {
   Layers,
   Database,
   Rocket,
-  ChevronRight
+  ChevronRight,
+  CheckCircle2,
+  Info
 } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc, serverTimestamp, writeBatch } from "firebase/firestore"
@@ -35,8 +36,8 @@ import { cn } from "@/lib/utils"
 import { parseBulkQuestions } from "@/lib/parser"
 
 /**
- * @fileOverview Institutional Current Affairs Management Hub v7.0.
- * UPDATED: Increased ingestion box size and aligned with interleaved bilingual parser.
+ * @fileOverview Institutional Current Affairs Management Hub v8.0.
+ * UPDATED: Full question preview (Question, Options, Answer, Both Explanations).
  */
 
 export default function AdminCurrentAffairs() {
@@ -71,7 +72,7 @@ export default function AdminCurrentAffairs() {
         questions: [...(editingItem.questions || []), ...result.questions]
       });
       setBulkText("");
-      toast({ title: "Extraction Success", description: `${result.questions.length} questions staged.` });
+      toast({ title: "Extraction Success", description: `${result.questions.length} questions staged with bilingual logic.` });
     } else {
       toast({ variant: "destructive", title: "Parse Failed", description: "Format: Q1, Pa Statement, (A) Opt EN/PA" });
     }
@@ -312,8 +313,8 @@ export default function AdminCurrentAffairs() {
                            <Textarea 
                               value={bulkText}
                               onChange={e => setBulkText(e.target.value)}
-                              placeholder={`Q1. English Question\nPunjabi Question\n(A) Option EN / Option PA\nAnswer: (B)\nExplanation: English rationale\nPunjabi rationale`}
-                              className="min-h-[400px] rounded-xl bg-slate-50 border-none p-6 text-sm font-bold shadow-inner resize-none focus-visible:ring-primary"
+                              placeholder={`Q15. English Question\nਪੰਜਾਬੀ ਪ੍ਰਸ਼ਨ\nA. Option EN\nਪੰਜਾਬੀ ਆਪਸ਼ਨ\nAnswer: C\nExplanation (English): English rationale\nਵਿਆਖਿਆ (Punjabi): Punjabi rationale`}
+                              className="min-h-[300px] rounded-xl bg-slate-50 border-none p-6 text-sm font-bold shadow-inner resize-none focus-visible:ring-primary"
                            />
                            <Button onClick={handleProcessBulk} disabled={!bulkText.trim()} className="w-full h-14 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.3em] text-[11px] rounded-xl shadow-2xl gap-3 border-none">
                               Process Bulk Extraction <ChevronRight className="h-4 w-4" />
@@ -322,18 +323,42 @@ export default function AdminCurrentAffairs() {
 
                         {editingItem?.questions?.length > 0 && (
                            <div className="flex-1 flex flex-col min-h-0 pt-4 border-t border-slate-50">
-                              <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-3">
-                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-4">
+                                 <div className="grid grid-cols-1 gap-4">
                                     {editingItem.questions.map((q: any, idx: number) => (
-                                       <div key={idx} className="bg-slate-50/50 p-4 rounded-xl border border-slate-100 group/q relative transition-all hover:bg-white hover:shadow-lg">
-                                          <button onClick={() => { const qs = [...editingItem.questions]; qs.splice(idx, 1); setEditingItem({...editingItem, questions: qs}); }} className="absolute top-3 right-3 text-rose-300 hover:text-rose-50 opacity-0 group-hover/q:opacity-100 transition-opacity"><Trash2 className="h-4 w-4" /></button>
-                                          <div className="flex items-center gap-3 mb-2">
-                                             <div className="h-5 w-5 rounded-md bg-[#0F172A] text-white flex items-center justify-center font-black text-[8px]">{idx + 1}</div>
-                                             <span className="text-[7px] font-black uppercase text-slate-400">VERIFIED</span>
+                                       <div key={idx} className="bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100 group/q relative transition-all hover:bg-white hover:shadow-xl">
+                                          <button onClick={() => { const qs = [...editingItem.questions]; qs.splice(idx, 1); setEditingItem({...editingItem, questions: qs}); }} className="absolute top-6 right-6 text-rose-300 hover:text-rose-600 opacity-0 group-hover/q:opacity-100 transition-all p-2 rounded-xl hover:bg-rose-50"><Trash2 className="h-5 w-5" /></button>
+                                          
+                                          <div className="flex items-center gap-4 mb-4">
+                                             <div className="h-8 w-8 rounded-xl bg-[#0F172A] text-white flex items-center justify-center font-black text-xs shadow-lg">{idx + 1}</div>
+                                             <Badge className="bg-emerald-50 text-emerald-600 border-none text-[8px] font-black uppercase tracking-widest px-3 py-1">VERIFIED ASSET</Badge>
                                           </div>
-                                          <p className="font-bold text-[10px] text-[#0F172A] line-clamp-2 leading-snug">{q.englishQuestion}</p>
-                                          <div className="mt-2 flex items-center gap-2">
-                                             <Badge className="bg-emerald-50 text-emerald-600 border-none text-[7px] font-black">KEY: {q.correctAnswer}</Badge>
+
+                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                             <div className="space-y-4 text-left">
+                                                <div className="space-y-1">
+                                                   <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Question Statement</p>
+                                                   <p className="font-bold text-sm text-[#0F172A] leading-snug">{q.englishQuestion}</p>
+                                                   <p className="font-bold text-sm text-slate-500 leading-snug mt-1">{q.punjabiQuestion}</p>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                   <div className="bg-white/50 p-2 rounded-lg border border-slate-100/50">
+                                                      <p className="text-[7px] font-black text-slate-400 uppercase">Correct Key</p>
+                                                      <p className="font-black text-emerald-600 text-sm">Option {q.correctAnswer}</p>
+                                                   </div>
+                                                </div>
+                                             </div>
+
+                                             <div className="space-y-4 text-left border-l border-slate-100 pl-4 md:pl-8">
+                                                <div className="space-y-2">
+                                                   <p className="text-[8px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2"><Info className="h-3 w-3" /> English Rationale</p>
+                                                   <p className="text-xs font-medium text-slate-600 leading-relaxed italic line-clamp-2">{q.englishExplanation || 'Not provided'}</p>
+                                                </div>
+                                                <div className="space-y-2">
+                                                   <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest flex items-center gap-2"><Info className="h-3 w-3" /> ਪੰਜਾਬੀ ਵਿਆਖਿਆ</p>
+                                                   <p className="text-xs font-medium text-slate-600 leading-relaxed italic line-clamp-2">{q.punjabiExplanation || 'Not provided'}</p>
+                                                </div>
+                                             </div>
                                           </div>
                                        </div>
                                     ))}
