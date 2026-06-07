@@ -1,10 +1,12 @@
-
 'use client';
 
 import React from 'react';
 import { Question, LanguageDisplayMode } from '@/types';
 import { cn } from '@/lib/utils';
 import MathText from './MathText';
+import { Clock, AlertTriangle, Bookmark, Star } from 'lucide-react';
+import { useExamStore } from '@/store/useExamStore';
+import { Badge } from '@/components/ui/badge';
 
 interface QuestionRendererProps {
   question: Partial<Question> & { displayId?: string };
@@ -17,8 +19,8 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview Production Hardened Question Engine v25.0.
- * UPDATED: Reduced spacing and internal padding for high-density mock display.
+ * @fileOverview High-Fidelity Question Engine v26.0.
+ * Matches the "Diagnostic Info Row" and italicized option labels from the reference.
  */
 export default function QuestionRenderer({ 
   question, 
@@ -29,96 +31,99 @@ export default function QuestionRenderer({
   onSelect,
   className
 }: QuestionRendererProps) {
+  const timeLeft = useExamStore(s => s.timeLeft);
   
-  if (!question) return (
-    <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 opacity-20">
-       <p className="text-[10px] font-black uppercase">Node Hydration Failed</p>
-    </div>
-  );
+  if (!question) return null;
 
   const normalizedLang = (language || 'ENGLISH_PUNJABI').toUpperCase();
-  
-  const mode = normalizedLang === 'EN' ? 'ENGLISH' :
-               normalizedLang === 'PA' ? 'PUNJABI' :
-               normalizedLang === 'HI' ? 'HINDI' :
-               normalizedLang === 'BILINGUAL' ? 'ENGLISH_PUNJABI' : normalizedLang as LanguageDisplayMode;
-
   const q = question as any;
   
+  const formatTime = (seconds: number) => {
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
   const englishQ = q.englishQuestion || q.questionEn || q.questionText || "";
   const punjabiQ = q.punjabiQuestion || q.questionPa || "";
-  const hindiQ = q.hindiQuestion || q.questionHi || "";
   
-  const englishExp = q.englishExplanation || q.explanationEn || q.rationalization || "";
-  const punjabiExp = q.punjabiExplanation || q.explanationPa || "";
-  const hindiExp = q.hindiExplanation || "";
-
-  const showEn = mode === 'ENGLISH' || mode === 'ENGLISH_PUNJABI' || mode === 'ENGLISH_HINDI';
-  const showPa = mode === 'PUNJABI' || mode === 'ENGLISH_PUNJABI';
-  const showHi = mode === 'HINDI' || mode === 'ENGLISH_HINDI';
+  const showEn = normalizedLang.includes('ENGLISH');
+  const showPa = normalizedLang.includes('PUNJABI');
 
   return (
-    <div className={cn("w-full text-left font-body bg-white text-[#0F172A] p-3 md:p-5 rounded-[1.5rem] md:rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col select-none", className)}>
+    <div className={cn("w-full text-left font-body bg-white text-[#0F172A] p-4 md:p-8 flex flex-col select-none", className)}>
       
-      {/* 1. QUESTION STATEMENTS */}
-      <div className="space-y-2 mb-4 md:mb-6">
+      {/* 1. DIAGNOSTIC INFO ROW */}
+      {!showSolution && (
+        <div className="flex items-center justify-between mb-8">
+           <div className="flex items-center gap-4">
+              <div className="h-10 w-10 rounded-full bg-slate-400 flex items-center justify-center text-white font-black text-sm">
+                 {q.displayId || '1'}
+              </div>
+              <div className="flex items-center gap-1.5 text-slate-400 font-bold text-xs">
+                 <Clock className="h-4 w-4" />
+                 <span className="tabular-nums">{formatTime(timeLeft)}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                 <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[10px] px-2 py-0.5 rounded">+ 1.0</Badge>
+                 <Badge className="bg-rose-50 text-rose-600 border-none font-black text-[10px] px-2 py-0.5 rounded">- 0.25</Badge>
+              </div>
+           </div>
+           <div className="flex items-center gap-4 text-slate-300">
+              <AlertTriangle className="h-5 w-5 hover:text-rose-500 cursor-pointer transition-colors" />
+              <Bookmark className="h-5 w-5 hover:text-primary cursor-pointer transition-colors" />
+              <Star className="h-5 w-5 hover:text-amber-500 cursor-pointer transition-colors" />
+           </div>
+        </div>
+      )}
+
+      {/* 2. QUESTION STATEMENTS */}
+      <div className="space-y-4 mb-8">
          {showEn && englishQ && (
-           <div className="font-[700] text-[15px] md:text-[18px] leading-snug tracking-tight text-[#0F172A] antialiased">
+           <div className="font-bold text-lg md:text-xl text-[#0F172A] antialiased leading-relaxed">
              <MathText text={englishQ} />
            </div>
          )}
          {showPa && punjabiQ && (
-           <div className="font-[700] text-[14px] md:text-[17px] leading-snug tracking-tight text-[#0F172A] antialiased">
+           <div className="font-bold text-lg md:text-xl text-[#0F172A] antialiased leading-relaxed">
              <MathText text={punjabiQ} />
-           </div>
-         )}
-         {showHi && hindiQ && (
-           <div className="font-[700] text-[14px] md:text-[17px] leading-snug tracking-tight text-[#0F172A] antialiased">
-             <MathText text={hindiQ} />
            </div>
          )}
       </div>
 
-      {/* 2. OPTIONS MATRIX */}
+      {/* 3. OPTIONS MATRIX */}
       {!hideOptions && (
-        <div className="flex flex-col space-y-2.5">
+        <div className="flex flex-col space-y-3">
           {['A', 'B', 'C', 'D'].map((key, idx) => {
             const en = q[`option${key}English`];
             const pa = q[`option${key}Punjabi`];
-            const hi = q[`option${key}Hindi`];
             
             const isSelected = selectedAnswer === idx;
             const isCorrect = q.correctAnswer === key;
 
-            const boxClasses = cn(
-              "flex items-start gap-3 p-2.5 md:p-3.5 rounded-xl md:rounded-2xl cursor-pointer transition-all border-2",
-              showSolution 
-                ? isCorrect ? "bg-emerald-50 border-emerald-500 shadow-sm" 
-                  : isSelected ? "bg-rose-50 border-rose-500"
-                  : "bg-slate-50/50 border-transparent"
-                : isSelected ? "bg-orange-50 border-primary shadow-md" 
-                  : "bg-slate-50/80 border-transparent active:bg-slate-100"
-            );
-
             return (
-              <div key={key} onClick={() => onSelect?.(idx)} className={boxClasses}>
+              <div 
+                key={key} 
+                onClick={() => onSelect?.(idx)} 
+                className={cn(
+                  "flex items-center gap-4 p-4 rounded-xl border-2 transition-all cursor-pointer",
+                  showSolution 
+                    ? isCorrect ? "bg-emerald-50 border-emerald-500" 
+                      : isSelected ? "bg-rose-50 border-rose-500"
+                      : "bg-white border-slate-100"
+                    : isSelected ? "bg-blue-50 border-blue-500 shadow-md" 
+                      : "bg-white border-slate-100 hover:border-slate-200"
+                )}
+              >
                 <span className={cn(
-                  "font-[900] text-[14px] md:text-[16px] shrink-0 mt-0.5",
-                  showSolution ? (isCorrect ? "text-emerald-600" : isSelected ? "text-rose-600" : "text-[#0F172A]")
-                  : (isSelected ? "text-primary" : "text-slate-400")
+                  "font-serif italic text-lg md:text-xl shrink-0 w-6 text-center",
+                  isSelected ? "text-blue-600" : "text-slate-400"
                 )}>
-                  {key}
+                  {idx + 1}.
                 </span>
                 <div className="flex flex-col flex-1 min-w-0">
-                  {showEn && en && (
-                    <div className="font-[700] text-[14px] md:text-[16px] leading-tight text-[#0F172A]"><MathText text={en} /></div>
-                  )}
-                  {showPa && pa && (
-                    <div className="font-[700] text-[13px] md:text-[15px] leading-tight text-[#0F172A] mt-1"><MathText text={pa} /></div>
-                  )}
-                  {showHi && hi && (
-                    <div className="font-[700] text-[13px] md:text-[15px] leading-tight text-[#0F172A] mt-1"><MathText text={hi} /></div>
-                  )}
+                  {showEn && en && <div className="font-bold text-base md:text-lg text-[#0F172A]"><MathText text={en} /></div>}
+                  {showPa && pa && <div className="font-bold text-base md:text-lg text-[#0F172A]"><MathText text={pa} /></div>}
                 </div>
               </div>
             )
@@ -126,34 +131,12 @@ export default function QuestionRenderer({
         </div>
       )}
 
-      {/* 3. SOLUTION HUB */}
+      {/* 4. SOLUTION HUB */}
       {showSolution && (
-        <div className="mt-6 pt-6 border-t border-slate-100 space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-           <div className="flex items-center gap-3">
-              <div className="font-[900] text-[10px] text-emerald-600 bg-emerald-100/50 px-3 py-1 rounded-lg border border-emerald-200 inline-block uppercase tracking-[0.2em] shadow-sm">
-                 Key: ({q.correctAnswer || '?'})
-              </div>
-              <div className="h-px flex-1 bg-slate-50" />
-           </div>
-
-           <div className="space-y-4">
-              {showEn && englishExp && (
-                <div className="space-y-1">
-                   <span className="text-primary font-[900] uppercase tracking-[0.2em] text-[9px] ml-1">English Rationale:</span>
-                   <div className="font-[600] text-[13px] md:text-[14px] leading-relaxed text-slate-600 antialiased bg-slate-50/50 p-4 rounded-2xl border border-slate-100 shadow-inner">
-                      <MathText text={englishExp} />
-                   </div>
-                </div>
-              )}
-
-              {showPa && punjabiExp && (
-                <div className="space-y-1">
-                   <span className="text-primary font-[900] uppercase tracking-[0.2em] text-[9px] ml-1">ਪੰਜਾਬੀ ਵਿਆਖਿਆ:</span>
-                   <div className="font-[600] text-[13px] md:text-[14px] leading-relaxed text-slate-600 antialiased bg-slate-50/50 p-4 rounded-2xl border border-slate-100 shadow-inner">
-                      <MathText text={punjabiExp} />
-                   </div>
-                </div>
-              )}
+        <div className="mt-8 pt-8 border-t border-slate-100 space-y-4 animate-in fade-in slide-in-from-top-4">
+           <Badge className="bg-emerald-100 text-emerald-700 border-none font-black text-xs uppercase px-4 py-1">Key: ({q.correctAnswer})</Badge>
+           <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 italic text-slate-600">
+              <MathText text={q.englishExplanation || "Detailed logic pending audit."} />
            </div>
         </div>
       )}

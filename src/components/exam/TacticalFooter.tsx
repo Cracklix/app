@@ -1,15 +1,14 @@
-
 'use client';
 
 import { useExamStore } from '@/store/useExamStore';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, CheckCircle2, RotateCcw, Flag } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { useFirestore } from '@/firebase';
 import { cn } from '@/lib/utils';
 
 /**
- * @fileOverview Professional Tactical Action Bar.
- * PERFORMANCE OPTIMIZED: Granular selectors and pointer-event hardening.
+ * @file Overview High-Fidelity Tactical Action Bar.
+ * Reordered and styled to match the specific mobile screenshot layout.
  */
 export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const currentIdx = useExamStore(s => s.currentIdx);
@@ -17,56 +16,34 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const clearAnswer = useExamStore(s => s.clearAnswer);
   const markForReview = useExamStore(s => s.markForReview);
   const saveAndNext = useExamStore(s => s.saveAndNext);
-  const setCurrentIdx = useExamStore(s => s.setCurrentIdx);
   
   const db = useFirestore();
   const isLast = currentIdx === questions.length - 1;
 
   return (
-    <div className="w-full flex flex-col gap-2.5 pt-2 pb-8 select-none pointer-events-auto">
-      <div className="flex items-center gap-2 w-full">
-        <Button 
-          variant="outline" 
-          onClick={() => clearAnswer(currentIdx, db)}
-          className="flex-1 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest border-slate-200 text-slate-500 bg-white active:scale-95"
-        >
-          <RotateCcw className="h-4 w-4 mr-2" /> Clear
-        </Button>
-        <Button 
-          variant="outline" 
-          onClick={() => markForReview(currentIdx, db)}
-          className="flex-1 h-12 rounded-xl font-black uppercase text-[10px] tracking-widest border-violet-100 text-violet-600 bg-violet-50 active:scale-95"
-        >
-          <Flag className="h-4 w-4 mr-2" /> Mark
-        </Button>
-      </div>
+    <div className="w-full grid grid-cols-3 gap-3 pt-6 pb-8 bg-white/80 backdrop-blur-sm sticky bottom-0 z-40">
+      <Button 
+        variant="outline" 
+        onClick={() => markForReview(currentIdx, db)}
+        className="h-14 rounded-xl font-black uppercase text-[10px] tracking-tight border-slate-300 text-[#0F172A] bg-white active:scale-95"
+      >
+        Mark & Next
+      </Button>
 
-      <div className="flex items-center gap-2 w-full">
-        <Button 
-          variant="outline" 
-          onClick={() => setCurrentIdx(Math.max(0, currentIdx - 1))}
-          disabled={currentIdx === 0}
-          className="h-14 px-5 rounded-xl border-slate-200 bg-white text-slate-500 active:scale-95"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </Button>
+      <Button 
+        variant="outline" 
+        onClick={() => clearAnswer(currentIdx, db)}
+        className="h-14 rounded-xl font-black uppercase text-[10px] tracking-tight border-slate-300 text-[#0F172A] bg-white active:scale-95"
+      >
+        Clear
+      </Button>
 
-        {isLast ? (
-          <Button 
-            onClick={onSubmit}
-            className="flex-1 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black uppercase text-[11px] tracking-widest shadow-lg gap-2 active:scale-95"
-          >
-            Finish Test <CheckCircle2 className="h-4 w-4" />
-          </Button>
-        ) : (
-          <Button 
-            onClick={() => saveAndNext(db)}
-            className="flex-1 h-14 bg-primary hover:bg-orange-600 text-white rounded-xl font-black uppercase text-[11px] tracking-widest shadow-lg gap-2 active:scale-95"
-          >
-            Save & Next <ChevronRight className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
+      <Button 
+        onClick={isLast ? onSubmit : () => saveAndNext(db)}
+        className="h-14 bg-[#2563EB] hover:bg-blue-700 text-white rounded-xl font-black uppercase text-[10px] tracking-tight shadow-xl shadow-blue-500/20 active:scale-95"
+      >
+        {isLast ? 'Finish Test' : 'Save & Next'}
+      </Button>
     </div>
   );
 }

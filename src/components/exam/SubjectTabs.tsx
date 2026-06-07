@@ -5,9 +5,8 @@ import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 
 /**
- * @fileOverview Adaptive Institutional Subject Navigation v5.0.
- * TESTBOOK STYLE: 2 sections visible on mobile, 3+ on desktop.
- * Optimized for high-density evaluation hubs.
+ * @fileOverview High-Fidelity Subject Hub v6.0.
+ * Matches the horizontally scrollable boxed design from the reference image.
  */
 export default function SubjectTabs() {
   const questions = useExamStore(s => s.questions);
@@ -44,7 +43,7 @@ export default function SubjectTabs() {
   const activeSectionId = questions[currentIdx]?.sectionId || 'General Knowledge';
 
   return (
-    <nav className="bg-white border-b border-slate-200 h-12 flex items-center px-1 overflow-x-auto no-scrollbar gap-1 shrink-0 sticky top-0 z-40 pointer-events-auto">
+    <nav className="bg-white border-b border-slate-100 h-14 flex items-center px-4 overflow-x-auto no-scrollbar gap-2 shrink-0 sticky top-0 z-40">
       {sections.map((s) => {
         const isActive = activeSectionId === s.id;
         return (
@@ -52,25 +51,13 @@ export default function SubjectTabs() {
             key={s.id}
             onClick={() => setCurrentIdx(s.startIdx)}
             className={cn(
-              "h-full flex items-center justify-between gap-3 transition-all whitespace-nowrap border-b-2 px-4 cursor-pointer active:scale-95",
-              // MOBILE: 2 sections (48%) | DESKTOP: Fit 3+ (min 200px)
-              "min-w-[48%] md:min-w-[200px] md:flex-1 md:max-w-[300px]",
+              "h-10 flex items-center px-4 rounded-lg border-2 transition-all whitespace-nowrap text-[11px] font-black uppercase tracking-tight",
               isActive 
-                ? "border-primary text-primary bg-primary/5 shadow-[inset_0_-2px_0_0_hsl(var(--primary))]" 
-                : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+                ? "border-primary text-primary bg-primary/5" 
+                : "border-slate-200 text-slate-400 hover:border-slate-300"
             )}
           >
-            <span className="text-[10px] md:text-[11px] font-[900] uppercase tracking-tighter leading-none truncate flex-1 text-left">
-               {s.name.replace(/-/g, ' ')}
-            </span>
-            <span className={cn(
-              "text-[9px] font-black px-2 py-0.5 rounded-md shrink-0 shadow-sm border",
-              isActive 
-                ? "bg-primary text-white border-primary" 
-                : "bg-white text-slate-400 border-slate-100"
-            )}>
-              {s.answered}/{s.total}
-            </span>
+            {s.name.replace(/-/g, ' ')}
           </button>
         );
       })}
