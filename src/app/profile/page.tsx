@@ -31,7 +31,8 @@ import {
   History,
   User as UserIcon,
   ChevronRight,
-  CreditCard
+  CreditCard,
+  Loader2
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
@@ -43,8 +44,9 @@ import { cn } from "@/lib/utils"
 import React from "react"
 
 /**
- * @fileOverview Elite Aspirant Profile Hub v10.0.
+ * @fileOverview Elite Aspirant Profile Hub v10.5.
  * Features: Mandatory Real-World Data (DOB, Address, Phone) with Admin Sync.
+ * Fixed: All Lucide Icon imports and Save button prominence.
  */
 export default function ProfilePage() {
   const { user, profile, loading } = useUser()
@@ -70,9 +72,11 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (profile) {
+      // Clean phone number for editing (strip +91 if present for easier typing)
+      const cleanPhone = profile.phone?.replace('+91 ', '') || ""
       setEditForm({
         name: profile.name || "",
-        phone: profile.phone || "",
+        phone: cleanPhone,
         dob: profile.dob || "",
         address: profile.address || "",
         targetExam: profile.targetExam || ""
@@ -111,14 +115,25 @@ export default function ProfilePage() {
     const missing = mandatory.find(key => !editForm[key]?.trim());
     
     if (missing) {
-      toast({ variant: "destructive", title: "Update Blocked", description: `The field '${missing.toUpperCase()}' is mandatory for institutional records.` });
+      toast({ 
+        variant: "destructive", 
+        title: "Update Blocked", 
+        description: `The field '${missing.toUpperCase()}' is mandatory for institutional records.` 
+      });
+      return;
+    }
+
+    if (editForm.phone.replace(/\D/g, '').length < 10) {
+      toast({ variant: "destructive", title: "Invalid Contact", description: "Please enter a valid 10-digit mobile number." });
       return;
     }
 
     setIsSaving(true)
     try {
+       const finalPhone = editForm.phone.startsWith('+91') ? editForm.phone : `+91 ${editForm.phone.replace(/\D/g, '')}`;
        await updateDoc(doc(db, "users", user.uid), {
           ...editForm,
+          phone: finalPhone,
           updatedAt: serverTimestamp()
        })
        toast({ title: "Registry Synced", description: "Your institutional details have been updated." })
@@ -144,7 +159,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center space-y-4">
-        <Zap className="h-10 w-10 text-primary animate-spin" />
+        <Loader2 className="h-10 w-10 text-primary animate-spin" />
         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Syncing Aspirant Hub...</p>
       </div>
     )
@@ -157,7 +172,7 @@ export default function ProfilePage() {
       <Navbar />
       
       <main className="w-full">
-        {/* TESTBOOK STYLE HEADER */}
+        {/* HEADER */}
         <div className="bg-[#0B1528] relative overflow-hidden">
            <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 blur-[120px] rounded-full" />
            <div className="container mx-auto px-4 md:px-6 max-w-6xl pt-8 md:pt-16 pb-16 md:pb-20">
@@ -321,8 +336,11 @@ export default function ProfilePage() {
                   </div>
                </div>
                <div className="space-y-2 text-left">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Verified Contact Node</Label>
-                  <Input value={editForm?.phone || ""} onChange={e => setEditForm({...editForm, phone: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-none font-bold" placeholder="10-digit number" />
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Verified Contact Node (Mobile)</Label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-slate-400">+91</span>
+                    <Input value={editForm?.phone || ""} onChange={e => setEditForm({...editForm, phone: e.target.value.replace(/\D/g, '').slice(0,10)})} className="h-12 pl-12 rounded-xl bg-slate-50 border-none font-bold" placeholder="10-digit mobile number" />
+                  </div>
                </div>
                <div className="space-y-2 text-left">
                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Permanent Correspondence Address</Label>
@@ -331,8 +349,8 @@ export default function ProfilePage() {
             </div>
             <DialogFooter className="p-10 pt-4 bg-slate-50 flex gap-4">
                <Button variant="ghost" onClick={() => setIsEditing(false)} className="rounded-xl h-14 font-black uppercase text-[10px] text-slate-400">Abort Audit</Button>
-               <Button onClick={handleUpdateProfile} disabled={isSaving} className="bg-[#0F172A] hover:bg-black h-14 px-10 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 shadow-xl">
-                  {isSaving ? "Syncing..." : "Commit Changes"}
+               <Button onClick={handleUpdateProfile} disabled={isSaving} className="bg-primary hover:bg-orange-600 text-white h-14 px-10 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 shadow-xl shadow-primary/20 gap-3">
+                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save Registry Node
                </Button>
             </DialogFooter>
          </DialogContent>
