@@ -28,7 +28,9 @@ import {
   Clock,
   XCircle,
   AlertCircle,
-  BookOpen
+  BookOpen,
+  Printer,
+  FileText
 } from "lucide-react"
 import { useUser, useFirestore, useCollection } from "@/firebase"
 import { collection, query, where, doc, getDoc, documentId, getDocs } from "firebase/firestore"
@@ -37,11 +39,11 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import StudentAvatar from "@/components/brand/StudentAvatar"
+import Logo from "@/components/brand/Logo"
 
 /**
- * @fileOverview Test Results Hub v6.0 (Layout Hardened).
- * FIXED: Metric card squashing and text truncation in high-density viewports.
- * FIXED: Background icon overlap and Merit Node alignment.
+ * @fileOverview Test Results Hub v7.0 (Hardened Report).
+ * UPDATED: Professional Print Logic for Official Result Certificate.
  */
 
 export default function ResultPage() {
@@ -184,52 +186,77 @@ export default function ResultPage() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 font-body pb-safe text-left">
-      <Navbar />
+    <div className="flex flex-col min-h-screen bg-slate-50 font-body pb-safe text-left print:bg-white print:pb-0">
+      <div className="print:hidden"><Navbar /></div>
       
-      <main className="container mx-auto px-4 md:px-6 py-6 md:py-12 max-w-7xl space-y-8 md:space-y-12">
+      <main className="container mx-auto px-4 md:px-6 py-6 md:py-12 max-w-7xl space-y-8 md:space-y-12 print:p-0 print:m-0 print:max-w-full">
         
+        {/* OFFICIAL PRINT HEADER */}
+        <div className="hidden print:flex flex-col items-center gap-6 mb-12 border-b-2 border-slate-900 pb-8">
+           <Logo variant="dark" className="scale-150" />
+           <div className="text-center space-y-2">
+              <h2 className="text-3xl font-black uppercase tracking-widest">OFFICIAL RESULT CERTIFICATE</h2>
+              <div className="flex items-center justify-center gap-6 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">
+                 <span>Batch: 2026 Registry</span>
+                 <span>•</span>
+                 <span>Authorized Audit Node</span>
+                 <span>•</span>
+                 <span>Punjab Exam Hub</span>
+              </div>
+           </div>
+           <div className="grid grid-cols-2 gap-20 w-full pt-6">
+              <div className="text-left space-y-1">
+                 <p className="text-[8px] font-black text-slate-400 uppercase">ASPIRANT NAME</p>
+                 <p className="text-xl font-bold uppercase">{profile?.name}</p>
+              </div>
+              <div className="text-right space-y-1">
+                 <p className="text-[8px] font-black text-slate-400 uppercase">SESSION TIMESTAMP</p>
+                 <p className="text-sm font-bold">{new Date(sessionData.timestamp).toLocaleString()}</p>
+              </div>
+           </div>
+        </div>
+
         {/* HERO HUB */}
         <div className="flex flex-col lg:flex-row gap-6 md:gap-10">
-           <Card className="flex-1 border-none shadow-5xl rounded-[2.5rem] bg-[#0B1528] text-white overflow-hidden relative group">
-              <div className="absolute -top-20 -right-20 p-12 opacity-[0.02] rotate-12 group-hover:scale-110 transition-transform duration-1000"><Trophy className="h-[500px] w-[500px]" /></div>
-              <CardContent className="p-6 md:p-14 lg:p-16 space-y-8 md:space-y-10 relative z-10">
+           <Card className="flex-1 border-none shadow-5xl rounded-[2.5rem] bg-[#0B1528] text-white overflow-hidden relative group print:bg-white print:text-[#0F172A] print:shadow-none print:border-2 print:border-slate-100">
+              <div className="absolute -top-20 -right-20 p-12 opacity-[0.02] rotate-12 group-hover:scale-110 transition-transform duration-1000 print:hidden"><Trophy className="h-[500px] w-[500px]" /></div>
+              <CardContent className="p-6 md:p-14 lg:p-16 space-y-8 md:space-y-10 relative z-10 print:p-10">
                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
                     <div className="space-y-4 max-w-full lg:max-w-[65%]">
-                       <div className="flex items-center gap-4">
+                       <div className="flex items-center gap-4 print:hidden">
                           <ShieldCheck className="h-5 w-5 text-primary" />
                           <Badge className="bg-primary/20 text-primary border-none px-4 py-1.5 rounded-full font-black uppercase text-[9px] tracking-[0.2em] shadow-xl">Audit Finalized</Badge>
                        </div>
-                       <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-headline font-black uppercase leading-[0.95] tracking-tight break-words">
+                       <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-headline font-black uppercase leading-[0.95] tracking-tight break-words print:text-4xl">
                           {sessionData.mockTitle}
                        </h1>
                     </div>
                     
-                    <div className="flex items-center gap-4 md:gap-8 bg-white/5 backdrop-blur-3xl p-6 md:p-8 rounded-[2.5rem] border border-white/10 shadow-5xl group/merit w-full lg:w-auto">
+                    <div className="flex items-center gap-4 md:gap-8 bg-white/5 backdrop-blur-3xl p-6 md:p-8 rounded-[2.5rem] border border-white/10 shadow-5xl group/merit w-full lg:w-auto print:bg-slate-50 print:border-slate-200">
                        <div className="flex-1 text-center space-y-1.5">
                           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">RANK</p>
-                          <p className="text-3xl md:text-5xl font-headline font-black text-primary leading-none tabular-nums">#{merit.rank}</p>
+                          <p className="text-3xl md:text-5xl font-headline font-black text-primary leading-none tabular-nums print:text-4xl">#{merit.rank}</p>
                           <p className="text-[9px] font-black text-slate-500 uppercase">OF {merit.total}</p>
                        </div>
-                       <div className="h-12 md:h-20 w-px bg-white/10 shrink-0" />
+                       <div className="h-12 md:h-20 w-px bg-white/10 shrink-0 print:bg-slate-200" />
                        <div className="flex-1 text-center space-y-1.5">
                           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">PERCENTILE</p>
-                          <p className="text-3xl md:text-5xl font-headline font-black text-emerald-400 leading-none tabular-nums">{merit.percentile}</p>
+                          <p className="text-3xl md:text-5xl font-headline font-black text-emerald-400 leading-none tabular-nums print:text-4xl">{merit.percentile}</p>
                           <p className="text-[9px] font-black text-slate-500 uppercase">EFFICIENCY</p>
                        </div>
                     </div>
                  </div>
 
-                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 pt-8 border-t border-white/5">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 pt-8 border-t border-white/5 print:border-slate-100 print:grid-cols-4">
                     <MetricCard label="SCORE" val={`${(sessionData.score || 0).toFixed(1)}`} sub={`/${sessionData.totalQuestions} MARKS`} color="text-primary" />
                     <MetricCard label="ACCURACY" val={`${sessionData.accuracy || 0}%`} sub="PRECISION INDEX" color="text-emerald-400" />
-                    <MetricCard label="CORRECT" val={Math.floor(sessionData.score || 0)} sub="SUCCESSFUL NODES" color="text-emerald-400" />
-                    <MetricCard label="TIME" val={`${Math.floor((sessionData.timeTaken || 0) / 60)}m`} sub="ATTEMPT DURATION" color="text-blue-400" />
+                    <MetricCard label="CORRECT" val={Math.floor(sessionData.score || 0)} sub="SUCCESS NODES" color="text-emerald-400" />
+                    <MetricCard label="TIME" val={`${Math.floor((sessionData.timeTaken || 0) / 60)}m`} sub="DURATION" color="text-blue-400" />
                  </div>
               </CardContent>
            </Card>
 
-           <div className="w-full lg:w-80 flex flex-col gap-6">
+           <div className="w-full lg:w-80 flex flex-col gap-6 print:hidden">
               <Card className="border-none shadow-3xl rounded-[2.5rem] bg-white p-6 md:p-8 space-y-6 border border-slate-100">
                  <div className="flex items-center gap-3">
                     <Zap className="h-5 w-5 text-primary" />
@@ -237,7 +264,7 @@ export default function ResultPage() {
                  </div>
                  <div className="space-y-4">
                     <Button onClick={() => window.print()} className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-emerald-900/10 gap-3 border-none">
-                       <Download className="h-4 w-4" /> Download Report
+                       <Printer className="h-4 w-4" /> Download Report
                     </Button>
                     <Button variant="outline" asChild className="w-full h-14 border-2 border-slate-100 hover:border-primary hover:text-primary rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] text-slate-600">
                        <Link href={`/mocks/${mockId}/attempt`}><TrendingUp className="h-4 w-4 mr-2" /> Re-Attempt Hub</Link>
@@ -262,7 +289,7 @@ export default function ResultPage() {
 
         {/* DETAILED ANALYSIS TABS */}
         <Tabs defaultValue="SECTIONAL" className="space-y-8">
-           <div className="bg-white border border-slate-100 rounded-3xl p-1.5 shadow-xl inline-flex w-full md:w-auto overflow-x-auto no-scrollbar justify-start">
+           <div className="bg-white border border-slate-100 rounded-3xl p-1.5 shadow-xl inline-flex w-full md:w-auto overflow-x-auto no-scrollbar justify-start print:hidden">
              <TabsList className="bg-transparent border-none p-0 flex h-14 md:h-16 gap-1 md:gap-2 px-1">
                 <TabsTrigger value="SECTIONAL" className="rounded-2xl px-4 md:px-8 font-black uppercase text-[8px] md:text-[10px] tracking-widest gap-2 h-full data-[state=active]:bg-[#0B1528] data-[state=active]:text-white data-[state=active]:shadow-2xl transition-all whitespace-nowrap">
                    <BarChart3 className="h-4 w-4" /> Sectional Audit
@@ -277,16 +304,16 @@ export default function ResultPage() {
            </div>
 
            <TabsContent value="SECTIONAL" className="m-0 animate-in fade-in slide-in-from-bottom-2 duration-500">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 print:grid-cols-2">
                  {sectionalAnalysis.map((s, i) => (
-                    <Card key={i} className="border-none shadow-xl rounded-[3rem] bg-white p-8 md:p-10 group hover:translate-y-[-4px] transition-all border border-slate-100 hover:border-primary/20">
+                    <Card key={i} className="border-none shadow-xl rounded-[3rem] bg-white p-8 md:p-10 group hover:translate-y-[-4px] transition-all border border-slate-100 hover:border-primary/20 print:p-6 print:rounded-2xl print:shadow-none print:border-slate-200">
                        <CardHeader className="p-0 mb-8 flex flex-row items-center justify-between">
                           <div className="space-y-0.5 text-left min-w-0 flex-1 pr-4">
-                             <h4 className="font-headline font-black text-xl md:text-2xl uppercase text-[#0B1528] leading-none truncate">{s.name}</h4>
+                             <h4 className="font-headline font-black text-xl md:text-2xl uppercase text-[#0B1528] leading-none truncate print:text-lg">{s.name}</h4>
                              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Sectional Registry</p>
                           </div>
                           <Badge className={cn(
-                             "border-none text-[10px] font-black uppercase px-3 py-1.5 rounded-xl shadow-lg", 
+                             "border-none text-[10px] font-black uppercase px-3 py-1.5 rounded-xl shadow-lg print:shadow-none print:bg-slate-50 print:text-black", 
                              s.accuracy >= 70 ? 'bg-emerald-50 text-emerald-600 shadow-emerald-500/10' : s.accuracy >= 40 ? 'bg-amber-50 text-amber-600 shadow-amber-500/10' : 'bg-rose-50 text-rose-600 shadow-rose-500/10'
                           )}>
                              {s.accuracy}%
@@ -294,13 +321,13 @@ export default function ResultPage() {
                        </CardHeader>
                        <div className="space-y-8">
                           <div className="grid grid-cols-2 gap-4">
-                             <div className="text-left bg-slate-50/50 p-5 rounded-2xl border border-slate-100/50 shadow-inner">
+                             <div className="text-left bg-slate-50/50 p-5 rounded-2xl border border-slate-100/50 shadow-inner print:p-4 print:rounded-xl">
                                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">MARKS</p>
-                                <p className="text-2xl md:text-3xl font-headline font-black text-[#0B1528] tabular-nums">{s.score.toFixed(1)}</p>
+                                <p className="text-2xl md:text-3xl font-headline font-black text-[#0B1528] tabular-nums print:text-xl">{s.score.toFixed(1)}</p>
                              </div>
-                             <div className="text-left bg-rose-50/30 p-5 rounded-2xl border border-rose-100/50">
+                             <div className="text-left bg-rose-50/30 p-5 rounded-2xl border border-rose-100/50 print:p-4 print:rounded-xl">
                                 <p className="text-[8px] font-black text-rose-300 uppercase tracking-widest mb-1">WRONG</p>
-                                <p className="text-2xl md:text-3xl font-headline font-black text-rose-600 tabular-nums">{s.wrong}</p>
+                                <p className="text-2xl md:text-3xl font-headline font-black text-rose-600 tabular-nums print:text-xl">{s.wrong}</p>
                              </div>
                           </div>
                           <div className="space-y-3">
@@ -319,35 +346,35 @@ export default function ResultPage() {
            </TabsContent>
 
            <TabsContent value="TOPPER" className="m-0 animate-in fade-in duration-500">
-              <Card className="border-none shadow-3xl rounded-[4rem] bg-white overflow-hidden border border-slate-100">
-                 <div className="grid grid-cols-1 lg:grid-cols-2">
-                    <div className="p-10 md:p-16 lg:p-24 space-y-12 md:space-y-16 border-b lg:border-b-0 lg:border-r border-slate-50">
+              <Card className="border-none shadow-3xl rounded-[4rem] bg-white overflow-hidden border border-slate-100 print:rounded-3xl print:border-slate-200">
+                 <div className="grid grid-cols-1 lg:grid-cols-2 print:grid-cols-2">
+                    <div className="p-10 md:p-16 lg:p-24 space-y-12 md:space-y-16 border-b lg:border-b-0 lg:border-r border-slate-50 print:p-10 print:space-y-8">
                        <div className="flex items-center gap-6">
-                          <div className="h-14 w-14 md:h-20 md:w-20 rounded-[2rem] bg-amber-50 flex items-center justify-center text-amber-500 shadow-2xl">
-                             <Trophy className="h-8 w-8 md:h-10 md:w-10" />
+                          <div className="h-14 w-14 md:h-20 md:w-20 rounded-[2rem] bg-amber-50 flex items-center justify-center text-amber-500 shadow-2xl print:h-12 print:w-12 print:rounded-xl">
+                             <Trophy className="h-8 w-8 md:h-10 md:w-10 print:h-6 print:w-6" />
                           </div>
                           <div className="space-y-1 text-left">
-                             <h3 className="font-headline font-black text-2xl md:text-4xl uppercase text-[#0B1528] tracking-tight">Merit Benchmark</h3>
+                             <h3 className="font-headline font-black text-2xl md:text-4xl uppercase text-[#0B1528] tracking-tight print:text-2xl">Merit Benchmark</h3>
                              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Performance vs State Leader</p>
                           </div>
                        </div>
                        
-                       <div className="space-y-12">
+                       <div className="space-y-12 print:space-y-8">
                           <CompareMetric label="SCORE PERFORMANCE" user={sessionData.score || 0} topper={merit.topper?.score || 0} max={sessionData.totalQuestions} />
                           <CompareMetric label="ACCURACY TRAIL" user={sessionData.accuracy || 0} topper={merit.topper?.accuracy || 0} unit="%" />
                           <CompareMetric label="TIME EFFICIENCY" user={Math.floor((sessionData.timeTaken || 0) / 60)} topper={Math.floor((merit.topper?.timeTaken || 0) / 60)} isTime />
                        </div>
                     </div>
 
-                    <div className="p-12 md:p-24 flex flex-col items-center justify-center text-center space-y-10 bg-slate-50/50 relative overflow-hidden">
-                       <div className="absolute inset-0 opacity-5"><Target className="h-full w-full text-[#0B1528]" /></div>
+                    <div className="p-12 md:p-24 flex flex-col items-center justify-center text-center space-y-10 bg-slate-50/50 relative overflow-hidden print:p-10">
+                       <div className="absolute inset-0 opacity-5 print:hidden"><Target className="h-full w-full text-[#0B1528]" /></div>
                        <div className="relative group">
-                          <StudentAvatar profile={merit.topper} className="h-40 w-40 md:h-64 md:w-64 border-[12px] border-white shadow-5xl rounded-[4rem] transition-transform duration-700 group-hover:scale-105" />
-                          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-amber-400 text-white px-8 py-2.5 rounded-full font-black text-[10px] uppercase shadow-2xl tracking-[0.2em] border-4 border-white animate-bounce">STATE TOPPER</div>
+                          <StudentAvatar profile={merit.topper} className="h-40 w-40 md:h-64 md:w-64 border-[12px] border-white shadow-5xl rounded-[4rem] transition-transform duration-700 group-hover:scale-105 print:h-32 print:w-32 print:border-4" />
+                          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-amber-400 text-white px-8 py-2.5 rounded-full font-black text-[10px] uppercase shadow-2xl tracking-[0.2em] border-4 border-white animate-bounce print:hidden">STATE TOPPER</div>
                        </div>
                        <div className="space-y-2 relative z-10">
                           <p className="text-primary font-black uppercase tracking-[0.5em] text-[10px]">REGISTRY LEADER</p>
-                          <h4 className="text-3xl md:text-5xl font-headline font-black uppercase text-[#0B1528] tracking-tight leading-none">{merit.topper?.name || 'Academic Topper'}</h4>
+                          <h4 className="text-3xl md:text-5xl font-headline font-black uppercase text-[#0B1528] tracking-tight leading-none print:text-2xl">{merit.topper?.name || 'Academic Topper'}</h4>
                        </div>
                     </div>
                  </div>
@@ -355,14 +382,14 @@ export default function ResultPage() {
            </TabsContent>
 
            <TabsContent value="SOLUTIONS" className="m-0 space-y-8 animate-in fade-in duration-500">
-              <div className="bg-white border border-slate-100 rounded-[2.5rem] p-4 md:p-6 shadow-2xl flex flex-wrap items-center gap-3 md:gap-6 sticky top-24 z-30 backdrop-blur-3xl bg-opacity-95">
+              <div className="bg-white border border-slate-100 rounded-[2.5rem] p-4 md:p-6 shadow-2xl flex flex-wrap items-center gap-3 md:gap-6 sticky top-24 z-30 backdrop-blur-3xl bg-opacity-95 print:hidden">
                  <FilterPill active={activeReviewFilter === 'ALL'} label="ALL NODES" count={questions.length} onClick={() => setActiveReviewFilter('ALL')} color="bg-slate-100 text-slate-500" />
                  <FilterPill active={activeReviewFilter === 'CORRECT'} label="CORRECT" count={Math.floor(sessionData.score || 0)} onClick={() => setActiveReviewFilter('CORRECT')} color="bg-emerald-50 text-emerald-600" />
                  <FilterPill active={activeReviewFilter === 'WRONG'} label="WRONG" count={Object.keys(sessionData.answers || {}).length - Math.floor(sessionData.score || 0)} onClick={() => setActiveReviewFilter('WRONG')} color="bg-rose-50 text-rose-600" />
                  <FilterPill active={activeReviewFilter === 'SKIPPED'} label="SKIPPED" count={sessionData.totalQuestions - Object.keys(sessionData.answers || {}).length} onClick={() => setActiveReviewFilter('SKIPPED')} color="bg-slate-100 text-slate-300" />
               </div>
 
-              <div className="grid grid-cols-1 gap-6 md:gap-10">
+              <div className="grid grid-cols-1 gap-6 md:gap-10 print:gap-4">
                  {filteredQuestions.map((q) => {
                     const isExpanded = expandedQs[q.index];
                     const studentAns = sessionData.answers?.[q.index];
@@ -370,45 +397,45 @@ export default function ResultPage() {
                     const isSkipped = studentAns === undefined || studentAns === null;
 
                     return (
-                       <Card key={q.id} className="border-none shadow-2xl rounded-[3rem] overflow-hidden bg-white group border border-slate-100 relative text-left">
-                          <div className={cn("absolute top-0 left-0 w-2 h-full transition-colors", isCorrect ? 'bg-emerald-500' : isSkipped ? 'bg-slate-200' : 'bg-rose-500')} />
-                          <CardContent className="p-8 md:p-14 space-y-8 md:space-y-12">
-                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-                                <div className="flex items-center gap-6">
+                       <Card key={q.id} className="border-none shadow-2xl rounded-[3rem] overflow-hidden bg-white group border border-slate-100 relative text-left print:shadow-none print:rounded-xl print:border-slate-200 print:break-inside-avoid">
+                          <div className={cn("absolute top-0 left-0 w-2 h-full transition-colors print:w-1", isCorrect ? 'bg-emerald-500' : isSkipped ? 'bg-slate-200' : 'bg-rose-500')} />
+                          <CardContent className="p-8 md:p-14 space-y-8 md:space-y-12 print:p-6 print:space-y-4">
+                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 print:flex-row print:gap-2">
+                                <div className="flex items-center gap-6 print:gap-4">
                                    <div className={cn(
-                                      "h-14 w-14 md:h-20 md:w-20 rounded-[2rem] flex items-center justify-center font-black text-2xl md:text-4xl shadow-inner transition-transform group-hover:scale-105",
-                                      isCorrect ? "bg-emerald-50 text-emerald-600 shadow-emerald-500/10" : isSkipped ? "bg-slate-50 text-slate-300" : "bg-rose-50 text-rose-500 shadow-rose-500/10"
+                                      "h-14 w-14 md:h-20 md:w-20 rounded-[2rem] flex items-center justify-center font-black text-2xl md:text-4xl shadow-inner transition-transform group-hover:scale-105 print:h-8 print:w-8 print:text-sm print:rounded-lg",
+                                      isCorrect ? "bg-emerald-50 text-emerald-600 shadow-emerald-500/10" : isSkipped ? "bg-slate-50 text-slate-300" : "bg-rose-50 text-rose-600 shadow-rose-500/10"
                                    )}>
                                       {q.index + 1}
                                    </div>
                                    <div className="space-y-1.5 text-left">
                                       <div className="flex items-center gap-3">
                                          <Badge className={cn(
-                                            "border-none text-[9px] md:text-[11px] font-black uppercase px-3 py-1 rounded-lg shadow-sm", 
+                                            "border-none text-[9px] md:text-[11px] font-black uppercase px-3 py-1 rounded-lg shadow-sm print:text-[8px] print:px-2 print:py-0.5", 
                                             isCorrect ? 'bg-emerald-50 text-emerald-600' : isSkipped ? 'bg-slate-100 text-slate-400' : 'bg-rose-50 text-rose-600'
                                          )}>
-                                            {isCorrect ? 'CORRECT AUDIT' : isSkipped ? 'SKIPPED NODE' : 'INCORRECT CHOICE'}
+                                            {isCorrect ? 'CORRECT' : isSkipped ? 'SKIPPED' : 'INCORRECT'}
                                          </Badge>
-                                         {!isCorrect && !isSkipped && <Badge className="bg-[#0B1528] text-white border-none text-[9px] font-black uppercase px-3 py-1 rounded-lg">OFFICIAL KEY: {q.correctAnswer}</Badge>}
+                                         {!isCorrect && !isSkipped && <Badge className="bg-[#0B1528] text-white border-none text-[9px] font-black uppercase px-3 py-1 rounded-lg print:text-[8px] print:bg-slate-100 print:text-black">KEY: {q.correctAnswer}</Badge>}
                                       </div>
-                                      <p className="text-[10px] md:text-[12px] font-black text-slate-400 uppercase tracking-widest ml-1">{q.sectionId || 'GENERAL PREPARATION HUB'}</p>
+                                      <p className="text-[10px] md:text-[12px] font-black text-slate-400 uppercase tracking-widest ml-1 print:text-[8px]">{q.sectionId || 'GENERAL PREPARATION HUB'}</p>
                                    </div>
                                 </div>
                                 <Button 
                                    onClick={() => setExpandedQs(prev => ({ ...prev, [q.index]: !prev[q.index] }))}
                                    variant="ghost" 
-                                   className="h-14 px-8 md:px-12 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-4 bg-slate-50 text-[#0B1528] hover:bg-[#0B1528] hover:text-white transition-all w-full md:w-auto shadow-sm"
+                                   className="h-14 px-8 md:px-12 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-4 bg-slate-50 text-[#0B1528] hover:bg-[#0B1528] hover:text-white transition-all w-full md:w-auto shadow-sm print:hidden"
                                 >
                                    {isExpanded ? 'Hide Solution' : 'View Solution'}
                                    {isExpanded ? <ChevronUp className="h-4 w-4" /> : <BrainCircuit className="h-5 w-5 text-primary" />}
                                 </Button>
                              </div>
 
-                             <div className="px-1 md:px-4">
+                             <div className="px-1 md:px-4 print:px-0">
                                 <QuestionRenderer 
                                    question={q} 
                                    language={mockData?.languageMode || 'ENGLISH_PUNJABI'}
-                                   showSolution={isExpanded}
+                                   showSolution={isExpanded || true}
                                    selectedAnswer={studentAns}
                                    className="p-0 border-none shadow-none bg-transparent"
                                 />
@@ -420,8 +447,24 @@ export default function ResultPage() {
               </div>
            </TabsContent>
         </Tabs>
+
+        {/* PRINT ONLY FOOTER */}
+        <div className="hidden print:block pt-16 border-t-2 border-slate-900 mt-20 text-center space-y-4">
+           <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+              <div className="text-left space-y-1">
+                 <p className="text-slate-400">AUTHORIZED BY</p>
+                 <p className="text-sm">Arsh Grewal Management</p>
+              </div>
+              <div className="text-right space-y-1">
+                 <p className="text-slate-400">CERTIFICATE NO</p>
+                 <p className="text-sm">CRX-NODE-{sessionData.id?.slice(-8).toUpperCase()}</p>
+              </div>
+           </div>
+           <p className="text-[9px] text-slate-400 font-medium">This is an electronically generated result card. All marks are audited as per official 2026 patterns.</p>
+        </div>
       </main>
-      <Footer />
+
+      <div className="print:hidden"><Footer /></div>
     </div>
   )
 }
@@ -429,18 +472,18 @@ export default function ResultPage() {
 function MetricCard({ label, val, sub, color }: any) {
    const valStr = String(val);
    return (
-      <div className="space-y-3 p-6 md:p-8 bg-white/5 border border-white/5 rounded-[2.5rem] transition-all hover:bg-white/10 group text-left shadow-2xl relative overflow-hidden">
-         <div className="absolute top-0 left-0 w-1 h-full bg-white/5" />
-         <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] leading-none">{label}</p>
+      <div className="space-y-3 p-6 md:p-8 bg-white/5 border border-white/5 rounded-[2.5rem] transition-all hover:bg-white/10 group text-left shadow-2xl relative overflow-hidden print:bg-slate-50 print:border-slate-100 print:shadow-none print:p-4 print:rounded-xl">
+         <div className="absolute top-0 left-0 w-1 h-full bg-white/5 print:hidden" />
+         <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] leading-none print:text-[7px]">{label}</p>
          <div className="space-y-1">
-            <p className={cn("text-3xl md:text-5xl font-headline font-black leading-none tracking-tighter tabular-nums", color)}>
+            <p className={cn("text-3xl md:text-5xl font-headline font-black leading-none tracking-tighter tabular-nums print:text-2xl", color)}>
                {val}
             </p>
-            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest leading-none">
+            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest leading-none print:text-[8px]">
                {sub}
             </p>
          </div>
-         <div className="flex items-center gap-3 pt-3 border-t border-white/5 mt-4">
+         <div className="flex items-center gap-3 pt-3 border-t border-white/5 mt-4 print:hidden">
             <div className={cn("h-1.5 w-1.5 rounded-full animate-pulse shrink-0", valStr.includes('NaN') ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]')} />
             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
                {valStr.includes('NaN') ? 'SYNCING ERROR' : 'NODE ACTIVE'}
@@ -459,24 +502,24 @@ function CompareMetric({ label, user, topper, max, unit = "", isTime = false }: 
    const topperPer = (topperVal / maxVal) * 100;
 
    return (
-      <div className="space-y-5 text-left">
+      <div className="space-y-5 text-left print:space-y-3">
          <div className="flex justify-between items-end">
             <div className="space-y-1.5">
-               <span className="text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em] text-[#0B1528]">{label}</span>
-               <div className="h-1 w-8 bg-primary rounded-full" />
+               <span className="text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em] text-[#0B1528] print:text-[10px]">{label}</span>
+               <div className="h-1 w-8 bg-primary rounded-full print:hidden" />
             </div>
             <div className="flex gap-8">
                <div className="text-right">
                   <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">YOU</p>
-                  <p className="text-xl md:text-2xl font-black text-[#0B1528] tabular-nums">{user}{unit}{isTime && 'm'}</p>
+                  <p className="text-xl md:text-2xl font-black text-[#0B1528] tabular-nums print:text-lg">{user}{unit}{isTime && 'm'}</p>
                </div>
                <div className="text-right">
                   <p className="text-[8px] font-black text-amber-500 uppercase tracking-widest leading-none mb-1">TOPPER</p>
-                  <p className="text-xl md:text-2xl font-black text-amber-600 tabular-nums">{topper}{unit}{isTime && 'm'}</p>
+                  <p className="text-xl md:text-2xl font-black text-amber-600 tabular-nums print:text-lg">{topper}{unit}{isTime && 'm'}</p>
                </div>
             </div>
          </div>
-         <div className="relative h-3 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200/50">
+         <div className="relative h-3 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200/50 print:h-2">
             <div className="absolute inset-0 bg-amber-400/10 transition-all duration-[1500ms] ease-out" style={{ width: `${topperPer}%` }} />
             <div className="absolute inset-0 bg-amber-400 transition-all duration-[1800ms] ease-out border-r-[4px] border-amber-600 shadow-lg" style={{ width: `${topperPer}%` }} />
             <div className="absolute inset-0 bg-primary/40 border-r-[4px] border-primary transition-all duration-[1200ms] ease-out shadow-lg" style={{ width: `${userPer}%` }} />
