@@ -32,7 +32,8 @@ import {
   Activity,
   Edit,
   Save,
-  X
+  X,
+  TrendingUp
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from "next/navigation"
@@ -43,8 +44,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Aspirant Profile Hub v9.0 (Testbook Inspired).
- * Optimized: Adaptive scaling header, fixed Date/Undefined errors, and lead data management.
+ * @fileOverview Elite Aspirant Profile Hub v9.1 (Testbook Inspired).
+ * Fixed: Imported missing TrendingUp icon to resolve runtime ReferenceError.
  */
 
 export default function ProfilePage() {
