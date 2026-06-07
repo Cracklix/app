@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { initializeFirebase } from '@/firebase';
@@ -6,6 +5,7 @@ import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from 'fir
 
 /**
  * @fileOverview Razorpay Signature Verification & Subscription Automation Node.
+ * Hardened with crypto signature audit.
  */
 
 export async function POST(request: Request) {
@@ -19,17 +19,13 @@ export async function POST(request: Request) {
     } = await request.json();
 
     const secret = process.env.RAZORPAY_KEY_SECRET || '';
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
-
+    
     // 1. Verify Signature Integrity
-    const expectedSignature = crypto
-      .createHmac('sha256', secret)
-      .update(body.toString())
-      .digest('hex');
+    const hmac = crypto.createHmac('sha256', secret);
+    hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
+    const generated_signature = hmac.digest('hex');
 
-    const isSignatureValid = expectedSignature === razorpay_signature;
-
-    if (!isSignatureValid) {
+    if (generated_signature !== razorpay_signature) {
       console.error('[SECURITY_ALERT]: Invalid Payment Signature Attempt');
       return NextResponse.json({ error: 'Transaction signature mismatch.' }, { status: 400 });
     }
@@ -67,18 +63,6 @@ export async function POST(request: Request) {
       gateway: 'RAZORPAY_WEB',
       verified: true,
       updatedAt: serverTimestamp()
-    });
-
-    // Create Financial Node Entry
-    await addDoc(collection(db, 'payments'), {
-      userId,
-      userEmail: (await getDoc(userRef)).data()?.email || 'N/A',
-      planId,
-      planName: planData.name,
-      amount: planData.price,
-      paymentId: razorpay_payment_id,
-      status: 'SUCCESS',
-      createdAt: serverTimestamp()
     });
 
     return NextResponse.json({ success: true });

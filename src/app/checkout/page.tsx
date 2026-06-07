@@ -18,8 +18,8 @@ import { doc, setDoc, updateDoc, collection, addDoc, serverTimestamp } from "fir
 import Script from "next/script"
 
 /**
- * @fileOverview Institutional Checkout Hub v15.0.
- * HARDENED: Aggressive Alphanumeric Sanitization for names to resolve gateway rejections.
+ * @fileOverview Institutional Checkout Hub v16.0.
+ * FIXED: Aggressive sanitization for names and contact numbers to resolve "International" rejections.
  */
 
 export default function CheckoutPage() {
@@ -54,14 +54,14 @@ function CheckoutContent() {
     if (!user || !planData || !db) return;
     
     if (!(window as any).Razorpay) {
-      toast({ variant: "destructive", title: "Gateway Hub Offline", description: "Razorpay script is still loading. Please wait 5 seconds." });
+      toast({ variant: "destructive", title: "Gateway Node Offline", description: "Razorpay script is initializing. Please wait 5 seconds." });
       return;
     }
 
     setProcessing(true);
 
     try {
-      // 1. Create order
+      // 1. Create order node
       const orderRes = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -71,14 +71,14 @@ function CheckoutContent() {
       const orderData = await orderRes.json();
       if (orderData.error) throw new Error(orderData.error);
 
-      // 2. AGGRESSIVE SANITIZATION (Strict Alphanumeric only)
-      // Removing all symbols that might trigger "Invalid Name" or "International" flags
+      // 2. AGGRESSIVE SANITIZATION (Strict English-only protocol)
+      // Removing dots, dashes, and symbols that trigger "International" false-positives
       const rawName = profile?.name || user?.displayName || 'Aspirant';
-      const sanitizedName = rawName.replace(/[^a-zA-Z\s]/g, '').slice(0, 40).trim() || "Student";
+      const sanitizedName = rawName.replace(/[^a-zA-Z\s]/g, '').trim().slice(0, 40) || "Student";
       
-      // Contact must be exactly 10 digits
-      const phoneDigits = profile?.phone?.replace(/\D/g, '').slice(-10) || "";
-      const sanitizedPhone = phoneDigits.length === 10 ? `+91${phoneDigits}` : phoneDigits;
+      // Strict domestic contact extraction (Exactly 10 digits)
+      const phoneDigits = (profile?.phone || '').replace(/\D/g, '').slice(-10);
+      const sanitizedPhone = phoneDigits.length === 10 ? `+91${phoneDigits}` : '';
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -91,7 +91,7 @@ function CheckoutContent() {
         handler: async function (response: any) {
           setProcessing(true);
           try {
-            // 3. Verify Server-side
+            // 3. Verify Signature
             const verifyRes = await fetch('/api/razorpay/verify-payment', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -106,23 +106,13 @@ function CheckoutContent() {
 
             const verifyData = await verifyRes.json();
             if (verifyData.success) {
-              // 4. Perform Client-side Registry Update (Ensures Owner permission)
-              const expiryDate = new Date();
-              expiryDate.setDate(expiryDate.getDate() + (planData.durationDays || 30));
-
-              await updateDoc(doc(db, 'users', user.uid), {
-                status: planId,
-                passExpiryDate: expiryDate.toISOString(),
-                updatedAt: serverTimestamp()
-              });
-
               toast({ title: "Pass Activated" });
               router.push(`/payment/success?plan=${planData.name}`);
             } else {
-              throw new Error("Verification Node Rejected");
+              throw new Error("Verification Registry Rejected");
             }
           } catch (e: any) {
-            toast({ variant: "destructive", title: "Security Error", description: "Verification failed." });
+            toast({ variant: "destructive", title: "Security Alert", description: "Payment verification failed." });
             setProcessing(false);
           }
         },
@@ -143,8 +133,8 @@ function CheckoutContent() {
       rzp.on('payment.failed', function (response: any) {
         toast({ 
           variant: "destructive", 
-          title: "Payment Failed", 
-          description: response.error.description || "The transaction was declined." 
+          title: "Payment Declined", 
+          description: response.error.description || "The transaction was interrupted." 
         });
         setProcessing(false);
       });
@@ -171,7 +161,7 @@ function CheckoutContent() {
           planId: planId,
           transactionId: utr
        })
-       toast({ title: "Request Submitted", description: "Admin will verify within 24 hours." })
+       toast({ title: "Audit Submitted", description: "Admin will verify your payment node within 24 hours." })
        router.push("/dashboard")
     } catch (e: any) {
        toast({ variant: "destructive", title: "Submission Failed" })
@@ -198,7 +188,7 @@ function CheckoutContent() {
            </Button>
            <div className="text-left">
               <h1 className="text-4xl font-headline font-black text-[#0F172A] uppercase tracking-tight">Checkout Hub</h1>
-              <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-1 text-left">Secure Access Activation</p>
+              <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-1 text-left">Secure Transaction Node</p>
            </div>
         </div>
 
@@ -213,7 +203,7 @@ function CheckoutContent() {
                  <TabsContent value="online" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                     <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden">
                        <CardHeader className="p-10 bg-slate-50/50 border-b border-slate-100">
-                          <CardTitle className="font-headline font-black text-xl uppercase text-[#0F172A]">Instant Unlock</CardTitle>
+                          <CardTitle className="font-headline font-black text-xl uppercase text-[#0F172A]">Instant Activation</CardTitle>
                           <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Secure transaction via Razorpay domestic gateway</CardDescription>
                        </CardHeader>
                        <CardContent className="p-10 space-y-10">
@@ -222,7 +212,7 @@ function CheckoutContent() {
                                 <ShieldCheck className="h-6 w-6" />
                              </div>
                              <p className="text-sm font-medium text-emerald-800 leading-relaxed uppercase">
-                                Use the test credentials shown in your Razorpay dashboard for this transaction.
+                                Use the test credentials shown in your Razorpay dashboard for this evaluation.
                              </p>
                           </div>
                           <Button 
@@ -290,7 +280,7 @@ function CheckoutContent() {
                  <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-110 transition-transform duration-1000"><Gem className="h-48 w-48" /></div>
                  <div className="relative z-10 space-y-12">
                     <div className="space-y-2 text-center">
-                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Aspirant Entry Hub</p>
+                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Order Node Summary</p>
                        <h3 className="text-3xl md:text-5xl font-headline font-black uppercase leading-tight">{planData.name}</h3>
                     </div>
                     
@@ -304,18 +294,13 @@ function CheckoutContent() {
                           <span className="text-5xl font-black text-primary tracking-tighter tabular-nums">₹{planData.price}</span>
                        </div>
                     </div>
-
-                    <div className="p-6 bg-white/5 rounded-3xl border border-white/5 space-y-3">
-                       <p className="text-[9px] font-black uppercase text-slate-500 text-center tracking-[0.2em]">Active Coverage</p>
-                       <p className="text-center font-black uppercase tracking-widest text-emerald-400 text-lg">{planData.durationDays} Days Unlocked</p>
-                    </div>
                  </div>
               </Card>
 
               <div className="p-8 bg-white rounded-[2.5rem] border border-slate-100 shadow-xl flex items-start gap-4">
                  <Lock className="h-5 w-5 text-slate-300 shrink-0 mt-1" />
                  <p className="text-[10px] font-bold text-slate-500 leading-relaxed uppercase">
-                    Institutional security active. All transactions are monitored and verified against the master Punjab Exam Registry node.
+                    Institutional security active. All transactions are verified against the master Punjab Exam Registry node.
                  </p>
               </div>
            </div>

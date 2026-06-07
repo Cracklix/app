@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 
 /**
- * @fileOverview Hardened Razorpay Order Node v3.0.
+ * @fileOverview Hardened Razorpay Order Node v4.0.
  * Ensures amount is in whole paise and receipt ID is strictly alphanumeric and short.
  */
 
@@ -30,8 +30,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Minimum amount 1 INR required.' }, { status: 400 });
     }
 
-    // 2. Ultra-short alphanumeric receipt (Max 40, keeping it very short for safety)
-    const receipt = `rcpt_${Date.now().toString().slice(-8)}`;
+    // 2. Ultra-short alphanumeric receipt (Max 40, strictly enforced)
+    const receipt = `rcpt_${Date.now().toString().slice(-10)}`;
 
     const options = {
       amount: amountInPaise,
