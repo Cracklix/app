@@ -216,16 +216,32 @@ export default function MockAttemptPage() {
         </SheetContent>
       </Sheet>
 
+      {/* PAUSE / EXIT CONFIRMATION MODAL (High-Fidelity Match) */}
       <Dialog open={showExitModal} onOpenChange={setShowExitModal}>
-         <DialogContent className="mobile-app-shell rounded-3xl p-8 bg-white text-center border-none">
-            <DialogHeader className="space-y-4">
-               <div className="h-16 w-16 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto text-rose-500"><AlertTriangle className="h-8 w-8" /></div>
-               <DialogTitle className="text-xl font-headline font-black text-[#0F172A] uppercase">Terminate Session?</DialogTitle>
-            </DialogHeader>
-            <DialogFooter className="flex flex-col gap-3 mt-6">
-               <Button onClick={() => setShowExitModal(false)} className="w-full h-12 bg-slate-100 text-slate-600 rounded-xl font-bold uppercase">Stay in Test</Button>
-               <Button variant="ghost" onClick={() => router.push('/dashboard')} className="w-full h-10 text-rose-500 font-bold uppercase tracking-widest">Confirm Exit</Button>
-            </DialogFooter>
+         <DialogContent className="max-w-[90%] sm:max-w-[400px] rounded-2xl p-0 bg-white overflow-hidden border-none shadow-[0_20px_50px_rgba(0,0,0,0.2)]">
+            <div className="p-8 space-y-10 text-center">
+               <h2 className="text-xl font-bold text-[#0F172A] leading-tight px-2">
+                  Are you sure you want to pause the test?
+               </h2>
+               
+               <div className="flex gap-4">
+                  <Button 
+                    onClick={() => {
+                       setShowExitModal(false);
+                       router.push('/dashboard');
+                    }}
+                    className="flex-1 h-14 bg-[#3B82F6] hover:bg-blue-600 text-white rounded-md font-bold text-lg shadow-md transition-all active:scale-95"
+                  >
+                     Yes
+                  </Button>
+                  <Button 
+                    onClick={() => setShowExitModal(false)}
+                    className="flex-1 h-14 bg-[#94A3B8] hover:bg-slate-500 text-white rounded-md font-bold text-lg shadow-md transition-all active:scale-95"
+                  >
+                     No
+                  </Button>
+               </div>
+            </div>
          </DialogContent>
       </Dialog>
     </div>
