@@ -44,8 +44,8 @@ import { cn } from "@/lib/utils"
 import React from "react"
 
 /**
- * @fileOverview Elite Aspirant Profile Hub v11.0.
- * Formatting: Mobile (+91), DOB (DD/MM/YYYY), and Iconized Accuracy.
+ * @fileOverview Elite Aspirant Profile Hub v12.0.
+ * HARDENED: Prominent Save Protocol & Regional Formatting (+91 / DD-MM-YYYY).
  */
 export default function ProfilePage() {
   const { user, profile, loading } = useUser()
@@ -127,13 +127,15 @@ export default function ProfilePage() {
 
     setIsSaving(true)
     try {
-       const finalPhone = editForm.phone.startsWith('+91') ? editForm.phone : `+91 ${editForm.phone.replace(/\D/g, '')}`;
+       const digits = editForm.phone.replace(/\D/g, '');
+       const finalPhone = `+91 ${digits}`;
+       
        await updateDoc(doc(db, "users", user.uid), {
           ...editForm,
           phone: finalPhone,
           updatedAt: serverTimestamp()
        })
-       toast({ title: "Registry Synced", description: "Details updated." })
+       toast({ title: "Registry Synced", description: "Identity node updated." })
        setIsEditing(false)
     } catch (e: any) {
        toast({ variant: "destructive", title: "Sync Failed", description: e.message })
@@ -145,17 +147,18 @@ export default function ProfilePage() {
   // Format Helper: +91 99999 99999
   const formatPhone = (phone: string) => {
     if (!phone) return "Not Linked";
+    if (phone.startsWith('+91')) return phone;
     const digits = phone.replace(/\D/g, '');
     if (digits.length === 10) return `+91 ${digits}`;
-    if (digits.startsWith('91') && digits.length === 12) return `+${digits}`;
     return phone;
   };
 
   // Format Helper: DD/MM/YYYY
   const formatDOB = (dob: string) => {
     if (!dob) return "Audit Pending";
-    const parts = dob.split('-'); // Expected YYYY-MM-DD from input type date
+    const parts = dob.split('-'); 
     if (parts.length === 3) {
+      // Input date returns YYYY-MM-DD
       return `${parts[2]}/${parts[1]}/${parts[0]}`;
     }
     return dob;
@@ -333,14 +336,15 @@ export default function ProfilePage() {
 
       {/* EDIT REGISTRY DIALOG */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
-         <DialogContent className="sm:max-w-2xl bg-white rounded-[2.5rem] border-none shadow-4xl p-0 overflow-hidden">
-            <div className="h-2 w-full bg-primary" />
-            <DialogHeader className="p-10 pb-4">
+         <DialogContent className="sm:max-w-2xl bg-white rounded-[2.5rem] border-none shadow-4xl p-0 overflow-hidden text-left flex flex-col">
+            <div className="h-2 w-full bg-primary shrink-0" />
+            <DialogHeader className="p-10 pb-4 shrink-0">
                <DialogTitle className="text-3xl font-black font-headline uppercase text-[#0F172A] flex items-center gap-4">
                   <ShieldCheck className="h-8 w-8 text-primary" /> Modify Audit Node
                </DialogTitle>
             </DialogHeader>
-            <div className="px-10 pb-10 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+            
+            <div className="px-10 pb-10 space-y-6 overflow-y-auto custom-scrollbar flex-1 max-h-[70vh]">
                <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2 text-left">
                      <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Identity Name</Label>
@@ -351,22 +355,39 @@ export default function ProfilePage() {
                      <Input type="date" value={editForm?.dob || ""} onChange={e => setEditForm({...editForm, dob: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-none font-bold" />
                   </div>
                </div>
+               
                <div className="space-y-2 text-left">
                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Verified Contact Node (Mobile)</Label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-slate-400">+91</span>
-                    <Input value={editForm?.phone || ""} onChange={e => setEditForm({...editForm, phone: e.target.value.replace(/\D/g, '').slice(0,10)})} className="h-12 pl-12 rounded-xl bg-slate-50 border-none font-bold" placeholder="10-digit mobile number" />
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-black text-slate-400">+91</span>
+                    <Input 
+                      value={editForm?.phone || ""} 
+                      onChange={e => setEditForm({...editForm, phone: e.target.value.replace(/\D/g, '').slice(0,10)})} 
+                      className="h-12 pl-14 rounded-xl bg-slate-50 border-none font-black text-lg" 
+                      placeholder="10-digit mobile number" 
+                    />
                   </div>
                </div>
+
                <div className="space-y-2 text-left">
                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Permanent Correspondence Address</Label>
-                  <Textarea value={editForm?.address || ""} onChange={e => setEditForm({...editForm, address: e.target.value})} className="min-h-[120px] rounded-xl bg-slate-50 border-none font-medium p-4 leading-relaxed" placeholder="Complete address for institutional records..." />
+                  <Textarea 
+                    value={editForm?.address || ""} 
+                    onChange={e => setEditForm({...editForm, address: e.target.value})} 
+                    className="min-h-[140px] rounded-2xl bg-slate-50 border-none font-medium p-6 leading-relaxed shadow-inner" 
+                    placeholder="Complete address for institutional records..." 
+                  />
                </div>
             </div>
-            <DialogFooter className="p-10 pt-4 bg-slate-50 flex gap-4">
-               <Button variant="ghost" onClick={() => setIsEditing(false)} className="rounded-xl h-14 font-black uppercase text-[10px] text-slate-400">Abort Audit</Button>
-               <Button onClick={handleUpdateProfile} disabled={isSaving} className="bg-primary hover:bg-orange-600 text-white h-14 px-10 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 shadow-xl shadow-primary/20 gap-3">
-                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save Registry Node
+
+            <DialogFooter className="p-10 pt-6 bg-slate-50 border-t border-slate-100 shrink-0 flex gap-4">
+               <Button variant="ghost" onClick={() => setIsEditing(false)} className="rounded-xl h-16 px-10 font-black uppercase text-[10px] text-slate-400 tracking-widest">Abort Audit</Button>
+               <Button 
+                onClick={handleUpdateProfile} 
+                disabled={isSaving} 
+                className="bg-primary hover:bg-orange-600 text-white h-16 px-16 rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] flex-1 shadow-2xl shadow-primary/20 gap-4 transition-all active:scale-95"
+               >
+                  {isSaving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />} Save Registry Details
                </Button>
             </DialogFooter>
          </DialogContent>
