@@ -24,7 +24,7 @@ export default function AdminDashboard() {
   const [isSyncing, setIsSyncing] = useState(false)
 
   // Hardened DB Validation
-  const isValidDb = db && typeof db === 'object';
+  const isValidDb = !!(db && typeof db === 'object' && 'type' in db === false);
 
   const { data: users } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "users") : null), [isValidDb, db]))
   const { data: questions, loading: qLoading } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "questions") : null), [isValidDb, db]))

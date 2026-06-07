@@ -39,6 +39,7 @@ import BackButton from "@/components/navigation/BackButton"
 /**
  * @fileOverview Institutional Result Engine v6.2.
  * Fixed: Re-attempt logic and click propagation.
+ * Hardened: Firestore argument validation to prevent collection() errors.
  */
 export default function ResultPage() {
   const params = useParams()
@@ -52,10 +53,12 @@ export default function ResultPage() {
   const [questions, setQuestions] = useState<any[]>([])
   const [loadingContent, setLoadingContent] = useState(true)
 
+  const isValidDb = !!(db && typeof db === 'object' && 'type' in db === false);
+
   const resultsQuery = useMemo(() => {
-    if (!db || !user) return null
+    if (!isValidDb || !user) return null
     return query(collection(db, "results"), where("userId", "==", user.uid))
-  }, [db, user])
+  }, [isValidDb, db, user])
 
   const { data: rawResultDocs, loading: resultsLoading } = useCollection<any>(resultsQuery)
   
@@ -73,7 +76,7 @@ export default function ResultPage() {
 
   useEffect(() => {
     async function loadQuestions() {
-      if (resultsLoading) return;
+      if (resultsLoading || !isValidDb) return;
       if (!sessionData) {
         setLoadingContent(false);
         return;
@@ -108,38 +111,24 @@ export default function ResultPage() {
       }
     }
     loadQuestions()
-  }, [db, sessionData, mockId, toast, resultsLoading])
+  }, [isValidDb, db, sessionData, mockId, toast, resultsLoading])
 
-  /**
-   * CRITICAL BUG FIX: Re-attempt Handler
-   */
   const handleReattempt = () => {
-    console.log("Reattempt clicked");
-    console.log("Mock ID:", mockId);
-
-    if (!db || !user || !mockId) {
-      console.error("Reattempt failed: Missing context", { db: !!db, user: !!user, mockId });
-      return;
-    }
+    if (!isValidDb || !user || !mockId) return;
     
     const confirmMsg = "CRITICAL AUDIT: Restart evaluation node? Current scores will be archived.";
     if (!window.confirm(confirmMsg)) return;
 
-    // 1. Reset Firestore state (Non-blocking)
     const attemptId = `${user.uid}_${mockId}`;
-    deleteDoc(doc(db, "attempts", attemptId)).catch(e => console.error("Attempt purge failed", e));
-    deleteDoc(doc(db, "results", attemptId)).catch(e => console.error("Result purge failed", e));
+    deleteDoc(doc(db, "attempts", attemptId)).catch(() => {});
+    deleteDoc(doc(db, "results", attemptId)).catch(() => {});
     
-    // 2. Clear potential LocalStorage caches
     if (typeof window !== 'undefined') {
        localStorage.removeItem(`attempt_${mockId}`);
        localStorage.removeItem(`result_${mockId}`);
     }
 
-    // 3. UI Feedback
     toast({ title: "Registry Reset", description: "Loading fresh attempt instructions..." });
-    
-    // 4. Instant Navigation
     router.push(`/mocks/${mockId}/instructions`);
   };
 
@@ -174,7 +163,7 @@ export default function ResultPage() {
   )
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50/50 w-full overflow-x-hidden">
+    <div className="flex flex-col min-h-screen bg-slate-50/50 w-full overflow-x-hidden text-left">
       <Navbar />
       <main className="container mx-auto px-2 md:px-6 py-4 md:py-8 max-w-4xl w-full">
         <div className="flex items-center gap-2 md:gap-4 mb-6">

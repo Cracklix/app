@@ -34,7 +34,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Exam Master Registry.
- * Hardened: Enforced null checks on all collection calls.
+ * Hardened: Enforced Firestore instance validation on all collection calls.
  */
 
 export default function ExamRegistryPage() {
@@ -49,9 +49,11 @@ export default function ExamRegistryPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [editingExam, setEditingExam] = useState<any>(null)
 
-  const { data: exams, loading } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
-  const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
-  const { data: questions } = useCollection<any>(useMemo(() => (db ? collection(db, "questions") : null), [db]))
+  const isValidDb = !!(db && typeof db === 'object' && 'type' in db === false);
+
+  const { data: exams, loading } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "exams") : null), [isValidDb, db]))
+  const { data: boards } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "boards") : null), [isValidDb, db]))
+  const { data: questions } = useCollection<any>(useMemo(() => (isValidDb ? collection(db, "questions") : null), [isValidDb, db]))
 
   const stats = useMemo(() => {
     if (!exams || !questions) return {}
@@ -71,8 +73,8 @@ export default function ExamRegistryPage() {
   }, [exams, searchTerm])
 
   const handleSaveExam = async () => {
-    if (!db || !editingExam.name || !editingExam.boardId) {
-      toast({ variant: "destructive", title: "Missing Config", description: "Name and Board are mandatory." })
+    if (!isValidDb || !editingExam.name || !editingExam.boardId) {
+      toast({ variant: "destructive", title: "Audit Blocked", description: "Config incomplete." })
       return
     }
     setIsSaving(true)
@@ -87,7 +89,7 @@ export default function ExamRegistryPage() {
 
     try {
       await setDoc(examRef, payload, { merge: true })
-      toast({ title: "Hub Synced", description: `${payload.name} node successfully registered.` })
+      toast({ title: "Hub Synced", description: `${payload.name} registered.` })
       setEditingExam(null)
     } catch (e: any) {
       toast({ variant: "destructive", title: "Sync Failed", description: e.message })
@@ -97,15 +99,15 @@ export default function ExamRegistryPage() {
   }
 
   const handleDeepMerge = async () => {
-    if (!db || !mergeSource || !mergeTarget || mergeSource === mergeTarget) {
-      toast({ variant: "destructive", title: "Invalid Selection", description: "Nodes must be distinct." })
+    if (!isValidDb || !mergeSource || !mergeTarget || mergeSource === mergeTarget) {
+      toast({ variant: "destructive", title: "Selection Error" })
       return
     }
 
     const sourceExam = exams?.find(e => e.id === mergeSource)
     const targetExam = exams?.find(e => e.id === mergeTarget)
     
-    if (!confirm(`CRITICAL AUDIT: Move all content from "${sourceExam.name}" into "${targetExam.name}"? This will update all linked MCQs and Mocks.`)) return
+    if (!confirm(`CRITICAL: Merge "${sourceExam.name}" into "${targetExam.name}"?`)) return
 
     setIsMerging(true)
     try {
@@ -123,12 +125,10 @@ export default function ExamRegistryPage() {
       batch.delete(doc(db, "exams", mergeSource))
 
       await batch.commit()
-      toast({ title: "Hub Consolidation Success", description: `Reassigned ${qSnap.size} MCQs to ${targetExam.name}.` })
+      toast({ title: "Success", description: `Merged ${qSnap.size} MCQs.` })
       setMergeDialogOpen(false)
-      setMergeSource("")
-      setMergeTarget("")
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Merge Rejected", description: e.message })
+      toast({ variant: "destructive", title: "Merge Failed" })
     } finally {
       setIsMerging(false)
     }
@@ -214,7 +214,7 @@ export default function ExamRegistryPage() {
                           <Edit className="h-5 w-5" />
                        </Button>
                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-rose-50 hover:text-rose-600 shadow-sm" onClick={async () => {
-                          if (confirm("CRITICAL: Purge this hub node from registry? Linked items will become orphans.")) {
+                          if (confirm("CRITICAL: Purge registry node?")) {
                              await deleteDoc(doc(db!, "exams", e.id))
                              toast({ title: "Registry Node Purged" })
                           }
@@ -230,7 +230,6 @@ export default function ExamRegistryPage() {
         </CardContent>
       </Card>
 
-      {/* Registry Hub Entry Dialog */}
       <Dialog open={!!editingExam} onOpenChange={open => !open && setEditingExam(null)}>
          <DialogContent className="sm:max-w-xl rounded-[2.5rem] bg-white border-none shadow-4xl p-0 overflow-hidden text-left">
             <div className="h-2 w-full bg-[#0F172A]" />
