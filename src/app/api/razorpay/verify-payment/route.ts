@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { initializeFirebase } from '@/firebase';
@@ -5,7 +6,7 @@ import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from 'fir
 
 /**
  * @fileOverview Razorpay Signature Verification & Subscription Automation Node.
- * Hardened with crypto signature audit.
+ * Hardened with domestic signature audit and automatic user registry update.
  */
 
 export async function POST(request: Request) {
@@ -39,10 +40,12 @@ export async function POST(request: Request) {
     if (!planSnap.exists()) throw new Error("Plan node missing in master registry.");
     const planData = planSnap.data();
 
+    // Calculate expiry based on plan duration (default 30 days)
+    const duration = planData.durationDays || 30;
     const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + (planData.durationDays || 30));
+    expiryDate.setDate(expiryDate.getDate() + duration);
 
-    // Update Student Registry
+    // Update Student Registry Node
     await updateDoc(userRef, {
       status: planId,
       passExpiryDate: expiryDate.toISOString(),
@@ -63,6 +66,16 @@ export async function POST(request: Request) {
       gateway: 'RAZORPAY_WEB',
       verified: true,
       updatedAt: serverTimestamp()
+    });
+
+    // Optional: Log payment to a separate collection for finance audit
+    await addDoc(collection(db, 'payments'), {
+      userId,
+      userEmail: (await getDoc(userRef)).data()?.email || 'N/A',
+      amount: planData.price,
+      paymentId: razorpay_payment_id,
+      planName: planData.name,
+      createdAt: serverTimestamp()
     });
 
     return NextResponse.json({ success: true });
