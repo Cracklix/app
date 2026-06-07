@@ -28,9 +28,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 /**
- * @fileOverview Institutional "My Exams" Dashboard v2.0.
- * Fixed: Official logo lookup for pinned hubs.
- * Optimized: Client-side sorting for Results to bypass composite index requirements.
+ * @fileOverview Institutional "My Exams" Dashboard v2.1.
+ * Optimized: Logo visibility hardened with p-1.5 and object-contain to ensure full logo visibility.
  */
 
 export default function MyExamsPage() {
@@ -50,7 +49,6 @@ export default function MyExamsPage() {
   const { data: allExams } = useCollection<any>(examsQuery)
   const { data: boards } = useCollection<any>(boardsQuery)
 
-  // Simplified query to bypass index requirement
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
     return query(collection(db, "results"), where("userId", "==", user.uid))
@@ -60,12 +58,11 @@ export default function MyExamsPage() {
 
   const recentAttempts = useMemo(() => {
     if (!rawResults) return []
-    // Client-side chronological sort
     return [...rawResults].sort((a: any, b: any) => {
       const tA = new Date(a.timestamp || 0).getTime()
       const tB = new Date(b.timestamp || 0).getTime()
       return tB - tA
-    })
+    }).slice(0, 20)
   }, [rawResults])
 
   const pinnedExams = useMemo(() => {
@@ -81,7 +78,6 @@ export default function MyExamsPage() {
       
       <main className="container mx-auto px-4 py-6 md:py-12 max-w-6xl space-y-8">
         
-        {/* HEADER */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 text-left">
            <div className="space-y-1">
               <div className="flex items-center gap-2">
@@ -96,7 +92,6 @@ export default function MyExamsPage() {
            </div>
         </div>
 
-        {/* PINNED REGISTRY */}
         <section className="space-y-4">
            <div className="flex items-center justify-between">
               <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
@@ -113,7 +108,7 @@ export default function MyExamsPage() {
                  return (
                   <Link key={exam.id} href={`/exams/${exam.id}`}>
                       <Card className="border-none shadow-sm hover:shadow-xl transition-all duration-300 rounded-2xl bg-white p-4 md:p-6 text-left group relative overflow-hidden h-full flex flex-col">
-                        <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center mb-3 md:mb-4 group-hover:bg-primary/10 transition-colors relative overflow-hidden shrink-0 border border-slate-100 shadow-inner">
+                        <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl bg-slate-50 flex items-center justify-center mb-3 md:mb-4 group-hover:bg-primary/10 transition-colors relative overflow-hidden shrink-0 border border-slate-100 shadow-inner">
                             {logoUrl ? (
                               <img 
                                 src={logoUrl} 
@@ -122,7 +117,7 @@ export default function MyExamsPage() {
                                 alt={exam.name} 
                               />
                             ) : (
-                              <GraduationCap className="h-5 w-5 md:h-6 md:w-6 text-slate-300" />
+                              <GraduationCap className="h-6 w-6 md:h-8 md:w-8 text-slate-300" />
                             )}
                         </div>
                         <h4 className="font-black text-[13px] md:text-lg text-[#0F172A] uppercase leading-tight line-clamp-2 flex-1">{exam.name}</h4>
@@ -140,7 +135,6 @@ export default function MyExamsPage() {
            </div>
         </section>
 
-        {/* CONTINUE PREPARATION */}
         <section className="space-y-4">
            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
               <History className="h-3 w-3" /> Continue Preparation
@@ -175,7 +169,6 @@ export default function MyExamsPage() {
            </div>
         </section>
 
-        {/* RECRUITMENT GALAXY */}
         <section className="bg-[#0B1528] rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl text-left">
            <div className="absolute top-0 right-0 p-10 opacity-10 rotate-12"><ShieldCheck className="h-40 w-40" /></div>
            <div className="relative z-10 space-y-6 max-w-xl">
