@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -268,7 +269,7 @@ function MockBuilderContent() {
                      <Input 
                         type="number" 
                         step="0.5" 
-                        value={Number.isNaN(mockData.positiveMarks) ? "" : mockData.positiveMarks} 
+                        value={isNaN(mockData.positiveMarks) ? "" : mockData.positiveMarks} 
                         onChange={e => setMockData({...mockData, positiveMarks: parseFloat(e.target.value)})} 
                         className="h-12 rounded-xl text-center font-black border-slate-100 text-emerald-600" 
                       />
@@ -278,7 +279,7 @@ function MockBuilderContent() {
                      <Input 
                         type="number" 
                         step="0.05" 
-                        value={Number.isNaN(mockData.negativeMarks) ? "" : mockData.negativeMarks} 
+                        value={isNaN(mockData.negativeMarks) ? "" : mockData.negativeMarks} 
                         onChange={e => setMockData({...mockData, negativeMarks: parseFloat(e.target.value)})} 
                         className="h-12 rounded-xl text-center font-black border-slate-100 text-rose-500" 
                       />
@@ -312,7 +313,7 @@ function MockBuilderContent() {
                     <Label className="text-[10px] font-black uppercase text-slate-500 ml-1"><Clock className="h-3 w-3" /> Duration (Mins)</Label>
                     <Input 
                       type="number" 
-                      value={Number.isNaN(mockData.duration) ? "" : mockData.duration} 
+                      value={isNaN(mockData.duration) ? "" : mockData.duration} 
                       onChange={e => setMockData({...mockData, duration: parseInt(e.target.value)})} 
                       className="h-12 rounded-xl text-center border-slate-100" 
                     />
