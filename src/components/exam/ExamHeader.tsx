@@ -24,8 +24,8 @@ const ALL_LANG_MODES: { label: string, value: LanguageDisplayMode }[] = [
 ];
 
 /**
- * @fileOverview Institutional CBT Header v15.0.
- * PERFORMANCE OPTIMIZED: Granular selectors prevent whole-header re-renders on timer tick.
+ * @fileOverview Institutional CBT Header v16.0.
+ * PERFORMANCE OPTIMIZED: Redundant Palette button hidden on large screens.
  */
 export default function ExamHeader({ 
   onPaletteToggle, 
@@ -121,7 +121,7 @@ export default function ExamHeader({
            <Button 
              variant="ghost"
              onClick={onPaletteToggle}
-             className="bg-[#F97316] hover:bg-orange-600 h-9 md:h-12 px-4 md:px-6 rounded-xl font-black uppercase text-[9px] md:text-[11px] tracking-widest gap-2 md:gap-3 shadow-xl transition-all active:scale-95 pointer-events-auto"
+             className="bg-[#F97316] hover:bg-orange-600 h-9 md:h-12 px-4 md:px-6 rounded-xl font-black uppercase text-[9px] md:text-[11px] tracking-widest gap-2 md:gap-3 shadow-xl transition-all active:scale-95 pointer-events-auto lg:hidden"
            >
               <Menu className="h-4 w-4" />
               <span>Palette</span>

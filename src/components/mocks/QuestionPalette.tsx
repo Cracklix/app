@@ -18,8 +18,8 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Professional CBT Question Palette Hub v13.0.
- * UPDATED: Order swapped - Sections now appear above Status Legend.
+ * @fileOverview Professional CBT Question Palette Hub v14.0.
+ * UPDATED: Order strictly maintained with Palette above Status Legend.
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const questions = useExamStore(s => s.questions);
@@ -65,7 +65,7 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
       <ScrollArea className="h-full">
         <div className="p-3 md:p-6 pt-6 md:pt-8 space-y-6 md:space-y-8 pb-32">
            
-           {/* 1. SECTIONAL GRIDS (MOVED TO TOP) */}
+           {/* 1. SECTIONAL GRIDS (AT TOP) */}
            <div className="space-y-6">
               {sections.map(([secId, data]) => (
                 <div key={secId} className="space-y-3">
@@ -91,9 +91,9 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
               ))}
            </div>
 
-           {/* 2. STATUS SUMMARY HUB (MOVED BELOW) */}
+           {/* 2. STATUS SUMMARY HUB (BELOW) */}
            <div className="space-y-3 pt-4 border-t border-slate-50">
-              <p className="text-[9px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Legend</p>
+              <p className="text-[9px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Evaluation Status</p>
               <div className="grid grid-cols-2 gap-2">
                  <SummaryCard count={stats.answered} label="ANSWERED" color="bg-blue-600" />
                  <SummaryCard count={stats.notAnswered} label="NOT ANSWERED" color="bg-slate-400" />

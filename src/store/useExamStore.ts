@@ -1,3 +1,4 @@
+
 'use client';
 
 import { create } from 'zustand';
@@ -8,8 +9,8 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
 /**
- * @fileOverview Elite CBT Global Store v28.0 (Production Hardened).
- * FEATURES: Precision scoring, background sync hardening, and mathematical accuracy.
+ * @fileOverview Elite CBT Global Store v29.0 (Production Hardened).
+ * FEATURES: Precision scoring, Pause-aware clock synchronization, and background sync hardening.
  */
 
 interface ExamStore extends AttemptState {
@@ -104,7 +105,27 @@ export const useExamStore = create<ExamStore>((set, get) => ({
   },
 
   setLanguage: (lang) => set({ language: lang }),
-  setPaused: (isPaused) => set({ isPaused }),
+  
+  setPaused: (isPaused) => {
+    const { timeLeft, userId, mockId } = get();
+    const now = Date.now();
+    
+    if (!isPaused) {
+       // Resuming: Recalculate end time based on preserved time left
+       const newEndTime = now + (timeLeft * 1000);
+       set({ isPaused, endTime: newEndTime });
+       
+       if (userId && mockId) {
+          const { firestore: db } = initializeFirebase();
+          updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), {
+             endTime: newEndTime,
+             updatedAt: serverTimestamp()
+          }).catch(() => {});
+       }
+    } else {
+       set({ isPaused });
+    }
+  },
 
   setCurrentIdx: (idx) => {
     const { visited, questions, userId, mockId } = get();
