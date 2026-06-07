@@ -17,9 +17,9 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Institutional CBT Palette Hub v23.0.
- * FIXED: Colors precisely matched to user screenshot (Grey for Not Answered, White for Not Visited).
- * FIXED: Header padding to prevent clipping.
+ * @fileOverview Institutional CBT Palette Hub v24.0.
+ * FIXED: Anti-squash layout for legend cards.
+ * FIXED: pt-24 padding to prevent top-clipping on mobile.
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const questions = useExamStore(s => s.questions);
@@ -59,10 +59,10 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
   return (
     <div className="flex flex-col h-full bg-white text-left font-body select-none pointer-events-auto overflow-hidden">
       <ScrollArea className="h-full">
-        {/* Anti-Clipping padding for mobile headers */}
-        <div className="p-4 md:p-8 pt-20 md:pt-24 space-y-8 md:space-y-10 pb-32">
+        {/* Anti-Clipping padding for mobile headers - calibrated to pt-24 */}
+        <div className="p-3 md:p-8 pt-24 md:pt-28 space-y-8 md:space-y-10 pb-32">
            
-           {/* 1. HIGH-FIDELITY LEGEND HUB */}
+           {/* 1. HIGH-FIDELITY LEGEND HUB - Optimized for 65vw width */}
            <div className="grid grid-cols-2 gap-2 md:gap-4">
               <SummaryCard count={stats.answered} label="ANSWERED" color="bg-[#1E5EFF]" />
               <SummaryCard count={stats.notAnswered} label="NOT ANSWERED" color="bg-[#94A3B8]" />
@@ -79,7 +79,7 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
                 <div key={sIdx} className="space-y-5 md:space-y-6">
                    <div className="flex items-center gap-3">
                       <div className="h-2.5 w-2.5 rounded-full bg-[#F97316] shrink-0" />
-                      <h4 className="text-[10px] md:text-xs font-black uppercase text-[#0F172A] tracking-wider leading-none">
+                      <h4 className="text-[10px] md:text-xs font-black uppercase text-[#0F172A] tracking-wider leading-tight">
                          {section.name}
                       </h4>
                    </div>
@@ -120,14 +120,14 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
 function SummaryCard({ count, label, color, textColor = "text-white", colSpan = 1, border = "border-transparent" }: any) {
   return (
     <div className={cn(
-      "flex items-center gap-3 md:gap-4 p-4 rounded-[1.5rem] bg-white border border-slate-100 shadow-2xl",
+      "flex items-center gap-2 md:gap-4 p-2.5 md:p-4 rounded-[1.25rem] md:rounded-[1.5rem] bg-white border border-slate-100 shadow-xl",
       colSpan > 1 && "col-span-2"
     )}>
-       <div className={cn("h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center text-sm md:text-lg font-black shrink-0 shadow-lg border-4 border-white", color, textColor, border)}>
+       <div className={cn("h-9 w-9 md:h-11 md:w-11 rounded-full flex items-center justify-center text-sm md:text-base font-black shrink-0 shadow-lg border-[3px] border-white", color, textColor, border)}>
           {count}
        </div>
        <div className="min-w-0">
-          <span className="text-[10px] md:text-[12px] font-black uppercase text-slate-400 tracking-tight block leading-tight">{label}</span>
+          <span className="text-[9px] md:text-[11px] font-black uppercase text-slate-400 tracking-tighter block leading-[1.1]">{label}</span>
        </div>
     </div>
   )
@@ -138,9 +138,6 @@ function QuestionNode({ index, isActive, status, isVisited, onClick }: any) {
   const isMarked = status === 'marked';
   const isAnsMarked = status === 'answered-marked';
   
-  // MATCHING SCREENSHOT COLORS:
-  // Node 1 (Grey): Not Answered (Visited but no selection)
-  // Node 2 (White): Not Visited
   const colorClass = isActive 
     ? "bg-white text-[#F97316] border-[#F97316] border-[3px] shadow-lg scale-105 z-10" 
     : isAnswered ? "bg-[#1E5EFF] text-white border-transparent"
