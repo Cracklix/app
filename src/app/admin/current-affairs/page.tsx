@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -38,8 +39,8 @@ import { cn } from "@/lib/utils"
 import { parseBulkQuestions } from "@/lib/parser"
 
 /**
- * @fileOverview Institutional Current Affairs Management Hub v3.0.
- * FIXED: Header overlapping on mobile and dialog sizing calibrated.
+ * @fileOverview Institutional Current Affairs Management Hub v4.0.
+ * FIXED: Optimized Dialog sizing and padding to prevent content clipping on mobile.
  */
 
 export default function AdminCurrentAffairs() {
@@ -168,7 +169,7 @@ export default function AdminCurrentAffairs() {
   }, [caItems, searchTerm])
 
   return (
-    <div className="space-y-8 md:space-y-12 pb-24 text-left">
+    <div className="space-y-6 md:space-y-10 pb-24 text-left">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 md:gap-8 px-2 md:px-4">
         <div className="min-w-0 flex-1">
            <div className="flex items-center gap-3 mb-2">
@@ -184,7 +185,7 @@ export default function AdminCurrentAffairs() {
       </div>
 
       <Card className="border-none shadow-3xl bg-white rounded-2xl md:rounded-[3rem] overflow-hidden mx-2 md:mx-4">
-        <CardHeader className="p-6 md:p-10 border-b border-slate-50 bg-slate-50/30">
+        <CardHeader className="p-4 md:p-10 border-b border-slate-50 bg-slate-50/30">
            <div className="relative w-full lg:w-[45%]">
               <Search className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-slate-400" />
               <Input 
@@ -262,18 +263,18 @@ export default function AdminCurrentAffairs() {
       </Card>
 
       <Dialog open={!!editingItem} onOpenChange={(open) => !open && !isSaving && setEditingItem(null)}>
-        <DialogContent className="sm:max-w-7xl max-h-[95vh] rounded-[2rem] md:rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
-          <div className="h-2 w-full bg-[#0F172A] shrink-0" />
-          <DialogHeader className="p-6 md:p-10 pb-4 shrink-0 flex flex-row items-center justify-between">
-            <DialogTitle className="text-xl md:text-3xl font-black font-headline uppercase text-[#0F172A]">CA Hub Configuration</DialogTitle>
-            <button onClick={() => setEditingItem(null)} className="p-2 hover:bg-slate-100 rounded-xl transition-colors"><X className="h-5 w-5 md:h-6 md:w-6 text-slate-400" /></button>
+        <DialogContent className="sm:max-w-7xl w-[95vw] h-[92vh] max-h-[92vh] rounded-[1.5rem] md:rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
+          <div className="h-1.5 w-full bg-[#0F172A] shrink-0" />
+          <DialogHeader className="px-5 md:px-10 py-4 md:py-8 shrink-0 flex flex-row items-center justify-between border-b border-slate-50">
+            <DialogTitle className="text-lg md:text-3xl font-black font-headline uppercase text-[#0F172A] truncate pr-4">CA Hub Configuration</DialogTitle>
+            <button onClick={() => setEditingItem(null)} className="p-2 hover:bg-slate-100 rounded-xl transition-colors shrink-0"><X className="h-5 w-5 md:h-6 md:w-6 text-slate-400" /></button>
           </DialogHeader>
           
-          <div className="flex-1 overflow-y-auto custom-scrollbar px-6 md:px-10 pb-10 space-y-10">
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-5 md:px-10 py-6 md:py-10 space-y-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
                {/* Metadata Column */}
                <div className="lg:col-span-4 space-y-6">
-                  <Card className="border-none bg-slate-50/50 p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] space-y-6">
+                  <Card className="border-none bg-slate-50/50 p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] space-y-6 shadow-inner">
                      <p className="text-[9px] md:text-[10px] font-black uppercase text-primary tracking-[0.3em] ml-1">Archive Metadata</p>
                      <div className="space-y-2">
                         <Label className="text-[9px] md:text-[10px] font-black uppercase text-slate-500 ml-1">Package Title</Label>
@@ -325,7 +326,7 @@ export default function AdminCurrentAffairs() {
 
                {/* Quiz / MCQs Bulk Architect */}
                <div className="lg:col-span-8 space-y-8">
-                  <Card className="border-none bg-white shadow-xl rounded-2xl md:rounded-[3rem] p-6 md:p-10 space-y-10 border border-slate-100">
+                  <Card className="border-none bg-white shadow-xl rounded-2xl md:rounded-[3rem] p-5 md:p-10 space-y-8 border border-slate-100">
                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="flex items-center gap-4">
                            <Zap className="h-6 w-6 md:h-8 md:w-8 text-primary" />
@@ -334,7 +335,7 @@ export default function AdminCurrentAffairs() {
                               <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">Institutional Bulk Ingestion Protocol</p>
                            </div>
                         </div>
-                        <Badge className="bg-[#0F172A] text-white border-none font-black px-4 md:px-6 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] w-fit">{editingItem?.questions?.length || 0} Questions Staged</Badge>
+                        <Badge className="bg-[#0F172A] text-white border-none font-black px-4 md:px-6 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] w-fit shadow-lg">{editingItem?.questions?.length || 0} Questions Staged</Badge>
                      </div>
 
                      <div className="space-y-6">
@@ -349,7 +350,7 @@ export default function AdminCurrentAffairs() {
                               value={bulkText}
                               onChange={e => setBulkText(e.target.value)}
                               placeholder={`Q1. Question Statement EN...\nਪ੍ਰਸ਼ਨ 1. ਸਟੇਟਮੈਂਟ PA...\n(A) Option EN / ਵਿਕਲਪ PA\n(B) Option EN / ਵਿਕਲਪ PA\nCorrect Answer: A`}
-                              className="min-h-[200px] md:min-h-[250px] rounded-xl md:rounded-[2rem] bg-slate-50 border-none p-6 md:p-8 text-xs md:text-sm font-bold shadow-inner custom-scrollbar resize-none focus-visible:ring-primary"
+                              className="min-h-[180px] md:min-h-[250px] rounded-xl md:rounded-[2rem] bg-slate-50 border-none p-5 md:p-8 text-xs md:text-sm font-bold shadow-inner custom-scrollbar resize-none focus-visible:ring-primary"
                            />
                            <Button onClick={handleProcessBulk} disabled={!bulkText.trim()} className="w-full h-14 md:h-16 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.3em] text-[10px] md:text-[11px] rounded-xl shadow-2xl gap-4 group transition-all active:scale-95 border-none">
                               Initialize Bulk Extraction <ChevronRight className="h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-1 transition-transform" />
@@ -359,7 +360,7 @@ export default function AdminCurrentAffairs() {
                         {editingItem?.questions?.length > 0 && (
                            <div className="pt-6 border-t border-slate-50">
                               <p className="text-[9px] md:text-[10px] font-black uppercase text-slate-400 tracking-widest mb-6 ml-1">Review Staged Assets</p>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[300px] md:max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[250px] md:max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
                                  {editingItem.questions.map((q: any, idx: number) => (
                                     <div key={idx} className="bg-slate-50/50 p-4 md:p-6 rounded-xl md:rounded-2xl border border-slate-100 group/q relative transition-all hover:bg-white hover:shadow-lg">
                                        <button 
@@ -399,9 +400,9 @@ export default function AdminCurrentAffairs() {
             </div>
           </div>
 
-          <DialogFooter className="p-6 md:p-10 pt-4 bg-slate-50 flex gap-3 md:gap-4 shrink-0 border-t border-slate-100">
-            <button onClick={() => setEditingItem(null)} className="rounded-xl h-12 md:h-14 px-6 md:px-8 font-black uppercase text-[9px] md:text-[10px] text-slate-400 hover:text-[#0F172A]">Cancel Draft</button>
-            <Button onClick={handleSave} disabled={isSaving} className="bg-[#0F172A] hover:bg-black text-white h-12 md:h-14 px-8 md:px-10 rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-widest flex-1 shadow-xl transition-all active:scale-95 gap-3 border-none">
+          <DialogFooter className="p-4 md:p-10 pt-2 bg-slate-50 flex gap-3 md:gap-4 shrink-0 border-t border-slate-100">
+            <button onClick={() => setEditingItem(null)} className="rounded-xl h-11 md:h-14 px-4 md:px-8 font-black uppercase text-[9px] md:text-[10px] text-slate-400 hover:text-[#0F172A]">Cancel Draft</button>
+            <Button onClick={handleSave} disabled={isSaving} className="bg-[#0F172A] hover:bg-black text-white h-11 md:h-14 px-6 md:px-10 rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-widest flex-1 shadow-xl transition-all active:scale-95 gap-3 border-none">
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4 text-primary fill-current" />} Commit CA Hub to Registry
             </Button>
           </DialogFooter>

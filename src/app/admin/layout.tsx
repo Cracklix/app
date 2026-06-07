@@ -1,3 +1,4 @@
+
 'use client';
 
 import { SidebarProvider, Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
@@ -39,8 +40,8 @@ import { Button } from "@/components/ui/button";
 import BackButton from "@/components/navigation/BackButton";
 
 /**
- * @fileOverview Admin Layout v10.0.
- * UPDATED: Hardened for mobile responsiveness with overflow-x management.
+ * @fileOverview Admin Layout v11.0.
+ * UPDATED: Hardened for mobile responsiveness and z-index calibration for system dialogs.
  */
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -152,7 +153,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </Sidebar>
         
         <SidebarInset className="flex flex-col bg-white min-w-0 max-w-full">
-          <header className="h-14 md:h-16 border-b border-slate-200 flex items-center px-4 md:px-6 justify-between bg-white sticky top-0 z-[100] shrink-0">
+          <header className="h-14 md:h-16 border-b border-slate-200 flex items-center px-4 md:px-6 justify-between bg-white sticky top-0 z-[50] shrink-0">
             <div className="flex items-center gap-1 md:gap-3 overflow-hidden">
               <div className="lg:hidden">
                  <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
