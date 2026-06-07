@@ -1,12 +1,11 @@
-
 import { create } from 'zustand';
 import { AttemptState, ExamLanguage, QuestionStatus, Question } from '@/types';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
 
 /**
- * @fileOverview Enterprise CBT Global Store v18.0.
- * Optimized: All Firestore updates are non-blocking and UI-first to ensure high-velocity preparation.
+ * @fileOverview Enterprise CBT Global Store v19.0.
+ * Fixed: Robust initExam to prevent starting with 0 time.
  */
 
 interface ExamStore extends AttemptState {
@@ -58,7 +57,14 @@ export const useExamStore = create<ExamStore>((set, get) => ({
 
   initExam: (mockId, mockTitle, userId, questions, duration, savedState) => {
     const now = Date.now();
-    const endTime = savedState?.endTime || now + (duration * 60 * 1000);
+    
+    // Safety Audit: If no savedState or it's expired, create new time window
+    let endTime = savedState?.endTime || (now + (duration * 60 * 1000));
+    
+    if (now >= endTime) {
+       endTime = now + (duration * 60 * 1000);
+    }
+    
     const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
     
     set({
@@ -99,7 +105,6 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     
     if (userId && mockId) {
       const { firestore: db } = initializeFirebase();
-      // Non-blocking status update
       updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), {
          currentIdx: idx,
          visited: newVisited,

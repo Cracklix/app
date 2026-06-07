@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -28,8 +27,8 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Final CBT Attempt Node v19.0.
- * Optimized: Implemented chunked batch fetching and non-blocking submission for high-velocity preparation.
+ * @fileOverview Final CBT Attempt Node v20.0.
+ * Fixed: Stale data audit to prevent auto-submit on re-attempt.
  */
 
 export default function MockAttemptPage() {
@@ -59,7 +58,6 @@ export default function MockAttemptPage() {
         const questionIds = mockData.questionIds || [];
         const fetchedQuestions: any[] = [];
         
-        // Optimization: Chunked batch fetching (max 30 per 'in' query)
         const chunks = [];
         for (let i = 0; i < questionIds.length; i += 30) {
           chunks.push(questionIds.slice(i, i + 30));
@@ -73,7 +71,6 @@ export default function MockAttemptPage() {
           snap.docs.forEach(d => fetchedQuestions.push({ ...d.data(), id: d.id }));
         });
 
-        // Restore registry order
         const questions = questionIds.map(id => fetchedQuestions.find(q => q.id === id)).filter(Boolean);
 
         if (mockData.sections && mockData.sections.length > 0) {
@@ -92,14 +89,18 @@ export default function MockAttemptPage() {
 
         const attemptRef = doc(db, "attempts", `${user.uid}_${mockId}`);
         const attemptSnap = await getDoc(attemptRef);
-        const savedState = attemptSnap.exists() ? attemptSnap.data() : undefined;
+        let savedState = attemptSnap.exists() ? attemptSnap.data() : undefined;
 
-        if (!attemptSnap.exists()) {
+        // CRITICAL FIX: If attempt is already COMPLETED or EXPIRED, force a fresh start
+        if (savedState && (savedState.status === 'COMPLETED' || (savedState.endTime && Date.now() > savedState.endTime))) {
+           savedState = undefined;
+        }
+
+        if (!savedState) {
            const startTime = Date.now();
            const endTime = startTime + (mockData.duration * 60 * 1000);
            
-           // Non-blocking initialization
-           setDoc(attemptRef, {
+           const newAttemptData = {
               userId: user.uid,
               mockId,
               mockTitle: mockData.title,
@@ -112,9 +113,10 @@ export default function MockAttemptPage() {
               startTime,
               endTime,
               violations: 0
-           }).catch(() => {});
-           
-           examStore.initExam(mockId, mockData.title || "Evaluation Series", user.uid, questions, mockData.duration || 120, { startTime, endTime });
+           };
+
+           setDoc(attemptRef, newAttemptData).catch(() => {});
+           examStore.initExam(mockId, mockData.title || "Evaluation Series", user.uid, questions, mockData.duration || 120, newAttemptData);
         } else {
            examStore.initExam(mockId, mockData.title || "Evaluation Series", user.uid, questions, mockData.duration || 120, savedState);
         }
@@ -132,12 +134,13 @@ export default function MockAttemptPage() {
     if (isInitializing) return;
     const interval = setInterval(() => {
       examStore.tick();
-      if (examStore.timeLeft <= 0 && !isSubmittingFinal) {
+      // Only auto-submit if time actually ran out (timeLeft is 0 and it's not a fresh init)
+      if (examStore.timeLeft <= 0 && !isSubmittingFinal && examStore.endTime > 0) {
          handleSubmitFinal();
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [isInitializing, examStore.timeLeft, isSubmittingFinal]);
+  }, [isInitializing, examStore.timeLeft, isSubmittingFinal, examStore.endTime]);
 
   const stats = useMemo(() => {
     const s = { answered: 0, marked: 0, notAnswered: 0, notVisited: 0, ansMarked: 0 };
@@ -180,7 +183,6 @@ export default function MockAttemptPage() {
       createdAt: serverTimestamp()
     };
 
-    // Optimization: Non-blocking submission
     const resultRef = doc(db, "results", `${user.uid}_${mockId}`);
     setDoc(resultRef, resultPayload).catch(async (err) => {
       errorEmitter.emit('permission-error', new FirestorePermissionError({
