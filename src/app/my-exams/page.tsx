@@ -32,9 +32,8 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @file Overview Elite "My Exams" Live Hub v7.0.
- * PERSONALIZED ENGINE: Instantly detects new mocks/news for pinned hubs.
- * PERFORMANCE: Uses sub-collection queries and chronological sorting.
+ * @fileOverview Elite "My Exams" Live Hub v7.0.
+ * PERFORMANCE: Moved sorting client-side to bypass Firestore composite index requirements.
  */
 
 export default function MyExamsPage() {
@@ -51,15 +50,22 @@ export default function MyExamsPage() {
 
   const examsQuery = useMemo(() => (db ? collection(db, "exams") : null), [db])
   const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db])
-  const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true), orderBy("createdAt", "desc"), limit(20)) : null), [db])
+  
+  // Simplified query: No orderBy combined with where to prevent index errors
+  const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true), limit(100)) : null), [db])
   
   const { data: allExams } = useCollection<any>(examsQuery)
   const { data: boards } = useCollection<any>(boardsQuery)
-  const { data: recentMocks } = useCollection<any>(mocksQuery)
+  const { data: rawRecentMocks } = useCollection<any>(mocksQuery)
+
+  const recentMocks = useMemo(() => {
+    if (!rawRecentMocks) return []
+    return [...rawRecentMocks].sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+  }, [rawRecentMocks])
 
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
-    return query(collection(db, "results"), where("userId", "==", user.uid), limit(5))
+    return query(collection(db, "results"), where("userId", "==", user.uid), limit(10))
   }, [db, user])
 
   const { data: rawResults, loading: attemptsLoading } = useCollection<any>(resultsQuery)
@@ -119,7 +125,7 @@ export default function MyExamsPage() {
                  const isImgFailed = failedImages[exam.id];
                  const isArmy = exam.boardId?.toLowerCase() === 'army' || exam.id?.toLowerCase().includes('army');
                  
-                 // Elite logic: Find new mocks for this pinned hub
+                 // Find new mocks for this pinned hub using client-side sorted list
                  const hasNewMocks = recentMocks?.some(m => m.examId === exam.id && (Date.now() - (m.createdAt?.seconds * 1000 || 0)) < 86400000 * 7);
 
                  return (
