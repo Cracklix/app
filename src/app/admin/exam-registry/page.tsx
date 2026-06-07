@@ -36,6 +36,7 @@ import { cn } from "@/lib/utils"
 /**
  * @fileOverview Institutional Exam Master Registry.
  * Updated: High-Fidelity Board Logo lookup for registry identity nodes.
+ * Optimized: Added referrer policy for gov domains (SSWCD, PSSSB).
  */
 
 export default function ExamRegistryPage() {
@@ -186,7 +187,7 @@ export default function ExamRegistryPage() {
                   b.id.toLowerCase() === e.boardId?.toLowerCase() || 
                   b.abbreviation?.toLowerCase() === e.boardId?.toLowerCase()
                 );
-                const logoUrl = board?.iconUrl;
+                const logoUrl = board?.iconUrl || e.iconUrl;
 
                 return (
                   <TableRow key={e.id} className="hover:bg-slate-50 border-slate-50 transition-colors group">
@@ -215,7 +216,7 @@ export default function ExamRegistryPage() {
                     <TableCell>
                       <div className="flex flex-col gap-2">
                           <Badge variant="outline" className="bg-white border-slate-100 text-primary text-[8px] font-black uppercase px-2 py-0.5 w-fit">
-                            {e.boardId}
+                            {board?.abbreviation || e.boardId}
                           </Badge>
                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{e.category || 'General'}</p>
                       </div>

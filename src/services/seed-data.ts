@@ -2,9 +2,9 @@
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Engine v22.0.
+ * @fileOverview Institutional Seeding Engine v23.0.
  * Features: Hardened Unique Hub Registry with support for ARMY, DEFENSE and TECHNICAL IDs.
- * Updated: Specific PPSC and PSSSB institutional asset nodes.
+ * Updated: SSWCD (Anganwadi) official asset node integrated.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('[AUDIT] Initializing Cracklix Global Registry Sync...');
@@ -17,12 +17,14 @@ export async function seedInitialData(db: Firestore) {
   const armyEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Indian_Army_Logo.png/400px-Indian_Army_Logo.png";
   const courtEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Emblem_of_India.svg/200px-Emblem_of_India.svg.png";
   const pspclLogo = "https://pspcl.in/assets/images/logo.png";
+  const anganwadiLogo = "https://sswcd.punjab.gov.in/sites/default/files/download.png";
 
   // 1. BOARDS REGISTRY (The Governing Bodies)
   const boards = [
     { id: 'psssb', abbreviation: 'PSSSB', name: 'Punjab Subordinate Services Selection Board', region: 'Punjab', category: 'STATE_BOARD', iconUrl: psssbSvg },
     { id: 'ppsc', abbreviation: 'PPSC', name: 'Punjab Public Service Commission', region: 'Punjab', category: 'GAZETTED_BOARD', iconUrl: ppscJpg },
     { id: 'punjab-police', abbreviation: 'POLICE', name: 'Punjab Police Recruitment Board', region: 'Punjab', category: 'DEFENCE_BOARD', iconUrl: policeEmblem },
+    { id: 'sswcd', abbreviation: 'SSWCD', name: 'Social Security and Women & Child Development', region: 'Punjab', category: 'STATE_BOARD', iconUrl: anganwadiLogo },
     { id: 'pspcl', abbreviation: 'PSPCL', name: 'Punjab State Power Corporation Ltd', region: 'Punjab', category: 'TECHNICAL_BOARD', iconUrl: pspclLogo },
     { id: 'TECHNICAL', abbreviation: 'PSPCL', name: 'Punjab Technical & Power Board', region: 'Punjab', category: 'TECHNICAL_BOARD', iconUrl: pspclLogo },
     { id: 'high-court', abbreviation: 'COURT', name: 'Punjab & Haryana High Court (SSSC)', region: 'Punjab/Haryana', category: 'JUDICIAL_BOARD', iconUrl: courtEmblem },
@@ -39,6 +41,7 @@ export async function seedInitialData(db: Firestore) {
   const exams = [
     { id: 'punjab-patwari', boardId: 'psssb', name: 'Revenue Patwari 2026', category: 'STATE', description: 'Prepare for Revenue Patwari, Canal Patwari and Ziladar recruitment.', totalFullMocks: 45, totalPyqs: 10, iconUrl: psssbSvg },
     { id: 'psssb-clerk', boardId: 'psssb', name: 'Subordinate Clerk (PSSSB)', category: 'STATE', description: 'Clerical recruitment for multi-departmental Punjab govt posts.', totalFullMocks: 60, totalPyqs: 15, iconUrl: psssbSvg },
+    { id: 'punjab-anganwadi', boardId: 'sswcd', name: 'Anganwadi Recruitment', category: 'STATE', description: 'Prepare for Supervisor, Worker and Helper posts in SSWCD Punjab.', totalFullMocks: 15, totalPyqs: 3, iconUrl: anganwadiLogo },
     { id: 'police-si', boardId: 'punjab-police', name: 'Sub-Inspector (Dist/Armed)', category: 'POLICE', description: 'District and Armed Cadre recruitment for Punjab Police.', totalFullMocks: 30, totalPyqs: 5, iconUrl: policeEmblem },
     { id: 'police-constable', boardId: 'punjab-police', name: 'Constable Recruitment', category: 'POLICE', description: 'Direct recruitment for Constable posts in Punjab Police.', totalFullMocks: 50, totalPyqs: 8, iconUrl: policeEmblem },
     { id: 'ppsc-pcs', boardId: 'ppsc', name: 'PCS Executive Prelims', category: 'CIVIL', description: 'Higher Class A & B services including DSP and Tehsildar posts.', totalFullMocks: 20, totalPyqs: 12, iconUrl: ppscJpg },
