@@ -13,7 +13,8 @@ import {
   LogOut,
   ShieldCheck,
   User,
-  Gem
+  Gem,
+  Share2
 } from "lucide-react";
 import Link from "next/link";
 import { useUser, useAuth } from "@/firebase";
@@ -22,10 +23,11 @@ import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import StudentAvatar from "@/components/brand/StudentAvatar";
 import React from "react";
+import { useToast } from "@/hooks/use-toast";
 
 /**
- * @fileOverview Institutional Dark Sidebar v11.0 (Visibility Hardened).
- * Fixed: Profile section clipping resolved with pt-24 safe-zone.
+ * @fileOverview Institutional Dark Sidebar v12.0.
+ * Refined: Smaller name font, 'View Profile' label, and integrated Share action.
  * Specifications: 290px width, 14px font-size, 46px menu height.
  */
 
@@ -34,11 +36,31 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const { toast } = useToast();
 
   const handleLogout = async () => {
     await signOut(auth);
     onClose();
     router.push('/');
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: 'CRACKLIX | Punjab Exam Hub',
+      text: 'Prepare for Punjab Government Exams with high-fidelity mocks.',
+      url: window.location.origin
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareData.url);
+        toast({ title: "Link Copied", description: "Cracklix link saved to clipboard." });
+      }
+    } catch (err) {
+      // Handle user cancellation silently
+    }
   };
 
   const menuItems = [
@@ -49,13 +71,14 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
     { label: "Previous Papers", href: "/pyqs", icon: FileText },
     { label: "Study Materials", href: "/notes", icon: Library },
     { label: "Daily Analysis", href: "/current-affairs", icon: Newspaper },
+    { label: "Share CRACKLIX", icon: Share2, onClick: handleShare },
     { label: "Ask Arsh Grewal", href: "/contact", icon: MessageCircleQuestion },
   ];
 
   return (
     <div className="flex flex-col h-full bg-[#0F172A] text-white overflow-y-auto no-scrollbar font-body w-full select-none">
       
-      {/* 1. PROFILE NODE (Institutional Dark - Increased pt for visibility) */}
+      {/* 1. PROFILE NODE (Institutional Dark) */}
       <div className="bg-[#0B1528] px-6 pt-24 pb-10 flex flex-col gap-8 relative overflow-hidden border-b border-white/5 shrink-0">
         <div className="absolute top-0 right-0 p-8 opacity-5"><ShieldCheck className="h-40 w-40" /></div>
         
@@ -71,7 +94,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
            </div>
            
            <div className="flex-1 min-w-0 text-left">
-              <h2 className="text-2xl font-black text-white leading-none mb-2 uppercase tracking-tight truncate">
+              <h2 className="text-xl font-black text-white leading-tight mb-2 uppercase tracking-tight">
                  {profile?.name || "Aspirant Node"}
               </h2>
               <div className="flex items-center gap-2">
@@ -89,7 +112,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
         >
           <div className="flex items-center gap-3">
              <User className="h-4 w-4 text-primary" />
-             <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-300">Registry Profile</span>
+             <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-300">View Profile</span>
           </div>
           <ChevronRight className="h-4 w-4 text-slate-500 group-hover:text-primary transition-all" />
         </Link>
@@ -99,16 +122,9 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
       <div className="flex flex-col py-6">
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
-          return (
-            <Link 
-              key={item.label}
-              href={item.href}
-              onClick={onClose}
-              className={cn(
-                "flex items-center justify-between px-6 h-[46px] transition-all group border-l-4",
-                isActive ? "bg-primary/10 border-primary" : "hover:bg-white/5 border-transparent"
-              )}
-            >
+          
+          const content = (
+            <>
               <div className="flex items-center gap-5">
                  <item.icon className={cn(
                    "h-5 w-5 shrink-0 transition-all",
@@ -127,6 +143,32 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                   {item.badge}
                 </span>
               )}
+            </>
+          );
+
+          if (item.onClick) {
+            return (
+              <button 
+                key={item.label}
+                onClick={() => { item.onClick!(); onClose(); }}
+                className="flex items-center justify-between px-6 h-[46px] transition-all group border-l-4 border-transparent hover:bg-white/5"
+              >
+                {content}
+              </button>
+            )
+          }
+
+          return (
+            <Link 
+              key={item.label}
+              href={item.href || '#'}
+              onClick={onClose}
+              className={cn(
+                "flex items-center justify-between px-6 h-[46px] transition-all group border-l-4",
+                isActive ? "bg-primary/10 border-primary" : "hover:bg-white/5 border-transparent"
+              )}
+            >
+              {content}
             </Link>
           )
         })}
