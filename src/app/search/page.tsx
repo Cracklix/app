@@ -15,9 +15,8 @@ import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Global Search Hub v4.0 (Performance Optimized).
- * TARGET: Sub-50ms registry filtering with fuzzy matching.
- * AUDIT: Unified results for Mocks, PYQs, Exams, and Analysis nodes.
+ * @fileOverview Elite Global Search Hub v5.0.
+ * UPDATED: Removed Strategic Analysis matching logic.
  */
 
 export default function SearchPage() {
@@ -41,10 +40,9 @@ function SearchContent() {
   // Aggregate Registry Nodes
   const { data: mocks, loading: mLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]))
   const { data: exams, loading: eLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
-  const { data: ca, loading: cLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "current_affairs") : null), [db]))
   const { data: notes, loading: nLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "notes") : null), [db]))
 
-  const isLoading = mLoading || eLoading || cLoading || nLoading;
+  const isLoading = mLoading || eLoading || nLoading;
 
   const results = useMemo(() => {
     if (query.trim().length < 2) return []
@@ -60,18 +58,13 @@ function SearchContent() {
       m.boardId?.toLowerCase().includes(term)
     ).map(m => ({ title: m.title, type: "Mock Series", href: `/mocks/${m.id}`, icon: <Zap className="text-orange-500" /> }))
 
-    const caMatches = (ca || []).filter(c => 
-      c.title?.toLowerCase().includes(term) || 
-      c.category?.toLowerCase().includes(term)
-    ).map(c => ({ title: c.title, type: "Strategic Analysis", href: `/current-affairs`, icon: <Newspaper className="text-emerald-500" /> }))
-
     const notesMatches = (notes || []).filter(n => 
        n.title?.toLowerCase().includes(term) || 
        n.subjectId?.toLowerCase().includes(term)
     ).map(n => ({ title: n.title, type: "PDF Blueprint", href: `/notes`, icon: <FileText className="text-blue-500" /> }))
 
-    return [...examMatches, ...mockMatches, ...caMatches, ...notesMatches]
-  }, [query, exams, mocks, ca, notes])
+    return [...examMatches, ...mockMatches, ...notesMatches]
+  }, [query, exams, mocks, notes])
 
   return (
     <div className="min-h-screen bg-slate-50/30 font-body">
@@ -141,7 +134,6 @@ function SearchContent() {
                        <div className="flex flex-wrap gap-3">
                           <SearchBadge label="Agniveer Hub" />
                           <SearchBadge label="Master Cadre" />
-                          <SearchBadge label="Analysis Feed" />
                           <SearchBadge label="Pass Registry" />
                           <SearchBadge label="State Ranks" />
                           <SearchBadge label="Audit Queue" />

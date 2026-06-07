@@ -5,6 +5,11 @@ import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { FileText, Scale, AlertCircle, ShieldAlert } from "lucide-react"
 
+/**
+ * @fileOverview Institutional Terms v2.0.
+ * UPDATED: Removed Analysis articles from IP policy.
+ */
+
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-slate-50/50">
@@ -30,7 +35,7 @@ export default function TermsPage() {
              <section className="space-y-4">
                 <h2 className="text-2xl font-headline font-black text-[#0F172A] uppercase">2. Content Integrity</h2>
                 <p className="text-slate-600 leading-relaxed font-medium">
-                   All MCQs, analysis articles, and rationalizations are copyrighted intellectual property of Arsh Grewal Management. Unauthorized reproduction or commercial redistribution is strictly prohibited.
+                   All MCQs, rationalizations, and study notes are copyrighted intellectual property of Arsh Grewal Management. Unauthorized reproduction or commercial redistribution is strictly prohibited.
                 </p>
              </section>
 

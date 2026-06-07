@@ -10,8 +10,8 @@ import { useMemo } from "react";
 import ShareButton from "@/components/navigation/ShareButton";
 
 /**
- * @fileOverview Final Institutional Footer Node v7.0.
- * Updated: Streamlined branding to avoid repetition while maintaining founder credits.
+ * @fileOverview Final Institutional Footer Node v8.0.
+ * Updated: Removed Daily Analysis from links.
  */
 
 export default function Footer() {
@@ -74,8 +74,8 @@ export default function Footer() {
             <h4 className="font-headline font-black text-xs uppercase tracking-[0.2em] text-slate-500 mb-8">Resources</h4>
             <ul className="space-y-4 text-slate-300 font-bold text-sm">
               <li><Link href="/mocks" className="hover:text-primary transition-colors">Free Mock Tests</Link></li>
-              <li><Link href="/current-affairs" className="hover:text-primary transition-colors">Daily Analysis</Link></li>
               <li><Link href="/pyqs" className="hover:text-primary transition-colors">Previous Year Papers</Link></li>
+              <li><Link href="/notes" className="hover:text-primary transition-colors">Study Notes</Link></li>
               <li><Link href="/about" className="hover:text-primary transition-colors">Origin Story</Link></li>
             </ul>
           </div>

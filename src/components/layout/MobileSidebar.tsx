@@ -8,7 +8,6 @@ import {
   Target, 
   Library, 
   MessageCircleQuestion, 
-  Newspaper, 
   ChevronRight,
   LogOut,
   ShieldCheck,
@@ -18,7 +17,8 @@ import {
   MessageCircle,
   Mail,
   MessageSquare,
-  X
+  X,
+  Shield
 } from "lucide-react";
 import Link from "next/link";
 import { useUser, useAuth } from "@/firebase";
@@ -32,10 +32,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Institutional Dark Sidebar v13.0.
- * UPDATED: Reduced name font size for full visibility.
- * UPDATED: Functional Share Hub with WhatsApp, SMS, and Gmail options.
- * Specifications: 290px width, 14px font-size, 46px menu height.
+ * @fileOverview Institutional Dark Sidebar v14.0.
+ * UPDATED: Removed Daily Analysis per management audit.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -83,7 +81,6 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
     { label: "Test Series", href: "/mocks", icon: Zap },
     { label: "Previous Papers", href: "/pyqs", icon: FileText },
     { label: "Study Materials", href: "/notes", icon: Library },
-    { label: "Daily Analysis", href: "/current-affairs", icon: Newspaper },
     { label: "Share CRACKLIX", icon: Share2, onClick: () => setIsShareOpen(true) },
     { label: "Ask Arsh Grewal", href: "/contact", icon: MessageCircleQuestion },
   ];
@@ -261,3 +258,4 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
     </>
   );
 }
+

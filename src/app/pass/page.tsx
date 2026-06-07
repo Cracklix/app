@@ -15,8 +15,8 @@ import { useMemo } from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Cracklix Pass Hub.
- * Directly mirrors Admin config for pricing and features.
+ * @fileOverview Cracklix Pass Hub v2.0.
+ * UPDATED: Removed daily analysis from pass benefits text.
  */
 export default function PassPage() {
   const db = useFirestore()
@@ -129,7 +129,7 @@ export default function PassPage() {
                  <h2 className="text-4xl md:text-7xl font-headline font-black uppercase leading-[0.85] tracking-tighter">Your Success <br/> Is Waiting.</h2>
               </div>
               <p className="text-lg md:text-2xl text-slate-400 font-medium leading-relaxed max-w-2xl antialiased">
-                 Every cracklix pass provides full access to the official exam lists and daily strategic analysis.
+                 Every cracklix pass provides full access to the official exam lists and verified mock series.
               </p>
               <div className="flex flex-col sm:row items-center gap-6 pt-6">
                  <Button asChild className="w-full sm:w-auto h-16 md:h-20 px-12 md:px-20 bg-primary text-white hover:bg-orange-600 rounded-[2rem] font-black uppercase tracking-[0.3em] text-[11px] shadow-3xl border-none">

@@ -18,8 +18,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Free Content CMS v3.0.
- * Features: Slug Generation, SEO Metadata, and High-Fidelity Dialog UI.
+ * @fileOverview Institutional Free Content CMS v4.0.
+ * UPDATED: Removed Strategic News category from ingestion.
  */
 
 export default function AdminFreeContent() {
@@ -92,7 +92,7 @@ export default function AdminFreeContent() {
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Free Content Master Registry</span>
            </div>
           <h1 className="text-5xl font-black font-headline text-[#0F172A] uppercase tracking-tight leading-none">Free Hub CMS</h1>
-          <p className="text-slate-500 mt-2 text-lg font-medium">Coordinate high-fidelity Mocks, PDFs, and News for the public feed.</p>
+          <p className="text-slate-500 mt-2 text-lg font-medium">Coordinate high-fidelity Mocks and PDFs for the public feed.</p>
         </div>
         <Button onClick={() => setEditingItem({ title: "", description: "", slug: "", type: "pdf", link: "", fileUrl: "" })} className="bg-primary hover:bg-orange-600 gap-3 h-16 px-10 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl transition-all active:scale-95">
           <Plus className="h-5 w-5" /> Initialize Free Content
@@ -136,7 +136,7 @@ export default function AdminFreeContent() {
                        )}>
                           {item.type === 'mock' ? <Zap className="h-6 w-6" /> : 
                            item.type === 'pdf' ? <FileText className="h-6 w-6" /> : 
-                           item.type === 'current' ? <TrendingUp className="h-6 w-6" /> : <FileStack className="h-6 w-6" />}
+                           <FileStack className="h-6 w-6" />}
                        </div>
                        <div>
                           <p className="font-black text-[#0F172A] text-xl uppercase tracking-tight leading-none">{item.title}</p>
@@ -170,13 +170,13 @@ export default function AdminFreeContent() {
       </Card>
 
       <Dialog open={!!editingItem} onOpenChange={(open) => !open && setEditingItem(null)}>
-        <DialogContent className="sm:max-w-xl rounded-[3rem] bg-white border-none shadow-4xl p-0 overflow-hidden text-left">
-          <div className="h-2 w-full bg-[#0F172A]" />
+        <DialogContent className="sm:max-w-xl rounded-[3rem] bg-white border-none shadow-4xl p-0 overflow-hidden text-left flex flex-col">
+          <div className="h-2 w-full bg-[#0F172A] shrink-0" />
           <DialogHeader className="p-10 pb-0">
             <DialogTitle className="text-3xl font-black font-headline uppercase text-[#0F172A]">Free Asset Registry</DialogTitle>
           </DialogHeader>
           
-          <div className="p-10 space-y-6">
+          <div className="p-10 space-y-6 overflow-y-auto">
             <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Asset Headline</Label>
               <Input value={editingItem?.title || ""} onChange={e => setEditingItem({...editingItem, title: e.target.value})} className="h-14 rounded-xl border-slate-100 font-black text-lg text-[#0F172A]" />
@@ -198,7 +198,6 @@ export default function AdminFreeContent() {
                 <select value={editingItem?.type} onChange={e => setEditingItem({...editingItem, type: e.target.value})} className="w-full h-14 bg-slate-50 border-none rounded-xl px-4 font-black uppercase text-[10px] outline-none">
                   <option value="mock">FREE MOCK</option>
                   <option value="pdf">BLUEPRINT PDF</option>
-                  <option value="current">STRATEGIC NEWS</option>
                   <option value="pyq">OFFICIAL PYQ</option>
                   <option value="note">STUDY NOTE</option>
                 </select>

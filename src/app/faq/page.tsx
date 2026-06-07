@@ -11,6 +11,11 @@ import {
 } from "@/components/ui/accordion"
 import { HelpCircle, ShieldCheck, Sparkles, BookOpen, GraduationCap } from "lucide-react"
 
+/**
+ * @fileOverview Institutional FAQ Hub v2.0.
+ * UPDATED: Removed Daily Analysis question.
+ */
+
 const FAQS = [
   {
     q: "Are the mock tests updated as per upcoming exams?",
@@ -29,8 +34,8 @@ const FAQS = [
     a: "Absolutely. Our CBT engine features a 'Bilingual Toggle' on the top-bar, allowing you to switch between English and Punjabi for every question instantly."
   },
   {
-    q: "How often is the Daily Analysis updated?",
-    a: "Strategic news and state governance updates are pushed to the 'Analysis Feed' every morning by 8:00 AM, verified by Arsh Grewal management."
+    q: "Can I access the platform on my mobile?",
+    a: "Yes, Cracklix is fully optimized for mobile browsers and also offers a native application for Android and iOS devices for seamless learning."
   }
 ]
 

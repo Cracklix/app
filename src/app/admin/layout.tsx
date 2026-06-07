@@ -39,6 +39,11 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/co
 import { Button } from "@/components/ui/button";
 import BackButton from "@/components/navigation/BackButton";
 
+/**
+ * @fileOverview Admin Layout v8.0.
+ * UPDATED: Removed Analysis Feed from Content Sections.
+ */
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useUser()
   const auth = useAuth()
@@ -100,7 +105,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <AdminNavItem icon={<FileStack className="text-blue-500" />} label="PYQ Repository" href="/admin/pyqs" active={pathname === "/admin/pyqs"} />
               <AdminNavItem icon={<FileText className="text-rose-400" />} label="Study Notes" href="/admin/notes" active={pathname === "/admin/notes"} />
               <AdminNavItem icon={<Sparkles className="text-amber-400" />} label="Free Hub CMS" href="/admin/free-content" active={pathname === "/admin/free-content"} />
-              <AdminNavItem icon={<Newspaper className="text-emerald-500" />} label="Analysis Feed" href="/admin/current-affairs" active={pathname === "/admin/current-affairs"} />
               <AdminNavItem icon={<Bell className="text-orange-500" />} label="Exam Gazette" href="/admin/notifications" active={pathname === "/admin/notifications"} />
             </SidebarMenu>
           </SidebarGroup>

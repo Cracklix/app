@@ -11,8 +11,8 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 
 /**
- * @fileOverview Final Cracklix Pass Center (Phase 156).
- * Tiered monetization gateway for Punjab Government aspirants.
+ * @fileOverview Final Cracklix Pass Center (Phase 157).
+ * UPDATED: Removed Daily Analysis from plan features.
  */
 
 const PLANS = [
@@ -24,9 +24,9 @@ const PLANS = [
     desc: "Start your journey with verified patterns.",
     features: [
       "10 Free Mocks (PSSSB/Police)",
-      "Daily Analysis Feed",
       "Public Exam Calendar",
-      "Limited PYQ Previews"
+      "Limited PYQ Previews",
+      "Bilingual Engine Support"
     ],
     icon: <Zap className="h-6 w-6 text-slate-400" />
   },
@@ -38,10 +38,10 @@ const PLANS = [
     desc: "Targeted subject mastery for state exams.",
     features: [
       "All Subject-wise Mocks",
-      "Detailed Daily Analysis",
       "All Official PYQs (PDF)",
       "Performance Dashboard",
-      "Bilingual Support Node"
+      "Bilingual Support Node",
+      "Regional Rank Index"
     ],
     icon: <ShieldCheck className="h-6 w-6 text-blue-500" />
   },
@@ -88,7 +88,7 @@ export default function PricingPage() {
         <div className="text-center space-y-8 mb-20">
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Badge className="bg-primary/10 text-primary border-none px-6 py-2 rounded-full font-black uppercase text-[10px] tracking-[0.2em] mb-6 shadow-sm">
-                 Monetization Node v1.0
+                 Monetization Node v1.1
               </Badge>
               <h1 className="text-6xl md:text-8xl font-headline font-black text-[#0F172A] tracking-tight uppercase leading-[0.9]">
                  Select Your <br/> <span className="text-primary">Cracklix Pass</span>

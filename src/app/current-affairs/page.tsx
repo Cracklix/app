@@ -34,15 +34,14 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 
 /**
- * @fileOverview Institutional Free Hub v5.0 - Gagan Pratap Inspired.
- * Features: Live Rankers Podium, Slug-Based Test Launchers, and Category Grids.
+ * @fileOverview Institutional Free Hub v6.0.
+ * UPDATED: Removed Analysis category from the hub.
  */
 
 const CATEGORIES = [
   { id: "all", label: "All Hubs", icon: <Globe className="h-6 w-6" />, color: "bg-blue-50 text-blue-600" },
   { id: "mock", label: "Free Mocks", icon: <Zap className="h-6 w-6" />, color: "bg-orange-50 text-primary" },
   { id: "pdf", label: "Blueprints", icon: <FileText className="h-6 w-6" />, color: "bg-emerald-50 text-emerald-600" },
-  { id: "current", label: "Analysis", icon: <TrendingUp className="h-6 w-6" />, color: "bg-purple-50 text-purple-600" },
   { id: "pyq", label: "Official PYQ", icon: <FileStack className="h-6 w-6" />, color: "bg-rose-50 text-rose-600" }
 ]
 
@@ -117,7 +116,7 @@ export default function FreeContentHub() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
              {/* LEFT: CONTENT HUB */}
              <div className="lg:col-span-8 space-y-12">
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                    {CATEGORIES.map(cat => (
                      <button 
                       key={cat.id}
