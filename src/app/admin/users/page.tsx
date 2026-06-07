@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useState } from "react"
@@ -7,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Search, MoreVertical, ShieldCheck, Trash2, Gift, Gem, RefreshCw, XCircle, User as UserIcon, Calendar, MapPin, Mail, Phone, GraduationCap, Unlock } from "lucide-react"
+import { Search, MoreVertical, ShieldCheck, Trash2, Gift, Gem, RefreshCw, XCircle, User as UserIcon, Calendar, MapPin, Mail, Phone, GraduationCap, Unlock, Zap } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection, query, doc, updateDoc, serverTimestamp, deleteDoc, addDoc } from "firebase/firestore"
@@ -33,8 +32,8 @@ import { cn } from "@/lib/utils"
 import React from "react"
 
 /**
- * @fileOverview Student Registry v11.0 - Manual Pass & Test Controls.
- * Fixed: Label import added to prevent ReferenceError.
+ * @fileOverview Student Registry v12.0 - Manual Pass & Test Controls.
+ * Added: Pass unlock everything logic and granular test access.
  */
 export default function AspirantsManagement() {
   const db = useFirestore()
@@ -46,6 +45,7 @@ export default function AspirantsManagement() {
   const [grantPlanId, setGrantPlanId] = useState("")
   const [grantDuration, setGrantDuration] = useState("30")
   const [selectedUser, setSelectedUser] = useState<any>(null)
+  const [isProcessing, setIsProcessing] = useState(false)
 
   const usersQuery = useMemo(() => (db ? query(collection(db, 'users')) : null), [db])
   const { data: aspirants, loading } = useCollection<any>(usersQuery)
@@ -66,6 +66,7 @@ export default function AspirantsManagement() {
     const selectedPass = passes?.find(p => p.id === grantPlanId)
     if (!selectedPass) return
 
+    setIsProcessing(true)
     const days = parseInt(grantDuration) || 30
     const expiryDate = new Date()
     expiryDate.setDate(expiryDate.getDate() + days)
@@ -93,6 +94,25 @@ export default function AspirantsManagement() {
        setGrantDialogUser(null)
     } catch (e: any) {
        toast({ variant: "destructive", title: "Grant Failed" })
+    } finally {
+       setIsProcessing(false)
+    }
+  }
+
+  const handleUnlockEverything = async (userId: string) => {
+    if (!db) return;
+    const expiry = new Date();
+    expiry.setFullYear(expiry.getFullYear() + 1); // 1 year access
+
+    try {
+       await updateDoc(doc(db, "users", userId), {
+          status: 'PREMIUM',
+          passExpiryDate: expiry.toISOString(),
+          updatedAt: serverTimestamp()
+       });
+       toast({ title: "Master Unlock Activated", description: "Aspirant now has access to every mock vertical." });
+    } catch (e) {
+       toast({ variant: "destructive", title: "Unlock Failed" });
     }
   }
 
@@ -102,7 +122,7 @@ export default function AspirantsManagement() {
         <div>
            <div className="flex items-center gap-3 mb-2">
               <ShieldCheck className="h-6 w-6 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Student List</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Student Registry</span>
            </div>
           <h1 className="text-5xl font-headline font-black text-primary uppercase tracking-tight">Student Hub</h1>
           <p className="text-slate-600 mt-1 font-medium">Monitoring {aspirants?.length || 0} student identities and access tiers.</p>
@@ -123,7 +143,7 @@ export default function AspirantsManagement() {
                 <TableHead className="px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Student</TableHead>
                 <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Contact & Target</TableHead>
                 <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Current Status</TableHead>
-                <TableHead className="text-right px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Edit</TableHead>
+                <TableHead className="text-right px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -160,8 +180,11 @@ export default function AspirantsManagement() {
                           <DropdownMenuItem onClick={() => setGrantDialogUser(aspirant)} className="rounded-xl px-4 py-3 gap-3 focus:bg-primary/20 text-primary">
                              <Gem className="h-4 w-4" /> Grant Premium Pass
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleUnlockEverything(aspirant.id)} className="rounded-xl px-4 py-3 gap-3 focus:bg-emerald-500/20 text-emerald-400">
+                             <Unlock className="h-4 w-4" /> Pass Unlock Everything
+                          </DropdownMenuItem>
                           <DropdownMenuItem className="rounded-xl px-4 py-3 gap-3 focus:bg-blue-500/20 text-blue-400">
-                             <Unlock className="h-4 w-4" /> Unlock Specific Test
+                             <Zap className="h-4 w-4" /> Unlock Specific Test
                           </DropdownMenuItem>
                           <DropdownMenuSeparator className="bg-white/5 my-2" />
                           <DropdownMenuItem onClick={async () => { if(confirm("Permanently delete this student?")) await deleteDoc(doc(db!, "users", aspirant.id)) }} className="rounded-xl px-4 py-3 gap-3 text-rose-500">
@@ -198,8 +221,8 @@ export default function AspirantsManagement() {
                </div>
             </div>
             <DialogFooter>
-               <Button onClick={handleGrantPass} className="w-full bg-primary hover:bg-orange-600 h-14 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-2xl">
-                  Authorize Pass Access
+               <Button onClick={handleGrantPass} disabled={isProcessing} className="w-full bg-primary hover:bg-orange-600 h-14 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-2xl">
+                  {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : "Authorize Pass Access"}
                </Button>
             </DialogFooter>
          </DialogContent>

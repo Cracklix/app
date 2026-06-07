@@ -1,7 +1,31 @@
 'use client';
 
 import { SidebarProvider, Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { LayoutDashboard, Database, LogOut, ShieldCheck, Zap, Globe, Menu, HeartPulse, Settings, Users, CreditCard, ShieldAlert, History, User, Loader2 } from "lucide-react"
+import { 
+  LayoutDashboard, 
+  Database, 
+  LogOut, 
+  ShieldCheck, 
+  Zap, 
+  Globe, 
+  Menu, 
+  HeartPulse, 
+  Settings, 
+  Users, 
+  CreditCard, 
+  ShieldAlert, 
+  History, 
+  User, 
+  Loader2,
+  FileText,
+  FileStack,
+  Newspaper,
+  Megaphone,
+  Layers,
+  Sparkles,
+  SearchCode,
+  Bell
+} from "lucide-react"
 import Link from "next/link"
 import Logo from "@/components/brand/Logo"
 import { useUser, useAuth } from "@/firebase"
@@ -13,8 +37,8 @@ import { Button } from "@/components/ui/button";
 import BackButton from "@/components/navigation/BackButton";
 
 /**
- * @fileOverview Administrative Security Node.
- * Audits user identity before granting entry.
+ * @fileOverview Administrative Security Node v5.0.
+ * Restored all management functions for full institutional control.
  */
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -63,27 +87,36 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <AdminNavItem icon={<LayoutDashboard />} label="Dashboard" href="/admin" active={pathname === "/admin"} />
               <AdminNavItem icon={<HeartPulse className="text-rose-400" />} label="System Health" href="/admin/health" active={pathname === "/admin/health"} />
               <AdminNavItem icon={<Globe className="text-blue-400" />} label="Authority Hub" href="/admin/exams" active={pathname === "/admin/exams"} />
+              <AdminNavItem icon={<Layers className="text-amber-500" />} label="Exam Registry" href="/admin/exam-registry" active={pathname === "/admin/exam-registry"} />
               <AdminNavItem icon={<Database />} label="Question Bank" href="/admin/questions" active={pathname === "/admin/questions"} />
+              <AdminNavItem icon={<SearchCode className="text-emerald-400" />} label="Subject Hub" href="/admin/subjects" active={pathname === "/admin/subjects"} />
             </SidebarMenu>
           </SidebarGroup>
 
           <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Test Control</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Content Hubs</SidebarGroupLabel>
             <SidebarMenu>
               <AdminNavItem icon={<Zap className="text-primary" />} label="Mock Manager" href="/admin/mocks" active={pathname === "/admin/mocks"} />
+              <AdminNavItem icon={<FileStack className="text-blue-500" />} label="PYQ Repository" href="/admin/pyqs" active={pathname === "/admin/pyqs"} />
+              <AdminNavItem icon={<FileText className="text-rose-400" />} label="Study Notes" href="/admin/notes" active={pathname === "/admin/notes"} />
+              <AdminNavItem icon={<Sparkles className="text-amber-400" />} label="Free Hub CMS" href="/admin/free-content" active={pathname === "/admin/free-content"} />
+              <AdminNavItem icon={<Newspaper className="text-emerald-500" />} label="Analysis Feed" href="/admin/current-affairs" active={pathname === "/admin/current-affairs"} />
+              <AdminNavItem icon={<Bell className="text-orange-500" />} label="Exam Gazette" href="/admin/notifications" active={pathname === "/admin/notifications"} />
             </SidebarMenu>
           </SidebarGroup>
 
           <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Payments</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Financials</SidebarGroupLabel>
             <SidebarMenu>
+              <AdminNavItem icon={<Gem className="text-primary" />} label="Pass Manager" href="/admin/passes" active={pathname === "/admin/passes"} />
               <AdminNavItem icon={<CreditCard className="text-emerald-400" />} label="All Payments" href="/admin/payments" active={pathname === "/admin/payments"} />
               <AdminNavItem icon={<ShieldCheck className="text-blue-400" />} label="Verify UPI" href="/admin/payments/verify" active={pathname === "/admin/payments/verify"} />
+              <AdminNavItem icon={<Megaphone className="text-pink-400" />} label="Ad Manager" href="/admin/ads" active={pathname === "/admin/ads"} />
             </SidebarMenu>
           </SidebarGroup>
 
           <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Users & Logs</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Governance</SidebarGroupLabel>
             <SidebarMenu>
               <AdminNavItem icon={<Users className="text-blue-400" />} label="Student List" href="/admin/users" active={pathname === "/admin/users"} />
               <AdminNavItem icon={<ShieldAlert className="text-rose-500" />} label="Content Reports" href="/admin/reports" active={pathname === "/admin/reports"} />

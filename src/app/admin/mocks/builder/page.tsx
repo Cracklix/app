@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -34,7 +33,7 @@ import {
   EyeOff
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
-import { collection, doc, setDoc, serverTimestamp, query, where, limit, getDocs } from "firebase/firestore"
+import { collection, doc, setDoc, serverTimestamp, query, where, limit, getDocs, documentId } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { MockType, Difficulty, AccessType, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
@@ -64,7 +63,7 @@ function MockBuilderContent() {
   const mockId = searchParams.get("id")
   const isEditing = !!mockId
 
-  const { data: existingMock } = useDoc<any>(useMemo(() => (db && mockId ? doc(db, "mocks", mockId) : null), [db, mockId]))
+  const { data: existingMock, loading: mockLoading } = useDoc<any>(useMemo(() => (db && mockId ? doc(db, "mocks", mockId) : null), [db, mockId]))
   const { data: boards } = useCollection<any>(useMemo(() => (db ? query(collection(db, "boards")) : null), [db]))
   const { data: exams } = useCollection<any>(useMemo(() => (db ? query(collection(db, "exams")) : null), [db]))
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? query(collection(db, "subjects")) : null), [db]))
@@ -128,31 +127,44 @@ function MockBuilderContent() {
   }, [db])
 
   useEffect(() => {
-    if (existingMock && questionBank.length > 0) {
+    async function hydrateExistingMock() {
+      if (!existingMock || questionBank.length === 0 || !db) return;
+
       setMockData(prev => ({ 
         ...prev, 
         ...existingMock,
         languageMode: existingMock.languageMode || "ENGLISH_PUNJABI"
       }));
 
-      if (existingMock.sections && existingMock.sections.length > 0) {
+      // Hydrate questions for each section
+      if (existingMock.sections && existingMock.sections.length > 0 && existingMock.questionIds) {
+        let currentIndex = 0;
+        const qIds = existingMock.questionIds;
+        
         const hydratedSections = existingMock.sections.map((s: any, idx: number) => {
-          const qIds = existingMock.questionIds?.slice(
-            existingMock.sections.slice(0, idx).reduce((acc: number, curr: any) => acc + curr.count, 0),
-            existingMock.sections.slice(0, idx + 1).reduce((acc: number, curr: any) => acc + curr.count, 0)
-          ) || [];
+          const sectionQIds = qIds.slice(currentIndex, currentIndex + s.count);
+          currentIndex += s.count;
           
           return {
             id: `sec-${idx + 1}`,
             name: s.name,
-            questions: questionBank.filter(q => qIds.includes(q.id))
+            questions: questionBank.filter(q => sectionQIds.includes(q.id))
           };
         });
+        
         setSections(hydratedSections);
         if (hydratedSections[0]) setActiveSectionId(hydratedSections[0].id);
+      } else if (existingMock.questionIds) {
+        // Fallback for flat mocks without sections
+        setSections([{
+           id: 'sec-1',
+           name: 'Main Assessment',
+           questions: questionBank.filter(q => existingMock.questionIds.includes(q.id))
+        }]);
       }
     }
-  }, [existingMock, questionBank])
+    hydrateExistingMock();
+  }, [existingMock, questionBank, db])
 
   const filteredBank = useMemo(() => {
     const allSelectedIds = sections.flatMap(s => s.questions.map(q => q.id));
@@ -224,7 +236,7 @@ function MockBuilderContent() {
         <div className="flex items-center gap-6">
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl border bg-white h-12 w-12 shadow-sm"><ChevronLeft className="h-6 w-6" /></Button>
           <div className="text-left">
-            <h1 className="text-4xl font-black font-headline uppercase tracking-tight text-[#0F172A]">Mock Architect</h1>
+            <h1 className="text-4xl font-black font-headline uppercase tracking-tight text-[#0F172A]">{isEditing ? "Modify Mock" : "Mock Architect"}</h1>
             <p className="text-[10px] uppercase font-black tracking-[0.2em] text-slate-400 mt-1">Design High-Fidelity Test Series</p>
           </div>
         </div>
