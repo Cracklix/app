@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useExamStore } from '@/store/useExamStore';
@@ -24,8 +23,8 @@ const ALL_LANG_MODES: { label: string, value: LanguageDisplayMode }[] = [
 ];
 
 /**
- * @fileOverview Institutional CBT Header v23.0.
- * UPDATED: Removed Exam Name per user request to match high-fidelity screenshot.
+ * @fileOverview Institutional CBT Header v24.0.
+ * MATCHED: Strictly aligns with the user screenshot (Orange Palette button, Dark Icon buttons).
  */
 export default function ExamHeader({ 
   onPaletteToggle, 
@@ -55,7 +54,7 @@ export default function ExamHeader({
 
   return (
     <header className="bg-[#0B1528] text-white flex flex-col shrink-0 z-[100] border-b border-white/5 shadow-lg">
-      <div className="h-14 md:h-16 flex items-center justify-between px-2 md:px-6">
+      <div className="h-14 md:h-18 flex items-center justify-between px-2 md:px-6 py-2">
         
         {/* LEFT: BACK & PROGRESS */}
         <div className="flex items-center gap-2 md:gap-4 shrink-0 min-w-0 flex-1">
@@ -88,12 +87,12 @@ export default function ExamHeader({
            />
         </div>
 
-        {/* RIGHT: ACTIONS HUB */}
+        {/* RIGHT: ACTIONS HUB (Screenshot Match) */}
         <div className="flex items-center justify-end gap-1.5 md:gap-4 shrink-0 flex-1">
            {availableModes.length > 1 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                   <button className="h-9 w-9 md:h-11 md:w-11 bg-white/5 text-white hover:bg-white/10 border border-white/10 rounded-xl transition-all active:scale-95 flex items-center justify-center">
+                   <button className="h-10 w-10 md:h-12 md:w-12 bg-white/5 text-white hover:bg-white/10 border border-white/10 rounded-xl transition-all active:scale-95 flex items-center justify-center shadow-xl">
                       <Languages className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                    </button>
                 </DropdownMenuTrigger>
@@ -116,17 +115,16 @@ export default function ExamHeader({
 
            <button 
              onClick={() => setPaused(!isPaused)}
-             className="h-9 w-9 md:h-11 md:w-11 bg-white/5 text-white hover:bg-white/10 shrink-0 border border-white/10 rounded-xl active:scale-95 flex items-center justify-center"
+             className="h-10 w-10 md:h-12 md:w-12 bg-white/5 text-white hover:bg-white/10 shrink-0 border border-white/10 rounded-xl active:scale-95 flex items-center justify-center shadow-xl"
            >
              {isPaused ? <Play className="h-4 w-4 md:h-5 md:w-5 fill-current text-primary" /> : <Pause className="h-4 w-4 md:h-5 md:w-5 fill-current" />}
            </button>
            
            <button 
              onClick={onPaletteToggle}
-             className="bg-primary hover:bg-orange-600 h-9 w-9 md:h-12 md:px-6 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center shadow-xl transition-all active:scale-95 border-none"
+             className="bg-[#F97316] hover:bg-orange-600 text-white h-10 md:h-12 px-3 md:px-6 rounded-xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center shadow-xl shadow-orange-500/20 transition-all active:scale-95 border-none"
            >
-              <Menu className="h-4 w-4 md:mr-2" />
-              <span className="hidden md:inline">Palette</span>
+              <span className="inline">PALETTE</span>
            </button>
         </div>
       </div>

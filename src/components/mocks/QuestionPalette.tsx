@@ -17,9 +17,8 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Institutional CBT Palette Hub v24.0.
- * FIXED: Anti-squash layout for legend cards.
- * FIXED: pt-24 padding to prevent top-clipping on mobile.
+ * @fileOverview Institutional CBT Palette Hub v25.0.
+ * MATCHED: Strictly aligns with screenshot (Rounded Cards, Specific Status Colors, Orange Bullet Headers).
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const questions = useExamStore(s => s.questions);
@@ -59,10 +58,10 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
   return (
     <div className="flex flex-col h-full bg-white text-left font-body select-none pointer-events-auto overflow-hidden">
       <ScrollArea className="h-full">
-        {/* Anti-Clipping padding for mobile headers - calibrated to pt-24 */}
+        {/* Anti-Clipping padding calibrated for screenshot visibility */}
         <div className="p-3 md:p-8 pt-24 md:pt-28 space-y-8 md:space-y-10 pb-32">
            
-           {/* 1. HIGH-FIDELITY LEGEND HUB - Optimized for 65vw width */}
+           {/* 1. STATUS LEGEND HUB (Screenshot Match) */}
            <div className="grid grid-cols-2 gap-2 md:gap-4">
               <SummaryCard count={stats.answered} label="ANSWERED" color="bg-[#1E5EFF]" />
               <SummaryCard count={stats.notAnswered} label="NOT ANSWERED" color="bg-[#94A3B8]" />
@@ -71,15 +70,15 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
               <SummaryCard count={stats.ansMarked} label="ANS & MARKED" color="bg-[#6366F1]" colSpan={2} />
            </div>
 
-           <div className="h-px w-full bg-slate-50" />
+           <div className="h-px w-full bg-slate-100" />
 
-           {/* 2. SECTIONAL GRIDS WITH BULLET HEADERS */}
+           {/* 2. SECTIONAL GRIDS WITH ORANGE BULLETS */}
            <div className="space-y-10 md:space-y-12">
               {sections.map((section, sIdx) => (
                 <div key={sIdx} className="space-y-5 md:space-y-6">
                    <div className="flex items-center gap-3">
-                      <div className="h-2.5 w-2.5 rounded-full bg-[#F97316] shrink-0" />
-                      <h4 className="text-[10px] md:text-xs font-black uppercase text-[#0F172A] tracking-wider leading-tight">
+                      <div className="h-3 w-3 rounded-full bg-[#F97316] shrink-0 shadow-sm" />
+                      <h4 className="text-[10px] md:text-xs font-[900] uppercase text-[#0F172A] tracking-wider leading-tight">
                          {section.name}
                       </h4>
                    </div>
@@ -99,14 +98,14 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
               ))}
            </div>
 
-           {/* 3. TACTICAL SUBMIT BUTTON */}
-           <div className="pt-4">
+           {/* 3. SUBMIT NODE */}
+           <div className="pt-6">
               <Button 
                 onClick={(e) => {
                    e.preventDefault();
                    onSubmit();
                 }}
-                className="w-full h-16 bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase tracking-[0.2em] text-[10px] md:text-[11px] rounded-2xl shadow-xl shadow-emerald-900/10 gap-3 group transition-all active:scale-95 border-none"
+                className="w-full h-16 bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-xl shadow-emerald-900/20 gap-3 group transition-all active:scale-95 border-none"
               >
                  <ShieldCheck className="h-5 w-5 group-hover:scale-110 transition-transform" /> SUBMIT TEST
               </Button>
@@ -120,10 +119,10 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
 function SummaryCard({ count, label, color, textColor = "text-white", colSpan = 1, border = "border-transparent" }: any) {
   return (
     <div className={cn(
-      "flex items-center gap-2 md:gap-4 p-2.5 md:p-4 rounded-[1.25rem] md:rounded-[1.5rem] bg-white border border-slate-100 shadow-xl",
+      "flex items-center gap-3 p-3 md:p-4 rounded-2xl md:rounded-[2rem] bg-white border border-slate-100 shadow-2xl",
       colSpan > 1 && "col-span-2"
     )}>
-       <div className={cn("h-9 w-9 md:h-11 md:w-11 rounded-full flex items-center justify-center text-sm md:text-base font-black shrink-0 shadow-lg border-[3px] border-white", color, textColor, border)}>
+       <div className={cn("h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center text-sm md:text-lg font-black shrink-0 shadow-lg border-[3px] border-white", color, textColor, border)}>
           {count}
        </div>
        <div className="min-w-0">
@@ -139,25 +138,25 @@ function QuestionNode({ index, isActive, status, isVisited, onClick }: any) {
   const isAnsMarked = status === 'answered-marked';
   
   const colorClass = isActive 
-    ? "bg-white text-[#F97316] border-[#F97316] border-[3px] shadow-lg scale-105 z-10" 
-    : isAnswered ? "bg-[#1E5EFF] text-white border-transparent"
-    : isMarked ? "bg-[#F43F5E] text-white border-transparent"
-    : isAnsMarked ? "bg-[#6366F1] text-white border-transparent"
-    : isVisited ? "bg-[#94A3B8] text-white border-transparent"
-    : "bg-white text-[#94A3B8] border-slate-100";
+    ? "bg-white text-[#F97316] border-[#F97316] border-[3px] shadow-xl scale-105 z-10" 
+    : isAnswered ? "bg-[#1E5EFF] text-white border-transparent shadow-md"
+    : isMarked ? "bg-[#F43F5E] text-white border-transparent shadow-md"
+    : isAnsMarked ? "bg-[#6366F1] text-white border-transparent shadow-md"
+    : isVisited ? "bg-[#94A3B8] text-white border-transparent shadow-md"
+    : "bg-white text-[#94A3B8] border-slate-100 shadow-sm";
 
   return (
     <button
       onClick={onClick}
       className={cn(
-        "relative aspect-square rounded-xl flex items-center justify-center font-black text-[14px] md:text-[16px] transition-all border shadow-sm shrink-0 active:scale-90 w-full cursor-pointer",
+        "relative aspect-square rounded-xl flex items-center justify-center font-black text-[14px] md:text-[18px] transition-all border shrink-0 active:scale-90 w-full cursor-pointer",
         colorClass
       )}
     >
       {index + 1}
       {isAnsMarked && (
-        <div className="absolute -top-1.5 -right-1.5 h-3.5 w-3.5 md:h-4 md:w-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center shadow-md">
-           <CheckCircle2 className="h-2 w-2 md:h-2.5 md:w-2.5 text-white" />
+        <div className="absolute -top-1.5 -right-1.5 h-4 w-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center shadow-lg">
+           <CheckCircle2 className="h-2.5 w-2.5 text-white" />
         </div>
       )}
     </button>
