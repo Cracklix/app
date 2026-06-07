@@ -18,8 +18,8 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @file Overview High-Density Responsive Exam Catalog v3.9.
- * Optimized: Unified Institutional Logo Protocol with PSSSB SVG support.
+ * @file Overview High-Density Responsive Exam Catalog v4.0.
+ * Fixed: Removed crossOrigin="anonymous" to allow government domain logos to load.
  */
 
 export default function ExamsCatalog() {
@@ -142,7 +142,6 @@ function CatalogContent() {
                                   className="w-full h-full object-contain p-1.5 md:p-2" 
                                   alt="Logo" 
                                   referrerPolicy="no-referrer" 
-                                  crossOrigin="anonymous"
                                   onError={() => setFailedImages(p => ({...p, [exam.id]: true}))}
                                 />
                              ) : (

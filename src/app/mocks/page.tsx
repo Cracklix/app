@@ -28,9 +28,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Final Exam Gateway Node.
- * Updated: Real-time aggregation for Full Mocks, Subjects, PYQs, and Sectionals.
- * Purged: Fake numbering and hardcoded multipliers.
+ * @file Overview Final Exam Gateway Node v4.5.
+ * Fixed: Robust board logo lookup and removed crossOrigin lock for government domains.
  */
 
 export default function MocksGatewayPage() {
@@ -97,7 +96,12 @@ export default function MocksGatewayPage() {
            {examsLoading || mocksLoading ? (
              Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-[450px] w-full rounded-[3.5rem]" />)
            ) : exams?.sort((a: any, b: any) => a.name.localeCompare(b.name)).map((exam: any) => {
-             const board = boards?.find(b => b.id === exam.boardId)
+             const board = boards?.find((b: any) => 
+               b.id.toLowerCase() === exam.boardId?.toLowerCase() || 
+               b.abbreviation?.toLowerCase() === exam.boardId?.toLowerCase()
+             );
+             
+             const logoUrl = board?.iconUrl || exam.iconUrl;
              const stats = statsMap[exam.id] || { full: 0, pyq: 0, sectional: 0, subjects: new Set() };
              const isImgFailed = failedImages[exam.id];
 
@@ -107,11 +111,11 @@ export default function MocksGatewayPage() {
                       <CardContent className="p-10 flex flex-col h-full">
                          <div className="flex justify-between items-start mb-10">
                             <div className="h-20 w-20 rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all group-hover:shadow-xl shadow-inner relative overflow-hidden shrink-0">
-                               {board?.iconUrl && !isImgFailed ? (
+                               {logoUrl && !isImgFailed ? (
                                   <img 
-                                    src={board.iconUrl} 
+                                    src={logoUrl} 
                                     referrerPolicy="no-referrer"
-                                    alt={board.abbreviation || 'Board'} 
+                                    alt={board?.abbreviation || 'Board'} 
                                     className="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-110" 
                                     onError={() => setFailedImages(p => ({...p, [exam.id]: true}))}
                                   />

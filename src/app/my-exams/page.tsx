@@ -29,8 +29,8 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional "My Exams" Dashboard v4.0.
- * Optimized: Full visibility protocol for official SVGs (PSSSB).
+ * @file Overview Institutional "My Exams" Dashboard v4.1.
+ * Fixed: Removed crossOrigin and hardened board logo lookup for 100% visibility.
  */
 
 export default function MyExamsPage() {
@@ -121,7 +121,6 @@ export default function MyExamsPage() {
                                 src={logoUrl} 
                                 className="w-full h-full object-contain p-1" 
                                 referrerPolicy="no-referrer" 
-                                crossOrigin="anonymous"
                                 alt={exam.name} 
                                 onError={() => setFailedImages(p => ({...p, [exam.id]: true}))}
                               />
