@@ -8,8 +8,8 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
 /**
- * @fileOverview Elite CBT Global Store v30.0 (Production Hardened).
- * FIXED: Improved setPaused parameter handling and timer tick stability.
+ * @fileOverview Elite CBT Global Store v31.0 (Production Hardened).
+ * UPDATED: Strict language compatibility audit on initialization.
  */
 
 interface ExamStore extends AttemptState {
@@ -73,6 +73,15 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const timeLeft = Math.max(0, Math.floor((finalEndTime - now) / 1000));
     const finalBaseMode = languageMode || 'ENGLISH_PUNJABI';
 
+    // LANGUAGE COMPATIBILITY AUDIT
+    let initialLang = (state.language && state.language !== '') ? (state.language as string) : finalBaseMode;
+    
+    if (finalBaseMode === 'ENGLISH_PUNJABI' && initialLang.includes('HINDI')) {
+      initialLang = 'ENGLISH_PUNJABI';
+    } else if (finalBaseMode === 'ENGLISH_HINDI' && initialLang.includes('PUNJABI')) {
+      initialLang = 'ENGLISH_HINDI';
+    }
+
     set({
       mockId,
       mockTitle,
@@ -80,7 +89,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       questions,
       timeLeft,
       baseLanguageMode: finalBaseMode,
-      language: (state.language && state.language !== '') ? state.language : finalBaseMode, 
+      language: initialLang as LanguageDisplayMode, 
       startTime: isStale ? now : (savedState?.startTime || now),
       endTime: finalEndTime,
       answers: isStale ? {} : (savedState?.answers || {}),

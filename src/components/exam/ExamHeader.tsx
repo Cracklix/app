@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useExamStore } from '@/store/useExamStore';
@@ -24,8 +23,8 @@ const ALL_LANG_MODES: { label: string, value: LanguageDisplayMode }[] = [
 ];
 
 /**
- * @fileOverview Production-Grade CBT Header v27.0.
- * FIXED: Mobile overlap issues and strict timer-synchronization logic.
+ * @fileOverview Production-Grade CBT Header v28.0.
+ * UPDATED: Strict language mode filtering to prevent cross-hub leaks.
  */
 export default function ExamHeader({ 
   onPaletteToggle, 
@@ -44,12 +43,19 @@ export default function ExamHeader({
   const setLanguage = useExamStore(s => s.setLanguage);
 
   const availableModes = useMemo(() => {
+    // If exam is En+Pa, strictly forbid Hindi
     if (baseLanguageMode === 'ENGLISH_PUNJABI') {
       return ALL_LANG_MODES.filter(m => ['ENGLISH', 'PUNJABI', 'ENGLISH_PUNJABI'].includes(m.value));
     }
+    // If exam is En+Hi, strictly forbid Punjabi
     if (baseLanguageMode === 'ENGLISH_HINDI') {
       return ALL_LANG_MODES.filter(m => ['ENGLISH', 'HINDI', 'ENGLISH_HINDI'].includes(m.value));
     }
+    // Single language modes
+    if (baseLanguageMode === 'ENGLISH') return ALL_LANG_MODES.filter(m => m.value === 'ENGLISH');
+    if (baseLanguageMode === 'PUNJABI') return ALL_LANG_MODES.filter(m => m.value === 'PUNJABI');
+    if (baseLanguageMode === 'HINDI') return ALL_LANG_MODES.filter(m => m.value === 'HINDI');
+    
     return ALL_LANG_MODES.filter(m => m.value === baseLanguageMode);
   }, [baseLanguageMode]);
 

@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils";
 import { LanguageDisplayMode } from "@/types";
 
 /**
- * @fileOverview Testbook-Style Entrance Hub v5.0.
- * UPDATED: Removed "Bilingual" term from buttons as requested.
+ * @fileOverview Testbook-Style Entrance Hub v6.0.
+ * UPDATED: Strict language mode filtering for English/Punjabi vs English/Hindi.
  */
 export default function InstructionsPage() {
   const params = useParams();
@@ -37,8 +37,11 @@ export default function InstructionsPage() {
   const availableLangs = useMemo(() => {
     if (!mock?.languageMode) return [];
     const mode = mock.languageMode;
+    
+    // Strict isolation rules
     if (mode === 'ENGLISH_PUNJABI') return ['ENGLISH', 'PUNJABI', 'ENGLISH_PUNJABI'];
     if (mode === 'ENGLISH_HINDI') return ['ENGLISH', 'HINDI', 'ENGLISH_HINDI'];
+    
     if (mode === 'ENGLISH') return ['ENGLISH'];
     if (mode === 'PUNJABI') return ['PUNJABI'];
     if (mode === 'HINDI') return ['HINDI'];
