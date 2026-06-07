@@ -38,7 +38,7 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import ShareButton from "@/components/navigation/ShareButton"
 
 /**
- * @fileOverview Student Dashboard Hub v8.0.
+ * @fileOverview Student Dashboard.
  * Simplified Language: Replaced technical jargon with clear words.
  */
 
@@ -129,7 +129,7 @@ export default function StudentDashboard() {
 
               {/* METRICS */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-                 <MetricNode label="READINESS SCORE" val={`${stats.readiness}%`} icon={<TrendingUp className="text-primary h-4 w-4" />} />
+                 <MetricNode label="PREPARATION SCORE" val={`${stats.readiness}%`} icon={<TrendingUp className="text-primary h-4 w-4" />} />
                  <MetricNode label="AVG ACCURACY" val={`${stats.avgAccuracy}%`} icon={<Target className="text-emerald-500 h-4 w-4" />} />
                  <MetricNode label="TESTS DONE" val={stats.total} icon={<ClipboardList className="text-blue-500 h-4 w-4" />} />
                  <MetricNode label="TIME SPENT" val={stats.hours} icon={<Clock className="text-amber-500 h-4 w-4" />} />
@@ -202,7 +202,7 @@ export default function StudentDashboard() {
                  <DashboardTile icon={<Bookmark className="text-primary" />} label="SAVED ITEMS" href="/revision" />
                  <DashboardTile icon={<Trophy className="text-amber-500" />} label="RANKINGS" href="/leaderboard" />
                  <DashboardTile icon={<LayoutGrid className="text-blue-500" />} label="ALL EXAMS" href="/exams" />
-                 <DashboardTile icon={<Activity className="text-emerald-500" />} label="MY ANALYSIS" href="/analytics" />
+                 <DashboardTile icon={<Activity className="text-emerald-500" />} label="MY PERFORMANCE" href="/analytics" />
               </div>
 
               <Card className="border-none shadow-xl bg-white p-10 rounded-[3rem] text-left space-y-8 border border-slate-100">
@@ -250,7 +250,7 @@ function MetricNode({ label, val, icon }: any) {
 function DashboardTile({ icon, label, href }: any) {
    return (
       <Link href={href} className="block active:scale-95 transition-all">
-         <Card className="border-none shadow-lg bg-white p-6 md:p-8 rounded-[2.5rem] flex flex-col items-center gap-4 group hover:shadow-2xl border border-slate-50">
+         <Card className="border-none shadow-lg bg-white p-6 md:p-8 rounded-[2.5rem] flex flex-col items-center gap-4 group hover:shadow-2xl border border-slate-100">
             <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-primary/5 transition-all">
                {icon}
             </div>

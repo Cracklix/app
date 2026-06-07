@@ -32,7 +32,7 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite "My Exams" Live Hub v7.0.
+ * @file Overview My Exams Dashboard.
  * PERFORMANCE: Moved sorting client-side to bypass Firestore composite index requirements.
  */
 
@@ -83,7 +83,7 @@ export default function MyExamsPage() {
   if (userLoading) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-6">
        <Zap className="h-12 w-12 text-primary animate-spin" />
-       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Syncing Mastery Hub...</p>
+       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Syncing Dashboard...</p>
     </div>
   )
 
@@ -93,28 +93,28 @@ export default function MyExamsPage() {
       
       <main className="container mx-auto px-4 py-6 md:py-12 max-w-6xl space-y-12">
         
-        {/* HEADER: ELITE NODES */}
+        {/* HEADER */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 text-left">
            <div className="space-y-3">
               <div className="flex items-center gap-3">
                  <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-inner">
                     <Target className="h-6 w-6" />
                  </div>
-                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Institutional Dashboard</span>
+                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">My Dashboard</span>
               </div>
               <h1 className="text-4xl md:text-7xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-none">MY <span className="text-primary">EXAMS</span></h1>
-              <p className="text-sm md:text-xl text-slate-400 font-medium max-w-xl">Strategic overview of your selected recruitment verticals.</p>
+              <p className="text-sm md:text-xl text-slate-400 font-medium max-w-xl">Overview of your selected exam categories.</p>
            </div>
            <Button asChild className="h-16 px-10 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-4xl gap-3">
-              <Link href="/exams"><LayoutGrid className="h-5 w-5" /> Add Master Hub</Link>
+              <Link href="/exams"><LayoutGrid className="h-5 w-5" /> Add Exam Hub</Link>
            </Button>
         </div>
 
-        {/* PINNED HUBS: LIVE DETECTION */}
+        {/* PINNED HUBS */}
         <section className="space-y-6">
            <div className="flex items-center justify-between px-2">
               <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-3">
-                 <Star className="h-4 w-4 text-amber-500 fill-current" /> Pinned Mastery Nodes
+                 <Star className="h-4 w-4 text-amber-500 fill-current" /> Pinned Exams
               </h3>
            </div>
            
@@ -144,11 +144,11 @@ export default function MyExamsPage() {
                                 <GraduationCap className="h-8 w-8 text-slate-200" />
                               )}
                            </div>
-                           <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black uppercase px-3 py-1 rounded-lg">REGISTRY HUB</Badge>
+                           <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black uppercase px-3 py-1 rounded-lg">EXAM HUB</Badge>
                         </div>
                         <h4 className="font-black text-xl text-[#0F172A] uppercase leading-tight flex-1 mb-2">{exam.name}</h4>
                         <div className="flex items-center justify-between pt-6 border-t border-slate-50 mt-6">
-                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{board?.abbreviation || 'GOVT'} Authority</p>
+                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{board?.abbreviation || 'GOVT'} Board</p>
                            <ChevronRight className="h-5 w-5 text-slate-200 group-hover:text-primary transition-all group-hover:translate-x-1" />
                         </div>
                       </Card>
@@ -160,21 +160,21 @@ export default function MyExamsPage() {
                        <Sparkles className="h-10 w-10" />
                     </div>
                     <div className="space-y-2">
-                       <p className="text-xl font-headline font-black text-[#0F172A] uppercase">Mastery Nodes Empty</p>
-                       <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">Pin recruitment hubs to track them instantly.</p>
+                       <p className="text-xl font-headline font-black text-[#0F172A] uppercase">No Pinned Exams</p>
+                       <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">Pin your exams to track them instantly.</p>
                     </div>
                     <Button asChild className="bg-[#0F172A] hover:bg-black rounded-xl h-12 px-10 font-black uppercase text-[10px] tracking-widest shadow-xl">
-                       <Link href="/exams">Browse Hub Registry</Link>
+                       <Link href="/exams">Browse All Exams</Link>
                     </Button>
                  </Card>
               )}
            </div>
         </section>
 
-        {/* RECENT ACTIVITY: CHRONOLOGICAL */}
+        {/* RECENT ACTIVITY */}
         <section className="space-y-6">
            <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-3 px-2">
-              <History className="h-4 w-4" /> Activity Trajectory
+              <History className="h-4 w-4" /> Recent Tests
            </h3>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {attemptsLoading ? (
@@ -200,26 +200,26 @@ export default function MyExamsPage() {
                  </Link>
               )) : (
                 <div className="col-span-full py-16 text-center bg-white rounded-[3rem] border border-slate-100 shadow-sm opacity-30 italic">
-                   <p className="font-black uppercase tracking-[0.3em] text-[10px]">Awaiting your first evaluation attempt.</p>
+                   <p className="font-black uppercase tracking-[0.3em] text-[10px]">No recent test results.</p>
                 </div>
               )}
            </div>
         </section>
 
-        {/* CTA: STRATEGIC GROWTH */}
+        {/* CTA */}
         <section className="bg-gradient-to-br from-[#0B1528] to-[#0F172A] rounded-[4rem] p-10 md:p-20 text-white relative overflow-hidden shadow-5xl text-left border border-white/5">
            <div className="absolute top-0 right-0 p-16 opacity-10 rotate-12 group-hover:scale-110 transition-transform"><Award className="h-80 w-80" /></div>
            <div className="relative z-10 space-y-10 max-w-2xl">
               <div className="space-y-4">
-                 <Badge className="bg-primary text-white border-none px-4 py-1 rounded-full font-black uppercase text-[10px] tracking-widest shadow-2xl shadow-primary/20">ELITE REGISTRY ENABLED</Badge>
-                 <h2 className="text-4xl md:text-7xl font-headline font-black uppercase leading-[0.85] tracking-tighter">Your Future <br/> Node is Active.</h2>
+                 <Badge className="bg-primary text-white border-none px-4 py-1 rounded-full font-black uppercase text-[10px] tracking-widest shadow-2xl shadow-primary/20">ELITE PASS ENABLED</Badge>
+                 <h2 className="text-4xl md:text-7xl font-headline font-black uppercase leading-[0.85] tracking-tighter">Your Future <br/> Success is Waiting.</h2>
               </div>
               <p className="text-base md:text-2xl text-slate-400 font-medium leading-relaxed antialiased">
-                 Every mastery pass node includes 24/7 access to the official PSSSB registry and real-time current affairs verification. Fix your logic gaps today.
+                 Get full access to all practice tests and real-time exam updates. Improve your logic and score higher today.
               </p>
               <div className="flex flex-col sm:row items-center gap-4">
                  <Button asChild className="w-full sm:w-auto bg-primary hover:bg-orange-600 text-white font-black uppercase text-[11px] tracking-[0.2em] h-16 px-12 rounded-2xl shadow-5xl transition-all active:scale-95 border-none">
-                    <Link href="/mocks">Explore All Hubs <Zap className="ml-3 h-4 w-4 fill-current" /></Link>
+                    <Link href="/mocks">Browse All Tests <Zap className="ml-3 h-4 w-4 fill-current" /></Link>
                  </Button>
                  <Button asChild variant="ghost" className="text-slate-400 hover:text-white uppercase font-black text-[10px] tracking-widest">
                     <Link href="/pass">Upgrade Account</Link>

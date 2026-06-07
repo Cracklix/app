@@ -41,9 +41,8 @@ import { useState } from "react";
 import ShareButton from "@/components/navigation/ShareButton";
 
 /**
- * @fileOverview Institutional Mobile Sidebar v8.0.
- * Matched to provided screenshot: HOME, MY EXAMS, PRACTICE SERIES, etc.
- * Features: Live Ranker Status and Bold Typography.
+ * @fileOverview Student Mobile Sidebar.
+ * Features: Easy language and Bold Typography.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -60,7 +59,6 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
     router.push('/login');
   };
 
-  // Primary Menu mapped to Screenshot Icons/Labels
   const primaryMenu = [
     { label: "HOME", href: "/", icon: Home },
     { label: "MY EXAMS", href: "/my-exams", icon: Target },
@@ -73,8 +71,8 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex flex-col h-full bg-white text-[#0F172A] overflow-hidden font-body w-full">
       
-      {/* 1. PROFILE HEADER: Real Data Sync */}
-      <div className="px-6 pt-10 pb-8 bg-[#0B1528] relative overflow-hidden shrink-0">
+      {/* 1. PROFILE HEADER */}
+      <div className="px-6 pt-10 pb-8 bg-[#0B1528] relative overflow-hidden shrink-0 text-left">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-3xl rounded-full" />
         
         <button 
@@ -92,7 +90,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
           <div className="space-y-2 text-left">
             <div className="flex items-center justify-between gap-3 overflow-hidden">
               <h2 className="font-headline font-black text-xl text-white uppercase tracking-tight truncate flex-1">
-                {profile?.name || "Aspirant"}
+                {profile?.name || "Student"}
               </h2>
               <Badge className="bg-primary text-white border-none text-[8px] font-black uppercase px-2 py-0.5 rounded-sm shrink-0 shadow-lg">
                 {profile?.status?.toUpperCase() || 'FREE'} PASS
@@ -109,7 +107,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      {/* 2. MENU LIST: Matched to Screenshot */}
+      {/* 2. MENU LIST */}
       <div className="flex-1 overflow-y-auto custom-scrollbar py-4">
         <div className="space-y-0.5">
           {primaryMenu.map((item) => (
@@ -125,13 +123,13 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
 
           {/* Account Sub-menu */}
           <CollapsibleGroup 
-            label="ACCOUNT CONTROLS" 
+            label="MY ACCOUNT" 
             isOpen={isAccountOpen} 
             onToggle={setIsAccountOpen}
           >
             <MenuLink item={{ label: "PASS HUB", href: "/pass", icon: Gem }} active={pathname === '/pass'} onClick={onClose} indent />
             <MenuLink item={{ label: "NOTIFICATIONS", href: "/notifications", icon: Bell }} active={pathname === '/notifications'} onClick={onClose} indent />
-            <MenuLink item={{ label: "SUPPORT HUB", href: "/contact", icon: Phone }} active={pathname === '/contact'} onClick={onClose} indent />
+            <MenuLink item={{ label: "CONTACT US", href: "/contact", icon: Phone }} active={pathname === '/contact'} onClick={onClose} indent />
             
             <button 
               onClick={handleLogout}
@@ -142,7 +140,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
             </button>
           </CollapsibleGroup>
 
-          {/* Social / Share */}
+          {/* Share */}
           <div className="px-8 mt-4">
              <ShareButton 
                className="w-full h-14 bg-slate-50 border-none shadow-none text-slate-500 hover:bg-primary hover:text-white rounded-2xl" 
@@ -152,13 +150,13 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      {/* 3. FIXED BRANDING FOOTER */}
+      {/* 3. FOOTER */}
       <div className="px-6 py-6 border-t border-slate-100 bg-slate-50 flex flex-col items-center gap-1 shrink-0">
          <p className="text-[9px] font-black text-[#0F172A] uppercase tracking-[0.2em] flex items-center gap-2">
             <UserIcon className="h-3 w-3 text-primary" /> Developed by Arsh Grewal
          </p>
          <p className="text-[7px] font-bold text-slate-400 uppercase tracking-[0.3em]">
-            Official Exam Registry Node 2026
+            Official Platform 2026
          </p>
       </div>
     </div>

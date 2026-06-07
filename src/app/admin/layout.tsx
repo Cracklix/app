@@ -1,3 +1,4 @@
+
 'use client';
 
 import { SidebarProvider, Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
@@ -14,8 +15,8 @@ import BackButton from "@/components/navigation/BackButton";
 import { Loader2 } from "lucide-react";
 
 /**
- * @fileOverview Master Administrative Security Node.
- * PROTECTS: Strictly audits user identity and role before granting entry to content registries.
+ * @fileOverview Administrative Security Node.
+ * Audits user identity before granting entry.
  */
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -46,7 +47,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (loading) return (
     <div className="h-screen w-full bg-[#0F172A] flex flex-col items-center justify-center space-y-6">
        <ShieldCheck className="h-12 w-12 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500">Auditing Authority Node...</p>
+       <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500">Checking Access...</p>
     </div>
   )
   
@@ -64,32 +65,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <AdminNavItem icon={<LayoutDashboard />} label="Dashboard" href="/admin" active={pathname === "/admin"} />
               <AdminNavItem icon={<HeartPulse className="text-rose-400" />} label="System Health" href="/admin/health" active={pathname === "/admin/health"} />
               <AdminNavItem icon={<Globe className="text-blue-400" />} label="Authority Hub" href="/admin/exams" active={pathname === "/admin/exams"} />
-              <AdminNavItem icon={<Database />} label="Atomic Bank" href="/admin/questions" active={pathname === "/admin/questions"} />
+              <AdminNavItem icon={<Database />} label="Question Bank" href="/admin/questions" active={pathname === "/admin/questions"} />
             </SidebarMenu>
           </SidebarGroup>
 
           <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Mock Control</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Test Control</SidebarGroupLabel>
             <SidebarMenu>
               <AdminNavItem icon={<Zap className="text-primary" />} label="Mock Manager" href="/admin/mocks" active={pathname === "/admin/mocks"} />
             </SidebarMenu>
           </SidebarGroup>
 
           <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Monetization</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Payments</SidebarGroupLabel>
             <SidebarMenu>
-              <AdminNavItem icon={<CreditCard className="text-emerald-400" />} label="Payments" href="/admin/payments" active={pathname === "/admin/payments"} />
+              <AdminNavItem icon={<CreditCard className="text-emerald-400" />} label="All Payments" href="/admin/payments" active={pathname === "/admin/payments"} />
               <AdminNavItem icon={<ShieldCheck className="text-blue-400" />} label="Verify UPI" href="/admin/payments/verify" active={pathname === "/admin/payments/verify"} />
             </SidebarMenu>
           </SidebarGroup>
 
           <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Student & Audit</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Users & Logs</SidebarGroupLabel>
             <SidebarMenu>
-              <AdminNavItem icon={<Users className="text-blue-400" />} label="Student Registry" href="/admin/users" active={pathname === "/admin/users"} />
-              <AdminNavItem icon={<ShieldAlert className="text-rose-500" />} label="Audit Queue" href="/admin/reports" active={pathname === "/admin/reports"} />
+              <AdminNavItem icon={<Users className="text-blue-400" />} label="Student List" href="/admin/users" active={pathname === "/admin/users"} />
+              <AdminNavItem icon={<ShieldAlert className="text-rose-500" />} label="Content Reports" href="/admin/reports" active={pathname === "/admin/reports"} />
               <AdminNavItem icon={<History className="text-slate-400" />} label="Audit Trail" href="/admin/audit-logs" active={pathname === "/admin/audit-logs"} />
-              <AdminNavItem icon={<Settings className="text-primary" />} label="Global Settings" href="/admin/settings" active={pathname === "/admin/settings"} />
+              <AdminNavItem icon={<Settings className="text-primary" />} label="Settings" href="/admin/settings" active={pathname === "/admin/settings"} />
             </SidebarMenu>
           </SidebarGroup>
        </div>
@@ -100,7 +101,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <User className="h-4 w-4" />
              </div>
              <div className="text-left">
-                <p className="text-[7px] font-black text-slate-500 uppercase tracking-[0.2em] leading-none mb-1">AUTHORITY NODE</p>
+                <p className="text-[7px] font-black text-slate-500 uppercase tracking-[0.2em] leading-none mb-1">ADMIN LOGIN</p>
                 <p className="text-[11px] font-black text-white uppercase tracking-tight">{profile?.name || 'ADMIN'}</p>
              </div>
           </div>
@@ -134,12 +135,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <SidebarTrigger className="hidden lg:flex text-[#0F172A]" />
               
               <div className="h-4 w-[1px] bg-slate-200 mx-2 hidden md:block" />
-              <BackButton label="Hub Dashboard" fallback="/admin" />
+              <BackButton label="Dashboard" fallback="/admin" />
 
               <div className="h-4 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
               <div className="flex items-center gap-2 truncate">
                  <ShieldCheck className="h-3.5 w-3.5 text-primary shrink-0" />
-                 <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#0F172A] truncate">System Authority Active</span>
+                 <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#0F172A] truncate">Admin Active</span>
               </div>
             </div>
             

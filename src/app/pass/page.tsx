@@ -15,8 +15,8 @@ import { useMemo } from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Final Elite Pass Hub v16.0.
- * Directly mirrors Admin registry configurations for pricing and features.
+ * @fileOverview Cracklix Pass Hub.
+ * Directly mirrors Admin config for pricing and features.
  */
 export default function PassPage() {
   const db = useFirestore()
@@ -38,13 +38,13 @@ export default function PassPage() {
         <div className="text-center space-y-6 mb-16 md:mb-20">
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Badge className="bg-primary/20 text-primary border-primary/30 px-5 py-2 rounded-full font-black uppercase text-[10px] tracking-[0.2em] mb-8 shadow-2xl">
-                 Official Registry 2026
+                 Verified Platform 2026
               </Badge>
               <h1 className="text-4xl md:text-7xl font-headline font-black tracking-tight uppercase leading-[0.9]">
                  UNLOCK YOUR <br/> <span className="text-primary">ELITE PASS</span>
               </h1>
               <p className="text-sm md:text-xl text-slate-400 font-medium max-w-2xl mx-auto mt-8 leading-relaxed">
-                 Access high-fidelity mocks and official pattern rationalizations verified by Arsh Grewal Management.
+                 Access full length mocks and official explanations verified by Arsh Grewal Management.
               </p>
            </motion.div>
         </div>
@@ -52,7 +52,7 @@ export default function PassPage() {
         {loading ? (
            <div className="flex flex-col items-center justify-center py-24 space-y-6">
               <Loader2 className="h-12 w-12 text-primary animate-spin" />
-              <p className="font-black uppercase text-[10px] tracking-[0.4em] text-slate-500">Syncing Registry...</p>
+              <p className="font-black uppercase text-[10px] tracking-[0.4em] text-slate-500">Loading Passes...</p>
            </div>
         ) : (
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch justify-center">
@@ -126,14 +126,14 @@ export default function PassPage() {
            <div className="max-w-3xl relative z-10 space-y-10">
               <div className="flex items-center gap-6">
                  <ShieldCheck className="h-12 w-12 md:h-20 md:w-20 text-primary" />
-                 <h2 className="text-4xl md:text-7xl font-headline font-black uppercase leading-[0.85] tracking-tighter">Your Success <br/> Is Gated.</h2>
+                 <h2 className="text-4xl md:text-7xl font-headline font-black uppercase leading-[0.85] tracking-tighter">Your Success <br/> Is Waiting.</h2>
               </div>
               <p className="text-lg md:text-2xl text-slate-400 font-medium leading-relaxed max-w-2xl antialiased">
-                 Every elite pass node provides 24/7 access to the official PSSSB/PPSC registry and live current affairs rationalizations.
+                 Every cracklix pass provides full access to the official exam lists and daily strategic analysis.
               </p>
-              <div className="flex flex-col sm:flex-row items-center gap-6 pt-6">
+              <div className="flex flex-col sm:row items-center gap-6 pt-6">
                  <Button asChild className="w-full sm:w-auto h-16 md:h-20 px-12 md:px-20 bg-primary text-white hover:bg-orange-600 rounded-[2rem] font-black uppercase tracking-[0.3em] text-[11px] shadow-3xl border-none">
-                    <Link href="/mocks">Explore All Mocks</Link>
+                    <Link href="/mocks">Browse All Tests</Link>
                  </Button>
                  <Link href="/contact" className="text-slate-500 hover:text-white font-black uppercase text-[10px] tracking-widest transition-colors">Inquire for Institute</Link>
               </div>

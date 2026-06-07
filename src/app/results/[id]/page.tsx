@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -33,8 +34,8 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import StudentAvatar from "@/components/brand/StudentAvatar"
 
 /**
- * @fileOverview Production Hardened Result Hub v18.0.
- * FEATURES: Precision rank calculation, percentile efficiency, and robust comparisons.
+ * @fileOverview Test Results Center.
+ * Simplified Language: Replaced technical jargon with easy words.
  */
 
 export default function ResultPage() {
@@ -162,14 +163,14 @@ export default function ResultPage() {
   if (resultsLoading || loadingContent) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-6">
        <Loader2 className="h-12 w-12 text-primary animate-spin" />
-       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Auditing Performance node...</p>
+       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Checking results...</p>
     </div>
   )
 
   if (!sessionData) return (
     <div className="h-screen flex flex-col items-center justify-center bg-slate-50 p-6 space-y-8">
        <Trophy className="h-20 w-20 text-slate-200" />
-       <p className="text-sm font-black text-slate-400 uppercase tracking-widest text-center">Result Node Not Detected</p>
+       <p className="text-sm font-black text-slate-400 uppercase tracking-widest text-center">No Result Found</p>
        <Button asChild className="rounded-2xl h-16 px-12 bg-[#0B1528] text-white font-black uppercase text-[10px] tracking-widest shadow-xl">
           <Link href="/mocks">Back to Mocks</Link>
        </Button>
@@ -190,7 +191,7 @@ export default function ResultPage() {
                     <div className="space-y-4">
                        <div className="flex items-center gap-3">
                           <ShieldCheck className="h-6 w-6 text-primary" />
-                          <Badge className="bg-primary/20 text-primary border-none px-4 py-1.5 rounded-full font-black uppercase text-[9px] tracking-[0.2em] shadow-lg">Certified Rank</Badge>
+                          <Badge className="bg-primary/20 text-primary border-none px-4 py-1.5 rounded-full font-black uppercase text-[9px] tracking-[0.2em] shadow-lg">Final Rank</Badge>
                        </div>
                        <h1 className="text-3xl md:text-5xl lg:text-7xl font-headline font-black uppercase leading-[0.85] tracking-tighter">
                           {sessionData.mockTitle}
@@ -213,23 +214,23 @@ export default function ResultPage() {
                  </div>
 
                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 pt-8">
-                    <HeroMetric label="SCORE" val={`${sessionData.score.toFixed(1)}/${sessionData.totalQuestions}`} sub="Net Points" color="text-primary" />
+                    <HeroMetric label="SCORE" val={`${sessionData.score.toFixed(1)}/${sessionData.totalQuestions}`} sub="Total Marks" color="text-primary" />
                     <HeroMetric label="ACCURACY" val={`${sessionData.accuracy}%`} sub="Precision" color="text-emerald-400" />
-                    <HeroMetric label="CORRECT" val={Math.floor(sessionData.score)} sub="Validated Answers" color="text-emerald-400" />
-                    <HeroMetric label="TIME" val={`${Math.floor(sessionData.timeTaken / 60)}m`} sub="Audit Duration" color="text-blue-400" />
+                    <HeroMetric label="CORRECT" val={Math.floor(sessionData.score)} sub="Correct Answers" color="text-emerald-400" />
+                    <HeroMetric label="TIME" val={`${Math.floor(sessionData.timeTaken / 60)}m`} sub="Test Duration" color="text-blue-400" />
                  </div>
               </CardContent>
            </Card>
 
            <div className="w-full lg:w-80 flex flex-col gap-6">
               <Card className="border-none shadow-2xl rounded-[2.5rem] bg-white p-8 space-y-6">
-                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Management</h3>
+                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Options</h3>
                  <div className="space-y-4">
                     <Button onClick={() => window.print()} className="w-full h-16 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl gap-3">
                        <Download className="h-5 w-5" /> Download Report
                     </Button>
                     <Button variant="outline" asChild className="w-full h-16 border-slate-100 rounded-2xl font-black uppercase text-[10px] tracking-widest text-slate-600">
-                       <Link href={`/mocks/${mockId}/attempt`}><Zap className="h-4 w-4 mr-2" /> Re-Attempt</Link>
+                       <Link href={`/mocks/${mockId}/attempt`}><Zap className="h-4 w-4 mr-2" /> Try Again</Link>
                     </Button>
                  </div>
               </Card>
@@ -282,7 +283,7 @@ export default function ResultPage() {
                           </div>
                           <div className="space-y-3">
                              <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-400 tracking-widest">
-                                <span>Correct nodes</span>
+                                <span>Correct answers</span>
                                 <span>{s.correct} / {s.total}</span>
                              </div>
                              <div className="h-2.5 w-full bg-slate-50 rounded-full overflow-hidden">

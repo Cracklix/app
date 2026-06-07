@@ -46,9 +46,8 @@ import { cn } from "@/lib/utils"
 import React from "react"
 
 /**
- * @fileOverview Student Profile Center v19.0.
- * Fixed: Added missing Skeleton import to prevent ReferenceError.
- * Features: Easy language, Editable Target Board & Email, Fixed Accuracy Icon.
+ * @fileOverview Student Profile Center.
+ * Simplified Language: Easy language, Editable Target Board & Email.
  */
 export default function ProfilePage() {
   const { user, profile, loading } = useUser()
