@@ -49,6 +49,7 @@ import { collection, doc, setDoc, serverTimestamp, query, where, limit, getDocs,
 import { useToast } from "@/hooks/use-toast"
 import { MockType, Difficulty, AccessType, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 const LANGUAGE_MODES: { label: string, value: LanguageDisplayMode }[] = [
   { label: "BILINGUAL (EN+PA)", value: "ENGLISH_PUNJABI" },
@@ -123,8 +124,8 @@ function MockBuilderContent() {
   // Dynamic Subject Filtering Logic: Only show subjects that have questions for this board/exam
   const relevantSubjects = useMemo(() => {
     if (!subjects || !questionBank.length) return [];
-    if (!mockData.boardId && !mockData.examId) return subjects;
-
+    
+    // STRICT FILTER: Only show subjects that have content for the selected Board + Exam Hub
     return subjects.filter((s: any) => {
       return questionBank.some((q: any) => 
         q.subjectId === s.id && 
@@ -487,30 +488,38 @@ function MockBuilderContent() {
                        </div>
                     </div>
 
-                    <div className="mb-8 space-y-4">
-                       <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                          <button 
-                             onClick={() => setBankFilter({...bankFilter, subjectId: 'all'})}
-                             className={cn(
-                                "px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all",
-                                bankFilter.subjectId === 'all' ? "bg-[#0F172A] border-[#0F172A] text-white shadow-lg" : "bg-white border-slate-100 text-slate-400 hover:border-primary/20"
-                             )}
-                          >
-                             All Subjects
-                          </button>
-                          {relevantSubjects.map((s: any) => (
+                    {/* DYNAMIC SCROLLABLE SUBJECT GRID */}
+                    <div className="mb-8">
+                       <ScrollArea className="h-full max-h-48 border border-slate-100 rounded-2xl bg-white p-4 shadow-inner">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
                              <button 
-                               key={s.id}
-                               onClick={() => setBankFilter({...bankFilter, subjectId: s.id})}
-                               className={cn(
-                                  "px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all truncate",
-                                  bankFilter.subjectId === s.id ? "bg-primary border-primary text-white shadow-lg" : "bg-white border-slate-100 text-slate-400 hover:border-primary/20"
-                               )}
+                                onClick={() => setBankFilter({...bankFilter, subjectId: 'all'})}
+                                className={cn(
+                                   "px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all h-12 flex items-center justify-center text-center",
+                                   bankFilter.subjectId === 'all' ? "bg-[#0F172A] border-[#0F172A] text-white shadow-lg" : "bg-white border-slate-100 text-slate-400 hover:border-primary/20"
+                                )}
                              >
-                                {s.name}
+                                All Subjects
                              </button>
-                          ))}
-                       </div>
+                             {relevantSubjects.length > 0 ? relevantSubjects.map((s: any) => (
+                                <button 
+                                  key={s.id}
+                                  onClick={() => setBankFilter({...bankFilter, subjectId: s.id})}
+                                  className={cn(
+                                     "px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all h-12 flex items-center justify-center text-center truncate",
+                                     bankFilter.subjectId === s.id ? "bg-primary border-primary text-white shadow-lg" : "bg-white border-slate-100 text-slate-400 hover:border-primary/20"
+                                  )}
+                                >
+                                   {s.name}
+                                </button>
+                             )) : (
+                                <div className="col-span-full py-8 text-center opacity-20 flex flex-col items-center justify-center gap-2">
+                                   <Filter className="h-4 w-4" />
+                                   <p className="text-[8px] font-black uppercase tracking-widest">Select Authority/Exam to view subjects</p>
+                                </div>
+                             )}
+                          </div>
+                       </ScrollArea>
                     </div>
 
                     <div className="bg-[#0F172A] p-6 rounded-[2rem] mb-8 flex flex-col md:flex-row md:items-center justify-between gap-8 text-white shadow-2xl overflow-hidden shrink-0">
