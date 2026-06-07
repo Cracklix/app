@@ -14,12 +14,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
 /**
- * @fileOverview Institutional PYQ Repository Management v15.0.
+ * @fileOverview Institutional PYQ Repository Management v15.1.
  * Features: Deep Registry Audit and Working PDF integration.
+ * FIXED: Missing Badge import.
  */
 
 export default function AdminPYQManagement() {
