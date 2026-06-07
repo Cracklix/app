@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { motion } from "framer-motion";
 import { ChevronRight, BookOpen, GraduationCap, ShieldCheck, Zap } from "lucide-react";
 import Link from "next/link";
@@ -8,24 +8,37 @@ import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, limit } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils";
 
 /**
  * @fileOverview High-Density Exam Hub Catalog.
- * Optimized for mobile viewport with reduced vertical spacing and compact cards.
+ * Optimized: Only displays exams with verified logos to maintain visual quality.
  */
 
 export default function PopularExams() {
   const db = useFirestore()
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
   
   const examsQuery = useMemo(() => {
     if (!db) return null
-    return query(collection(db, "exams"), limit(8))
+    return query(collection(db, "exams"), limit(12))
   }, [db])
 
   const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db])
 
-  const { data: exams, loading } = useCollection<any>(examsQuery)
+  const { data: rawExams, loading } = useCollection<any>(examsQuery)
   const { data: boards } = useCollection<any>(boardsQuery)
+
+  const exams = useMemo(() => {
+    if (!rawExams) return [];
+    // Show only exams that have a verified logo or whose board has a logo
+    return rawExams.filter((exam: any) => {
+      const board = boards?.find(b => b.id === exam.boardId);
+      const hasLogo = exam.iconUrl || board?.iconUrl;
+      const isFailed = failedImages[exam.id];
+      return hasLogo && !isFailed;
+    }).slice(0, 8);
+  }, [rawExams, boards, failedImages]);
 
   return (
     <section className="py-8 md:py-16 bg-transparent">
@@ -44,12 +57,15 @@ export default function PopularExams() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
           {loading ? (
              Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-32 md:h-48 w-full rounded-2xl" />)
           ) : exams && exams.length > 0 ? (
             exams.map((exam, idx) => {
               const board = boards?.find(b => b.id === exam.boardId)
+              const logoUrl = exam.iconUrl || board?.iconUrl;
+              const isArmy = exam.boardId?.toLowerCase() === 'army' || exam.id?.toLowerCase().includes('army');
+
               return (
                 <motion.div
                   key={exam.id}
@@ -64,12 +80,13 @@ export default function PopularExams() {
                       
                       <div className="flex items-center gap-4 md:gap-8 relative z-10">
                         <div className="shrink-0 h-14 w-14 md:h-20 md:w-20 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all group-hover:bg-white relative overflow-hidden">
-                           {board?.iconUrl ? (
+                           {logoUrl ? (
                              <img 
-                               src={board.iconUrl} 
-                               className="w-full h-full object-contain p-2 md:p-3 transition-transform duration-500 group-hover:scale-110" 
-                               alt="Logo" 
+                               src={logoUrl} 
+                               className={cn("w-full h-full object-contain p-2 md:p-3 transition-transform duration-500 group-hover:scale-110", isArmy ? "scale-150" : "")} 
+                               alt={exam.name}
                                referrerPolicy="no-referrer"
+                               onError={() => setFailedImages(prev => ({ ...prev, [exam.id]: true }))}
                              />
                            ) : (
                              <GraduationCap className="h-6 w-6 md:h-9 md:w-9 text-slate-300 group-hover:text-primary transition-colors" />
@@ -88,7 +105,7 @@ export default function PopularExams() {
                           <div className="flex items-center gap-4 pt-1">
                              <div className="flex items-center gap-1.5">
                                 <Zap className="h-2.5 w-2.5 md:h-3.5 md:w-3.5 text-primary" />
-                                <span className="text-[8px] md:text-[10px] font-black text-[#0F172A] uppercase">{exam.totalMocks || 0} Tests</span>
+                                <span className="text-[8px] md:text-[10px] font-black text-[#0F172A] uppercase">{exam.totalFullMocks || 0} Tests</span>
                              </div>
                              <div className="flex items-center gap-1.5">
                                 <BookOpen className="h-2.5 w-2.5 md:h-3.5 md:w-3.5 text-primary" />
@@ -105,7 +122,7 @@ export default function PopularExams() {
           ) : (
             <div className="col-span-full py-12 text-center opacity-20 border-2 border-dashed border-slate-100 rounded-2xl">
                <ShieldCheck className="h-10 w-10 mx-auto mb-2" />
-               <p className="font-black uppercase tracking-widest text-[9px]">Syncing Registry...</p>
+               <p className="font-black uppercase tracking-widest text-[9px]">Syncing Registry Hub...</p>
             </div>
           )}
         </div>
