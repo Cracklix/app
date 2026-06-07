@@ -26,8 +26,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 /**
- * @fileOverview Production Hardened CBT Attempt Engine v25.0.
- * FIXED: Granular selectors applied to prevent re-initialization loops during pause/tick.
+ * @fileOverview Production Hardened CBT Attempt Engine v26.0.
+ * FIXED: Duration calculation added to final payload to eliminate NaN errors in results.
  */
 
 export default function MockAttemptPage() {
@@ -55,6 +55,7 @@ export default function MockAttemptPage() {
   const answers = useExamStore(s => s.answers);
   const mockTitle = useExamStore(s => s.mockTitle);
   const setAnswer = useExamStore(s => s.setAnswer);
+  const startTime = useExamStore(s => s.startTime);
 
   useEffect(() => {
     async function loadExam() {
@@ -140,16 +141,20 @@ export default function MockAttemptPage() {
       }
     });
 
+    const now = Date.now();
+    const timeTakenSeconds = Math.round((now - startTime) / 1000);
     const attempted = Object.keys(answers).length;
     const accuracy = attempted > 0 ? Math.max(0, Math.round((score / (attempted * positiveMarks)) * 100)) : 0;
 
     const resultPayload = {
       userId: user.uid,
+      userName: user.displayName || 'Aspirant',
       mockId: mockId,
       mockTitle: mockTitle,
       score: Math.max(0, score),
       totalQuestions: questions.length,
       accuracy,
+      timeTaken: timeTakenSeconds,
       answers: answers,
       timestamp: new Date().toISOString(),
       createdAt: serverTimestamp()
@@ -167,7 +172,7 @@ export default function MockAttemptPage() {
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: resultRef.path, operation: 'create' }));
       setIsSubmittingFinal(false);
     }
-  }, [db, user, isSubmittingFinal, questions, answers, router, toast, mockId, mockTitle, mockData]);
+  }, [db, user, isSubmittingFinal, questions, answers, router, toast, mockId, mockTitle, mockData, startTime]);
 
   if (isInitializing) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-[#0B1528] space-y-8">
