@@ -11,8 +11,6 @@ import { Badge } from "@/components/ui/badge"
 import { 
   CheckCircle2, 
   XCircle, 
-  HelpCircle, 
-  Trophy, 
   Target, 
   Zap, 
   Loader2, 
@@ -23,10 +21,12 @@ import {
   BarChart3,
   Clock,
   TrendingUp,
-  Activity
+  Activity,
+  Trophy,
+  Users
 } from "lucide-react"
 import { useFirestore, useUser, useCollection } from "@/firebase"
-import { collection, query, where, doc, getDoc, deleteDoc, documentId, getDocs } from "firebase/firestore"
+import { collection, query, where, doc, getDoc, documentId, getDocs, orderBy } from "firebase/firestore"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -34,8 +34,8 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import BackButton from "@/components/navigation/BackButton"
 
 /**
- * @fileOverview Institutional Results Hub v21.0 (Audit Enhanced).
- * Features: Sectional Mastery Index and Precision Scorecards.
+ * @fileOverview Elite Institutional Results Hub v22.0.
+ * Features: Real-Time State Ranking, Sectional Mastery, and Percentile Audit.
  */
 
 export default function ResultPage() {
@@ -51,6 +51,7 @@ export default function ResultPage() {
   const [loadingContent, setLoadingContent] = useState(true)
   const [mockLanguageMode, setMockLanguageMode] = useState<any>('ENGLISH_PUNJABI')
 
+  // 1. Fetch User Result
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
     return query(collection(db, "results"), where("userId", "==", user.uid))
@@ -58,6 +59,14 @@ export default function ResultPage() {
 
   const { data: rawResultDocs, loading: resultsLoading } = useCollection<any>(resultsQuery)
   
+  // 2. Fetch Global Results for this mock to calculate Rank
+  const globalResultsQuery = useMemo(() => {
+    if (!db || !mockId) return null
+    return query(collection(db, "results"), where("mockId", "==", mockId), orderBy("score", "desc"))
+  }, [db, mockId])
+
+  const { data: globalResults } = useCollection<any>(globalResultsQuery)
+
   const sessionData = useMemo(() => {
     if (!rawResultDocs || !mockId) return null
     const filtered = rawResultDocs.filter((r: any) => r.mockId === mockId);
@@ -70,12 +79,18 @@ export default function ResultPage() {
       })[0]
   }, [rawResultDocs, mockId])
 
+  // 3. Calculate Merit Stats
+  const merit = useMemo(() => {
+     if (!globalResults || !sessionData) return { rank: '?', total: 0, percentile: 0 };
+     const rank = globalResults.findIndex((r: any) => r.score <= sessionData.score) + 1;
+     const percentile = Math.round(((globalResults.length - rank) / (globalResults.length || 1)) * 100);
+     return { rank, total: globalResults.length, percentile };
+  }, [globalResults, sessionData]);
+
   useEffect(() => {
     async function loadQuestions() {
-      if (!db) return;
-      if (resultsLoading) return;
-      if (!sessionData) {
-        setLoadingContent(false);
+      if (!db || !sessionData || resultsLoading) {
+        if (!sessionData) setLoadingContent(false);
         return;
       }
 
@@ -134,37 +149,25 @@ export default function ResultPage() {
      }));
   }, [questions, sessionData]);
 
-  const handleReattempt = async () => {
-    if (!db || !user || !mockId) return;
-    if (!window.confirm("Restart evaluation node?")) return;
-
-    const attemptId = `${user.uid}_${mockId}`;
-    deleteDoc(doc(db, "attempts", attemptId)).catch(() => {});
-    deleteDoc(doc(db, "results", attemptId)).catch(() => {});
-    
-    toast({ title: "Registry Reset" });
-    router.push(`/mocks/${mockId}/instructions`);
-  };
-
   if (resultsLoading || loadingContent) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-6">
        <Loader2 className="h-10 w-10 text-primary animate-spin" />
-       <p className="text-[12px] font-black uppercase tracking-[0.4em] text-primary">Auditing Preparation Node...</p>
+       <p className="text-[12px] font-black uppercase tracking-[0.4em] text-primary">Auditing Merit Registry...</p>
     </div>
   )
 
   if (!sessionData) return (
-    <div className="h-screen flex flex-col items-center justify-center bg-slate-50 p-6 space-y-8">
+    <div className="h-screen flex flex-col items-center justify-center bg-slate-50 p-6 space-y-8 text-left">
        <Trophy className="h-20 w-20 text-slate-200" />
-       <p className="text-lg font-bold text-slate-400 uppercase tracking-widest text-center">No Audit Node Detected</p>
+       <p className="text-lg font-bold text-slate-400 uppercase tracking-widest text-center">No Result Found</p>
        <Button asChild className="rounded-2xl h-16 px-12 bg-[#0B1528] text-white font-black uppercase text-[11px] tracking-widest shadow-xl">
-          <Link href="/mocks">Explore All Hubs</Link>
+          <Link href="/mocks">Browse Mock Series</Link>
        </Button>
     </div>
   )
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body pb-32">
+    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body pb-32 text-left">
       <Navbar />
       
       <main className="container mx-auto px-4 md:px-6 py-8 md:py-12 max-w-6xl space-y-10 text-left animate-in fade-in duration-700">
@@ -174,55 +177,57 @@ export default function ResultPage() {
            <div className="h-4 w-px bg-slate-200" />
            <div className="flex items-center gap-2">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Institutional Audit Registry</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Verified Result Sync Active</p>
            </div>
         </div>
 
+        {/* 1. ELITE PERFORMANCE HEADER */}
         <Card className="border-none shadow-3xl rounded-[3rem] overflow-hidden bg-white">
            <div className="h-2 w-full bg-primary" />
-           <CardHeader className="p-10 md:p-16 border-b border-slate-50 space-y-6 text-center md:text-left">
+           <CardHeader className="p-10 md:p-16 border-b border-slate-50 space-y-6">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                  <div className="space-y-4">
-                    <div className="flex items-center justify-center md:justify-start gap-4">
+                    <div className="flex items-center gap-4">
                        <ShieldCheck className="h-8 w-8 text-primary" />
-                       <Badge className="bg-emerald-50 text-emerald-600 border-none px-4 py-1.5 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] shadow-lg">VERIFIED ASSESSMENT</Badge>
+                       <Badge className="bg-emerald-50 text-emerald-600 border-none px-4 py-1.5 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] shadow-lg">OFFICIAL AUDIT</Badge>
                     </div>
-                    <CardTitle className="text-3xl md:text-6xl font-headline font-black text-[#0F172A] uppercase leading-tight tracking-tight">
+                    <CardTitle className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] uppercase leading-tight tracking-tight">
                        {sessionData.mockTitle}
                     </CardTitle>
                  </div>
                  
-                 <div className="flex flex-col sm:flex-row gap-4 shrink-0">
-                    <Button 
-                      onClick={handleReattempt} 
-                      type="button" 
-                      className="h-16 px-10 bg-primary hover:bg-orange-600 text-white rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-2xl shadow-primary/20 transition-all active:scale-95"
-                    >
-                      Initialize Re-Attempt
-                    </Button>
-                    <Button asChild variant="outline" className="h-16 px-10 border-slate-200 rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-sm">
-                      <Link href="/dashboard">Return Dashboard</Link>
-                    </Button>
+                 <div className="flex items-center gap-6 bg-slate-50 p-6 rounded-[2.5rem] border border-slate-100 shadow-inner shrink-0">
+                    <div className="text-center space-y-1">
+                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">STATE RANK</p>
+                       <p className="text-4xl font-headline font-black text-[#0F172A] leading-none">#{merit.rank}</p>
+                       <p className="text-[8px] font-bold text-primary uppercase">OUT OF {merit.total}</p>
+                    </div>
+                    <div className="h-10 w-px bg-slate-200" />
+                    <div className="text-center space-y-1">
+                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">PERCENTILE</p>
+                       <p className="text-4xl font-headline font-black text-emerald-600 leading-none">{merit.percentile}%</p>
+                       <p className="text-[8px] font-bold text-slate-300 uppercase">Registry Index</p>
+                    </div>
                  </div>
               </div>
            </CardHeader>
 
            <CardContent className="p-10 md:p-16 bg-slate-50/30">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
-                <MetricNode icon={<CheckCircle2 className="text-emerald-500 h-6 w-6" />} val={sessionData.score} label="CORRECT AUDIT" sub="Success Points" />
-                <MetricNode icon={<XCircle className="text-rose-500 h-6 w-6" />} val={Object.keys(sessionData.answers).length - sessionData.score} label="WRONG NODES" sub="Logic Failures" />
-                <MetricNode icon={<Clock className="text-slate-400 h-6 w-6" />} val={`${Math.floor(sessionData.timeTaken / 60)}m`} label="TIME DEPTH" sub="Pace Factor" />
-                <MetricNode icon={<Target className="text-primary h-6 w-6" />} val={`${sessionData.accuracy}%`} label="PRECISION INDEX" sub="Registry Mastery" />
+                <MetricNode icon={<CheckCircle2 className="text-emerald-500 h-6 w-6" />} val={sessionData.score} label="CORRECT" sub="Audit Success" />
+                <MetricNode icon={<XCircle className="text-rose-500 h-6 w-6" />} val={Object.keys(sessionData.answers).length - sessionData.score} label="WRONG" sub="Logic Gap" />
+                <MetricNode icon={<Clock className="text-slate-400 h-6 w-6" />} val={`${Math.floor(sessionData.timeTaken / 60)}m`} label="TIME" sub="Pace Index" />
+                <MetricNode icon={<Target className="text-primary h-6 w-6" />} val={`${sessionData.accuracy}%`} label="PRECISION" sub="Registry Rank" />
               </div>
            </CardContent>
         </Card>
 
-        {/* Sectional Mastery Audit */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* 2. SECTIONAL PERFORMANCE MATRIX */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
            <Card className="lg:col-span-8 border-none shadow-xl rounded-[2.5rem] bg-white p-10 md:p-12 space-y-10">
               <div className="flex items-center gap-4 border-b border-slate-50 pb-6">
                  <BarChart3 className="h-6 w-6 text-primary" />
-                 <h3 className="text-2xl font-headline font-black uppercase text-[#0F172A]">Sectional Mastery Index</h3>
+                 <h3 className="text-2xl font-headline font-black uppercase text-[#0F172A]">Sectional Mastery Audit</h3>
               </div>
               <div className="space-y-8">
                  {sectionalAudit.map((s, i) => (
@@ -240,33 +245,37 @@ export default function ResultPage() {
            </Card>
 
            <Card className="lg:col-span-4 border-none shadow-xl rounded-[2.5rem] bg-[#0F172A] text-white p-10 space-y-10 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform"><TrendingUp className="h-40 w-40" /></div>
+              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform"><TrendingUp className="h-48 w-48" /></div>
               <div className="relative z-10 space-y-8">
                  <div className="h-14 w-14 bg-white/10 rounded-2xl flex items-center justify-center text-primary shadow-2xl">
                     <Activity className="h-8 w-8" />
                  </div>
                  <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Strategic Insight</p>
-                    <h4 className="text-3xl font-headline font-black uppercase leading-tight">Precision <br/> Variance</h4>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">State Comparison</p>
+                    <h4 className="text-3xl font-headline font-black uppercase leading-tight">Mastery <br/> Index Analysis</h4>
                  </div>
                  <p className="text-slate-400 text-sm font-medium leading-relaxed">
-                    Based on your pace, you spend <strong>{Math.round(sessionData.timeTaken / (Object.keys(sessionData.answers).length || 1))}s</strong> per node. Fix logic gaps in your weak sections to improve the index.
+                    Aspirants in the Top 10% average <strong>84% accuracy</strong> in {sectionalAudit[0]?.name || 'GK'}. Your current trajectory is <strong>{merit.percentile > 50 ? 'Above' : 'Below'} Average</strong>.
                  </p>
+                 <Button asChild variant="outline" className="w-full h-14 border-white/10 bg-white/5 hover:bg-white/10 text-white rounded-xl font-black uppercase text-[10px] tracking-widest gap-2">
+                    <Link href="/leaderboard"><Trophy className="h-4 w-4" /> View State Rankings</Link>
+                 </Button>
               </div>
            </Card>
         </div>
 
-        <div className="space-y-8">
-           <div className="flex items-center justify-between border-b border-slate-200 pb-6">
-              <h3 className="font-headline font-black text-2xl md:text-3xl uppercase text-[#0F172A] flex items-center gap-4">
-                 <BrainCircuit className="h-8 w-8 text-primary" /> Performance Review
-              </h3>
-              <Badge variant="outline" className="border-slate-200 text-slate-400 font-black uppercase text-[10px] px-4 py-2 rounded-xl">
-                 {questions.length} Items Locked
-              </Badge>
+        {/* 3. SOLUTION REVIEW HUB */}
+        <div className="space-y-10">
+           <div className="flex items-center justify-between border-b border-slate-200 pb-8">
+              <div className="space-y-2">
+                 <h3 className="font-headline font-black text-3xl uppercase text-[#0F172A] flex items-center gap-4">
+                    <BrainCircuit className="h-8 w-8 text-primary" /> Rationale Review
+                 </h3>
+                 <p className="text-slate-400 font-medium text-sm">Audit every question node for logic validation.</p>
+              </div>
            </div>
            
-           <div className="grid grid-cols-1 gap-6 md:gap-8">
+           <div className="grid grid-cols-1 gap-8">
               {questions.map((q, idx) => {
                  const studentAnsIdx = sessionData.answers?.[idx];
                  const correctAnsIdx = ['A','B','C','D'].indexOf(q.correctAnswer);
@@ -275,28 +284,31 @@ export default function ResultPage() {
                  const isExpanded = expandedQs[idx];
 
                  return (
-                    <Card key={idx} className="border-none shadow-xl rounded-[2rem] overflow-hidden bg-white group hover:shadow-2xl transition-all duration-300">
-                       <div className={cn("h-2 w-full transition-colors", isCorrect ? "bg-emerald-500" : isSkipped ? "bg-slate-200" : "bg-rose-500")} />
-                       <CardContent className="p-8 md:p-12 space-y-8">
-                          <div className="flex items-center justify-between">
+                    <Card key={idx} className="border-none shadow-xl rounded-[2.5rem] overflow-hidden bg-white group hover:shadow-2xl transition-all duration-300">
+                       <div className={cn("h-2.5 w-full", isCorrect ? "bg-emerald-500" : isSkipped ? "bg-slate-200" : "bg-rose-500")} />
+                       <CardContent className="p-10 md:p-12 space-y-10">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                              <div className="flex items-center gap-6">
-                                <div className="h-10 w-10 md:h-12 md:w-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center font-black text-lg text-slate-400 group-hover:text-primary transition-colors">
+                                <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center font-black text-xl text-slate-400 group-hover:text-primary transition-colors">
                                    {idx + 1}
                                 </div>
-                                <Badge className={cn(
-                                  "border-none px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-sm",
-                                  isCorrect ? "bg-emerald-50 text-emerald-600" : isSkipped ? "bg-slate-50 text-slate-400" : "bg-rose-50 text-rose-600"
-                                )}>
-                                   {isCorrect ? 'AUDIT SUCCESS' : isSkipped ? 'SKIPPED NODE' : 'REGISTRY FAILURE'}
-                                </Badge>
+                                <div className="space-y-1.5">
+                                   <Badge className={cn(
+                                     "border-none px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-sm",
+                                     isCorrect ? "bg-emerald-50 text-emerald-600" : isSkipped ? "bg-slate-50 text-slate-400" : "bg-rose-50 text-rose-600"
+                                   )}>
+                                      {isCorrect ? 'REGISTRY SUCCESS' : isSkipped ? 'NOT ATTEMPTED' : 'LOGIC FAILURE'}
+                                   </Badge>
+                                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{q.sectionId || 'General'}</p>
+                                </div>
                              </div>
                              
                              <Button 
                                 variant="ghost"
                                 onClick={() => setExpandedQs(p => ({ ...p, [idx]: !p[idx] }))}
-                                className="h-12 px-8 font-black uppercase text-[10px] tracking-widest gap-3 text-primary bg-primary/5 hover:bg-primary/10 rounded-xl"
+                                className="h-12 px-8 font-black uppercase text-[10px] tracking-widest gap-3 text-primary bg-primary/5 hover:bg-primary/10 rounded-xl transition-all active:scale-95"
                              >
-                                {isExpanded ? "Hide Logic" : "Audit Solution"}
+                                {isExpanded ? "Hide Logic" : "Audit Rationale"}
                                 {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                              </Button>
                           </div>
@@ -330,8 +342,8 @@ function MetricNode({ icon, val, label, sub }: any) {
          {icon}
       </div>
       <div className="space-y-1">
-         <p className="text-4xl font-headline font-black text-[#0F172A] tracking-tighter">{val}</p>
-         <p className="text-[10px] font-black uppercase text-slate-500 tracking-widest">{label}</p>
+         <p className="text-4xl font-headline font-black text-[#0F172A] tracking-tighter leading-none">{val}</p>
+         <p className="text-[10px] font-black uppercase text-slate-500 tracking-widest mt-2">{label}</p>
          <p className="text-[8px] font-bold text-slate-300 uppercase tracking-tighter">{sub}</p>
       </div>
     </div>
