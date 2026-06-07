@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Skeleton } from "@/components/ui/skeleton"
 import { 
   Mail, 
   Phone, 
@@ -45,9 +46,9 @@ import { cn } from "@/lib/utils"
 import React from "react"
 
 /**
- * @fileOverview Student Profile Center v18.0.
- * Simplified language: Replaced jargon like "Node" and "Registry" with clear words.
- * Features: Fixed accuracy icon and joined date logic.
+ * @fileOverview Student Profile Center v19.0.
+ * Fixed: Added missing Skeleton import to prevent ReferenceError.
+ * Features: Easy language, Editable Target Board & Email, Fixed Accuracy Icon.
  */
 export default function ProfilePage() {
   const { user, profile, loading } = useUser()
