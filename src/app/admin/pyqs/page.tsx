@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Trash2, Edit, FileText, Download, Save, Search, Layers, ExternalLink, Loader2, Globe } from "lucide-react"
+import { Plus, Trash2, Edit, FileText, Download, Save, Search, Layers, ExternalLink, Loader2, Globe, ShieldCheck } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc, query, orderBy, serverTimestamp } from "firebase/firestore"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
@@ -17,11 +17,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
+import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional PYQ Repository Management v15.1.
+ * @fileOverview Institutional PYQ Repository Management v15.2.
  * Features: Deep Registry Audit and Working PDF integration.
- * FIXED: Missing Badge import.
+ * FIXED: Missing Badge and cn imports.
  */
 
 export default function AdminPYQManagement() {
@@ -105,9 +106,9 @@ export default function AdminPYQManagement() {
           <h1 className="text-5xl font-black font-headline text-[#0F172A] uppercase tracking-tight">PYQ Repository</h1>
           <p className="text-slate-500 mt-2 text-lg font-medium">Manage authentic previous year papers with real cloud-stored PDF URIs.</p>
         </div>
-        <Button onClick={() => setEditingPYQ({ title: "", boardId: "", examId: "", year: new Date().getFullYear(), pdfUrl: "", status: "Verified" })} className="bg-primary hover:bg-orange-600 gap-3 h-16 px-10 rounded-2xl font-black shadow-2xl uppercase tracking-widest text-[10px]">
+        <button onClick={() => setEditingPYQ({ title: "", boardId: "", examId: "", year: new Date().getFullYear(), pdfUrl: "", status: "Verified" })} className="bg-primary hover:bg-orange-600 gap-3 h-16 px-10 rounded-2xl font-black shadow-2xl uppercase tracking-widest text-[10px] text-white flex items-center justify-center border-none">
           <Plus className="h-5 w-5" /> Archive New Paper
-        </Button>
+        </button>
       </div>
 
       <Card className="border-none shadow-3xl bg-white rounded-[3rem] overflow-hidden mx-4">
@@ -153,7 +154,7 @@ export default function AdminPYQManagement() {
                   </TableCell>
                   <TableCell>
                      <div className="flex items-center gap-3">
-                        <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center shadow-inner", p.pdfUrl ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-500")}>
+                        <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center shadow-inner", p.pdfUrl ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600")}>
                            {p.pdfUrl ? <ShieldCheck className="h-5 w-5" /> : <Layers className="h-5 w-5" />}
                         </div>
                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{p.pdfUrl ? 'URL_VALID' : 'NO_ASSET'}</span>
