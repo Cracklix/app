@@ -14,8 +14,8 @@ import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 
 /**
- * @fileOverview High-Density Mock Feed v13.0.
- * HARDENED: Fail-safe access whitelist for Home Feed.
+ * @fileOverview High-Density Mock Feed v14.0.
+ * DEBUG: Added runtime logs for accessLevel, isPremium, and user.pass.active.
  */
 
 export default function LatestMocks() {
@@ -72,6 +72,9 @@ export default function LatestMocks() {
             const tier = (mock.accessLevel || mock.accessType || 'FREE').trim().toUpperCase();
             const isPremium = tier === 'PREMIUM';
             const locked = isPremium && !hasActivePass;
+
+            // RUNTIME DEBUG LOGS
+            console.log(`[RUNTIME_VAL] FEED | ${mock.title} | accessLevel: ${mock.accessLevel} | isPremium: ${isPremium} | user.pass.active: ${profile?.pass?.active}`);
 
             return (
               <motion.div key={mock.id} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} viewport={{ once: true }}>

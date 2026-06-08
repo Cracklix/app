@@ -27,8 +27,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Mock Node Gateway v20.0.
- * HARDENED: Robust Whitelist Access Level evaluation.
+ * @fileOverview Institutional Mock Node Gateway v21.0.
+ * DEBUG: Added runtime logs for accessLevel, isPremium, and user.pass.active.
  */
 
 export default function MockOverviewPage() {
@@ -51,6 +51,9 @@ export default function MockOverviewPage() {
 
       const tier = (mock.accessLevel || mock.accessType || 'FREE').trim().toUpperCase();
       const isPremium = tier === 'PREMIUM';
+
+      // RUNTIME DEBUG LOGS
+      console.log(`[RUNTIME_VAL] GATEWAY | accessLevel: ${mock.accessLevel} | isPremium: ${isPremium} | user.pass.active: ${profile?.pass?.active}`);
 
       if (user) {
          try {
@@ -75,8 +78,6 @@ export default function MockOverviewPage() {
          const status = (profile?.status || '').trim().toLowerCase();
          if (status !== '' && status !== 'free' && status !== 'student') hasPass = true;
       }
-
-      console.log(`[AUDIT] Gateway Check: ${mock.title} | Tier: ${tier} | WhitelistResult: ${hasPass}`);
       
       setIsLocked(!hasPass);
       setAccessChecked(true);
@@ -121,7 +122,8 @@ export default function MockOverviewPage() {
               </div>
               <div className="w-full md:w-auto">
                  {isLocked ? (
-                    <Button onClick={() => router.push('/pass')} className="w-full h-14 md:h-16 px-10 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl gap-3 border-none transition-all active:scale-95 flex items-center justify-center">
+                    <Button onClick={() => router.push('/pass')} className="w-full h-14 md:h-16 px-10 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl gap-3 border-none transition-all active:scale-95 flex items-center justify-center"
+                    >
                       <Lock className="h-5 w-5" /> UNLOCK TEST
                     </Button>
                  ) : isLimitReached ? (

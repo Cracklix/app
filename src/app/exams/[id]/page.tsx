@@ -33,8 +33,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v21.0.
- * HARDENED: Fail-safe access whitelist logic to prevent Premium leaks.
+ * @fileOverview Institutional Exam Hub v22.0.
+ * DEBUG: Added runtime logs for accessLevel, isPremium, and user.pass.active.
  */
 
 export default function ExamHubPage() {
@@ -152,10 +152,10 @@ export default function ExamHubPage() {
             </div>
 
             <div className="animate-in fade-in duration-500">
-               <TabsContent value="FULL" className="m-0"><MockList data={groupedContent.FULL} results={userResults} hasActivePass={hasActivePass} /></TabsContent>
-               <TabsContent value="SUBJECT" className="m-0"><MockList data={groupedContent.SUBJECT} results={userResults} hasActivePass={hasActivePass} /></TabsContent>
-               <TabsContent value="SECTIONAL" className="m-0"><MockList data={groupedContent.SECTIONAL} results={userResults} hasActivePass={hasActivePass} /></TabsContent>
-               <TabsContent value="PYQ" className="m-0"><MockList data={groupedContent.PYQ} results={userResults} hasActivePass={hasActivePass} /></TabsContent>
+               <TabsContent value="FULL" className="m-0"><MockList data={groupedContent.FULL} results={userResults} hasActivePass={hasActivePass} profile={profile} /></TabsContent>
+               <TabsContent value="SUBJECT" className="m-0"><MockList data={groupedContent.SUBJECT} results={userResults} hasActivePass={hasActivePass} profile={profile} /></TabsContent>
+               <TabsContent value="SECTIONAL" className="m-0"><MockList data={groupedContent.SECTIONAL} results={userResults} hasActivePass={hasActivePass} profile={profile} /></TabsContent>
+               <TabsContent value="PYQ" className="m-0"><MockList data={groupedContent.PYQ} results={userResults} hasActivePass={hasActivePass} profile={profile} /></TabsContent>
                <TabsContent value="NOTES" className="m-0"><NotesList data={groupedContent.NOTES} hasActivePass={hasActivePass} /></TabsContent>
             </div>
          </Tabs>
@@ -173,7 +173,7 @@ function DashboardTab({ value, label, icon }: any) {
    )
 }
 
-function MockList({ data, results, hasActivePass }: { data: any[], results: any[], hasActivePass: boolean }) {
+function MockList({ data, results, hasActivePass, profile }: { data: any[], results: any[], hasActivePass: boolean, profile: any }) {
    const router = useRouter();
 
    if (data.length === 0) return <EmptyNode label="Awaiting Content Registry" />;
@@ -186,7 +186,8 @@ function MockList({ data, results, hasActivePass }: { data: any[], results: any[
             const isPremium = tier === 'PREMIUM';
             const isLocked = isPremium && !hasActivePass;
 
-            console.log(`[AUDIT] MockList Gate: ${mock.title} | Tier: ${tier} | UserPass: ${hasActivePass} | Locked: ${isLocked}`);
+            // RUNTIME DEBUG LOGS
+            console.log(`[RUNTIME_VAL] ${mock.title} | test.accessLevel: ${mock.accessLevel} | test.isPremium: ${isPremium} | user.pass.active: ${profile?.pass?.active}`);
 
             return (
                <Card key={mock.id} className="border-none shadow-sm rounded-2xl bg-white hover:shadow-md transition-all text-left group">
