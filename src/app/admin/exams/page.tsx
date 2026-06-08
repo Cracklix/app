@@ -18,8 +18,8 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Authority Hub v30.0 - Hardened Mandatory Branding Engine.
- * Features: Persistent official logos for PSSSB, Punjab Police, PSPCL, CTET, PSTET, and PSEB.
+ * @fileOverview Authority Hub v31.0 - Hardened Mandatory Branding Engine.
+ * Features: Persistent official logos for PSSSB, Punjab Police, PSPCL, CTET, PSTET, PSEB, and SSC.
  */
 
 export default function ExamManagement() {
@@ -43,6 +43,7 @@ export default function ExamManagement() {
   const pstetOfficialLogo = "https://pstet.pseb.ac.in/img/main-logo-2.png";
   const psebOfficialLogo = "https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png";
   const policeOfficialLogo = "https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png";
+  const sscOfficialLogo = "https://ssc.gov.in/assets/sscLogo.webp";
 
   const handleSave = async () => {
     if (!db || !editingBoard) return
@@ -64,6 +65,7 @@ export default function ExamManagement() {
     const isPstet = abbrev === 'PSTET';
     const isEducation = abbrev === 'EDUCATION' || abbrev === 'PSEB';
     const isPolice = abbrev.includes('POLICE');
+    const isSsc = abbrev === 'SSC';
     
     const payload = { 
       ...editingBoard, 
@@ -74,6 +76,7 @@ export default function ExamManagement() {
                isPstet ? pstetOfficialLogo :
                isEducation ? psebOfficialLogo :
                isPolice ? policeOfficialLogo :
+               isSsc ? sscOfficialLogo :
                (editingBoard.iconUrl || ""),
       updatedAt: serverTimestamp()
     }
@@ -171,6 +174,7 @@ export default function ExamManagement() {
                 const isPstet = abbrev === 'PSTET';
                 const isEducation = abbrev === 'EDUCATION' || abbrev === 'PSEB';
                 const isPolice = abbrev.includes('POLICE');
+                const isSsc = abbrev === 'SSC';
                 const isArmy = board.id?.toLowerCase() === 'army' || abbrev === 'ARMY';
                 
                 const effectiveIcon = isPsssb ? psssbOfficialLogo : 
@@ -179,6 +183,7 @@ export default function ExamManagement() {
                                      isPstet ? pstetOfficialLogo :
                                      isEducation ? psebOfficialLogo :
                                      isPolice ? policeOfficialLogo :
+                                     isSsc ? sscOfficialLogo :
                                      board.iconUrl;
 
                 return (
@@ -192,7 +197,7 @@ export default function ExamManagement() {
                           ) : (
                             <img 
                               src={effectiveIcon} 
-                              className={cn("h-full w-full object-contain p-2", (isArmy || isCtet || isPstet || isEducation || isPolice) ? "scale-150" : "")} 
+                              className={cn("h-full w-full object-contain p-2", (isArmy || isCtet || isPstet || isEducation || isPolice || isSsc) ? "scale-150" : "")} 
                               referrerPolicy="no-referrer"
                               alt={board.abbreviation}
                               onError={() => setFailedImages(p => ({...p, [board.id]: true}))}
@@ -252,7 +257,7 @@ export default function ExamManagement() {
                         <img 
                           src={editingBoard.iconUrl} 
                           referrerPolicy="no-referrer"
-                          className={cn("absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform", (editingBoard.id === 'army' || editingBoard.abbreviation?.toUpperCase() === 'ARMY' || editingBoard.abbreviation?.toUpperCase() === 'CTET' || editingBoard.abbreviation?.toUpperCase() === 'PSTET' || editingBoard.abbreviation?.toUpperCase() === 'EDUCATION' || editingBoard.abbreviation?.toUpperCase() === 'PSEB' || editingBoard.abbreviation?.toUpperCase()?.includes('POLICE')) ? "scale-150" : "")} 
+                          className={cn("absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform", (editingBoard.id === 'army' || editingBoard.abbreviation?.toUpperCase() === 'ARMY' || editingBoard.abbreviation?.toUpperCase() === 'CTET' || editingBoard.abbreviation?.toUpperCase() === 'PSTET' || editingBoard.abbreviation?.toUpperCase() === 'EDUCATION' || editingBoard.abbreviation?.toUpperCase() === 'PSEB' || editingBoard.abbreviation?.toUpperCase()?.includes('POLICE') || editingBoard.abbreviation?.toUpperCase() === 'SSC') ? "scale-150" : "")} 
                           alt="Preview"
                         />
                       ) : (

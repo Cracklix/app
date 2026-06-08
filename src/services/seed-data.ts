@@ -1,16 +1,15 @@
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Engine v52.0.
+ * @fileOverview Institutional Seeding Engine v53.0.
  * Features: High-Fidelity Verified Official Logos for Punjab & National Exam Hubs.
- * UPDATED: Mandatory official Punjab Police insignia from gov domain.
+ * UPDATED: Added mandatory official SSC logo from gov domain.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('[AUDIT] Initializing Cracklix Global Registry Sync...');
 
   // High-Fidelity Official Assets (Verified Nodes)
   const psssbLogo = "https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg";
-  const punjabEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Emblem_of_Punjab.svg/512px-Emblem_of_Punjab.svg.png";
   const psebOfficialLogo = "https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png";
   const ppscJpg = "https://upload.wikimedia.org/wikipedia/en/a/a1/Punjab_Public_Service_Commission.jpg";
   const policeEmblem = "https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png";
@@ -20,6 +19,7 @@ export async function seedInitialData(db: Firestore) {
   const pspclLogo = "https://pspcl.in/assets/images/logo.png";
   const armyEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Indian_Army_Insignia_circular.png/1280px-Indian_Army_Insignia_circular.png";
   const ibpsLogo = "https://upload.wikimedia.org/wikipedia/en/b/b3/Institute_of_Banking_Personnel_Selection_Logo.png";
+  const sscLogo = "https://ssc.gov.in/assets/sscLogo.webp";
 
   // 1. BOARDS REGISTRY
   const boards = [
@@ -32,7 +32,8 @@ export async function seedInitialData(db: Firestore) {
     { id: 'education', abbreviation: 'EDUCATION', name: 'Education Recruitment Board Punjab (PSEB)', region: 'Punjab', category: 'TEACHING_BOARD', iconUrl: psebOfficialLogo },
     { id: 'cbse', abbreviation: 'CBSE', name: 'Central Board of Secondary Education (CTET)', region: 'National', category: 'TEACHING_BOARD', iconUrl: ctetLogo },
     { id: 'pstet', abbreviation: 'PSTET', name: 'Punjab State Teacher Eligibility Test (PSEB)', region: 'Punjab', category: 'TEACHING_BOARD', iconUrl: pstetLogo },
-    { id: 'ibps', abbreviation: 'IBPS', name: 'Institute of Banking Personnel Selection', region: 'National', category: 'BANKING_BOARD', iconUrl: ibpsLogo }
+    { id: 'ibps', abbreviation: 'IBPS', name: 'Institute of Banking Personnel Selection', region: 'National', category: 'BANKING_BOARD', iconUrl: ibpsLogo },
+    { id: 'ssc', abbreviation: 'SSC', name: 'Staff Selection Commission', region: 'National', category: 'CENTRAL_BOARD', iconUrl: sscLogo }
   ];
 
   for (const b of boards) {
@@ -48,6 +49,9 @@ export async function seedInitialData(db: Firestore) {
     { id: 'ppsc-pcs', boardId: 'ppsc', name: 'PCS Executive Prelims', category: 'CIVIL', description: 'Higher Class A & B services including DSP and Tehsildar posts.', iconUrl: ppscJpg },
     { id: 'hc-clerk', boardId: 'high-court', name: 'High Court Clerk (SSSC)', category: 'JUDICIAL', description: 'Clerical recruitment for High Court of Punjab & Haryana.', iconUrl: ssscLogo },
     { id: 'ibps-po', boardId: 'ibps', name: 'IBPS PO / Clerk', category: 'BANKING', description: 'Central banking recruitment exams.', iconUrl: ibpsLogo },
+    { id: 'ssc-cgl', boardId: 'ssc', name: 'SSC CGL', category: 'CENTRAL', description: 'Combined Graduate Level Examination for central posts.', iconUrl: sscLogo },
+    { id: 'ssc-chsl', boardId: 'ssc', name: 'SSC CHSL', category: 'CENTRAL', description: 'Combined Higher Secondary Level Examination.', iconUrl: sscLogo },
+    { id: 'ssc-mts', boardId: 'ssc', name: 'SSC MTS & Havildar', category: 'CENTRAL', description: 'Multi-Tasking Staff recruitment examination.', iconUrl: sscLogo },
     
     // Power Nodes
     { id: 'pspcl-clerk', boardId: 'pspcl', name: 'PSPCL Clerk / LDC', category: 'TECHNICAL', description: 'Recruitment for Punjab State Power Corporation.', iconUrl: pspclLogo },

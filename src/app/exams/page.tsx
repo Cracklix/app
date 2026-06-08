@@ -17,8 +17,8 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview High-Density Responsive Exam Catalog v11.0.
- * UPDATED: Optimized high-fidelity rendering for PSSSB and PSPCL logos.
+ * @fileOverview High-Density Responsive Exam Catalog v12.0.
+ * UPDATED: Optimized high-fidelity rendering for PSSSB, PSPCL, and SSC logos.
  */
 
 export default function ExamsCatalog() {
@@ -151,7 +151,7 @@ function CatalogContent() {
               const isArmy = bid === 'army' || exam.id?.toLowerCase().includes('army');
               const isPolice = bid.includes('police');
               const isPower = bid.includes('pspcl') || bid.includes('pstcl');
-              const isPsssb = bid === 'psssb';
+              const isSsc = bid === 'ssc' || exam.id?.toLowerCase().includes('ssc');
 
               return (
                 <Card key={exam.id} className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 rounded-xl md:rounded-[3rem] bg-white group overflow-hidden text-left h-full flex flex-col border border-slate-100 p-4 md:p-10 relative">
@@ -168,9 +168,8 @@ function CatalogContent() {
                              {logoUrl && !isImgFailed ? (
                                 <img 
                                   src={logoUrl} 
-                                  className={cn(
-                                    "w-full h-full object-contain p-1.5 md:p-2 transition-transform duration-500 group-hover:scale-105", 
-                                    isArmy ? "scale-125" : isPolice ? "scale-110 p-1" : isPower ? "scale-110" : ""
+                                  className={cn("w-full h-full object-contain p-1.5 md:p-2 transition-transform duration-500 group-hover:scale-105", 
+                                    isArmy ? "scale-125" : isPolice ? "scale-110 p-1" : (isPower || isSsc) ? "scale-110" : ""
                                   )} 
                                   alt="Board Logo" 
                                   referrerPolicy="no-referrer" 
