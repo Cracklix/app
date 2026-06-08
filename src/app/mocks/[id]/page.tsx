@@ -21,7 +21,8 @@ import {
   Zap,
   Gem,
   AlertCircle,
-  History
+  History,
+  Play
 } from "lucide-react"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -29,7 +30,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Mock Node with Authentication & Tiered Attempt Guards.
- * UPDATED: Optimized "UNLOCK TEST" button behavior.
+ * UPDATED: Optimized "UNLOCK WITH PASS" button behavior and styling.
  */
 
 export default function MockOverviewPage() {
@@ -161,9 +162,9 @@ export default function MockOverviewPage() {
     <div className="min-h-screen bg-white flex flex-col font-body">
       <Navbar />
       
-      <main className="flex-1">
+      <main className="flex-1 text-left">
         <section className="bg-slate-50 border-b border-slate-100 py-6 md:py-12">
-          <div className="container mx-auto px-4 max-w-6xl text-left">
+          <div className="container mx-auto px-4 max-w-6xl">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div className="flex items-start gap-4 flex-1">
                 <Button variant="ghost" onClick={() => router.back()} className="rounded-full h-10 w-10 border border-slate-200 bg-white flex items-center justify-center text-slate-400 p-0">
@@ -172,7 +173,7 @@ export default function MockOverviewPage() {
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center gap-2">
                       <Badge className={cn("border-none px-3 py-0.5 rounded font-black uppercase text-[8px] tracking-widest shadow-sm", isPremiumMock ? "bg-amber-100 text-amber-600" : "bg-emerald-50 text-emerald-600")}>
-                        {isPremiumMock ? "PREMIUM SERIES" : "FREE SERIES"}
+                        {isPremiumMock ? "PREMIUM" : "FREE"}
                       </Badge>
                       {isLocked && <Badge className="bg-slate-100 text-slate-500 border-none px-3 py-0.5 rounded font-black uppercase text-[8px] tracking-widest flex items-center gap-1"><Lock className="h-3 w-3" /> PASS REQUIRED</Badge>}
                   </div>
@@ -189,12 +190,12 @@ export default function MockOverviewPage() {
                  {isLocked ? (
                     <Button 
                        onClick={() => router.push('/pass')} 
-                       className="w-full h-14 md:h-16 px-10 bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest text-[10px] rounded-xl shadow-xl gap-3"
+                       className="w-full h-14 md:h-16 px-10 bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl gap-3 transition-all active:scale-95"
                     >
-                      <Lock className="h-4 w-4" /> UNLOCK TEST
+                      <Lock className="h-5 w-5" /> UNLOCK WITH PASS
                     </Button>
                  ) : isLimitReached ? (
-                    <div className="bg-rose-50 border border-rose-100 p-4 rounded-xl flex items-center gap-4 text-left">
+                    <div className="bg-rose-50 border border-rose-100 p-4 rounded-xl flex items-center gap-4 text-left shadow-sm">
                        <AlertCircle className="h-8 w-8 text-rose-600" />
                        <div>
                           <p className="text-[10px] font-black uppercase text-rose-700 tracking-widest leading-none mb-1">Attempt Limit Reached</p>
@@ -202,8 +203,10 @@ export default function MockOverviewPage() {
                        </div>
                     </div>
                  ) : (
-                    <Button asChild onClick={handleStart} className="w-full h-14 md:h-16 px-10 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-widest text-[10px] rounded-xl shadow-xl gap-3 group border-none">
-                      <Link href={`/mocks/${mockId}/instructions`}>Start Practice <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" /></Link>
+                    <Button asChild onClick={handleStart} className="w-full h-14 md:h-16 px-10 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl gap-3 group border-none transition-all active:scale-95">
+                      <Link href={`/mocks/${mockId}/instructions`} className="flex items-center justify-center gap-3">
+                         <Play className="h-5 w-5 fill-current" /> ATTEMPT NOW <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      </Link>
                     </Button>
                  )}
               </div>
@@ -211,7 +214,7 @@ export default function MockOverviewPage() {
           </div>
         </section>
 
-        <div className="container mx-auto px-4 py-8 max-w-6xl text-left">
+        <div className="container mx-auto px-4 py-8 max-w-6xl">
            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
               <div className="lg:col-span-8 space-y-8">
                  <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100 space-y-6">
