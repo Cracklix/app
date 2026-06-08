@@ -1,9 +1,9 @@
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Engine v47.0.
+ * @fileOverview Institutional Seeding Engine v48.0.
  * Features: High-Fidelity Verified Official Logos for Punjab Exam Hubs.
- * UPDATED: Mandatory official PSSSB and PSPCL logos applied to all relevant nodes.
+ * UPDATED: Added ALM/Lineman vertical with permanent PSPCL branding.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('[AUDIT] Initializing Cracklix Global Registry Sync...');
@@ -46,16 +46,17 @@ export async function seedInitialData(db: Firestore) {
     { id: 'hc-clerk', boardId: 'high-court', name: 'High Court Clerk (SSSC)', category: 'JUDICIAL', description: 'Clerical recruitment for High Court of Punjab & Haryana.', iconUrl: ssscLogo },
     { id: 'ibps-po', boardId: 'ibps', name: 'IBPS PO / Clerk', category: 'BANKING', description: 'Central banking recruitment exams.', iconUrl: ibpsLogo },
     
+    // Power Nodes
+    { id: 'pspcl-clerk', boardId: 'pspcl', name: 'PSPCL Clerk / LDC', category: 'TECHNICAL', description: 'Recruitment for Punjab State Power Corporation.', iconUrl: pspclLogo },
+    { id: 'pspcl-alm', boardId: 'pspcl', name: 'ALM / Lineman', category: 'TECHNICAL', description: 'Assistant Lineman recruitment for Punjab State Power Corporation.', iconUrl: pspclLogo },
+    { id: 'pstcl-ae', boardId: 'pspcl', name: 'PSTCL AE / JE', category: 'TECHNICAL', description: 'Technical recruitment for Transmission Corporation.', iconUrl: pspclLogo },
+
     // Teaching Nodes (CTET & ETT)
     { id: 'ctet-paper-1', boardId: 'cbse', name: 'CTET Paper 1', category: 'TEACHING', description: 'Central Teacher Eligibility Test (Primary Stage).', iconUrl: cbseLogo },
     { id: 'ctet-paper-2', boardId: 'cbse', name: 'CTET Paper 2', category: 'TEACHING', description: 'Central Teacher Eligibility Test (Elementary Stage).', iconUrl: cbseLogo },
     { id: 'pstet-hub', boardId: 'education', name: 'PSTET (Paper 1 & 2)', category: 'TEACHING', description: 'Punjab State Teacher Eligibility Test recruitment.', iconUrl: punjabEmblem },
     { id: 'ett-cadre', boardId: 'education', name: 'ETT Cadre', category: 'TEACHING', description: 'Elementary Teacher Training recruitment hub.', iconUrl: punjabEmblem },
-    { id: 'master-cadre', boardId: 'education', name: 'Master Cadre', category: 'TEACHING', description: 'Subject-wise teacher recruitment for Punjab Schools.', iconUrl: punjabEmblem },
-    
-    // Power Nodes
-    { id: 'pspcl-clerk', boardId: 'pspcl', name: 'PSPCL Clerk / LDC', category: 'TECHNICAL', description: 'Recruitment for Punjab State Power Corporation.', iconUrl: pspclLogo },
-    { id: 'pstcl-ae', boardId: 'pspcl', name: 'PSTCL AE / JE', category: 'TECHNICAL', description: 'Technical recruitment for Transmission Corporation.', iconUrl: pspclLogo }
+    { id: 'master-cadre', boardId: 'education', name: 'Master Cadre', category: 'TEACHING', description: 'Subject-wise teacher recruitment for Punjab Schools.', iconUrl: punjabEmblem }
   ];
 
   for (const e of exams) {
