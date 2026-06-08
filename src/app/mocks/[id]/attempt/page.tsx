@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -27,8 +26,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 /**
- * @fileOverview Production Hardened CBT Attempt Engine v37.0.
- * UPDATED: Integrated Server-Sync subscription validation for access control.
+ * @fileOverview Production Hardened CBT Attempt Engine v38.0.
+ * FIXED: Save & Exit navigation reliability.
  */
 
 export default function MockAttemptPage() {
@@ -80,7 +79,7 @@ export default function MockAttemptPage() {
         const mData = mockSnap.data();
         setMockData(mData);
 
-        // ACCESS CONTROL HUB: Strict Validation
+        // ACCESS CONTROL HUB
         const accessTier = mData.accessType || 'FREE';
         if (accessTier === 'PREMIUM' && profile?.role !== 'ADMIN' && profile?.role !== 'SUPER_ADMIN') {
            const subQuery = query(
@@ -196,7 +195,6 @@ export default function MockAttemptPage() {
     const resultRef = doc(db, "results", `${user.uid}_${mockId}`);
     const attemptRef = doc(db, "attempts", `${user.uid}_${mockId}`);
 
-    // OPTIMISTIC TRANSITION: Don't await the writes
     setDoc(resultRef, resultPayload).catch((err) => {
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: resultRef.path, operation: 'create' }));
     });
@@ -206,6 +204,15 @@ export default function MockAttemptPage() {
     toast({ title: "Results Processing", description: "Your answers are being synchronized." });
     router.push(`/results/${mockId}`);
   }, [db, user, isSubmittingFinal, questions, answers, router, toast, mockId, mockTitle, mockData, startTime]);
+
+  const handleManualExit = () => {
+    setShowExitModal(false);
+    // Hard exit to clear memory and ensure navigation
+    setPaused(false);
+    setTimeout(() => {
+      window.location.href = '/dashboard';
+    }, 50);
+  };
 
   if (isInitializing) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-[#0B1528] space-y-8">
@@ -291,7 +298,7 @@ export default function MockAttemptPage() {
                </div>
                <div className="flex gap-4 pt-4">
                   <Button variant="ghost" onClick={() => setShowExitModal(false)} className="flex-1 h-16 rounded-xl font-black uppercase text-[11px] text-[#0F172A] tracking-widest hover:bg-slate-50">Cancel</Button>
-                  <Button onClick={() => { setShowExitModal(false); router.push('/dashboard'); }} className="flex-1 h-16 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl font-black uppercase text-[11px] tracking-widest shadow-xl border-none">Yes, Save & Exit</Button>
+                  <Button onClick={handleManualExit} className="flex-1 h-16 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl font-black uppercase text-[11px] tracking-widest shadow-xl border-none">Yes, Save & Exit</Button>
                </div>
             </div>
          </DialogContent>
