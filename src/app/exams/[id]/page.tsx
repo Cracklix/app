@@ -32,8 +32,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v10.0.
- * UPDATED: Added Re-attempt button support for completed mocks.
+ * @fileOverview Institutional Exam Hub v11.0.
+ * UPDATED: Replaced 'Chapter Test' with 'Sectional Test'.
  */
 
 export default function ExamHubPage() {
@@ -77,7 +77,7 @@ export default function ExamHubPage() {
     return {
       FULL: mocks.filter(m => m.mockType === 'FULL'),
       SUBJECT: mocks.filter(m => m.mockType === 'SUBJECT'),
-      CHAPTER: mocks.filter(m => m.mockType === 'CHAPTER'),
+      SECTIONAL: mocks.filter(m => m.mockType === 'SECTIONAL'),
       PYQ: mocks.filter(m => m.mockType === 'PYQ'),
       NOTES: notes.filter(n => n.category === 'NOTES'),
       SYLLABUS: notes.filter(n => n.category === 'SYLLABUS')
@@ -138,7 +138,7 @@ export default function ExamHubPage() {
                <TabsList className="bg-transparent border-none p-0 flex h-10 w-full justify-start gap-1">
                   <DashboardTab value="FULL" label="Full Mocks" icon={<Zap className="h-3 w-3" />} />
                   <DashboardTab value="SUBJECT" label="Subject Tests" icon={<BookOpen className="h-3 w-3" />} />
-                  <DashboardTab value="CHAPTER" label="Chapter Tests" icon={<ListTree className="h-3 w-3" />} />
+                  <DashboardTab value="SECTIONAL" label="Sectional Tests" icon={<ListTree className="h-3 w-3" />} />
                   <DashboardTab value="PYQ" label="PYQ Papers" icon={<Layers className="h-3 w-3" />} />
                   <DashboardTab value="NOTES" label="Study Notes" icon={<FileText className="h-3 w-3" />} />
                   <DashboardTab value="SYLLABUS" label="Syllabus" icon={<Info className="h-3 w-3" />} />
@@ -148,7 +148,7 @@ export default function ExamHubPage() {
             <div className="animate-in fade-in duration-500">
                <TabsContent value="FULL" className="m-0"><MockList data={groupedContent.FULL} results={userResults} hasPass={hasPass} user={user} /></TabsContent>
                <TabsContent value="SUBJECT" className="m-0"><MockList data={groupedContent.SUBJECT} results={userResults} hasPass={hasPass} user={user} /></TabsContent>
-               <TabsContent value="CHAPTER" className="m-0"><MockList data={groupedContent.CHAPTER} results={userResults} hasPass={hasPass} user={user} /></TabsContent>
+               <TabsContent value="SECTIONAL" className="m-0"><MockList data={groupedContent.SECTIONAL} results={userResults} hasPass={hasPass} user={user} /></TabsContent>
                <TabsContent value="PYQ" className="m-0"><MockList data={groupedContent.PYQ} results={userResults} hasPass={hasPass} user={user} /></TabsContent>
                
                <TabsContent value="NOTES" className="m-0"><NotesList data={groupedContent.NOTES} hasPass={hasPass} user={user} /></TabsContent>

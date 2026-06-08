@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState } from "react"
@@ -11,8 +12,8 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Density Exam Hub Catalog v13.0.
- * UPDATED: Strict Uniqueness Protocol applied + Restored logos for PSSSB, Police, CTET, Power.
+ * @fileOverview High-Density Exam Hub Catalog v14.0.
+ * UPDATED: Terminological fix (Chapter -> Sectional) and Real-time counts.
  */
 
 export default function PopularExams() {
@@ -26,12 +27,10 @@ export default function PopularExams() {
 
   const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db])
   const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true)) : null), [db])
-  const questionsQuery = useMemo(() => (db ? collection(db, "questions") : null), [db])
 
   const { data: rawExams, loading: examsLoading } = useCollection<any>(examsQuery)
   const { data: boards } = useCollection<any>(boardsQuery)
   const { data: mocks, loading: mocksLoading } = useCollection<any>(mocksQuery)
-  const { data: questions } = useCollection<any>(questionsQuery)
 
   const exams = useMemo(() => {
     if (!rawExams) return [];
@@ -45,23 +44,20 @@ export default function PopularExams() {
   }, [rawExams]);
 
   const statsMap = useMemo(() => {
-    if (!mocks || !questions) return { mocks: {}, qs: {} };
-    const mockMap: Record<string, number> = {};
-    const qMap: Record<string, number> = {};
+    if (!mocks) return {};
+    const map: Record<string, { mocks: number, qs: number }> = {};
     
     mocks.forEach(m => {
       const eids = m.examIds || (m.examId ? [m.examId] : []);
       eids.forEach((eid: string) => {
-        mockMap[eid] = (mockMap[eid] || 0) + 1;
+        if (!map[eid]) map[eid] = { mocks: 0, qs: 0 };
+        map[eid].mocks++;
+        map[eid].qs += (m.totalQuestions || 0);
       });
     });
 
-    questions.forEach(q => {
-      if (q.examId) qMap[q.examId] = (qMap[q.examId] || 0) + 1;
-    });
-
-    return { mocks: mockMap, qs: qMap };
-  }, [mocks, questions]);
+    return map;
+  }, [mocks]);
 
   return (
     <section className="py-8 md:py-16 bg-transparent">
@@ -89,8 +85,7 @@ export default function PopularExams() {
               const logoUrl = exam.iconUrl || board?.iconUrl;
               const isArmy = exam.boardId?.toLowerCase() === 'army' || exam.id?.toLowerCase().includes('army');
               const isPolice = exam.boardId?.toLowerCase().includes('police');
-              const liveTestsCount = statsMap.mocks[exam.id] || 0;
-              const liveQuestionsCount = statsMap.qs[exam.id] || 0;
+              const stats = statsMap[exam.id] || { mocks: 0, qs: 0 };
               const isFailed = failedImages[exam.id];
 
               return (
@@ -135,11 +130,11 @@ export default function PopularExams() {
                           <div className="flex items-center gap-4 pt-1">
                              <div className="flex items-center gap-1.5">
                                 <Zap className="h-2.5 w-2.5 md:h-3.5 md:w-3.5 text-primary" />
-                                <span className="text-[8px] md:text-[10px] font-black text-[#0F172A] uppercase">{liveTestsCount} Mocks</span>
+                                <span className="text-[8px] md:text-[10px] font-black text-[#0F172A] uppercase">{stats.mocks} Mocks</span>
                              </div>
                              <div className="flex items-center gap-1.5">
                                 <BookOpen className="h-2.5 w-2.5 md:h-3.5 md:w-3.5 text-primary" />
-                                <span className="text-[8px] md:text-[10px] font-black text-[#0F172A] uppercase">{liveQuestionsCount} Qs</span>
+                                <span className="text-[8px] md:text-[10px] font-black text-[#0F172A] uppercase">{stats.qs} Qs</span>
                              </div>
                           </div>
                         </div>

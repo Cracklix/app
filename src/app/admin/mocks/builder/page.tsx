@@ -50,9 +50,8 @@ import { MockType, Difficulty, AccessType, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Institutional Mock Architect v49.0.
- * UPDATED: Integrated Target Hub Selector in Bank Tab for rapid multi-section assembly.
- * HARDENED: Deploy Engine with Batch Chunking.
+ * @fileOverview Elite Institutional Mock Architect v50.0.
+ * UPDATED: Replaced 'Chapter-wise' with 'Sectional' terminology.
  */
 
 const SELECTION_RULES = [
@@ -336,13 +335,13 @@ function MockBuilderContent() {
                          <SelectContent>
                             <SelectItem value="FULL">Full Length</SelectItem>
                             <SelectItem value="SUBJECT">Subject-wise</SelectItem>
-                            <SelectItem value="CHAPTER">Chapter-wise</SelectItem>
+                            <SelectItem value="SECTIONAL">Sectional Test</SelectItem>
                             <SelectItem value="PYQ">PYQ Series</SelectItem>
                          </SelectContent>
                       </Select>
                    </div>
                    <div className="space-y-2">
-                      <Label className="text-[10px) font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Languages className="h-3 w-3" /> Language Mode</Label>
+                      <Label className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Languages className="h-3 w-3" /> Language Mode</Label>
                       <Select value={mockData.languageMode} onValueChange={(v: any) => setMockData({...mockData, languageMode: v})}>
                          <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none font-black text-[9px] uppercase"><SelectValue /></SelectTrigger>
                          <SelectContent>

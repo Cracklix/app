@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo, useState } from "react"
@@ -27,8 +28,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @file Overview Final Exam Gateway Node v8.0.
- * UPDATED: Strict Uniqueness Protocol + Full Logo Restoration for PSSSB, Police, CTET.
+ * @file Overview Final Exam Gateway Node v9.0.
+ * UPDATED: Real-time counts for Full, Subject, PYQ, and Sectional tests.
  */
 
 export default function MocksGatewayPage() {
@@ -64,13 +65,14 @@ export default function MocksGatewayPage() {
       
       eids.forEach((eid: string) => {
         if (!map[eid]) {
-          map[eid] = { full: 0, pyq: 0, sectional: 0, subjects: new Set<string>() };
+          map[eid] = { full: 0, pyq: 0, sectional: 0, subject: 0 };
         }
         
-        if (m.mockType === 'FULL') map[eid].full++;
-        if (m.mockType === 'PYQ') map[eid].pyq++;
-        if (m.mockType === 'SECTIONAL') map[eid].sectional++;
-        if (m.subjectId) map[eid].subjects.add(m.subjectId);
+        const type = m.mockType;
+        if (type === 'FULL') map[eid].full++;
+        else if (type === 'PYQ') map[eid].pyq++;
+        else if (type === 'SECTIONAL') map[eid].sectional++;
+        else if (type === 'SUBJECT') map[eid].subject++;
       });
     });
     
@@ -107,9 +109,8 @@ export default function MocksGatewayPage() {
                b.abbreviation?.toLowerCase() === exam.boardId?.toLowerCase()
              );
              
-             // PRIORITY: Exam-specific logo first
              const logoUrl = exam.iconUrl || board?.iconUrl;
-             const stats = statsMap[exam.id] || { full: 0, pyq: 0, sectional: 0, subjects: new Set() };
+             const stats = statsMap[exam.id] || { full: 0, pyq: 0, sectional: 0, subject: 0 };
              const isImgFailed = failedImages[exam.id];
              const isArmy = exam.boardId?.toLowerCase() === 'army' || exam.id?.toLowerCase().includes('army');
              const isPolice = exam.boardId?.toLowerCase().includes('police');
@@ -153,7 +154,7 @@ export default function MocksGatewayPage() {
 
                          <div className="mt-12 pt-8 border-t border-slate-50 grid grid-cols-2 gap-4">
                             <InventoryNode icon={<Zap className="text-primary h-3.5 w-3.5" />} count={stats.full} label="Full Mocks" />
-                            <InventoryNode icon={<BookOpen className="text-blue-500 h-3.5 w-3.5" />} count={stats.subjects.size} label="Subject" />
+                            <InventoryNode icon={<BookOpen className="text-blue-500 h-3.5 w-3.5" />} count={stats.subject} label="Subject" />
                             <InventoryNode icon={<FileText className="text-emerald-500 h-3.5 w-3.5" />} count={stats.pyq} label="PYQs" />
                             <InventoryNode icon={<Layout className="text-orange-500 h-3.5 w-3.5" />} count={stats.sectional} label="Sectional" />
                          </div>
