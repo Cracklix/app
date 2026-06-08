@@ -13,6 +13,17 @@ export type LanguageDisplayMode = 'ENGLISH' | 'PUNJABI' | 'HINDI' | 'ENGLISH_PUN
 
 export type CurrentAffairType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'QUIZ' | 'SPECIAL';
 
+export interface Board {
+  id: string;
+  abbreviation: string;
+  name: string;
+  region: string;
+  category: string;
+  iconUrl?: string;
+  color?: string;
+  updatedAt?: any;
+}
+
 export interface Subject {
   id: string;
   name: string;
@@ -28,8 +39,9 @@ export interface ExamSection {
 export interface MockTest {
   id: string;
   title: string;
-  boardIds: string[]; // Supports multiple authorities
-  examIds: string[]; // Supports multi-exam assignment
+  boardId: string;
+  boardIds?: string[];
+  examIds: string[];
   mockType: MockType;
   accessType: AccessType;
   duration: number;
@@ -41,29 +53,14 @@ export interface MockTest {
   sections: ExamSection[];
   published: boolean;
   languageMode: LanguageDisplayMode;
-  attemptLimit: number; // 0 for unlimited
-  createdAt: any;
-  updatedAt: any;
-}
-
-export interface CurrentAffairHubItem {
-  id: string;
-  title: string;
-  month: string;
-  year: string;
-  language: string;
-  category: string;
-  type: CurrentAffairType;
-  pdfUrl?: string;
-  status: 'PUBLISHED' | 'DRAFT';
-  quizId?: string;
-  questions?: Partial<Question>[];
+  attemptLimit: number;
   createdAt: any;
   updatedAt: any;
 }
 
 export interface Question {
   id: string;
+  boardId: string;
   examId: string;
   sectionId: string;
   partId?: string;
@@ -99,19 +96,6 @@ export interface Question {
   isDuplicateOf?: string;
 }
 
-export interface AttemptState {
-  answers: Record<number, number>; // index: optionIndex
-  status: Record<number, QuestionStatus>;
-  visited: number[];
-  bookmarks: number[];
-  timeLeft: number;
-  currentIdx: number;
-  currentSectionId: string;
-  violations: number;
-  startTime: number;
-  endTime: number;
-}
-
 export interface UserProfile {
   id: string;
   name: string;
@@ -122,6 +106,7 @@ export interface UserProfile {
   role: UserRole;
   state: "Punjab";
   targetExam: string;
+  assignedBoardId?: string;
   createdAt: string;
   status: string;
   passExpiryDate?: string;
@@ -130,36 +115,3 @@ export interface UserProfile {
   subscriptions?: string[];
   pinnedExams?: string[];
 }
-
-export interface Advertisement {
-  id: string;
-  title: string;
-  type: 'BANNER' | 'ADSENSE' | 'HTML';
-  status: 'ACTIVE' | 'PAUSED' | 'SCHEDULED';
-  placements: AdPlacementType[];
-  desktopImageUrl?: string;
-  mobileImageUrl?: string;
-  externalUrl?: string;
-  htmlCode?: string;
-  adSenseCode?: string;
-  priority: number;
-  targeting?: {
-    examIds?: string[];
-  };
-  stats: {
-    impressions: number;
-    clicks: number;
-  };
-}
-
-export type AdPlacementType = 
-  | 'HOMEPAGE_TOP' 
-  | 'HOMEPAGE_MIDDLE' 
-  | 'HOMEPAGE_BOTTOM' 
-  | 'EXAM_LISTING' 
-  | 'MOCK_LISTING' 
-  | 'NOTES_PAGE' 
-  | 'CA_PAGE' 
-  | 'RESULT_PAGE' 
-  | 'SIDEBAR' 
-  | 'FOOTER';
