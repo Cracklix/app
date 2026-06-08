@@ -27,7 +27,8 @@ import {
   AlertTriangle,
   ChevronRight,
   Layers,
-  SearchCode
+  SearchCode,
+  Globe
 } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc, serverTimestamp, writeBatch } from "firebase/firestore"
@@ -40,8 +41,8 @@ import { parseBulkQuestions } from "@/lib/parser"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Current Affairs Management Hub v16.0.
- * UPDATED: Added individual question editing for staged extraction nodes.
+ * @fileOverview Institutional Current Affairs Management Hub v17.0.
+ * UPDATED: Added full Options Matrix and Correct Answer selector to question editing.
  */
 
 export default function AdminCurrentAffairs() {
@@ -167,6 +168,9 @@ export default function AdminCurrentAffairs() {
     }
 
     const { questions: _, ...cleanPayload } = payload;
+
+    // Hardened fallback to prevent uncontrolled inputs
+    Object.keys(cleanPayload).forEach(k => cleanPayload[k] === undefined && (cleanPayload[k] = ""));
 
     try {
       await setDoc(caRef, cleanPayload, { merge: true })
@@ -455,7 +459,36 @@ export default function AdminCurrentAffairs() {
                   </div>
                </div>
 
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+               <div className="space-y-6 pt-6 border-t border-slate-100">
+                  <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] ml-1">Options Matrix</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     {['A','B','C','D'].map(opt => (
+                        <div key={opt} className="bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100 space-y-4">
+                           <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                 <div className="h-7 w-7 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-black text-xs">{opt}</div>
+                                 <Label className="text-[10px] font-black uppercase text-slate-500">English Text</Label>
+                              </div>
+                              <button onClick={() => setEditQForm({...editQForm, correctAnswer: opt})} className={cn("h-6 w-6 rounded-full border-2 transition-all flex items-center justify-center", editQForm?.correctAnswer === opt ? "bg-emerald-50 border-emerald-500 text-white" : "border-slate-200 hover:border-primary")}>
+                                 {editQForm?.correctAnswer === opt && <CheckCircle2 className="h-4 w-4" />}
+                              </button>
+                           </div>
+                           <Input value={editQForm?.[`option${opt}English`] || ""} onChange={e => setEditQForm({...editQForm, [`option${opt}English`]: e.target.value})} className="bg-white border-none font-bold h-12 rounded-xl" />
+                           
+                           <div className="pt-2 space-y-2">
+                              <Label className="text-[9px] font-black uppercase text-slate-400 flex items-center gap-2"><Globe className="h-3 w-3" /> Secondary Text</Label>
+                              <Input 
+                                 value={editingItem?.language === 'English & Hindi' ? (editQForm?.[`option${opt}Hindi`] || "") : (editQForm?.[`option${opt}Punjabi`] || "")} 
+                                 onChange={e => setEditQForm({...editQForm, [editingItem?.language === 'English & Hindi' ? `option${opt}Hindi` : `option${opt}Punjabi`]: e.target.value})} 
+                                 className="bg-white border-none font-bold h-12 rounded-xl" 
+                              />
+                           </div>
+                        </div>
+                     ))}
+                  </div>
+               </div>
+
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-6 border-t border-slate-100">
                   <div className="space-y-3">
                      <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">English Rationalization</Label>
                      <Textarea value={editQForm?.englishExplanation || ""} onChange={e => setEditQForm({...editQForm, englishExplanation: e.target.value})} className="h-32 rounded-2xl bg-slate-900 text-emerald-400 font-medium p-6 shadow-2xl" />
