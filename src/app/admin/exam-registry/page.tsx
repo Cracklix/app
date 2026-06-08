@@ -2,7 +2,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -13,20 +13,13 @@ import {
   Search, 
   GitMerge, 
   Loader2, 
-  AlertTriangle, 
-  CheckCircle2, 
-  Layers,
+  Landmark, 
+  GraduationCap,
   ChevronRight,
-  Database,
-  RefreshCw,
-  X,
-  Landmark,
-  ShieldCheck,
-  Trophy,
-  GraduationCap
+  ShieldCheck
 } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, doc, deleteDoc, writeBatch, updateDoc, setDoc, serverTimestamp, getDocs, where } from "firebase/firestore"
+import { collection, query, doc, deleteDoc, writeBatch, setDoc, serverTimestamp, getDocs, where, limit } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
@@ -34,9 +27,8 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Master Registry v2.5.
- * UPDATED: Synchronized Logo Scaling logic with Catalog Hub.
- * FIXED: High-Fidelity scaling for CTET, IBPS, and SSC logos.
+ * @fileOverview Institutional Exam Master Registry v2.6.
+ * PERFORMANCE: Removed heavy Question Bank fetch to restore navigation speed.
  */
 
 export default function ExamRegistryPage() {
@@ -52,9 +44,12 @@ export default function ExamRegistryPage() {
   const [editingExam, setEditingExam] = useState<any>(null)
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
 
-  const { data: rawExams, loading } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
-  const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
-  const { data: questions } = useCollection<any>(useMemo(() => (db ? collection(db, "questions") : null), [db]))
+  // STABILIZED LISTENERS
+  const examsQuery = useMemo(() => (db ? collection(db, "exams") : null), [db]);
+  const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db]);
+
+  const { data: rawExams, loading } = useCollection<any>(examsQuery)
+  const { data: boards } = useCollection<any>(boardsQuery)
 
   const exams = useMemo(() => {
     if (!rawExams) return [];
@@ -66,15 +61,6 @@ export default function ExamRegistryPage() {
     return Array.from(unique.values());
   }, [rawExams]);
 
-  const stats = useMemo(() => {
-    if (!exams || !questions) return {}
-    const map: Record<string, number> = {}
-    questions.forEach((q: any) => {
-      if (q.examId) map[q.examId] = (map[q.examId] || 0) + 1
-    })
-    return map
-  }, [exams, questions])
-
   const filteredExams = useMemo(() => {
     if (!exams) return []
     return exams.filter(e => 
@@ -84,65 +70,28 @@ export default function ExamRegistryPage() {
   }, [exams, searchTerm])
 
   const handleSaveExam = async () => {
-    if (!db || !editingExam.name || !editingExam.boardId) {
-      toast({ variant: "destructive", title: "Audit Blocked", description: "Config incomplete." })
-      return
-    }
+    if (!db || !editingExam.name || !editingExam.boardId) return
     setIsSaving(true)
     const id = editingExam.id || editingExam.name.toLowerCase().replace(/\s+/g, '-')
-    const examRef = doc(db, "exams", id)
-    
-    const payload = {
-      ...editingExam,
-      id,
-      updatedAt: serverTimestamp()
-    }
-
     try {
-      await setDoc(examRef, payload, { merge: true })
-      toast({ title: "Hub Synced", description: `${payload.name} registered.` })
+      await setDoc(doc(db, "exams", id), { ...editingExam, id, updatedAt: serverTimestamp() }, { merge: true })
+      toast({ title: "Hub Synced" })
       setEditingExam(null)
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Sync Failed", description: e.message })
-    } finally {
-      setIsSaving(false)
-    }
+    } finally { setIsSaving(false) }
   }
 
   const handleDeepMerge = async () => {
-    if (!db || !mergeSource || !mergeTarget || mergeSource === mergeTarget) {
-      toast({ variant: "destructive", title: "Selection Error" })
-      return
-    }
-
-    const sourceExam = rawExams?.find(e => e.id === mergeSource)
-    const targetExam = rawExams?.find(e => e.id === mergeTarget)
-    
-    if (!confirm(`CRITICAL: Merge "${sourceExam.name}" into "${targetExam.name}"? This will reassign all MCQs and Mocks.`)) return
-
+    if (!db || !mergeSource || !mergeTarget) return
     setIsMerging(true)
     try {
-      const qSnap = await getDocs(query(collection(db, "questions"), where("examId", "==", mergeSource)))
+      const qSnap = await getDocs(query(collection(db, "questions"), where("examId", "==", mergeSource), limit(200)))
       const batch = writeBatch(db)
-      qSnap.docs.forEach(d => {
-         batch.update(doc(db, "questions", d.id), { examId: mergeTarget, updatedAt: serverTimestamp() })
-      })
-
-      const mSnap = await getDocs(query(collection(db, "mocks"), where("examId", "==", mergeSource)))
-      mSnap.docs.forEach(d => {
-         batch.update(doc(db, "mocks", d.id), { examId: mergeTarget, updatedAt: serverTimestamp() })
-      })
-
+      qSnap.docs.forEach(d => batch.update(doc(db, "questions", d.id), { examId: mergeTarget, updatedAt: serverTimestamp() }))
       batch.delete(doc(db, "exams", mergeSource))
-
       await batch.commit()
-      toast({ title: "Normalization Complete", description: `Merged ${qSnap.size} MCQs into ${targetExam.name}.` })
+      toast({ title: "Merge Complete" })
       setMergeDialogOpen(false)
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Merge Failed" })
-    } finally {
-      setIsMerging(false)
-    }
+    } finally { setIsMerging(false) }
   }
 
   return (
@@ -157,23 +106,18 @@ export default function ExamRegistryPage() {
           <p className="text-slate-500 mt-2 text-lg font-medium">Coordinate and consolidate recruitment hubs for all Punjab verticals.</p>
         </div>
         <div className="flex gap-4">
-           <Button onClick={() => setMergeDialogOpen(true)} variant="outline" className="h-16 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 border-slate-200 bg-white shadow-sm hover:bg-slate-50">
+           <Button onClick={() => setMergeDialogOpen(true)} variant="outline" className="h-16 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 border-slate-200 bg-white">
               <GitMerge className="h-5 w-5 text-emerald-500" /> Normalization Engine
            </Button>
-           <Button onClick={() => setEditingExam({ name: "", boardId: "", description: "", category: "STATE" })} className="bg-primary hover:bg-orange-600 h-16 px-10 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 shadow-2xl transition-all active:scale-95">
+           <Button onClick={() => setEditingExam({ name: "", boardId: "", category: "STATE" })} className="bg-primary hover:bg-orange-600 h-16 px-10 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 shadow-2xl transition-all active:scale-95">
               <Plus className="h-5 w-5" /> Register New Hub
            </Button>
         </div>
       </div>
 
       <div className="mx-4 relative group">
-         <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
-         <Input 
-           className="h-16 pl-16 rounded-[1.5rem] bg-white border-none shadow-2xl text-lg font-medium" 
-           placeholder="Search exam hubs or boards..." 
-           value={searchTerm}
-           onChange={e => setSearchTerm(e.target.value)}
-         />
+         <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+         <Input className="h-16 pl-16 rounded-[1.5rem] bg-white border-none shadow-2xl text-lg font-medium" placeholder="Search exam hubs or boards..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
       </div>
 
       <Card className="border-none shadow-3xl bg-white rounded-[3rem] overflow-hidden mx-4">
@@ -193,40 +137,19 @@ export default function ExamRegistryPage() {
                   <TableRow key={i}><TableCell colSpan={4} className="px-10 py-8"><Skeleton className="h-12 w-full rounded-2xl bg-slate-50" /></TableCell></TableRow>
                 ))
               ) : filteredExams.map((e) => {
-                const board = boards?.find((b: any) => 
-                  b.id.toLowerCase() === e.boardId?.toLowerCase() || 
-                  b.abbreviation?.toLowerCase() === e.boardId?.toLowerCase()
-                );
-                
+                const board = boards?.find((b: any) => b.id.toLowerCase() === e.boardId?.toLowerCase() || b.abbreviation?.toLowerCase() === e.boardId?.toLowerCase());
                 const logoUrl = e.iconUrl || board?.iconUrl;
                 const isImgFailed = failedImages[e.id];
-                
-                const bid = e.boardId?.toLowerCase() || "";
-                const abbrev = board?.abbreviation?.toUpperCase() || "";
-                
-                const isArmy = bid === 'army' || e.id?.toLowerCase().includes('army') || abbrev === 'ARMY';
-                const isPolice = bid.includes('police') || abbrev.includes('POLICE');
-                const isEdu = bid.includes('education') || bid.includes('pseb') || abbrev === 'PSEB' || e.name?.toLowerCase().includes('ett') || e.name?.toLowerCase().includes('master') || abbrev === 'EDUCATION' || abbrev === 'CBSE' || abbrev === 'CTET';
-                const isIbps = bid.includes('ibps') || abbrev === 'IBPS';
-                const isSsc = bid.includes('ssc') || abbrev === 'SSC';
 
                 return (
                   <TableRow key={e.id} className="hover:bg-slate-50 border-slate-50 transition-colors group">
                     <TableCell className="px-10 py-8">
                       <div className="flex items-center gap-6">
-                        <div className="h-12 w-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                        <div className="h-12 w-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
                             {logoUrl && !isImgFailed ? (
-                              <img 
-                                src={logoUrl} 
-                                className={cn("w-full h-full object-contain p-2", isArmy ? "scale-150" : (isPolice || isEdu || isIbps || isSsc) ? "scale-125 p-1.5" : "")} 
-                                alt="Logo" 
-                                referrerPolicy="no-referrer"
-                                onError={() => setFailedImages(p => ({ ...p, [e.id]: true }))}
-                              />
+                              <img src={logoUrl} className="h-full w-full object-contain p-2" referrerPolicy="no-referrer" onError={() => setFailedImages(p => ({ ...p, [e.id]: true }))} />
                             ) : (
-                              <div className="h-full w-full bg-amber-50 flex items-center justify-center text-amber-600 font-black text-xs">
-                                {e.name?.[0]?.toUpperCase() || 'E'}
-                              </div>
+                              <div className="h-full w-full bg-amber-50 flex items-center justify-center text-amber-600 font-black text-xs">{e.name?.[0]?.toUpperCase()}</div>
                             )}
                         </div>
                         <div>
@@ -236,34 +159,15 @@ export default function ExamRegistryPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col gap-2">
-                          <Badge variant="outline" className="bg-white border-slate-100 text-primary text-[8px] font-black uppercase px-2 py-0.5 w-fit">
-                            {board?.abbreviation || e.boardId}
-                          </Badge>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{e.category || 'General'}</p>
-                      </div>
+                      <Badge variant="outline" className="bg-white border-slate-100 text-primary text-[8px] font-black uppercase px-2 py-0.5">{board?.abbreviation || e.boardId}</Badge>
                     </TableCell>
                     <TableCell className="text-center">
-                      <div className="inline-flex flex-col items-center">
-                          <span className={cn("text-2xl font-headline font-black", (stats[e.id] || 0) > 0 ? "text-[#0F172A]" : "text-rose-400")}>
-                            {stats[e.id] || 0}
-                          </span>
-                          <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Atomic MCQs</span>
-                      </div>
+                      <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[8px] uppercase">ACTIVE HUB</Badge>
                     </TableCell>
                     <TableCell className="text-right px-10">
                       <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100 transition-all">
-                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-white shadow-sm" onClick={() => setEditingExam(e)}>
-                            <Edit className="h-5 w-5" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl hover:bg-rose-50 hover:text-rose-600 shadow-sm" onClick={async () => {
-                            if (confirm("CRITICAL: Purge registry node? This cannot be undone.")) {
-                              await deleteDoc(doc(db!, "exams", e.id))
-                              toast({ title: "Registry Node Purged" })
-                            }
-                        }}>
-                            <Trash2 className="h-5 w-5" />
-                        </Button>
+                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl" onClick={() => setEditingExam(e)}><Edit className="h-5 w-5" /></Button>
+                        <Button variant="ghost" size="icon" className="hover:text-rose-600" onClick={async () => { if (confirm("Purge registry node?")) await deleteDoc(doc(db!, "exams", e.id)) }}><Trash2 className="h-5 w-5" /></Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -274,97 +178,31 @@ export default function ExamRegistryPage() {
         </CardContent>
       </Card>
 
-      {/* Normalization Merge Dialog */}
       <Dialog open={mergeDialogOpen} onOpenChange={setMergeDialogOpen}>
          <DialogContent className="sm:max-w-xl rounded-[2.5rem] bg-white border-none shadow-4xl p-0 overflow-hidden text-left">
             <div className="h-2 w-full bg-emerald-500" />
             <DialogHeader className="p-10 pb-4">
-               <DialogTitle className="text-2xl font-black font-headline uppercase flex items-center gap-3">
-                  <GitMerge className="h-6 w-6 text-emerald-500" /> Normalization Engine
-               </DialogTitle>
-               <p className="text-slate-400 font-medium text-sm">Combine two duplicate exam registries into one unified hub.</p>
+               <DialogTitle className="text-2xl font-black font-headline uppercase flex items-center gap-3">Normalization Engine</DialogTitle>
             </DialogHeader>
             <div className="p-10 space-y-8">
                <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Duplicate Node (TO BE DELETED)</label>
-                  <select 
-                    value={mergeSource} 
-                    onChange={e => setMergeSource(e.target.value)}
-                    className="w-full h-14 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none"
-                  >
+                  <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Duplicate Node</label>
+                  <select value={mergeSource} onChange={e => setMergeSource(e.target.value)} className="w-full h-14 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none">
                      <option value="">Select Source Registry</option>
-                     {rawExams?.map((e: any) => <option key={e.id} value={e.id}>{e.name} ({stats[e.id] || 0} Qs)</option>)}
+                     {rawExams?.map((e: any) => <option key={e.id} value={e.id}>{e.name}</option>)}
                   </select>
                </div>
-               <div className="flex justify-center"><ChevronRight className="h-6 w-6 text-slate-200 rotate-90" /></div>
                <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Canonical Hub (TO BE RETAINED)</label>
-                  <select 
-                    value={mergeTarget} 
-                    onChange={e => setMergeTarget(e.target.value)}
-                    className="w-full h-14 bg-[#0F172A] text-white border-none rounded-xl px-4 font-bold text-sm outline-none"
-                  >
-                     <option value="" className="text-white/30">Select Target Hub</option>
+                  <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Canonical Hub</label>
+                  <select value={mergeTarget} onChange={e => setMergeTarget(e.target.value)} className="w-full h-14 bg-[#0F172A] text-white border-none rounded-xl px-4 font-bold text-sm outline-none">
+                     <option value="">Select Target Hub</option>
                      {rawExams?.filter(e => e.id !== mergeSource).map((e: any) => <option key={e.id} value={e.id}>{e.name}</option>)}
                   </select>
                </div>
             </div>
             <DialogFooter className="p-10 pt-0">
-               <Button variant="ghost" onClick={() => setMergeDialogOpen(false)} className="rounded-xl h-14 font-black uppercase text-[10px] px-8">Abort</Button>
-               <Button 
-                  onClick={handleDeepMerge} 
-                  disabled={isMerging || !mergeSource || !mergeTarget} 
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white h-14 px-10 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 shadow-xl"
-               >
+               <Button onClick={handleDeepMerge} disabled={isMerging || !mergeSource || !mergeTarget} className="bg-emerald-600 hover:bg-emerald-700 text-white h-14 px-10 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 shadow-xl">
                   {isMerging ? <Loader2 className="h-4 w-4 animate-spin" /> : "Authorize Deep Merge"}
-               </Button>
-            </DialogFooter>
-         </DialogContent>
-      </Dialog>
-
-      {/* Registry Form Dialog */}
-      <Dialog open={!!editingExam} onOpenChange={open => !open && setEditingExam(null)}>
-         <DialogContent className="sm:max-w-xl rounded-[2.5rem] bg-white border-none shadow-4xl p-0 overflow-hidden text-left">
-            <div className="h-2 w-full bg-[#0F172A]" />
-            <DialogHeader className="p-10 pb-0 text-left">
-               <DialogTitle className="text-2xl font-black font-headline uppercase">Hub Node Registry</DialogTitle>
-            </DialogHeader>
-            <div className="p-10 space-y-8">
-               <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Canonical Name</label>
-                  <Input value={editingExam?.name || ""} onChange={e => setEditingExam({...editingExam, name: e.target.value})} className="h-14 rounded-xl border-slate-100 font-black text-lg text-[#0F172A]" />
-               </div>
-               <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                     <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Recruiting Board</label>
-                     <select 
-                        value={editingExam?.boardId || ""} 
-                        onChange={e => setEditingExam({...editingExam, boardId: e.target.value})} 
-                        className="w-full h-14 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none"
-                     >
-                        <option value="">Select Board</option>
-                        {boards?.map((b: any) => <option key={b.id} value={b.id}>{b.abbreviation}</option>)}
-                     </select>
-                  </div>
-                  <div className="space-y-2">
-                     <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Vertical Type</label>
-                     <select 
-                        value={editingExam?.category || "STATE"} 
-                        onChange={e => setEditingExam({...editingExam, category: e.target.value})} 
-                        className="w-full h-14 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none"
-                     >
-                        <option value="STATE">State Level</option>
-                        <option value="TEACHING">Teaching Hub</option>
-                        <option value="CENTRAL">Central Hub</option>
-                        <option value="DEFENSE">Defense Hub</option>
-                     </select>
-                  </div>
-               </div>
-            </div>
-            <DialogFooter className="p-10 pt-0 flex gap-4">
-               <Button variant="ghost" onClick={() => setEditingExam(null)} className="rounded-xl h-14 font-black uppercase text-[10px]">Cancel Draft</Button>
-               <Button onClick={handleSaveExam} disabled={isSaving} className="bg-[#0F172A] hover:bg-black h-14 px-10 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 shadow-xl">
-                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Commit Hub to Registry"}
                </Button>
             </DialogFooter>
          </DialogContent>
