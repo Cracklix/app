@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useState } from "react"
@@ -16,64 +15,36 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Phase 142: Real-Time State Merit Index.
- * UPDATED: Removed ALL hardcoded offsets for 100% real-time accuracy.
+ * @fileOverview Phase 143: State Merit Index (Optimized).
+ * PERFORMANCE: Stabilized queries and memoized heavy ranking loops.
  */
 
 export default function LeaderboardPage() {
   const db = useFirestore()
   const [searchTerm, setSearchTerm] = useState("")
   
-  // 1. Live Data Listeners
-  const meritQuery = useMemo(() => {
-    if (!db) return null
-    return query(collection(db, "results"), orderBy("score", "desc"), limit(100))
-  }, [db])
+  // STABILIZED LISTENERS (Strictly limited for speed)
+  const meritQuery = useMemo(() => (db ? query(collection(db, "results"), orderBy("score", "desc"), limit(50)) : null), [db])
+  const usersQuery = useMemo(() => (db ? query(collection(db, "users"), limit(100)) : null), [db])
+  const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true), limit(50)) : null), [db])
 
   const { data: results, loading: resultsLoading } = useCollection<any>(meritQuery)
-  const { data: users, loading: usersLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]))
-  const { data: mocks } = useCollection<any>(useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true)) : null), [db]))
+  const { data: users, loading: usersLoading } = useCollection<any>(usersQuery)
+  const { data: mocks } = useCollection<any>(mocksQuery)
 
-  // 2. Real-Time Stats Calculation (No offsets)
-  const liveAspirantCount = useMemo(() => {
-    const count = (users?.length || 0);
-    return count > 999 ? `${(count / 1000).toFixed(1)}k+` : count.toLocaleString();
-  }, [users]);
-
-  const liveMockCount = useMemo(() => {
-    const count = (mocks?.length || 0);
-    return count.toString();
-  }, [mocks]);
-
-  const liveRankerCount = useMemo(() => {
-    // Unique users who have at least one result in the results collection
-    const uniqueUsers = new Set(results?.map(r => r.userId) || []);
-    const count = uniqueUsers.size;
-    return count > 999 ? `${(count / 1000).toFixed(1)}k+` : count.toLocaleString();
-  }, [results]);
-
-  const avgAccuracy = useMemo(() => {
-    if (!results || results.length === 0) return "0%";
-    const sum = results.reduce((acc: number, curr: any) => acc + (curr.accuracy || 0), 0);
-    const avg = Math.round(sum / results.length);
-    return `${avg}%`;
-  }, [results]);
-
-  // 3. Logic to group best performance per student
   const meritList = useMemo(() => {
     if (!results || !users) return []
-    
     const lowerSearch = searchTerm.toLowerCase();
     const uniqueRankers = new Map();
     
     results.forEach((r: any) => {
       if (!uniqueRankers.has(r.userId)) {
         const userProfile = users.find(u => u.id === r.userId);
-        if (userProfile && (userProfile.name?.toLowerCase().includes(lowerSearch) || userProfile.email?.toLowerCase().includes(lowerSearch))) {
+        if (!searchTerm || (userProfile && (userProfile.name?.toLowerCase().includes(lowerSearch) || userProfile.email?.toLowerCase().includes(lowerSearch)))) {
           uniqueRankers.set(r.userId, {
             id: r.userId,
-            name: userProfile.name,
-            email: userProfile.email,
+            name: userProfile?.name || r.userName || "Aspirant",
+            email: userProfile?.email || "---",
             profile: userProfile,
             score: r.score,
             accuracy: r.accuracy,
@@ -83,7 +54,6 @@ export default function LeaderboardPage() {
         }
       }
     });
-
     return Array.from(uniqueRankers.values());
   }, [results, users, searchTerm]);
 
@@ -93,39 +63,18 @@ export default function LeaderboardPage() {
     <div className="min-h-screen bg-slate-50/30 font-body text-left">
       <Navbar />
       <main className="container mx-auto px-4 md:px-6 py-12 md:py-20 max-w-6xl space-y-12 md:space-y-16">
-        
-        {/* HEADER HUB */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
           <div className="space-y-6 text-left">
-            <div className="flex items-center gap-4">
-               <div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
-                  <ShieldCheck className="h-7 w-7" />
-               </div>
-               <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-500">Live State Merit Index</span>
-            </div>
-            <h1 className="text-5xl md:text-8xl font-headline font-black text-[#0F172A] tracking-tighter uppercase leading-[0.9] tracking-tighter">
-              HALL OF <br/> <span className="text-primary">RANKERS</span>
-            </h1>
-            <p className="text-slate-500 font-medium text-lg md:text-xl max-w-xl leading-relaxed">
-              Real-time rankings based on institutional mock results. Audit your position among thousands of aspirants.
-            </p>
+            <div className="flex items-center gap-4"><div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner"><ShieldCheck className="h-7 w-7" /></div><span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-500">Live State Merit Index</span></div>
+            <h1 className="text-5xl md:text-8xl font-headline font-black text-[#0F172A] tracking-tighter uppercase leading-[0.9]">HALL OF <br/> <span className="text-primary">RANKERS</span></h1>
+            <p className="text-slate-500 font-medium text-lg md:text-xl max-w-xl leading-relaxed">Real-time rankings based on institutional mock results. Audit your position among thousands of aspirants.</p>
           </div>
-          
           <div className="relative w-full md:w-96 group">
             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
-            <div className="relative">
-               <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
-               <Input 
-                 className="h-16 pl-14 rounded-2xl bg-white border-none shadow-xl text-lg font-bold text-[#0F172A]" 
-                 placeholder="Search aspirant registry..." 
-                 value={searchTerm}
-                 onChange={e => setSearchTerm(e.target.value)}
-               />
-            </div>
+            <div className="relative"><Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus:text-primary transition-colors" /><Input className="h-16 pl-14 rounded-2xl bg-white border-none shadow-xl text-lg font-bold" placeholder="Search aspirant..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
           </div>
         </div>
 
-        {/* STATE PODIUM */}
         {meritList.length >= 3 && !searchTerm && (
            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end pt-16 md:pt-24 pb-8">
               <PodiumCard rank={2} data={podium[1]} color="bg-slate-300" />
@@ -134,80 +83,22 @@ export default function LeaderboardPage() {
            </div>
         )}
 
-        {/* FULL REGISTRY LIST */}
         <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden">
            <CardContent className="p-0">
-              <div className="p-8 md:p-10 border-b border-slate-50 bg-slate-50/30 grid grid-cols-12 text-[10px] md:text-xs font-black uppercase tracking-widest text-slate-500">
-                 <div className="col-span-2 md:col-span-1">RANK</div>
-                 <div className="col-span-6 md:col-span-7">ASPIRANT NODE</div>
-                 <div className="col-span-2 text-center">SCORE</div>
-                 <div className="col-span-2 text-right">ACCURACY</div>
-              </div>
+              <div className="p-8 md:p-10 border-b border-slate-50 bg-slate-50/30 grid grid-cols-12 text-[10px] md:text-xs font-black uppercase tracking-widest text-slate-500"><div className="col-span-2 md:col-span-1">RANK</div><div className="col-span-6 md:col-span-7">ASPIRANT NODE</div><div className="col-span-2 text-center">SCORE</div><div className="col-span-2 text-right">ACCURACY</div></div>
               <div className="divide-y divide-slate-50">
-                 {resultsLoading || usersLoading ? (
-                   Array.from({ length: 8 }).map((_, i) => (
-                      <div key={i} className="p-8 grid grid-cols-12 gap-6 items-center">
-                         <Skeleton className="h-6 w-8 rounded-md col-span-1" />
-                         <div className="col-span-7 flex items-center gap-4">
-                            <Skeleton className="h-12 w-12 rounded-xl" />
-                            <div className="space-y-2"><Skeleton className="h-4 w-32" /><Skeleton className="h-3 w-20" /></div>
-                         </div>
-                         <Skeleton className="h-8 w-full rounded-md col-span-2" />
-                         <Skeleton className="h-8 w-full rounded-md col-span-2" />
-                      </div>
-                   ))
-                 ) : meritList.length > 0 ? (
-                    meritList.map((entry, idx) => (
+                 {resultsLoading || usersLoading ? Array.from({ length: 5 }).map((_, i) => (<div key={i} className="p-8 grid grid-cols-12 gap-6 items-center"><Skeleton className="h-6 w-8 rounded-md col-span-1" /><div className="col-span-7 flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-xl" /><div className="space-y-2"><Skeleton className="h-4 w-32" /><Skeleton className="h-3 w-20" /></div></div><Skeleton className="h-8 w-full rounded-md col-span-2" /><Skeleton className="h-8 w-full rounded-md col-span-2" /></div>)) : 
+                 meritList.length > 0 ? meritList.map((entry, idx) => (
                       <div key={entry.id} className="p-8 md:p-10 grid grid-cols-12 items-center hover:bg-slate-50/50 transition-all group cursor-pointer border-l-[4px] border-transparent hover:border-primary">
-                         <div className="col-span-2 md:col-span-1 font-headline font-black text-xl md:text-3xl text-slate-300 group-hover:text-primary transition-colors">
-                            #{idx + 1}
-                         </div>
-                         <div className="col-span-6 md:col-span-7 flex items-center gap-4 md:gap-8">
-                            <StudentAvatar profile={entry.profile} className="h-12 w-12 md:h-16 md:w-16 rounded-xl md:rounded-2xl border-2 border-slate-100 shadow-sm" />
-                            <div className="min-w-0">
-                               <p className="font-black text-[#0F172A] text-base md:text-2xl uppercase tracking-tight truncate leading-none">{entry.name}</p>
-                               <div className="flex items-center gap-3 mt-1.5 md:mt-3">
-                                  <Badge className="bg-primary/10 text-primary border-none text-[7px] md:text-[9px] font-black uppercase px-2 py-0.5">{entry.profile?.targetExam || 'General Hub'}</Badge>
-                                  <span className="hidden md:inline-flex items-center gap-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-                                     <Activity className="h-3 w-3" /> Recent: {entry.mockTitle}
-                                  </span>
-                               </div>
-                            </div>
-                         </div>
-                         <div className="col-span-2 text-center">
-                            <div className="inline-flex flex-col items-center">
-                               <span className="font-headline font-black text-xl md:text-4xl text-[#0F172A] tracking-tighter leading-none">{entry.score}</span>
-                               <span className="text-[7px] md:text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">PTS</span>
-                            </div>
-                         </div>
-                         <div className="col-span-2 text-right">
-                            <Badge className={cn(
-                               "border-none text-[10px] md:text-[13px] font-black px-3 md:px-5 py-1.5 md:py-2 rounded-xl shadow-lg",
-                               entry.accuracy > 85 ? "bg-emerald-50 text-emerald-600" : entry.accuracy > 60 ? "bg-amber-50 text-amber-600" : "bg-slate-100 text-slate-400"
-                            )}>
-                               {entry.accuracy}%
-                            </Badge>
-                         </div>
+                         <div className="col-span-2 md:col-span-1 font-headline font-black text-xl md:text-3xl text-slate-300 group-hover:text-primary transition-colors">#{idx + 1}</div>
+                         <div className="col-span-6 md:col-span-7 flex items-center gap-4 md:gap-8"><StudentAvatar profile={entry.profile} className="h-12 w-12 md:h-16 md:w-16 rounded-xl md:rounded-2xl border-2 border-slate-100 shadow-sm" /><div className="min-w-0"><p className="font-black text-[#0F172A] text-base md:text-2xl uppercase tracking-tight truncate leading-none">{entry.name}</p><div className="flex items-center gap-3 mt-1.5 md:mt-3"><Badge className="bg-primary/10 text-primary border-none text-[7px] md:text-[9px] font-black uppercase px-2 py-0.5">{entry.profile?.targetExam || 'General Hub'}</Badge><span className="hidden md:inline-flex items-center gap-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest"><Activity className="h-3 w-3" /> {entry.mockTitle}</span></div></div></div>
+                         <div className="col-span-2 text-center"><div className="inline-flex flex-col items-center"><span className="font-headline font-black text-xl md:text-4xl text-[#0F172A] tracking-tighter leading-none">{entry.score}</span><span className="text-[7px] md:text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">PTS</span></div></div>
+                         <div className="col-span-2 text-right"><Badge className={cn("border-none text-[10px] md:text-[13px] font-black px-3 md:px-5 py-1.5 md:py-2 rounded-xl shadow-lg", entry.accuracy > 85 ? "bg-emerald-50 text-emerald-600" : entry.accuracy > 60 ? "bg-amber-50 text-amber-600" : "bg-slate-100 text-slate-400")}>{entry.accuracy}%</Badge></div>
                       </div>
-                    ))
-                 ) : (
-                    <div className="py-32 flex flex-col items-center justify-center text-slate-300 opacity-20 text-center space-y-6">
-                       <Activity className="h-24 w-24" />
-                       <p className="font-headline font-black text-3xl uppercase tracking-widest">No Merit Nodes Detected</p>
-                       <p className="text-lg font-bold uppercase">Awaiting first successful mock attempt sync.</p>
-                    </div>
-                 )}
+                    )) : (<div className="py-32 flex flex-col items-center justify-center text-slate-300 opacity-20 text-center space-y-6"><Activity className="h-24 w-24" /><p className="font-headline font-black text-3xl uppercase tracking-widest">No Merit Nodes Detected</p></div>)}
               </div>
            </CardContent>
         </Card>
-
-        {/* INSTITUTIONAL TRUST BAR (No offsets) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-10">
-           <MeritStat icon={<Users className="text-blue-500" />} label="ACTIVE ASPIRANTS" val={liveAspirantCount} />
-           <MeritStat icon={<Target className="text-primary" />} label="AVG ACCURACY" val={avgAccuracy} />
-           <MeritStat icon={<Zap className="text-amber-500" />} label="LIVE MOCKS" val={liveMockCount} />
-           <MeritStat icon={<Medal className="text-emerald-500" />} label="RANKERS" val={liveRankerCount} />
-        </div>
       </main>
       <Footer />
     </div>
@@ -217,47 +108,8 @@ export default function LeaderboardPage() {
 function PodiumCard({ rank, data, color, isMain }: any) {
    return (
       <div className={cn("flex flex-col items-center space-y-8 group relative", isMain ? "mb-12 md:mb-16 z-20" : "mb-6 z-10")}>
-         <div className="relative">
-            <StudentAvatar profile={data?.profile} className={cn("border-4 border-white shadow-5xl rounded-[3rem] transition-all duration-700 group-hover:scale-110", isMain ? "h-36 w-36 md:h-48 md:w-48" : "h-28 w-28 md:h-36 md:w-36")} />
-            <div className={cn("absolute -bottom-5 left-1/2 -translate-x-1/2 h-12 w-12 md:h-14 md:w-14 rounded-2xl flex items-center justify-center shadow-2xl border-4 border-white transition-transform group-hover:rotate-12", color)}>
-               <Trophy className="h-6 w-6 md:h-7 md:w-7 text-white fill-current" />
-            </div>
-            {isMain && (
-               <div className="absolute -top-10 left-1/2 -translate-x-1/2 animate-bounce">
-                  <Badge className="bg-primary text-white border-none font-black text-[10px] px-4 py-1.5 rounded-full shadow-2xl uppercase tracking-widest">State Topper</Badge>
-               </div>
-            )}
-         </div>
-         <div className="text-center space-y-3">
-            <h3 className={cn("font-headline font-black text-[#0F172A] uppercase tracking-tight truncate max-w-[220px]", isMain ? "text-3xl md:text-4xl" : "text-xl md:text-2xl")}>
-               {data?.name || '---'}
-            </h3>
-            <div className="flex items-center justify-center gap-6">
-               <div className="text-center">
-                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">SCORE</p>
-                  <p className="text-xl font-bold text-primary leading-none">{data?.score || '0'}</p>
-               </div>
-               <div className="h-6 w-px bg-slate-200" />
-               <div className="text-center">
-                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">ACCURACY</p>
-                  <p className="text-xl font-bold text-emerald-600 leading-none">{data?.accuracy || '0'}%</p>
-               </div>
-            </div>
-         </div>
-      </div>
-   )
-}
-
-function MeritStat({ icon, label, val }: any) {
-   return (
-      <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-xl border border-slate-100 flex items-center gap-6 group hover:translate-y-[-4px] transition-all">
-         <div className="h-10 w-10 md:h-14 md:w-14 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
-            {icon}
-         </div>
-         <div className="text-left">
-            <p className="text-[14px] md:text-2xl font-headline font-black text-[#0F172A] leading-none">{val}</p>
-            <p className="text-[7px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1.5">{label}</p>
-         </div>
+         <div className="relative"><StudentAvatar profile={data?.profile} className={cn("border-4 border-white shadow-5xl rounded-[3rem] transition-all duration-700 group-hover:scale-110", isMain ? "h-36 w-36 md:h-48 md:w-48" : "h-28 w-28 md:h-36 md:w-36")} /><div className={cn("absolute -bottom-5 left-1/2 -translate-x-1/2 h-12 w-12 md:h-14 md:w-14 rounded-2xl flex items-center justify-center shadow-2xl border-4 border-white transition-transform group-hover:rotate-12", color)}><Trophy className="h-6 w-6 md:h-7 md:w-7 text-white fill-current" /></div>{isMain && (<div className="absolute -top-10 left-1/2 -translate-x-1/2 animate-bounce"><Badge className="bg-primary text-white border-none font-black text-[10px] px-4 py-1.5 rounded-full shadow-2xl uppercase tracking-widest">State Topper</Badge></div>)}</div>
+         <div className="text-center space-y-3"><h3 className={cn("font-headline font-black text-[#0F172A] uppercase tracking-tight truncate max-w-[220px]", isMain ? "text-3xl md:text-4xl" : "text-xl md:text-2xl")}>{data?.name || '---'}</h3><div className="flex items-center justify-center gap-6"><div className="text-center"><p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">SCORE</p><p className="text-xl font-bold text-primary leading-none">{data?.score || '0'}</p></div><div className="h-6 w-px bg-slate-200" /><div className="text-center"><p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">ACCURACY</p><p className="text-xl font-bold text-emerald-600 leading-none">{data?.accuracy || '0'}%</p></div></div></div>
       </div>
    )
 }

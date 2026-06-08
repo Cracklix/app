@@ -26,8 +26,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 /**
- * @fileOverview Production Hardened CBT Attempt Engine v35.2.
- * UPDATED: Strict single-language isolation for English, Punjabi, and Hindi subjects.
+ * @fileOverview Production Hardened CBT Attempt Engine v36.0.
+ * PERFORMANCE: Removed blocking awaits from submission to ensure instant UI response.
  */
 
 export default function MockAttemptPage() {
@@ -45,7 +45,6 @@ export default function MockAttemptPage() {
   const [isSubmittingFinal, setIsSubmittingFinal] = useState(false);
   const [mockData, setMockData] = useState<any>(null);
 
-  // Granular Reactive Selectors
   const initExam = useExamStore(s => s.initExam);
   const tick = useExamStore(s => s.tick);
   const isPaused = useExamStore(s => s.isPaused);
@@ -58,7 +57,6 @@ export default function MockAttemptPage() {
   const startTime = useExamStore(s => s.startTime);
   const language = useExamStore(s => s.language); 
 
-  // SUBJECT-SPECIFIC LANGUAGE OVERRIDE LOGIC
   const q = questions[currentIdx];
   const selectedAnswer = answers[currentIdx];
   
@@ -66,12 +64,9 @@ export default function MockAttemptPage() {
     if (!q) return language;
     const sectionName = (q.sectionId || "").toUpperCase();
     const subjectId = (q.subjectId || "").toUpperCase();
-    
-    // Language subjects are never bilingual
     if (sectionName.includes("PUNJABI") || subjectId.includes("PUNJABI")) return "PUNJABI";
     if (sectionName.includes("ENGLISH") || subjectId.includes("ENGLISH")) return "ENGLISH";
     if (sectionName.includes("HINDI") || subjectId.includes("HINDI")) return "HINDI";
-    
     return language;
   }, [q, language]);
 
@@ -129,7 +124,7 @@ export default function MockAttemptPage() {
       }
     }
     loadExam();
-  }, [db, user?.uid, mockId, initExam]);
+  }, [db, user?.uid, mockId, initExam, router, toast]);
 
   useEffect(() => {
     if (isInitializing) return;
@@ -150,13 +145,9 @@ export default function MockAttemptPage() {
     questions.forEach((q, idx) => {
       const studentAnsIdx = answers[idx];
       if (studentAnsIdx === undefined || studentAnsIdx === null) return;
-
       const correctAnsIdx = ['A', 'B', 'C', 'D'].indexOf(q.correctAnswer);
-      if (studentAnsIdx === correctAnsIdx) {
-        score += positiveMarks;
-      } else {
-        score -= negativeMarks;
-      }
+      if (studentAnsIdx === correctAnsIdx) score += positiveMarks;
+      else score -= negativeMarks;
     });
 
     const now = Date.now();
@@ -181,15 +172,15 @@ export default function MockAttemptPage() {
     const resultRef = doc(db, "results", `${user.uid}_${mockId}`);
     const attemptRef = doc(db, "attempts", `${user.uid}_${mockId}`);
 
-    try {
-      await setDoc(resultRef, resultPayload);
-      await updateDoc(attemptRef, { status: 'COMPLETED', updatedAt: serverTimestamp() });
-      toast({ title: "Results Saved", description: "Your test results have been recorded." });
-      router.push(`/results/${mockId}`);
-    } catch (err: any) {
+    // OPTIMISTIC TRANSITION: Don't await the writes
+    setDoc(resultRef, resultPayload).catch((err) => {
       errorEmitter.emit('permission-error', new FirestorePermissionError({ path: resultRef.path, operation: 'create' }));
-      setIsSubmittingFinal(false);
-    }
+    });
+    
+    updateDoc(attemptRef, { status: 'COMPLETED', updatedAt: serverTimestamp() }).catch(() => {});
+
+    toast({ title: "Results Processing", description: "Your answers are being synchronized." });
+    router.push(`/results/${mockId}`);
   }, [db, user, isSubmittingFinal, questions, answers, router, toast, mockId, mockTitle, mockData, startTime]);
 
   if (isInitializing) return (
@@ -260,13 +251,8 @@ export default function MockAttemptPage() {
       </main>
       
       <Sheet open={isPaletteOpen} onOpenChange={setIsPaletteOpen}>
-        <SheetContent 
-          side="right" 
-          className="p-0 border-none overflow-hidden shadow-5xl w-[85vw] md:w-[400px] h-full"
-        >
-          <SheetHeader className="sr-only">
-             <SheetTitle>Question Map</SheetTitle>
-          </SheetHeader>
+        <SheetContent side="right" className="p-0 border-none overflow-hidden shadow-5xl w-[85vw] md:w-[400px] h-full">
+          <SheetHeader className="sr-only"><SheetTitle>Question Map</SheetTitle></SheetHeader>
           <QuestionPalette onSelect={(idx) => { useExamStore.getState().setCurrentIdx(idx); setIsPaletteOpen(false); }} onSubmit={() => setShowSubmitModal(true)} />
         </SheetContent>
       </Sheet>
@@ -274,24 +260,14 @@ export default function MockAttemptPage() {
       <Dialog open={showExitModal} onOpenChange={setShowExitModal}>
          <DialogContent className="max-w-[440px] rounded-[2.5rem] p-10 md:p-12 bg-white border-none shadow-5xl text-center">
             <div className="space-y-10">
-               <div className="h-16 w-16 bg-blue-50/50 rounded-2xl flex items-center justify-center mx-auto text-blue-500 shadow-inner">
-                  <LogOut className="h-8 w-8" />
-               </div>
+               <div className="h-16 w-16 bg-blue-50/50 rounded-2xl flex items-center justify-center mx-auto text-blue-500 shadow-inner"><LogOut className="h-8 w-8" /></div>
                <div className="space-y-3">
                   <DialogTitle className="text-3xl font-headline font-black uppercase text-[#0F172A] tracking-tight">Pause Test?</DialogTitle>
                   <p className="text-sm font-bold text-slate-400 leading-relaxed uppercase tracking-tight">Your progress will be saved. You can resume later from the dashboard.</p>
                </div>
                <div className="flex gap-4 pt-4">
                   <Button variant="ghost" onClick={() => setShowExitModal(false)} className="flex-1 h-16 rounded-xl font-black uppercase text-[11px] text-[#0F172A] tracking-widest hover:bg-slate-50">Cancel</Button>
-                  <Button 
-                    onClick={() => {
-                       setShowExitModal(false);
-                       router.push('/dashboard');
-                    }}
-                    className="flex-1 h-16 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl font-black uppercase text-[11px] tracking-widest shadow-xl shadow-orange-500/20 transition-all border-none"
-                  >
-                     Yes, Save & Exit
-                  </Button>
+                  <Button onClick={() => { setShowExitModal(false); router.push('/dashboard'); }} className="flex-1 h-16 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl font-black uppercase text-[11px] tracking-widest shadow-xl border-none">Yes, Save & Exit</Button>
                </div>
             </div>
          </DialogContent>
@@ -300,22 +276,15 @@ export default function MockAttemptPage() {
       <Dialog open={showSubmitModal} onOpenChange={show => !isSubmittingFinal && setShowSubmitModal(show)}>
          <DialogContent className="max-w-[440px] rounded-[3rem] p-12 bg-[#0F172A] text-white border-none shadow-5xl text-center">
             <div className="space-y-10">
-               <div className="h-24 w-24 bg-primary/20 rounded-[3rem] flex items-center justify-center mx-auto text-primary shadow-3xl">
-                  <ShieldCheck className="h-12 w-12" />
-               </div>
+               <div className="h-24 w-24 bg-primary/20 rounded-[3rem] flex items-center justify-center mx-auto text-primary shadow-3xl"><ShieldCheck className="h-12 w-12" /></div>
                <div className="space-y-3">
                   <DialogTitle className="text-3xl font-headline font-black uppercase text-white tracking-tight">Finish Test</DialogTitle>
                   <p className="text-slate-400 font-medium leading-relaxed">Are you sure you want to submit? Your answers will be locked for grading.</p>
                </div>
                <div className="flex gap-4 pt-4">
                   <Button variant="ghost" onClick={() => setShowSubmitModal(false)} disabled={isSubmittingFinal} className="flex-1 h-16 rounded-2xl text-slate-500 hover:text-white font-black uppercase text-[10px] tracking-widest">Go Back</Button>
-                  <Button 
-                     onClick={handleSubmitFinal}
-                     disabled={isSubmittingFinal}
-                     className="flex-1 h-16 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl shadow-3xl shadow-primary/20 gap-3"
-                  >
-                     {isSubmittingFinal ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-                     Submit Hub
+                  <Button onClick={handleSubmitFinal} disabled={isSubmittingFinal} className="flex-1 h-16 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl shadow-3xl gap-3 border-none">
+                     {isSubmittingFinal ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />} Submit Hub
                   </Button>
                </div>
             </div>
