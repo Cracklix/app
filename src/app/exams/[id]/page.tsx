@@ -13,17 +13,11 @@ import {
   BookOpen, 
   ShieldCheck, 
   ChevronRight,
-  Layers,
   FileText,
   Zap,
   ChevronLeft,
-  Sparkles,
   Info,
   Lock,
-  Newspaper,
-  FileStack,
-  Map,
-  Bell,
   GraduationCap,
   ListTree,
   Download
@@ -36,8 +30,8 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 
 /**
- * @fileOverview Institutional Exam Hub v7.2.
- * FIXED: Moved published filter to client-side to bypass Firestore index requirements.
+ * @fileOverview Institutional Exam Hub v8.0.
+ * UPDATED: Multi-Exam Assignment support using array-contains logic.
  */
 
 export default function ExamHubPage() {
@@ -50,13 +44,12 @@ export default function ExamHubPage() {
 
   const { data: exam, loading: examLoading } = useDoc<any>(useMemo(() => (db && examId ? doc(db, "exams", examId) : null), [db, examId]))
   
-  // 1. Fetch all mocks for this exam (Simple query, no index needed)
+  // Fetch all mocks that include this specific exam vertical ID in their examIds array
   const mocksQuery = useMemo(() => {
     if (!db || !examId) return null;
-    return query(collection(db, "mocks"), where("examId", "==", examId));
+    return query(collection(db, "mocks"), where("examIds", "array-contains", examId));
   }, [db, examId]);
 
-  // 2. Fetch all study notes/syllabus for this exam
   const notesQuery = useMemo(() => {
     if (!db || !examId) return null;
     return query(collection(db, "notes"), where("examId", "==", examId));
@@ -72,7 +65,6 @@ export default function ExamHubPage() {
   const { data: userResults } = useCollection<any>(resultsQuery)
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
 
-  // 3. Grouping Content Nodes with Client-Side Published Filter
   const groupedContent = useMemo(() => {
     const mocks = (rawMocks || []).filter(m => m.published === true);
     const notes = rawNotes || [];
@@ -142,7 +134,7 @@ export default function ExamHubPage() {
                   <DashboardTab value="FULL" label="Full Mocks" icon={<Zap className="h-3 w-3" />} />
                   <DashboardTab value="SUBJECT" label="Subject Tests" icon={<BookOpen className="h-3 w-3" />} />
                   <DashboardTab value="CHAPTER" label="Chapter Tests" icon={<ListTree className="h-3 w-3" />} />
-                  <DashboardTab value="PYQ" label="PYQ Papers" icon={<FileStack className="h-3 w-3" />} />
+                  <DashboardTab value="PYQ" label="PYQ Papers" icon={<Layers className="h-3 w-3" />} />
                   <DashboardTab value="NOTES" label="Study Notes" icon={<FileText className="h-3 w-3" />} />
                   <DashboardTab value="SYLLABUS" label="Syllabus" icon={<Info className="h-3 w-3" />} />
                </TabsList>
@@ -237,8 +229,6 @@ function MockList({ data, results, hasPass, user }: any) {
 }
 
 function NotesList({ data, hasPass, user }: any) {
-   const router = useRouter();
-
    if (data.length === 0) return <EmptyNode label="No Materials Archive Found" />;
 
    return (
@@ -282,7 +272,7 @@ function NotesList({ data, hasPass, user }: any) {
 function EmptyNode({ label }: { label: string }) {
    return (
       <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-3xl opacity-20">
-         <Sparkles className="h-10 w-10 mx-auto mb-4" />
+         <Zap className="h-10 w-10 mx-auto mb-4" />
          <p className="font-black uppercase tracking-[0.2em] text-[10px]">{label}</p>
       </div>
    )

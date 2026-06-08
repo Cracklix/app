@@ -10,8 +10,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Switch } from "@/components/ui/switch"
 import { Checkbox } from "@/components/ui/checkbox"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { 
   ChevronLeft, 
   Database, 
@@ -25,23 +25,19 @@ import {
   Clock,
   PlusCircle,
   Filter,
-  Landmark,
   BookOpen,
-  FileStack,
   Lock,
-  Unlock,
   History,
   Target,
-  AlertTriangle,
-  ChevronDown,
   Languages,
   ShieldCheck,
   Settings2,
   CheckCircle2,
-  Gem
+  Gem,
+  LayoutGrid
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
-import { collection, doc, setDoc, serverTimestamp, query, where, limit, getDocs, documentId, writeBatch } from "firebase/firestore"
+import { collection, doc, setDoc, serverTimestamp, query, limit, getDocs, writeBatch } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { MockType, Difficulty, AccessType, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
@@ -53,6 +49,8 @@ const SELECTION_RULES = [
   { id: 'no-duplicates', label: 'Block Duplicates', icon: <ShieldCheck className="h-3 w-3" /> },
   { id: 'topic-balanced', label: 'Balanced Topics', icon: <Target className="h-3 w-3" /> }
 ];
+
+type AssignmentMode = 'SINGLE' | 'MULTIPLE' | 'BOARD';
 
 export default function MockBuilderPage() {
   return (
@@ -79,6 +77,7 @@ function MockBuilderContent() {
   const [bankLoading, setBankLoading] = useState(false)
   const [questionBank, setQuestionBank] = useState<any[]>([])
   const [activeRules, setActiveRules] = useState<string[]>(['no-locked', 'no-duplicates'])
+  const [assignmentMode, setAssignmentMode] = useState<AssignmentMode>('SINGLE')
   const [bankFilter, setBankFilter] = useState({ 
     boardId: "all",
     examId: "all",
@@ -89,7 +88,7 @@ function MockBuilderContent() {
   const [mockData, setMockData] = useState<any>({
     title: "", 
     boardId: "", 
-    examId: "",
+    examIds: [] as string[],
     duration: 120, 
     difficulty: "Medium" as Difficulty, 
     mockType: "FULL" as MockType, 
@@ -127,6 +126,7 @@ function MockBuilderContent() {
       setMockData(prev => ({ 
         ...prev, 
         ...existingMock,
+        examIds: existingMock.examIds || (existingMock.examId ? [existingMock.examId] : []),
         positiveMarks: existingMock.positiveMarks ?? 1,
         negativeMarks: existingMock.negativeMarks ?? 0.25,
         duration: existingMock.duration ?? 120,
@@ -135,12 +135,14 @@ function MockBuilderContent() {
         accessType: existingMock.accessType ?? "FREE"
       }));
 
+      if (existingMock.examIds?.length > 1) setAssignmentMode('MULTIPLE');
+
       if (existingMock.sections && existingMock.sections.length > 0 && existingMock.questionIds) {
         let currentIndex = 0;
         const qIds = existingMock.questionIds;
         const hydratedSections = existingMock.sections.map((s: any, idx: number) => {
-          const sectionQIds = qIds.slice(currentIndex, currentIndex + s.count);
-          currentIndex += s.count;
+          const sectionQIds = qIds.slice(currentIndex, currentIndex + (s.count || 0));
+          currentIndex += (s.count || 0);
           return {
             id: `sec-${idx + 1}`,
             name: s.name,
@@ -161,7 +163,6 @@ function MockBuilderContent() {
       const matchesSubject = bankFilter.subjectId === "all" || q.subjectId === bankFilter.subjectId
       const notAlreadySelected = !allSelectedIds.includes(q.id)
       
-      // Advanced CBT Selection Logic
       if (activeRules.includes('unused-only') && q.status !== 'UNUSED') return false;
       if (activeRules.includes('no-locked') && q.status === 'LOCKED') return false;
       if (activeRules.includes('no-duplicates') && q.status === 'DUPLICATE') return false;
@@ -193,12 +194,25 @@ function MockBuilderContent() {
     const finalId = mockId || `mock-${Date.now()}`
     const mockRef = doc(db, "mocks", finalId)
     
+    // Multi-Exam Logic
+    let finalExamIds = [...mockData.examIds];
+    if (assignmentMode === 'BOARD') {
+       finalExamIds = exams?.filter((e: any) => e.boardId === mockData.boardId).map((e: any) => e.id) || [];
+    }
+
+    if (finalExamIds.length === 0) {
+       toast({ variant: "destructive", title: "No Exams Linked" });
+       setIsPublishing(false);
+       return;
+    }
+
     const flatQuestionIds = sections.flatMap(s => s.questions.map(q => q.id));
     const sectionMetadata = sections.map(s => ({ name: s.name, count: s.questions.length })).filter(s => s.count > 0);
 
     const payload = {
       ...mockData,
       id: finalId,
+      examIds: finalExamIds,
       totalQuestions,
       questionIds: flatQuestionIds,
       sections: sectionMetadata,
@@ -210,7 +224,6 @@ function MockBuilderContent() {
     try {
       await setDoc(mockRef, payload, { merge: true });
       
-      // Update Question Usage Stats
       const batch = writeBatch(db);
       flatQuestionIds.forEach(id => {
          const qRef = doc(db, "questions", id);
@@ -230,6 +243,14 @@ function MockBuilderContent() {
     }
   }
 
+  const toggleExamSelection = (id: string) => {
+     const current = mockData.examIds || [];
+     setMockData({
+        ...mockData,
+        examIds: current.includes(id) ? current.filter(x => x !== id) : [...current, id]
+     });
+  };
+
   return (
     <div className="max-w-[1600px] mx-auto space-y-8 pb-32 text-left pt-4">
       <div className="flex items-center justify-between gap-6 px-4">
@@ -247,32 +268,90 @@ function MockBuilderContent() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 px-4">
         <div className="lg:col-span-4 space-y-8">
-          <Card className="border-none shadow-4xl rounded-[3rem] bg-white p-10 space-y-10">
+          <Card className="border-none shadow-4xl rounded-[3rem] bg-white p-10 space-y-8">
              <div className="space-y-6">
                <div className="space-y-2">
                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Series Title</Label>
                  <Input value={mockData.title ?? ""} onChange={e => setMockData({...mockData, title: e.target.value})} className="rounded-xl h-14 font-bold text-lg border-slate-100 text-[#0F172A]" />
                </div>
 
-               <div className="grid grid-cols-2 gap-4">
+               <div className="space-y-4 pt-2">
+                  <p className="text-[10px] font-black uppercase text-primary tracking-[0.3em] ml-1">Exam Linking Mode</p>
+                  <RadioGroup value={assignmentMode} onValueChange={(v: any) => setAssignmentMode(v)} className="grid grid-cols-1 gap-3">
+                     <div className={cn("flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer", assignmentMode === 'SINGLE' ? "border-primary bg-primary/5" : "border-slate-100")} onClick={() => setAssignmentMode('SINGLE')}>
+                        <div className="flex items-center gap-3">
+                           <RadioGroupItem value="SINGLE" />
+                           <Label className="font-bold text-xs cursor-pointer">Single Vertical</Label>
+                        </div>
+                     </div>
+                     <div className={cn("flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer", assignmentMode === 'MULTIPLE' ? "border-primary bg-primary/5" : "border-slate-100")} onClick={() => setAssignmentMode('MULTIPLE')}>
+                        <div className="flex items-center gap-3">
+                           <RadioGroupItem value="MULTIPLE" />
+                           <Label className="font-bold text-xs cursor-pointer">Multiple Verticals</Label>
+                        </div>
+                     </div>
+                     <div className={cn("flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer", assignmentMode === 'BOARD' ? "border-primary bg-primary/5" : "border-slate-100")} onClick={() => setAssignmentMode('BOARD')}>
+                        <div className="flex items-center gap-3">
+                           <RadioGroupItem value="BOARD" />
+                           <Label className="font-bold text-xs cursor-pointer">Entire Authority Hub</Label>
+                        </div>
+                        <Badge className="bg-amber-50 text-amber-600 border-none text-[8px] font-black">AUTO-LINK</Badge>
+                     </div>
+                  </RadioGroup>
+               </div>
+
+               <div className="space-y-4">
                   <div className="space-y-2">
                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Authority Hub</Label>
-                   <Select value={mockData.boardId ?? ""} onValueChange={v => setMockData({...mockData, boardId: v})}>
-                     <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-none font-bold"><SelectValue placeholder="Board" /></SelectTrigger>
+                   <Select value={mockData.boardId ?? ""} onValueChange={v => setMockData({...mockData, boardId: v, examIds: []})}>
+                     <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-none font-bold"><SelectValue placeholder="Select Authority" /></SelectTrigger>
                      <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
                    </Select>
                  </div>
-                 <div className="space-y-2">
-                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Vertical</Label>
-                   <Select value={mockData.examId ?? ""} onValueChange={v => setMockData({...mockData, examId: v})}>
-                     <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-none font-bold"><SelectValue placeholder="Exam" /></SelectTrigger>
-                     <SelectContent>
-                        {exams?.filter((e: any) => e.boardId === mockData.boardId).sort((a:any, b:any) => a.name.localeCompare(b.name)).map((e: any) => (
-                           <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
-                        ))}
-                     </SelectContent>
-                   </Select>
-                 </div>
+
+                 {assignmentMode === 'SINGLE' && (
+                    <div className="space-y-2 animate-in slide-in-from-top-2">
+                       <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Target Vertical</Label>
+                       <Select value={mockData.examIds[0] ?? ""} onValueChange={v => setMockData({...mockData, examIds: [v]})}>
+                        <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-none font-bold"><SelectValue placeholder="Select Exam" /></SelectTrigger>
+                        <SelectContent>
+                           {exams?.filter((e: any) => e.boardId === mockData.boardId).map((e: any) => (
+                              <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
+                           ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                 )}
+
+                 {assignmentMode === 'MULTIPLE' && (
+                    <div className="space-y-3 animate-in slide-in-from-top-2">
+                       <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Select Linked Verticals</Label>
+                       <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
+                          {exams?.filter((e: any) => e.boardId === mockData.boardId).map((e: any) => (
+                             <button 
+                                key={e.id}
+                                onClick={() => toggleExamSelection(e.id)}
+                                className={cn(
+                                   "flex items-center gap-3 p-3 rounded-lg border text-left transition-all",
+                                   mockData.examIds.includes(e.id) ? "border-primary bg-primary/5 text-primary" : "border-slate-100 text-slate-400 hover:border-slate-200"
+                                )}
+                             >
+                                <Checkbox checked={mockData.examIds.includes(e.id)} onCheckedChange={() => toggleExamSelection(e.id)} />
+                                <span className="text-[10px] font-bold uppercase">{e.name}</span>
+                             </button>
+                          ))}
+                       </div>
+                    </div>
+                 )}
+
+                 {assignmentMode === 'BOARD' && (
+                    <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 flex items-start gap-3 animate-in slide-in-from-top-2">
+                       <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5" />
+                       <p className="text-[10px] font-medium text-emerald-700 leading-relaxed uppercase">
+                          This series will be automatically visible across ALL exams registered under the <strong>{boards?.find(b => b.id === mockData.boardId)?.abbreviation}</strong> authority.
+                       </p>
+                    </div>
+                 )}
                </div>
 
                <div className="space-y-4 pt-4 border-t border-slate-50">

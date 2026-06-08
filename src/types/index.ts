@@ -29,7 +29,7 @@ export interface MockTest {
   id: string;
   title: string;
   boardId: string;
-  examId: string;
+  examIds: string[]; // Supports multi-exam assignment
   mockType: MockType;
   accessType: AccessType;
   duration: number;

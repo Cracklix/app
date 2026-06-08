@@ -12,8 +12,8 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Density Exam Hub Catalog v10.0.
- * UPDATED: Renamed to "Hall of Exams" and hardened for real-time live data sync.
+ * @fileOverview High-Density Exam Hub Catalog v11.0.
+ * UPDATED: Multi-Exam assignment support for authentic prep node counting.
  */
 
 export default function PopularExams() {
@@ -40,7 +40,10 @@ export default function PopularExams() {
     const qMap: Record<string, number> = {};
     
     mocks.forEach(m => {
-      if (m.examId) mockMap[m.examId] = (mockMap[m.examId] || 0) + 1;
+      const eids = m.examIds || (m.examId ? [m.examId] : []);
+      eids.forEach((eid: string) => {
+        mockMap[eid] = (mockMap[eid] || 0) + 1;
+      });
     });
 
     questions.forEach(q => {
@@ -52,7 +55,6 @@ export default function PopularExams() {
 
   const exams = useMemo(() => {
     if (!rawExams) return [];
-    // Only sort by name, no filtering to ensure all "real" items show up
     return [...rawExams].sort((a: any, b: any) => a.name.localeCompare(b.name)).slice(0, 8);
   }, [rawExams]);
 

@@ -7,7 +7,7 @@ import Footer from "@/components/layout/Footer"
 import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection, query, doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore"
 import { Input } from "@/components/ui/input"
-import { Search, GraduationCap, ChevronRight, Zap, ShieldCheck, BookOpen, Layers, FileText, Star } from "lucide-react"
+import { Search, GraduationCap, ChevronRight, Zap, BookOpen, Layers, FileText, Star } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -18,8 +18,8 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @file Overview High-Density Responsive Exam Catalog v6.2.
- * UPDATED: Precise real-time question count per exam hub node.
+ * @file Overview High-Density Responsive Exam Catalog v7.0.
+ * UPDATED: Precise Multi-Exam stats calculation for linked hubs.
  */
 
 export default function ExamsCatalog() {
@@ -53,13 +53,16 @@ function CatalogContent() {
     const map: Record<string, any> = {};
     
     mocks.forEach(m => {
-      const eid = m.examId;
-      if (!eid) return;
-      if (!map[eid]) map[eid] = { full: 0, pyq: 0, sectional: 0, qCount: 0, subjects: new Set<string>() };
-      if (m.mockType === 'FULL') map[eid].full++;
-      if (m.mockType === 'PYQ') map[eid].pyq++;
-      if (m.mockType === 'SECTIONAL') map[eid].sectional++;
-      if (m.subjectId) map[eid].subjects.add(m.subjectId);
+      const eids = m.examIds || (m.examId ? [m.examId] : []);
+      if (!eids.length) return;
+      
+      eids.forEach((eid: string) => {
+        if (!map[eid]) map[eid] = { full: 0, pyq: 0, sectional: 0, qCount: 0, subjects: new Set<string>() };
+        if (m.mockType === 'FULL') map[eid].full++;
+        if (m.mockType === 'PYQ') map[eid].pyq++;
+        if (m.mockType === 'SECTIONAL') map[eid].sectional++;
+        if (m.subjectId) map[eid].subjects.add(m.subjectId);
+      });
     });
 
     if (questions) {
@@ -157,7 +160,7 @@ function CatalogContent() {
                                   className={cn("w-full h-full object-contain p-1.5 md:p-2 transition-transform duration-500 group-hover:scale-105", isArmy ? "scale-125" : "")} 
                                   alt="Logo" 
                                   referrerPolicy="no-referrer" 
-                                  onError={() => setFailedImages(p => ({...p, [exam.id]: true}))}
+                                  onError={() => setImgFailed(true)}
                                 />
                              ) : (
                                 <GraduationCap className="h-5 w-5 md:h-10 md:w-10 text-slate-300" />
