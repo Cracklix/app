@@ -24,6 +24,7 @@ import {
   Layers
 } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
+import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useMemo, useState } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -33,6 +34,7 @@ import { cn } from "@/lib/utils"
  * @fileOverview Institutional Exam Hub v9.0.
  * FIXED: Refactored to fetch all published mocks and filter client-side to ensure 
  * mocks assigned via either legacy 'examId' or new 'examIds' array appear correctly.
+ * FIXED: Added missing Link import to resolve ReferenceError.
  */
 
 export default function ExamHubPage() {
