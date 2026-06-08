@@ -2,9 +2,9 @@
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Engine v58.0.
+ * @fileOverview Institutional Seeding Engine v59.0.
  * Features: High-Fidelity Verified Official Logos for Punjab & National Exam Hubs.
- * UPDATED: Restored correct CTET, PSTET, PSEB, and Police Logos.
+ * UPDATED: Fixed CTET and IBPS logos as mandatory institutional nodes.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('[AUDIT] Initializing Cracklix Global Registry Sync...');
@@ -19,7 +19,7 @@ export async function seedInitialData(db: Firestore) {
   const ssscLogo = "https://highcourtchd.gov.in/images/logo.png";
   const pspclLogo = "https://pspcl.in/assets/images/logo.png";
   const armyEmblem = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Indian_Army_Insignia_circular.png/1280px-Indian_Army_Insignia_circular.png";
-  const ibpsLogo = "https://upload.wikimedia.org/wikipedia/en/b/b3/Institute_of_Banking_Personnel_Selection_Logo.png";
+  const ibpsLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2383XvJjgCoK15EkKqSOXXBCfm1WsMNWYcw&s";
   const sscLogo = "https://ssc.gov.in/assets/sscLogo.webp";
 
   // 1. BOARDS REGISTRY

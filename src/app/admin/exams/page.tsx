@@ -19,8 +19,8 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Authority Hub v35.0 - Hardened Mandatory Branding Engine.
- * Features: Permanent official logos for PSSSB, Police, PSEB, PSPCL, CTET, PSTET, and SSC.
+ * @fileOverview Authority Hub v36.0 - Hardened Mandatory Branding Engine.
+ * Features: Permanent official logos for PSSSB, Police, PSEB, PSPCL, CTET, PSTET, SSC, and IBPS.
  */
 
 export default function ExamManagement() {
@@ -45,6 +45,7 @@ export default function ExamManagement() {
   const psebOfficialLogo = "https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png";
   const policeOfficialLogo = "https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png";
   const sscOfficialLogo = "https://ssc.gov.in/assets/sscLogo.webp";
+  const ibpsOfficialLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2383XvJjgCoK15EkKqSOXXBCfm1WsMNWYcw&s";
 
   const handleSave = async () => {
     if (!db || !editingBoard) return
@@ -67,6 +68,7 @@ export default function ExamManagement() {
     const isEducation = abbrev === 'EDUCATION' || abbrev === 'PSEB' || abbrev.includes('ETT') || abbrev.includes('MASTER') || abbrev.includes('LECTURER');
     const isPolice = abbrev.includes('POLICE');
     const isSsc = abbrev === 'SSC';
+    const isIbps = abbrev === 'IBPS';
     
     const payload = { 
       ...editingBoard, 
@@ -78,6 +80,7 @@ export default function ExamManagement() {
                isEducation ? psebOfficialLogo :
                isPolice ? policeOfficialLogo :
                isSsc ? sscOfficialLogo :
+               isIbps ? ibpsOfficialLogo :
                (editingBoard.iconUrl || ""),
       updatedAt: serverTimestamp()
     }
@@ -174,6 +177,7 @@ export default function ExamManagement() {
                 const isEducation = abbrev === 'EDUCATION' || abbrev === 'PSEB' || abbrev.includes('ETT') || abbrev.includes('MASTER') || abbrev.includes('LECTURER');
                 const isPolice = abbrev.includes('POLICE');
                 const isSsc = abbrev === 'SSC';
+                const isIbps = abbrev === 'IBPS';
                 const isArmy = board.id?.toLowerCase() === 'army' || abbrev === 'ARMY';
                 
                 const effectiveIcon = isPsssb ? psssbOfficialLogo : 
@@ -183,6 +187,7 @@ export default function ExamManagement() {
                                      isEducation ? psebOfficialLogo :
                                      isPolice ? policeOfficialLogo :
                                      isSsc ? sscOfficialLogo :
+                                     isIbps ? ibpsOfficialLogo :
                                      board.iconUrl;
 
                 return (
@@ -196,7 +201,7 @@ export default function ExamManagement() {
                           ) : (
                             <img 
                               src={effectiveIcon} 
-                              className={cn("h-full w-full object-contain p-2", (isArmy || isCtet || isPstet || isEducation || isPolice || isSsc) ? "scale-150" : "")} 
+                              className={cn("h-full w-full object-contain p-2", (isArmy || isCtet || isPstet || isEducation || isPolice || isSsc || isIbps) ? "scale-150" : "")} 
                               referrerPolicy="no-referrer"
                               alt={board.abbreviation}
                               onError={() => setFailedImages(p => ({...p, [board.id]: true}))}
@@ -256,7 +261,7 @@ export default function ExamManagement() {
                         <img 
                           src={editingBoard.iconUrl} 
                           referrerPolicy="no-referrer"
-                          className={cn("absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform", (editingBoard.id === 'army' || editingBoard.abbreviation?.toUpperCase() === 'ARMY' || editingBoard.abbreviation?.toUpperCase() === 'CTET' || editingBoard.abbreviation?.toUpperCase() === 'PSTET' || editingBoard.abbreviation?.toUpperCase() === 'EDUCATION' || editingBoard.abbreviation?.toUpperCase() === 'PSEB' || editingBoard.abbreviation?.toUpperCase()?.includes('POLICE') || editingBoard.abbreviation?.toUpperCase() === 'SSC') ? "scale-150" : "")} 
+                          className={cn("absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform", (editingBoard.id === 'army' || editingBoard.abbreviation?.toUpperCase() === 'ARMY' || editingBoard.abbreviation?.toUpperCase() === 'CTET' || editingBoard.abbreviation?.toUpperCase() === 'PSTET' || editingBoard.abbreviation?.toUpperCase() === 'EDUCATION' || editingBoard.abbreviation?.toUpperCase() === 'PSEB' || editingBoard.abbreviation?.toUpperCase()?.includes('POLICE') || editingBoard.abbreviation?.toUpperCase() === 'SSC' || editingBoard.abbreviation?.toUpperCase() === 'IBPS') ? "scale-150" : "")} 
                           alt="Preview"
                         />
                       ) : (
