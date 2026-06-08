@@ -9,14 +9,14 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import { ShieldCheck, Save, RefreshCw, QrCode, Share2, Smartphone, Apple, Play, Info, Megaphone, Target, Zap } from "lucide-react"
+import { ShieldCheck, Save, RefreshCw, QrCode, Share2, Smartphone, Apple, Play, Info, Megaphone, Target, Zap, Gift, Clock } from "lucide-react"
 import { useDoc, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * @fileOverview Institutional Administrative Portal v8.0.
- * Dynamic management of UPI IDs and Global PASS configuration.
+ * @fileOverview Institutional Administrative Portal v9.0.
+ * UPDATED: Added Free Trial Hub controls for Enable/Disable and Duration.
  */
 
 export default function AdminSettings() {
@@ -43,7 +43,9 @@ export default function AdminSettings() {
     adSenseClientCode: "",
     shareUrl: "https://cracklix.com",
     shareTitle: "CRACKLIX | Punjab Exam Hub",
-    shareDescription: "Practice Mock Tests and Prepare for Punjab Government Exams."
+    shareDescription: "Practice Mock Tests and Prepare for Punjab Government Exams.",
+    freeTrialEnabled: true,
+    freeTrialDays: 7
   });
 
   useEffect(() => {
@@ -81,8 +83,38 @@ export default function AdminSettings() {
           <TabsTrigger value="social" className="rounded-lg px-6 font-black uppercase text-[10px] h-full">Support Info</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="monetization" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <TabsContent value="monetization" className="space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-300">
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* FREE TRIAL HUB */}
+              <Card className="border-none shadow-lg rounded-[2rem] bg-white p-8 space-y-8">
+                 <div className="flex items-center gap-3 mb-4">
+                    <Gift className="h-6 w-6 text-emerald-500" />
+                    <h3 className="font-headline font-black text-lg uppercase">Free Trial Hub</h3>
+                 </div>
+                 <div className="space-y-6">
+                    <div className="flex items-center justify-between p-5 bg-emerald-50 rounded-2xl border border-emerald-100">
+                       <div className="space-y-0.5">
+                          <p className="font-black text-[11px] uppercase text-emerald-900">Offer Active</p>
+                          <p className="text-[8px] font-bold text-emerald-600 uppercase">Allow students to claim a free pass once</p>
+                       </div>
+                       <Switch checked={formData.freeTrialEnabled} onCheckedChange={v => setFormData({...formData, freeTrialEnabled: v})} />
+                    </div>
+                    
+                    <div className="space-y-2">
+                       <Label className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2">
+                          <Clock className="h-3 w-3" /> Trial Duration (Days)
+                       </Label>
+                       <Input 
+                         type="number" 
+                         value={formData.freeTrialDays} 
+                         onChange={e => setFormData({...formData, freeTrialDays: parseInt(e.target.value) || 0})}
+                         className="h-12 rounded-xl border-slate-100 font-black text-emerald-600"
+                       />
+                    </div>
+                 </div>
+              </Card>
+
+              {/* M-PAYMENT GATEWAY */}
               <Card className="border-none shadow-lg rounded-[2rem] bg-white p-8 space-y-8">
                  <div className="flex items-center gap-3 mb-4">
                     <QrCode className="h-6 w-6 text-primary" />
@@ -97,19 +129,13 @@ export default function AdminSettings() {
                        <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">QR Code Image URL (Asset Path)</Label>
                        <Input value={formData.qrCodeUrl} onChange={e => setFormData({...formData, qrCodeUrl: e.target.value})} className="h-12 rounded-xl border-slate-100 text-xs font-mono" placeholder="https://..." />
                     </div>
-                    <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 flex items-start gap-4 mt-4">
-                       <Info className="h-4 w-4 text-emerald-600 mt-1 shrink-0" />
-                       <p className="text-[9px] font-bold text-emerald-800 uppercase leading-relaxed tracking-tight">
-                          These details appear on the checkout page for students when they upgrade their pass.
-                       </p>
-                    </div>
                  </div>
               </Card>
 
-              <Card className="border-none shadow-lg rounded-[2rem] bg-white p-8 space-y-8">
+              <Card className="border-none shadow-lg rounded-[2rem] bg-white p-8 space-y-8 lg:col-span-2">
                  <div className="flex items-center gap-3 mb-4">
                     <Target className="h-6 w-6 text-blue-500" />
-                    <h3 className="font-headline font-black text-lg uppercase">Access Enforcement</h3>
+                    <h3 className="font-headline font-black text-lg uppercase">AdSense & Monetization</h3>
                  </div>
                  <div className="space-y-6">
                     <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">

@@ -4,6 +4,29 @@ import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 export async function seedInitialData(db: Firestore) {
   console.log('[AUDIT] Initializing Cracklix Performance Hub Sync...');
 
+  await setDoc(doc(db, 'settings', 'global'), {
+    announcement: "🔥 Official Punjab 2026 Recruitment Calendar Live.",
+    showAnnouncement: true,
+    platformName: "Cracklix",
+    footerText: "Punjab's most advanced government exam portal.",
+    address: "Shergarh, Bathinda, Punjab",
+    upiId: "arshdeepgrewal1122-1@oksbi",
+    qrCodeUrl: "",
+    supportPhone: "+91 98881 88602",
+    supportEmail: "cracklixhelp@gmail.com",
+    telegramUrl: "https://t.me/cracklixapp",
+    playStoreUrl: "",
+    appStoreUrl: "",
+    adSenseEnabled: false,
+    adSenseClientCode: "",
+    shareUrl: "https://cracklix.com",
+    shareTitle: "CRACKLIX | Punjab Exam Hub",
+    shareDescription: "Practice Mock Tests and Prepare for Punjab Government Exams.",
+    freeTrialEnabled: true,
+    freeTrialDays: 7,
+    updatedAt: serverTimestamp()
+  }, { merge: true });
+
   await setDoc(doc(db, 'settings', 'stats'), {
     mcqCount: 12500,
     userCount: 15400,

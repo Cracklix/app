@@ -17,8 +17,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Elite PASS Registry Hub v10.0.
- * Dynamic plan rendering from Admin-managed Firestore collection.
+ * @fileOverview Elite PASS Registry Hub v11.0.
+ * UPDATED: Optimized Free Trial logic to read Enable/Duration from Admin Settings.
  */
 export default function PassPage() {
   const { user, profile, loading: userLoading } = useUser()
@@ -26,6 +26,7 @@ export default function PassPage() {
   const { toast } = useToast()
   const [claiming, setClaiming] = useState(false)
 
+  const { data: settings } = useDoc<any>(useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]));
   const passQuery = useMemo(() => (db ? collection(db, "passes") : null), [db])
   const { data: rawPasses, loading: passesLoading } = useCollection<any>(passQuery)
 
@@ -42,22 +43,22 @@ export default function PassPage() {
   }, [profile]);
 
   const handleClaimFreePass = async () => {
-    if (!user || !db) return
+    if (!user || !db || !settings) return
     if (profile?.pass?.freePassClaimed) {
       toast({ variant: "destructive", title: "Audit Blocked", description: "Free pass has already been claimed." })
       return
     }
 
-    const freePlan = passes.find(p => p.price === 0 || p.id === 'free-pass');
-    if (!freePlan) {
-       toast({ variant: "destructive", title: "Offer Inactive", description: "Free trial is currently disabled." })
+    if (settings.freeTrialEnabled === false) {
+       toast({ variant: "destructive", title: "Offer Inactive", description: "Free trial is currently disabled by Admin." })
        return
     }
 
     setClaiming(true)
     try {
+      const trialDays = settings.freeTrialDays || 7;
       const expiry = new Date()
-      expiry.setDate(expiry.getDate() + (freePlan.durationDays || 7))
+      expiry.setDate(expiry.getDate() + trialDays)
       
       await updateDoc(doc(db, "users", user.uid), {
         pass: {
@@ -67,17 +68,21 @@ export default function PassPage() {
           expiryDate: expiry.toISOString(),
           freePassClaimed: true
         },
-        status: freePlan.id,
+        status: 'free-pass',
         updatedAt: serverTimestamp()
       })
 
-      toast({ title: "Free Pass Activated", description: "Your 7-day preparation node is now live." })
+      toast({ title: "Free Pass Activated", description: `Your ${trialDays}-day preparation node is now live.` })
     } catch (e: any) {
       toast({ variant: "destructive", title: "Claim Failed" })
     } finally {
       setClaiming(false)
     }
   }
+
+  const showFreeTrial = useMemo(() => {
+     return settings?.freeTrialEnabled !== false && !profile?.pass?.freePassClaimed;
+  }, [settings, profile]);
 
   return (
     <div className="min-h-screen bg-[#020817] font-body pb-safe overflow-x-hidden text-white">
@@ -104,19 +109,19 @@ export default function PassPage() {
            </motion.div>
         </div>
 
-        {!profile?.pass?.freePassClaimed && (
-           <div className="max-w-xl mx-auto mb-24">
+        {showFreeTrial && (
+           <div className="max-w-xl mx-auto mb-24 animate-in zoom-in-95 duration-500">
               <Card className="bg-emerald-500/10 border-2 border-emerald-500/20 rounded-[3rem] p-10 text-center space-y-8 shadow-3xl shadow-emerald-500/5 group hover:border-emerald-500/40 transition-all">
                  <div className="h-16 w-16 bg-emerald-500 text-white rounded-2xl flex items-center justify-center mx-auto shadow-2xl">
                     <Gift className="h-8 w-8" />
                  </div>
                  <div className="space-y-2">
                     <h3 className="text-3xl font-headline font-black uppercase text-emerald-400">Claim Trial Pass</h3>
-                    <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest leading-none">FREE 7-DAY UNRESTRICTED ACCESS</p>
+                    <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest leading-none">FREE {settings?.freeTrialDays || 7}-DAY UNRESTRICTED ACCESS</p>
                  </div>
                  <Button 
                    onClick={handleClaimFreePass}
-                   disabled={claiming || passesLoading}
+                   disabled={claiming || userLoading}
                    className="w-full h-16 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[11px] tracking-[0.2em] rounded-2xl shadow-xl transition-all active:scale-95 border-none"
                  >
                     {claiming ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-5 w-5 mr-3" />}
