@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, Suspense, useState } from "react"
@@ -18,8 +17,8 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @file Overview High-Density Responsive Exam Catalog v8.0.
- * UPDATED: Strict Uniqueness Protocol applied to remove duplicate verticals by name.
+ * @file Overview High-Density Responsive Exam Catalog v9.0.
+ * UPDATED: Strict Uniqueness Protocol + Hardened Logo Restoration.
  */
 
 export default function ExamsCatalog() {
@@ -168,7 +167,7 @@ function CatalogContent() {
                                   className={cn("w-full h-full object-contain p-1.5 md:p-2 transition-transform duration-500 group-hover:scale-105", isArmy ? "scale-125" : "")} 
                                   alt="Logo" 
                                   referrerPolicy="no-referrer" 
-                                  onError={() => setImgFailed(true)}
+                                  onError={() => setFailedImages(p => ({...p, [exam.id]: true}))}
                                 />
                              ) : (
                                 <GraduationCap className="h-5 w-5 md:h-10 md:w-10 text-slate-300" />
@@ -180,7 +179,7 @@ function CatalogContent() {
                        </div>
                        
                        <div className="space-y-1 md:space-y-4 flex-1">
-                          <h3 className="text-[15px] md:text-3xl font-black text-[#0F172A] uppercase leading-tight group-hover:text-primary transition-colors">
+                          <h3 className="text-[15px] md:text-3xl font-black text-[#0F172A] uppercase leading-tight tracking-tight group-hover:text-primary transition-colors">
                             {exam.name}
                           </h3>
                           <p className="text-[10px] md:sm font-medium text-slate-400 leading-relaxed line-clamp-1 md:line-clamp-2">
