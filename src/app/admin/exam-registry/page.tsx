@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useState } from "react"
@@ -34,8 +33,8 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Master Registry v2.3.
- * UPDATED: Strict uniqueness filtering by name for registry list and normalization.
+ * @fileOverview Institutional Exam Master Registry v2.4.
+ * UPDATED: Synchronized Logo Scaling logic with Catalog Hub to prevent 'Loading' failures.
  */
 
 export default function ExamRegistryPage() {
@@ -49,12 +48,12 @@ export default function ExamRegistryPage() {
   const [mergeTarget, setMergeTarget] = useState<string>("")
   const [isSaving, setIsSaving] = useState(false)
   const [editingExam, setEditingExam] = useState<any>(null)
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
 
   const { data: rawExams, loading } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
   const { data: questions } = useCollection<any>(useMemo(() => (db ? collection(db, "questions") : null), [db]))
 
-  // STRICT UNIQUE LIST (By Name)
   const exams = useMemo(() => {
     if (!rawExams) return [];
     const unique = new Map();
@@ -65,7 +64,6 @@ export default function ExamRegistryPage() {
     return Array.from(unique.values());
   }, [rawExams]);
 
-  // Atomic content volume per exam registry
   const stats = useMemo(() => {
     if (!exams || !questions) return {}
     const map: Record<string, number> = {}
@@ -199,19 +197,27 @@ export default function ExamRegistryPage() {
                 );
                 
                 const logoUrl = e.iconUrl || board?.iconUrl;
-                const isArmy = e.boardId?.toLowerCase() === 'army' || e.id?.toLowerCase().includes('army');
+                const isImgFailed = failedImages[e.id];
+                
+                const bid = e.boardId?.toLowerCase() || "";
+                const abbrev = board?.abbreviation?.toUpperCase() || "";
+                
+                const isArmy = bid === 'army' || e.id?.toLowerCase().includes('army') || abbrev === 'ARMY';
+                const isPolice = bid.includes('police') || abbrev.includes('POLICE');
+                const isEdu = bid.includes('education') || bid.includes('pseb') || abbrev === 'PSEB' || e.name?.toLowerCase().includes('ett') || e.name?.toLowerCase().includes('master') || abbrev === 'EDUCATION' || abbrev === 'CBSE' || abbrev === 'CTET';
 
                 return (
                   <TableRow key={e.id} className="hover:bg-slate-50 border-slate-50 transition-colors group">
                     <TableCell className="px-10 py-8">
                       <div className="flex items-center gap-6">
                         <div className="h-12 w-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-                            {logoUrl ? (
+                            {logoUrl && !isImgFailed ? (
                               <img 
                                 src={logoUrl} 
-                                className={cn("w-full h-full object-contain p-2", isArmy ? "scale-125" : "")} 
+                                className={cn("w-full h-full object-contain p-2", isArmy ? "scale-150" : (isPolice || isEdu) ? "scale-125 p-1.5" : "")} 
                                 alt="Logo" 
                                 referrerPolicy="no-referrer"
+                                onError={() => setFailedImages(p => ({ ...p, [e.id]: true }))}
                               />
                             ) : (
                               <div className="h-full w-full bg-amber-50 flex items-center justify-center text-amber-600 font-black text-xs">
@@ -235,7 +241,7 @@ export default function ExamRegistryPage() {
                     </TableCell>
                     <TableCell className="text-center">
                       <div className="inline-flex flex-col items-center">
-                          <span className={cn("text-2xl font-headline font-black", stats[e.id] > 0 ? "text-[#0F172A]" : "text-rose-400")}>
+                          <span className={cn("text-2xl font-headline font-black", (stats[e.id] || 0) > 0 ? "text-[#0F172A]" : "text-rose-400")}>
                             {stats[e.id] || 0}
                           </span>
                           <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Atomic MCQs</span>
