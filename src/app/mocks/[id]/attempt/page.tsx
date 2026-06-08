@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -12,7 +13,7 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer";
 import QuestionPalette from "@/components/mocks/QuestionPalette";
 import SubjectTabs from "@/components/exam/SubjectTabs";
 import { Button } from "@/components/ui/button";
-import { Loader2, Play, ShieldCheck, CheckCircle2, Zap, LogOut } from "lucide-react";
+import { Loader2, Play, ShieldCheck, CheckCircle2, Zap, LogOut, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,8 +27,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 /**
- * @fileOverview Production Hardened CBT Attempt Engine v38.0.
- * FIXED: Save & Exit navigation reliability.
+ * @fileOverview Production Hardened CBT Attempt Engine v39.0.
+ * HARDENED: Strict security guard for Premium accessLevel.
  */
 
 export default function MockAttemptPage() {
@@ -79,27 +80,15 @@ export default function MockAttemptPage() {
         const mData = mockSnap.data();
         setMockData(mData);
 
-        // ACCESS CONTROL HUB
-        const accessTier = mData.accessType || 'FREE';
-        if (accessTier === 'PREMIUM' && profile?.role !== 'ADMIN' && profile?.role !== 'SUPER_ADMIN') {
-           const subQuery = query(
-              collection(db, "subscriptions"), 
-              where("userId", "==", user.uid),
-              where("status", "==", "active"),
-              limit(1)
-           );
-           const subSnap = await getDocs(subQuery);
-           let hasPass = false;
-           if (!subSnap.empty) {
-              const subData = subSnap.docs[0].data();
-              if (new Date(subData.expiryDate) > new Date()) hasPass = true;
-           }
-           
-           if (!hasPass) {
-              toast({ variant: "destructive", title: "Access Denied", description: "This mock requires a Premium Pass." });
-              router.push(`/mocks/${mockId}`);
-              return;
-           }
+        // SPECIFICATION: HARDENED ACCESS GUARD
+        const level = (mData.accessLevel || 'FREE').toUpperCase();
+        const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN';
+        const hasPass = profile?.pass?.active === true && new Date(profile.pass.expiryDate) > new Date();
+
+        if (level === 'PREMIUM' && !isAdmin && !hasPass) {
+           toast({ variant: "destructive", title: "Access Denied", description: "Premium pass required for this evaluation node." });
+           router.push(`/mocks/${mockId}`);
+           return;
         }
 
         const questionIds = mData.questionIds || [];
@@ -119,18 +108,6 @@ export default function MockAttemptPage() {
         });
 
         const sortedQs = questionIds.map(id => fetchedQuestions.find(q => q.id === id)).filter(Boolean);
-
-        if (mData.sections && mData.sections.length > 0) {
-           let currentIndex = 0;
-           mData.sections.forEach((sec: any) => {
-              for (let i = 0; i < sec.count; i++) {
-                 if (sortedQs[currentIndex]) {
-                    sortedQs[currentIndex].sectionId = sec.name;
-                 }
-                 currentIndex++;
-              }
-           });
-        }
 
         if (sortedQs.length === 0) throw new Error("Question bank is currently empty.");
 
@@ -207,7 +184,6 @@ export default function MockAttemptPage() {
 
   const handleManualExit = () => {
     setShowExitModal(false);
-    // Hard exit to clear memory and ensure navigation
     setPaused(false);
     setTimeout(() => {
       window.location.href = '/dashboard';

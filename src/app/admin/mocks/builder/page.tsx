@@ -41,19 +41,14 @@ import {
   AlertTriangle,
   FileStack,
   ListTree,
-  SearchCode
+  SearchCode,
+  Unlock
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, limit, getDocs, writeBatch, where } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
-import { MockType, Difficulty, AccessType, LanguageDisplayMode } from "@/types"
+import { MockType, Difficulty, AccessLevel, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
-
-/**
- * @fileOverview Elite Institutional Mock Architect v53.0.
- * FIXED: Re-engineered "Block Duplicates" logic to strictly exclude redundancy nodes.
- * PERFORMANCE: Stabilized numeric casting and cursor-based selection.
- */
 
 const SELECTION_RULES = [
   { id: 'unused-only', label: 'Use Only Unused Questions', icon: <Zap className="h-3 w-3" /> },
@@ -127,7 +122,7 @@ function MockBuilderContent() {
     duration: 120, 
     difficulty: "Medium" as Difficulty, 
     mockType: "FULL" as MockType, 
-    accessType: "FREE" as AccessType,
+    accessLevel: "FREE" as AccessLevel,
     published: false,
     languageMode: "ENGLISH_PUNJABI" as LanguageDisplayMode,
     positiveMarks: 1,
@@ -169,6 +164,7 @@ function MockBuilderContent() {
         sourceBoardId: existingMock.sourceBoardId || existingMock.boardId || "",
         boardIds: existingMock.boardIds || (existingMock.boardId ? [existingMock.boardId] : []),
         examIds: existingMock.examIds || (existingMock.examId ? [existingMock.examId] : []),
+        accessLevel: existingMock.accessLevel || (existingMock.accessType === 'PREMIUM' ? 'PREMIUM' : 'FREE')
       }));
 
       if (existingMock.sections && existingMock.sections.length > 0 && existingMock.questionIds) {
@@ -198,15 +194,12 @@ function MockBuilderContent() {
       const qStatus = q.status || 'UNUSED';
       const qUsedCount = q.usedCount || 0;
 
-      // 1. UNUSED ONLY: Exclude if USED or has usedCount > 0
       if (activeRules.includes('unused-only')) {
          if (qStatus === 'USED' || qStatus === 'REPEATED' || qUsedCount > 0) return false;
       }
       
-      // 2. NO LOCKED: Block manually disabled nodes
       if (activeRules.includes('no-locked') && qStatus === 'LOCKED') return false;
       
-      // 3. BLOCK DUPLICATES: Exclude redundancy nodes identified in QA audit
       if (activeRules.includes('no-duplicates')) {
          if (qStatus === 'DUPLICATE' || q.isDuplicateOf) return false;
       }
@@ -266,7 +259,6 @@ function MockBuilderContent() {
     try {
       await setDoc(mockRef, payload, { merge: true });
       
-      // CHUNKED BATCH UPDATE
       const CHUNK_SIZE = 450;
       for (let i = 0; i < flatQuestionIds.length; i += CHUNK_SIZE) {
         const chunk = flatQuestionIds.slice(i, i + CHUNK_SIZE);
@@ -368,19 +360,28 @@ function MockBuilderContent() {
 
                 <div className="grid grid-cols-2 gap-4">
                    <div className="space-y-2">
-                      <Label className="text-[10px) font-black uppercase text-slate-500 ml-1">Duration (Mins)</Label>
+                      <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Duration (Mins)</Label>
                       <Input 
                         type="number" 
-                        value={isNaN(mockData.duration) ? "" : mockData.duration} 
+                        value={isNaN(mockData.duration) ? "" : mockData.duration.toString()} 
                         onChange={e => setMockData({...mockData, duration: parseInt(e.target.value) || 0})} 
                         className="h-12 rounded-xl bg-slate-50/50 border-none font-black text-center" 
                       />
                    </div>
+                   {/* SPECIFICATION: Access Level Selection */}
                    <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Access Level</Label>
-                      <Select value={mockData.accessType ?? "FREE"} onValueChange={(v: any) => setMockData({...mockData, accessType: v})}>
-                         <SelectTrigger className="h-12 rounded-xl bg-slate-50/50 border-none font-black text-[10px] uppercase"><SelectValue /></SelectTrigger>
-                         <SelectContent><SelectItem value="FREE">FREE PASS</SelectItem><SelectItem value="PREMIUM">PREMIUM PASS</SelectItem></SelectContent>
+                      <Select value={mockData.accessLevel ?? "FREE"} onValueChange={(v: AccessLevel) => setMockData({...mockData, accessLevel: v})}>
+                         <SelectTrigger className="h-12 rounded-xl bg-slate-50/50 border-none font-black text-[10px] uppercase">
+                            <div className="flex items-center gap-2">
+                               {mockData.accessLevel === 'PREMIUM' ? <Lock className="h-3 w-3 text-amber-500" /> : <Unlock className="h-3 w-3 text-emerald-500" />}
+                               <SelectValue />
+                            </div>
+                         </SelectTrigger>
+                         <SelectContent>
+                            <SelectItem value="FREE">FREE TEST</SelectItem>
+                            <SelectItem value="PREMIUM">PREMIUM TEST</SelectItem>
+                         </SelectContent>
                       </Select>
                    </div>
                 </div>
@@ -391,7 +392,7 @@ function MockBuilderContent() {
                       <Input 
                         type="number" 
                         step="0.5" 
-                        value={isNaN(mockData.positiveMarks) ? "" : mockData.positiveMarks} 
+                        value={isNaN(mockData.positiveMarks) ? "" : mockData.positiveMarks.toString()} 
                         onChange={e => setMockData({...mockData, positiveMarks: parseFloat(e.target.value) || 0})} 
                         className="h-12 rounded-xl bg-slate-50/50 border-none font-black text-center" 
                       />
@@ -401,7 +402,7 @@ function MockBuilderContent() {
                       <Input 
                         type="number" 
                         step="0.05" 
-                        value={isNaN(mockData.negativeMarks) ? "" : mockData.negativeMarks} 
+                        value={isNaN(mockData.negativeMarks) ? "" : mockData.negativeMarks.toString()} 
                         onChange={e => setMockData({...mockData, negativeMarks: parseFloat(e.target.value) || 0})} 
                         className="h-12 rounded-xl bg-slate-50/50 border-none font-black text-center" 
                       />

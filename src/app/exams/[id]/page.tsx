@@ -33,9 +33,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v16.0.
- * HARDENED: Strict Premium Access Control Logic with Debug Logs.
- * STYLE: Testbook-inspired high-fidelity orange action nodes.
+ * @fileOverview Institutional Exam Hub v17.0.
+ * HARDENED: Unified PASS Subscription System Access Control.
  */
 
 export default function ExamHubPage() {
@@ -68,24 +67,30 @@ export default function ExamHubPage() {
   const { data: userResults } = useCollection<any>(resultsQuery)
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
 
-  // --- STRICT PASS ACCESS LOGIC ---
-  const hasPass = useMemo(() => {
+  // SPECIFICATION: Strict Pass Access Guard
+  const hasActivePass = useMemo(() => {
      if (!profile) return false;
      
+     // 1. Administrative bypass
      const role = (profile.role || '').toUpperCase();
      if (role === 'ADMIN' || role === 'SUPER_ADMIN') return true;
      
+     // 2. Blueprint PASS Check
+     if (profile.pass?.active === true) {
+        const expiry = new Date(profile.pass.expiryDate);
+        if (expiry > new Date()) return true;
+     }
+
+     // 3. Legacy status check (failsafe)
      const status = (profile.status || '').toLowerCase();
-     if (!status || status === 'free' || status === '') return false;
+     if (status !== '' && status !== 'free') return true;
      
-     // Any other status indicates an active pass ID
-     return true;
+     return false;
   }, [profile]);
 
   const groupedContent = useMemo(() => {
     const mocks = (rawMocks || []).filter(m => {
-       const hasMatch = m.examId === examId || (m.examIds && Array.isArray(m.examIds) && m.examIds.includes(examId));
-       return hasMatch;
+       return m.examId === examId || (m.examIds && Array.isArray(m.examIds) && m.examIds.includes(examId));
     });
     
     const notes = rawNotes || [];
@@ -160,21 +165,21 @@ export default function ExamHubPage() {
             </div>
 
             <div className="animate-in fade-in duration-500">
-               <TabsContent value="FULL" className="m-0"><MockList data={groupedContent.FULL} results={userResults} hasPass={hasPass} user={user} profile={profile} /></TabsContent>
-               <TabsContent value="SUBJECT" className="m-0"><MockList data={groupedContent.SUBJECT} results={userResults} hasPass={hasPass} user={user} profile={profile} /></TabsContent>
-               <TabsContent value="SECTIONAL" className="m-0"><MockList data={groupedContent.SECTIONAL} results={userResults} hasPass={hasPass} user={user} profile={profile} /></TabsContent>
-               <TabsContent value="PYQ" className="m-0"><MockList data={groupedContent.PYQ} results={userResults} hasPass={hasPass} user={user} profile={profile} /></TabsContent>
+               <TabsContent value="FULL" className="m-0"><MockList data={groupedContent.FULL} results={userResults} hasActivePass={hasActivePass} /></TabsContent>
+               <TabsContent value="SUBJECT" className="m-0"><MockList data={groupedContent.SUBJECT} results={userResults} hasActivePass={hasActivePass} /></TabsContent>
+               <TabsContent value="SECTIONAL" className="m-0"><MockList data={groupedContent.SECTIONAL} results={userResults} hasActivePass={hasActivePass} /></TabsContent>
+               <TabsContent value="PYQ" className="m-0"><MockList data={groupedContent.PYQ} results={userResults} hasActivePass={hasActivePass} /></TabsContent>
                
-               <TabsContent value="NOTES" className="m-0"><NotesList data={groupedContent.NOTES} hasPass={hasPass} user={user} /></TabsContent>
-               <TabsContent value="SYLLABUS" className="m-0"><NotesList data={groupedContent.SYLLABUS} hasPass={hasPass} user={user} /></TabsContent>
+               <TabsContent value="NOTES" className="m-0"><NotesList data={groupedContent.NOTES} hasActivePass={hasActivePass} /></TabsContent>
+               <TabsContent value="SYLLABUS" className="m-0"><NotesList data={groupedContent.SYLLABUS} hasActivePass={hasActivePass} /></TabsContent>
             </div>
          </Tabs>
       </main>
 
-      {!hasPass && user && (
+      {!hasActivePass && user && (
         <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-100 p-4 md:p-6 md:px-[25%] flex items-center justify-center shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
-           <Button asChild className="w-full h-12 md:h-16 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-widest text-[10px] md:text-sm rounded-xl transition-all shadow-xl">
-              <Link href="/pass">Unlock Premium Preparation Hub</Link>
+           <Button onClick={() => router.push('/pass')} className="w-full h-12 md:h-16 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-widest text-[10px] md:text-sm rounded-xl transition-all shadow-xl">
+              Get Active Pass for Premium Hub
            </Button>
         </div>
       )}
@@ -195,7 +200,7 @@ function DashboardTab({ value, label, icon }: any) {
    )
 }
 
-function MockList({ data, results, hasPass, user, profile }: any) {
+function MockList({ data, results, hasActivePass }: { data: any[], results: any[], hasActivePass: boolean }) {
    const router = useRouter();
 
    if (data.length === 0) return <EmptyNode label="Awaiting Content Registry" />;
@@ -204,13 +209,14 @@ function MockList({ data, results, hasPass, user, profile }: any) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
          {data.map((mock: any) => {
             const result = results?.find((r: any) => r.mockId === mock.id);
-            const access = (mock.accessType || 'FREE').toUpperCase();
-            const isFree = access === 'FREE';
+            // SPECIFICATION: accessLevel evaluation
+            const accessLevel = (mock.accessLevel || 'FREE').toUpperCase();
+            const isFree = accessLevel === 'FREE';
             
-            // STRICT ACCESS CHECK
-            const isLocked = !isFree && !hasPass;
+            // Logic: PREMIUM + NO PASS = LOCKED
+            const isLocked = !isFree && !hasActivePass;
 
-            console.log(`[AUDIT] Mock: ${mock.title} | Access: ${access} | User Status: ${profile?.status} | IsLocked: ${isLocked}`);
+            console.log(`[AUDIT] Mock: ${mock.title} | accessLevel: ${accessLevel} | isLocked: ${isLocked}`);
 
             return (
                <Card key={mock.id} className="border-none shadow-sm rounded-2xl bg-white hover:shadow-md transition-all text-left group">
@@ -219,7 +225,7 @@ function MockList({ data, results, hasPass, user, profile }: any) {
                         <div className="flex items-center gap-2">
                            {isLocked && <Lock className="h-3 w-3 text-amber-500" />}
                            <Badge className={cn("border-none text-[8px] font-black px-2 py-0.5 rounded shadow-sm", isFree ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600")}>
-                              {isFree ? 'FREE' : 'PREMIUM'}
+                              {accessLevel}
                            </Badge>
                         </div>
                         {result && <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">AUDITED</span>}
@@ -229,26 +235,26 @@ function MockList({ data, results, hasPass, user, profile }: any) {
                         <span className="flex items-center gap-1.5"><Clock className="h-3 w-3" /> {mock.duration}m</span>
                         <span className="flex items-center gap-1.5"><BookOpen className="h-3 w-3" /> {mock.totalQuestions} Qs</span>
                      </div>
-                     <div className="pt-2 flex flex-col sm:flex-row gap-2">
+                     <div className="pt-2">
                         {isLocked ? (
                            <Button 
                              onClick={() => router.push('/pass')} 
                              className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase text-[10px] rounded-xl shadow-xl gap-3 transition-all active:scale-95 border-none"
                            >
-                              <Lock className="h-4 w-4" /> UNLOCK TEST
+                              <Lock className="h-4 w-4" /> UNLOCK WITH PASS
                            </Button>
                         ) : result ? (
-                           <>
+                           <div className="flex flex-col sm:flex-row gap-2">
                               <Button asChild className="flex-1 h-11 bg-primary text-white hover:bg-orange-600 border-none font-black uppercase text-[10px] rounded-xl shadow-md">
                                  <Link href={`/results/${mock.id}`}>View Score</Link>
                               </Button>
                               <Button asChild variant="outline" className="flex-1 h-11 border-slate-200 text-slate-600 hover:bg-slate-50 font-black uppercase text-[10px] rounded-xl gap-2">
                                  <Link href={`/mocks/${mock.id}/instructions`}><RefreshCw className="h-3.5 w-3.5" /> Re-attempt</Link>
                               </Button>
-                           </>
+                           </div>
                         ) : (
                            <Button asChild className="w-full h-11 bg-slate-900 hover:bg-black text-white border-none font-black uppercase text-[10px] rounded-xl shadow-lg gap-3">
-                              <Link href={`/mocks/${mock.id}/instructions`}><Play className="h-4 w-4 fill-current" /> Attempt Now</Link>
+                              <Link href={`/mocks/${mock.id}/instructions`}><Play className="h-4 w-4 fill-current" /> ATTEMPT NOW</Link>
                            </Button>
                         )}
                      </div>
@@ -260,15 +266,15 @@ function MockList({ data, results, hasPass, user, profile }: any) {
    )
 }
 
-function NotesList({ data, hasPass, user }: any) {
+function NotesList({ data, hasActivePass }: { data: any[], hasActivePass: boolean }) {
    const router = useRouter();
    if (data.length === 0) return <EmptyNode label="No Materials Archive Found" />;
 
    return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
          {data.map((note: any) => {
-            const isFree = note.isFree;
-            const locked = !isFree && !hasPass;
+            const isFree = note.isFree !== false; // Default to free if not set
+            const isLocked = !isFree && !hasActivePass;
 
             return (
                <Card key={note.id} className="border-none shadow-sm rounded-2xl bg-white hover:shadow-md transition-all text-left group">
@@ -284,12 +290,12 @@ function NotesList({ data, hasPass, user }: any) {
                         <span className="flex items-center gap-1.5"><Download className="h-3 w-3" /> PDF</span>
                      </div>
                      <div className="pt-2">
-                        {locked ? (
+                        {isLocked ? (
                           <Button 
                             onClick={() => router.push('/pass')} 
                             className="w-full h-11 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase text-[10px] rounded-xl shadow-xl gap-2 border-none transition-all active:scale-95"
                           >
-                             <Lock className="h-4 w-4" /> UNLOCK TEST
+                             <Lock className="h-4 w-4" /> UNLOCK WITH PASS
                           </Button>
                         ) : (
                           <Button asChild className="w-full h-11 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] rounded-xl border-none shadow-lg">

@@ -5,7 +5,10 @@ export type MockType = 'FULL' | 'SUBJECT' | 'SECTIONAL' | 'PYQ' | 'CA_QUIZ' | 'P
 export type ContentStatus = 'DRAFT' | 'REVIEW' | 'PUBLISHED' | 'ARCHIVED';
 export type QuestionLifecycleStatus = 'UNUSED' | 'USED' | 'LOCKED' | 'DUPLICATE' | 'REPEATED';
 export type Gender = 'Male' | 'Female' | 'Other';
-export type AccessType = 'FREE' | 'PREMIUM';
+
+// SPECIFICATION: Access Levels
+export type AccessLevel = 'FREE' | 'PREMIUM';
+
 export type QuestionStatus = 'not-visited' | 'not-answered' | 'answered' | 'marked' | 'answered-marked';
 export type ExamLanguage = 'en' | 'pa' | 'hi' | 'bilingual';
 
@@ -43,7 +46,8 @@ export interface MockTest {
   boardIds?: string[];
   examIds: string[];
   mockType: MockType;
-  accessType: AccessType;
+  // SPECIFICATION: Unified Access Level
+  accessLevel: AccessLevel;
   duration: number;
   totalQuestions: number;
   totalMarks: number;
@@ -56,44 +60,6 @@ export interface MockTest {
   attemptLimit: number;
   createdAt: any;
   updatedAt: any;
-}
-
-export interface Question {
-  id: string;
-  boardId: string;
-  examId: string;
-  sectionId: string;
-  partId?: string;
-  englishQuestion: string;
-  punjabiQuestion: string;
-  hindiQuestion?: string;
-  optionAEnglish: string;
-  optionAPunjabi: string;
-  optionAHindi?: string;
-  optionBEnglish: string;
-  optionBPunjabi: string;
-  optionBHindi?: string;
-  optionCEnglish: string;
-  optionCPunjabi: string;
-  optionCHindi?: string;
-  optionDEnglish: string;
-  optionDPunjabi: string;
-  optionDHindi?: string;
-  correctAnswer: 'A' | 'B' | 'C' | 'D';
-  englishExplanation: string;
-  punjabiExplanation: string;
-  hindiExplanation?: string;
-  difficulty: Difficulty;
-  subjectId: string;
-  topic?: string;
-  language?: string;
-  
-  // Usage Tracking
-  status: QuestionLifecycleStatus;
-  usedCount: number;
-  lastUsedDate?: string;
-  mockIdsUsedIn?: string[];
-  isDuplicateOf?: string;
 }
 
 export interface UserProfile {
@@ -114,4 +80,11 @@ export interface UserProfile {
   gender?: Gender;
   subscriptions?: string[];
   pinnedExams?: string[];
+  // SPECIFICATION: Pass Subscription System
+  pass?: {
+    active: boolean;
+    plan: 'MONTHLY' | 'QUARTERLY' | 'YEARLY';
+    purchaseDate: string;
+    expiryDate: string;
+  };
 }
