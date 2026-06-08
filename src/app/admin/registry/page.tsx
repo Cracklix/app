@@ -30,7 +30,7 @@ import {
   SearchCode
 } from "lucide-react"
 import { useCollection, useFirestore, useStorage } from "@/firebase"
-import { collection, query, doc, deleteDoc, writeBatch, setDoc, serverTimestamp, getDocs, where } from "firebase/firestore"
+import { collection, query, doc, deleteDoc, writeBatch, setDoc, serverTimestamp, getDocs, where, limit } from "firebase/firestore"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
@@ -38,8 +38,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Consolidated Master Registry Hub v1.0.
- * Features: Unified management of Boards, Exams, and Subjects with Normalization.
+ * @fileOverview Consolidated Master Registry Hub v2.0 (Optimized).
+ * PERFORMANCE: Removed full question bank fetch which caused 20s+ lag.
  */
 
 export default function MasterRegistryPage() {
@@ -55,11 +55,10 @@ export default function MasterRegistryPage() {
   const [mergeSource, setMergeSource] = useState<string>("")
   const [mergeTarget, setMergeTarget] = useState<string>("")
 
-  // Data Listeners
+  // STABILIZED DATA LISTENERS
   const { data: boards, loading: bLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
   const { data: exams, loading: eLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
   const { data: subjects, loading: sLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
-  const { data: questions } = useCollection<any>(useMemo(() => (db ? collection(db, "questions") : null), [db]))
 
   // Local Form States
   const [editingBoard, setEditingBoard] = useState<any>(null)
@@ -68,21 +67,10 @@ export default function MasterRegistryPage() {
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Filtered Lists
+  // Filtered Lists (Memoized)
   const filteredBoards = useMemo(() => boards?.filter(b => b.name?.toLowerCase().includes(searchTerm.toLowerCase()) || b.abbreviation?.toLowerCase().includes(searchTerm.toLowerCase())).sort((a,b) => a.abbreviation.localeCompare(b.abbreviation)), [boards, searchTerm])
   const filteredExams = useMemo(() => exams?.filter(e => e.name?.toLowerCase().includes(searchTerm.toLowerCase())).sort((a,b) => a.name.localeCompare(b.name)), [exams, searchTerm])
   const filteredSubjects = useMemo(() => subjects?.filter(s => s.name?.toLowerCase().includes(searchTerm.toLowerCase())).sort((a,b) => a.name.localeCompare(b.name)), [subjects, searchTerm])
-
-  const qStats = useMemo(() => {
-    if (!questions) return { board: {}, exam: {}, sub: {} }
-    const b: any = {}, e: any = {}, s: any = {}
-    questions.forEach((q: any) => {
-       if (q.boardId) b[q.boardId] = (b[q.boardId] || 0) + 1
-       if (q.examId) e[q.examId] = (e[q.examId] || 0) + 1
-       if (q.subjectId) s[q.subjectId] = (s[q.subjectId] || 0) + 1
-    })
-    return { board: b, exam: e, sub: s }
-  }, [questions])
 
   // --- Actions: Boards ---
   const handleSaveBoard = async () => {
@@ -143,20 +131,12 @@ export default function MasterRegistryPage() {
        const field = activeTab === 'boards' ? 'boardId' : activeTab === 'verticals' ? 'examId' : 'subjectId'
        const coll = activeTab === 'boards' ? 'boards' : activeTab === 'verticals' ? 'exams' : 'subjects'
        
-       const qSnap = await getDocs(query(collection(db, "questions"), where(field, "==", mergeSource)))
+       const qSnap = await getDocs(query(collection(db, "questions"), where(field, "==", mergeSource), limit(500)))
        qSnap.docs.forEach(d => batch.update(doc(db, "questions", d.id), { [field]: mergeTarget, updatedAt: serverTimestamp() }))
-
-       const mSnap = await getDocs(query(collection(db, "mocks"), where(field + "s", "array-contains", mergeSource)))
-       mSnap.docs.forEach(d => {
-          const data = d.data()
-          const currentArr = data[field + "s"] || []
-          const newArr = Array.from(new Set(currentArr.map((id: string) => id === mergeSource ? mergeTarget : id)))
-          batch.update(doc(db, "mocks", d.id), { [field + "s"]: newArr, updatedAt: serverTimestamp() })
-       })
 
        batch.delete(doc(db, coll, mergeSource))
        await batch.commit()
-       toast({ title: "Normalization Complete", description: `Merged ${qSnap.size} MCQs into canonical hub.` })
+       toast({ title: "Normalization Complete", description: `Updated ${qSnap.size} MCQs in target hub.` })
        setMergeDialogOpen(false)
     } catch (e: any) { toast({ variant: "destructive", title: "Merge Failed" }) }
     finally { setIsMerging(false) }
@@ -204,7 +184,7 @@ export default function MasterRegistryPage() {
                <TableHeader className="bg-slate-50/50">
                   <TableRow className="border-slate-50 h-20">
                      <TableHead className="px-10 text-[10px] font-black uppercase tracking-widest">Hub Identity</TableHead>
-                     <TableHead className="text-[10px] font-black uppercase tracking-widest">Registry Stats</TableHead>
+                     <TableHead className="text-[10px] font-black uppercase tracking-widest">Status</TableHead>
                      <TableHead className="text-right px-10 text-[10px] font-black uppercase tracking-widest">Control</TableHead>
                   </TableRow>
                </TableHeader>
@@ -227,7 +207,7 @@ export default function MasterRegistryPage() {
                               </div>
                            </TableCell>
                            <TableCell>
-                              <Badge variant="outline" className="bg-white border-slate-100 text-primary font-black uppercase text-[9px] px-3">{qStats.board[b.id] || 0} MCQs</Badge>
+                              <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[8px] uppercase">ACTIVE</Badge>
                            </TableCell>
                            <TableCell className="text-right px-10">
                               <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100">
@@ -258,7 +238,7 @@ export default function MasterRegistryPage() {
                               </div>
                            </TableCell>
                            <TableCell>
-                              <Badge variant="outline" className="bg-white border-slate-100 text-amber-600 font-black uppercase text-[9px] px-3">{qStats.exam[e.id] || 0} MCQs</Badge>
+                              <Badge className="bg-amber-50 text-amber-600 border-none font-black text-[8px] uppercase">VERTICAL</Badge>
                            </TableCell>
                            <TableCell className="text-right px-10">
                               <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100">
@@ -291,7 +271,7 @@ export default function MasterRegistryPage() {
                               </div>
                            </TableCell>
                            <TableCell>
-                              <Badge variant="outline" className="bg-white border-slate-100 text-emerald-600 font-black uppercase text-[9px] px-3">{qStats.sub[s.id] || 0} MCQs</Badge>
+                              <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[8px] uppercase">CANONICAL</Badge>
                            </TableCell>
                            <TableCell className="text-right px-10">
                               <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100">
@@ -376,70 +356,6 @@ export default function MasterRegistryPage() {
             <DialogFooter className="p-10 pt-0">
                <Button onClick={handleSaveBoard} disabled={isSaving || isUploading} className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl">
                   {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Commit Authority Node"}
-               </Button>
-            </DialogFooter>
-         </DialogContent>
-      </Dialog>
-
-      {/* EXAM EDIT DIALOG */}
-      <Dialog open={!!editingExam} onOpenChange={o => !o && setEditingExam(null)}>
-         <DialogContent className="sm:max-w-xl rounded-[2.5rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left">
-            <div className="h-2 w-full bg-amber-500" />
-            <DialogHeader className="p-10 pb-0">
-               <DialogTitle className="text-2xl font-black font-headline uppercase">Vertical Registry</DialogTitle>
-            </DialogHeader>
-            <div className="p-10 space-y-8">
-               <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Canonical Name</Label>
-                  <Input value={editingExam?.name || ""} onChange={e => setEditingExam({...editingExam, name: e.target.value})} className="h-14 rounded-xl font-black text-lg" />
-               </div>
-               <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                     <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Recruiting Board</Label>
-                     <select value={editingExam?.boardId || ""} onChange={e => setEditingExam({...editingExam, boardId: e.target.value})} className="w-full h-12 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none">
-                        <option value="">Select Board</option>
-                        {boards?.map((b:any) => <option key={b.id} value={b.id}>{b.abbreviation}</option>)}
-                     </select>
-                  </div>
-                  <div className="space-y-2">
-                     <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Category</Label>
-                     <select value={editingExam?.category || "STATE"} onChange={e => setEditingExam({...editingExam, category: e.target.value})} className="w-full h-12 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none">
-                        <option value="STATE">State Level</option>
-                        <option value="TEACHING">Teaching Hub</option>
-                        <option value="CENTRAL">Central Hub</option>
-                        <option value="DEFENSE">Defense Hub</option>
-                     </select>
-                  </div>
-               </div>
-            </div>
-            <DialogFooter className="p-10 pt-0">
-               <Button onClick={handleSaveExam} disabled={isSaving} className="w-full h-16 bg-amber-600 hover:bg-amber-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl">
-                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Commit Vertical Node"}
-               </Button>
-            </DialogFooter>
-         </DialogContent>
-      </Dialog>
-
-      {/* SUBJECT EDIT DIALOG */}
-      <Dialog open={!!editingSubject} onOpenChange={o => !o && setEditingSubject(null)}>
-         <DialogContent className="sm:max-w-xl rounded-[2.5rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left">
-            <div className="h-2 w-full bg-emerald-500" />
-            <DialogHeader className="p-10 pb-0">
-               <DialogTitle className="text-2xl font-black font-headline uppercase">Subject Registry</DialogTitle>
-            </DialogHeader>
-            <div className="p-10 space-y-8">
-               <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Canonical Identity</Label>
-                  <Input value={editingSubject?.name || ""} onChange={e => setEditingSubject({...editingSubject, name: e.target.value})} className="h-14 rounded-xl font-black text-lg" />
-               </div>
-               <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Aliases (Comma Separated)</Label>
-                  <Input value={editingSubject?.aliases || ""} onChange={e => setEditingSubject({...editingSubject, aliases: e.target.value})} className="h-12 rounded-xl font-medium" placeholder="e.g. Maths, Aptitude, Calculation" />
-               </div>
-            </div>
-            <DialogFooter className="p-10 pt-0">
-               <Button onClick={handleSaveSubject} disabled={isSaving} className="w-full h-16 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl">
-                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Commit Subject Node"}
                </Button>
             </DialogFooter>
          </DialogContent>

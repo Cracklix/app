@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useMemo } from "react"
@@ -21,9 +22,9 @@ export default function AdminAnalytics() {
   const db = useFirestore()
   
   // STABILIZED LISTENERS
-  const usersQuery = useMemo(() => (db ? query(collection(db, "users"), limit(500)) : null), [db]);
-  const resultsQuery = useMemo(() => (db ? query(collection(db, "results"), limit(500)) : null), [db]);
-  const questionsQuery = useMemo(() => (db ? query(collection(db, "questions"), limit(500)) : null), [db]);
+  const usersQuery = useMemo(() => (db ? query(collection(db, "users"), limit(200)) : null), [db]);
+  const resultsQuery = useMemo(() => (db ? query(collection(db, "results"), limit(200)) : null), [db]);
+  const questionsQuery = useMemo(() => (db ? query(collection(db, "questions"), limit(200)) : null), [db]);
 
   const { data: users } = useCollection<any>(usersQuery)
   const { data: results } = useCollection<any>(resultsQuery)
