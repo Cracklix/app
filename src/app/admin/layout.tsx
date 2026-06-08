@@ -30,7 +30,8 @@ import {
   Plus,
   ChevronRight,
   Landmark,
-  GraduationCap
+  GraduationCap,
+  ClipboardList
 } from "lucide-react"
 import Link from "next/link"
 import Logo from "@/components/brand/Logo"
@@ -43,8 +44,8 @@ import { Button } from "@/components/ui/button";
 import BackButton from "@/components/navigation/BackButton";
 
 /**
- * @fileOverview Simplified Admin Layout v9.0.
- * UPDATED: Centralized Authority management into a single hub, removing dynamic board sprawl.
+ * @fileOverview Consolidated Admin Layout v10.0.
+ * UPDATED: Merged redundant registry links into a single 'Master Registry' node.
  */
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -91,10 +92,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Registry Hub</SidebarGroupLabel>
             <SidebarMenu>
               <AdminNavItem icon={<LayoutDashboard />} label="Dashboard" href="/admin" active={pathname === "/admin"} />
-              <AdminNavItem icon={<Globe className="text-blue-400" />} label="Authority Registry" href="/admin/exams" active={pathname === "/admin/exams"} />
-              <AdminNavItem icon={<GraduationCap className="text-amber-400" />} label="Exam Verticals" href="/admin/exam-registry" active={pathname === "/admin/exam-registry"} />
+              <AdminNavItem icon={<ClipboardList className="text-amber-400" />} label="Master Registry" href="/admin/registry" active={pathname === "/admin/registry"} />
               <AdminNavItem icon={<Database />} label="Global MCQ Bank" href="/admin/questions" active={pathname === "/admin/questions"} />
-              <AdminNavItem icon={<SearchCode className="text-emerald-400" />} label="Subject List" href="/admin/subjects" active={pathname === "/admin/subjects"} />
             </SidebarMenu>
           </SidebarGroup>
 
