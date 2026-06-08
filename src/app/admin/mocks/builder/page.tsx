@@ -36,7 +36,8 @@ import {
   Languages,
   BookOpen,
   Info,
-  X
+  X,
+  History
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, limit, getDocs, writeBatch, where, documentId, orderBy } from "firebase/firestore"
@@ -46,8 +47,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Mock Architect v55.0 (TOTAL RECOVERY).
- * MATCHED: Strictly reconstructed to align with the "Old Style" full function screenshot.
+ * @fileOverview Institutional Mock Architect v55.1.
+ * FIXED: Added missing 'History' import to resolve Illegal constructor error.
  */
 
 export default function MockBuilderPage() {
