@@ -14,8 +14,8 @@ import { collection } from "firebase/firestore"
 import { useMemo } from "react"
 
 /**
- * @fileOverview Institutional About Hub v3.6.
- * UPDATED: Live Aspirant and MCQ counts in stats.
+ * @fileOverview Institutional About Hub v3.7.
+ * UPDATED: Removed hardcoded offsets from statistics.
  */
 
 export default function AboutPage() {
@@ -26,17 +26,19 @@ export default function AboutPage() {
   const { data: questions } = useCollection<any>(useMemo(() => (db ? collection(db, "questions") : null), [db]));
 
   const liveAspirantCount = useMemo(() => {
-    const count = (users?.length || 0) + 15420;
-    return `${Math.floor(count / 1000)}k+`;
+    const count = (users?.length || 0);
+    return count > 999 ? `${Math.floor(count / 1000)}k+` : count.toLocaleString();
   }, [users]);
 
   const liveQCount = useMemo(() => {
-    const count = (questions?.length || 0) + 10000;
-    return `${(count / 1000000).toFixed(1)}M+`;
+    const count = (questions?.length || 0);
+    if (count > 999999) return `${(count / 1000000).toFixed(1)}M+`;
+    if (count > 999) return `${(count / 1000).toFixed(1)}k+`;
+    return count.toString();
   }, [questions]);
 
   return (
-    <div className="min-h-screen bg-white font-body">
+    <div className="min-h-screen bg-white font-body text-left">
       <Navbar />
       <main>
         {/* Hero Section */}
@@ -103,7 +105,7 @@ export default function AboutPage() {
            <div className="container mx-auto px-6 max-w-7xl">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-16 text-center">
                  <StatNode icon={<UserCheck className="text-primary" />} val={liveAspirantCount} label="Active Students" />
-                 <StatNode icon={<Flame className="text-orange-500" />} val={liveQCount} label="MCQs Solved" />
+                 <StatNode icon={<Flame className="text-orange-500" />} val={liveQCount} label="MCQs Bank" />
                  <StatNode icon={<Globe className="text-blue-400" />} val="22" label="Districts Covered" />
                  <StatNode icon={<Target className="text-emerald-500" />} val="94%" label="Accuracy Rate" />
               </div>

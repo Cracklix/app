@@ -15,8 +15,8 @@ import { collection, query, where } from "firebase/firestore";
 import { BookOpen, Zap, Users, Target } from "lucide-react";
 
 /**
- * @fileOverview Institutional Landing Hub v32.0.
- * UPDATED: Real-time live status for 15k+ Aspirants and MCQ bank.
+ * @fileOverview Institutional Landing Hub v33.0.
+ * UPDATED: Strictly real-time counts from Firestore (Removed Hardcoded Offsets).
  */
 
 export default function HomePage() {
@@ -33,12 +33,12 @@ export default function HomePage() {
   const { data: results } = useCollection<any>(resultsQuery);
 
   const liveAspirantCount = useMemo(() => {
-    const count = (users?.length || 0) + 15420;
+    const count = (users?.length || 0);
     return count.toLocaleString();
   }, [users]);
 
   const formattedQCount = useMemo(() => {
-    const count = (questions?.length || 0) + 10000;
+    const count = (questions?.length || 0);
     if (count > 999) {
       return `${(count / 1000).toFixed(1)}k+`;
     }
@@ -46,10 +46,10 @@ export default function HomePage() {
   }, [questions]);
 
   const avgAccuracy = useMemo(() => {
-    if (!results || results.length === 0) return "94%";
+    if (!results || results.length === 0) return "0%";
     const sum = results.reduce((acc: number, curr: any) => acc + (curr.accuracy || 0), 0);
     const avg = Math.round(sum / results.length);
-    return `${Math.max(avg, 94)}%`;
+    return `${avg}%`;
   }, [results]);
 
   return (
@@ -61,7 +61,7 @@ export default function HomePage() {
          <div className="container mx-auto px-4 max-w-7xl">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-10">
                <TrustCard icon={<BookOpen className="text-primary h-4 w-4 md:h-6 md:w-6" />} label="MCQ Bank" val={formattedQCount} />
-               <TrustCard icon={<Zap className="text-blue-500 h-4 w-4 md:h-6 md:w-6" />} label="Mocks Live" val={mocks?.length || "500+"} />
+               <TrustCard icon={<Zap className="text-blue-500 h-4 w-4 md:h-6 md:w-6" />} label="Mocks Live" val={mocks?.length || "0"} />
                <TrustCard icon={<Users className="text-emerald-500 h-4 w-4 md:h-6 md:w-6" />} label="Aspirants" val={liveAspirantCount} />
                <TrustCard icon={<Target className="text-amber-500 h-4 w-4 md:h-6 md:w-6" />} label="Avg Accuracy" val={avgAccuracy} />
             </div>

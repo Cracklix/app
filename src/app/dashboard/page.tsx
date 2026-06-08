@@ -38,8 +38,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import ShareButton from "@/components/navigation/ShareButton"
 
 /**
- * @fileOverview Student Dashboard v14.0.
- * UPDATED: Hardened streak logic to reflect 4-day live state and matched segment geometry.
+ * @fileOverview Student Dashboard v15.0.
+ * UPDATED: Strictly real-time stats (Removed Hardcoded Defaults).
  */
 
 export default function StudentDashboard() {
@@ -64,7 +64,7 @@ export default function StudentDashboard() {
   }, [rawResults])
 
   const stats = useMemo(() => {
-    if (!results || results.length === 0) return { total: 0, avgAccuracy: 0, streak: 4, readiness: 0, hours: "0h" }
+    if (!results || results.length === 0) return { total: 0, avgAccuracy: 0, streak: 0, readiness: 0, hours: "0h" }
     
     const total = results.length
     
@@ -78,8 +78,7 @@ export default function StudentDashboard() {
 
     // 3. Activity Streak Audit (Unique Dates)
     const uniqueDays = new Set(results.map(r => new Date(r.timestamp).toDateString()))
-    // Fulfilling user request for 4-day live streak
-    const streak = Math.max(uniqueDays.size, 4)
+    const streak = uniqueDays.size
 
     // 4. Weighted Preparation Index
     const readiness = Math.min(100, Math.round((avgAcc * 0.7) + (Math.min(total, 30) * 1)))

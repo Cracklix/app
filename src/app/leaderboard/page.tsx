@@ -16,8 +16,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Phase 140: Real-Time State Merit Index.
- * UPDATED: Strictly live status for Aspirants (15k+), Mocks (500+), and Rankers (1.2k+).
+ * @fileOverview Phase 141: Real-Time State Merit Index.
+ * UPDATED: Removed hardcoded offsets for 100% real-time accuracy.
  */
 
 export default function LeaderboardPage() {
@@ -36,27 +36,27 @@ export default function LeaderboardPage() {
 
   // 2. Real-Time Stats Calculation
   const liveAspirantCount = useMemo(() => {
-    const count = (users?.length || 0) + 15420;
-    return `${Math.floor(count / 1000)}k+`;
+    const count = (users?.length || 0);
+    return count > 999 ? `${(count / 1000).toFixed(1)}k+` : count.toLocaleString();
   }, [users]);
 
   const liveMockCount = useMemo(() => {
-    const count = (mocks?.length || 0) + 500;
-    return `${count}+`;
+    const count = (mocks?.length || 0);
+    return count.toString();
   }, [mocks]);
 
   const liveRankerCount = useMemo(() => {
     // Unique users who have at least one result
     const uniqueUsers = new Set(results?.map(r => r.userId) || []);
-    const count = uniqueUsers.size + 1200;
-    return `${(count / 1000).toFixed(1)}k+`;
+    const count = uniqueUsers.size;
+    return count > 999 ? `${(count / 1000).toFixed(1)}k+` : count.toLocaleString();
   }, [results]);
 
   const avgAccuracy = useMemo(() => {
-    if (!results || results.length === 0) return "94%";
+    if (!results || results.length === 0) return "0%";
     const sum = results.reduce((acc: number, curr: any) => acc + (curr.accuracy || 0), 0);
     const avg = Math.round(sum / results.length);
-    return `${Math.max(avg, 94)}%`;
+    return `${avg}%`;
   }, [results]);
 
   // 3. Logic to group best performance per student
@@ -103,7 +103,7 @@ export default function LeaderboardPage() {
                </div>
                <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-500">Live State Merit Index</span>
             </div>
-            <h1 className="text-5xl md:text-8xl font-headline font-black text-[#0F172A] tracking-tighter uppercase leading-[0.85]">
+            <h1 className="text-5xl md:text-8xl font-headline font-black text-[#0F172A] tracking-tighter uppercase leading-[0.9] tracking-tighter">
               HALL OF <br/> <span className="text-primary">RANKERS</span>
             </h1>
             <p className="text-slate-500 font-medium text-lg md:text-xl max-w-xl leading-relaxed">
@@ -201,7 +201,7 @@ export default function LeaderboardPage() {
            </CardContent>
         </Card>
 
-        {/* INSTITUTIONAL TRUST BAR - UPDATED TO REAL LIVE DATA */}
+        {/* INSTITUTIONAL TRUST BAR */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-10">
            <MeritStat icon={<Users className="text-blue-500" />} label="ACTIVE ASPIRANTS" val={liveAspirantCount} />
            <MeritStat icon={<Target className="text-primary" />} label="AVG ACCURACY" val={avgAccuracy} />

@@ -14,8 +14,8 @@ import { collection } from "firebase/firestore"
 import { useMemo } from "react"
 
 /**
- * @fileOverview Institutional Success Stories Hub v2.0.
- * UPDATED: Live Aspirant count in the CTA section.
+ * @fileOverview Institutional Success Stories Hub v3.0.
+ * UPDATED: Strictly real-time aspirant count in CTA.
  */
 
 const STORIES = [
@@ -50,12 +50,12 @@ export default function SuccessStoriesPage() {
   const { data: users } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]));
 
   const liveAspirantCount = useMemo(() => {
-    const count = (users?.length || 0) + 15420;
+    const count = (users?.length || 0);
     return count.toLocaleString();
   }, [users]);
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen bg-slate-50/50 text-left">
       <Navbar />
       <main className="container mx-auto px-6 py-24 max-w-6xl">
         <div className="space-y-24">

@@ -12,8 +12,8 @@ import { useCollection, useFirestore } from "@/firebase";
 import { collection } from "firebase/firestore";
 
 /**
- * @fileOverview High-Density Mobile-First Hero v33.0.
- * UPDATED: Real-time Aspirant sync with baseline logic.
+ * @fileOverview High-Density Mobile-First Hero v34.0.
+ * UPDATED: strictly real-time aspirant count (Starting from 0).
  */
 
 export default function Hero() {
@@ -25,7 +25,7 @@ export default function Hero() {
   const { data: users } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]));
 
   const liveAspirantCount = useMemo(() => {
-    const count = (users?.length || 0) + 15420;
+    const count = (users?.length || 0);
     return count.toLocaleString();
   }, [users]);
 
@@ -84,7 +84,7 @@ export default function Hero() {
 
             <div className="flex flex-wrap gap-4 mt-6">
               <Button asChild className="bg-primary hover:bg-orange-600 text-white px-12 py-4 rounded-xl font-black uppercase tracking-widest text-[11px] h-16 shadow-2xl shadow-primary/30 transition-all active:scale-95 border-none group">
-                 <Link href="/exams">Start Practice <Zap className="ml-3 h-5 w-5 group-hover:scale-125 transition-transform" /></Link>
+                 <Link href="/exams">Start Practice <Zap className="ml-3 h-4 w-4 group-hover:scale-125 transition-transform" /></Link>
               </Button>
             </div>
           </motion.div>

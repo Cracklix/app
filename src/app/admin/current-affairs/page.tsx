@@ -39,9 +39,9 @@ import { parseBulkQuestions } from "@/lib/parser"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Current Affairs Management Hub v14.0.
- * UPDATED: Added comprehensive Category Selector (Daily/Weekly/Monthly/Quiz).
- * FEATURES: Multi-hub target routing, Live CBT Preview, Duration & Marking Scheme controls.
+ * @fileOverview Institutional Current Affairs Management Hub v15.0.
+ * UPDATED: Fixed controlled input warning and removed PDF requirements.
+ * FEATURES: Direct Mock Architect with Live CBT Preview.
  */
 
 export default function AdminCurrentAffairs() {
@@ -282,7 +282,7 @@ export default function AdminCurrentAffairs() {
                      <div className="space-y-1.5">
                         <Label className="text-[9px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Layers className="h-3 w-3" /> Hub Category</Label>
                         <select 
-                           value={editingItem?.type} 
+                           value={editingItem?.type || "DAILY"} 
                            onChange={e => setEditingItem({...editingItem, type: e.target.value as CurrentAffairType})} 
                            className="w-full h-11 bg-white border-slate-200 rounded-xl px-4 font-black uppercase text-[9px] outline-none shadow-sm"
                         >
@@ -297,7 +297,7 @@ export default function AdminCurrentAffairs() {
                      <div className="grid grid-cols-1 gap-4">
                         <div className="space-y-1.5">
                            <Label className="text-[9px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Languages className="h-3 w-3" /> CBT Assessment Language</Label>
-                           <select value={editingItem?.language} onChange={e => setEditingItem({...editingItem, language: e.target.value})} className="w-full h-11 bg-[#0B1528] text-white border-none rounded-xl px-4 font-black uppercase text-[9px] outline-none shadow-xl">
+                           <select value={editingItem?.language || "English & Punjabi"} onChange={e => setEditingItem({...editingItem, language: e.target.value})} className="w-full h-11 bg-[#0B1528] text-white border-none rounded-xl px-4 font-black uppercase text-[9px] outline-none shadow-xl">
                               <option value="English & Punjabi">English & Punjabi</option>
                               <option value="English & Hindi">English & Hindi</option>
                            </select>
@@ -309,17 +309,17 @@ export default function AdminCurrentAffairs() {
                         
                         <div className="space-y-1.5">
                            <Label className="text-[9px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Clock className="h-3 w-3" /> Test Duration (Mins)</Label>
-                           <Input type="number" value={editingItem?.duration || 15} onChange={e => setEditingItem({...editingItem, duration: e.target.value})} className="h-11 rounded-xl border-none bg-white font-black shadow-sm" />
+                           <Input type="number" value={editingItem?.duration || ""} onChange={e => setEditingItem({...editingItem, duration: e.target.value})} className="h-11 rounded-xl border-none bg-white font-black shadow-sm" />
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                            <div className="space-y-1.5">
                               <Label className="text-[9px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Target className="h-3 w-3 text-emerald-500" /> Pos (+)</Label>
-                              <Input type="number" step="0.5" value={editingItem?.positiveMarks || 1} onChange={e => setEditingItem({...editingItem, positiveMarks: e.target.value})} className="h-11 rounded-xl border-none bg-white font-black shadow-sm text-center" />
+                              <Input type="number" step="0.5" value={editingItem?.positiveMarks || ""} onChange={e => setEditingItem({...editingItem, positiveMarks: e.target.value})} className="h-11 rounded-xl border-none bg-white font-black shadow-sm text-center" />
                            </div>
                            <div className="space-y-1.5">
                               <Label className="text-[9px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><AlertTriangle className="h-3 w-3 text-rose-500" /> Neg (-)</Label>
-                              <Input type="number" step="0.05" value={editingItem?.negativeMarks || 0.25} onChange={e => setEditingItem({...editingItem, negativeMarks: e.target.value})} className="h-11 rounded-xl border-none bg-white font-black shadow-sm text-center" />
+                              <Input type="number" step="0.05" value={editingItem?.negativeMarks || ""} onChange={e => setEditingItem({...editingItem, negativeMarks: e.target.value})} className="h-11 rounded-xl border-none bg-white font-black shadow-sm text-center" />
                            </div>
                         </div>
                      </div>
@@ -327,13 +327,13 @@ export default function AdminCurrentAffairs() {
                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200/50">
                         <div className="space-y-1.5">
                            <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Archive Month</Label>
-                           <select value={editingItem?.month} onChange={e => setEditingItem({...editingItem, month: e.target.value})} className="w-full h-11 bg-white border-none rounded-xl px-4 font-bold text-[10px] outline-none shadow-sm">
+                           <select value={editingItem?.month || "January"} onChange={e => setEditingItem({...editingItem, month: e.target.value})} className="w-full h-11 bg-white border-none rounded-xl px-4 font-bold text-[10px] outline-none shadow-sm">
                            {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(m => <option key={m} value={m}>{m}</option>)}
                            </select>
                         </div>
                         <div className="space-y-1.5">
                            <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Year</Label>
-                           <Input value={editingItem?.year} onChange={e => setEditingItem({...editingItem, year: e.target.value})} className="h-11 rounded-xl border-none bg-white font-bold shadow-sm text-center" />
+                           <Input value={editingItem?.year || ""} onChange={e => setEditingItem({...editingItem, year: e.target.value})} className="h-11 rounded-xl border-none bg-white font-bold shadow-sm text-center" />
                         </div>
                      </div>
                   </Card>
@@ -341,7 +341,7 @@ export default function AdminCurrentAffairs() {
 
                {/* MAIN EXTRACTION HUB */}
                <div className="lg:col-span-9 h-full min-h-[400px]">
-                  <Card className="border-none bg-white shadow-3xl rounded-[3rem] p-8 md:p-12 space-y-10 border border-slate-50 h-full flex flex-col">
+                  <Card className="border-none bg-white shadow-3xl rounded-[3rem] p-8 md:p-12 space-y-10 border border-slate-100 h-full flex flex-col">
                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 shrink-0">
                         <div className="flex items-center gap-6">
                            <Zap className="h-8 w-8 text-primary fill-current" />
