@@ -19,9 +19,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Paginated Question Bank Hub v30.0.
- * PERFORMANCE: Hardened Cursor-Based Pagination and debounced filtering.
- * UI: Instant responsiveness via non-blocking write transitions.
+ * @fileOverview Paginated Question Bank Hub v30.1.
+ * RESTORED: Status-based filtering (Unused, Used, Locked) and bulk actions.
  */
 
 type QuestionFilterType = 'ALL' | 'UNUSED' | 'USED' | 'LOCKED' | 'DUPLICATE' | 'REPEATED';
@@ -122,12 +121,11 @@ function QuestionBankContent() {
       batch.update(doc(db, "questions", id), { status: newStatus, updatedAt: serverTimestamp() });
     });
 
-    batch.commit().catch(() => toast({ variant: "destructive", title: "Bulk Update Failed" }));
-    
-    setQuestions(prev => prev.map(q => selectedIds.includes(q.id) ? { ...q, status: newStatus } : q));
-    setSelectedIds([]);
-    setIsBulkProcessing(false);
-    toast({ title: "Registry Hub Synced" });
+    batch.commit().then(() => {
+       setQuestions(prev => prev.map(q => selectedIds.includes(q.id) ? { ...q, status: newStatus } : q));
+       setSelectedIds([]);
+       toast({ title: "Registry Hub Synced" });
+    }).catch(() => toast({ variant: "destructive", title: "Bulk Update Failed" })).finally(() => setIsBulkProcessing(false));
   }
 
   return (
