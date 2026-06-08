@@ -21,7 +21,8 @@ import {
   GraduationCap,
   ListTree,
   Download,
-  Layers
+  Layers,
+  RefreshCw
 } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
@@ -31,10 +32,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v9.0.
- * FIXED: Refactored to fetch all published mocks and filter client-side to ensure 
- * mocks assigned via either legacy 'examId' or new 'examIds' array appear correctly.
- * FIXED: Added missing Link import to resolve ReferenceError.
+ * @fileOverview Institutional Exam Hub v10.0.
+ * UPDATED: Added Re-attempt button support for completed mocks.
  */
 
 export default function ExamHubPage() {
@@ -47,7 +46,6 @@ export default function ExamHubPage() {
 
   const { data: exam, loading: examLoading } = useDoc<any>(useMemo(() => (db && examId ? doc(db, "exams", examId) : null), [db, examId]))
   
-  // Fetch all published mocks to ensure maximum compatibility with legacy/new assignment models
   const mocksQuery = useMemo(() => {
     if (!db) return null;
     return query(collection(db, "mocks"), where("published", "==", true));
@@ -69,7 +67,6 @@ export default function ExamHubPage() {
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
 
   const groupedContent = useMemo(() => {
-    // FLEXIBLE FILTERING: Support both single examId and array examIds
     const mocks = (rawMocks || []).filter(m => {
        const hasMatch = m.examId === examId || (m.examIds && Array.isArray(m.examIds) && m.examIds.includes(examId));
        return hasMatch;
@@ -217,16 +214,25 @@ function MockList({ data, results, hasPass, user }: any) {
                         <span className="flex items-center gap-1.5"><Clock className="h-3 w-3" /> {mock.duration}m</span>
                         <span className="flex items-center gap-1.5"><BookOpen className="h-3 w-3" /> {mock.totalQuestions} Qs</span>
                      </div>
-                     <div className="pt-2">
-                        <Button 
-                          asChild 
-                          onClick={handleInteraction}
-                          className="w-full h-10 bg-slate-50 hover:bg-primary text-slate-600 hover:text-white border-none font-black uppercase text-[9px] rounded-xl"
-                        >
-                           <Link href={locked ? "/pass" : result ? `/results/${mock.id}` : `/mocks/${mock.id}`}>
-                              {locked ? 'Unlock with Pass' : result ? 'View Results' : 'Attempt Now'}
-                           </Link>
-                        </Button>
+                     <div className="pt-2 flex flex-col sm:flex-row gap-2">
+                        {locked ? (
+                           <Button asChild onClick={handleInteraction} className="w-full h-10 bg-amber-500 hover:bg-amber-600 text-white border-none font-black uppercase text-[9px] rounded-xl">
+                              <Link href="/pass">Unlock with Pass</Link>
+                           </Button>
+                        ) : result ? (
+                           <>
+                              <Button asChild onClick={handleInteraction} className="flex-1 h-10 bg-primary text-white hover:bg-orange-600 border-none font-black uppercase text-[9px] rounded-xl shadow-md">
+                                 <Link href={`/results/${mock.id}`}>View Results</Link>
+                              </Button>
+                              <Button asChild onClick={handleInteraction} variant="outline" className="flex-1 h-10 border-slate-200 text-slate-600 hover:bg-slate-50 font-black uppercase text-[9px] rounded-xl gap-2">
+                                 <Link href={`/mocks/${mock.id}/instructions`}><RefreshCw className="h-3 w-3" /> Re-attempt</Link>
+                              </Button>
+                           </>
+                        ) : (
+                           <Button asChild onClick={handleInteraction} className="w-full h-10 bg-slate-900 hover:bg-black text-white border-none font-black uppercase text-[9px] rounded-xl shadow-lg">
+                              <Link href={`/mocks/${mock.id}`}>Attempt Now</Link>
+                           </Button>
+                        )}
                      </div>
                   </CardContent>
                </Card>

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -29,7 +30,8 @@ import {
   AlertCircle,
   BookOpen,
   Printer,
-  FileText
+  FileText,
+  RefreshCw
 } from "lucide-react"
 import { useUser, useFirestore, useCollection } from "@/firebase"
 import { collection, query, where, doc, getDoc, documentId, getDocs } from "firebase/firestore"
@@ -41,8 +43,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import Logo from "@/components/brand/Logo"
 
 /**
- * @fileOverview Test Results Hub v7.3 (Production Hardened).
- * FIXED: Prevented NaN displays by ensuring all calculations have numeric fallbacks.
+ * @fileOverview Test Results Hub v7.5.
+ * UPDATED: Added Re-attempt action button to the results hero.
  */
 
 export default function ResultPage() {
@@ -196,27 +198,37 @@ export default function ResultPage() {
               <div className="absolute -top-20 -right-20 p-12 opacity-[0.02] rotate-12 group-hover:scale-110 transition-transform duration-1000 print:hidden"><Trophy className="h-[500px] w-[500px]" /></div>
               <CardContent className="p-6 md:p-14 lg:p-16 space-y-8 md:space-y-10 relative z-10 print:p-10">
                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
-                    <div className="space-y-4 max-w-full lg:max-w-[65%]">
+                    <div className="space-y-6 max-w-full lg:max-w-[60%] text-left">
                        <div className="flex items-center gap-4 print:hidden">
                           <ShieldCheck className="h-5 w-5 text-primary" />
                           <Badge className="bg-primary/20 text-primary border-none px-4 py-1.5 rounded-full font-black uppercase text-[9px] tracking-[0.2em] shadow-xl">Test Completed</Badge>
                        </div>
-                       <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-headline font-black uppercase leading-[0.95] tracking-tight break-words print:text-4xl">
+                       <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-headline font-black uppercase leading-[0.95] tracking-tight break-words print:text-4xl">
                           {sessionData.mockTitle}
                        </h1>
+                       <div className="flex flex-wrap gap-4 print:hidden">
+                          <Button asChild className="bg-primary hover:bg-orange-600 text-white font-black uppercase text-[10px] tracking-widest h-12 px-8 rounded-xl shadow-xl gap-2 transition-all active:scale-95 border-none">
+                             <Link href={`/mocks/${mockId}/instructions`}>
+                                <RefreshCw className="h-4 w-4" /> Re-attempt Test
+                             </Link>
+                          </Button>
+                          <Button variant="outline" className="bg-white/5 border-white/10 hover:bg-white/10 text-white font-black uppercase text-[10px] tracking-widest h-12 px-8 rounded-xl" onClick={() => window.print()}>
+                             <Printer className="h-4 w-4 mr-2" /> Print Result
+                          </Button>
+                       </div>
                     </div>
                     
                     <div className="flex items-center gap-4 md:gap-8 bg-white/5 backdrop-blur-3xl p-6 md:p-8 rounded-[2.5rem] border border-white/10 shadow-5xl group/merit w-full lg:w-auto print:bg-slate-50 print:border-slate-200">
                        <div className="flex-1 text-center space-y-1.5">
                           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">RANK</p>
                           <p className="text-3xl md:text-5xl font-headline font-black text-primary leading-none tabular-nums print:text-4xl">#{merit.rank || 0}</p>
-                          <p className="text-[9px] font-black text-slate-500 uppercase">OF {merit.total || 0}</p>
+                          <p className="text-[9px] font-black text-slate-50 uppercase">OF {merit.total || 0}</p>
                        </div>
                        <div className="h-12 md:h-20 w-px bg-white/10 shrink-0 print:bg-slate-200" />
                        <div className="flex-1 text-center space-y-1.5">
                           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">PERCENTILE</p>
                           <p className="text-3xl md:text-5xl font-headline font-black text-emerald-400 leading-none tabular-nums print:text-4xl">{merit.percentile || 0}</p>
-                          <p className="text-[9px] font-black text-slate-500 uppercase">SCORE %</p>
+                          <p className="text-[9px] font-black text-slate-50 uppercase">SCORE %</p>
                        </div>
                     </div>
                  </div>
