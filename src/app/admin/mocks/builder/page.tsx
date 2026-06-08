@@ -151,9 +151,11 @@ function MockBuilderContent() {
       const matchesSubject = bankFilter.subjectId === "all" || q.subjectId === bankFilter.subjectId
       const notAlreadySelected = !allSelectedIds.includes(q.id)
       
-      if (activeRules.includes('unused-only') && q.status !== 'UNUSED') return false;
-      if (activeRules.includes('no-locked') && q.status === 'LOCKED') return false;
-      if (activeRules.includes('no-duplicates') && q.status === 'DUPLICATE') return false;
+      const qStatus = q.status || 'UNUSED';
+
+      if (activeRules.includes('unused-only') && qStatus !== 'UNUSED') return false;
+      if (activeRules.includes('no-locked') && qStatus === 'LOCKED') return false;
+      if (activeRules.includes('no-duplicates') && qStatus === 'DUPLICATE') return false;
 
       return matchesSubject && notAlreadySelected
     })

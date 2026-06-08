@@ -17,7 +17,7 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 
 /**
  * @fileOverview Institutional Command Center v26.0.
- * UPDATED: Responsive header sizes and activity node visibility.
+ * UPDATED: Hardened Unused Question calculation for real-time fidelity.
  */
 
 export default function AdminDashboard() {
@@ -27,7 +27,7 @@ export default function AdminDashboard() {
   const [lastSyncStatus, setLastSyncStatus] = useState<'idle' | 'success'>('idle')
 
   // Real-time Data Nodes
-  const { data: users, loading: uLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]))
+  const { data: users } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]))
   const { data: questions, loading: qLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "questions") : null), [db]))
   const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]))
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
@@ -41,6 +41,11 @@ export default function AdminDashboard() {
 
   const recentResultsQuery = useMemo(() => (db ? query(collection(db, "results"), orderBy("timestamp", "desc"), limit(5)) : null), [db]);
   const { data: recentResults } = useCollection<any>(recentResultsQuery);
+
+  const unusedCount = useMemo(() => {
+    if (!questions) return 0;
+    return questions.filter(q => q.status === 'UNUSED' || !q.status).length;
+  }, [questions]);
 
   const subjectBreakdown = useMemo(() => {
     if (!questions) return [];
@@ -105,11 +110,11 @@ export default function AdminDashboard() {
 
       {/* 2. STATS MATRIX */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6 px-2 md:px-0">
-         <StatCard label="Questions" value={questions?.length ?? "..."} icon={<Database className="text-blue-500" />} active />
+         <StatCard label="MCQ Bank" value={questions?.length ?? "..."} icon={<Database className="text-blue-500" />} active />
+         <StatCard label="Unused Nodes" value={unusedCount} icon={<BookOpen className="text-emerald-500" />} />
          <StatCard label="Live Tests" value={mocks?.filter((m: any) => m.published).length ?? "..."} icon={<Zap className="text-primary" />} active />
          <StatCard label="Aspirants" value={users?.length || "0"} icon={<Users className="text-emerald-500" />} active />
          <StatCard label="PYQ Papers" value={pyqs?.length ?? "..."} icon={<Landmark className="text-orange-500" />} />
-         <StatCard label="Study Notes" value={notes?.length ?? "..."} icon={<BookOpen className="text-rose-500" />} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 px-2 md:px-0">

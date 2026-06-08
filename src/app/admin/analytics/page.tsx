@@ -35,7 +35,7 @@ const chartData = [
 
 /**
  * @fileOverview Final Administrative Control Center.
- * Features growth metrics, pass distribution, and institutional usage analytics.
+ * UPDATED: Hardened stats calculation to treat missing status as UNUSED.
  */
 
 export default function AdminAnalytics() {
@@ -50,7 +50,7 @@ export default function AdminAnalytics() {
      if (!questions) return { used: 0, unused: 0, locked: 0, repeated: 0, dup: 0 };
      return {
         used: questions.filter(q => q.status === 'USED').length,
-        unused: questions.filter(q => q.status === 'UNUSED').length,
+        unused: questions.filter(q => q.status === 'UNUSED' || !q.status).length,
         locked: questions.filter(q => q.status === 'LOCKED').length,
         repeated: questions.filter(q => (q.usedCount || 0) > 1).length,
         dup: questions.filter(q => q.status === 'DUPLICATE').length
@@ -60,7 +60,7 @@ export default function AdminAnalytics() {
   const proUsers = useMemo(() => users?.filter((u: any) => u.status && u.status !== 'Free') || [], [users]);
 
   const avgAccuracy = useMemo(() => {
-    if (!results || results.length === 0) return 64
+    if (!results || results.length === 0) return 0
     return Math.round(results.reduce((acc, r: any) => acc + (r.accuracy || 0), 0) / results.length)
   }, [results])
 

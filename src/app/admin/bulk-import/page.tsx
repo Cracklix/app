@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -35,8 +36,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Bulk Ingestion Hub v7.0.
- * FIXED: Controlled input warnings resolved by using nullish coalescing.
+ * @fileOverview Institutional Bulk Ingestion Hub v8.0.
+ * FIXED: Explicit QuestionLifecycleStatus set to UNUSED for all new assets.
  */
 
 export default function BulkImportPage() {
@@ -70,7 +71,9 @@ export default function BulkImportPage() {
     }
 
     const result = parseBulkQuestions(rawText, metadata);
-    setParsedQuestions(result.questions);
+    // Explicitly enforce UNUSED status for parsed questions
+    const questionsWithStatus = result.questions.map(q => ({ ...q, status: 'UNUSED' }));
+    setParsedQuestions(questionsWithStatus);
 
     if (result.questions.length > 0) {
       toast({ title: "Extraction Success", description: `${result.questions.length} blocks mapped to explicit fields.` });
@@ -109,6 +112,8 @@ export default function BulkImportPage() {
       batch.set(qRef, {
         ...cleanQ,
         id: qRef.id,
+        status: 'UNUSED',
+        usedCount: 0,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       })
