@@ -29,8 +29,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Mock Node Gateway v16.0.
- * HARDENED: Strict access type evaluation and conversion path normalization.
+ * @fileOverview Institutional Mock Node Gateway v17.0.
+ * HARDENED: Synced accessLevel and accessType logic for consistent premium gating.
  */
 
 export default function MockOverviewPage() {
@@ -55,7 +55,8 @@ export default function MockOverviewPage() {
         return;
       }
 
-      const access = (mock.accessType || 'FREE').toUpperCase();
+      // SYNC CHECK: Standardized access Level detection
+      const access = (mock.accessLevel || mock.accessType || 'FREE').toUpperCase();
       const isPremium = access === 'PREMIUM';
       
       console.log(`[AUDIT] Mock Gateway: ${mock.title} | Access: ${access} | User: ${user?.uid}`);
@@ -150,7 +151,8 @@ export default function MockOverviewPage() {
     </div>
   );
 
-  const isPremiumMock = (mock.accessType || 'FREE').toUpperCase() === 'PREMIUM';
+  const tier = (mock.accessLevel || mock.accessType || 'FREE').toUpperCase();
+  const isPremiumMock = tier === 'PREMIUM';
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-body">
@@ -167,7 +169,7 @@ export default function MockOverviewPage() {
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center gap-2">
                       <Badge className={cn("border-none px-3 py-0.5 rounded font-black uppercase text-[8px] tracking-widest shadow-sm", isPremiumMock ? "bg-amber-100 text-amber-600" : "bg-emerald-50 text-emerald-600")}>
-                        {isPremiumMock ? "PREMIUM" : "FREE"}
+                        {tier}
                       </Badge>
                       {isLocked && <Badge className="bg-slate-100 text-slate-500 border-none px-3 py-0.5 rounded font-black uppercase text-[8px] tracking-widest flex items-center gap-1"><Lock className="h-3 w-3" /> PASS REQUIRED</Badge>}
                   </div>

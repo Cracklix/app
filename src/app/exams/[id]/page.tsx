@@ -33,8 +33,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v17.0.
- * HARDENED: Unified PASS Subscription System Access Control.
+ * @fileOverview Institutional Exam Hub v18.0.
+ * UPDATED: Synchronized accessLevel and accessType for consistent gating.
  */
 
 export default function ExamHubPage() {
@@ -81,7 +81,7 @@ export default function ExamHubPage() {
         if (expiry > new Date()) return true;
      }
 
-     // 3. Legacy status check (failsafe)
+     // 3. Status check (Normalize case)
      const status = (profile.status || '').toLowerCase();
      if (status !== '' && status !== 'free') return true;
      
@@ -209,14 +209,12 @@ function MockList({ data, results, hasActivePass }: { data: any[], results: any[
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
          {data.map((mock: any) => {
             const result = results?.find((r: any) => r.mockId === mock.id);
-            // SPECIFICATION: accessLevel evaluation
-            const accessLevel = (mock.accessLevel || 'FREE').toUpperCase();
+            // SYNC CHECK: Check both accessLevel and accessType
+            const accessLevel = (mock.accessLevel || mock.accessType || 'FREE').toUpperCase();
             const isFree = accessLevel === 'FREE';
             
             // Logic: PREMIUM + NO PASS = LOCKED
             const isLocked = !isFree && !hasActivePass;
-
-            console.log(`[AUDIT] Mock: ${mock.title} | accessLevel: ${accessLevel} | isLocked: ${isLocked}`);
 
             return (
                <Card key={mock.id} className="border-none shadow-sm rounded-2xl bg-white hover:shadow-md transition-all text-left group">
@@ -241,7 +239,7 @@ function MockList({ data, results, hasActivePass }: { data: any[], results: any[
                              onClick={() => router.push('/pass')} 
                              className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase text-[10px] rounded-xl shadow-xl gap-3 transition-all active:scale-95 border-none"
                            >
-                              <Lock className="h-4 w-4" /> UNLOCK WITH PASS
+                              <Lock className="h-4 w-4" /> UNLOCK TEST
                            </Button>
                         ) : result ? (
                            <div className="flex flex-col sm:flex-row gap-2">

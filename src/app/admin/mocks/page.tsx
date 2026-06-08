@@ -27,7 +27,8 @@ import {
   Zap,
   Eye,
   Lock,
-  Unlock
+  Unlock,
+  RefreshCw
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -40,8 +41,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Mock Manager v18.0.
- * UPDATED: Added Access Level (FREE/PREMIUM) filtering and tier management.
+ * @fileOverview Institutional Mock Manager v19.0.
+ * UPDATED: Standardized accessLevel logic and added inline Tier Toggle.
  */
 
 export default function MockManagement() {
@@ -53,6 +54,7 @@ export default function MockManagement() {
   const [accessFilter, setAccessFilter] = useState("all")
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [isDeletingBulk, setIsDeletingBulk] = useState(false)
+  const [togglingId, setTogglingId] = useState<string | null>(null)
 
   const mocksQuery = useMemo(() => (db ? collection(db, "mocks") : null), [db])
   const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db])
@@ -64,16 +66,40 @@ export default function MockManagement() {
     if (!rawMocks) return []
     return [...rawMocks]
       .filter(m => {
+        const currentTier = (m.accessLevel || m.accessType || 'FREE').toUpperCase();
         const matchesSearch = m.title?.toLowerCase().includes(searchTerm.toLowerCase())
-        // Support both legacy single boardId and new boardIds array
         const matchesBoard = boardFilter === "all" || 
                            m.boardId === boardFilter || 
                            (m.boardIds && Array.isArray(m.boardIds) && m.boardIds.includes(boardFilter))
-        const matchesAccess = accessFilter === "all" || (m.accessType || 'FREE') === accessFilter;
+        const matchesAccess = accessFilter === "all" || currentTier === accessFilter;
         return matchesSearch && matchesBoard && matchesAccess
       })
       .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
   }, [rawMocks, searchTerm, boardFilter, accessFilter])
+
+  const toggleTier = async (mockId: string, currentTier: string) => {
+    if (!db || togglingId) return
+    const nextTier = currentTier === 'PREMIUM' ? 'FREE' : 'PREMIUM'
+    setTogglingId(mockId)
+    
+    try {
+      const mockRef = doc(db, "mocks", mockId)
+      await setDoc(mockRef, { 
+        accessLevel: nextTier, 
+        accessType: nextTier, // Sync legacy field for compatibility
+        updatedAt: serverTimestamp() 
+      }, { merge: true })
+      
+      toast({ 
+        title: "Tier Hub Updated", 
+        description: `Mock "${mocks.find(m => m.id === mockId)?.title}" is now ${nextTier}.` 
+      })
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Sync Failed", description: e.message })
+    } finally {
+      setTogglingId(null)
+    }
+  }
 
   const handleDeleteSingle = async (id: string) => {
     if (!db) return
@@ -200,7 +226,10 @@ export default function MockManagement() {
                    Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={5} className="p-10"><Skeleton className="h-16 w-full rounded-xl" /></TableCell></TableRow>)
                 ) : mocks.map((mock: any) => {
                   const isSelected = selectedIds.includes(mock.id);
-                  const isPremium = (mock.accessType || 'FREE') === 'PREMIUM';
+                  const tier = (mock.accessLevel || mock.accessType || 'FREE').toUpperCase();
+                  const isPremium = tier === 'PREMIUM';
+                  const isSyncingTier = togglingId === mock.id;
+
                   return (
                     <TableRow key={mock.id} className={cn("hover:bg-slate-50 border-slate-50 transition-colors group", isSelected && "bg-primary/5")}>
                       <TableCell className="px-6 text-center">
@@ -228,12 +257,26 @@ export default function MockManagement() {
                       </TableCell>
                       <TableCell>
                          <div className="flex flex-col gap-2">
-                            <div className="flex items-center gap-2">
-                               {isPremium ? <Lock className="h-3 w-3 text-amber-500" /> : <Unlock className="h-3 w-3 text-emerald-500" />}
-                               <Badge className={cn("border-none text-[8px] font-black px-2 py-0.5", isPremium ? "bg-amber-50 text-amber-600" : "bg-emerald-50 text-emerald-600")}>
-                                  {mock.accessType || 'FREE'}
+                            <button 
+                               onClick={() => toggleTier(mock.id, tier)}
+                               disabled={isSyncingTier}
+                               className="flex items-center gap-2 group/tier text-left focus:outline-none"
+                               title="Click to toggle tier"
+                            >
+                               {isSyncingTier ? (
+                                  <RefreshCw className="h-3 w-3 text-slate-400 animate-spin" />
+                               ) : isPremium ? (
+                                  <Lock className="h-3 w-3 text-amber-500" />
+                               ) : (
+                                  <Unlock className="h-3 w-3 text-emerald-500" />
+                               )}
+                               <Badge className={cn(
+                                  "border-none text-[8px] font-black px-2 py-0.5 transition-all", 
+                                  isPremium ? "bg-amber-50 text-amber-600 group-hover/tier:bg-amber-100" : "bg-emerald-50 text-emerald-600 group-hover/tier:bg-emerald-100"
+                               )}>
+                                  {tier}
                                </Badge>
-                            </div>
+                            </button>
                             <div className="flex items-center gap-2">
                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">{mock.mockType || 'FULL'} HUB</span>
                             </div>
@@ -303,5 +346,17 @@ export default function MockManagement() {
          </div>
       )}
     </div>
+  )
+}
+
+function MetricCard({ label, value, icon }: any) {
+  return (
+    <Card className="border-none shadow-xl bg-white p-10 rounded-[2.5rem] relative overflow-hidden group">
+       <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform">{icon}</div>
+       <div className="space-y-4 relative z-10 text-left">
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">{label}</p>
+          <p className="text-4xl font-headline font-black text-[#0F172A]">{value}</p>
+       </div>
+    </Card>
   )
 }
