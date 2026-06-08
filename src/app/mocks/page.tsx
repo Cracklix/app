@@ -28,8 +28,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @file Overview Final Exam Gateway Node v6.1.
- * HARDENED: Fixed logo priority to show exam-specific icons first.
+ * @file Overview Final Exam Gateway Node v6.2.
+ * UPDATED: Multi-Board stats mapping and authentic logo resolution.
  */
 
 export default function MocksGatewayPage() {
@@ -49,17 +49,19 @@ export default function MocksGatewayPage() {
     const map: Record<string, any> = {};
     
     mocks.forEach(m => {
-      const eid = m.examId;
-      if (!eid) return;
+      const eids = m.examIds || (m.examId ? [m.examId] : []);
+      if (!eids.length) return;
       
-      if (!map[eid]) {
-        map[eid] = { full: 0, pyq: 0, sectional: 0, subjects: new Set<string>() };
-      }
-      
-      if (m.mockType === 'FULL') map[eid].full++;
-      if (m.mockType === 'PYQ') map[eid].pyq++;
-      if (m.mockType === 'SECTIONAL') map[eid].sectional++;
-      if (m.subjectId) map[eid].subjects.add(m.subjectId);
+      eids.forEach((eid: string) => {
+        if (!map[eid]) {
+          map[eid] = { full: 0, pyq: 0, sectional: 0, subjects: new Set<string>() };
+        }
+        
+        if (m.mockType === 'FULL') map[eid].full++;
+        if (m.mockType === 'PYQ') map[eid].pyq++;
+        if (m.mockType === 'SECTIONAL') map[eid].sectional++;
+        if (m.subjectId) map[eid].subjects.add(m.subjectId);
+      });
     });
     
     return map;

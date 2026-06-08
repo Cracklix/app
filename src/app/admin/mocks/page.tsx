@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useMemo, useState } from "react"
+import React, { useMemo, useState } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -38,8 +38,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Mock Manager v16.0.
- * UPDATED: Added View option and Manual Edit routing for direct content typing.
+ * @fileOverview Institutional Mock Manager v17.0.
+ * UPDATED: Multi-Board filter support for cross-authority series.
  */
 
 export default function MockManagement() {
@@ -62,7 +62,10 @@ export default function MockManagement() {
     return [...rawMocks]
       .filter(m => {
         const matchesSearch = m.title?.toLowerCase().includes(searchTerm.toLowerCase())
-        const matchesBoard = boardFilter === "all" || m.boardId === boardFilter
+        // Support both legacy single boardId and new boardIds array
+        const matchesBoard = boardFilter === "all" || 
+                           m.boardId === boardFilter || 
+                           (m.boardIds && Array.isArray(m.boardIds) && m.boardIds.includes(boardFilter))
         return matchesSearch && matchesBoard
       })
       .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
@@ -196,7 +199,9 @@ export default function MockManagement() {
                           <div>
                             <p className="font-black text-[#0F172A] text-lg uppercase leading-none">{mock.title}</p>
                             <div className="flex items-center gap-3 mt-2">
-                               <Badge variant="outline" className="text-[8px] font-black uppercase px-2 border-slate-100 text-slate-400">{mock.boardId}</Badge>
+                               <Badge variant="outline" className="text-[8px] font-black uppercase px-2 border-slate-100 text-slate-400">
+                                  {mock.boardIds ? mock.boardIds.join(', ') : mock.boardId}
+                               </Badge>
                                <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">{mock.totalQuestions} Qs • {mock.duration}m</span>
                             </div>
                           </div>

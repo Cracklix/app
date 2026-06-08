@@ -28,7 +28,7 @@ export interface ExamSection {
 export interface MockTest {
   id: string;
   title: string;
-  boardId: string;
+  boardIds: string[]; // Supports multiple authorities
   examIds: string[]; // Supports multi-exam assignment
   mockType: MockType;
   accessType: AccessType;

@@ -37,7 +37,10 @@ import {
   Gem,
   LayoutGrid,
   FileStack,
-  ListTree
+  ListTree,
+  X,
+  Globe,
+  Info
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, limit, getDocs, writeBatch } from "firebase/firestore"
@@ -81,6 +84,8 @@ function MockBuilderContent() {
   const [questionBank, setQuestionBank] = useState<any[]>([])
   const [activeRules, setActiveRules] = useState<string[]>(['no-locked', 'no-duplicates'])
   const [assignmentMode, setAssignmentMode] = useState<AssignmentMode>('SINGLE')
+  const [boardSearch, setBoardSearch] = useState("")
+  
   const [bankFilter, setBankFilter] = useState({ 
     boardId: "all",
     examId: "all",
@@ -90,7 +95,7 @@ function MockBuilderContent() {
   const [isPublishing, setIsPublishing] = useState(false)
   const [mockData, setMockData] = useState<any>({
     title: "", 
-    boardId: "", 
+    boardIds: [] as string[],
     examIds: [] as string[],
     duration: 120, 
     difficulty: "Medium" as Difficulty, 
@@ -129,6 +134,7 @@ function MockBuilderContent() {
       setMockData(prev => ({ 
         ...prev, 
         ...existingMock,
+        boardIds: existingMock.boardIds || (existingMock.boardId ? [existingMock.boardId] : []),
         examIds: existingMock.examIds || (existingMock.examId ? [existingMock.examId] : []),
         positiveMarks: existingMock.positiveMarks ?? 1,
         negativeMarks: existingMock.negativeMarks ?? 0.25,
@@ -183,8 +189,8 @@ function MockBuilderContent() {
   }
 
   const handlePublish = async () => {
-    if (!db || !mockData.title || !mockData.boardId) {
-      toast({ variant: "destructive", title: "Audit Blocked", description: "Metadata incomplete." })
+    if (!db || !mockData.title || mockData.boardIds.length === 0) {
+      toast({ variant: "destructive", title: "Audit Blocked", description: "Metadata incomplete. Title and Authority are required." })
       return
     }
 
@@ -201,7 +207,7 @@ function MockBuilderContent() {
     // Multi-Exam Logic
     let finalExamIds = [...mockData.examIds];
     if (assignmentMode === 'BOARD') {
-       finalExamIds = exams?.filter((e: any) => e.boardId === mockData.boardId).map((e: any) => e.id) || [];
+       finalExamIds = exams?.filter((e: any) => mockData.boardIds.includes(e.boardId)).map((e: any) => e.id) || [];
     }
 
     if (finalExamIds.length === 0) {
@@ -248,6 +254,15 @@ function MockBuilderContent() {
     }
   }
 
+  const toggleBoardSelection = (id: string) => {
+    const current = mockData.boardIds || [];
+    setMockData({
+      ...mockData,
+      boardIds: current.includes(id) ? current.filter(x => x !== id) : [...current, id],
+      examIds: [] // Reset exams when boards change
+    });
+  }
+
   const toggleExamSelection = (id: string) => {
      const current = mockData.examIds || [];
      setMockData({
@@ -255,6 +270,19 @@ function MockBuilderContent() {
         examIds: current.includes(id) ? current.filter(x => x !== id) : [...current, id]
      });
   };
+
+  const filteredBoards = useMemo(() => {
+    if (!boards) return [];
+    return boards.filter(b => 
+      b.abbreviation?.toLowerCase().includes(boardSearch.toLowerCase()) ||
+      b.name?.toLowerCase().includes(boardSearch.toLowerCase())
+    ).sort((a, b) => a.abbreviation.localeCompare(b.abbreviation));
+  }, [boards, boardSearch]);
+
+  const examsForSelectedBoards = useMemo(() => {
+    if (!exams || mockData.boardIds.length === 0) return [];
+    return exams.filter(e => mockData.boardIds.includes(e.boardId)).sort((a, b) => a.name.localeCompare(b.name));
+  }, [exams, mockData.boardIds]);
 
   return (
     <div className="max-w-[1600px] mx-auto space-y-8 pb-32 text-left pt-4">
@@ -316,7 +344,7 @@ function MockBuilderContent() {
                      <div className={cn("flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer", assignmentMode === 'BOARD' ? "border-primary bg-primary/5" : "border-slate-100")} onClick={() => setAssignmentMode('BOARD')}>
                         <div className="flex items-center gap-3">
                            <RadioGroupItem value="BOARD" />
-                           <Label className="font-bold text-xs cursor-pointer">Entire Authority Hub</Label>
+                           <Label className="font-bold text-xs cursor-pointer">Entire Authority Hubs</Label>
                         </div>
                         <Badge className="bg-amber-50 text-amber-600 border-none text-[8px] font-black">AUTO-LINK</Badge>
                      </div>
@@ -324,45 +352,48 @@ function MockBuilderContent() {
                </div>
 
                <div className="space-y-4">
-                  <div className="space-y-2">
-                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Authority Hub</Label>
-                   <Select value={mockData.boardId ?? ""} onValueChange={v => setMockData({...mockData, boardId: v, examIds: []})}>
-                     <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-none font-bold"><SelectValue placeholder="Select Authority" /></SelectTrigger>
-                     <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
-                   </Select>
+                  <div className="space-y-3">
+                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Authority Hubs (Multiple Supported)</Label>
+                   <div className="relative mb-2">
+                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-300" />
+                     <Input 
+                       placeholder="Search boards..." 
+                       value={boardSearch} 
+                       onChange={e => setBoardSearch(e.target.value)}
+                       className="h-10 pl-9 rounded-xl border-slate-100 bg-slate-50/50 text-xs font-bold"
+                     />
+                   </div>
+                   <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto custom-scrollbar pr-2 border-l-2 border-slate-100 pl-4">
+                      {filteredBoards.map(b => (
+                         <div key={b.id} className="flex items-center gap-3 py-1 cursor-pointer group" onClick={() => toggleBoardSelection(b.id)}>
+                            <Checkbox checked={mockData.boardIds.includes(b.id)} onCheckedChange={() => toggleBoardSelection(b.id)} />
+                            <span className={cn("text-[10px] font-black uppercase tracking-tight transition-colors", mockData.boardIds.includes(b.id) ? "text-primary" : "text-slate-400 group-hover:text-slate-600")}>
+                               {b.abbreviation} Hub
+                            </span>
+                         </div>
+                      ))}
+                      {filteredBoards.length === 0 && <p className="text-[9px] text-slate-300 italic">No boards match audit search.</p>}
+                   </div>
                  </div>
 
-                 {assignmentMode === 'SINGLE' && (
-                    <div className="space-y-2 animate-in slide-in-from-top-2">
-                       <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Target Vertical</Label>
-                       <Select value={mockData.examIds[0] ?? ""} onValueChange={v => setMockData({...mockData, examIds: [v]})}>
-                        <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-none font-bold"><SelectValue placeholder="Select Exam" /></SelectTrigger>
-                        <SelectContent>
-                           {exams?.filter((e: any) => e.boardId === mockData.boardId).map((e: any) => (
-                              <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
-                           ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                 )}
-
-                 {assignmentMode === 'MULTIPLE' && (
+                 {assignmentMode !== 'BOARD' && mockData.boardIds.length > 0 && (
                     <div className="space-y-3 animate-in slide-in-from-top-2">
-                       <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Select Linked Verticals</Label>
-                       <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
-                          {exams?.filter((e: any) => e.boardId === mockData.boardId).map((e: any) => (
-                             <button 
+                       <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Linked Recruitment Verticals</Label>
+                       <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto custom-scrollbar pr-2 border-l-2 border-slate-100 pl-4">
+                          {examsForSelectedBoards.map((e: any) => (
+                             <div 
                                 key={e.id}
-                                onClick={() => toggleExamSelection(e.id)}
                                 className={cn(
-                                   "flex items-center gap-3 p-3 rounded-lg border text-left transition-all",
-                                   mockData.examIds.includes(e.id) ? "border-primary bg-primary/5 text-primary" : "border-slate-100 text-slate-400 hover:border-slate-200"
+                                   "flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer",
+                                   mockData.examIds.includes(e.id) ? "border-primary bg-primary/5 text-primary" : "border-slate-50 text-slate-400 hover:border-slate-100"
                                 )}
+                                onClick={() => toggleExamSelection(e.id)}
                              >
                                 <Checkbox checked={mockData.examIds.includes(e.id)} onCheckedChange={() => toggleExamSelection(e.id)} />
-                                <span className="text-[10px] font-bold uppercase">{e.name}</span>
-                             </button>
+                                <span className="text-[10px] font-[900] uppercase tracking-tighter truncate">{e.name}</span>
+                             </div>
                           ))}
+                          {examsForSelectedBoards.length === 0 && <p className="text-[9px] text-slate-300 italic">No exams registered for selected boards.</p>}
                        </div>
                     </div>
                  )}
@@ -483,16 +514,30 @@ function MockBuilderContent() {
                           </div>
                        </div>
                        <div className="h-px w-full bg-white/5" />
-                       <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest mb-1.5 ml-1 flex-1">Targeting Section Hub: <span className="text-primary ml-2">{sections.find(s => s.id === activeSectionId)?.name}</span></p>
+                       <div className="flex items-center justify-between">
+                          <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1 flex-1">Targeting Section Hub: <span className="text-primary ml-2">{sections.find(s => s.id === activeSectionId)?.name}</span></p>
+                          <div className="flex items-center gap-3">
+                             <Checkbox 
+                               checked={bankSelection.length === filteredBank.length && filteredBank.length > 0} 
+                               onCheckedChange={(checked) => setBankSelection(checked ? filteredBank.map(q => q.id) : [])}
+                               className="border-white/20"
+                             />
+                             <span className="text-[9px] font-black uppercase tracking-widest text-white/40">Select All Visible</span>
+                          </div>
+                       </div>
                     </div>
 
                     <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 space-y-3 min-h-0 bg-slate-50/50 rounded-[2.5rem] p-6 border border-slate-100/50">
                        {bankLoading ? (
                           <div className="flex flex-col items-center justify-center h-full opacity-20"><Loader2 className="h-8 w-8 animate-spin mb-4" /></div>
                        ) : filteredBank.length > 0 ? filteredBank.map(q => (
-                            <div key={q.id} className={cn("p-4 rounded-xl border flex items-center justify-between transition-all", bankSelection.includes(q.id) ? "bg-primary/5 border-primary/20 shadow-inner" : "bg-white border-slate-100 hover:border-primary/10 shadow-sm")}>
+                            <div 
+                              key={q.id} 
+                              onClick={() => setBankSelection(prev => prev.includes(q.id) ? prev.filter(id => id !== q.id) : [...prev, q.id])}
+                              className={cn("p-4 rounded-xl border flex items-center justify-between transition-all cursor-pointer", bankSelection.includes(q.id) ? "bg-primary/5 border-primary/20 shadow-inner" : "bg-white border-slate-100 hover:border-primary/10 shadow-sm")}
+                            >
                                <div className="flex items-center gap-6 min-w-0 flex-1 text-left">
-                                  <Checkbox checked={bankSelection.includes(q.id)} onCheckedChange={() => setBankSelection(prev => prev.includes(q.id) ? prev.filter(id => id !== q.id) : [...prev, q.id])} />
+                                  <Checkbox checked={bankSelection.includes(q.id)} onCheckedChange={() => {}} />
                                   <div className="min-w-0 flex-1">
                                      <div className="flex items-center gap-3 mb-1">
                                         <Badge className={cn("border-none text-[7px] font-black uppercase px-2", q.status === 'LOCKED' ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600')}>{q.status || 'UNUSED'}</Badge>

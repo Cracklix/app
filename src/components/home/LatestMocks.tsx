@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState } from "react"
@@ -11,8 +12,8 @@ import { collection, query, where } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview High-Density Mock Feed.
- * Reduced card heights and padding for mobile-first scanning.
+ * @fileOverview High-Density Mock Feed v8.0.
+ * UPDATED: Multi-Board support for institutional logo display.
  */
 
 export default function LatestMocks() {
@@ -50,7 +51,8 @@ export default function LatestMocks() {
           {loading ? (
              Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-32 md:h-64 w-full rounded-2xl" />)
           ) : mocks.map((mock, i) => {
-            const board = boards?.find((b: any) => b.id === mock.boardId);
+            const boardId = mock.boardIds?.[0] || mock.boardId;
+            const board = boards?.find((b: any) => b.id === boardId);
             return (
               <motion.div key={mock.id} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} viewport={{ once: true }}>
                 <div className="bg-white rounded-xl md:rounded-[2.5rem] border border-slate-100 shadow-md hover:shadow-xl transition-all p-4 md:p-8 text-left flex flex-col h-full group">
@@ -58,7 +60,9 @@ export default function LatestMocks() {
                     <div className="h-8 w-8 md:h-12 md:w-12 rounded-lg bg-slate-50 flex items-center justify-center shrink-0 overflow-hidden">
                        {board?.iconUrl ? <img src={board.iconUrl} className="p-1.5 h-full w-full object-contain" alt="Logo" referrerPolicy="no-referrer" /> : <Zap className="h-4 w-4 text-primary" />}
                     </div>
-                    <Badge className="bg-primary/5 text-primary border-none text-[6px] font-black uppercase">{board?.abbreviation || 'GOVT'}</Badge>
+                    <Badge className="bg-primary/5 text-primary border-none text-[6px] font-black uppercase">
+                       {board?.abbreviation || (mock.boardIds?.length > 1 ? 'MULTI' : 'GOVT')}
+                    </Badge>
                   </div>
                   <h3 className="font-black text-[13px] md:text-base text-[#000000] leading-tight mb-2 uppercase line-clamp-2 min-h-[32px] md:min-h-[40px]">{mock.title}</h3>
                   
