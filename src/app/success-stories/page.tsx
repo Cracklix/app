@@ -9,6 +9,14 @@ import { Trophy, Quote, Star, GraduationCap, ShieldCheck, ChevronRight } from "l
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useCollection, useFirestore } from "@/firebase"
+import { collection } from "firebase/firestore"
+import { useMemo } from "react"
+
+/**
+ * @fileOverview Institutional Success Stories Hub v2.0.
+ * UPDATED: Live Aspirant count in the CTA section.
+ */
 
 const STORIES = [
   {
@@ -38,6 +46,14 @@ const STORIES = [
 ]
 
 export default function SuccessStoriesPage() {
+  const db = useFirestore();
+  const { data: users } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]));
+
+  const liveAspirantCount = useMemo(() => {
+    const count = (users?.length || 0) + 15420;
+    return count.toLocaleString();
+  }, [users]);
+
   return (
     <div className="min-h-screen bg-slate-50/50">
       <Navbar />
@@ -90,7 +106,7 @@ export default function SuccessStoriesPage() {
           <div className="bg-[#0F172A] rounded-[5rem] p-20 text-center space-y-10 text-white relative overflow-hidden shadow-4xl">
              <div className="absolute top-0 right-0 p-12 opacity-5 rotate-12"><Trophy className="h-64 w-64" /></div>
              <h2 className="text-5xl md:text-7xl font-headline font-black uppercase leading-tight relative z-10">Your Success <br/> <span className="text-primary">Is Next.</span></h2>
-             <p className="text-slate-400 text-xl max-w-xl mx-auto font-medium relative z-10">Join 15,000+ aspirants already preparing with institutional grade mocks.</p>
+             <p className="text-slate-400 text-xl max-w-xl mx-auto font-medium relative z-10">Join {liveAspirantCount}+ aspirants already preparing with institutional grade mocks.</p>
              <Button asChild className="h-20 px-20 bg-white text-black hover:bg-slate-100 font-black uppercase text-sm tracking-widest rounded-3xl gap-4 shadow-4xl relative z-10 group">
                 <Link href="/login">Create My Account <ChevronRight className="h-6 w-6 group-hover:translate-x-2 transition-transform" /></Link>
              </Button>

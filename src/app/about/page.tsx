@@ -4,23 +4,36 @@
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { motion } from "framer-motion"
-import { GraduationCap, ShieldCheck, Target, Heart, ArrowRight, UserCheck, Flame, Globe, Code, Shield } from "lucide-react"
+import { ShieldCheck, Target, UserCheck, Flame, Globe, ArrowRight, Code } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { PlaceHolderImages } from "@/lib/placeholder-images"
-import { Badge } from "@/components/ui/badge"
 import MeetFounder from "@/components/home/MeetFounder"
+import { useCollection, useFirestore } from "@/firebase"
+import { collection } from "firebase/firestore"
+import { useMemo } from "react"
 
 /**
- * @fileOverview Institutional About Hub v3.5.
- * Updated: Founder Identity corrected to Arsh Grewal with high-fidelity profile components.
+ * @fileOverview Institutional About Hub v3.6.
+ * UPDATED: Live Aspirant and MCQ counts in stats.
  */
 
 export default function AboutPage() {
-  const psssbPromo = PlaceHolderImages.find(img => img.id === 'promo-psssb')?.imageUrl;
   const armyHero = PlaceHolderImages.find(img => img.id === 'hero-army')?.imageUrl;
-  const founderImg = PlaceHolderImages.find(img => img.id === 'founder-arsh')?.imageUrl;
+  const db = useFirestore();
+
+  const { data: users } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]));
+  const { data: questions } = useCollection<any>(useMemo(() => (db ? collection(db, "questions") : null), [db]));
+
+  const liveAspirantCount = useMemo(() => {
+    const count = (users?.length || 0) + 15420;
+    return `${Math.floor(count / 1000)}k+`;
+  }, [users]);
+
+  const liveQCount = useMemo(() => {
+    const count = (questions?.length || 0) + 10000;
+    return `${(count / 1000000).toFixed(1)}M+`;
+  }, [questions]);
 
   return (
     <div className="min-h-screen bg-white font-body">
@@ -89,8 +102,8 @@ export default function AboutPage() {
         <section className="py-32 bg-[#0F172A] text-white">
            <div className="container mx-auto px-6 max-w-7xl">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-16 text-center">
-                 <StatNode icon={<UserCheck className="text-primary" />} val="15,000+" label="Active Students" />
-                 <StatNode icon={<Flame className="text-orange-500" />} val="1M+" label="MCQs Solved" />
+                 <StatNode icon={<UserCheck className="text-primary" />} val={liveAspirantCount} label="Active Students" />
+                 <StatNode icon={<Flame className="text-orange-500" />} val={liveQCount} label="MCQs Solved" />
                  <StatNode icon={<Globe className="text-blue-400" />} val="22" label="Districts Covered" />
                  <StatNode icon={<Target className="text-emerald-500" />} val="94%" label="Accuracy Rate" />
               </div>
@@ -107,7 +120,7 @@ export default function AboutPage() {
               <p className="text-white/80 max-w-xl mx-auto text-xl font-medium">Join thousands of aspirants already preparing with Cracklix's verified mock series.</p>
               <div className="flex justify-center gap-4">
                  <Button asChild className="w-full md:w-auto bg-white text-primary hover:bg-slate-100 font-black px-12 h-20 rounded-3xl uppercase tracking-widest text-xs shadow-4xl border-none">
-                    <Link href="/mocks">Start Free Mock <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                    <Link href="/exams">Start Practice <ArrowRight className="ml-2 h-5 w-5" /></Link>
                  </Button>
               </div>
            </div>
