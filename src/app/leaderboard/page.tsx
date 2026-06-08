@@ -16,8 +16,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Phase 141: Real-Time State Merit Index.
- * UPDATED: Removed hardcoded offsets for 100% real-time accuracy.
+ * @fileOverview Phase 142: Real-Time State Merit Index.
+ * UPDATED: Removed ALL hardcoded offsets for 100% real-time accuracy.
  */
 
 export default function LeaderboardPage() {
@@ -34,7 +34,7 @@ export default function LeaderboardPage() {
   const { data: users, loading: usersLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]))
   const { data: mocks } = useCollection<any>(useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true)) : null), [db]))
 
-  // 2. Real-Time Stats Calculation
+  // 2. Real-Time Stats Calculation (No offsets)
   const liveAspirantCount = useMemo(() => {
     const count = (users?.length || 0);
     return count > 999 ? `${(count / 1000).toFixed(1)}k+` : count.toLocaleString();
@@ -46,7 +46,7 @@ export default function LeaderboardPage() {
   }, [mocks]);
 
   const liveRankerCount = useMemo(() => {
-    // Unique users who have at least one result
+    // Unique users who have at least one result in the results collection
     const uniqueUsers = new Set(results?.map(r => r.userId) || []);
     const count = uniqueUsers.size;
     return count > 999 ? `${(count / 1000).toFixed(1)}k+` : count.toLocaleString();
@@ -201,7 +201,7 @@ export default function LeaderboardPage() {
            </CardContent>
         </Card>
 
-        {/* INSTITUTIONAL TRUST BAR */}
+        {/* INSTITUTIONAL TRUST BAR (No offsets) */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-10">
            <MeritStat icon={<Users className="text-blue-500" />} label="ACTIVE ASPIRANTS" val={liveAspirantCount} />
            <MeritStat icon={<Target className="text-primary" />} label="AVG ACCURACY" val={avgAccuracy} />

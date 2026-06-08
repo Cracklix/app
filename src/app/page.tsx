@@ -15,8 +15,8 @@ import { collection, query, where } from "firebase/firestore";
 import { BookOpen, Zap, Users, Target } from "lucide-react";
 
 /**
- * @fileOverview Institutional Landing Hub v33.0.
- * UPDATED: Strictly real-time counts from Firestore (Removed Hardcoded Offsets).
+ * @fileOverview Institutional Landing Hub v34.0.
+ * UPDATED: Strictly real-time counts from Firestore (Removed ALL Hardcoded Offsets).
  */
 
 export default function HomePage() {

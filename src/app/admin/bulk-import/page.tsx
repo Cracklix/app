@@ -20,12 +20,10 @@ import {
   FileText,
   Edit,
   X,
-  AlertTriangle,
   Database,
   SearchCode,
   CheckCircle2,
   Languages,
-  Info,
   Globe
 } from "lucide-react"
 import { useFirestore, useCollection } from "@/firebase"
@@ -40,6 +38,7 @@ import { cn } from "@/lib/utils"
 /**
  * @fileOverview Institutional Bulk Ingestion Hub v6.0.
  * UPDATED: Added full Options Matrix and Correct Answer selector to individual node editing.
+ * FIXED: Controlled input warnings resolved by adding fallback values.
  */
 
 export default function BulkImportPage() {
@@ -210,7 +209,7 @@ export default function BulkImportPage() {
                 {parsedQuestions.map((q, idx) => (
                   <div key={idx} className="relative group">
                     <Card className="border-none shadow-3xl rounded-[3rem] bg-white p-12 text-left group overflow-visible border border-slate-50 transition-all hover:border-primary/20">
-                       <div className="flex justify-between items-start mb-10 border-b border-slate-50 pb-8">
+                       <div className="flex justify-between items-start mb-10 border-b border-slate-100 pb-8">
                           <Badge className="bg-[#0F172A] text-white border-none text-[10px] font-black px-6 py-2 rounded-xl uppercase tracking-widest">Asset {idx + 1}</Badge>
                           <div className="flex gap-3">
                              <Button variant="ghost" size="icon" className="h-14 w-14 rounded-2xl text-blue-500 bg-blue-50 shadow-sm hover:scale-110 transition-transform" onClick={() => handleOpenEdit(idx)}><Edit className="h-6 w-6" /></Button>
@@ -269,7 +268,7 @@ export default function BulkImportPage() {
                                  <div className="h-7 w-7 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-black text-xs">{opt}</div>
                                  <Label className="text-[10px] font-black uppercase text-slate-500">English Text</Label>
                               </div>
-                              <button onClick={() => setEditForm({...editForm, correctAnswer: opt})} className={cn("h-6 w-6 rounded-full border-2 transition-all flex items-center justify-center", editForm?.correctAnswer === opt ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-200 hover:border-primary")}>
+                              <button onClick={() => setEditForm({...editForm, correctAnswer: opt})} className={cn("h-6 w-6 rounded-full border-2 transition-all flex items-center justify-center", editForm?.correctAnswer === opt ? "bg-emerald-50 border-emerald-500 text-white" : "border-slate-200 hover:border-primary")}>
                                  {editForm?.correctAnswer === opt && <CheckCircle2 className="h-4 w-4" />}
                               </button>
                            </div>

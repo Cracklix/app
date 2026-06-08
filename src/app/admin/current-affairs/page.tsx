@@ -41,8 +41,9 @@ import { parseBulkQuestions } from "@/lib/parser"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Current Affairs Management Hub v17.0.
+ * @fileOverview Institutional Current Affairs Management Hub v18.0.
  * UPDATED: Added full Options Matrix and Correct Answer selector to question editing.
+ * FIXED: Controlled input warnings resolved by adding fallback values.
  */
 
 export default function AdminCurrentAffairs() {
@@ -170,7 +171,7 @@ export default function AdminCurrentAffairs() {
     const { questions: _, ...cleanPayload } = payload;
 
     // Hardened fallback to prevent uncontrolled inputs
-    Object.keys(cleanPayload).forEach(k => cleanPayload[k] === undefined && (cleanPayload[k] = ""));
+    Object.keys(cleanPayload).forEach(k => (cleanPayload[k] === undefined || cleanPayload[k] === null) && (cleanPayload[k] = ""));
 
     try {
       await setDoc(caRef, cleanPayload, { merge: true })
