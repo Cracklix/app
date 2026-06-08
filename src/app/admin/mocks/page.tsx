@@ -43,8 +43,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Mock Management Hub v11.0.
- * UPDATED: Displaying Test Category and support for Multi-Board filtering.
+ * @fileOverview Institutional Mock Management Hub v12.0.
+ * UPDATED: Displaying standardized Test Type classification (Full, Subject, etc.)
  */
 
 export default function MockManagement() {
@@ -109,6 +109,16 @@ export default function MockManagement() {
     toast({ title: "Series Purged" })
   }
 
+  const formatMockType = (type: string) => {
+    const map: Record<string, string> = {
+      'FULL': 'Full Mock',
+      'SUBJECT': 'Subject Test',
+      'SECTIONAL': 'Sectional',
+      'PYQ': 'PYQ Paper'
+    };
+    return map[type] || type;
+  };
+
   return (
     <div className="space-y-12 text-left pb-32">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 px-4">
@@ -153,7 +163,7 @@ export default function MockManagement() {
             <TableHeader className="bg-slate-50/50">
               <TableRow className="h-20 border-slate-100">
                 <TableHead className="px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Series Identity</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Category</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Test Type</TableHead>
                 <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Tier Governance</TableHead>
                 <TableHead className="text-center text-[10px] font-black uppercase tracking-widest text-slate-500">Status</TableHead>
                 <TableHead className="text-right px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Actions</TableHead>
@@ -177,7 +187,7 @@ export default function MockManagement() {
                       <TableCell>
                          <div className="flex items-center gap-2">
                             <Tags className="h-3 w-3 text-slate-300" />
-                            <span className="text-[10px] font-black text-slate-500 uppercase">{mock.testCategory || 'General'}</span>
+                            <span className="text-[10px] font-black text-slate-500 uppercase">{formatMockType(mock.mockType)}</span>
                          </div>
                       </TableCell>
                       <TableCell>

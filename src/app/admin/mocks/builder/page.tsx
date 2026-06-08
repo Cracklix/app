@@ -52,8 +52,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Mock Architect v68.0.
- * UPDATED: Integrated Subject Hub Registry for Active Assembly and added Target Hub context.
+ * @fileOverview Institutional Mock Architect v69.0.
+ * UPDATED: Replaced generic Test Category with structured Type selector (Full, Subject, Sectional, PYQ).
  */
 
 export default function MockBuilderPage() {
@@ -99,10 +99,9 @@ function MockBuilderContent() {
     boardIds: [] as string[],
     examIds: [] as string[],
     assignmentMode: "SINGLE" as MockAssignmentMode,
-    testCategory: "General",
+    mockType: "FULL" as MockType, 
     duration: 120, 
     difficulty: "Medium" as Difficulty, 
-    mockType: "FULL" as MockType, 
     accessLevel: "FREE" as AccessLevel,
     published: true,
     languageMode: "ENGLISH_PUNJABI" as LanguageDisplayMode,
@@ -139,8 +138,7 @@ function MockBuilderContent() {
         ...existingMock,
         boardIds: existingMock.boardIds || (existingMock.boardId ? [existingMock.boardId] : []),
         examIds: existingMock.examIds || (existingMock.examId ? [existingMock.examId] : []),
-        assignmentMode: existingMock.assignmentMode || "SINGLE",
-        testCategory: existingMock.testCategory || "General"
+        assignmentMode: existingMock.assignmentMode || "SINGLE"
       });
 
       if (existingMock.questionIds && questionBank.length > 0) {
@@ -203,7 +201,6 @@ function MockBuilderContent() {
     let finalExamIds = [...(mockData.examIds || [])];
     let finalBoardIds = [...(mockData.boardIds || [])];
 
-    // Ensure primary boardId is included in the array for legacy support
     if (mockData.boardId && !finalBoardIds.includes(mockData.boardId)) {
        finalBoardIds.push(mockData.boardId);
     }
@@ -310,15 +307,14 @@ function MockBuilderContent() {
                  </div>
 
                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Tags className="h-3 w-3" /> Test Category</Label>
-                    <Select value={mockData.testCategory || "General"} onValueChange={(v) => setMockData({...mockData, testCategory: v})}>
-                       <SelectTrigger className="h-11 rounded-xl bg-slate-50 border-none font-bold text-[10px] uppercase"><SelectValue placeholder="Select Category" /></SelectTrigger>
+                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Layers className="h-3 w-3" /> Test Type</Label>
+                    <Select value={mockData.mockType || "FULL"} onValueChange={(v: any) => setMockData({...mockData, mockType: v})}>
+                       <SelectTrigger className="h-11 rounded-xl bg-slate-50 border-none font-bold text-[10px] uppercase"><SelectValue placeholder="Select Type" /></SelectTrigger>
                        <SelectContent>
-                          <SelectItem value="General">General Practice</SelectItem>
-                          <SelectItem value="Marathon">Marathon Series</SelectItem>
-                          <SelectItem value="Crash Course">Crash Course Node</SelectItem>
-                          <SelectItem value="Scholarship">Scholarship Test</SelectItem>
-                          <SelectItem value="Expected Paper">Expected Paper 2026</SelectItem>
+                          <SelectItem value="FULL">Full Length Mock</SelectItem>
+                          <SelectItem value="SUBJECT">Subject-Wise Test</SelectItem>
+                          <SelectItem value="SECTIONAL">Sectional Test</SelectItem>
+                          <SelectItem value="PYQ">Previous Year Paper (PYQ)</SelectItem>
                        </SelectContent>
                     </Select>
                  </div>
@@ -641,4 +637,3 @@ function FilterChip({ active, label, onClick, color = "text-slate-400" }: any) {
 function DropdownMenuLabel({ children, className }: { children: React.ReactNode, className?: string }) {
   return <div className={cn("px-2 py-1.5 text-sm font-semibold", className)}>{children}</div>
 }
-
