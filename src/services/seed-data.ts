@@ -2,7 +2,7 @@
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Engine v59.0.
+ * @fileOverview Institutional Seeding Engine v60.0.
  * Features: High-Fidelity Verified Official Logos for Punjab & National Exam Hubs.
  * UPDATED: Fixed CTET and IBPS logos as mandatory institutional nodes.
  */

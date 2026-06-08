@@ -19,7 +19,7 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Authority Hub v36.0 - Hardened Mandatory Branding Engine.
+ * @fileOverview Authority Hub v37.0 - Hardened Mandatory Branding Engine.
  * Features: Permanent official logos for PSSSB, Police, PSEB, PSPCL, CTET, PSTET, SSC, and IBPS.
  */
 

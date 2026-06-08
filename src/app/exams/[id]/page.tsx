@@ -30,9 +30,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v8.2.
- * FIXED: ReferenceError resolved by adding Layers to imports.
- * UPDATED: Multi-Exam Assignment support using array-contains logic.
+ * @fileOverview Institutional Exam Hub v9.0.
+ * FIXED: Refactored to fetch all published mocks and filter client-side to ensure 
+ * mocks assigned via either legacy 'examId' or new 'examIds' array appear correctly.
  */
 
 export default function ExamHubPage() {
@@ -45,11 +45,11 @@ export default function ExamHubPage() {
 
   const { data: exam, loading: examLoading } = useDoc<any>(useMemo(() => (db && examId ? doc(db, "exams", examId) : null), [db, examId]))
   
-  // Fetch all mocks that include this specific exam vertical ID in their examIds array
+  // Fetch all published mocks to ensure maximum compatibility with legacy/new assignment models
   const mocksQuery = useMemo(() => {
-    if (!db || !examId) return null;
-    return query(collection(db, "mocks"), where("examIds", "array-contains", examId));
-  }, [db, examId]);
+    if (!db) return null;
+    return query(collection(db, "mocks"), where("published", "==", true));
+  }, [db]);
 
   const notesQuery = useMemo(() => {
     if (!db || !examId) return null;
@@ -67,7 +67,12 @@ export default function ExamHubPage() {
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
 
   const groupedContent = useMemo(() => {
-    const mocks = (rawMocks || []).filter(m => m.published === true);
+    // FLEXIBLE FILTERING: Support both single examId and array examIds
+    const mocks = (rawMocks || []).filter(m => {
+       const hasMatch = m.examId === examId || (m.examIds && Array.isArray(m.examIds) && m.examIds.includes(examId));
+       return hasMatch;
+    });
+    
     const notes = rawNotes || [];
 
     return {
@@ -78,7 +83,7 @@ export default function ExamHubPage() {
       NOTES: notes.filter(n => n.category === 'NOTES'),
       SYLLABUS: notes.filter(n => n.category === 'SYLLABUS')
     }
-  }, [rawMocks, rawNotes])
+  }, [rawMocks, rawNotes, examId])
 
   const hasPass = useMemo(() => profile?.status && profile?.status !== 'Free', [profile]);
 
