@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo, useEffect, Suspense } from "react"
@@ -51,6 +50,7 @@ import { collection, doc, setDoc, serverTimestamp, query, limit, getDocs, writeB
 import { useToast } from "@/hooks/use-toast"
 import { MockType, Difficulty, AccessLevel, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
+import { Skeleton } from "@/components/ui/skeleton"
 
 /**
  * @fileOverview Ultimate Mock Architect Panel v40.0.
@@ -413,7 +413,7 @@ function MockBuilderContent() {
                                         onClick={() => setSections(p => p.map(x => x.id === s.id ? { ...x, questions: x.questions.filter((item: any) => item.id !== q.id) } : x))}
                                         className="opacity-0 group-hover:opacity-100 text-rose-400 hover:text-rose-600 transition-all"
                                       >
-                                         <X className="h-3.5 w-3.5" />
+                                         <XIcon className="h-3.5 w-3.5" />
                                       </button>
                                    </div>
                                 ))}
@@ -438,7 +438,7 @@ function MockBuilderContent() {
   )
 }
 
-function X({ className }: { className?: string }) {
+function XIcon({ className }: { className?: string }) {
    return (
       <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
          <path d="M18 6 6 18" /><path d="m6 6 12 12" />
