@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -18,7 +19,7 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Authority Hub v33.0 - Hardened Mandatory Branding Engine.
+ * @fileOverview Authority Hub v35.0 - Hardened Mandatory Branding Engine.
  * Features: Permanent official logos for PSSSB, Police, PSEB, PSPCL, CTET, PSTET, and SSC.
  */
 
@@ -113,8 +114,7 @@ export default function ExamManagement() {
     }
   }
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+  const handleFileUpload = async (file: File) => {
     if (!file || !storage) return
 
     setIsUploading(true)
@@ -129,7 +129,6 @@ export default function ExamManagement() {
       toast({ variant: "destructive", title: "Upload Failed", description: error.message || "Storage rejection." })
     } finally {
       setIsUploading(false)
-      if (fileInputRef.current) fileInputRef.current.value = ""
     }
   }
 
@@ -212,7 +211,7 @@ export default function ExamManagement() {
                          <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="h-12 w-12 rounded-xl hover:bg-slate-100" 
+                            className="h-12 w-12 rounded-xl hover:bg-white shadow-sm" 
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditingBoard(board); }}
                           >
                            <Edit className="h-5 w-5" />
@@ -280,7 +279,10 @@ export default function ExamManagement() {
                   {isUploading ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Upload className="h-4 w-4 text-primary" />}
                   {isUploading ? "Syncing Asset..." : "Upload Device Logo"}
                 </Button>
-                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileUpload} />
+                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (file) handleFileUpload(file);
+                }} />
               </div>
             </div>
 

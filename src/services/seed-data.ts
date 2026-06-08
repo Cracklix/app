@@ -1,9 +1,10 @@
+
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Engine v56.0.
+ * @fileOverview Institutional Seeding Engine v58.0.
  * Features: High-Fidelity Verified Official Logos for Punjab & National Exam Hubs.
- * UPDATED: Corrected CTET Logo and Hardened mandatory logos for all verticals.
+ * UPDATED: Restored correct CTET, PSTET, PSEB, and Police Logos.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('[AUDIT] Initializing Cracklix Global Registry Sync...');

@@ -50,8 +50,8 @@ import { MockType, Difficulty, AccessType, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Institutional Mock Architect v48.2.
- * FIXED: Header layout adjusted to prevent Deploy button truncation.
+ * @fileOverview Elite Institutional Mock Architect v49.0.
+ * UPDATED: Integrated Target Hub Selector in Bank Tab for rapid multi-section assembly.
  * HARDENED: Deploy Engine with Batch Chunking.
  */
 
@@ -342,7 +342,7 @@ function MockBuilderContent() {
                       </Select>
                    </div>
                    <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Languages className="h-3 w-3" /> Language Mode</Label>
+                      <Label className="text-[10px) font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Languages className="h-3 w-3" /> Language Mode</Label>
                       <Select value={mockData.languageMode} onValueChange={(v: any) => setMockData({...mockData, languageMode: v})}>
                          <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none font-black text-[9px] uppercase"><SelectValue /></SelectTrigger>
                          <SelectContent>
@@ -509,10 +509,10 @@ function MockBuilderContent() {
                        </div>
                     ) : (
                        <>
-                          <div className="bg-[#0F172A] p-6 rounded-[2.5rem] mb-8 flex flex-col gap-6 text-white shadow-2xl overflow-hidden shrink-0 border border-white/5">
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
-                                <div className="space-y-2">
-                                   <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Filter Subject Hub</p>
+                          <div className="bg-[#0B1528] p-8 rounded-[2.5rem] mb-8 flex flex-col gap-6 text-white shadow-2xl overflow-hidden shrink-0 border border-white/5">
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-2.5">
+                                   <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Filter Subject Hub</p>
                                    <Select value={bankFilter.subjectId} onValueChange={v => setBankFilter({...bankFilter, subjectId: v})}>
                                       <SelectTrigger className="h-12 w-full bg-white/5 border-white/10 text-white font-bold text-xs rounded-xl focus:ring-0"><SelectValue placeholder="All Subjects" /></SelectTrigger>
                                       <SelectContent>
@@ -521,16 +521,28 @@ function MockBuilderContent() {
                                       </SelectContent>
                                    </Select>
                                 </div>
-                                <Button disabled={bankSelection.length === 0} onClick={handleBulkLink} className="bg-emerald-600 hover:bg-emerald-700 h-14 px-10 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl w-full border-none">Link {bankSelection.length} Assets</Button>
+                                <div className="flex items-end">
+                                   <Button disabled={bankSelection.length === 0} onClick={handleBulkLink} className="bg-emerald-600 hover:bg-emerald-700 h-12 px-10 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl w-full border-none transition-all active:scale-95">Link {bankSelection.length} Assets</Button>
+                                </div>
                              </div>
-                             <div className="flex items-center justify-between pt-2">
-                                <p className="text-[9px] font-black uppercase text-slate-400">Targeting Hub: <span className="text-primary ml-2">{sections.find(s => s.id === activeSectionId)?.name}</span></p>
+                             
+                             <div className="pt-6 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div className="space-y-2">
+                                   <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Targeting Hub</p>
+                                   <Select value={activeSectionId} onValueChange={setActiveSectionId}>
+                                      <SelectTrigger className="h-10 w-full sm:w-48 bg-white/5 border-white/10 text-white font-bold text-[10px] rounded-lg focus:ring-0 uppercase"><SelectValue /></SelectTrigger>
+                                      <SelectContent>
+                                         {sections.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                                      </SelectContent>
+                                   </Select>
+                                </div>
                                 <div className="flex items-center gap-3">
                                    <Checkbox 
                                      checked={bankSelection.length === filteredBank.length && filteredBank.length > 0} 
                                      onCheckedChange={(checked) => setBankSelection(checked ? filteredBank.map(q => q.id) : [])}
+                                     className="border-primary h-5 w-5 rounded-md"
                                    />
-                                   <span className="text-[9px] font-black uppercase tracking-widest text-white/40">Select All Visible</span>
+                                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Select All Visible</span>
                                 </div>
                              </div>
                           </div>
