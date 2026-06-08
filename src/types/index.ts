@@ -10,7 +10,7 @@ export type ExamLanguage = 'en' | 'pa' | 'hi' | 'bilingual';
 
 export type LanguageDisplayMode = 'ENGLISH' | 'PUNJABI' | 'HINDI' | 'ENGLISH_PUNJABI' | 'ENGLISH_HINDI';
 
-export type CurrentAffairType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'SPECIAL';
+export type CurrentAffairType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'QUIZ' | 'SPECIAL';
 
 export interface Subject {
   id: string;

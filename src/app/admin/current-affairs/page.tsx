@@ -25,22 +25,23 @@ import {
   Clock,
   Target,
   AlertTriangle,
-  ChevronRight
+  ChevronRight,
+  Layers
 } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc, serverTimestamp, writeBatch } from "firebase/firestore"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
-import { CurrentAffairHubItem, LanguageDisplayMode } from "@/types"
+import { CurrentAffairHubItem, LanguageDisplayMode, CurrentAffairType } from "@/types"
 import { cn } from "@/lib/utils"
 import { parseBulkQuestions } from "@/lib/parser"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Current Affairs Management Hub v12.0.
- * UPDATED: Focused on direct extraction for Mock creation. Removed PDF requirement.
- * FEATURES: Live CBT Preview, Duration & Marking Scheme controls.
+ * @fileOverview Institutional Current Affairs Management Hub v14.0.
+ * UPDATED: Added comprehensive Category Selector (Daily/Weekly/Monthly/Quiz).
+ * FEATURES: Multi-hub target routing, Live CBT Preview, Duration & Marking Scheme controls.
  */
 
 export default function AdminCurrentAffairs() {
@@ -223,9 +224,11 @@ export default function AdminCurrentAffairs() {
                       <div className="flex items-center gap-4 md:gap-6">
                          <div className={cn(
                            "h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 shadow-inner transition-transform group-hover:scale-105",
-                           item.type === 'DAILY' ? 'bg-orange-50 text-primary' : 'bg-blue-50 text-blue-600'
+                           item.type === 'DAILY' ? 'bg-orange-50 text-primary' : 
+                           item.type === 'WEEKLY' ? 'bg-blue-50 text-blue-600' : 
+                           item.type === 'MONTHLY' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'
                          )}>
-                            <Calendar className="h-5 w-5 md:h-6 md:w-6" />
+                            {item.type === 'QUIZ' ? <Zap className="h-5 w-5 md:h-6 md:w-6" /> : <Calendar className="h-5 w-5 md:h-6 md:w-6" />}
                          </div>
                          <div className="min-w-0">
                             <p className="font-black text-[#0F172A] text-sm md:text-xl uppercase tracking-tight leading-tight truncate">{item.title}</p>
@@ -274,6 +277,21 @@ export default function AdminCurrentAffairs() {
                      <div className="space-y-1.5">
                         <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Quiz Title</Label>
                         <Input value={editingItem?.title || ""} onChange={e => setEditingItem({...editingItem, title: e.target.value})} className="h-12 rounded-xl border-slate-100 bg-white font-black text-sm" placeholder="e.g. Daily GK 24 Oct" />
+                     </div>
+
+                     <div className="space-y-1.5">
+                        <Label className="text-[9px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Layers className="h-3 w-3" /> Hub Category</Label>
+                        <select 
+                           value={editingItem?.type} 
+                           onChange={e => setEditingItem({...editingItem, type: e.target.value as CurrentAffairType})} 
+                           className="w-full h-11 bg-white border-slate-200 rounded-xl px-4 font-black uppercase text-[9px] outline-none shadow-sm"
+                        >
+                           <option value="DAILY">Daily Hub</option>
+                           <option value="WEEKLY">Weekly Hub</option>
+                           <option value="MONTHLY">Monthly Hub</option>
+                           <option value="QUIZ">Live Quiz Hub</option>
+                           <option value="SPECIAL">Special Hub</option>
+                        </select>
                      </div>
 
                      <div className="grid grid-cols-1 gap-4">
