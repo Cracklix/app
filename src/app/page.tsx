@@ -10,22 +10,45 @@ import Features from "@/components/home/Features";
 import AppPreview from "@/components/home/AppPreview";
 import MeetFounder from "@/components/home/MeetFounder";
 import Footer from "@/components/layout/Footer";
-import { useDoc, useFirestore } from "@/firebase";
-import { doc } from "firebase/firestore";
+import { useCollection, useFirestore } from "@/firebase";
+import { collection, query, where } from "firebase/firestore";
 import { BookOpen, Zap, Users, Target } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Optimized Institutional Landing Hub v35.0.
- * PERFORMANCE: Removed full collection scans. Now reads pre-computed stats from a single node.
+ * @fileOverview Optimized Institutional Landing Hub v36.0.
+ * UPDATED: Replaced static stats doc with real live collection lengths for true synchronization.
  */
 
 export default function HomePage() {
   const db = useFirestore();
 
-  // STABILIZED SINGLE DOC FETCH (1 Read instead of 10,000)
-  const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
-  const { data: stats, loading } = useDoc<any>(statsRef);
+  // STABILIZED LIVE COLLECTION LISTENERS
+  const { data: users, loading: usersLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]));
+  const { data: mocks, loading: mocksLoading } = useCollection<any>(useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true)) : null), [db]));
+  const { data: questions, loading: questionsLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "questions") : null), [db]));
+  const { data: results, loading: resultsLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "results") : null), [db]));
+
+  const liveStats = useMemo(() => {
+    const qCount = questions?.length || 0;
+    const mCount = mocks?.length || 0;
+    const uCount = users?.length || 0;
+    
+    let avgAcc = 94; // Default fallback
+    if (results && results.length > 0) {
+       const sum = results.reduce((acc: number, r: any) => acc + (r.accuracy || 0), 0);
+       avgAcc = Math.round(sum / results.length);
+    }
+
+    return {
+      mcqs: qCount > 999 ? `${(qCount / 1000).toFixed(1)}k+` : qCount.toString(),
+      mocks: mCount,
+      users: uCount.toLocaleString(),
+      accuracy: `${avgAcc}%`
+    };
+  }, [questions, mocks, users, results]);
+
+  const isGlobalLoading = usersLoading || mocksLoading || questionsLoading || resultsLoading;
 
   return (
     <main className="min-h-screen bg-white font-body pb-safe overflow-x-hidden">
@@ -36,28 +59,28 @@ export default function HomePage() {
          <div className="container mx-auto px-4 max-w-7xl">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-10">
                <TrustCard 
-                  loading={loading}
+                  loading={isGlobalLoading}
                   icon={<BookOpen className="text-primary h-4 w-4 md:h-6 md:w-6" />} 
                   label="MCQ Bank" 
-                  val={stats?.mcqCount ? `${(stats.mcqCount / 1000).toFixed(1)}k+` : "10k+"} 
+                  val={liveStats.mcqs} 
                />
                <TrustCard 
-                  loading={loading}
+                  loading={isGlobalLoading}
                   icon={<Zap className="text-blue-500 h-4 w-4 md:h-6 md:w-6" />} 
                   label="Mocks Live" 
-                  val={stats?.mockCount || "500+"} 
+                  val={liveStats.mocks} 
                />
                <TrustCard 
-                  loading={loading}
+                  loading={isGlobalLoading}
                   icon={<Users className="text-emerald-500 h-4 w-4 md:h-6 md:w-6" />} 
                   label="Aspirants" 
-                  val={stats?.userCount ? stats.userCount.toLocaleString() : "15,000+"} 
+                  val={liveStats.users} 
                />
                <TrustCard 
-                  loading={loading}
+                  loading={isGlobalLoading}
                   icon={<Target className="text-amber-500 h-4 w-4 md:h-6 md:w-6" />} 
                   label="Avg Accuracy" 
-                  val={stats?.avgAccuracy ? `${stats.avgAccuracy}%` : "94%"} 
+                  val={liveStats.accuracy} 
                />
             </div>
          </div>
