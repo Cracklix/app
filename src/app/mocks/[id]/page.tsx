@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Mock Node with Authentication & Tiered Attempt Guards.
- * UPDATED: Hardened "UNLOCK TEST" logic and casing normalization.
+ * UPDATED: Prominent gold "UNLOCK WITH PASS" button style for premium series.
  */
 
 export default function MockOverviewPage() {
@@ -202,9 +202,9 @@ export default function MockOverviewPage() {
                  {isLocked ? (
                     <Button 
                        onClick={() => router.push('/pass')} 
-                       className="w-full h-14 md:h-16 px-10 bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl gap-3 transition-all active:scale-95"
+                       className="w-full h-14 md:h-16 px-10 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl gap-3 transition-all active:scale-95 border-none"
                     >
-                      <Lock className="h-5 w-5" /> UNLOCK TEST
+                      <Lock className="h-5 w-5" /> UNLOCK WITH PASS
                     </Button>
                  ) : isLimitReached ? (
                     <div className="bg-rose-50 border border-rose-100 p-4 rounded-xl flex items-center gap-4 text-left shadow-sm">

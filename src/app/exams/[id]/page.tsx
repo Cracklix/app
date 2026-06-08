@@ -33,8 +33,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v14.2.
- * FIXED: Access control logic string normalization (Free vs FREE).
+ * @fileOverview Institutional Exam Hub v15.0.
+ * FIXED: Prominent "UNLOCK WITH PASS" button for premium mocks.
+ * STYLE: Testbook-inspired high-fidelity orange action nodes.
  */
 
 export default function ExamHubPage() {
@@ -236,8 +237,11 @@ function MockList({ data, results, hasPass, user }: any) {
                      </div>
                      <div className="pt-2 flex flex-col sm:flex-row gap-2">
                         {isLocked ? (
-                           <Button onClick={() => router.push('/pass')} className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-white border-none font-black uppercase text-[10px] rounded-xl shadow-xl gap-3">
-                              <Lock className="h-4 w-4" /> UNLOCK TEST
+                           <Button 
+                             onClick={() => router.push('/pass')} 
+                             className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase text-[10px] rounded-xl shadow-xl gap-3 transition-all active:scale-95 border-none"
+                           >
+                              <Lock className="h-4 w-4" /> UNLOCK WITH PASS
                            </Button>
                         ) : result ? (
                            <>
@@ -287,8 +291,11 @@ function NotesList({ data, hasPass, user }: any) {
                      </div>
                      <div className="pt-2">
                         {locked ? (
-                          <Button onClick={() => router.push('/pass')} className="w-full h-11 bg-amber-500 hover:bg-amber-600 text-white font-black uppercase text-[10px] rounded-xl shadow-xl gap-2 border-none">
-                             <Lock className="h-4 w-4" /> UNLOCK TEST
+                          <Button 
+                            onClick={() => router.push('/pass')} 
+                            className="w-full h-11 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase text-[10px] rounded-xl shadow-xl gap-2 border-none transition-all active:scale-95"
+                          >
+                             <Lock className="h-4 w-4" /> UNLOCK WITH PASS
                           </Button>
                         ) : (
                           <Button asChild className="w-full h-11 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] rounded-xl border-none shadow-lg">
