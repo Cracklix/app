@@ -11,48 +11,29 @@ import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection, query, where, limit, getDocs } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 
 /**
- * @fileOverview High-Density Mock Feed v9.2.
- * FIXED: Pass-gating logic normalization (Free vs FREE).
+ * @fileOverview High-Density Mock Feed v10.0.
+ * HARDENED: Unified Premium Access Control Logic.
  */
 
 export default function LatestMocks() {
   const db = useFirestore()
   const { user, profile } = useUser()
+  const router = useRouter()
   
   const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true)) : null), [db])
   const { data: rawMocks, loading } = useCollection<any>(mocksQuery)
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
 
-  const [hasPass, setHasPass] = useState(false);
-
-  useEffect(() => {
-    async function checkPass() {
-      if (!user || !db) return;
-      
-      const role = (profile?.role || '').toUpperCase();
-      if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
-        setHasPass(true);
-        return;
-      }
-      
-      const status = (profile?.status || '').toLowerCase();
-      const activeStatus = status !== '' && status !== 'free';
-      
-      if (activeStatus) {
-        setHasPass(true);
-        return;
-      }
-      
-      const subQuery = query(collection(db, "subscriptions"), where("userId", "==", user.uid), where("status", "==", "active"), limit(1));
-      const snap = await getDocs(subQuery);
-      if (!snap.empty && new Date(snap.docs[0].data().expiryDate) > new Date()) {
-        setHasPass(true);
-      }
-    }
-    checkPass();
-  }, [user, db, profile]);
+  const hasPass = useMemo(() => {
+     if (!profile) return false;
+     const role = (profile.role || '').toUpperCase();
+     if (role === 'ADMIN' || role === 'SUPER_ADMIN') return true;
+     const status = (profile.status || '').toLowerCase();
+     return status !== '' && status !== 'free';
+  }, [profile]);
 
   const mocks = useMemo(() => {
     if (!rawMocks) return []
@@ -85,6 +66,8 @@ export default function LatestMocks() {
             const boardId = mock.boardIds?.[0] || mock.boardId;
             const board = boards?.find((b: any) => b.id === boardId);
             const isPremium = (mock.accessType || 'FREE').toUpperCase() === 'PREMIUM';
+            
+            // CONVERSION GATE
             const locked = isPremium && !hasPass;
 
             return (
@@ -106,14 +89,22 @@ export default function LatestMocks() {
                      <span className="flex items-center gap-1"><Clock className="h-2.5 w-2.5 text-primary" /> {mock.duration}m</span>
                   </div>
 
-                  <Button asChild className={cn(
-                    "w-full h-9 md:h-12 font-black text-[8px] md:text-[10px] uppercase tracking-widest rounded-lg mt-auto transition-all shadow-lg border-none active:scale-95",
-                    locked ? "bg-amber-500 hover:bg-amber-600 text-white" : "bg-[#0F172A] hover:bg-black text-white"
-                  )}>
-                    <Link href={locked ? "/pass" : `/mocks/${mock.id}`}>
-                       {locked ? "UNLOCK TEST" : "ATTEMPT NOW"}
-                    </Link>
-                  </Button>
+                  <div className="mt-auto">
+                    {locked ? (
+                       <Button 
+                        onClick={() => router.push('/pass')} 
+                        className="w-full h-9 md:h-12 bg-orange-500 hover:bg-orange-600 text-white font-black text-[8px] md:text-[10px] uppercase tracking-widest rounded-lg shadow-lg border-none active:scale-95"
+                       >
+                          <Lock className="h-3 w-3 mr-2" /> UNLOCK TEST
+                       </Button>
+                    ) : (
+                       <Button asChild className="w-full h-9 md:h-12 bg-[#0F172A] hover:bg-black text-white font-black text-[8px] md:text-[10px] uppercase tracking-widest rounded-lg shadow-lg border-none active:scale-95">
+                          <Link href={`/mocks/${mock.id}`}>
+                             ATTEMPT NOW
+                          </Link>
+                       </Button>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             )

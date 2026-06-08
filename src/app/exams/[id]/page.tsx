@@ -33,8 +33,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v15.0.
- * FIXED: Prominent "UNLOCK WITH PASS" button for premium mocks.
+ * @fileOverview Institutional Exam Hub v16.0.
+ * HARDENED: Strict Premium Access Control Logic with Debug Logs.
  * STYLE: Testbook-inspired high-fidelity orange action nodes.
  */
 
@@ -68,6 +68,20 @@ export default function ExamHubPage() {
   const { data: userResults } = useCollection<any>(resultsQuery)
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
 
+  // --- STRICT PASS ACCESS LOGIC ---
+  const hasPass = useMemo(() => {
+     if (!profile) return false;
+     
+     const role = (profile.role || '').toUpperCase();
+     if (role === 'ADMIN' || role === 'SUPER_ADMIN') return true;
+     
+     const status = (profile.status || '').toLowerCase();
+     if (!status || status === 'free' || status === '') return false;
+     
+     // Any other status indicates an active pass ID
+     return true;
+  }, [profile]);
+
   const groupedContent = useMemo(() => {
     const mocks = (rawMocks || []).filter(m => {
        const hasMatch = m.examId === examId || (m.examIds && Array.isArray(m.examIds) && m.examIds.includes(examId));
@@ -85,17 +99,6 @@ export default function ExamHubPage() {
       SYLLABUS: notes.filter(n => n.category === 'SYLLABUS')
     }
   }, [rawMocks, rawNotes, examId])
-
-  const hasPass = useMemo(() => {
-     if (!profile) return false;
-     const role = (profile.role || '').toUpperCase();
-     const isElevated = role === 'ADMIN' || role === 'SUPER_ADMIN';
-     
-     const status = (profile.status || '').toLowerCase();
-     const activeStatus = status !== '' && status !== 'free';
-     
-     return !!(isElevated || activeStatus);
-  }, [profile]);
 
   if (examLoading || userLoading) return <div className="h-screen flex items-center justify-center bg-white"><Skeleton className="h-16 w-16 rounded-full animate-pulse" /></div>
   if (!exam) return <div className="h-screen flex flex-col items-center justify-center text-slate-400 gap-4"><Info className="h-12 w-12 opacity-10" /><p className="font-black uppercase tracking-widest text-xs">Registry node missing</p></div>
@@ -157,10 +160,10 @@ export default function ExamHubPage() {
             </div>
 
             <div className="animate-in fade-in duration-500">
-               <TabsContent value="FULL" className="m-0"><MockList data={groupedContent.FULL} results={userResults} hasPass={hasPass} user={user} /></TabsContent>
-               <TabsContent value="SUBJECT" className="m-0"><MockList data={groupedContent.SUBJECT} results={userResults} hasPass={hasPass} user={user} /></TabsContent>
-               <TabsContent value="SECTIONAL" className="m-0"><MockList data={groupedContent.SECTIONAL} results={userResults} hasPass={hasPass} user={user} /></TabsContent>
-               <TabsContent value="PYQ" className="m-0"><MockList data={groupedContent.PYQ} results={userResults} hasPass={hasPass} user={user} /></TabsContent>
+               <TabsContent value="FULL" className="m-0"><MockList data={groupedContent.FULL} results={userResults} hasPass={hasPass} user={user} profile={profile} /></TabsContent>
+               <TabsContent value="SUBJECT" className="m-0"><MockList data={groupedContent.SUBJECT} results={userResults} hasPass={hasPass} user={user} profile={profile} /></TabsContent>
+               <TabsContent value="SECTIONAL" className="m-0"><MockList data={groupedContent.SECTIONAL} results={userResults} hasPass={hasPass} user={user} profile={profile} /></TabsContent>
+               <TabsContent value="PYQ" className="m-0"><MockList data={groupedContent.PYQ} results={userResults} hasPass={hasPass} user={user} profile={profile} /></TabsContent>
                
                <TabsContent value="NOTES" className="m-0"><NotesList data={groupedContent.NOTES} hasPass={hasPass} user={user} /></TabsContent>
                <TabsContent value="SYLLABUS" className="m-0"><NotesList data={groupedContent.SYLLABUS} hasPass={hasPass} user={user} /></TabsContent>
@@ -192,21 +195,8 @@ function DashboardTab({ value, label, icon }: any) {
    )
 }
 
-function MockList({ data, results, hasPass, user }: any) {
+function MockList({ data, results, hasPass, user, profile }: any) {
    const router = useRouter();
-
-   const handleInteraction = (e: React.MouseEvent, href: string) => {
-      if (href === "/pass") {
-         router.push("/pass");
-         return;
-      }
-
-      if (!user) {
-         e.preventDefault();
-         router.push(`/login?returnUrl=${encodeURIComponent(window.location.pathname)}`);
-         return;
-      }
-   };
 
    if (data.length === 0) return <EmptyNode label="Awaiting Content Registry" />;
 
@@ -216,7 +206,11 @@ function MockList({ data, results, hasPass, user }: any) {
             const result = results?.find((r: any) => r.mockId === mock.id);
             const access = (mock.accessType || 'FREE').toUpperCase();
             const isFree = access === 'FREE';
+            
+            // STRICT ACCESS CHECK
             const isLocked = !isFree && !hasPass;
+
+            console.log(`[AUDIT] Mock: ${mock.title} | Access: ${access} | User Status: ${profile?.status} | IsLocked: ${isLocked}`);
 
             return (
                <Card key={mock.id} className="border-none shadow-sm rounded-2xl bg-white hover:shadow-md transition-all text-left group">
@@ -241,19 +235,19 @@ function MockList({ data, results, hasPass, user }: any) {
                              onClick={() => router.push('/pass')} 
                              className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase text-[10px] rounded-xl shadow-xl gap-3 transition-all active:scale-95 border-none"
                            >
-                              <Lock className="h-4 w-4" /> UNLOCK WITH PASS
+                              <Lock className="h-4 w-4" /> UNLOCK TEST
                            </Button>
                         ) : result ? (
                            <>
-                              <Button asChild onClick={(e) => handleInteraction(e, `/results/${mock.id}`)} className="flex-1 h-11 bg-primary text-white hover:bg-orange-600 border-none font-black uppercase text-[10px] rounded-xl shadow-md">
+                              <Button asChild className="flex-1 h-11 bg-primary text-white hover:bg-orange-600 border-none font-black uppercase text-[10px] rounded-xl shadow-md">
                                  <Link href={`/results/${mock.id}`}>View Score</Link>
                               </Button>
-                              <Button asChild onClick={(e) => handleInteraction(e, `/mocks/${mock.id}/instructions`)} variant="outline" className="flex-1 h-11 border-slate-200 text-slate-600 hover:bg-slate-50 font-black uppercase text-[10px] rounded-xl gap-2">
+                              <Button asChild variant="outline" className="flex-1 h-11 border-slate-200 text-slate-600 hover:bg-slate-50 font-black uppercase text-[10px] rounded-xl gap-2">
                                  <Link href={`/mocks/${mock.id}/instructions`}><RefreshCw className="h-3.5 w-3.5" /> Re-attempt</Link>
                               </Button>
                            </>
                         ) : (
-                           <Button asChild onClick={(e) => handleInteraction(e, `/mocks/${mock.id}/instructions`)} className="w-full h-11 bg-slate-900 hover:bg-black text-white border-none font-black uppercase text-[10px] rounded-xl shadow-lg gap-3">
+                           <Button asChild className="w-full h-11 bg-slate-900 hover:bg-black text-white border-none font-black uppercase text-[10px] rounded-xl shadow-lg gap-3">
                               <Link href={`/mocks/${mock.id}/instructions`}><Play className="h-4 w-4 fill-current" /> Attempt Now</Link>
                            </Button>
                         )}
@@ -295,7 +289,7 @@ function NotesList({ data, hasPass, user }: any) {
                             onClick={() => router.push('/pass')} 
                             className="w-full h-11 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase text-[10px] rounded-xl shadow-xl gap-2 border-none transition-all active:scale-95"
                           >
-                             <Lock className="h-4 w-4" /> UNLOCK WITH PASS
+                             <Lock className="h-4 w-4" /> UNLOCK TEST
                           </Button>
                         ) : (
                           <Button asChild className="w-full h-11 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] rounded-xl border-none shadow-lg">

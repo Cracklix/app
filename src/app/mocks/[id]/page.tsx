@@ -29,8 +29,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Mock Node with Authentication & Tiered Attempt Guards.
- * UPDATED: Prominent gold "UNLOCK WITH PASS" button style for premium series.
+ * @fileOverview Institutional Mock Node Gateway v16.0.
+ * HARDENED: Strict access type evaluation and conversion path normalization.
  */
 
 export default function MockOverviewPage() {
@@ -55,8 +55,11 @@ export default function MockOverviewPage() {
         return;
       }
 
-      const mockTier = (mock.accessType || 'FREE').toUpperCase();
+      const access = (mock.accessType || 'FREE').toUpperCase();
+      const isPremium = access === 'PREMIUM';
       
+      console.log(`[AUDIT] Mock Gateway: ${mock.title} | Access: ${access} | User: ${user?.uid}`);
+
       // 1. Fetch User Results for this Mock
       if (user) {
          try {
@@ -68,8 +71,8 @@ export default function MockOverviewPage() {
          }
       }
 
-      // 2. Pass Access Logic (Tiered Check)
-      if (mockTier === 'FREE') {
+      // 2. PASS ACCESS AUDIT
+      if (!isPremium) {
         setIsLocked(false);
         setAccessChecked(true);
         return;
@@ -82,45 +85,41 @@ export default function MockOverviewPage() {
         return;
       }
 
-      if (!user) {
-        setIsLocked(true);
-        setAccessChecked(true);
-        return;
-      }
-
-      // Normalized status check
+      // Status check (Normalize case)
       const status = (profile?.status || '').toLowerCase();
-      const hasActivePass = status !== '' && status !== 'free';
+      const hasStatusPass = status !== '' && status !== 'free';
 
-      if (hasActivePass) {
+      if (hasStatusPass) {
         setIsLocked(false);
         setAccessChecked(true);
         return;
       }
 
-      // Final verification against subscriptions collection
-      try {
-        const subQuery = query(
-          collection(db, "subscriptions"), 
-          where("userId", "==", user.uid),
-          where("status", "==", "active"),
-          limit(1)
-        );
-        const subSnap = await getDocs(subQuery);
-        
-        let subFound = false;
-        if (!subSnap.empty) {
-          const subData = subSnap.docs[0].data();
-          const expiry = new Date(subData.expiryDate);
-          if (expiry > new Date()) {
-            subFound = true;
+      // Final subscription check
+      if (user) {
+        try {
+          const subQuery = query(
+            collection(db, "subscriptions"), 
+            where("userId", "==", user.uid),
+            where("status", "==", "active"),
+            limit(1)
+          );
+          const subSnap = await getDocs(subQuery);
+          
+          let subFound = false;
+          if (!subSnap.empty) {
+            const subData = subSnap.docs[0].data();
+            const expiry = new Date(subData.expiryDate);
+            if (expiry > new Date()) subFound = true;
           }
+          setIsLocked(!subFound);
+        } catch (e) {
+          setIsLocked(true);
         }
-        setIsLocked(!subFound);
-      } catch (e) {
-        console.error("Access Audit Error:", e);
+      } else {
         setIsLocked(true);
       }
+      
       setAccessChecked(true);
     }
     checkAccessAndAttempts();
@@ -132,23 +131,6 @@ export default function MockOverviewPage() {
   }, [mock, previousAttempts]);
 
   const isLimitReached = attemptsLeft === 0;
-
-  const handleStart = (e: React.MouseEvent) => {
-    if (isLocked) {
-       e.preventDefault();
-       router.push("/pass");
-       return;
-    }
-    if (!user) {
-      e.preventDefault();
-      router.push(`/login?returnUrl=/mocks/${mockId}`);
-      return;
-    }
-    if (isLimitReached) {
-       e.preventDefault();
-       return;
-    }
-  };
 
   const showSkeleton = mockLoading || userLoading || (user && !accessChecked);
 
@@ -204,7 +186,7 @@ export default function MockOverviewPage() {
                        onClick={() => router.push('/pass')} 
                        className="w-full h-14 md:h-16 px-10 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl gap-3 transition-all active:scale-95 border-none"
                     >
-                      <Lock className="h-5 w-5" /> UNLOCK WITH PASS
+                      <Lock className="h-5 w-5" /> UNLOCK TEST
                     </Button>
                  ) : isLimitReached ? (
                     <div className="bg-rose-50 border border-rose-100 p-4 rounded-xl flex items-center gap-4 text-left shadow-sm">
@@ -215,7 +197,7 @@ export default function MockOverviewPage() {
                        </div>
                     </div>
                  ) : (
-                    <Button asChild onClick={handleStart} className="w-full h-14 md:h-16 px-10 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl gap-3 group border-none transition-all active:scale-95">
+                    <Button asChild className="w-full h-14 md:h-16 px-10 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl gap-3 group border-none transition-all active:scale-95">
                       <Link href={`/mocks/${mockId}/instructions`} className="flex items-center justify-center gap-3">
                          <Play className="h-5 w-5 fill-current" /> ATTEMPT NOW <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                       </Link>
