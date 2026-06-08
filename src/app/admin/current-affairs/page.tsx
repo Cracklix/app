@@ -40,8 +40,8 @@ import { parseBulkQuestions } from "@/lib/parser"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Current Affairs Management Hub v19.1 (Production Audited).
- * FIXED: Controlled input warnings resolved by using nullish coalescing to prevent undefined/null states.
+ * @fileOverview Institutional Current Affairs Management Hub v19.2 (Production Audited).
+ * FIXED: Syntax error in cleanPayload loop corrected (assignment vs comparison).
  */
 
 export default function AdminCurrentAffairs() {
@@ -170,7 +170,11 @@ export default function AdminCurrentAffairs() {
     const { questions: _, ...cleanPayload } = payload;
 
     // Hardened fallback to prevent uncontrolled inputs
-    Object.keys(cleanPayload).forEach(k => (cleanPayload[k] === undefined || cleanPayload[k] = null) && (cleanPayload[k] = ""));
+    Object.keys(cleanPayload).forEach(k => {
+      if (cleanPayload[k] === undefined || cleanPayload[k] === null) {
+        cleanPayload[k] = "";
+      }
+    });
 
     try {
       await setDoc(caRef, cleanPayload, { merge: true })
