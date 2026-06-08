@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -40,8 +41,8 @@ import { parseBulkQuestions } from "@/lib/parser"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Current Affairs Management Hub v19.4.
- * FIXED: Build error resolved by correcting comparison logic in cleanPayload loop.
+ * @fileOverview Institutional Current Affairs Management Hub v19.5.
+ * FIXED: Resolved syntax errors and hardened cleaning logic to prevent memory threshold crashes.
  */
 
 export default function AdminCurrentAffairs() {

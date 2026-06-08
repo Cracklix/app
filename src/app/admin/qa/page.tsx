@@ -33,8 +33,8 @@ import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/e
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Integrity & Cleanup Dashboard v2.0.
- * FIXED: ReferenceError resolved by defining handleReScan.
+ * @fileOverview Institutional Integrity & Cleanup Dashboard v2.1.
+ * FIXED: Defined handleReScan to prevent reference errors.
  */
 
 export default function QADashboard() {
