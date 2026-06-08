@@ -18,8 +18,8 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Authority Hub v25.3 - Logo Restoration & Hardened Purge Engine.
- * Features: Absolute Deletion Logic & PSSSB Official Branding Guard.
+ * @fileOverview Authority Hub v26.0 - Hardened Mandatory Branding Engine.
+ * Features: Persistent official logos for PSSSB and PSPCL.
  */
 
 export default function ExamManagement() {
@@ -38,6 +38,7 @@ export default function ExamManagement() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const psssbOfficialLogo = "https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg";
+  const pspclOfficialLogo = "https://pspcl.in/assets/images/logo.png";
 
   const handleSave = async () => {
     if (!db || !editingBoard) return
@@ -51,12 +52,15 @@ export default function ExamManagement() {
     const boardId = editingBoard.id || `board-${Date.now()}`
     const boardRef = doc(db, "boards", boardId)
     
-    // Auto-apply PSSSB branding if the board is PSSSB
-    const isPsssb = editingBoard.abbreviation?.toUpperCase() === 'PSSSB';
+    // MANDATORY BRANDING PROTOCOL
+    const abbrev = editingBoard.abbreviation?.toUpperCase();
+    const isPsssb = abbrev === 'PSSSB';
+    const isPspcl = abbrev === 'PSPCL' || abbrev === 'PSTCL';
+    
     const payload = { 
       ...editingBoard, 
       id: boardId,
-      iconUrl: isPsssb ? psssbOfficialLogo : (editingBoard.iconUrl || ""),
+      iconUrl: isPsssb ? psssbOfficialLogo : isPspcl ? pspclOfficialLogo : (editingBoard.iconUrl || ""),
       updatedAt: serverTimestamp()
     }
     
@@ -146,9 +150,12 @@ export default function ExamManagement() {
                 ))
               ) : boards?.map((board: any) => {
                 const isImageFailed = failedImages[board.id];
-                const isPsssb = board.abbreviation?.toUpperCase() === 'PSSSB';
-                const isArmy = board.id?.toLowerCase() === 'army' || board.abbreviation?.toLowerCase() === 'army';
-                const effectiveIcon = isPsssb ? psssbOfficialLogo : board.iconUrl;
+                const abbrev = board.abbreviation?.toUpperCase();
+                const isPsssb = abbrev === 'PSSSB';
+                const isPspcl = abbrev === 'PSPCL' || abbrev === 'PSTCL';
+                const isArmy = board.id?.toLowerCase() === 'army' || abbrev === 'ARMY';
+                
+                const effectiveIcon = isPsssb ? psssbOfficialLogo : isPspcl ? pspclOfficialLogo : board.iconUrl;
 
                 return (
                   <TableRow key={board.id} className="hover:bg-slate-50 group border-slate-50 transition-all">
@@ -221,7 +228,7 @@ export default function ExamManagement() {
                         <img 
                           src={editingBoard.iconUrl} 
                           referrerPolicy="no-referrer"
-                          className={cn("absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform", (editingBoard.id === 'army' || editingBoard.abbreviation === 'ARMY') ? "scale-150" : "")} 
+                          className={cn("absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform", (editingBoard.id === 'army' || editingBoard.abbreviation?.toUpperCase() === 'ARMY') ? "scale-150" : "")} 
                           alt="Preview"
                         />
                       ) : (

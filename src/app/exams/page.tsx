@@ -17,8 +17,8 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @file Overview High-Density Responsive Exam Catalog v10.0.
- * UPDATED: Strict Uniqueness Protocol + Hardened Logo Restoration for PSSSB, CTET, Police, Power.
+ * @fileOverview High-Density Responsive Exam Catalog v11.0.
+ * UPDATED: Optimized high-fidelity rendering for PSSSB and PSPCL logos.
  */
 
 export default function ExamsCatalog() {
@@ -79,7 +79,6 @@ function CatalogContent() {
 
   const exams = useMemo(() => {
     if (!rawExams) return [];
-    // STRICT UNIQUENESS PROTOCOL: Remove duplicate exams like PSTET 1, PSTET 2 by grouping by name
     const unique = new Map();
     rawExams.forEach(e => {
        const key = e.name?.toLowerCase().trim();
@@ -147,9 +146,13 @@ function CatalogContent() {
               const stats = statsMap[exam.id] || { full: 0, pyq: 0, sectional: 0, qCount: 0, subjects: new Set() };
               const isPinned = profile?.pinnedExams?.includes(exam.id);
               const isImgFailed = failedImages[exam.id];
-              const isArmy = exam.boardId?.toLowerCase() === 'army' || exam.id?.toLowerCase().includes('army');
-              const isPolice = exam.boardId?.toLowerCase().includes('police');
               
+              const bid = exam.boardId?.toLowerCase() || "";
+              const isArmy = bid === 'army' || exam.id?.toLowerCase().includes('army');
+              const isPolice = bid.includes('police');
+              const isPower = bid.includes('pspcl') || bid.includes('pstcl');
+              const isPsssb = bid === 'psssb';
+
               return (
                 <Card key={exam.id} className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 rounded-xl md:rounded-[3rem] bg-white group overflow-hidden text-left h-full flex flex-col border border-slate-100 p-4 md:p-10 relative">
                    <button 
@@ -167,9 +170,9 @@ function CatalogContent() {
                                   src={logoUrl} 
                                   className={cn(
                                     "w-full h-full object-contain p-1.5 md:p-2 transition-transform duration-500 group-hover:scale-105", 
-                                    isArmy ? "scale-125" : isPolice ? "scale-110 p-1" : ""
+                                    isArmy ? "scale-125" : isPolice ? "scale-110 p-1" : isPower ? "scale-110" : ""
                                   )} 
-                                  alt="Logo" 
+                                  alt="Board Logo" 
                                   referrerPolicy="no-referrer" 
                                   onError={() => setFailedImages(p => ({...p, [exam.id]: true}))}
                                 />

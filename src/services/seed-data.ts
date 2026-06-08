@@ -1,9 +1,9 @@
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Engine v46.0.
+ * @fileOverview Institutional Seeding Engine v47.0.
  * Features: High-Fidelity Verified Official Logos for Punjab Exam Hubs.
- * UPDATED: Mandatory official PSSSB SVG logo applied to all relevant nodes.
+ * UPDATED: Mandatory official PSSSB and PSPCL logos applied to all relevant nodes.
  */
 export async function seedInitialData(db: Firestore) {
   console.log('[AUDIT] Initializing Cracklix Global Registry Sync...');
