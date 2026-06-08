@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useMemo, useEffect, Suspense } from "react"
@@ -49,8 +50,9 @@ import { MockType, Difficulty, AccessType, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Institutional Mock Architect v48.0.
- * HARDENED: Deploy Engine with Batch Chunking and Pre-flight validation.
+ * @fileOverview Elite Institutional Mock Architect v48.2.
+ * FIXED: Header layout adjusted to prevent Deploy button truncation.
+ * HARDENED: Deploy Engine with Batch Chunking.
  */
 
 const SELECTION_RULES = [
@@ -254,7 +256,7 @@ function MockBuilderContent() {
     try {
       await setDoc(mockRef, payload, { merge: true });
       
-      // CHUNKED BATCH UPDATE (To handle > 500 questions)
+      // CHUNKED BATCH UPDATE
       const CHUNK_SIZE = 450;
       for (let i = 0; i < flatQuestionIds.length; i += CHUNK_SIZE) {
         const chunk = flatQuestionIds.slice(i, i + CHUNK_SIZE);
@@ -280,16 +282,21 @@ function MockBuilderContent() {
 
   return (
     <div className="max-w-[1600px] mx-auto space-y-8 pb-32 text-left pt-4">
-      <div className="flex items-center justify-between gap-6 px-4">
-        <div className="flex items-center gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-6 px-4">
+        <div className="flex items-center gap-4 md:gap-6">
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl border bg-white h-12 w-12 shadow-sm"><ChevronLeft className="h-6 w-6" /></Button>
           <div className="text-left">
-            <h1 className="text-4xl font-headline font-black uppercase tracking-tight text-[#0F172A]">{isEditing ? "Modify Mock" : "Elite Architect"}</h1>
+            <h1 className="text-2xl md:text-4xl font-headline font-black uppercase tracking-tight text-[#0F172A]">{isEditing ? "Modify Mock" : "Elite Architect"}</h1>
             <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mt-1">Language & Access Registry Hub</p>
           </div>
         </div>
-        <Button className="bg-primary hover:bg-orange-600 font-black px-12 h-16 rounded-2xl uppercase text-[11px] tracking-[0.2em] gap-3 shadow-3xl border-none transition-all active:scale-95" onClick={handlePublish} disabled={isPublishing}>
-          {isPublishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ClipboardCheck className="h-5 w-5" />} Deploy Live Registry
+        <Button 
+          className="bg-primary hover:bg-orange-600 font-black px-6 md:px-12 h-14 md:h-16 rounded-2xl uppercase text-[10px] md:text-[11px] tracking-[0.2em] gap-3 shadow-3xl border-none transition-all active:scale-95 shrink-0" 
+          onClick={handlePublish} 
+          disabled={isPublishing}
+        >
+          {isPublishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ClipboardCheck className="h-5 w-5" />} 
+          <span className="whitespace-nowrap">Deploy Live Registry</span>
         </Button>
       </div>
 
