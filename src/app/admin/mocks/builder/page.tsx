@@ -40,7 +40,8 @@ import {
   GraduationCap,
   AlertTriangle,
   FileStack,
-  ListTree
+  ListTree,
+  SearchCode
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, limit, getDocs, writeBatch, where } from "firebase/firestore"
@@ -49,9 +50,9 @@ import { MockType, Difficulty, AccessType, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Institutional Mock Architect v41.0.
- * RECOVERED: Language Protocol, Test Categories, Access Gating, and Selection Logic.
- * HARDENED: Unused tracking logic treating null status as UNUSED.
+ * @fileOverview Elite Institutional Mock Architect v45.0.
+ * RECOVERED: Language Architecture, Access Gating, Multi-Board/Multi-Exam logic.
+ * FIXED: Uniqueness filter for exam list scrollbar.
  */
 
 const SELECTION_RULES = [
@@ -85,13 +86,25 @@ function MockBuilderContent() {
 
   const { data: existingMock } = useDoc<any>(useMemo(() => (db && mockId ? doc(db, "mocks", mockId) : null), [db, mockId]))
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
-  const { data: allExams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
+  const { data: allExamsRaw } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
   
+  // UNIQUE EXAM REGISTRY FILTER
+  const allExams = useMemo(() => {
+     if (!allExamsRaw) return [];
+     const unique = new Map();
+     allExamsRaw.forEach(e => {
+        if (!unique.has(e.id)) unique.set(e.id, e);
+     });
+     return Array.from(unique.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [allExamsRaw]);
+
   const [bankLoading, setBankLoading] = useState(false)
   const [questionBank, setQuestionBank] = useState<any[]>([])
   const [activeRules, setActiveRules] = useState<string[]>(['no-locked', 'no-duplicates'])
   const [assignmentMode, setAssignmentMode] = useState<'SINGLE' | 'MULTIPLE' | 'BOARD'>('SINGLE')
+  const [searchBoard, setSearchBoard] = useState("")
+  const [searchExam, setSearchExam] = useState("")
   
   const [isPublishing, setIsPublishing] = useState(false)
   const [mockData, setMockData] = useState<any>({
@@ -209,6 +222,7 @@ function MockBuilderContent() {
     const payload = {
       ...mockData,
       id: finalId,
+      boardId: mockData.boardIds?.[0] || mockData.sourceBoardId,
       examIds: finalExamIds,
       totalQuestions: flatQuestionIds.length,
       questionIds: flatQuestionIds,
@@ -317,7 +331,7 @@ function MockBuilderContent() {
                    <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Access Level</Label>
                       <Select value={mockData.accessType ?? "FREE"} onValueChange={(v: any) => setMockData({...mockData, accessType: v})}>
-                         <SelectTrigger className="h-12 rounded-xl bg-slate-50/50 border-none font-black"><SelectValue /></SelectTrigger>
+                         <SelectTrigger className="h-12 rounded-xl bg-slate-50/50 border-none font-black text-[10px] uppercase"><SelectValue /></SelectTrigger>
                          <SelectContent><SelectItem value="FREE">FREE</SelectItem><SelectItem value="PREMIUM">PREMIUM</SelectItem></SelectContent>
                       </Select>
                    </div>
@@ -337,7 +351,7 @@ function MockBuilderContent() {
                 <div className="space-y-4 pt-6 border-t border-slate-50">
                   <p className="text-[10px] font-black uppercase text-primary tracking-[0.3em] ml-1">Attempt Gating</p>
                   <Select value={mockData.attemptLimit?.toString()} onValueChange={(v) => setMockData({...mockData, attemptLimit: parseInt(v)})}>
-                     <SelectTrigger className="h-12 rounded-xl bg-slate-50/50 border-none font-black"><SelectValue /></SelectTrigger>
+                     <SelectTrigger className="h-12 rounded-xl bg-slate-50/50 border-none font-black text-[10px] uppercase"><SelectValue /></SelectTrigger>
                      <SelectContent>
                         <SelectItem value="0">Unlimited Attempts</SelectItem>
                         <SelectItem value="1">1 Attempt</SelectItem>
@@ -369,34 +383,46 @@ function MockBuilderContent() {
                    ))}
                 </div>
 
-                <div className="pt-4 space-y-4">
+                <div className="pt-4 space-y-6">
                   {assignmentMode === 'BOARD' ? (
-                     <div className="grid grid-cols-1 gap-2">
-                        {boards?.map((b: any) => (
-                           <div key={b.id} className={cn("flex items-center gap-3 p-3 rounded-xl border", (mockData.boardIds || []).includes(b.id) ? "border-primary bg-primary/5" : "border-slate-50")}>
-                              <Checkbox checked={(mockData.boardIds || []).includes(b.id)} onCheckedChange={(checked) => {
-                                 const current = mockData.boardIds || [];
-                                 setMockData({...mockData, boardIds: checked ? [...current, b.id] : current.filter(id => id !== b.id)});
-                              }} />
-                              <span className="text-[10px] font-black uppercase">{b.abbreviation} Hub</span>
-                           </div>
-                        ))}
+                     <div className="space-y-4">
+                        <div className="relative">
+                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
+                           <Input value={searchBoard} onChange={e => setSearchBoard(e.target.value)} placeholder="Filter Boards..." className="h-10 pl-9 rounded-xl border-slate-100 text-[10px] font-bold" />
+                        </div>
+                        <div className="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto custom-scrollbar border-l-2 border-slate-100 pl-4">
+                           {boards?.filter(b => b.abbreviation?.toLowerCase().includes(searchBoard.toLowerCase())).map((b: any) => (
+                              <div key={b.id} className={cn("flex items-center gap-3 p-3 rounded-xl border transition-all", (mockData.boardIds || []).includes(b.id) ? "border-primary bg-primary/5" : "border-slate-50")}>
+                                 <Checkbox checked={(mockData.boardIds || []).includes(b.id)} onCheckedChange={(checked) => {
+                                    const current = mockData.boardIds || [];
+                                    setMockData({...mockData, boardIds: checked ? [...current, b.id] : current.filter(id => id !== b.id)});
+                                 }} />
+                                 <span className="text-[10px] font-black uppercase truncate">{b.abbreviation} Hub</span>
+                              </div>
+                           ))}
+                        </div>
                      </div>
                   ) : (
-                     <div className="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto custom-scrollbar border-l-2 border-slate-100 pl-4">
-                        {allExams?.map((e: any) => (
-                           <div key={e.id} className={cn("flex items-center gap-3 p-3 rounded-lg border", (mockData.examIds || []).includes(e.id) ? "border-primary bg-primary/5" : "border-slate-50")}>
-                              <Checkbox checked={(mockData.examIds || []).includes(e.id)} onCheckedChange={(checked) => {
-                                 const current = mockData.examIds || [];
-                                 if (assignmentMode === 'SINGLE') {
-                                    setMockData({...mockData, examIds: checked ? [e.id] : []});
-                                 } else {
-                                    setMockData({...mockData, examIds: checked ? [...current, e.id] : current.filter(id => id !== e.id)});
-                                 }
-                              }} />
-                              <span className="text-[10px] font-black uppercase truncate">{e.name}</span>
-                           </div>
-                        ))}
+                     <div className="space-y-4">
+                        <div className="relative">
+                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
+                           <Input value={searchExam} onChange={e => setSearchExam(e.target.value)} placeholder="Filter Verticals..." className="h-10 pl-9 rounded-xl border-slate-100 text-[10px] font-bold" />
+                        </div>
+                        <div className="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto custom-scrollbar border-l-2 border-slate-100 pl-4">
+                           {allExams?.filter(e => e.name?.toLowerCase().includes(searchExam.toLowerCase())).map((e: any) => (
+                              <div key={e.id} className={cn("flex items-center gap-3 p-3 rounded-lg border transition-all", (mockData.examIds || []).includes(e.id) ? "border-primary bg-primary/5" : "border-slate-50")}>
+                                 <Checkbox checked={(mockData.examIds || []).includes(e.id)} onCheckedChange={(checked) => {
+                                    const current = mockData.examIds || [];
+                                    if (assignmentMode === 'SINGLE') {
+                                       setMockData({...mockData, examIds: checked ? [e.id] : []});
+                                    } else {
+                                       setMockData({...mockData, examIds: checked ? [...current, e.id] : current.filter(id => id !== e.id)});
+                                    }
+                                 }} />
+                                 <span className="text-[10px] font-black uppercase truncate">{e.name}</span>
+                              </div>
+                           ))}
+                        </div>
                      </div>
                   )}
                 </div>
