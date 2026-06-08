@@ -50,8 +50,8 @@ import { MockType, Difficulty, AccessType, LanguageDisplayMode } from "@/types"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Institutional Mock Architect v50.0.
- * UPDATED: Replaced 'Chapter-wise' with 'Sectional' terminology.
+ * @fileOverview Elite Institutional Mock Architect v51.0.
+ * UPDATED: Hardened 'Unused Only' logic to strictly block repeated assets.
  */
 
 const SELECTION_RULES = [
@@ -112,7 +112,7 @@ function MockBuilderContent() {
 
   const [bankLoading, setBankLoading] = useState(false)
   const [questionBank, setQuestionBank] = useState<any[]>([])
-  const [activeRules, setActiveRules] = useState<string[]>(['no-locked', 'no-duplicates'])
+  const [activeRules, setActiveRules] = useState<string[]>(['unused-only', 'no-locked', 'no-duplicates'])
   const [assignmentMode, setAssignmentMode] = useState<'SINGLE' | 'MULTIPLE' | 'BOARD'>('SINGLE')
   const [searchBoard, setSearchBoard] = useState("")
   const [searchExam, setSearchExam] = useState("")
@@ -195,8 +195,13 @@ function MockBuilderContent() {
       const notAlreadySelected = !allSelectedIds.includes(q.id)
       
       const qStatus = q.status || 'UNUSED';
+      const qUsedCount = q.usedCount || 0;
 
-      if (activeRules.includes('unused-only') && qStatus !== 'UNUSED') return false;
+      // STRICT RULE: If 'unused-only' is checked, question MUST have status UNUSED and 0 usedCount
+      if (activeRules.includes('unused-only')) {
+         if (qStatus !== 'UNUSED' || qUsedCount > 0) return false;
+      }
+      
       if (activeRules.includes('no-locked') && qStatus === 'LOCKED') return false;
       if (activeRules.includes('no-duplicates') && qStatus === 'DUPLICATE') return false;
 

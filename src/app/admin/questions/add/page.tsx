@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -20,8 +21,8 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Manual Question Entry v16.0.
- * UPDATED: Added full Hindi Statement and Hindi Rationalization support.
+ * @fileOverview Hardened Manual Question Entry v17.0.
+ * UPDATED: Set default status to UNUSED for immediate mock eligibility.
  */
 
 export default function QuestionEntryPage() {
@@ -51,7 +52,7 @@ function QuestionEntryContent() {
 
   const [formData, setFormData] = useState<any>({
     boardId: "", examId: "", subjectId: "", difficulty: "Medium",
-    status: "DRAFT",
+    status: "UNUSED",
     englishQuestion: "", punjabiQuestion: "", hindiQuestion: "",
     optionAEnglish: "", optionAPunjabi: "", optionAHindi: "",
     optionBEnglish: "", optionBPunjabi: "", optionBHindi: "",
@@ -112,7 +113,8 @@ function QuestionEntryContent() {
       updatedAt: serverTimestamp(),
       createdAt: isEditing ? (existingData?.createdAt || serverTimestamp()) : serverTimestamp(),
       isStandalone: true,
-      author: existingData?.author || profile?.name || "Team Node"
+      author: existingData?.author || profile?.name || "Team Node",
+      usedCount: existingData?.usedCount || 0
     };
 
     // Strict Purge
