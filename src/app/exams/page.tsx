@@ -18,8 +18,8 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @file Overview High-Density Responsive Exam Catalog v7.0.
- * UPDATED: Precise Multi-Exam stats calculation for linked hubs.
+ * @file Overview High-Density Responsive Exam Catalog v8.0.
+ * UPDATED: Strict Uniqueness Protocol applied to remove duplicate verticals by name.
  */
 
 export default function ExamsCatalog() {
@@ -43,7 +43,7 @@ function CatalogContent() {
   const mocksQuery = useMemo(() => (db ? query(collection(db, 'mocks')) : null), [db])
   const questionsQuery = useMemo(() => (db ? query(collection(db, 'questions')) : null), [db])
 
-  const { data: exams, loading: examsLoading } = useCollection<any>(examsQuery)
+  const { data: rawExams, loading: examsLoading } = useCollection<any>(examsQuery)
   const { data: boards } = useCollection<any>(boardsQuery)
   const { data: mocks, loading: mocksLoading } = useCollection<any>(mocksQuery)
   const { data: questions } = useCollection<any>(questionsQuery)
@@ -78,10 +78,18 @@ function CatalogContent() {
     return map;
   }, [mocks, questions]);
 
-  const filteredExams = useMemo(() => {
-    if (!exams) return [];
-    return exams.filter((e: any) => e.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [exams, searchTerm])
+  const exams = useMemo(() => {
+    if (!rawExams) return [];
+    // STRICT UNIQUENESS PROTOCOL
+    const unique = new Map();
+    rawExams.forEach(e => {
+       const key = e.name?.toLowerCase().trim();
+       if (!unique.has(key)) unique.set(key, e);
+    });
+    return Array.from(unique.values()).filter((e: any) => 
+       e.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [rawExams, searchTerm])
 
   const togglePin = async (e: React.MouseEvent, examId: string) => {
     e.preventDefault();
@@ -130,7 +138,7 @@ function CatalogContent() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
            {examsLoading || mocksLoading ? (
               Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[3.5rem]" />)
-           ) : filteredExams.map((exam: any) => {
+           ) : exams.map((exam: any) => {
               const board = boards?.find((b: any) => 
                 b.id.toLowerCase() === exam.boardId?.toLowerCase() || 
                 b.abbreviation?.toLowerCase() === exam.boardId?.toLowerCase()

@@ -12,8 +12,8 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Density Exam Hub Catalog v11.0.
- * UPDATED: Multi-Exam assignment support for authentic prep node counting.
+ * @fileOverview High-Density Exam Hub Catalog v12.0.
+ * UPDATED: Strict Uniqueness Protocol applied to remove duplicate verticales by name.
  */
 
 export default function PopularExams() {
@@ -22,7 +22,7 @@ export default function PopularExams() {
   
   const examsQuery = useMemo(() => {
     if (!db) return null
-    return query(collection(db, "exams"), limit(12))
+    return query(collection(db, "exams"))
   }, [db])
 
   const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db])
@@ -33,6 +33,17 @@ export default function PopularExams() {
   const { data: boards } = useCollection<any>(boardsQuery)
   const { data: mocks, loading: mocksLoading } = useCollection<any>(mocksQuery)
   const { data: questions } = useCollection<any>(questionsQuery)
+
+  const exams = useMemo(() => {
+    if (!rawExams) return [];
+    // STRICT UNIQUENESS PROTOCOL
+    const unique = new Map();
+    rawExams.forEach(e => {
+       const key = e.name?.toLowerCase().trim();
+       if (!unique.has(key)) unique.set(key, e);
+    });
+    return Array.from(unique.values()).sort((a: any, b: any) => a.name.localeCompare(b.name)).slice(0, 8);
+  }, [rawExams]);
 
   const statsMap = useMemo(() => {
     if (!mocks || !questions) return { mocks: {}, qs: {} };
@@ -52,11 +63,6 @@ export default function PopularExams() {
 
     return { mocks: mockMap, qs: qMap };
   }, [mocks, questions]);
-
-  const exams = useMemo(() => {
-    if (!rawExams) return [];
-    return [...rawExams].sort((a: any, b: any) => a.name.localeCompare(b.name)).slice(0, 8);
-  }, [rawExams]);
 
   return (
     <section className="py-8 md:py-16 bg-transparent">

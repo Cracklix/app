@@ -28,8 +28,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @file Overview Final Exam Gateway Node v6.2.
- * UPDATED: Multi-Board stats mapping and authentic logo resolution.
+ * @file Overview Final Exam Gateway Node v7.0.
+ * UPDATED: Strict Uniqueness Protocol applied to hide redundant vertical hubs.
  */
 
 export default function MocksGatewayPage() {
@@ -40,9 +40,20 @@ export default function MocksGatewayPage() {
   const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db])
   const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true)) : null), [db])
 
-  const { data: exams, loading: examsLoading } = useCollection<any>(examsQuery)
+  const { data: rawExams, loading: examsLoading } = useCollection<any>(examsQuery)
   const { data: boards } = useCollection<any>(boardsQuery)
   const { data: mocks, loading: mocksLoading } = useCollection<any>(mocksQuery)
+
+  const exams = useMemo(() => {
+    if (!rawExams) return [];
+    // STRICT UNIQUENESS PROTOCOL
+    const unique = new Map();
+    rawExams.forEach(e => {
+       const key = e.name?.toLowerCase().trim();
+       if (!unique.has(key)) unique.set(key, e);
+    });
+    return Array.from(unique.values()).sort((a: any, b: any) => a.name.localeCompare(b.name));
+  }, [rawExams]);
 
   const statsMap = useMemo(() => {
     if (!mocks) return {};
@@ -91,7 +102,7 @@ export default function MocksGatewayPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
            {examsLoading || mocksLoading ? (
              Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-[450px] w-full rounded-[3.5rem]" />)
-           ) : exams?.sort((a: any, b: any) => a.name.localeCompare(b.name)).map((exam: any) => {
+           ) : exams.map((exam: any) => {
              const board = boards?.find((b: any) => 
                b.id.toLowerCase() === exam.boardId?.toLowerCase() || 
                b.abbreviation?.toLowerCase() === exam.boardId?.toLowerCase()
