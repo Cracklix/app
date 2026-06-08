@@ -33,8 +33,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v20.0.
- * HARDENED: Explicit UNLOCK TEST conversion nodes with strict logic audit logs.
+ * @fileOverview Institutional Exam Hub v21.0.
+ * HARDENED: Fail-safe access whitelist logic to prevent Premium leaks.
  */
 
 export default function ExamHubPage() {
@@ -69,14 +69,21 @@ export default function ExamHubPage() {
 
   const hasActivePass = useMemo(() => {
      if (!profile) return false;
+     
+     // 1. Administrative Whitelist
      const role = (profile.role || '').toUpperCase();
      if (role === 'ADMIN' || role === 'SUPER_ADMIN') return true;
+
+     // 2. Blueprint Pass Registry Audit
      if (profile.pass?.active === true) {
-        const expiry = new Date(profile.pass.expiryDate);
-        if (expiry > new Date()) return true;
+        const expiryDate = profile.pass.expiryDate ? new Date(profile.pass.expiryDate) : null;
+        if (expiryDate && expiryDate > new Date()) return true;
      }
-     const status = (profile.status || '').toLowerCase();
-     if (status !== '' && status !== 'free') return true;
+
+     // 3. Legacy Status Audit (Strictly Block 'Free' and empty)
+     const s = (profile.status || '').trim().toLowerCase();
+     if (s !== '' && s !== 'free' && s !== 'student' && s !== 'aspirant') return true;
+
      return false;
   }, [profile]);
 
@@ -175,18 +182,18 @@ function MockList({ data, results, hasActivePass }: { data: any[], results: any[
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
          {data.map((mock: any) => {
             const result = results?.find((r: any) => r.mockId === mock.id);
-            const tierField = (mock.accessLevel || mock.accessType || 'FREE').trim().toUpperCase();
-            const isPremium = tierField === 'PREMIUM';
+            const tier = (mock.accessLevel || mock.accessType || 'FREE').trim().toUpperCase();
+            const isPremium = tier === 'PREMIUM';
             const isLocked = isPremium && !hasActivePass;
 
-            console.log(`[AUDIT] ExamHub Card: ${mock.title} | Tier: ${tierField} | hasPass: ${hasActivePass} | Locked: ${isLocked}`);
+            console.log(`[AUDIT] MockList Gate: ${mock.title} | Tier: ${tier} | UserPass: ${hasActivePass} | Locked: ${isLocked}`);
 
             return (
                <Card key={mock.id} className="border-none shadow-sm rounded-2xl bg-white hover:shadow-md transition-all text-left group">
                   <CardContent className="p-5 md:p-8 space-y-4">
                      <div className="flex items-center justify-between">
                         <Badge className={cn("border-none text-[8px] font-black px-2 py-0.5 rounded shadow-sm", isPremium ? "bg-amber-50 text-amber-600" : "bg-emerald-50 text-emerald-600")}>
-                           {tierField}
+                           {tier}
                         </Badge>
                         {result && <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">AUDITED</span>}
                      </div>
@@ -248,7 +255,7 @@ function NotesList({ data, hasActivePass }: { data: any[], hasActivePass: boolea
                           <Lock className="h-4 w-4" /> UNLOCK TEST
                        </Button>
                      ) : (
-                       <Button asChild className="w-full h-11 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] rounded-xl shadow-lg">
+                       <Button asChild className="w-full h-11 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] rounded-xl lg shadow-lg">
                           <a href={note.pdfUrl} target="_blank" rel="noopener noreferrer"><Download className="h-4 w-4 mr-2" /> Download Node</a>
                        </Button>
                      )}

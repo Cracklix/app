@@ -14,8 +14,8 @@ import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 
 /**
- * @fileOverview High-Density Mock Feed v12.0.
- * HARDENED: Robust Access Level evaluation with strict conversion buttons.
+ * @fileOverview High-Density Mock Feed v13.0.
+ * HARDENED: Fail-safe access whitelist for Home Feed.
  */
 
 export default function LatestMocks() {
@@ -27,13 +27,24 @@ export default function LatestMocks() {
   const { data: rawMocks, loading } = useCollection<any>(mocksQuery)
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
 
-  const hasPass = useMemo(() => {
+  const hasActivePass = useMemo(() => {
      if (!profile) return false;
+     
+     // 1. Administrative Whitelist
      const role = (profile.role || '').toUpperCase();
      if (role === 'ADMIN' || role === 'SUPER_ADMIN') return true;
-     if (profile.pass?.active === true && new Date(profile.pass.expiryDate) > new Date()) return true;
-     const status = (profile.status || '').toLowerCase();
-     return status !== '' && status !== 'free';
+
+     // 2. Blueprint Pass Registry Audit
+     if (profile.pass?.active === true) {
+        const expiryDate = profile.pass.expiryDate ? new Date(profile.pass.expiryDate) : null;
+        if (expiryDate && expiryDate > new Date()) return true;
+     }
+
+     // 3. Legacy Status Audit
+     const s = (profile.status || '').trim().toLowerCase();
+     if (s !== '' && s !== 'free' && s !== 'student' && s !== 'aspirant') return true;
+
+     return false;
   }, [profile]);
 
   const mocks = useMemo(() => {
@@ -60,7 +71,7 @@ export default function LatestMocks() {
             const board = boards?.find((b: any) => b.id === (mock.boardIds?.[0] || mock.boardId));
             const tier = (mock.accessLevel || mock.accessType || 'FREE').trim().toUpperCase();
             const isPremium = tier === 'PREMIUM';
-            const locked = isPremium && !hasPass;
+            const locked = isPremium && !hasActivePass;
 
             return (
               <motion.div key={mock.id} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} viewport={{ once: true }}>
@@ -69,7 +80,7 @@ export default function LatestMocks() {
                     <div className="h-8 w-8 md:h-12 md:w-12 rounded-lg bg-slate-50 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
                        {board?.iconUrl ? <img src={board.iconUrl} className="p-1.5 h-full w-full object-contain" alt="Logo" referrerPolicy="no-referrer" /> : <Zap className="h-4 w-4 text-primary" />}
                     </div>
-                    <Badge className={cn("border-none text-[6px] md:text-[8px] font-black uppercase px-2 py-0.5 rounded shadow-sm", isPremium ? "bg-amber-100 text-amber-600" : "bg-primary/5 text-primary")}>
+                    <Badge className={cn("border-none text-[6px] md:text-[8px] font-black uppercase px-2 py-0.5 rounded shadow-sm", isPremium ? "bg-amber-50 text-amber-600" : "bg-primary/5 text-primary")}>
                        {tier}
                     </Badge>
                   </div>

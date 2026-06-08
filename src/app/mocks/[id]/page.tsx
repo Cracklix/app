@@ -27,8 +27,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Mock Node Gateway v19.0.
- * HARDENED: Robust Access Level evaluation with strict conversion buttons.
+ * @fileOverview Institutional Mock Node Gateway v20.0.
+ * HARDENED: Robust Whitelist Access Level evaluation.
  */
 
 export default function MockOverviewPage() {
@@ -59,20 +59,26 @@ export default function MockOverviewPage() {
          } catch (e) {}
       }
 
+      // If test is Free, always unlock
       if (!isPremium) { setIsLocked(false); setAccessChecked(true); return; }
 
-      const role = (profile?.role || '').toUpperCase();
-      if (role === 'ADMIN' || role === 'SUPER_ADMIN') { setIsLocked(false); setAccessChecked(true); return; }
+      // Evaluate Pass Whitelist
+      let hasPass = false;
       
-      if (profile?.pass?.active === true && new Date(profile.pass.expiryDate) > new Date()) {
-         setIsLocked(false); setAccessChecked(true); return;
+      const role = (profile?.role || '').toUpperCase();
+      if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+         hasPass = true;
+      } else if (profile?.pass?.active === true) {
+         const expiry = profile.pass.expiryDate ? new Date(profile.pass.expiryDate) : null;
+         if (expiry && expiry > new Date()) hasPass = true;
+      } else {
+         const status = (profile?.status || '').trim().toLowerCase();
+         if (status !== '' && status !== 'free' && status !== 'student') hasPass = true;
       }
 
-      const status = (profile?.status || '').toLowerCase();
-      if (status !== '' && status !== 'free') { setIsLocked(false); setAccessChecked(true); return; }
-
-      console.log(`[AUDIT] MockGateway LOCKED: ${mock.title} | Tier: ${tier} | User: ${user?.uid}`);
-      setIsLocked(true);
+      console.log(`[AUDIT] Gateway Check: ${mock.title} | Tier: ${tier} | WhitelistResult: ${hasPass}`);
+      
+      setIsLocked(!hasPass);
       setAccessChecked(true);
     }
     checkAccess();
@@ -102,7 +108,7 @@ export default function MockOverviewPage() {
                 <Button variant="ghost" onClick={() => router.back()} className="rounded-full h-10 w-10 border border-slate-200 bg-white p-0"><ChevronLeft className="h-5 w-5" /></Button>
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center gap-2">
-                      <Badge className={cn("border-none px-3 py-0.5 rounded font-black uppercase text-[8px] tracking-widest shadow-sm", tierField === 'PREMIUM' ? "bg-amber-100 text-amber-600" : "bg-emerald-50 text-emerald-600")}>
+                      <Badge className={cn("border-none text-[8px] font-black px-2 py-0.5 rounded font-black uppercase text-[8px] tracking-widest shadow-sm", tierField === 'PREMIUM' ? "bg-amber-100 text-amber-600" : "bg-emerald-50 text-emerald-600")}>
                         {tierField}
                       </Badge>
                   </div>
