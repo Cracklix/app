@@ -17,8 +17,8 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Institutional CBT Palette Hub v26.0.
- * FIXED: Adjusted SummaryCard internal spacing to prevent text overflow on mobile.
+ * @fileOverview Institutional CBT Palette Hub v26.1 (Production Audited).
+ * FIXED: Optimized SummaryCard font-scaling and spacing to prevent clipping on small viewport widths (360px).
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const questions = useExamStore(s => s.questions);
@@ -59,7 +59,7 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
     <div className="flex flex-col h-full bg-white text-left font-body select-none pointer-events-auto overflow-hidden">
       <ScrollArea className="h-full">
         {/* Anti-Clipping padding calibrated for screenshot visibility */}
-        <div className="p-3 md:p-8 pt-24 md:pt-28 space-y-8 md:space-y-10 pb-32">
+        <div className="p-3 md:p-8 pt-24 md:pt-28 space-y-6 md:space-y-10 pb-32">
            
            {/* 1. STATUS LEGEND HUB */}
            <div className="grid grid-cols-2 gap-2 md:gap-4">
@@ -73,16 +73,16 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
            <div className="h-px w-full bg-slate-100" />
 
            {/* 2. SECTIONAL GRIDS WITH ORANGE BULLETS */}
-           <div className="space-y-10 md:space-y-12">
+           <div className="space-y-8 md:space-y-12">
               {sections.map((section, sIdx) => (
-                <div key={sIdx} className="space-y-5 md:space-y-6">
+                <div key={sIdx} className="space-y-4 md:space-y-6">
                    <div className="flex items-center gap-3">
-                      <div className="h-3 w-3 rounded-full bg-[#F97316] shrink-0 shadow-sm" />
-                      <h4 className="text-[10px] md:text-xs font-[900] uppercase text-[#0F172A] tracking-wider leading-tight">
+                      <div className="h-2 w-2 md:h-3 md:w-3 rounded-full bg-[#F97316] shrink-0" />
+                      <h4 className="text-[9px] md:text-xs font-[900] uppercase text-[#0F172A] tracking-wider truncate">
                          {section.name}
                       </h4>
                    </div>
-                   <div className="grid grid-cols-5 gap-2 md:gap-3">
+                   <div className="grid grid-cols-5 gap-1.5 md:gap-3">
                       {section.questions.map((q) => (
                          <QuestionNode 
                            key={q.globalIdx} 
@@ -105,9 +105,9 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
                    e.preventDefault();
                    onSubmit();
                 }}
-                className="w-full h-16 bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-xl shadow-emerald-900/20 gap-3 group transition-all active:scale-95 border-none"
+                className="w-full h-14 md:h-16 bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase tracking-[0.1em] text-[10px] md:text-[11px] rounded-2xl shadow-xl border-none transition-all active:scale-95"
               >
-                 <ShieldCheck className="h-5 w-5 group-hover:scale-110 transition-transform" /> SUBMIT TEST
+                 <ShieldCheck className="h-4 w-4 md:h-5 md:w-5 mr-2" /> SUBMIT TEST
               </Button>
            </div>
         </div>
@@ -119,14 +119,14 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
 function SummaryCard({ count, label, color, textColor = "text-white", colSpan = 1, border = "border-transparent" }: any) {
   return (
     <div className={cn(
-      "flex items-center gap-2 md:gap-3 p-2 md:p-4 rounded-xl md:rounded-[2rem] bg-white border border-slate-100 shadow-2xl",
+      "flex items-center gap-2 p-2 md:p-4 rounded-xl bg-white border border-slate-100 shadow-sm",
       colSpan > 1 && "col-span-2"
     )}>
-       <div className={cn("h-8 w-8 md:h-12 md:w-12 rounded-full flex items-center justify-center text-xs md:text-lg font-black shrink-0 shadow-lg border-[2px] md:border-[3px] border-white", color, textColor, border)}>
+       <div className={cn("h-7 w-7 md:h-11 md:w-11 rounded-full flex items-center justify-center text-[10px] md:text-lg font-black shrink-0 border-[2px] border-white shadow-sm", color, textColor, border)}>
           {count}
        </div>
        <div className="min-w-0">
-          <span className="text-[7px] md:text-[11px] font-black uppercase text-slate-400 tracking-tighter block leading-tight truncate">{label}</span>
+          <span className="text-[6.5px] md:text-[10px] font-[900] uppercase text-slate-500 tracking-tighter block leading-tight truncate">{label}</span>
        </div>
     </div>
   )
@@ -138,25 +138,25 @@ function QuestionNode({ index, isActive, status, isVisited, onClick }: any) {
   const isAnsMarked = status === 'answered-marked';
   
   const colorClass = isActive 
-    ? "bg-white text-[#F97316] border-[#F97316] border-[3px] shadow-xl scale-105 z-10" 
-    : isAnswered ? "bg-[#1E5EFF] text-white border-transparent shadow-md"
-    : isMarked ? "bg-[#F43F5E] text-white border-transparent shadow-md"
-    : isAnsMarked ? "bg-[#6366F1] text-white border-transparent shadow-md"
-    : isVisited ? "bg-[#94A3B8] text-white border-transparent shadow-md"
-    : "bg-white text-[#94A3B8] border-slate-100 shadow-sm";
+    ? "bg-white text-[#F97316] border-[#F97316] border-[2px] md:border-[3px] shadow-lg scale-105 z-10" 
+    : isAnswered ? "bg-[#1E5EFF] text-white border-transparent"
+    : isMarked ? "bg-[#F43F5E] text-white border-transparent"
+    : isAnsMarked ? "bg-[#6366F1] text-white border-transparent"
+    : isVisited ? "bg-[#94A3B8] text-white border-transparent"
+    : "bg-white text-[#94A3B8] border-slate-100";
 
   return (
     <button
       onClick={onClick}
       className={cn(
-        "relative aspect-square rounded-xl flex items-center justify-center font-black text-[14px] md:text-[18px] transition-all border shrink-0 active:scale-90 w-full cursor-pointer",
+        "relative aspect-square rounded-lg md:rounded-xl flex items-center justify-center font-black text-[12px] md:text-[18px] transition-all border shrink-0 active:scale-90 w-full cursor-pointer",
         colorClass
       )}
     >
       {index + 1}
       {isAnsMarked && (
-        <div className="absolute -top-1.5 -right-1.5 h-4 w-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center shadow-lg">
-           <CheckCircle2 className="h-2.5 w-2.5 text-white" />
+        <div className="absolute -top-1 -right-1 h-3 w-3 md:h-4 md:w-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center">
+           <CheckCircle2 className="h-2 w-2 md:h-2.5 md:w-2.5 text-white" />
         </div>
       )}
     </button>

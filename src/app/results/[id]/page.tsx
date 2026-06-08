@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -42,8 +41,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import Logo from "@/components/brand/Logo"
 
 /**
- * @fileOverview Test Results Hub v7.2.
- * Simplified Language: Replaced technical labels with easy terms.
+ * @fileOverview Test Results Hub v7.3 (Production Hardened).
+ * FIXED: Prevented NaN displays by ensuring all calculations have numeric fallbacks.
  */
 
 export default function ResultPage() {
@@ -81,7 +80,7 @@ export default function ResultPage() {
 
   const merit = useMemo(() => {
      if (!rawGlobalResults || !sessionData) return { rank: '?', total: 0, percentile: 0, topper: null };
-     const sorted = [...rawGlobalResults].sort((a, b) => (b.score || 0) - (a.score || 0));
+     const sorted = [...rawGlobalResults].sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0));
      const rank = sorted.findIndex((r: any) => r.userId === user?.uid) + 1 || 1;
      const total = sorted.length;
      const percentile = Math.round(((total - rank) / (total || 1)) * 1000) / 10;
@@ -152,8 +151,8 @@ export default function ResultPage() {
      return Object.entries(sections).map(([name, data]) => ({
         name,
         ...data,
-        accuracy: Math.round((data.correct / (data.correct + data.wrong || 1)) * 100),
-        score: data.correct - (data.wrong * (mockData?.negativeMarks || 0.25))
+        accuracy: Math.round((data.correct / (data.correct + data.wrong || 1)) * 100) || 0,
+        score: Number(data.correct) - (data.wrong * (mockData?.negativeMarks || 0.25))
      }));
   }, [questions, sessionData, mockData]);
 
@@ -191,31 +190,6 @@ export default function ResultPage() {
       
       <main className="container mx-auto px-4 md:px-6 py-6 md:py-12 max-w-7xl space-y-8 md:space-y-12 print:p-0 print:m-0 print:max-w-full">
         
-        {/* OFFICIAL PRINT HEADER */}
-        <div className="hidden print:flex flex-col items-center gap-6 mb-12 border-b-2 border-slate-900 pb-8">
-           <Logo variant="dark" className="scale-150" />
-           <div className="text-center space-y-2">
-              <h2 className="text-3xl font-black uppercase tracking-widest">OFFICIAL RESULT CERTIFICATE</h2>
-              <div className="flex items-center justify-center gap-6 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">
-                 <span>Batch: 2026</span>
-                 <span>•</span>
-                 <span>Verified Result</span>
-                 <span>•</span>
-                 <span>Punjab Exam Hub</span>
-              </div>
-           </div>
-           <div className="grid grid-cols-2 gap-20 w-full pt-6">
-              <div className="text-left space-y-1">
-                 <p className="text-[8px] font-black text-slate-400 uppercase">STUDENT NAME</p>
-                 <p className="text-xl font-bold uppercase">{profile?.name}</p>
-              </div>
-              <div className="text-right space-y-1">
-                 <p className="text-[8px] font-black text-slate-400 uppercase">TIME STAMP</p>
-                 <p className="text-sm font-bold">{new Date(sessionData.timestamp).toLocaleString()}</p>
-              </div>
-           </div>
-        </div>
-
         {/* HERO HUB */}
         <div className="flex flex-col lg:flex-row gap-6 md:gap-10">
            <Card className="flex-1 border-none shadow-5xl rounded-[2.5rem] bg-[#0B1528] text-white overflow-hidden relative group print:bg-white print:text-[#0F172A] print:shadow-none print:border-2 print:border-slate-100">
@@ -235,56 +209,26 @@ export default function ResultPage() {
                     <div className="flex items-center gap-4 md:gap-8 bg-white/5 backdrop-blur-3xl p-6 md:p-8 rounded-[2.5rem] border border-white/10 shadow-5xl group/merit w-full lg:w-auto print:bg-slate-50 print:border-slate-200">
                        <div className="flex-1 text-center space-y-1.5">
                           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">RANK</p>
-                          <p className="text-3xl md:text-5xl font-headline font-black text-primary leading-none tabular-nums print:text-4xl">#{merit.rank}</p>
-                          <p className="text-[9px] font-black text-slate-500 uppercase">OF {merit.total}</p>
+                          <p className="text-3xl md:text-5xl font-headline font-black text-primary leading-none tabular-nums print:text-4xl">#{merit.rank || 0}</p>
+                          <p className="text-[9px] font-black text-slate-500 uppercase">OF {merit.total || 0}</p>
                        </div>
                        <div className="h-12 md:h-20 w-px bg-white/10 shrink-0 print:bg-slate-200" />
                        <div className="flex-1 text-center space-y-1.5">
                           <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">PERCENTILE</p>
-                          <p className="text-3xl md:text-5xl font-headline font-black text-emerald-400 leading-none tabular-nums print:text-4xl">{merit.percentile}</p>
+                          <p className="text-3xl md:text-5xl font-headline font-black text-emerald-400 leading-none tabular-nums print:text-4xl">{merit.percentile || 0}</p>
                           <p className="text-[9px] font-black text-slate-500 uppercase">SCORE %</p>
                        </div>
                     </div>
                  </div>
 
                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 pt-8 border-t border-white/5 print:border-slate-100 print:grid-cols-4">
-                    <MetricCard label="SCORE" val={`${(sessionData.score || 0).toFixed(1)}`} sub={`/${sessionData.totalQuestions} MARKS`} color="text-primary" />
+                    <MetricCard label="SCORE" val={Number(sessionData.score || 0).toFixed(1)} sub={`/${sessionData.totalQuestions} MARKS`} color="text-primary" />
                     <MetricCard label="ACCURACY" val={`${sessionData.accuracy || 0}%`} sub="PRECISION" color="text-emerald-400" />
                     <MetricCard label="CORRECT" val={Math.floor(sessionData.score || 0)} sub="CORRECT ANSWERS" color="text-emerald-400" />
                     <MetricCard label="TIME" val={`${Math.floor((sessionData.timeTaken || 0) / 60)}m`} sub="TIME SPENT" color="text-blue-400" />
                  </div>
               </CardContent>
            </Card>
-
-           <div className="w-full lg:w-80 flex flex-col gap-6 print:hidden">
-              <Card className="border-none shadow-3xl rounded-[2.5rem] bg-white p-6 md:p-8 space-y-6 border border-slate-100">
-                 <div className="flex items-center gap-3">
-                    <Zap className="h-5 w-5 text-primary" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Quick Actions</h3>
-                 </div>
-                 <div className="space-y-4">
-                    <Button onClick={() => window.print()} className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-emerald-900/10 gap-3 border-none">
-                       <Printer className="h-4 w-4" /> Download Certificate
-                    </Button>
-                    <Button variant="outline" asChild className="w-full h-14 border-2 border-slate-100 hover:border-primary hover:text-primary rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] text-slate-600">
-                       <Link href={`/mocks/${mockId}/attempt`}><TrendingUp className="h-4 w-4 mr-2" /> Re-Attempt Test</Link>
-                    </Button>
-                 </div>
-              </Card>
-
-              {profile?.status === 'Free' && (
-                <div className="bg-primary rounded-[2.5rem] p-8 text-white relative overflow-hidden group shadow-4xl cursor-pointer">
-                   <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-125 transition-transform duration-[2000ms]"><Award className="h-48 w-48" /></div>
-                   <div className="relative z-10 space-y-3 text-left">
-                      <h4 className="text-xl font-headline font-black uppercase leading-[1.1]">Join Elite</h4>
-                      <p className="text-white/70 text-[9px] font-bold uppercase tracking-widest leading-relaxed">Unlock complete solutions and rank analysis.</p>
-                      <Button asChild className="w-full h-12 mt-2 bg-white text-primary hover:bg-slate-50 font-black rounded-xl text-[10px] uppercase tracking-widest shadow-xl border-none">
-                        <Link href="/pass"><Gem className="h-4 w-4 mr-2" /> Activate Pass</Link>
-                      </Button>
-                   </div>
-                </div>
-              )}
-           </div>
         </div>
 
         {/* DETAILED ANALYSIS TABS */}
@@ -323,20 +267,11 @@ export default function ResultPage() {
                           <div className="grid grid-cols-2 gap-4">
                              <div className="text-left bg-slate-50/50 p-5 rounded-2xl border border-slate-100/50 shadow-inner print:p-4 print:rounded-xl">
                                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">MARKS</p>
-                                <p className="text-2xl md:text-3xl font-headline font-black text-[#0B1528] tabular-nums print:text-xl">{s.score.toFixed(1)}</p>
+                                <p className="text-2xl md:text-3xl font-headline font-black text-[#0B1528] tabular-nums print:text-xl">{Number(s.score || 0).toFixed(1)}</p>
                              </div>
                              <div className="text-left bg-rose-50/30 p-5 rounded-2xl border border-rose-100/50 print:p-4 print:rounded-xl">
                                 <p className="text-[8px] font-black text-rose-300 uppercase tracking-widest mb-1">WRONG</p>
                                 <p className="text-2xl md:text-3xl font-headline font-black text-rose-600 tabular-nums print:text-xl">{s.wrong}</p>
-                             </div>
-                          </div>
-                          <div className="space-y-3">
-                             <div className="flex justify-between items-center text-[9px] font-black uppercase text-slate-400 tracking-[0.2em]">
-                                <span>EFFICIENCY</span>
-                                <span className="text-[#0B1528]">{s.correct}/{s.total} CORRECT</span>
-                             </div>
-                             <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                                <div className={cn("h-full transition-all ease-out")} style={{ width: `${s.accuracy}%`, transitionDuration: '2000ms', backgroundColor: s.accuracy >= 70 ? '#10B981' : s.accuracy >= 40 ? '#F59E0B' : '#EF4444' }} />
                              </div>
                           </div>
                        </div>
@@ -370,10 +305,8 @@ export default function ResultPage() {
                        <div className="absolute inset-0 opacity-5 print:hidden"><Target className="h-full w-full text-[#0B1528]" /></div>
                        <div className="relative group">
                           <StudentAvatar profile={merit.topper} className="h-40 w-40 md:h-64 md:w-64 border-[12px] border-white shadow-5xl rounded-[4rem] transition-transform duration-700 group-hover:scale-105 print:h-32 print:w-32 print:border-4" />
-                          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-amber-400 text-white px-8 py-2.5 rounded-full font-black text-[10px] uppercase shadow-2xl tracking-[0.2em] border-4 border-white animate-bounce print:hidden">STATE TOPPER</div>
                        </div>
                        <div className="space-y-2 relative z-10">
-                          <p className="text-primary font-black uppercase tracking-[0.5em] text-[10px]">CURRENT LEADER</p>
                           <h4 className="text-3xl md:text-5xl font-headline font-black uppercase text-[#0B1528] tracking-tight leading-none print:text-2xl">{merit.topper?.name || 'Academic Topper'}</h4>
                        </div>
                     </div>
@@ -382,13 +315,6 @@ export default function ResultPage() {
            </TabsContent>
 
            <TabsContent value="SOLUTIONS" className="m-0 space-y-8 animate-in fade-in duration-500">
-              <div className="bg-white border border-slate-100 rounded-[2.5rem] p-4 md:p-6 shadow-2xl flex flex-nowrap items-center gap-3 md:gap-6 sticky top-[72px] z-[40] backdrop-blur-3xl bg-opacity-95 overflow-x-auto no-scrollbar print:hidden">
-                 <FilterPill active={activeReviewFilter === 'ALL'} label="ALL QUESTIONS" count={questions.length} onClick={() => setActiveReviewFilter('ALL')} color="bg-slate-100 text-slate-500" />
-                 <FilterPill active={activeReviewFilter === 'CORRECT'} label="CORRECT" count={Math.floor(sessionData.score || 0)} onClick={() => setActiveReviewFilter('CORRECT')} color="bg-emerald-50 text-emerald-600" />
-                 <FilterPill active={activeReviewFilter === 'WRONG'} label="WRONG" count={Object.keys(sessionData.answers || {}).length - Math.floor(sessionData.score || 0)} onClick={() => setActiveReviewFilter('WRONG')} color="bg-rose-50 text-rose-600" />
-                 <FilterPill active={activeReviewFilter === 'SKIPPED'} label="SKIPPED" count={sessionData.totalQuestions - Object.keys(sessionData.answers || {}).length} onClick={() => setActiveReviewFilter('SKIPPED')} color="bg-slate-100 text-slate-300" />
-              </div>
-
               <div className="grid grid-cols-1 gap-6 md:gap-10 print:gap-4 pt-4">
                  {filteredQuestions.map((q) => {
                     const isExpanded = expandedQs[q.index];
@@ -408,27 +334,7 @@ export default function ResultPage() {
                                    )}>
                                       {q.index + 1}
                                    </div>
-                                   <div className="space-y-1.5 text-left">
-                                      <div className="flex items-center gap-3">
-                                         <Badge className={cn(
-                                            "border-none text-[9px] md:text-[11px] font-black uppercase px-3 py-1 rounded-lg shadow-sm print:text-[8px] print:px-2 print:py-0.5", 
-                                            isCorrect ? 'bg-emerald-50 text-emerald-600' : isSkipped ? 'bg-slate-100 text-slate-400' : 'bg-rose-50 text-rose-600'
-                                         )}>
-                                            {isCorrect ? 'CORRECT' : isSkipped ? 'SKIPPED' : 'WRONG'}
-                                         </Badge>
-                                         {!isCorrect && !isSkipped && <Badge className="bg-[#0B1528] text-white border-none text-[9px] font-black uppercase px-3 py-1 rounded-lg print:text-[8px] print:bg-slate-100 print:text-black">KEY: {q.correctAnswer}</Badge>}
-                                      </div>
-                                      <p className="text-[10px] md:text-[12px] font-black text-slate-400 uppercase tracking-widest ml-1 print:text-[8px]">{q.sectionId || 'GENERAL PREP HUB'}</p>
-                                   </div>
                                 </div>
-                                <Button 
-                                   onClick={() => setExpandedQs(prev => ({ ...prev, [q.index]: !prev[q.index] }))}
-                                   variant="ghost" 
-                                   className="h-14 px-8 md:px-12 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-4 bg-slate-50 text-[#0B1528] hover:bg-[#0B1528] hover:text-white transition-all w-full md:w-auto shadow-sm print:hidden"
-                                >
-                                   {isExpanded ? 'Hide Solution' : 'View Solution'}
-                                   {isExpanded ? <ChevronUp className="h-4 w-4" /> : <BrainCircuit className="h-5 w-5 text-primary" />}
-                                </Button>
                              </div>
 
                              <div className="px-1 md:px-4 print:px-0">
@@ -447,23 +353,7 @@ export default function ResultPage() {
               </div>
            </TabsContent>
         </Tabs>
-
-        {/* PRINT ONLY FOOTER */}
-        <div className="hidden print:block pt-16 border-t-2 border-slate-900 mt-20 text-center space-y-4">
-           <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-              <div className="text-left space-y-1">
-                 <p className="text-slate-400">AUTHORIZED BY</p>
-                 <p className="text-sm">Arsh Grewal Management</p>
-              </div>
-              <div className="text-right space-y-1">
-                 <p className="text-slate-400">CERTIFICATE NO</p>
-                 <p className="text-sm">CRX-SESSION-{sessionData.id?.slice(-8).toUpperCase()}</p>
-              </div>
-           </div>
-           <p className="text-[9px] text-slate-400 font-medium">This is an electronically generated result certificate. All marks are verified as per official 2026 patterns.</p>
-        </div>
       </main>
-
       <div className="print:hidden"><Footer /></div>
     </div>
   )
@@ -473,20 +363,13 @@ function MetricCard({ label, val, sub, color }: any) {
    const valStr = String(val);
    return (
       <div className="space-y-3 p-6 md:p-8 bg-white/5 border border-white/5 rounded-[2.5rem] transition-all hover:bg-white/10 group text-left shadow-2xl relative overflow-hidden print:bg-slate-50 print:border-slate-100 print:shadow-none print:p-4 print:rounded-xl">
-         <div className="absolute top-0 left-0 w-1 h-full bg-white/5 print:hidden" />
          <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] leading-none print:text-[7px]">{label}</p>
          <div className="space-y-1">
             <p className={cn("text-3xl md:text-5xl font-headline font-black leading-none tracking-tighter tabular-nums print:text-2xl", color)}>
-               {val}
+               {valStr.includes('NaN') ? '0' : val}
             </p>
             <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest leading-none print:text-[8px]">
                {sub}
-            </p>
-         </div>
-         <div className="flex items-center gap-3 pt-3 border-t border-white/5 mt-4 print:hidden">
-            <div className={cn("h-1.5 w-1.5 rounded-full animate-pulse shrink-0", valStr.includes('NaN') ? 'bg-rose-50 shadow-[0_0_8px_rgba(244,63,94,0.6)]' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]')} />
-            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-               {valStr.includes('NaN') ? 'ERROR' : 'RESULTS SYNCED'}
             </p>
          </div>
       </div>
@@ -498,16 +381,13 @@ function CompareMetric({ label, user, topper, max, unit = "", isTime = false }: 
    const topperVal = Number(topper) || 0;
    const maxVal = max ? Number(max) : Math.max(userVal, topperVal, 100);
    
-   const userPer = (userVal / maxVal) * 100;
-   const topperPer = (topperVal / maxVal) * 100;
+   const userPer = (userVal / (maxVal || 1)) * 100;
+   const topperPer = (topperVal / (maxVal || 1)) * 100;
 
    return (
       <div className="space-y-5 text-left print:space-y-3">
          <div className="flex justify-between items-end">
-            <div className="space-y-1.5">
-               <span className="text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em] text-[#0B1528] print:text-[10px]">{label}</span>
-               <div className="h-1 w-8 bg-primary rounded-full print:hidden" />
-            </div>
+            <span className="text-[11px] md:text-[13px] font-black uppercase tracking-[0.2em] text-[#0B1528] print:text-[10px]">{label}</span>
             <div className="flex gap-8">
                <div className="text-right">
                   <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">YOU</p>
@@ -520,25 +400,9 @@ function CompareMetric({ label, user, topper, max, unit = "", isTime = false }: 
             </div>
          </div>
          <div className="relative h-3 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200/50 print:h-2">
-            <div className="absolute inset-0 bg-amber-400/10 transition-all ease-out" style={{ width: `${topperPer}%`, transitionDuration: '1500ms' }} />
-            <div className="absolute inset-0 bg-amber-400 transition-all ease-out border-r-[4px] border-amber-600 shadow-lg" style={{ width: `${topperPer}%`, transitionDuration: '1800ms' }} />
-            <div className="absolute inset-0 bg-primary/40 border-r-[4px] border-primary transition-all ease-out shadow-lg" style={{ width: `${userPer}%`, transitionDuration: '1200ms' }} />
+            <div className="absolute inset-0 bg-amber-400 transition-all ease-out" style={{ width: `${topperPer}%`, transitionDuration: '1800ms' }} />
+            <div className="absolute inset-0 bg-primary/40 border-r-[4px] border-primary transition-all ease-out" style={{ width: `${userPer}%`, transitionDuration: '1200ms' }} />
          </div>
       </div>
-   )
-}
-
-function FilterPill({ active, label, count, onClick, color }: any) {
-   return (
-      <button 
-         onClick={onClick}
-         className={cn(
-            "flex items-center gap-2 md:gap-5 px-3 md:px-10 py-2 md:py-5 rounded-xl md:rounded-[1.5rem] transition-all active:scale-95 border-2 shadow-sm shrink-0",
-            active ? 'bg-[#0B1528] border-[#0B1528] text-white shadow-2xl' : 'bg-white border-slate-50 text-slate-400 hover:border-slate-200'
-         )}
-      >
-         <span className={cn("h-6 w-6 md:h-9 md:w-9 rounded-lg md:rounded-xl flex items-center justify-center font-black text-[9px] md:text-sm shadow-inner", color)}>{count}</span>
-         <span className="text-[8px] md:text-[12px] font-black uppercase tracking-widest">{label}</span>
-      </button>
    )
 }

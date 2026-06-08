@@ -1,4 +1,3 @@
-
 'use client';
 
 import { create } from 'zustand';
@@ -9,8 +8,8 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
 /**
- * @fileOverview Elite CBT Global Store v31.1 (Production Hardened).
- * FIXED: setPaused recalibrates endTime correctly to prevent timer drift.
+ * @fileOverview Elite CBT Global Store v31.2 (Production Audited).
+ * FIXED: setPaused recalibrates endTime correctly to prevent timer drift during pause/resume cycles.
  */
 
 interface ExamStore extends AttemptState {
@@ -121,6 +120,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const now = Date.now();
     
     if (!val) {
+       // Resuming: Calculate a new future endTime based on stored remaining seconds
        const newEndTime = now + (timeLeft * 1000);
        set({ isPaused: false, endTime: newEndTime });
        

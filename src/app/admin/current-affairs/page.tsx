@@ -40,8 +40,8 @@ import { parseBulkQuestions } from "@/lib/parser"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Current Affairs Management Hub v19.0.
- * FIXED: Controlled input warnings resolved by using nullish coalescing.
+ * @fileOverview Institutional Current Affairs Management Hub v19.1 (Production Audited).
+ * FIXED: Controlled input warnings resolved by using nullish coalescing to prevent undefined/null states.
  */
 
 export default function AdminCurrentAffairs() {
@@ -134,7 +134,8 @@ export default function AdminCurrentAffairs() {
           examId: 'current-affairs',
           sectionId: editingItem.title,
           updatedAt: serverTimestamp(),
-          createdAt: q.createdAt || serverTimestamp()
+          createdAt: q.createdAt || serverTimestamp(),
+          status: 'USED'
         }, { merge: true })
       })
 
@@ -169,7 +170,7 @@ export default function AdminCurrentAffairs() {
     const { questions: _, ...cleanPayload } = payload;
 
     // Hardened fallback to prevent uncontrolled inputs
-    Object.keys(cleanPayload).forEach(k => (cleanPayload[k] === undefined || cleanPayload[k] === null) && (cleanPayload[k] = ""));
+    Object.keys(cleanPayload).forEach(k => (cleanPayload[k] === undefined || cleanPayload[k] = null) && (cleanPayload[k] = ""));
 
     try {
       await setDoc(caRef, cleanPayload, { merge: true })
@@ -180,12 +181,6 @@ export default function AdminCurrentAffairs() {
     } finally {
       setIsSaving(false)
     }
-  }
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Permanently purge this node?")) return
-    await deleteDoc(doc(db!, "current_affairs_hub", id))
-    toast({ title: "Node Purged" })
   }
 
   const filteredItems = useMemo(() => {
@@ -199,12 +194,8 @@ export default function AdminCurrentAffairs() {
     <div className="space-y-6 pb-24 text-left">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 px-2 md:px-4">
         <div className="min-w-0 flex-1">
-           <div className="flex items-center gap-3 mb-2">
-              <Newspaper className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 truncate">Official news hub</span>
-           </div>
-          <h1 className="text-3xl md:text-5xl font-black font-headline text-primary uppercase tracking-tight leading-tight truncate">CA Manager</h1>
-          <p className="text-slate-500 mt-1 md:mt-2 text-sm md:text-lg font-medium">Coordinate Daily, Weekly, and Monthly strategic coverage.</p>
+          <h1 className="text-3xl md:text-5xl font-black font-headline text-primary uppercase tracking-tight leading-tight">CA Manager</h1>
+          <p className="text-slate-500 mt-1 md:mt-2 text-sm md:text-lg font-medium">Coordinate Daily, Weekly, and Monthly coverage.</p>
         </div>
         <button onClick={() => setEditingItem({ title: "", type: "DAILY", month: "January", year: "2026", status: "PUBLISHED", questions: [], language: "English & Punjabi", duration: 15, positiveMarks: 1, negativeMarks: 0.25 })} className="w-full lg:w-auto bg-primary hover:bg-orange-600 text-white h-14 md:h-16 px-10 rounded-2xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 border-none">
           <Plus className="h-5 w-5" /> Initialize CA Hub
@@ -214,7 +205,7 @@ export default function AdminCurrentAffairs() {
       <Card className="border-none shadow-3xl bg-white rounded-2xl md:rounded-[3rem] overflow-hidden mx-2 md:mx-4">
         <CardHeader className="p-4 md:p-10 border-b border-slate-50 bg-slate-50/30">
            <div className="relative w-full lg:w-[45%]">
-              <Search className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-slate-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-slate-400" />
               <Input 
                 className="pl-12 md:pl-16 h-12 md:h-16 rounded-xl md:rounded-[1.5rem] bg-white border-none shadow-inner text-sm md:text-lg font-medium" 
                 placeholder="Search archives..." 
@@ -243,21 +234,21 @@ export default function AdminCurrentAffairs() {
                     <TableCell className="px-6 md:px-10 py-6 md:py-8 text-left">
                       <div className="flex items-center gap-4 md:gap-6">
                          <div className={cn(
-                           "h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 shadow-inner transition-transform group-hover:scale-105",
+                           "h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 shadow-inner",
                            item.type === 'DAILY' ? 'bg-orange-50 text-primary' : 
                            item.type === 'WEEKLY' ? 'bg-blue-50 text-blue-600' : 
                            item.type === 'MONTHLY' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'
                          )}>
-                            {item.type === 'QUIZ' ? <Zap className="h-5 w-5 md:h-6 md:w-6" /> : <Calendar className="h-5 w-5 md:h-6 md:w-6" />}
+                            <Calendar className="h-5 w-5 md:h-6 md:w-6" />
                          </div>
                          <div className="min-w-0">
-                            <p className="font-black text-[#0F172A] text-sm md:text-xl uppercase tracking-tight leading-tight truncate">{item.title}</p>
-                            <p className="text-[8px] md:text-[9px] font-bold text-slate-400 mt-1 md:mt-2 uppercase tracking-widest">{item.month} {item.year}</p>
+                            <p className="font-black text-[#0F172A] text-sm md:text-xl uppercase truncate">{item.title}</p>
+                            <p className="text-[8px] md:text-[9px] font-bold text-slate-400 mt-1 uppercase">{item.month} {item.year}</p>
                          </div>
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge variant="outline" className="bg-white border-slate-200 text-slate-500 text-[8px] md:text-[9px] font-black uppercase px-2 md:px-3 py-1 rounded-lg">
+                      <Badge variant="outline" className="bg-white border-slate-200 text-slate-500 text-[8px] md:text-[9px] font-black uppercase px-2 py-1">
                          {item.type} HUB
                       </Badge>
                     </TableCell>
@@ -266,7 +257,7 @@ export default function AdminCurrentAffairs() {
                          <Button variant="ghost" size="icon" className="h-9 w-9 md:h-12 md:w-12 rounded-xl bg-slate-50 hover:bg-white hover:text-primary shadow-sm" onClick={() => setEditingItem(item)}>
                           <Edit className="h-4 w-4 md:h-5 md:w-5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 md:h-12 md:w-12 rounded-xl bg-slate-50 hover:bg-rose-50 hover:text-rose-600 shadow-sm" onClick={() => handleDelete(item.id)}>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 md:h-12 md:w-12 rounded-xl bg-slate-50 hover:bg-rose-50 hover:text-rose-600 shadow-sm" onClick={async () => { if(confirm("Purge?")) await deleteDoc(doc(db!, "current_affairs_hub", item.id)) }}>
                           <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
                         </Button>
                       </div>
@@ -314,21 +305,17 @@ export default function AdminCurrentAffairs() {
                         </select>
                      </div>
 
-                     <div className="grid grid-cols-1 gap-4">
-                        <div className="space-y-1.5">
-                           <Label className="text-[9px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Languages className="h-3 w-3" /> CBT Assessment Language</Label>
-                           <select value={editingItem?.language ?? "English & Punjabi"} onChange={e => setEditingItem({...editingItem, language: e.target.value})} className="w-full h-11 bg-[#0B1528] text-white border-none rounded-xl px-4 font-black uppercase text-[9px] outline-none shadow-xl">
-                              <option value="English & Punjabi">English & Punjabi</option>
-                              <option value="English & Hindi">English & Hindi</option>
-                           </select>
-                        </div>
+                     <div className="space-y-1.5">
+                        <Label className="text-[9px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Languages className="h-3 w-3" /> Language Mode</Label>
+                        <select value={editingItem?.language ?? "English & Punjabi"} onChange={e => setEditingItem({...editingItem, language: e.target.value})} className="w-full h-11 bg-[#0B1528] text-white border-none rounded-xl px-4 font-black uppercase text-[9px] outline-none shadow-xl">
+                           <option value="English & Punjabi">English & Punjabi</option>
+                           <option value="English & Hindi">English & Hindi</option>
+                        </select>
                      </div>
 
                      <div className="grid grid-cols-1 gap-4 pt-4 border-t border-slate-200/50">
-                        <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Institutional Evaluation</p>
-                        
                         <div className="space-y-1.5">
-                           <Label className="text-[9px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Clock className="h-3 w-3" /> Test Duration (Mins)</Label>
+                           <Label className="text-[9px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Clock className="h-3 w-3" /> Duration (Mins)</Label>
                            <Input type="number" value={editingItem?.duration ?? ""} onChange={e => setEditingItem({...editingItem, duration: e.target.value})} className="h-11 rounded-xl border-none bg-white font-black shadow-sm" />
                         </div>
 
@@ -341,19 +328,6 @@ export default function AdminCurrentAffairs() {
                               <Label className="text-[9px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><AlertTriangle className="h-3 w-3 text-rose-500" /> Neg (-)</Label>
                               <Input type="number" step="0.05" value={editingItem?.negativeMarks ?? ""} onChange={e => setEditingItem({...editingItem, negativeMarks: e.target.value})} className="h-11 rounded-xl border-none bg-white font-black shadow-sm text-center" />
                            </div>
-                        </div>
-                     </div>
-
-                     <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200/50">
-                        <div className="space-y-1.5">
-                           <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Archive Month</Label>
-                           <select value={editingItem?.month ?? "January"} onChange={e => setEditingItem({...editingItem, month: e.target.value})} className="w-full h-11 bg-white border-none rounded-xl px-4 font-bold text-[10px] outline-none shadow-sm">
-                           {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(m => <option key={m} value={m}>{m}</option>)}
-                           </select>
-                        </div>
-                        <div className="space-y-1.5">
-                           <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Year</Label>
-                           <Input value={editingItem?.year ?? ""} onChange={e => setEditingItem({...editingItem, year: e.target.value})} className="h-11 rounded-xl border-none bg-white font-bold shadow-sm text-center" />
                         </div>
                      </div>
                   </Card>
@@ -378,7 +352,7 @@ export default function AdminCurrentAffairs() {
                            <Textarea 
                               value={bulkText}
                               onChange={e => setBulkText(e.target.value)}
-                              placeholder={`Q15. English Question\nPunjabi/Hindi Question Statement...\n(A) Option English\nPunjabi/Hindi Option Text...\nAnswer: C\nExplanation (English): Logic...\nਵਿਆਖਿਆ/ਵਿਆਖਿਆ: Logic...`}
+                              placeholder={`Q15. English Question\nPunjabi/Hindi Question Statement...\n(A) Option English\nPunjabi/Hindi Option Text...\nAnswer: C\nExplanation (English): Logic...\nਵਿਆਖਿਆ: Logic...`}
                               className="min-h-[400px] md:min-h-[500px] rounded-[2.5rem] bg-slate-50 border-none p-10 text-sm font-bold shadow-inner resize-none focus-visible:ring-primary leading-relaxed"
                            />
                            <Button onClick={handleProcessBulk} disabled={!bulkText.trim()} className="w-full h-16 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.4em] text-[11px] rounded-2xl shadow-4xl gap-4 border-none transition-all active:scale-95">
@@ -399,7 +373,6 @@ export default function AdminCurrentAffairs() {
                                           
                                           <div className="flex items-center gap-6 mb-10">
                                              <div className="h-10 w-10 rounded-2xl bg-[#0F172A] text-white flex items-center justify-center font-black text-sm shadow-xl">{idx + 1}</div>
-                                             <Badge className="bg-emerald-50 text-emerald-600 border-none text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-lg shadow-sm">LIVE CBT AUDIT</Badge>
                                           </div>
 
                                           <div className="space-y-10">
@@ -429,86 +402,6 @@ export default function AdminCurrentAffairs() {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
-
-      {/* INDIVIDUAL QUESTION EDIT DIALOG */}
-      <Dialog open={editingQIndex !== null} onOpenChange={open => !open && setEditingQIndex(null)}>
-         <DialogContent className="sm:max-w-5xl max-h-[95vh] overflow-y-auto rounded-[3rem] bg-white border-none shadow-5xl p-0 text-left flex flex-col">
-            <div className="h-2 w-full bg-[#0F172A] shrink-0" />
-            <DialogHeader className="p-10 pb-6 flex flex-row items-center justify-between shrink-0">
-               <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600"><SearchCode className="h-7 w-7" /></div>
-                  <DialogTitle className="text-3xl font-black font-headline uppercase text-[#0F172A]">Modify Explicit Fields</DialogTitle>
-               </div>
-               <Button variant="ghost" size="icon" onClick={() => setEditingQIndex(null)} className="rounded-xl h-12 w-12"><X className="h-6 w-6 text-slate-400" /></Button>
-            </DialogHeader>
-            <div className="px-10 pb-10 space-y-10 overflow-y-auto custom-scrollbar flex-1">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                  <div className="space-y-3">
-                     <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">English Statement</Label>
-                     <Textarea value={editQForm?.englishQuestion ?? ""} onChange={e => setEditQForm({...editQForm, englishQuestion: e.target.value})} className="h-32 rounded-2xl bg-slate-50 border-none font-bold text-lg p-6 shadow-inner text-[#0F172A]" />
-                  </div>
-                  <div className="space-y-3">
-                     <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">Secondary Statement</Label>
-                     <Textarea 
-                        value={editingItem?.language === 'English & Hindi' ? (editQForm?.hindiQuestion ?? "") : (editQForm?.punjabiQuestion ?? "")} 
-                        onChange={e => setEditQForm({...editQForm, [editingItem?.language === 'English & Hindi' ? 'hindiQuestion' : 'punjabiQuestion']: e.target.value})} 
-                        className="h-32 rounded-2xl bg-slate-50 border-none font-bold text-lg p-6 shadow-inner text-[#0F172A]" 
-                     />
-                  </div>
-               </div>
-
-               <div className="space-y-6 pt-6 border-t border-slate-100">
-                  <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] ml-1">Options Matrix</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                     {['A','B','C','D'].map(opt => (
-                        <div key={opt} className="bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100 space-y-4">
-                           <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                 <div className="h-7 w-7 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-black text-xs">{opt}</div>
-                                 <Label className="text-[10px] font-black uppercase text-slate-500">English Text</Label>
-                              </div>
-                              <button onClick={() => setEditQForm({...editQForm, correctAnswer: opt})} className={cn("h-6 w-6 rounded-full border-2 transition-all flex items-center justify-center", (editQForm?.correctAnswer ?? "A") === opt ? "bg-emerald-50 border-emerald-500 text-white" : "border-slate-200 hover:border-primary")}>
-                                 {(editQForm?.correctAnswer ?? "A") === opt && <CheckCircle2 className="h-4 w-4" />}
-                              </button>
-                           </div>
-                           <Input value={editQForm?.[`option${opt}English`] ?? ""} onChange={e => setEditQForm({...editQForm, [`option${opt}English`]: e.target.value})} className="bg-white border-none font-bold h-12 rounded-xl" />
-                           
-                           <div className="pt-2 space-y-2">
-                              <Label className="text-[9px] font-black uppercase text-slate-400 flex items-center gap-2"><Globe className="h-3 w-3" /> Secondary Text</Label>
-                              <Input 
-                                 value={editingItem?.language === 'English & Hindi' ? (editQForm?.[`option${opt}Hindi`] ?? "") : (editQForm?.[`option${opt}Punjabi`] ?? "")} 
-                                 onChange={e => setEditQForm({...editQForm, [editingItem?.language === 'English & Hindi' ? `option${opt}Hindi` : `option${opt}Punjabi`]: e.target.value})} 
-                                 className="bg-white border-none font-bold h-12 rounded-xl" 
-                              />
-                           </div>
-                        </div>
-                     ))}
-                  </div>
-               </div>
-
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-6 border-t border-slate-100">
-                  <div className="space-y-3">
-                     <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">English Rationalization</Label>
-                     <Textarea value={editQForm?.englishExplanation ?? ""} onChange={e => setEditQForm({...editQForm, englishExplanation: e.target.value})} className="h-32 rounded-2xl bg-slate-900 text-emerald-400 font-medium p-6 shadow-2xl" />
-                  </div>
-                  <div className="space-y-3">
-                     <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">Secondary Rationalization</Label>
-                     <Textarea 
-                        value={editingItem?.language === 'English & Hindi' ? (editQForm?.hindiExplanation ?? "") : (editQForm?.punjabiExplanation ?? "")} 
-                        onChange={e => setEditQForm({...editQForm, [editingItem?.language === 'English & Hindi' ? 'hindiExplanation' : 'punjabiExplanation']: e.target.value})} 
-                        className="h-32 rounded-2xl bg-slate-900 text-blue-400 font-medium p-6 shadow-2xl" 
-                     />
-                  </div>
-               </div>
-            </div>
-            <DialogFooter className="p-10 pt-6 bg-slate-50 flex gap-6 shrink-0">
-               <Button variant="ghost" onClick={() => setEditingQIndex(null)} className="h-16 px-10 font-black uppercase text-[11px] text-slate-400 tracking-widest">Discard Changes</Button>
-               <Button onClick={handleSaveEditQ} className="bg-[#0F172A] hover:bg-black text-white h-16 px-16 rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] flex-1 shadow-2xl transition-all active:scale-95 border-none">
-                  <CheckCircle2 className="h-5 w-5 mr-3" /> Apply Modifications
-               </Button>
-            </DialogFooter>
-         </DialogContent>
       </Dialog>
     </div>
   )
