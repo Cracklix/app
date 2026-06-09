@@ -35,8 +35,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v21.0.
- * FIXED: Resolved React ReferenceError by adding React to imports.
+ * @fileOverview Institutional Exam Hub v22.0.
+ * HARDENED: Integrated Pass Hub access logic. Premium mocks show "Unlock with Pass" workflow.
  */
 
 export default function ExamHubPage() {
@@ -45,7 +45,6 @@ export default function ExamHubPage() {
   const db = useFirestore()
   const { user, profile, loading: userLoading } = useUser()
   const examId = params.id as string
-  const [imgFailed, setImgFailed] = useState(false);
 
   const { data: exam, loading: examLoading } = useDoc<any>(useMemo(() => (db && examId ? doc(db, "exams", examId) : null), [db, examId]))
   
@@ -60,6 +59,7 @@ export default function ExamHubPage() {
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
   const { data: caHub } = useCollection<any>(hubQuery);
 
+  // PASS ACCESS FIREWALL
   const isPassActive = useMemo(() => {
      if (!profile) return false;
      if (profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN') return true;
@@ -223,13 +223,17 @@ function MockList({ data, results, isPassActive, user }: { data: any[], results:
          {data.map((mock: any) => {
             const result = results?.find((r: any) => r.mockId === mock.id);
             const tier = (mock.accessLevel || mock.accessType || 'FREE').toUpperCase();
-            const locked = tier === 'PREMIUM' && !isPassActive;
+            const isPremium = tier === 'PREMIUM';
+            const locked = isPremium && !isPassActive;
 
             return (
                <Card key={mock.id} className="border-none shadow-xl rounded-[2.5rem] bg-white hover:shadow-4xl transition-all group p-8 md:p-10 text-left border border-slate-100 flex flex-col h-full">
                   <div className="flex justify-between items-start mb-8">
-                     <Badge className={cn("border-none text-[8px] font-black px-3 py-1 rounded shadow-lg", tier === 'PREMIUM' ? "bg-amber-100 text-amber-600" : "bg-emerald-50 text-emerald-600")}>
-                        {tier} ACCESS
+                     <Badge className={cn(
+                        "border-none text-[8px] font-black px-3 py-1 rounded shadow-lg uppercase", 
+                        isPremium ? "bg-amber-100 text-amber-600" : "bg-emerald-50 text-emerald-600"
+                     )}>
+                        {isPremium ? '🔒 PREMIUM TEST' : 'FREE TEST'}
                      </Badge>
                      {result && <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black px-3 py-1">AUDITED</Badge>}
                   </div>
@@ -241,11 +245,11 @@ function MockList({ data, results, isPassActive, user }: { data: any[], results:
                   <div className="mt-8">
                      {locked ? (
                         <Button onClick={() => router.push('/pass')} className="w-full h-14 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase text-[10px] rounded-2xl shadow-xl gap-2 border-none">
-                           <Lock className="h-4 w-4" /> UNLOCK WITH PASS
+                           <Lock className="h-4 w-4" /> UNLOCK PASS
                         </Button>
                      ) : (
                         <Button onClick={() => router.push(user ? `/mocks/${mock.id}/instructions` : `/login?returnUrl=/mocks/${mock.id}`)} className="w-full h-14 bg-slate-900 hover:bg-black text-white font-black uppercase text-[10px] rounded-2xl shadow-xl gap-2 border-none">
-                           <Play className="h-4 w-4 fill-current" /> ATTEMPT NOW
+                           <Play className="h-4 w-4 fill-current" /> START TEST
                         </Button>
                      )}
                   </div>

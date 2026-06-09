@@ -23,7 +23,8 @@ import {
   X,
   Clock,
   Printer,
-  AlertCircle
+  AlertCircle,
+  Lock
 } from "lucide-react"
 import { useUser, useFirestore, useCollection } from "@/firebase"
 import { collection, query, where, doc, getDoc, documentId, getDocs, limit, orderBy } from "firebase/firestore"
@@ -35,9 +36,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 /**
- * @fileOverview Test Results Hub v10.0.
- * FIXED: Removed server-side orderBy to bypass composite index requirements.
- * PERFORMANCE: Sorting results client-side for immediate rendering.
+ * @fileOverview Test Results Hub v11.0.
+ * HARDENED: Premium Access Firewall. Non-pass holders cannot access premium result nodes.
  */
 
 export default function ResultPage() {
@@ -45,7 +45,7 @@ export default function ResultPage() {
   const router = useRouter()
   const mockId = params.id as string
   const db = useFirestore()
-  const { user } = useUser()
+  const { user, profile } = useUser()
   const { toast } = useToast()
 
   const [questions, setQuestions] = useState<any[]>([])
@@ -53,6 +53,7 @@ export default function ResultPage() {
   const [loadingContent, setLoadingContent] = useState(true)
   const [activeReviewFilter, setActiveReviewFilter] = useState<'ALL' | 'CORRECT' | 'WRONG' | 'SKIPPED'>('ALL')
   const [isShareOpen, setIsShareOpen] = useState(false)
+  const [isLocked, setIsLocked] = useState(false);
 
   // USER SESSION LISTENER
   const resultsQuery = useMemo(() => {
@@ -62,19 +63,17 @@ export default function ResultPage() {
 
   const { data: rawResultDocs, loading: resultsLoading } = useCollection<any>(resultsQuery)
   
-  // GLOBAL MERIT LISTENER (PERFORMANCE BYPASS: Client-side sorting)
-  const globalResultsQuery = useMemo(() => {
-    if (!db || !mockId) return null
-    // REMOVED orderBy("score", "desc") to prevent index error
-    return query(collection(db, "results"), where("mockId", "==", mockId), limit(100))
-  }, [db, mockId])
-
-  const { data: rawGlobalResults } = useCollection<any>(globalResultsQuery)
-
   const sessionData = useMemo(() => {
     if (!rawResultDocs || rawResultDocs.length === 0) return null
     return rawResultDocs[0]
   }, [rawResultDocs])
+
+  const globalResultsQuery = useMemo(() => {
+    if (!db || !mockId) return null
+    return query(collection(db, "results"), where("mockId", "==", mockId), limit(100))
+  }, [db, mockId])
+
+  const { data: rawGlobalResults } = useCollection<any>(globalResultsQuery)
 
   const sortedGlobalResults = useMemo(() => {
     if (!rawGlobalResults) return [];
@@ -105,6 +104,24 @@ export default function ResultPage() {
         if (mockSnap.exists()) {
           const mData = mockSnap.data();
           setMockData(mData);
+
+          // PREMIUM ACCESS FIREWALL
+          const tier = (mData.accessLevel || mData.accessType || 'FREE').trim().toUpperCase();
+          const isPremium = tier === 'PREMIUM';
+          const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN';
+          
+          let hasActivePass = false;
+          if (isAdmin) hasActivePass = true;
+          else if (profile?.pass && profile.pass.active === true) {
+             const expiry = new Date(profile.pass.expiryDate);
+             if (expiry > new Date()) hasActivePass = true;
+          }
+
+          if (isPremium && !hasActivePass) {
+             setIsLocked(true);
+             setLoadingContent(false);
+             return;
+          }
           
           const questionIds = mData.questionIds || []
           const chunks = []
@@ -125,7 +142,7 @@ export default function ResultPage() {
       }
     }
     loadQuestions()
-  }, [db, sessionData, mockId, resultsLoading])
+  }, [db, sessionData, mockId, resultsLoading, profile]);
 
   const filteredQuestions = useMemo(() => {
      return questions.map((q, i) => ({ ...q, index: i })).filter((q) => {
@@ -139,6 +156,32 @@ export default function ResultPage() {
   }, [questions, sessionData, activeReviewFilter]);
 
   if (resultsLoading || loadingContent) return <div className="h-screen flex items-center justify-center bg-white"><Loader2 className="h-10 w-10 text-primary animate-spin" /></div>
+
+  if (isLocked) {
+     return (
+        <div className="min-h-screen bg-slate-50">
+           <Navbar />
+           <main className="container mx-auto px-6 py-24 flex flex-col items-center justify-center text-center max-w-xl">
+              <div className="h-32 w-32 bg-amber-50 rounded-[3rem] flex items-center justify-center mb-10 text-amber-500 shadow-2xl">
+                 <Lock className="h-16 w-16" />
+              </div>
+              <h1 className="text-4xl font-headline font-black text-[#0F172A] uppercase mb-4">Elite Pass Required</h1>
+              <p className="text-lg text-slate-500 font-medium leading-relaxed mb-10">
+                 Detailed solutions and performance rationalizations for this Premium Test are restricted to Elite Pass holders.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 w-full">
+                 <Button asChild className="flex-1 h-16 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[11px] tracking-widest rounded-2xl shadow-xl">
+                    <Link href="/pass">Unlock Premium Hub</Link>
+                 </Button>
+                 <Button asChild variant="outline" className="flex-1 h-16 border-slate-200 text-slate-600 font-black uppercase text-[11px] tracking-widest rounded-2xl">
+                    <Link href="/dashboard">Back to Dashboard</Link>
+                 </Button>
+              </div>
+           </main>
+           <Footer />
+        </div>
+     )
+  }
 
   if (!sessionData) return <div className="h-screen flex items-center justify-center text-slate-400 font-black uppercase text-xs">Registry Node Missing</div>
 
@@ -192,7 +235,8 @@ export default function ResultPage() {
 
            <TabsContent value="SOLUTIONS" className="space-y-6">
               <div className="flex gap-2 pb-4 overflow-x-auto no-scrollbar">
-                 {['ALL', 'CORRECT', 'WRONG', 'SKIPPED'].map((f: any) => (
+                 {activeReviewFilter !== 'ALL' && <button onClick={() => setActiveReviewFilter('ALL')} className="px-6 py-2 rounded-xl text-[9px] font-black uppercase border-2 border-slate-100 text-slate-400 hover:bg-slate-50">Reset</button>}
+                 {['CORRECT', 'WRONG', 'SKIPPED'].map((f: any) => (
                     <button key={f} onClick={() => setActiveReviewFilter(f)} className={cn("px-6 py-2 rounded-xl text-[9px] font-black uppercase border-2 transition-all", activeReviewFilter === f ? "bg-primary border-primary text-white" : "bg-white border-slate-100 text-slate-400")}>{f}</button>
                  ))}
               </div>

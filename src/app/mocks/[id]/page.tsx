@@ -27,8 +27,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Individual Mock Gateway v15.0.
- * HARDENED: Authentication Firewall with returnUrl persistence.
+ * @fileOverview Individual Mock Gateway v16.0.
+ * HARDENED: Authentication & Premium Access Firewall with returnUrl persistence.
  */
 
 export default function MockOverviewPage() {
@@ -52,6 +52,7 @@ export default function MockOverviewPage() {
     }
   }, [user, userLoading, router, pathname]);
 
+  // 2. PREMIUM ACCESS AUDIT
   useEffect(() => {
     async function checkAccess() {
       if (mockLoading || !user) return;
@@ -65,10 +66,10 @@ export default function MockOverviewPage() {
         setPreviousAttempts(resSnap.docs.map(d => d.data()));
       } catch (e) {}
 
-      // 1. ADMIN BYPASS
+      // ADMIN BYPASS
       const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN';
       
-      // 2. PASS HUB AUDIT
+      // PASS HUB AUDIT
       let hasActivePass = false;
       if (isAdmin) {
          hasActivePass = true;
@@ -78,11 +79,8 @@ export default function MockOverviewPage() {
          if (expiry > now) hasActivePass = true;
       }
       
-      // 3. LOCK LOGIC
+      // LOCK LOGIC
       const locked = isPremium && !hasActivePass;
-
-      // CRITICAL AUDIT LOG
-      console.log(`[RUNTIME_VAL] GATEWAY_AUDIT | MOCK: "${mock.title}" | tier: "${tier}" | isPassActive: ${hasActivePass} | isLocked: ${locked}`);
 
       setIsLocked(locked);
       setAccessChecked(true);
@@ -99,7 +97,7 @@ export default function MockOverviewPage() {
 
   if (mockLoading || userLoading || (user && !accessChecked)) return <div className="h-screen flex items-center justify-center bg-white"><Skeleton className="h-16 w-16 rounded-full animate-pulse" /></div>;
 
-  if (!user) return null; // Redirect handled by firewall
+  if (!user) return null;
 
   if (!mock) return <div className="h-screen flex flex-col items-center justify-center text-slate-400 gap-4"><Info className="h-12 w-12 opacity-10" /><p className="font-black uppercase tracking-widest text-xs">Registry node missing</p></div>;
 
@@ -121,7 +119,7 @@ export default function MockOverviewPage() {
                         "border-none text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm", 
                         isPremium ? "bg-amber-100 text-amber-600" : "bg-emerald-50 text-emerald-600"
                       )}>
-                        {isPremium ? 'PREMIUM HUB' : 'FREE ACCESS'}
+                        {isPremium ? '🔒 PREMIUM TEST' : 'FREE TEST'}
                       </Badge>
                       {mock.attemptLimit > 0 && (
                         <Badge variant="outline" className="text-[8px] font-black uppercase border-slate-200 text-slate-400 px-2 py-0.5">
@@ -143,7 +141,7 @@ export default function MockOverviewPage() {
                  {isLocked ? (
                     <Button onClick={() => router.push('/pass')} className="w-full h-14 md:h-16 px-10 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl gap-3 border-none transition-all active:scale-95 flex items-center justify-center"
                     >
-                      <Lock className="h-5 w-5" /> UNLOCK WITH PASS
+                      <Lock className="h-5 w-5" /> UNLOCK PASS
                     </Button>
                  ) : isLimitReached ? (
                     <div className="bg-rose-50 border border-rose-100 p-4 rounded-xl flex items-center gap-4 text-left shadow-sm">
@@ -152,7 +150,7 @@ export default function MockOverviewPage() {
                     </div>
                  ) : (
                     <Button asChild className="w-full h-14 md:h-16 px-10 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl border-none transition-all active:scale-95">
-                      <Link href={`/mocks/${mockId}/instructions`} className="flex items-center justify-center gap-3"><Play className="h-5 w-5 fill-current" /> ATTEMPT NOW <ArrowRight className="h-4 w-4" /></Link>
+                      <Link href={`/mocks/${mockId}/instructions`} className="flex items-center justify-center gap-3"><Play className="h-5 w-5 fill-current" /> START TEST <ArrowRight className="h-4 w-4" /></Link>
                     </Button>
                  )}
               </div>

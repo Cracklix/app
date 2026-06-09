@@ -25,8 +25,8 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Elite CBT Attempt Engine v16.0.
- * HARDENED: Strict entrance gate for Premium content. Even direct URL access is blocked.
+ * @fileOverview Elite CBT Attempt Engine v17.0.
+ * HARDENED: Strict access firewall. Premium mocks are locked even against direct URL manipulation.
  */
 
 export default function MockAttemptPage() {
@@ -79,7 +79,7 @@ export default function MockAttemptPage() {
         }
 
         if (isPremium && !hasActivePass) {
-           toast({ variant: "destructive", title: "Access Denied", description: "Premium pass required for this series." });
+           toast({ variant: "destructive", title: "Access Denied", description: "This is a Premium Test. Please unlock a Pass to continue." });
            router.push('/pass');
            return;
         }
@@ -96,7 +96,7 @@ export default function MockAttemptPage() {
         const attemptSnap = await getDoc(doc(db, "attempts", `${user.uid}_${mockId}`));
         initExam(mockId, mData.title || "Elite Series", user.uid, sortedQs, mData.duration || 120, attemptSnap.exists() ? attemptSnap.data() : undefined, mData.languageMode);
       } catch (err: any) {
-        toast({ variant: "destructive", title: "Test Blocked", description: err.message });
+        toast({ variant: "destructive", title: "Attempt Blocked", description: err.message });
         router.push(`/mocks/${mockId}`);
       } finally { setIsInitializing(false); }
     }
@@ -124,7 +124,8 @@ export default function MockAttemptPage() {
     const resultPayload = {
       userId: user.uid, userName: user.displayName || 'Aspirant', mockId, mockTitle,
       score: Math.max(0, score), totalQuestions: questions.length, accuracy: Math.max(0, Math.round((score / (Object.keys(answers).length * positiveMarks || 1)) * 100)),
-      timeTaken: Math.round((Date.now() - startTime) / 1000), answers, timestamp: new Date().toISOString(), createdAt: serverTimestamp()
+      timeTaken: Math.round((Date.now() - startTime) / 1000), answers, timestamp: new Date().toISOString(), createdAt: serverTimestamp(),
+      accessLevel: mockData?.accessLevel || 'FREE' // Save access level for result gating
     };
     await setDoc(doc(db, "results", `${user.uid}_${mockId}`), resultPayload);
     await updateDoc(doc(db, "attempts", `${user.uid}_${mockId}`), { status: 'COMPLETED', updatedAt: serverTimestamp() });
@@ -137,7 +138,7 @@ export default function MockAttemptPage() {
     window.location.href = '/dashboard';
   };
 
-  if (isInitializing) return <div className="h-screen w-full flex flex-col items-center justify-center bg-[#0B1528] space-y-8"><Zap className="h-16 w-16 text-primary animate-pulse" /><p className="text-[11px] font-black uppercase tracking-[0.5em] text-primary">Loading Questions...</p></div>;
+  if (isInitializing) return <div className="h-screen w-full flex flex-col items-center justify-center bg-[#0B1528] space-y-8"><Zap className="h-16 w-16 text-primary animate-pulse" /><p className="text-[11px] font-black uppercase tracking-[0.5em] text-primary">Synchronizing Access Registry...</p></div>;
 
   return (
     <div className="flex flex-col h-[100dvh] bg-white font-body select-none overflow-hidden relative">
