@@ -33,7 +33,9 @@ import {
   ClipboardList,
   Activity,
   FileWarning,
-  Rocket
+  Rocket,
+  ArrowLeftRight,
+  ExternalLink
 } from "lucide-react"
 import Link from "next/link"
 import Logo from "@/components/brand/Logo"
@@ -46,8 +48,9 @@ import { Button } from "@/components/ui/button";
 import BackButton from "@/components/navigation/BackButton";
 
 /**
- * @fileOverview Institutional Security Protocol v99.1.
+ * @fileOverview Institutional Security Protocol v99.2.
  * HARDENED: Permanent Super Admin Authority for Arsh Grewal.
+ * UPDATED: Added "Back to Student Side" navigation nodes.
  */
 
 // FOUNDER WHITELIST - PERMANENT AUTHORITY (Absolute Security)
@@ -147,6 +150,17 @@ export default function AdminLayout({ children }: { children: React.Node }) {
               <AdminNavItem icon={<Settings className="text-primary" />} label="System Portal" href="/admin/settings" active={pathname === "/admin/settings"} />
             </SidebarMenu>
           </SidebarGroup>
+
+          <SidebarGroup className="mt-auto pb-6">
+            <SidebarMenu>
+               <AdminNavItem 
+                  icon={<ArrowLeftRight className="text-primary" />} 
+                  label="Exit to Dashboard" 
+                  href="/dashboard" 
+                  className="bg-primary/10 border-l-4 border-primary"
+               />
+            </SidebarMenu>
+          </SidebarGroup>
        </div>
 
        <div className="p-6 border-t border-white/5 bg-black/20 shrink-0">
@@ -198,9 +212,16 @@ export default function AdminLayout({ children }: { children: React.Node }) {
               </div>
             </div>
             
-            <Button variant="ghost" size="icon" onClick={handleLogout} className="text-slate-400 hover:text-rose-500 rounded-xl cursor-pointer">
-               <LogOut className="h-5 w-5" />
-            </Button>
+            <div className="flex items-center gap-2 md:gap-4">
+               <Button asChild variant="outline" className="hidden sm:flex h-10 px-4 rounded-xl border-slate-200 font-black uppercase text-[9px] tracking-widest gap-2 hover:bg-slate-50 shadow-sm transition-all active:scale-95">
+                  <Link href="/dashboard">
+                     <ArrowLeftRight className="h-3.5 w-3.5 text-primary" /> Student Side
+                  </Link>
+               </Button>
+               <Button variant="ghost" size="icon" onClick={handleLogout} className="text-slate-400 hover:text-rose-500 rounded-xl cursor-pointer">
+                  <LogOut className="h-5 w-5" />
+               </Button>
+            </div>
           </header>
           <main className="flex-1 p-4 md:p-8 bg-white overflow-y-auto overflow-x-hidden min-w-0 pointer-events-auto">
             <div className="max-w-full">
@@ -213,13 +234,13 @@ export default function AdminLayout({ children }: { children: React.Node }) {
   )
 }
 
-function AdminNavItem({ icon, label, href, active }: { icon: React.ReactNode, label: string, href: string, active?: boolean }) {
+function AdminNavItem({ icon, label, href, active, className }: { icon: React.ReactNode, label: string, href: string, active?: boolean, className?: string }) {
   return (
     <SidebarMenuItem>
       <SidebarMenuButton 
         asChild 
         isActive={active}
-        className={`px-6 transition-all font-medium h-12 group cursor-pointer ${active ? 'bg-white/5 text-primary' : 'hover:bg-white/5 hover:text-primary text-white/60'}`}
+        className={`px-6 transition-all font-medium h-12 group cursor-pointer ${active ? 'bg-white/5 text-primary' : 'hover:bg-white/5 hover:text-primary text-white/60'} ${className}`}
       >
         <Link href={href} className="flex items-center gap-4 w-full text-left pointer-events-auto">
           <div className="shrink-0 flex items-center justify-center size-5">
