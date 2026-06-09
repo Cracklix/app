@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo, useEffect, Suspense } from "react"
@@ -52,9 +51,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v60.0.
- * FIXED: Target Section Hub popover UI perfectly matched to user screenshot (Orange highlights + Header).
- * UPDATED: Optimized button scaling and text visibility across all screen modes.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v61.0.
+ * FIXED: Resolved NaN input value error in numeric metadata fields.
+ * MAINTAINED: 7:00 AM state with orange Hub selector and dark Question Bank panel.
  */
 
 export default function MockBuilderPage() {
@@ -445,7 +444,7 @@ function MockBuilderContent() {
                     </Label>
                     <Input 
                        type="number" 
-                       value={mockData.duration} 
+                       value={isNaN(mockData.duration) ? "" : mockData.duration} 
                        onChange={e => setMockData({...mockData, duration: parseInt(e.target.value)})} 
                        className="h-16 rounded-2xl bg-slate-50 border-none font-black text-center text-xl shadow-inner" 
                     />
@@ -479,7 +478,7 @@ function MockBuilderContent() {
                     <Input 
                        type="number" 
                        step="0.1"
-                       value={mockData.positiveMarks} 
+                       value={isNaN(mockData.positiveMarks) ? "" : mockData.positiveMarks} 
                        onChange={e => setMockData({...mockData, positiveMarks: parseFloat(e.target.value)})}
                        className="h-10 bg-transparent border-none text-center font-black text-4xl text-[#10B981] p-0 focus-visible:ring-0" 
                     />
@@ -491,7 +490,7 @@ function MockBuilderContent() {
                     <Input 
                        type="number" 
                        step="0.01"
-                       value={mockData.negativeMarks} 
+                       value={isNaN(mockData.negativeMarks) ? "" : mockData.negativeMarks} 
                        onChange={e => setMockData({...mockData, negativeMarks: parseFloat(e.target.value)})}
                        className="h-10 bg-transparent border-none text-center font-black text-4xl text-[#F43F5E] p-0 focus-visible:ring-0" 
                     />
