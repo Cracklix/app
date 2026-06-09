@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useEffect, useState, useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, usePathname } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useDoc, useFirestore, useUser } from "@/firebase";
@@ -15,18 +16,26 @@ import { cn } from "@/lib/utils";
 import { LanguageDisplayMode } from "@/types";
 
 /**
- * @fileOverview Testbook-Style Entrance Hub v6.0.
- * UPDATED: Strict language mode filtering for English/Punjabi vs English/Hindi.
+ * @fileOverview Testbook-Style Entrance Hub v6.1.
+ * UPDATED: Implemented absolute Login Firewall.
  */
 export default function InstructionsPage() {
   const params = useParams();
   const router = useRouter();
+  const pathname = usePathname();
   const db = useFirestore();
+  const { user, loading: userLoading } = useUser();
   const mockId = params.id as string;
   const setLanguage = useExamStore(s => s.setLanguage);
   const [prefLang, setPrefLang] = useState<LanguageDisplayMode>('ENGLISH_PUNJABI');
 
   const { data: mock, loading } = useDoc<any>(useMemo(() => (db ? doc(db, "mocks", mockId) : null), [db, mockId]));
+
+  useEffect(() => {
+    if (!userLoading && !user) {
+       router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+    }
+  }, [user, userLoading, router, pathname]);
 
   useEffect(() => {
     if (mock?.languageMode) {
@@ -53,7 +62,7 @@ export default function InstructionsPage() {
     router.push(`/mocks/${mockId}/attempt`);
   };
 
-  if (loading) return <div className="h-screen flex items-center justify-center bg-white"><Zap className="h-10 w-10 text-[#F97316] animate-pulse" /></div>;
+  if (loading || userLoading || !user) return <div className="h-screen flex items-center justify-center bg-white"><Zap className="h-10 w-10 text-[#F97316] animate-pulse" /></div>;
   if (!mock) return null;
 
   return (

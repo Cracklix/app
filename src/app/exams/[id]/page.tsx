@@ -25,7 +25,7 @@ import {
   RefreshCw,
   Play
 } from "lucide-react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useMemo, useState, useEffect } from "react"
@@ -33,8 +33,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v16.2.
- * UPDATED: Strictly isolated CTET and PSTET official logos for Paper 1/2.
+ * @fileOverview Institutional Exam Hub v16.3.
+ * UPDATED: Implemented Login-First firewall for all mock attempts.
  */
 
 export default function ExamHubPage() {
@@ -114,7 +114,6 @@ export default function ExamHubPage() {
 
   let logoUrl = exam.iconUrl || activeBoard?.iconUrl;
   
-  // STRICT BRANDING AUDIT
   const isCtet = abbrev === 'CTET' || abbrev === 'CBSE' || exam.name.toUpperCase().includes('CTET');
   const isPstet = abbrev === 'PSTET' || (exam.name.toUpperCase().includes('PSTET') && !isCtet);
   const isPseb = abbrev === 'PSEB' || abbrev === 'EDUCATION' || (exam.name.toUpperCase().includes('PSEB') && !isCtet && !isPstet);
@@ -169,10 +168,10 @@ export default function ExamHubPage() {
             </div>
 
             <div className="animate-in fade-in duration-500">
-               <TabsContent value="FULL" className="m-0"><MockList data={groupedContent.FULL} results={userResults} isPassActive={isPassActive} /></TabsContent>
-               <TabsContent value="SUBJECT" className="m-0"><MockList data={groupedContent.SUBJECT} results={userResults} isPassActive={isPassActive} /></TabsContent>
-               <TabsContent value="SECTIONAL" className="m-0"><MockList data={groupedContent.SECTIONAL} results={userResults} isPassActive={isPassActive} /></TabsContent>
-               <TabsContent value="PYQ" className="m-0"><MockList data={groupedContent.PYQ} results={userResults} isPassActive={isPassActive} /></TabsContent>
+               <TabsContent value="FULL" className="m-0"><MockList data={groupedContent.FULL} results={userResults} isPassActive={isPassActive} user={user} /></TabsContent>
+               <TabsContent value="SUBJECT" className="m-0"><MockList data={groupedContent.SUBJECT} results={userResults} isPassActive={isPassActive} user={user} /></TabsContent>
+               <TabsContent value="SECTIONAL" className="m-0"><MockList data={groupedContent.SECTIONAL} results={userResults} isPassActive={isPassActive} user={user} /></TabsContent>
+               <TabsContent value="PYQ" className="m-0"><MockList data={groupedContent.PYQ} results={userResults} isPassActive={isPassActive} user={user} /></TabsContent>
                <TabsContent value="NOTES" className="m-0"><NotesList data={groupedContent.NOTES} isPassActive={isPassActive} /></TabsContent>
             </div>
          </Tabs>
@@ -190,10 +189,18 @@ function DashboardTab({ value, label, icon }: any) {
    )
 }
 
-function MockList({ data, results, isPassActive }: { data: any[], results: any[], isPassActive: boolean }) {
+function MockList({ data, results, isPassActive, user }: { data: any[], results: any[], isPassActive: boolean, user: any }) {
    const router = useRouter();
 
    if (data.length === 0) return <EmptyNode label="Awaiting Content Registry" />;
+
+   const handleAttemptAction = (mockId: string) => {
+      if (!user) {
+         router.push(`/login?returnUrl=${encodeURIComponent(`/mocks/${mockId}/instructions`)}`);
+         return;
+      }
+      router.push(`/mocks/${mockId}/instructions`);
+   };
 
    return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -221,7 +228,7 @@ function MockList({ data, results, isPassActive }: { data: any[], results: any[]
                         <span className="flex items-center gap-1.5"><BookOpen className="h-3 w-3" /> {mock.totalQuestions} Qs</span>
                      </div>
                      <div className="pt-2">
-                        {isLocked ? (
+                        {isLocked && user ? (
                            <Button 
                              onClick={() => router.push('/pass')} 
                              className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase text-[10px] rounded-xl shadow-xl gap-3 transition-all active:scale-95 border-none flex items-center justify-center"
@@ -233,13 +240,13 @@ function MockList({ data, results, isPassActive }: { data: any[], results: any[]
                               <Button asChild className="flex-1 h-11 bg-primary text-white font-black uppercase text-[10px] rounded-xl">
                                  <Link href={`/results/${mock.id}`}>View Score</Link>
                               </Button>
-                              <Button asChild variant="outline" className="flex-1 h-11 border-slate-200 font-black uppercase text-[10px] rounded-xl">
-                                 <Link href={`/mocks/${mock.id}/instructions`}>Re-attempt</Link>
+                              <Button onClick={() => handleAttemptAction(mock.id)} variant="outline" className="flex-1 h-11 border-slate-200 font-black uppercase text-[10px] rounded-xl">
+                                 Re-attempt
                               </Button>
                            </div>
                         ) : (
-                           <Button asChild className="w-full h-11 bg-slate-900 hover:bg-black text-white border-none font-black uppercase text-[10px] rounded-xl shadow-lg gap-3">
-                              <Link href={`/mocks/${mock.id}/instructions`}><Play className="h-4 w-4 fill-current" /> ATTEMPT NOW</Link>
+                           <Button onClick={() => handleAttemptAction(mock.id)} className="w-full h-11 bg-slate-900 hover:bg-black text-white border-none font-black uppercase text-[10px] rounded-xl shadow-lg gap-3">
+                              <Play className="h-4 w-4 fill-current" /> ATTEMPT NOW
                            </Button>
                         )}
                      </div>

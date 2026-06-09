@@ -33,10 +33,11 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 /**
- * @fileOverview Institutional Current Affairs Hub v10.1.
- * FIXED: Removed Firestore orderBy to bypass index requirement; sorting now handled client-side.
+ * @fileOverview Institutional Current Affairs Hub v10.2.
+ * UPDATED: Implemented Login-First redirect for Quiz attempts.
  */
 
 const HUB_TYPES = [
@@ -50,6 +51,7 @@ const HUB_TYPES = [
 export default function FreeContentHub() {
   const db = useFirestore()
   const { user } = useUser()
+  const router = useRouter()
   const [activeType, setActiveType] = useState("DAILY")
   const [searchTerm, setSearchTerm] = useState("")
 
@@ -81,6 +83,14 @@ export default function FreeContentHub() {
         return tB - tA;
       })
   }, [hubItems, activeType, searchTerm])
+
+  const handleQuizAttempt = (quizId: string) => {
+     if (!user) {
+        router.push(`/login?returnUrl=${encodeURIComponent(`/mocks/${quizId}/instructions`)}`);
+        return;
+     }
+     router.push(`/mocks/${quizId}/instructions`);
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body">
@@ -158,10 +168,8 @@ export default function FreeContentHub() {
                                   </div>
                                   <div className="shrink-0 w-full md:w-auto flex flex-col gap-3">
                                      {item.quizId && (
-                                        <Button asChild className="w-full md:w-auto h-12 px-8 bg-[#0F172A] hover:bg-primary text-white font-black uppercase text-[10px] tracking-widest rounded-xl shadow-xl transition-all active:scale-95">
-                                           <Link href={`/mocks/${item.quizId}/instructions`}>
-                                              Attempt Quiz <Zap className="ml-2 h-4 w-4" />
-                                           </Link>
+                                        <Button onClick={() => handleQuizAttempt(item.quizId)} className="w-full md:w-auto h-12 px-8 bg-[#0F172A] hover:bg-primary text-white font-black uppercase text-[10px] tracking-widest rounded-xl shadow-xl transition-all active:scale-95 border-none">
+                                           Attempt Quiz <Zap className="ml-2 h-4 w-4" />
                                         </Button>
                                      )}
                                      {item.pdfUrl && (
