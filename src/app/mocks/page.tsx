@@ -1,206 +1,100 @@
 
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
-import AdPlacement from "@/components/ads/AdPlacement"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, where } from "firebase/firestore"
+import { collection, query, orderBy } from "firebase/firestore"
+import { ShieldCheck, GraduationCap, Zap, Wallet, Globe, ChevronRight, Landmark } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { 
-  ShieldCheck, 
-  ChevronRight, 
-  Zap, 
-  BookOpen, 
-  FileText, 
-  Layout, 
-  GraduationCap,
-  Sparkles,
-  Target,
-  Shield,
-  Trophy
-} from "lucide-react"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @file Overview Final Exam Gateway Node v11.0.
- * UPDATED: Strictly enforced official branding for CTET, PSTET, and PSEB.
+ * @fileOverview RESTORED: Hierarchical Category Discovery.
+ * This is the root node showing the 5 major recruitment categories.
+ * REPLACES: The flat Mastery Hub exam listing.
  */
 
-export default function MocksGatewayPage() {
-  const db = useFirestore()
-  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
+const CATEGORY_ICONS: Record<string, any> = {
+  "punjab-govt": <ShieldCheck className="h-10 w-10 md:h-12 md:w-12" />,
+  "punjab-teaching": <GraduationCap className="h-10 w-10 md:h-12 md:w-12" />,
+  "punjab-technical": <Zap className="h-10 w-10 md:h-12 md:w-12" />,
+  "banking": <Wallet className="h-10 w-10 md:h-12 md:w-12" />,
+  "central-govt": <Globe className="h-10 w-10 md:h-12 md:w-12" />
+};
+
+export default function MocksDiscoveryPage() {
+  const db = useFirestore();
   
-  const examsQuery = useMemo(() => (db ? query(collection(db, "exams")) : null), [db])
-  const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db])
-  const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true)) : null), [db])
-
-  const { data: rawExams, loading: examsLoading } = useCollection<any>(examsQuery)
-  const { data: boards } = useCollection<any>(boardsQuery)
-  const { data: mocks, loading: mocksLoading } = useCollection<any>(mocksQuery)
-
-  const exams = useMemo(() => {
-    if (!rawExams) return [];
-    const unique = new Map();
-    rawExams.forEach(e => {
-       const key = e.name?.toLowerCase().trim();
-       if (!unique.has(key)) unique.set(key, e);
-    });
-    return Array.from(unique.values()).sort((a: any, b: any) => a.name.localeCompare(b.name));
-  }, [rawExams]);
-
-  const statsMap = useMemo(() => {
-    if (!mocks) return {};
-    const map: Record<string, any> = {};
-    
-    mocks.forEach(m => {
-      // Unified Multi-Exam Discovery
-      const eids = m.examIds || (m.examId ? [m.examId] : []);
-      if (!eids.length) return;
-      
-      eids.forEach((eid: string) => {
-        if (!map[eid]) {
-          map[eid] = { full: 0, pyq: 0, sectional: 0, subject: 0 };
-        }
-        
-        const type = m.mockType;
-        if (type === 'FULL') map[eid].full++;
-        else if (type === 'PYQ') map[eid].pyq++;
-        else if (type === 'SECTIONAL') map[eid].sectional++;
-        else if (type === 'SUBJECT') map[eid].subject++;
-      });
-    });
-    
-    return map;
-  }, [mocks]);
-
-  const ctetOfficialLogo = "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png";
-  const pstetOfficialLogo = "https://pstet.pseb.ac.in/img/main-logo-2.png";
-  const psebOfficialLogo = "https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png";
+  const catQuery = useMemo(() => (db ? query(collection(db, "categories"), orderBy("displayOrder", "asc")) : null), [db]);
+  const { data: categories, loading } = useCollection<any>(catQuery);
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body">
       <Navbar />
-      <main className="container mx-auto px-4 py-12 md:py-20 max-w-7xl">
-        <div className="text-left mb-16 space-y-6">
-          <div className="flex items-center gap-3">
-             <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-sm">
-                <ShieldCheck className="h-6 w-6" />
+      
+      <main className="container mx-auto px-4 md:px-6 py-12 md:py-24 max-w-7xl">
+        <div className="text-left mb-16 md:mb-24 space-y-6">
+          <div className="flex items-center gap-4">
+             <div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
+                <Landmark className="h-6 w-6" />
              </div>
-             <span className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-500">Official Exam Registry</span>
+             <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-slate-500">Official Exam Registry 2026</span>
           </div>
-          <h1 className="text-3xl md:text-5xl lg:text-8xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-[0.85]">
-            Select Your <br/> <span className="text-primary">Mastery Hub</span>
+          <h1 className="text-4xl md:text-8xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-[0.85]">
+            Master <br/> <span className="text-primary">Registry</span>
           </h1>
-          <p className="text-slate-500 font-medium text-lg md:text-xl max-w-2xl mt-4 leading-relaxed">
-            Access strictly structured preparation hubs audited for upcoming official recruitment patterns.
+          <p className="text-slate-500 font-medium text-lg md:text-2xl max-w-3xl leading-relaxed">
+            Select a recruitment vertical to browse official hubs and vertical exam preparation.
           </p>
         </div>
 
-        <AdPlacement placement="MOCK_LISTING" />
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-           {examsLoading || mocksLoading ? (
-             Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-[450px] w-full rounded-[3.5rem]" />)
-           ) : exams.map((exam: any) => {
-             const board = boards?.find((b: any) => 
-               b.id.toLowerCase() === exam.boardId?.toLowerCase() || 
-               b.abbreviation?.toLowerCase() === exam.boardId?.toLowerCase()
-             );
-             
-             const abbrev = board?.abbreviation?.toUpperCase() || exam.boardId?.toUpperCase();
-             let logoUrl = exam.iconUrl || board?.iconUrl;
-
-             // BRANDING AUDIT
-             const isCtet = abbrev === 'CTET' || abbrev === 'CBSE' || exam.name.toUpperCase().includes('CTET');
-             const isPstet = abbrev === 'PSTET' || (exam.name.toUpperCase().includes('PSTET') && !isCtet);
-             const isPseb = abbrev === 'PSEB' || abbrev === 'EDUCATION' || (exam.name.toUpperCase().includes('PSEB') && !isCtet && !isPstet);
-
-             if (isCtet) logoUrl = ctetOfficialLogo;
-             else if (isPstet) logoUrl = pstetOfficialLogo;
-             else if (isPseb) logoUrl = psebOfficialLogo;
-
-             const stats = statsMap[exam.id] || { full: 0, pyq: 0, sectional: 0, subject: 0 };
-             const isImgFailed = failedImages[exam.id];
-             const isArmy = exam.boardId?.toLowerCase() === 'army' || exam.id?.toLowerCase().includes('army');
-             const isPolice = exam.boardId?.toLowerCase().includes('police');
-
-             return (
-                <Link key={exam.id} href={`/exams/${exam.id}`}>
-                   <Card className="border-none shadow-xl hover:shadow-4xl hover:-translate-y-2 transition-all duration-500 rounded-[3.5rem] bg-white group overflow-hidden text-left h-full flex flex-col border border-slate-100">
-                      <CardContent className="p-10 flex flex-col h-full">
-                         <div className="flex justify-between items-start mb-10">
-                            <div className="h-20 w-20 rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all group-hover:shadow-xl shadow-inner relative overflow-hidden shrink-0">
-                               {logoUrl && !isImgFailed ? (
-                                  <img 
-                                    src={logoUrl} 
-                                    referrerPolicy="no-referrer"
-                                    alt="Board Logo" 
-                                    className={cn(
-                                      "w-full h-full object-contain p-2.5 transition-transform duration-500 group-hover:scale-110", 
-                                      isArmy ? "scale-150" : (isPolice || isCtet || isPstet || isPseb) ? "scale-125" : ""
-                                    )} 
-                                    onError={() => setFailedImages(p => ({...p, [exam.id]: true}))}
-                                  />
-                               ) : (
-                                  <div className="flex flex-col items-center justify-center text-primary">
-                                     {isPolice ? <Shield className="h-10 w-10" /> : <GraduationCap className="h-10 w-10" />}
-                                  </div>
-                               )}
+           {loading ? (
+             Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[3.5rem]" />)
+           ) : categories && categories.length > 0 ? (
+             categories.map((cat) => (
+                <Link key={cat.id} href={`/exams/category/${cat.id}`}>
+                   <Card className="border-none shadow-xl hover:shadow-5xl hover:translate-y-[-12px] transition-all duration-700 rounded-[3.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100">
+                      <CardContent className="p-10 md:p-14 flex flex-col h-full">
+                         <div className="flex justify-between items-start mb-12">
+                            <div className={cn("h-20 w-20 md:h-24 md:w-24 rounded-[1.8rem] md:rounded-[2.2rem] flex items-center justify-center transition-all group-hover:shadow-2xl shadow-inner relative overflow-hidden shrink-0", cat.bgColor || "bg-orange-50", cat.color || "text-primary")}>
+                               {CATEGORY_ICONS[cat.id] || <ShieldCheck className="h-10 w-10" />}
                             </div>
-                            <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-lg shadow-sm">
-                               {board?.abbreviation || 'GOVT'} Hub
+                            <Badge className="bg-[#0F172A] text-white border-none text-[8px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-xl shadow-lg">
+                               {cat.highlight || "VERTICAL"}
                             </Badge>
                          </div>
                          
-                         <div className="space-y-4 flex-1">
-                            <h3 className="font-headline text-3xl font-black text-[#0F172A] uppercase leading-[0.95] group-hover:text-primary transition-colors">
-                               {exam.name}
+                         <div className="space-y-5 flex-1">
+                            <h3 className="font-headline text-3xl md:text-4xl font-black text-[#0F172A] uppercase leading-[0.95] group-hover:text-primary transition-colors">
+                               {cat.title}
                             </h3>
-                            <p className="text-sm font-medium text-slate-400 leading-relaxed line-clamp-2">
-                               {exam.description || `Prepare for ${exam.name} recruitment.`}
+                            <p className="text-sm md:text-lg font-medium text-slate-400 leading-relaxed">
+                               {cat.description}
                             </p>
                          </div>
 
-                         <div className="mt-12 pt-8 border-t border-slate-50 grid grid-cols-2 gap-4">
-                            <InventoryNode icon={<Zap className="text-primary h-3.5 w-3.5" />} count={stats.full} label="Full Mocks" />
-                            <InventoryNode icon={<BookOpen className="text-blue-500 h-3.5 w-3.5" />} count={stats.subject} label="Subject" />
-                            <InventoryNode icon={<FileText className="text-emerald-500 h-3.5 w-3.5" />} count={stats.pyq} label="PYQs" />
-                            <InventoryNode icon={<Layout className="text-orange-500 h-3.5 w-3.5" />} count={stats.sectional} label="Sectional" />
-                         </div>
-
-                         <div className="mt-10">
+                         <div className="mt-12 pt-8 border-t border-slate-50">
                             <Button variant="ghost" className="w-full h-16 rounded-2xl bg-slate-900 text-white group-hover:bg-primary transition-all shadow-xl font-black uppercase text-[10px] tracking-widest gap-3">
-                               Open Exam Hub <ChevronRight className="h-4 w-4" />
+                               Open Category Hub <ChevronRight className="h-4 w-4" />
                             </Button>
                          </div>
                       </CardContent>
                    </Card>
                 </Link>
-             )
-           })}
+             ))
+           ) : (
+             <div className="col-span-full py-20 text-center opacity-20 italic">No categories deployed. Run admin sync.</div>
+           )}
         </div>
-
-        <AdPlacement placement="SIDEBAR" className="my-16" />
       </main>
       <Footer />
-    </div>
-  )
-}
-
-function InventoryNode({ icon, count, label }: any) {
-  return (
-    <div className="flex items-center gap-3 bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-100 shadow-sm transition-all group-hover:bg-white">
-      <div className="shrink-0">{icon}</div>
-      <div className="flex flex-col">
-         <span className="text-xs font-black text-[#0F172A] leading-none">{count}</span>
-         <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1">{label}</span>
-      </div>
     </div>
   )
 }
