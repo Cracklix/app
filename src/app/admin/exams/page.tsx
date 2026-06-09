@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Edit, Image as ImageIcon, Trash2, Save, Globe, Upload, Loader2, X, Layers } from "lucide-react"
+import { Plus, Edit, Image as ImageIcon, Trash2, Save, Globe, Upload, Loader2, X, Layers, Shield, GraduationCap, Zap, Landmark } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useCollection, useFirestore, useStorage } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc, serverTimestamp, query, orderBy } from "firebase/firestore"
@@ -19,8 +19,8 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Authority Hub v48.0.
- * UPDATED: Permanently set official Emblem for all Punjab Government hubs.
+ * @fileOverview Authority Hub v49.0.
+ * RESTORED: Defaulting to high-quality Lucide Icons.
  */
 
 export default function ExamManagement() {
@@ -41,11 +41,6 @@ export default function ExamManagement() {
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // PERMANENT LOGO REGISTRY
-  const govtOfficialEmblem = "https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png";
-  const teachingOfficialLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT77AiJp2d3yn7Lwjk7LG6nDeLpQC_ZnFs6FZg4yAieypyMsmctxNGWRdk&s=10";
-  const technicalOfficialLogo = "https://affiliation.pbteched.net/assets/images/banner-5.png";
-
   const handleSave = async () => {
     if (!db || !editingBoard) return
     
@@ -58,20 +53,9 @@ export default function ExamManagement() {
     const boardId = editingBoard.id || `board-${Date.now()}`
     const boardRef = doc(db, "boards", boardId)
     
-    const abbrev = editingBoard.abbreviation?.toUpperCase();
-    const catId = editingBoard.categoryId;
-    
-    const isGovt = catId === 'punjab-govt' || ['PSSSB', 'PPSC', 'POLICE'].includes(abbrev) || boardId.includes('police');
-    const isTeaching = catId === 'punjab-teaching' || ['PSTET', 'CTET', 'EDUCATION'].includes(abbrev);
-    const isTechnical = catId === 'punjab-technical' || ['PSPCL', 'PSTCL', 'PSBTE'].includes(abbrev);
-    
     const payload = { 
       ...editingBoard, 
       id: boardId,
-      iconUrl: isGovt ? govtOfficialEmblem :
-               isTeaching ? teachingOfficialLogo :
-               isTechnical ? technicalOfficialLogo :
-               (editingBoard.iconUrl || ""),
       updatedAt: serverTimestamp()
     }
     
@@ -160,34 +144,33 @@ export default function ExamManagement() {
               ) : boards?.map((board: any) => {
                 const category = categories?.find(c => c.id === board.categoryId);
                 const isImageFailed = failedImages[board.id];
-                const abbrev = board.abbreviation?.toUpperCase();
                 
-                const isGovt = board.categoryId === 'punjab-govt' || ['PSSSB', 'PPSC', 'POLICE'].includes(abbrev);
-                const isTeaching = board.categoryId === 'punjab-teaching' || ['PSTET', 'CTET', 'EDUCATION'].includes(abbrev);
-                const isTechnical = board.categoryId === 'punjab-technical' || ['PSPCL', 'PSTCL', 'PSBTE'].includes(abbrev);
-                const isArmy = board.id?.toLowerCase() === 'army' || abbrev === 'ARMY';
-                
-                const effectiveIcon = isGovt ? govtOfficialEmblem :
-                                     isTeaching ? teachingOfficialLogo :
-                                     isTechnical ? technicalOfficialLogo :
-                                     board.iconUrl;
+                const catId = board.categoryId;
+                const isGovt = catId === 'punjab-govt';
+                const isTeaching = catId === 'punjab-teaching';
+                const isTechnical = catId === 'punjab-technical';
+                const isBank = catId === 'banking';
 
                 return (
                   <TableRow key={board.id} className="hover:bg-slate-50 group border-slate-50 transition-all">
                     <TableCell className="px-10 py-6">
-                      <div className="h-16 w-16 rounded-2xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden relative shadow-inner group-hover:scale-110 transition-transform">
-                          {isImageFailed || !effectiveIcon ? (
-                             <div className="bg-primary text-white h-full w-full flex items-center justify-center font-black text-xl">
-                                {board.abbreviation?.substring(0, 2).toUpperCase()}
-                             </div>
-                          ) : (
+                      <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden relative shadow-inner group-hover:scale-110 transition-transform">
+                          {board.iconUrl && !isImageFailed ? (
                             <img 
-                              src={effectiveIcon} 
-                              className={cn("h-full w-full object-contain p-2", (isArmy || isGovt || isTeaching || isTechnical) ? "scale-125" : "")} 
+                              src={board.iconUrl} 
+                              className="h-full w-full object-contain p-2" 
                               referrerPolicy="no-referrer"
                               alt={board.abbreviation}
                               onError={() => setFailedImages(p => ({...p, [board.id]: true}))}
                             />
+                          ) : (
+                            <div className="text-primary opacity-40">
+                               {isGovt ? <Shield className="h-8 w-8" /> : 
+                                isTeaching ? <GraduationCap className="h-8 w-8" /> : 
+                                isTechnical ? <Zap className="h-8 w-8" /> :
+                                isBank ? <Landmark className="h-8 w-8" /> :
+                                <Landmark className="h-8 w-8" />}
+                            </div>
                           )}
                       </div>
                     </TableCell>
@@ -229,7 +212,7 @@ export default function ExamManagement() {
 
       <Dialog open={!!editingBoard} onOpenChange={(open) => !open && !isSaving && !isUploading && setEditingBoard(null)}>
         <DialogContent className="sm:max-w-xl rounded-[3rem] bg-white border-none shadow-4xl p-0 overflow-hidden text-left flex flex-col">
-          <div className="h-2 w-full bg-[#0F172A]" />
+          <div className="h-2 w-full bg-[#0F172A] />
           <DialogHeader className="p-10 pb-0 text-left">
             <div className="flex justify-between items-center">
                <DialogTitle className="text-2xl font-black font-headline uppercase text-[#0F172A]">{editingBoard?.id ? "Update Registry" : "New Authority Node"}</DialogTitle>
@@ -239,16 +222,16 @@ export default function ExamManagement() {
           
           <div className="p-10 space-y-8 max-h-[75vh] overflow-y-auto custom-scrollbar">
             <div className="flex flex-col items-center gap-6">
-              <div className="h-36 w-36 rounded-[2.5rem] bg-white border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden group shadow-inner">
+              <div className="h-36 w-36 rounded-[2.5rem] bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden group shadow-inner">
                  {isUploading ? (
                     <Loader2 className="h-8 w-8 text-primary animate-spin" />
                  ) : (
-                    <div className="relative h-full w-full flex items-center justify-center bg-white p-2">
+                    <div className="relative h-full w-full flex items-center justify-center bg-transparent p-2">
                       {editingBoard?.iconUrl ? (
                         <img 
                           src={editingBoard.iconUrl} 
                           referrerPolicy="no-referrer"
-                          className={cn("absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform", (editingBoard.categoryId === 'punjab-govt' || editingBoard.categoryId === 'punjab-teaching' || editingBoard.categoryId === 'punjab-technical') ? "scale-125" : "")} 
+                          className="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform" 
                           alt="Preview"
                         />
                       ) : (
@@ -299,13 +282,6 @@ export default function ExamManagement() {
                     <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Registry Name</Label>
                     <input value={editingBoard?.name || ""} onChange={e => setEditingBoard({...editingBoard, name: e.target.value})} className="w-full bg-slate-50 border-none rounded-xl h-12 font-bold px-4 outline-none text-[#0F172A]" />
                  </div>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Logo URL Override</Label>
-                <div className="flex gap-2">
-                  <input value={editingBoard?.iconUrl || ""} onChange={e => setEditingBoard({...editingBoard, iconUrl: e.target.value.trim()})} className="w-full bg-slate-50 border-none rounded-xl h-12 text-[10px] font-mono px-4 outline-none text-slate-500" placeholder="https://..." />
-                  {editingBoard?.iconUrl && <Button variant="ghost" size="icon" onClick={() => setEditingBoard({...editingBoard, iconUrl: ""})} className="h-12 w-12 rounded-xl"><X className="h-4 w-4" /></Button>}
-                </div>
               </div>
             </div>
           </div>

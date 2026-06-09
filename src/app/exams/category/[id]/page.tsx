@@ -10,22 +10,22 @@ import { collection, query, where } from "firebase/firestore"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Landmark, GraduationCap, ShieldCheck, Zap, Globe, Wallet, Info } from "lucide-react"
+import { ChevronLeft, ChevronRight, Landmark, GraduationCap, ShieldCheck, Zap, Globe, Wallet, Info, Shield } from "lucide-react"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Explorer.
- * UPDATED: Hardened relational counting and permanent logos.
+ * @fileOverview Institutional Category Explorer v3.0.
+ * RESTORED: Standard icons used as default hub identity.
  */
 
 const CATEGORY_META: Record<string, any> = {
-  "punjab-govt": { title: "Punjab Government", icon: <ShieldCheck /> },
-  "punjab-teaching": { title: "Punjab Teaching", icon: <GraduationCap /> },
-  "punjab-technical": { title: "Punjab Technical", icon: <Zap /> },
-  "banking": { title: "Banking Exams", icon: <Wallet /> },
-  "central-govt": { title: "Central Govt", icon: <Globe /> }
+  "punjab-govt": { title: "Punjab Government", icon: <ShieldCheck className="h-full w-full" /> },
+  "punjab-teaching": { title: "Punjab Teaching", icon: <GraduationCap className="h-full w-full" /> },
+  "punjab-technical": { title: "Punjab Technical", icon: <Zap className="h-full w-full" /> },
+  "banking": { title: "Banking Exams", icon: <Wallet className="h-full w-full" /> },
+  "central-govt": { title: "Central Govt", icon: <Globe className="h-full w-full" /> }
 };
 
 export default function CategoryHubsPage() {
@@ -33,18 +33,13 @@ export default function CategoryHubsPage() {
   const router = useRouter();
   const db = useFirestore();
   const catId = params.id as string;
-  const meta = CATEGORY_META[catId] || { title: "Exam Hubs", icon: <Landmark /> };
+  const meta = CATEGORY_META[catId] || { title: "Exam Hubs", icon: <Landmark className="h-full w-full" /> };
 
   const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db]);
   const examsQuery = useMemo(() => (db ? collection(db, "exams") : null), [db]);
 
   const { data: boards, loading: boardsLoading } = useCollection<any>(boardsQuery);
   const { data: allExams } = useCollection<any>(examsQuery);
-
-  // OFFICIAL LOGOS
-  const govtEmblem = "https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png";
-  const technicalLogo = "https://affiliation.pbteched.net/assets/images/banner-5.png";
-  const teachingLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT77AiJp2d3yn7Lwjk7LG6nDeLpQC_ZnFs6FZg4yAieypyMsmctxNGWRdk&s=10";
 
   // DYNAMIC DEDUPLICATION HUB
   const categoryHubs = useMemo(() => {
@@ -96,20 +91,17 @@ export default function CategoryHubsPage() {
                      e.boardId?.toLowerCase() === hub.abbreviation?.toLowerCase()
                   ).length;
 
-                  let forcedLogo = hub.iconUrl;
-                  if (catId === 'punjab-govt') forcedLogo = govtEmblem;
-                  else if (catId === 'punjab-teaching') forcedLogo = teachingLogo;
-                  else if (catId === 'punjab-technical') forcedLogo = technicalLogo;
-
                   return (
                     <Link key={hub.id} href={`/exams/hub/${hub.id}`}>
                        <Card className="border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100 p-8 text-left">
                           <div className="flex justify-between items-start mb-8">
                              <div className="h-16 w-16 rounded-[1.2rem] bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-                                {forcedLogo ? (
-                                   <img src={forcedLogo} className="h-full w-full object-contain p-2 scale-125" alt="Hub Logo" referrerPolicy="no-referrer" />
+                                {hub.iconUrl ? (
+                                   <img src={hub.iconUrl} className="h-full w-full object-contain p-2" alt="Hub Logo" referrerPolicy="no-referrer" />
                                 ) : (
-                                   <Landmark className="h-8 w-8 text-slate-200" />
+                                   <div className="text-primary opacity-40 p-4">
+                                      {meta.icon}
+                                   </div>
                                 )}
                              </div>
                              <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-slate-100 text-slate-400">OFFICIAL HUB</Badge>

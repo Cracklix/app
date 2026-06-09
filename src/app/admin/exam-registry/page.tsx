@@ -19,7 +19,9 @@ import {
   ShieldCheck,
   Layers,
   Save,
-  X
+  X,
+  Shield,
+  Zap
 } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, doc, deleteDoc, writeBatch, setDoc, serverTimestamp, getDocs, where, limit, orderBy } from "firebase/firestore"
@@ -31,8 +33,8 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Master Registry v5.2.
- * UPDATED: Permanently set official logos for all institutional verticals.
+ * @fileOverview Institutional Exam Master Registry v5.3.
+ * RESTORED: Standard Lucide Icons used as default identity.
  */
 
 export default function ExamRegistryPage() {
@@ -89,11 +91,6 @@ export default function ExamRegistryPage() {
     } finally { setIsSaving(false) }
   }
 
-  // PERMANENT LOGO REGISTRY
-  const govtOfficialEmblem = "https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png";
-  const teachingOfficialLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT77AiJp2d3yn7Lwjk7LG6nDeLpQC_ZnFs6FZg4yAieypyMsmctxNGWRdk&s=10";
-  const technicalOfficialLogo = "https://affiliation.pbteched.net/assets/images/banner-5.png";
-
   return (
     <div className="space-y-12 pb-24 text-left">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 px-4">
@@ -136,27 +133,35 @@ export default function ExamRegistryPage() {
               ) : filteredExams.map((e) => {
                 const board = boards?.find((b: any) => b.id === e.boardId || b.abbreviation === e.boardId);
                 const cat = categories?.find((c: any) => c.id === e.categoryId);
-                const abbrev = board?.abbreviation?.toUpperCase() || e.boardId?.toUpperCase();
-                const examName = e.name?.toUpperCase() || "";
                 
-                const isGovt = e.categoryId === 'punjab-govt' || ['PSSSB', 'PPSC', 'POLICE'].includes(abbrev) || examName.includes('PATWARI') || examName.includes('EXCISE') || examName.includes('CONSTABLE');
-                const isTeaching = e.categoryId === 'punjab-teaching' || ['CTET', 'PSTET', 'EDUCATION'].includes(abbrev) || examName.includes('CADRE') || examName.includes('TEACHER') || examName.includes('PROFESSOR') || examName.includes('PRINCIPAL');
-                const isTechnical = e.categoryId === 'punjab-technical' || ['PSPCL', 'PSTCL', 'PSBTE'].includes(abbrev) || examName.includes('TECHNICAL') || examName.includes('ENGINEER');
+                const catId = e.categoryId;
+                const isGovt = catId === 'punjab-govt';
+                const isTeaching = catId === 'punjab-teaching';
+                const isTechnical = catId === 'punjab-technical';
+                const isBank = catId === 'banking';
 
-                let forcedLogo = e.iconUrl || board?.iconUrl;
-                if (isGovt) forcedLogo = govtOfficialEmblem;
-                else if (isTeaching) forcedLogo = teachingOfficialLogo;
-                else if (isTechnical) forcedLogo = technicalOfficialLogo;
+                const effectiveLogo = e.iconUrl || board?.iconUrl;
 
                 return (
                   <TableRow key={e.id} className="hover:bg-slate-50 border-slate-50 transition-colors group">
                     <TableCell className="px-10 py-8">
                       <div className="flex items-center gap-6">
-                        <div className="h-12 w-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
-                            {forcedLogo && !failedImages[e.id] ? (
-                              <img src={forcedLogo} className={cn("h-full w-full object-contain p-2", (isGovt || isTeaching || isTechnical) ? "scale-140" : "")} referrerPolicy="no-referrer" onError={() => setFailedImages(p => ({ ...p, [e.id]: true }))} />
+                        <div className="h-12 w-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                            {effectiveLogo && !failedImages[e.id] ? (
+                              <img 
+                                src={effectiveLogo} 
+                                className="h-full w-full object-contain p-2" 
+                                referrerPolicy="no-referrer" 
+                                onError={() => setFailedImages(p => ({ ...p, [e.id]: true }))} 
+                              />
                             ) : (
-                              <div className="h-full w-full bg-amber-50 flex items-center justify-center text-amber-600 font-black text-xs">{e.name?.[0]?.toUpperCase()}</div>
+                              <div className="text-primary opacity-40">
+                                 {isGovt ? <Shield className="h-6 w-6" /> : 
+                                  isTeaching ? <GraduationCap className="h-6 w-6" /> : 
+                                  isTechnical ? <Zap className="h-6 w-6" /> :
+                                  isBank ? <Landmark className="h-6 w-6" /> :
+                                  <Landmark className="h-6 w-6" />}
+                              </div>
                             )}
                         </div>
                         <div>

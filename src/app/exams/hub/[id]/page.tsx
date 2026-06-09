@@ -10,14 +10,14 @@ import { collection, query, where, doc } from "firebase/firestore"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, GraduationCap, Zap, BookOpen, Layers, Shield, Loader2, FileText } from "lucide-react"
+import { ChevronLeft, ChevronRight, GraduationCap, Zap, BookOpen, Layers, Shield, Loader2, FileText, Landmark, ShieldCheck } from "lucide-react"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Hub Explorer.
- * UPDATED: Hardened relational mapping and permanent logos.
+ * @fileOverview Institutional Hub Explorer v3.0.
+ * RESTORED: Removed image URL overrides; defaulting to Lucide icons.
  */
 
 export default function HubExamsPage() {
@@ -57,11 +57,6 @@ export default function HubExamsPage() {
 
   if (hubLoading) return <div className="h-screen bg-white flex items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
 
-  // PERMANENT LOGO REGISTRY
-  const govtEmblem = "https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png";
-  const technicalLogo = "https://affiliation.pbteched.net/assets/images/banner-5.png";
-  const teachingLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT77AiJp2d3yn7Lwjk7LG6nDeLpQC_ZnFs6FZg4yAieypyMsmctxNGWRdk&s=10";
-
   return (
     <div className="min-h-screen bg-slate-50/50 font-body">
       <Navbar />
@@ -74,15 +69,21 @@ export default function HubExamsPage() {
             </button>
             <div className="flex flex-col md:flex-row items-center gap-10">
                <div className="h-24 w-24 md:h-36 md:w-36 rounded-[2rem] md:rounded-[3rem] bg-slate-50 border-4 border-white shadow-2xl flex items-center justify-center overflow-hidden shrink-0">
-                  {hub?.categoryId ? (
+                  {hub?.iconUrl && !failedImages['hub'] ? (
                     <img 
-                      src={hub.categoryId === 'punjab-govt' ? govtEmblem : hub.categoryId === 'punjab-teaching' ? teachingLogo : technicalLogo} 
-                      className="h-full w-full object-contain p-4 scale-140" 
+                      src={hub.iconUrl} 
+                      className="h-full w-full object-contain p-4" 
                       alt="Hub Logo" 
                       referrerPolicy="no-referrer"
+                      onError={() => setFailedImages(p => ({...p, 'hub': true}))}
                     />
                   ) : (
-                    <Shield className="h-12 w-12 text-slate-200" />
+                    <div className="text-primary opacity-40">
+                       {hub?.categoryId === 'punjab-govt' ? <ShieldCheck className="h-16 w-16" /> : 
+                        hub?.categoryId === 'punjab-teaching' ? <GraduationCap className="h-16 w-16" /> : 
+                        hub?.categoryId === 'punjab-technical' ? <Zap className="h-16 w-16" /> :
+                        <Landmark className="h-16 w-16" />}
+                    </div>
                   )}
                </div>
                <div className="space-y-3 text-center md:text-left">
@@ -105,18 +106,29 @@ export default function HubExamsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                {exams.map((exam) => {
                   const stats = statsMap[exam.id] || { full: 0, subject: 0, pyq: 0, sectional: 0 };
-                  const categoryId = hub?.categoryId;
-
-                  let forcedLogo = govtEmblem;
-                  if (categoryId === 'punjab-teaching') forcedLogo = teachingLogo;
-                  else if (categoryId === 'punjab-technical') forcedLogo = technicalLogo;
+                  const effectiveLogo = exam.iconUrl || hub?.iconUrl;
 
                   return (
                     <Link key={exam.id} href={`/exams/${exam.id}`}>
                        <Card className="border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[3rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100 p-10 text-left">
                           <div className="flex justify-between items-start mb-10">
                              <div className="h-16 w-16 md:h-20 md:w-20 rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all group-hover:shadow-xl shadow-inner relative overflow-hidden shrink-0">
-                                <img src={forcedLogo} className="w-full h-full object-contain p-2.5 scale-140" alt="Logo" referrerPolicy="no-referrer" />
+                                {effectiveLogo && !failedImages[exam.id] ? (
+                                   <img 
+                                     src={effectiveLogo} 
+                                     className="w-full h-full object-contain p-2.5" 
+                                     alt="Logo" 
+                                     referrerPolicy="no-referrer"
+                                     onError={() => setFailedImages(p => ({ ...p, [exam.id]: true }))}
+                                   />
+                                ) : (
+                                  <div className="text-primary opacity-40">
+                                     {hub?.categoryId === 'punjab-govt' ? <ShieldCheck className="h-10 w-10" /> : 
+                                      hub?.categoryId === 'punjab-teaching' ? <GraduationCap className="h-10 w-10" /> : 
+                                      hub?.categoryId === 'punjab-technical' ? <Zap className="h-10 w-10" /> :
+                                      <Landmark className="h-10 w-10" />}
+                                  </div>
+                                )}
                              </div>
                              <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-slate-100 text-slate-400">
                                 {hub?.abbreviation} VERTICAL
