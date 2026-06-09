@@ -47,8 +47,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Mock Architect v20.0 (Production Verified).
- * MATCHED: User Screenshot Layout & Color Palette.
+ * @fileOverview Institutional Mock Architect v21.0.
+ * UPDATED: Strict deduplication of Target Verticals to prevent redundant nodes.
  */
 
 export default function MockBuilderPage() {
@@ -71,7 +71,7 @@ function MockBuilderContent() {
   // --- DATA LISTENERS ---
   const { data: existingMock } = useDoc<any>(useMemo(() => (db && mockId ? doc(db, "mocks", mockId) : null), [db, mockId]))
   const { data: boards } = useCollection<any>(useMemo(() => (db ? query(collection(db, "boards"), orderBy("displayOrder", "asc")) : null), [db]))
-  const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
+  const { data: rawExams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
   
   // --- STATE HUB ---
@@ -152,6 +152,18 @@ function MockBuilderContent() {
       }
     }
   }, [existingMock, questionBank])
+
+  // DEDUPLICATION HUB
+  const uniqueExams = useMemo(() => {
+    if (!rawExams) return [];
+    const seen = new Set();
+    return rawExams.filter((e: any) => {
+      const key = e.name?.toLowerCase().trim();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).sort((a: any, b: any) => a.name.localeCompare(b.name));
+  }, [rawExams]);
 
   // --- BANK FILTER LOGIC ---
   const filteredBank = useMemo(() => {
@@ -368,7 +380,7 @@ function MockBuilderContent() {
                                   </div>
                                ))
                              ) : (
-                               exams?.map((e: any) => (
+                               uniqueExams?.map((e: any) => (
                                   <div key={e.id} className="flex items-center space-x-3 p-3 bg-white rounded-xl hover:bg-slate-100 transition-colors cursor-pointer shadow-sm border border-slate-100" onClick={() => toggleExamId(e.id)}>
                                      <Checkbox checked={mockData.examIds?.includes(e.id)} className="border-slate-300" />
                                      <span className="text-[10px] font-black text-[#0F172A] uppercase tracking-tighter">{e.name}</span>
@@ -400,7 +412,7 @@ function MockBuilderContent() {
                     <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Recruitment Vertical</Label>
                     <select value={filterExam} onChange={e => setFilterExam(e.target.value)} className="w-full h-14 bg-white/5 border border-white/10 rounded-xl px-4 font-black uppercase text-[10px] outline-none text-white focus:border-primary transition-all">
                        <option value="all" className="bg-[#0B1528]">All Exams</option>
-                       {exams?.map((ex:any) => <option key={ex.id} value={ex.id} className="bg-[#0B1528]">{ex.name}</option>)}
+                       {uniqueExams?.map((ex:any) => <option key={ex.id} value={ex.id} className="bg-[#0B1528]">{ex.name}</option>)}
                     </select>
                  </div>
                  <div className="space-y-3">

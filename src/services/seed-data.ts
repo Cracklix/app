@@ -2,26 +2,32 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, deleteDoc } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v53.0.
- * UPDATED: Consolidated PSTET/CTET hubs and purged legacy duplicates.
- * LOCKED: Official institutional URLs for all Punjab boards and specific verticals.
+ * @fileOverview Institutional Punjab-Centric Seeding Node v54.0.
+ * UPDATED: Aggressive cleanup of legacy exam IDs to prevent duplicates in discovery.
  */
 
 export async function seedInitialData(db: Firestore) {
   console.log('[AUDIT] Initializing Punjab-Focused Registry Sync...');
 
-  // 0. REGISTRY SANITIZATION: Purge legacy duplicate board nodes
-  const legacyBoardIds = ['pstet', 'ctet'];
-  for (const id of legacyBoardIds) {
+  // 0. REGISTRY SANITIZATION: Purge legacy duplicate board/exam nodes
+  const legacyIds = [
+    'pstet', 'ctet', 
+    'ctet-paper-1', 'ctet-paper-2', 
+    'pstet-paper-1', 'pstet-paper-2',
+    'exam-psssb', 'exam-ppsc', 'exam-police'
+  ];
+
+  for (const id of legacyIds) {
      try {
         await deleteDoc(doc(db, 'boards', id));
-        console.log(`[CLEANUP] Purged legacy board node: ${id}`);
+        await deleteDoc(doc(db, 'exams', id));
+        console.log(`[CLEANUP] Purged legacy node: ${id}`);
      } catch (e) {
         // Silent fail for non-existent nodes
      }
   }
 
-  // 1. STRATEGIC CATEGORIES (Punjab Focused)
+  // 1. STRATEGIC CATEGORIES
   const categories = [
     {
       id: "punjab-govt",
@@ -77,7 +83,7 @@ export async function seedInitialData(db: Firestore) {
     await setDoc(doc(db, 'categories', cat.id), { ...cat, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 2. HUBS (Boards) - Persistent Punjab Nodes with Locked Logos
+  // 2. HUBS (Boards)
   const boards = [
     { 
       id: 'punjab-police', 
@@ -158,45 +164,18 @@ export async function seedInitialData(db: Firestore) {
 
   // 3. EXAMS (Specific Verticals)
   const mandatoryExams = [
-    // Govt
     { id: 'police-constable', name: 'Police Constable', boardId: 'punjab-police', categoryId: 'punjab-govt', displayOrder: 1 },
     { id: 'police-head-constable', name: 'Head Constable / ASI', boardId: 'punjab-police', categoryId: 'punjab-govt', displayOrder: 1.5, iconUrl: 'https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png' },
     { id: 'police-si', name: 'Police Sub-Inspector', boardId: 'punjab-police', categoryId: 'punjab-govt', displayOrder: 2 },
     { id: 'pcs-prelims', name: 'PCS Prelims', boardId: 'ppsc', categoryId: 'punjab-govt', displayOrder: 3 },
-    
-    // Teaching - Standardized Hubs
     { id: 'master-cadre', name: 'Master Cadre', boardId: 'teaching-hub', categoryId: 'punjab-teaching', displayOrder: 4 },
     { id: 'ett-cadre', name: 'ETT Cadre', boardId: 'teaching-hub', categoryId: 'punjab-teaching', displayOrder: 5 },
-    { id: 'lecturer-cadre', name: 'Lecturer Cadre', boardId: 'teaching-hub', categoryId: 'punjab-teaching', displayOrder: 6 },
-    
-    // PSTET Hub (2 Verticals)
     { id: 'pstet-p1', name: 'PSTET Paper 1', boardId: 'pstet-hub', categoryId: 'punjab-teaching', displayOrder: 7 },
     { id: 'pstet-p2', name: 'PSTET Paper 2', boardId: 'pstet-hub', categoryId: 'punjab-teaching', displayOrder: 7.1 },
-    
-    // CTET Hub (2 Verticals)
     { id: 'ctet-p1', name: 'CTET Paper 1', boardId: 'ctet-hub', categoryId: 'punjab-teaching', displayOrder: 7.4 },
     { id: 'ctet-p2', name: 'CTET Paper 2', boardId: 'ctet-hub', categoryId: 'punjab-teaching', displayOrder: 7.5, iconUrl: 'https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png' },
-    
-    // Technical
-    { 
-      id: 'pspcl-alm', 
-      name: 'PSPCL ALM / Lineman', 
-      boardId: 'pspcl', 
-      categoryId: 'punjab-technical', 
-      displayOrder: 8,
-      iconUrl: 'https://www.pspcl.in/assets/images/logo.png' 
-    },
-    { 
-      id: 'pstcl-alm', 
-      name: 'PSTCL ALM / Lineman', 
-      boardId: 'pstcl', 
-      categoryId: 'punjab-technical', 
-      displayOrder: 9,
-      iconUrl: 'https://www.pspcl.in/assets/images/logo.png' 
-    },
-    { id: 'je-electrical', name: 'JE Electrical', boardId: 'pspcl', categoryId: 'punjab-technical', displayOrder: 10 },
-    
-    // General
+    { id: 'pspcl-alm', name: 'PSPCL ALM / Lineman', boardId: 'pspcl', categoryId: 'punjab-technical', displayOrder: 8, iconUrl: 'https://www.pspcl.in/assets/images/logo.png' },
+    { id: 'pstcl-alm', name: 'PSTCL ALM / Lineman', boardId: 'pstcl', categoryId: 'punjab-technical', displayOrder: 9, iconUrl: 'https://www.pspcl.in/assets/images/logo.png' },
     { id: 'patwari', name: 'Patwari', boardId: 'psssb', categoryId: 'punjab-general', displayOrder: 11 },
     { id: 'excise-inspector', name: 'Excise Inspector', boardId: 'psssb', categoryId: 'punjab-general', displayOrder: 12 },
     { id: 'clerk-general', name: 'Clerk (General)', boardId: 'psssb', categoryId: 'punjab-general', displayOrder: 13 }

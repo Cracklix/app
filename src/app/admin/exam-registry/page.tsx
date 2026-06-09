@@ -28,8 +28,8 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Master Registry v8.2.
- * RESTORED: Simplified management view without hierarchical drill-down links.
+ * @fileOverview Institutional Exam Master Registry v8.3.
+ * UPDATED: Strict deduplication by name to prevent discovery sprawl.
  */
 
 export default function ExamRegistryPage() {
@@ -52,6 +52,7 @@ export default function ExamRegistryPage() {
 
   const exams = useMemo(() => {
     if (!rawExams) return [];
+    // STRICT UNIQUENESS PROTOCOL
     const unique = new Map();
     rawExams.forEach(e => {
        const key = e.name?.toLowerCase().trim();
