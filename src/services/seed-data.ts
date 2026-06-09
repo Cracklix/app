@@ -1,8 +1,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Node v27.0.
- * RECOVERED & LOCKED: Locked official PSSSB SVG logo and restored other board assets.
+ * @fileOverview Institutional Seeding Node v28.0.
+ * RECOVERED & LOCKED: Locked official PSSSB SVG and Punjab Police PNG logos.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -71,7 +71,7 @@ export async function seedInitialData(db: Firestore) {
       abbreviation: 'POLICE', 
       name: 'Punjab Police Recruitment Board', 
       categoryId: 'punjab-govt',
-      iconUrl: 'https://punjabpolice.gov.in/media/images/pp10.original.jpg'
+      iconUrl: 'https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png'
     },
     { 
       id: 'psssb', 

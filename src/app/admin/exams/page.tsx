@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 
 /**
- * @fileOverview Authority Hub v58.0.
+ * @fileOverview Authority Hub v59.0.
  * FIXED: Unterminated string constant resolved. Corrected PSSSB logo mapping.
  */
 
