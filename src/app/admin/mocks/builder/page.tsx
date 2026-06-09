@@ -45,10 +45,12 @@ import { useToast } from "@/hooks/use-toast"
 import { MockType, Difficulty, AccessLevel, LanguageDisplayMode, MockAssignmentMode } from "@/types"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview Institutional Mock Architect v21.0.
- * UPDATED: Strict deduplication of Target Verticals to prevent redundant nodes.
+ * @fileOverview Institutional Mock Architect v22.0.
+ * UPDATED: Integrated Searchable Subject Picker with ScrollBar in Active Assembly.
  */
 
 export default function MockBuilderPage() {
@@ -87,6 +89,9 @@ function MockBuilderContent() {
   const [hideUsed, setHideUsed] = useState(true)
   const [blockDuplicates, setBlockDuplicates] = useState(true)
   const [bankSelection, setBankSelection] = useState<string[]>([])
+  
+  // Subject Picker State
+  const [subjectSearch, setSubjectSearch] = useState("")
 
   // Mock Metadata & Architecture
   const [mockData, setMockData] = useState<any>({
@@ -191,6 +196,13 @@ function MockBuilderContent() {
     })
   }, [questionBank, searchTerm, filterBoard, filterExam, filterSubject, hideUsed, blockDuplicates, sections])
 
+  const filteredSubjectsForPicking = useMemo(() => {
+    if (!subjects) return [];
+    return subjects.filter((s: any) => 
+      s.name?.toLowerCase().includes(subjectSearch.toLowerCase())
+    ).sort((a: any, b: any) => a.name.localeCompare(b.name));
+  }, [subjects, subjectSearch]);
+
   // --- ACTIONS ---
   const handleLinkQuestions = () => {
     const toAdd = questionBank.filter(q => bankSelection.includes(q.id));
@@ -275,6 +287,11 @@ function MockBuilderContent() {
        boardIds: current.includes(id) ? current.filter(x => x !== id) : [...current, id]
     });
   };
+
+  const addNewSection = (name: string) => {
+    setSections([...sections, { id: `sec-${Date.now()}`, name: name, questions: [] }]);
+    setSubjectSearch("");
+  }
 
   return (
     <div className="max-w-[1600px] mx-auto space-y-6 pb-32 text-left pt-2 md:pt-4">
@@ -467,7 +484,7 @@ function MockBuilderContent() {
               </div>
            </div>
 
-           {/* QUESTION LIST PREVIEW */}
+           {/* QUESTION LIST PREVIEW - ACTIVE ASSEMBLY */}
            <div className="space-y-6 pt-10">
               <div className="flex items-center justify-between px-4">
                  <div className="flex items-center gap-3">
@@ -477,41 +494,88 @@ function MockBuilderContent() {
                  <Badge className="bg-primary/10 text-primary border-none px-4 py-1 font-black uppercase text-[9px]">{sections.reduce((acc,s) => acc + s.questions.length, 0)} Total Linked</Badge>
               </div>
 
-              <div className="space-y-10">
-                {sections.map((sec, sIdx) => (
-                  <Card key={sec.id} className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden border border-slate-100 hover:border-primary/20 transition-all group">
-                     <div className="flex items-center justify-between p-8 bg-slate-50/50 border-b border-slate-50">
-                        <div className="flex items-center gap-6">
-                           <div className="h-10 w-10 bg-[#0F172A] text-white rounded-xl flex items-center justify-center font-black text-sm shadow-xl shrink-0">{sIdx + 1}</div>
-                           <div className="space-y-1 text-left">
-                              <Input 
-                                value={sec.name} 
-                                onChange={e => setSections(p => p.map(s => s.id === sec.id ? { ...s, name: e.target.value } : s))} 
-                                className="h-10 w-full md:w-80 bg-transparent border-none font-black uppercase text-xl focus-visible:ring-0 p-0 text-[#0F172A]" 
-                              />
-                           </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                           <Button variant="ghost" size="icon" onClick={() => setSections(p => p.filter(s => s.id !== sec.id))} className="h-12 w-12 text-rose-500 hover:bg-rose-50 rounded-2xl transition-colors"><Trash2 className="h-5 w-5" /></Button>
-                        </div>
-                     </div>
-                     <div className="p-8 space-y-4">
-                        {sec.questions.map((q: any, qIdx: number) => (
-                           <div key={q.id} className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-2xl group/item hover:bg-white hover:shadow-lg transition-all">
-                              <div className="flex items-center gap-6 min-w-0">
-                                 <span className="text-[10px] font-black text-slate-300 w-6 uppercase">#{qIdx + 1}</span>
-                                 <p className="text-sm font-bold text-slate-600 truncate max-w-2xl text-left">{q.englishQuestion}</p>
-                              </div>
-                              <button onClick={() => setSections(p => p.map(s => s.id === sec.id ? { ...s, questions: s.questions.filter((item: any) => item.id !== q.id) } : s))} className="opacity-0 group-hover/item:opacity-100 text-rose-400 hover:text-rose-600 p-2"><X className="h-4 w-4" /></button>
-                           </div>
-                        ))}
-                     </div>
-                  </Card>
-                ))}
-                <Button onClick={() => setSections([...sections, { id: `sec-${Date.now()}`, name: `Section ${sections.length + 1}`, questions: [] }])} className="h-20 w-full bg-white border-dashed border-2 border-slate-200 rounded-[2.5rem] shadow-xl hover:border-primary transition-all flex items-center justify-center gap-4 text-slate-400 font-black uppercase text-[11px] tracking-widest">
-                   <Plus className="h-6 w-6" /> ADD NEW SECTION HUB
-                </Button>
-              </div>
+              <ScrollArea className="h-[600px] pr-4">
+                <div className="space-y-10">
+                  {sections.map((sec, sIdx) => (
+                    <Card key={sec.id} className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden border border-slate-100 hover:border-primary/20 transition-all group">
+                       <div className="flex items-center justify-between p-8 bg-slate-50/50 border-b border-slate-50">
+                          <div className="flex items-center gap-6">
+                             <div className="h-10 w-10 bg-[#0F172A] text-white rounded-xl flex items-center justify-center font-black text-sm shadow-xl shrink-0">{sIdx + 1}</div>
+                             <div className="space-y-1 text-left">
+                                <Input 
+                                  value={sec.name} 
+                                  onChange={e => setSections(p => p.map(s => s.id === sec.id ? { ...s, name: e.target.value } : s))} 
+                                  className="h-10 w-full md:w-80 bg-transparent border-none font-black uppercase text-xl focus-visible:ring-0 p-0 text-[#0F172A]" 
+                                />
+                             </div>
+                          </div>
+                          <div className="flex items-center gap-4">
+                             <Button variant="ghost" size="icon" onClick={() => setSections(p => p.filter(s => s.id !== sec.id))} className="h-12 w-12 text-rose-500 hover:bg-rose-50 rounded-2xl transition-colors"><Trash2 className="h-5 w-5" /></Button>
+                          </div>
+                       </div>
+                       <div className="p-8 space-y-4">
+                          {sec.questions.map((q: any, qIdx: number) => (
+                             <div key={q.id} className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-2xl group/item hover:bg-white hover:shadow-lg transition-all">
+                                <div className="flex items-center gap-6 min-w-0">
+                                   <span className="text-[10px] font-black text-slate-300 w-6 uppercase">#{qIdx + 1}</span>
+                                   <p className="text-sm font-bold text-slate-600 truncate max-w-2xl text-left">{q.englishQuestion}</p>
+                                </div>
+                                <button onClick={() => setSections(p => p.map(s => s.id === sec.id ? { ...s, questions: s.questions.filter((item: any) => item.id !== q.id) } : s))} className="opacity-0 group-hover/item:opacity-100 text-rose-400 hover:text-rose-600 p-2"><X className="h-4 w-4" /></button>
+                             </div>
+                          ))}
+                       </div>
+                    </Card>
+                  ))}
+                  
+                  {/* SEARCHABLE SUBJECT PICKER WITH SCROLLBAR */}
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button className="h-20 w-full bg-white border-dashed border-2 border-slate-200 rounded-[2.5rem] shadow-xl hover:border-primary transition-all flex items-center justify-center gap-4 text-slate-400 font-black uppercase text-[11px] tracking-widest">
+                         <Plus className="h-6 w-6" /> ADD NEW SUBJECT NODE
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[320px] p-0 rounded-[2rem] bg-[#0F172A] text-white border-white/10 shadow-5xl overflow-hidden" align="center">
+                       <div className="p-6 border-b border-white/5 space-y-4">
+                          <p className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-center">Select Subject Node</p>
+                          <div className="relative">
+                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                             <Input 
+                               placeholder="Search registry..." 
+                               value={subjectSearch}
+                               onChange={(e) => setSubjectSearch(e.target.value)}
+                               className="h-12 pl-12 bg-white/5 border-white/10 rounded-xl font-bold text-sm focus-visible:ring-primary text-white" 
+                             />
+                          </div>
+                       </div>
+                       <ScrollArea className="h-[300px]">
+                          <div className="p-3 space-y-1">
+                             {filteredSubjectsForPicking.map((s: any) => (
+                                <button 
+                                   key={s.id}
+                                   onClick={() => addNewSection(s.name)}
+                                   className="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white/5 transition-all text-left group"
+                                >
+                                   <div className="flex items-center gap-3">
+                                      <SearchCode className="h-3.5 w-3.5 text-slate-500 group-hover:text-primary" />
+                                      <span className="text-[11px] font-black uppercase tracking-tight text-slate-300 group-hover:text-white">{s.name}</span>
+                                   </div>
+                                   <Plus className="h-3 w-3 text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </button>
+                             ))}
+                             <div className="p-2 pt-4 border-t border-white/5 mt-2">
+                                <button 
+                                   onClick={() => addNewSection(`Section ${sections.length + 1}`)}
+                                   className="w-full flex items-center justify-center h-12 rounded-xl bg-primary/10 border border-primary/20 text-primary font-black uppercase text-[9px] tracking-widest hover:bg-primary hover:text-white transition-all shadow-lg"
+                                >
+                                   + Custom Section
+                                </button>
+                             </div>
+                          </div>
+                       </ScrollArea>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </ScrollArea>
            </div>
         </div>
       </div>
