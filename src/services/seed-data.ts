@@ -2,9 +2,9 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Node v37.0.
- * RECOVERED & LOCKED: Verified official URLs for PSSSB, Police, PSPCL, PPSC, CTET, and PSTET Hubs.
- * UPDATED: Explicitly locked the CTET Paper 2 vertical with its specific official logo.
+ * @fileOverview Institutional Seeding Node v38.0.
+ * RECOVERED: PPSC Hub and associated PCS verticals.
+ * LOCKED: Verified official URLs for PSSSB, Police, PSPCL, PPSC, CTET, and PSTET Hubs.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -87,7 +87,7 @@ export async function seedInitialData(db: Firestore) {
       abbreviation: 'PPSC', 
       name: 'Punjab Public Service Commission', 
       categoryId: 'punjab-govt',
-      iconUrl: 'https://cdn.s3waas.gov.in/s38cb22bdd0b7ba1ab13d742e22eed8da2/uploads/2019/05/2019052938.jpg'
+      iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Punjab_Government_Logo.png'
     },
     { 
       id: 'pspcl', 
@@ -143,6 +143,8 @@ export async function seedInitialData(db: Firestore) {
     { id: 'sub-inspector', name: 'Police Sub-Inspector', boardId: 'punjab-police', categoryId: 'punjab-govt' },
     { id: 'patwari', name: 'Revenue Patwari', boardId: 'psssb', categoryId: 'punjab-govt' },
     { id: 'psssb-clerk', name: 'PSSSB Clerk', boardId: 'psssb', categoryId: 'punjab-govt' },
+    { id: 'pcs-prelims', name: 'PCS Prelims', boardId: 'ppsc', categoryId: 'punjab-govt' },
+    { id: 'pcs-mains', name: 'PCS Mains', boardId: 'ppsc', categoryId: 'punjab-govt' },
     { id: 'pspcl-alm', name: 'ALM (PSPCL)', boardId: 'pspcl', categoryId: 'punjab-technical' },
     { id: 'pstcl-alm', name: 'ALM (PSTCL)', boardId: 'pstcl', categoryId: 'punjab-technical' },
     { id: 'je-electrical', name: 'JE Electrical', boardId: 'psbte', categoryId: 'punjab-technical' },
