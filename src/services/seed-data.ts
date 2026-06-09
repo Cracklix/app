@@ -2,8 +2,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, getDocs, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Node v8.2.
- * UPDATED: Explicitly seeded all Teaching Cadre posts and technical hubs.
+ * @fileOverview Institutional Seeding Node v8.3.
+ * UPDATED: Set permanent teaching logo for all Punjab Teaching verticals.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -64,19 +64,19 @@ export async function seedInitialData(db: Firestore) {
 
   // 2. HUBS (Boards)
   const psssbLogo = "https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg";
-  const psebLogo = "https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png";
-  const pstetLogo = "https://pstet.pseb.ac.in/img/main-logo-2.png";
-  const ctetLogo = "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png";
   const pspclLogo = "https://pspcl.in/assets/images/logo.png";
   const pstclLogo = "https://pstcl.org/images/logo.png";
   const psbteLogo = "https://www.punjabteched.com/images/Clogo-blue.gif";
   
+  // PERMANENT TEACHING LOGO
+  const teachingLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT77AiJp2d3yn7Lwjk7LG6nDeLpQC_ZnFs6FZg4yAieypyMsmctxNGWRdk&s=10";
+  
   const boards = [
     { id: 'psssb', abbreviation: 'PSSSB', name: 'Punjab Subordinate Services Selection Board', region: 'Punjab', category: 'STATE_BOARD', categoryId: 'punjab-govt', iconUrl: psssbLogo },
     { id: 'punjab-police', abbreviation: 'POLICE', name: 'Punjab Police Recruitment Board', region: 'Punjab', category: 'DEFENCE_BOARD', categoryId: 'punjab-govt', iconUrl: "https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png" },
-    { id: 'education-board', abbreviation: 'EDUCATION', name: 'Education Recruitment Hub', region: 'Punjab', category: 'TEACHING_BOARD', categoryId: 'punjab-teaching', iconUrl: psebLogo },
-    { id: 'pstet-hub', abbreviation: 'PSTET', name: 'PSTET Hub', region: 'Punjab', category: 'TEACHING_BOARD', categoryId: 'punjab-teaching', iconUrl: pstetLogo },
-    { id: 'ctet-hub', abbreviation: 'CTET', name: 'CTET Hub', region: 'Punjab', category: 'TEACHING_BOARD', categoryId: 'punjab-teaching', iconUrl: ctetLogo },
+    { id: 'education-board', abbreviation: 'EDUCATION', name: 'Education Recruitment Hub', region: 'Punjab', category: 'TEACHING_BOARD', categoryId: 'punjab-teaching', iconUrl: teachingLogo },
+    { id: 'pstet-hub', abbreviation: 'PSTET', name: 'PSTET Hub', region: 'Punjab', category: 'TEACHING_BOARD', categoryId: 'punjab-teaching', iconUrl: teachingLogo },
+    { id: 'ctet-hub', abbreviation: 'CTET', name: 'CTET Hub', region: 'Punjab', category: 'TEACHING_BOARD', categoryId: 'punjab-teaching', iconUrl: teachingLogo },
     { id: 'pspcl', abbreviation: 'PSPCL', name: 'PSPCL Hub', region: 'Punjab', category: 'TECHNICAL', categoryId: 'punjab-technical', iconUrl: pspclLogo },
     { id: 'pstcl', abbreviation: 'PSTCL', name: 'PSTCL Hub', region: 'Punjab', category: 'TECHNICAL', categoryId: 'punjab-technical', iconUrl: pstclLogo },
     { id: 'psbte', abbreviation: 'PSBTE', name: 'Punjab Technical Board', region: 'Punjab', category: 'TECHNICAL', categoryId: 'punjab-technical', iconUrl: psbteLogo }

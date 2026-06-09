@@ -31,8 +31,8 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Master Registry v4.9.
- * UPDATED: Hardened keyword-based logo detection.
+ * @fileOverview Institutional Exam Master Registry v5.0.
+ * UPDATED: Permanently set official Teaching logo for relevant verticals.
  */
 
 export default function ExamRegistryPage() {
@@ -90,12 +90,12 @@ export default function ExamRegistryPage() {
   }
 
   // OFFICIAL LOGO REGISTRY
-  const ctetOfficialLogo = "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png";
-  const pstetOfficialLogo = "https://pstet.pseb.ac.in/img/main-logo-2.png";
-  const psebOfficialLogo = "https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png";
   const pspclOfficialLogo = "https://pspcl.in/assets/images/logo.png";
   const pstclOfficialLogo = "https://pstcl.org/images/logo.png";
   const psbteOfficialLogo = "https://www.punjabteched.com/images/Clogo-blue.gif";
+  
+  // PERMANENT TEACHING LOGO
+  const teachingOfficialLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT77AiJp2d3yn7Lwjk7LG6nDeLpQC_ZnFs6FZg4yAieypyMsmctxNGWRdk&s=10";
 
   return (
     <div className="space-y-12 pb-24 text-left">
@@ -142,10 +142,10 @@ export default function ExamRegistryPage() {
                 const abbrev = board?.abbreviation?.toUpperCase() || e.boardId?.toUpperCase();
                 const examName = e.name?.toUpperCase() || "";
                 
+                const isTeaching = e.categoryId === 'punjab-teaching' || abbrev === 'CTET' || abbrev === 'PSTET' || abbrev === 'EDUCATION' || examName.includes('CADRE') || examName.includes('TEACHER') || examName.includes('PROFESSOR') || examName.includes('PRINCIPAL') || examName.includes('ENTRANCE');
+
                 let forcedLogo = e.iconUrl || board?.iconUrl;
-                if (abbrev === 'CTET' || examName.includes('CTET')) forcedLogo = ctetOfficialLogo;
-                else if (abbrev === 'PSTET' || examName.includes('PSTET')) forcedLogo = pstetOfficialLogo;
-                else if (abbrev === 'PSEB' || abbrev === 'EDUCATION' || examName.includes('CADRE') || examName.includes('ENTRANCE') || examName.includes('PROFESSOR') || examName.includes('TEACHER') || examName.includes('PRINCIPAL')) forcedLogo = psebOfficialLogo;
+                if (isTeaching) forcedLogo = teachingOfficialLogo;
                 else if (abbrev === 'PSPCL') forcedLogo = pspclOfficialLogo;
                 else if (abbrev === 'PSTCL') forcedLogo = pstclOfficialLogo;
                 else if (abbrev === 'PSBTE') forcedLogo = psbteOfficialLogo;
@@ -156,7 +156,7 @@ export default function ExamRegistryPage() {
                       <div className="flex items-center gap-6">
                         <div className="h-12 w-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
                             {forcedLogo && !failedImages[e.id] ? (
-                              <img src={forcedLogo} className="h-full w-full object-contain p-2" referrerPolicy="no-referrer" onError={() => setFailedImages(p => ({ ...p, [e.id]: true }))} />
+                              <img src={forcedLogo} className={cn("h-full w-full object-contain p-2", isTeaching ? "scale-150" : "")} referrerPolicy="no-referrer" onError={() => setFailedImages(p => ({ ...p, [e.id]: true }))} />
                             ) : (
                               <div className="h-full w-full bg-amber-50 flex items-center justify-center text-amber-600 font-black text-xs">{e.name?.[0]?.toUpperCase()}</div>
                             )}
