@@ -2,20 +2,20 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Node v45.0.
- * LOCKED: Official institutional URLs for all recruitment boards.
- * UPDATED: Added Banking and Central Government Hubs + Exams.
+ * @fileOverview Institutional Punjab-Centric Seeding Node v50.0.
+ * UPDATED: Streamlined hierarchy focusing exclusively on Punjab recruitments.
+ * LOCKED: Official institutional URLs for PSSSB, Police, PSPCL, and Teaching Hubs.
  */
 
 export async function seedInitialData(db: Firestore) {
-  console.log('[AUDIT] Initializing Persistent Registry Sync...');
+  console.log('[AUDIT] Initializing Punjab-Focused Registry Sync...');
 
-  // 1. CORE CATEGORIES
+  // 1. STRATEGIC CATEGORIES (Punjab Focused)
   const categories = [
     {
       id: "punjab-govt",
       title: "Punjab Government Exams",
-      description: "Police, PSSSB, PPSC, Revenue & State Departments.",
+      description: "Police, PSSSB, PPSC and major state board recruitments.",
       highlight: "STATE LEVEL",
       color: "text-primary",
       bgColor: "bg-orange-50",
@@ -25,7 +25,7 @@ export async function seedInitialData(db: Firestore) {
     {
       id: "punjab-teaching",
       title: "Punjab Teaching Exams",
-      description: "PSTET, CTET, Master Cadre, ETT & Lecturer hubs.",
+      description: "PSTET, CTET, Master Cadre, ETT & Lecturer recruitment nodes.",
       highlight: "EDUCATIONAL",
       color: "text-blue-600",
       bgColor: "bg-blue-50",
@@ -35,27 +35,27 @@ export async function seedInitialData(db: Firestore) {
     {
       id: "punjab-technical",
       title: "Punjab Technical Exams",
-      description: "PSPCL, PSTCL, Technical Board JE & Assistant nodes.",
-      highlight: "POWER & IT",
+      description: "PSPCL, PSTCL, ALM, and Technical Board JE recruitments.",
+      highlight: "POWER & TECH",
       color: "text-amber-500",
       bgColor: "bg-amber-50",
       iconUrl: "https://affiliation.pbteched.net/assets/images/banner-5.png",
       displayOrder: 3
     },
     {
-      id: "banking",
-      title: "Banking Exams",
-      description: "IBPS, PO, Clerk, SBI, RBI & NABARD career prep.",
+      id: "punjab-banking",
+      title: "Punjab Banking & Cooperative",
+      description: "State Cooperative, Agricultural Dev Bank & PGB nodes.",
       highlight: "FINANCIAL",
       color: "text-emerald-600",
       bgColor: "bg-emerald-50",
       displayOrder: 4
     },
     {
-      id: "central-govt",
-      title: "Central Government Exams",
-      description: "SSC, Railways, Indian Army, Air Force & Navy Hubs.",
-      highlight: "NATIONAL",
+      id: "punjab-general",
+      title: "Punjab General Recruitment",
+      description: "Clerk, DEO, Patwari, Excise and Food Supply verticals.",
+      highlight: "GENERAL",
       color: "text-indigo-600",
       bgColor: "bg-indigo-50",
       displayOrder: 5
@@ -66,113 +66,85 @@ export async function seedInitialData(db: Firestore) {
     await setDoc(doc(db, 'categories', cat.id), { ...cat, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 2. HUBS (Boards) - Persistent Nodes with Verified Official Locked Logos
+  // 2. HUBS (Boards) - Persistent Punjab Nodes with Locked Logos
   const boards = [
     { 
       id: 'punjab-police', 
       abbreviation: 'POLICE', 
       name: 'Punjab Police Recruitment Board', 
       categoryId: 'punjab-govt',
-      iconUrl: 'https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png'
+      iconUrl: 'https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png',
+      displayOrder: 1
     },
     { 
       id: 'psssb', 
       abbreviation: 'PSSSB', 
       name: 'Punjab Subordinate Services Selection Board', 
       categoryId: 'punjab-govt',
-      iconUrl: 'https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg'
+      iconUrl: 'https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg',
+      displayOrder: 2
     },
     { 
       id: 'ppsc', 
       abbreviation: 'PPSC', 
       name: 'Punjab Public Service Commission', 
       categoryId: 'punjab-govt',
-      iconUrl: 'https://cdn.s3waas.gov.in/s38cb22bdd0b7ba1ab13d742e22eed8da2/uploads/2019/05/2019052938.jpg'
+      iconUrl: 'https://cdn.s3waas.gov.in/s38cb22bdd0b7ba1ab13d742e22eed8da2/uploads/2019/05/2019052938.jpg',
+      displayOrder: 3
     },
     { 
       id: 'pspcl', 
       abbreviation: 'PSPCL', 
       name: 'Punjab State Power Corporation Limited', 
       categoryId: 'punjab-technical',
-      iconUrl: 'https://www.pspcl.in/assets/images/logo.png'
+      iconUrl: 'https://www.pspcl.in/assets/images/logo.png',
+      displayOrder: 4
     },
     { 
       id: 'pstcl', 
       abbreviation: 'PSTCL', 
       name: 'Punjab State Transmission Corporation Limited', 
       categoryId: 'punjab-technical',
-      iconUrl: 'https://pstcl.org/images/logo.png'
+      iconUrl: 'https://pstcl.org/images/logo.png',
+      displayOrder: 5
     },
     { 
-      id: 'psbte', 
-      abbreviation: 'PSBTE', 
-      name: 'Punjab Technical Education Board', 
-      categoryId: 'punjab-technical',
-      iconUrl: 'https://www.punjabteched.com/images/Clogo-blue.gif'
+      id: 'high-court', 
+      abbreviation: 'COURT', 
+      name: 'Punjab & Haryana High Court', 
+      categoryId: 'punjab-govt',
+      displayOrder: 6
     },
     { 
-      id: 'pstet', 
+      id: 'pstet-hub', 
       abbreviation: 'PSTET', 
-      name: 'PSTET Hub', 
-      categoryId: 'punjab-teaching', 
-      iconUrl: 'https://pstet.pseb.ac.in/img/main-logo-2.png' 
+      name: 'PSTET Preparation Hub', 
+      categoryId: 'punjab-teaching',
+      iconUrl: 'https://pstet.pseb.ac.in/img/main-logo-2.png',
+      displayOrder: 7
     },
     { 
-      id: 'ctet', 
+      id: 'ctet-hub', 
       abbreviation: 'CTET', 
-      name: 'CTET Hub', 
-      categoryId: 'punjab-teaching', 
-      iconUrl: 'https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png' 
+      name: 'CTET Preparation Hub', 
+      categoryId: 'punjab-teaching',
+      iconUrl: 'https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png',
+      displayOrder: 8
     },
     { 
-      id: 'education-recruitment', 
-      abbreviation: 'EDUCATION', 
-      name: 'Education Recruitment Board Punjab', 
-      categoryId: 'punjab-teaching', 
-      iconUrl: 'https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png' 
+      id: 'teaching-hub', 
+      abbreviation: 'CADRE', 
+      name: 'Teaching Cadre Board', 
+      categoryId: 'punjab-teaching',
+      iconUrl: 'https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png',
+      displayOrder: 9
     },
-    // NATIONAL & BANKING HUBS
-    {
-      id: 'ibps',
-      abbreviation: 'IBPS',
-      name: 'Institute of Banking Personnel Selection',
-      categoryId: 'banking',
-      iconUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/3/3c/Institute_of_Banking_Personnel_Selection_Logo.png/200px-Institute_of_Banking_Personnel_Selection_Logo.png'
-    },
-    {
-      id: 'sbi',
-      abbreviation: 'SBI',
-      name: 'State Bank of India',
-      categoryId: 'banking',
-      iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/State_Bank_of_India_logo.svg/1024px-State_Bank_of_India_logo.svg.png'
-    },
-    {
-      id: 'ssc',
-      abbreviation: 'SSC',
-      name: 'Staff Selection Commission',
-      categoryId: 'central-govt',
-      iconUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/0/03/Staff_Selection_Commission_logo.png/200px-Staff_Selection_Commission_logo.png'
-    },
-    {
-      id: 'upsc',
-      abbreviation: 'UPSC',
-      name: 'Union Public Service Commission',
-      categoryId: 'central-govt',
-      iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/UPSC_logo.png'
-    },
-    {
-      id: 'railways',
-      abbreviation: 'RRB',
-      name: 'Railway Recruitment Board',
-      categoryId: 'central-govt',
-      iconUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/4/45/IRLogo.png/200px-IRLogo.png'
-    },
-    {
-      id: 'indian-army',
-      abbreviation: 'ARMY',
-      name: 'Indian Army Recruitment',
-      categoryId: 'central-govt',
-      iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Emblem_of_the_Indian_Army.svg/1200px-Emblem_of_the_Indian_Army.svg.png'
+    { 
+      id: 'coop-bank', 
+      abbreviation: 'COOP', 
+      name: 'Punjab Cooperative Bank', 
+      categoryId: 'punjab-banking',
+      displayOrder: 10
     }
   ];
 
@@ -180,45 +152,33 @@ export async function seedInitialData(db: Firestore) {
     await setDoc(doc(db, 'boards', b.id), { ...b, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 3. EXAMS (Verticals)
+  // 3. EXAMS (Specific Verticals)
   const mandatoryExams = [
-    { id: 'constable', name: 'Police Constable', boardId: 'punjab-police', categoryId: 'punjab-govt' },
-    { id: 'sub-inspector', name: 'Police Sub-Inspector', boardId: 'punjab-police', categoryId: 'punjab-govt' },
-    { id: 'patwari', name: 'Revenue Patwari', boardId: 'psssb', categoryId: 'punjab-govt' },
-    { id: 'psssb-clerk', name: 'PSSSB Clerk', boardId: 'psssb', categoryId: 'punjab-govt' },
-    { id: 'pcs-prelims', name: 'PCS Prelims', boardId: 'ppsc', categoryId: 'punjab-govt' },
-    { id: 'pcs-mains', name: 'PCS Mains', boardId: 'ppsc', categoryId: 'punjab-govt' },
-    { id: 'pspcl-alm', name: 'ALM (PSPCL)', boardId: 'pspcl', categoryId: 'punjab-technical' },
-    { id: 'pstcl-alm', name: 'ALM (PSTCL)', boardId: 'pstcl', categoryId: 'punjab-technical' },
-    { id: 'je-electrical', name: 'JE Electrical', boardId: 'psbte', categoryId: 'punjab-technical' },
-    { id: 'ett-cadre', name: 'ETT Cadre', boardId: 'education-recruitment', categoryId: 'punjab-teaching' },
-    { id: 'master-cadre', name: 'Master Cadre', boardId: 'education-recruitment', categoryId: 'punjab-teaching' },
-    { id: 'lecturer-cadre', name: 'Lecturer Cadre', boardId: 'education-recruitment', categoryId: 'punjab-teaching' },
-    { id: 'principal', name: 'Principal', boardId: 'education-recruitment', categoryId: 'punjab-teaching' },
-    { id: 'pstet-p1', name: 'PSTET Paper 1', boardId: 'pstet', categoryId: 'punjab-teaching' },
-    { id: 'pstet-p2', name: 'PSTET Paper 2', boardId: 'pstet', categoryId: 'punjab-teaching' },
-    { id: 'ctet-p1', name: 'CTET Paper 1', boardId: 'ctet', categoryId: 'punjab-teaching' },
-    { 
-      id: 'ctet-p2', 
-      name: 'CTET Paper 2', 
-      boardId: 'ctet', 
-      categoryId: 'punjab-teaching', 
-      iconUrl: 'https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png' 
-    },
-    // NATIONAL & BANKING VERTICALS
-    { id: 'ibps-po', name: 'IBPS PO (Probationary Officer)', boardId: 'ibps', categoryId: 'banking' },
-    { id: 'ibps-clerk', name: 'IBPS Clerk', boardId: 'ibps', categoryId: 'banking' },
-    { id: 'sbi-po', name: 'SBI PO', boardId: 'sbi', categoryId: 'banking' },
-    { id: 'ssc-cgl', name: 'SSC CGL (Graduate Level)', boardId: 'ssc', categoryId: 'central-govt' },
-    { id: 'ssc-chsl', name: 'SSC CHSL (10+2 Level)', boardId: 'ssc', categoryId: 'central-govt' },
-    { id: 'upsc-prelims', name: 'UPSC Civil Services Prelims', boardId: 'upsc', categoryId: 'central-govt' },
-    { id: 'rrb-ntpc', name: 'RRB NTPC (Non-Technical)', boardId: 'railways', categoryId: 'central-govt' },
-    { id: 'army-gd', name: 'Army GD (General Duty)', boardId: 'indian-army', categoryId: 'central-govt' }
+    // Govt
+    { id: 'police-constable', name: 'Police Constable', boardId: 'punjab-police', categoryId: 'punjab-govt', displayOrder: 1 },
+    { id: 'police-si', name: 'Police Sub-Inspector', boardId: 'punjab-police', categoryId: 'punjab-govt', displayOrder: 2 },
+    { id: 'pcs-prelims', name: 'PCS Prelims', boardId: 'ppsc', categoryId: 'punjab-govt', displayOrder: 3 },
+    
+    // Teaching
+    { id: 'master-cadre', name: 'Master Cadre', boardId: 'teaching-hub', categoryId: 'punjab-teaching', displayOrder: 4 },
+    { id: 'ett-cadre', name: 'ETT Cadre', boardId: 'teaching-hub', categoryId: 'punjab-teaching', displayOrder: 5 },
+    { id: 'lecturer-cadre', name: 'Lecturer Cadre', boardId: 'teaching-hub', categoryId: 'punjab-teaching', displayOrder: 6 },
+    { id: 'pstet-p1', name: 'PSTET Paper 1', boardId: 'pstet-hub', categoryId: 'punjab-teaching', displayOrder: 7 },
+    
+    // Technical
+    { id: 'pspcl-alm', name: 'PSPCL ALM', boardId: 'pspcl', categoryId: 'punjab-technical', displayOrder: 8 },
+    { id: 'pstcl-alm', name: 'PSTCL ALM', boardId: 'pstcl', categoryId: 'punjab-technical', displayOrder: 9 },
+    { id: 'je-electrical', name: 'JE Electrical', boardId: 'pspcl', categoryId: 'punjab-technical', displayOrder: 10 },
+    
+    // General
+    { id: 'patwari', name: 'Patwari', boardId: 'psssb', categoryId: 'punjab-general', displayOrder: 11 },
+    { id: 'excise-inspector', name: 'Excise Inspector', boardId: 'psssb', categoryId: 'punjab-general', displayOrder: 12 },
+    { id: 'clerk-general', name: 'Clerk (General)', boardId: 'psssb', categoryId: 'punjab-general', displayOrder: 13 }
   ];
 
   for (const ex of mandatoryExams) {
     await setDoc(doc(db, 'exams', ex.id), { ...ex, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  console.log('[AUDIT] Registry Logos and National/Banking Hierarchies Synchronized.');
+  console.log('[AUDIT] Punjab-Centric Registry Synchronized Successfully.');
 }

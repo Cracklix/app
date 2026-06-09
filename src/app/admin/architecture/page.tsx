@@ -21,7 +21,8 @@ import {
   Search,
   MoveUp,
   MoveDown,
-  Info
+  Info,
+  Box
 } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, orderBy, doc, deleteDoc } from "firebase/firestore"
@@ -32,8 +33,8 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Exam Architecture Manager v1.0.
- * Centralized hub for managing Categories, Hubs, and Exam Verticals.
+ * @fileOverview Punjab Exam Architecture Manager v2.0.
+ * Centralized hub for managing Punjab-Specific Categories, Hubs, and Exam Verticals.
  */
 
 export default function ArchitectureManager() {
@@ -62,24 +63,27 @@ export default function ArchitectureManager() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 px-4">
         <div>
            <div className="flex items-center gap-3 mb-2">
-              <Layers className="h-6 w-6 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Infrastructure Control Center</span>
+              <Box className="h-6 w-6 text-primary" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Punjab Registry Architect</span>
            </div>
           <h1 className="text-5xl font-black font-headline text-primary uppercase tracking-tight">Architecture Manager</h1>
-          <p className="text-slate-500 mt-2 text-lg font-medium">Manage the structural discovery hierarchy for all preparation nodes.</p>
+          <p className="text-slate-500 mt-2 text-lg font-medium">Manage the structural discovery hierarchy for all Punjab preparation nodes.</p>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="px-4 space-y-10">
-         <TabsList className="bg-slate-100 p-1 h-14 rounded-2xl shadow-sm inline-flex gap-2">
+         <TabsList className="bg-slate-100 p-1.5 h-16 rounded-2xl shadow-sm inline-flex gap-2">
             <TabsTrigger value="overview" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
-               <Layers className="h-4 w-4 mr-2" /> Global Tree
+               <Layers className="h-4 w-4 mr-2" /> Punjab Tree
             </TabsTrigger>
             <TabsTrigger value="categories" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
-               Modify Categories
+               Categories
             </TabsTrigger>
             <TabsTrigger value="hubs" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
-               Modify Hubs
+               Hubs (Boards)
+            </TabsTrigger>
+            <TabsTrigger value="verticals" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
+               Verticals (Exams)
             </TabsTrigger>
          </TabsList>
 
@@ -92,21 +96,21 @@ export default function ArchitectureManager() {
                      <div className="h-2 w-full bg-primary/20" />
                      <CardHeader className="p-10 pb-6 border-b border-slate-50 bg-slate-50/30 flex flex-row items-center justify-between">
                         <div className="flex items-center gap-6">
-                           <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
-                              <Layers className="h-6 w-6" />
+                           <div className="h-14 w-14 rounded-2xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                              {cat.iconUrl ? <img src={cat.iconUrl} className="h-full w-full object-contain p-2" /> : <Layers className="h-6 w-6 text-slate-300" />}
                            </div>
                            <div className="text-left">
                               <h3 className="text-2xl font-black font-headline uppercase text-[#0F172A]">{cat.title}</h3>
-                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{cat.hubs.length} Hubs Registered</p>
+                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{cat.hubs.length} Hubs Assigned</p>
                            </div>
                         </div>
                         <Button asChild variant="outline" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest gap-2">
-                           <Link href="/admin/categories"><Edit className="h-3 w-3" /> Manage</Link>
+                           <Link href="/admin/categories"><Edit className="h-3 w-3" /> Manage Nodes</Link>
                         </Button>
                      </CardHeader>
                      <CardContent className="p-10">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                           {cat.hubs.map((hub: any) => (
+                           {cat.hubs.length > 0 ? cat.hubs.sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0)).map((hub: any) => (
                               <div key={hub.id} className="space-y-4 bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100">
                                  <div className="flex items-center justify-between">
                                     <h4 className="font-black text-sm uppercase text-[#0F172A] flex items-center gap-2">
@@ -115,14 +119,14 @@ export default function ArchitectureManager() {
                                     <Badge className="bg-white border-slate-200 text-slate-400 text-[7px] font-black uppercase px-2">{hub.exams.length} Verticals</Badge>
                                  </div>
                                  <div className="space-y-2">
-                                    {hub.exams.map((exam: any) => (
+                                    {hub.exams.sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0)).map((exam: any) => (
                                        <div key={exam.id} className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 shadow-sm group hover:border-primary/20 transition-all">
-                                          <span className="text-[10px] font-bold text-slate-500 uppercase">{exam.name}</span>
-                                          <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                             <Button asChild size="icon" variant="ghost" className="h-6 w-6 rounded-lg">
-                                                <Link href={`/admin/architecture/linking/${exam.id}`}><LinkIcon className="h-3 w-3 text-primary" /></Link>
+                                          <span className="text-[10px] font-bold text-slate-500 uppercase truncate pr-2">{exam.name}</span>
+                                          <div className="flex gap-1.5 shrink-0">
+                                             <Button asChild size="icon" variant="ghost" className="h-6 w-6 rounded-lg hover:bg-primary/10">
+                                                <Link href={`/admin/architecture/linking/${exam.id}`} title="Link Content"><LinkIcon className="h-3 w-3 text-primary" /></Link>
                                              </Button>
-                                             <Button asChild size="icon" variant="ghost" className="h-6 w-6 rounded-lg">
+                                             <Button asChild size="icon" variant="ghost" className="h-6 w-6 rounded-lg hover:bg-blue-50">
                                                 <Link href={`/admin/exam-registry`}><Edit className="h-3 w-3 text-blue-500" /></Link>
                                              </Button>
                                           </div>
@@ -133,7 +137,9 @@ export default function ArchitectureManager() {
                                     <Link href="/admin/exam-registry">+ New Vertical</Link>
                                  </Button>
                               </div>
-                           ))}
+                           )) : (
+                              <div className="col-span-full py-10 text-center opacity-20 italic font-black uppercase text-[10px]">No Hubs Assigned to this Category.</div>
+                           )}
                         </div>
                      </CardContent>
                   </Card>
@@ -145,7 +151,7 @@ export default function ArchitectureManager() {
             <div className="bg-white rounded-[3rem] p-12 text-center border-2 border-dashed border-slate-100">
                <Info className="h-10 w-10 mx-auto mb-4 text-slate-300" />
                <h3 className="font-headline font-black text-xl uppercase mb-2">Category Registry</h3>
-               <p className="text-slate-400 text-sm mb-8">Redirecting to master category portal...</p>
+               <p className="text-slate-400 text-sm mb-8">Direct management for top-level Punjab verticals.</p>
                <Button asChild className="h-14 px-10 rounded-2xl bg-[#0F172A] hover:bg-black font-black uppercase text-[10px] tracking-widest">
                   <Link href="/admin/categories">Launch Category Manager</Link>
                </Button>
@@ -156,9 +162,20 @@ export default function ArchitectureManager() {
             <div className="bg-white rounded-[3rem] p-12 text-center border-2 border-dashed border-slate-100">
                <Info className="h-10 w-10 mx-auto mb-4 text-slate-300" />
                <h3 className="font-headline font-black text-xl uppercase mb-2">Hub (Board) Registry</h3>
-               <p className="text-slate-400 text-sm mb-8">Redirecting to authority hub portal...</p>
+               <p className="text-slate-400 text-sm mb-8">Manage recruiting boards like PSSSB, Police, and PPSC.</p>
                <Button asChild className="h-14 px-10 rounded-2xl bg-[#0F172A] hover:bg-black font-black uppercase text-[10px] tracking-widest">
                   <Link href="/admin/exams">Launch Hub Manager</Link>
+               </Button>
+            </div>
+         </TabsContent>
+
+         <TabsContent value="verticals">
+            <div className="bg-white rounded-[3rem] p-12 text-center border-2 border-dashed border-slate-100">
+               <Info className="h-10 w-10 mx-auto mb-4 text-slate-300" />
+               <h3 className="font-headline font-black text-xl uppercase mb-2">Exam Vertical Registry</h3>
+               <p className="text-slate-400 text-sm mb-8">Manage specific exams like Patwari, Constable, and Master Cadre.</p>
+               <Button asChild className="h-14 px-10 rounded-2xl bg-[#0F172A] hover:bg-black font-black uppercase text-[10px] tracking-widest">
+                  <Link href="/admin/exam-registry">Launch Vertical Manager</Link>
                </Button>
             </div>
          </TabsContent>
