@@ -49,8 +49,8 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v45.0.
- * Perfectly matching the 7:00 AM Morning Build screenshot.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v46.0.
+ * RESTORED: Perfectly matching the morning 7:00 AM screenshot.
  */
 
 export default function MockBuilderPage() {
@@ -421,7 +421,7 @@ function MockBuilderContent() {
                 onClick={() => setActiveRightTab('BANK')}
                 className={cn(
                   "px-8 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center gap-2",
-                  activeRightTab === 'BANK' ? "bg-[#0F172A] text-white shadow-xl" : "text-slate-400 hover:text-[#0F172A]"
+                  activeRightTab === 'BANK' ? "bg-[#0B1528] text-white shadow-xl" : "text-slate-400 hover:text-[#0B1528]"
                 )}
               >
                  <Database className="h-4 w-4" /> QUESTION BANK
@@ -430,7 +430,7 @@ function MockBuilderContent() {
                 onClick={() => setActiveRightTab('ASSEMBLY')}
                 className={cn(
                   "px-8 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center gap-2",
-                  activeRightTab === 'ASSEMBLY' ? "bg-[#0F172A] text-white shadow-xl" : "text-slate-400 hover:text-[#0F172A]"
+                  activeRightTab === 'ASSEMBLY' ? "bg-[#0B1528] text-white shadow-xl" : "text-slate-400 hover:text-[#0B1528]"
                 )}
               >
                  <Layers className="h-4 w-4" /> ACTIVE ASSEMBLY
@@ -443,7 +443,7 @@ function MockBuilderContent() {
                  <div className="absolute top-0 right-0 p-10 opacity-5"><Zap className="h-48 w-48" /></div>
                  
                  <div className="relative z-10 flex-1 flex flex-col space-y-8">
-                    {/* 1. TOP FILTERS (From Screenshot) */}
+                    {/* 1. TOP FILTERS */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
                        <div className="space-y-3">
                           <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">SOURCE BOARD HUB</Label>
@@ -535,7 +535,7 @@ function MockBuilderContent() {
                        </ScrollArea>
                     </div>
 
-                    {/* 3. TACTICAL COMMAND BAR (Screenshot Match) */}
+                    {/* 3. TACTICAL COMMAND BAR */}
                     <div className="space-y-6 pt-6 border-t border-white/10">
                        
                        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
