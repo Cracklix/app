@@ -1,4 +1,3 @@
-
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -73,6 +72,11 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'cdnbbsr.s3waas.gov.in',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.s3waas.gov.in',
         pathname: '/**',
       },
       {

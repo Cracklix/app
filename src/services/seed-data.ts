@@ -1,8 +1,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Node v32.0.
- * RECOVERED & LOCKED: Verified official URLs for PSSSB, Police, PSPCL, CTET, and PSTET Hubs.
+ * @fileOverview Institutional Seeding Node v35.0.
+ * RECOVERED & LOCKED: Verified official URLs for PSSSB, Police, PSPCL, PPSC, CTET, and PSTET Hubs.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -85,7 +85,7 @@ export async function seedInitialData(db: Firestore) {
       abbreviation: 'PPSC', 
       name: 'Punjab Public Service Commission', 
       categoryId: 'punjab-govt',
-      iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Punjab_Government_Logo.png'
+      iconUrl: 'https://cdn.s3waas.gov.in/s38cb22bdd0b7ba1ab13d742e22eed8da2/uploads/2019/05/2019052938.jpg'
     },
     { 
       id: 'pspcl', 
