@@ -8,18 +8,28 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Trash2, Edit, Save, Layers, Search, Loader2 } from "lucide-react"
+import { Plus, Trash2, Edit, Save, Layers, Search, Loader2, ChevronRight, Landmark, GraduationCap, Zap, Wallet, Globe, ShieldCheck } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, doc, setDoc, deleteDoc, serverTimestamp, query, orderBy } from "firebase/firestore"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Governance Node.
- * High-fidelity management for the 5 top-level verticals.
+ * @fileOverview Institutional Category Governance Node v10.0.
+ * High-fidelity management for the top-level verticals with deep-links to Hubs/Exams.
  */
+
+const CATEGORY_ICONS: Record<string, any> = {
+  "punjab-govt": <ShieldCheck className="h-6 w-6" />,
+  "punjab-teaching": <GraduationCap className="h-6 w-6" />,
+  "punjab-technical": <Zap className="h-6 w-6" />,
+  "banking": <Wallet className="h-6 w-6" />,
+  "central-govt": <Globe className="h-6 w-6" />
+};
 
 export default function CategoryManagement() {
   const db = useFirestore()
@@ -45,105 +55,173 @@ export default function CategoryManagement() {
         displayOrder: parseInt(editingCat.displayOrder) || 0,
         updatedAt: serverTimestamp()
       }, { merge: true })
-      toast({ title: "Registry Synced" })
+      toast({ title: "Registry Synced", description: `${editingCat.title} node updated.` })
       setEditingCat(null)
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Sync Failed", description: e.message })
     } finally {
       setIsSaving(false)
     }
   }
 
+  const handleDelete = async (id: string) => {
+    if (!db) return;
+    const confirmMsg = "CRITICAL: Permanently purge this category node? This will leave associated hubs and exams uncategorized.";
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      await deleteDoc(doc(db, "categories", id));
+      toast({ title: "Node Purged", description: "Category removed from master registry." });
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Purge Failed" });
+    }
+  }
+
   return (
     <div className="space-y-12 pb-24 text-left px-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
         <div>
            <div className="flex items-center gap-3 mb-2">
               <Layers className="h-6 w-6 text-primary" />
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Master Vertical Registry</span>
            </div>
           <h1 className="text-5xl font-black font-headline text-primary uppercase tracking-tight">Category Manager</h1>
+          <p className="text-slate-500 mt-1 font-medium">Coordinate high-level recruitment groups and drill-down into associated hubs.</p>
         </div>
-        <Button onClick={() => setEditingCat({ id: "", title: "", description: "", highlight: "", displayOrder: (categories?.length || 0) + 1, color: "text-primary", bgColor: "bg-orange-50" })} className="bg-primary hover:bg-orange-600 h-16 px-12 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl">
+        <Button onClick={() => setEditingCat({ id: "", title: "", description: "", highlight: "", displayOrder: (categories?.length || 0) + 1, color: "text-primary", bgColor: "bg-orange-50" })} className="bg-primary hover:bg-orange-600 h-16 px-12 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl transition-all active:scale-95">
           <Plus className="h-5 w-5" /> Deploy New Category
         </Button>
       </div>
 
       <Card className="border-none shadow-3xl bg-white rounded-[3rem] overflow-hidden">
         <CardContent className="p-0">
-          <Table>
-            <TableHeader className="bg-slate-50/50">
-              <TableRow className="border-slate-100 h-20">
-                <TableHead className="px-10 text-[10px] font-black uppercase tracking-widest">Vertical Identity</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-center">Order</TableHead>
-                <TableHead className="text-right px-10 text-[10px] font-black uppercase tracking-widest">Audit</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                 Array.from({length: 4}).map((_, i) => <TableRow key={i}><TableCell colSpan={3} className="p-10"><Skeleton className="h-16 w-full rounded-2xl"/></TableCell></TableRow>)
-              ) : categories?.map((cat: any) => (
-                <TableRow key={cat.id} className="hover:bg-slate-50 group border-slate-50 transition-all">
-                  <TableCell className="px-10 py-8">
-                     <div className="flex items-center gap-6">
-                        <div className={`h-12 w-12 rounded-xl flex items-center justify-center font-black ${cat.bgColor} ${cat.color} shadow-inner`}>
-                           {cat.id[0].toUpperCase()}
-                        </div>
-                        <div>
-                           <p className="font-black text-[#0F172A] text-xl uppercase leading-none">{cat.title}</p>
-                           <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest">{cat.id}</p>
-                        </div>
-                     </div>
-                  </TableCell>
-                  <TableCell className="text-center font-black text-slate-300 text-xl">{cat.displayOrder}</TableCell>
-                  <TableCell className="text-right px-10">
-                     <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100">
-                        <Button variant="ghost" size="icon" onClick={() => setEditingCat(cat)}><Edit className="h-5 w-5" /></Button>
-                        <Button variant="ghost" size="icon" className="hover:text-rose-600" onClick={async () => { if(confirm("Purge category?")) await deleteDoc(doc(db!, "categories", cat.id)) }}><Trash2 className="h-5 w-5" /></Button>
-                     </div>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-slate-50/50">
+                <TableRow className="border-slate-100 h-20">
+                  <TableHead className="px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Vertical Identity</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest text-center text-slate-500">Order</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Management Links</TableHead>
+                  <TableHead className="text-right px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Audit Control</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                   Array.from({length: 5}).map((_, i) => <TableRow key={i}><TableCell colSpan={4} className="p-10"><Skeleton className="h-16 w-full rounded-2xl"/></TableCell></TableRow>)
+                ) : categories?.map((cat: any) => (
+                  <TableRow key={cat.id} className="hover:bg-slate-50 group border-slate-50 transition-all">
+                    <TableCell className="px-10 py-8">
+                       <div className="flex items-center gap-6">
+                          <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center font-black shadow-inner bg-slate-50 text-slate-300", cat.color)}>
+                             {CATEGORY_ICONS[cat.id] || <Layers className="h-6 w-6" />}
+                          </div>
+                          <div>
+                             <p className="font-black text-[#0F172A] text-xl uppercase leading-none">{cat.title}</p>
+                             <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest">{cat.id}</p>
+                          </div>
+                       </div>
+                    </TableCell>
+                    <TableCell className="text-center font-black text-slate-300 text-xl tabular-nums">{cat.displayOrder}</TableCell>
+                    <TableCell>
+                       <div className="flex items-center gap-3">
+                          <Button asChild variant="outline" className="h-10 px-4 rounded-xl border-slate-200 font-black uppercase text-[8px] tracking-widest gap-2 hover:bg-primary/5 hover:text-primary transition-all">
+                             <Link href={`/admin/exams?category=${cat.id}`}><Landmark className="h-3 w-3" /> Hubs</Link>
+                          </Button>
+                          <Button asChild variant="outline" className="h-10 px-4 rounded-xl border-slate-200 font-black uppercase text-[8px] tracking-widest gap-2 hover:bg-blue-50 hover:text-blue-600 transition-all">
+                             <Link href={`/admin/exam-registry?category=${cat.id}`}><GraduationCap className="h-3 w-3" /> Verticals</Link>
+                          </Button>
+                       </div>
+                    </TableCell>
+                    <TableCell className="text-right px-10">
+                       <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100 transition-opacity">
+                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl bg-white shadow-sm border border-slate-100" onClick={() => setEditingCat(cat)}><Edit className="h-5 w-5" /></Button>
+                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl bg-white shadow-sm border border-slate-100 hover:bg-rose-50 hover:text-rose-600" onClick={() => handleDelete(cat.id)}><Trash2 className="h-5 w-5" /></Button>
+                       </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
       <Dialog open={!!editingCat} onOpenChange={o => !o && setEditingCat(null)}>
          <DialogContent className="sm:max-w-xl rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
             <div className="h-2 w-full bg-[#0F172A] shrink-0" />
-            <DialogHeader className="p-10 pb-0"><DialogTitle className="text-2xl font-black font-headline uppercase">Category Hub Architect</DialogTitle></DialogHeader>
+            <DialogHeader className="p-10 pb-0">
+               <DialogTitle className="text-2xl font-black font-headline uppercase flex items-center gap-4">
+                  <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-inner">
+                     <Layers className="h-6 w-6" />
+                  </div>
+                  Category Hub Architect
+               </DialogTitle>
+            </DialogHeader>
             <div className="p-10 space-y-6">
                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                     <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Registry ID</Label>
-                     <Input value={editingCat?.id} onChange={e => setEditingCat({...editingCat, id: e.target.value.toLowerCase().replace(/\s+/g, '-')})} className="h-12 rounded-xl" placeholder="e.g. punjab-govt" disabled={!!editingCat?.updatedAt} />
+                  <div className="space-y-2 text-left">
+                     <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Registry ID (Slug)</Label>
+                     <Input 
+                        value={editingCat?.id} 
+                        onChange={e => setEditingCat({...editingCat, id: e.target.value.toLowerCase().replace(/\s+/g, '-')})} 
+                        className="h-12 rounded-xl bg-slate-50 border-none font-mono text-xs" 
+                        placeholder="e.g. punjab-govt" 
+                        disabled={!!editingCat?.updatedAt} 
+                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 text-left">
                      <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Display Order</Label>
-                     <Input type="number" value={editingCat?.displayOrder} onChange={e => setEditingCat({...editingCat, displayOrder: e.target.value})} className="h-12 rounded-xl" />
+                     <Input 
+                        type="number" 
+                        value={editingCat?.displayOrder} 
+                        onChange={e => setEditingCat({...editingCat, displayOrder: e.target.value})} 
+                        className="h-12 rounded-xl bg-slate-50 border-none font-black text-center" 
+                     />
                   </div>
                </div>
-               <div className="space-y-2">
+               <div className="space-y-2 text-left">
                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Headline Title</Label>
-                  <Input value={editingCat?.title} onChange={e => setEditingCat({...editingCat, title: e.target.value})} className="h-12 rounded-xl font-bold" />
+                  <Input 
+                    value={editingCat?.title} 
+                    onChange={e => setEditingCat({...editingCat, title: e.target.value})} 
+                    className="h-14 rounded-xl border-slate-100 font-black text-lg text-[#0F172A]" 
+                    placeholder="e.g. Punjab Teaching Exams"
+                  />
                </div>
-               <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Abstract Description</Label>
-                  <Textarea value={editingCat?.description} onChange={e => setEditingCat({...editingCat, description: e.target.value})} className="rounded-xl min-h-[80px]" />
+               <div className="space-y-2 text-left">
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Thematic Description</Label>
+                  <Textarea 
+                    value={editingCat?.description} 
+                    onChange={e => setEditingCat({...editingCat, description: e.target.value})} 
+                    className="rounded-xl border-slate-100 bg-slate-50 min-h-[100px] font-medium leading-relaxed" 
+                    placeholder="Describe associated recruitment boards..."
+                  />
                </div>
                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                  <div className="space-y-2 text-left">
                      <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Highlight Badge</Label>
-                     <Input value={editingCat?.highlight} onChange={e => setEditingCat({...editingCat, highlight: e.target.value})} className="h-12 rounded-xl uppercase text-[10px] font-black" />
+                     <Input 
+                        value={editingCat?.highlight} 
+                        onChange={e => setEditingCat({...editingCat, highlight: e.target.value})} 
+                        className="h-12 rounded-xl border-slate-100 uppercase text-[10px] font-black" 
+                        placeholder="e.g. STATE LEVEL"
+                     />
                   </div>
-                  <div className="space-y-2">
-                     <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Color Theme (Tailwind)</Label>
-                     <Input value={editingCat?.color} onChange={e => setEditingCat({...editingCat, color: e.target.value})} className="h-12 rounded-xl font-mono text-xs" placeholder="text-primary" />
+                  <div className="space-y-2 text-left">
+                     <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Theme Color (Tailwind)</Label>
+                     <Input 
+                        value={editingCat?.color} 
+                        onChange={e => setEditingCat({...editingCat, color: e.target.value})} 
+                        className="h-12 rounded-xl border-slate-100 font-mono text-xs" 
+                        placeholder="text-primary" 
+                     />
                   </div>
                </div>
             </div>
-            <DialogFooter className="p-10 pt-0">
-               <Button onClick={handleSave} disabled={isSaving} className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl transition-all">
-                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Commit Category Node"}
+            <DialogFooter className="p-10 pt-4 bg-slate-50 flex gap-4 border-t border-slate-100">
+               <Button variant="ghost" onClick={() => setEditingCat(null)} className="rounded-xl h-14 px-8 font-black uppercase text-[10px] text-slate-400">Cancel</Button>
+               <Button onClick={handleSave} disabled={isSaving} className="flex-1 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl transition-all active:scale-95 gap-3 border-none">
+                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Commit Category Node
                </Button>
             </DialogFooter>
          </DialogContent>
