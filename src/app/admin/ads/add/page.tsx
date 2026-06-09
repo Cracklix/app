@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, Suspense } from "react"
@@ -134,7 +133,9 @@ function AdEntryContent() {
                  <div className="space-y-3">
                     <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Ad Engine</Label>
                     <Select value={formData.type} onValueChange={(v: AdType) => setFormData({...formData, type: v})}>
-                       <SelectTrigger className="h-14 rounded-2xl bg-slate-50 border-none font-black uppercase text-[10px]"><SelectValue /></SelectTrigger>
+                       <SelectTrigger className="h-14 rounded-2xl bg-slate-50 border-none font-black uppercase text-[10px]">
+                          <SelectValue />
+                       </SelectTrigger>
                        <SelectContent>
                           <SelectItem value="BANNER">Direct Image Banner</SelectItem>
                           <SelectItem value="ADSENSE">Google AdSense Node</SelectItem>
@@ -203,7 +204,9 @@ function AdEntryContent() {
                  <div className="space-y-3">
                     <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Global Status</Label>
                     <Select value={formData.status} onValueChange={(v: AdStatus) => setFormData({...formData, status: v})}>
-                       <SelectTrigger className="h-12 rounded-xl bg-white/5 border-none font-bold"><SelectValue /></SelectTrigger>
+                       <SelectTrigger className="h-12 rounded-xl bg-white/5 border-none font-bold">
+                          <SelectValue />
+                       </SelectTrigger>
                        <SelectContent>
                           <SelectItem value="ACTIVE">System Online</SelectItem>
                           <SelectItem value="PAUSED">System Paused</SelectItem>

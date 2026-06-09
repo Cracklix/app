@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
@@ -36,8 +35,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Bulk Ingestion Hub v9.0.
- * FIXED: Enforced strict 'UNUSED' status for all new registry assets.
+ * @fileOverview Institutional Bulk Ingestion Hub v9.1.
+ * FIXED: JSX syntax error on SelectValue tags.
  */
 
 export default function BulkImportPage() {
@@ -163,14 +162,18 @@ export default function BulkImportPage() {
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Target Board</Label>
                   <Select value={metadata.boardId} onValueChange={v => setMetadata({...metadata, boardId: v})}>
-                    <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-none font-bold text-sm"><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-none font-bold text-sm">
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
                     <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1.5">
                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Target Subject</Label>
                    <Select value={metadata.subjectId} onValueChange={v => setMetadata({...metadata, subjectId: v})}>
-                      <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-none font-bold text-sm"><SelectValue placeholder="Select" /></SelectTrigger>
+                      <SelectTrigger className="rounded-xl h-12 bg-slate-50/50 border-none font-bold text-sm">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
                       <SelectContent>{subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                    </Select>
                 </div>
@@ -179,7 +182,9 @@ export default function BulkImportPage() {
               <div className="space-y-1.5 pt-2">
                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1 flex items-center gap-2"><Languages className="h-3 w-3" /> Secondary Assessment Language</Label>
                  <Select value={metadata.secondaryLanguage} onValueChange={(v: any) => setMetadata({...metadata, secondaryLanguage: v})}>
-                    <SelectTrigger className="rounded-xl h-14 bg-slate-900 text-white border-none font-black uppercase text-[10px] tracking-widest"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="rounded-xl h-14 bg-slate-900 text-white border-none font-black uppercase text-[10px] tracking-widest">
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                        <SelectItem value="punjabi">English + Punjabi</SelectItem>
                        <SelectItem value="hindi">English + Hindi</SelectItem>

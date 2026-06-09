@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo, useEffect, Suspense } from "react"
@@ -48,9 +47,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Mock Architect v18.0 (Production Recovery).
- * RESTORED: Full question bank management, search, and sectional assembly.
- * UPDATED: Category -> Hub -> Vertical hierarchy for targeted distribution.
+ * @fileOverview Institutional Mock Architect v18.4.
+ * FIXED: JSX syntax error on SelectValue tags.
  */
 
 export default function MockBuilderPage() {
@@ -73,9 +71,9 @@ function MockBuilderContent() {
   // --- DATA LISTENERS ---
   const { data: existingMock } = useDoc<any>(useMemo(() => (db && mockId ? doc(db, "mocks", mockId) : null), [db, mockId]))
   const { data: categories } = useCollection<any>(useMemo(() => (db ? query(collection(db, "categories"), orderBy("displayOrder", "asc")) : null), [db]))
-  const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards"), orderBy("displayOrder", "asc")) : null), [db]))
-  const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams")) : null), [db]))
-  const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects")) : null), [db]))
+  const { data: boards } = useCollection<any>(useMemo(() => (db ? query(collection(db, "boards"), orderBy("displayOrder", "asc")) : null), [db]))
+  const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
+  const { data: subjects } = useCollection<any>(useMemo(() => (db ? collection(db, "subjects") : null), [db]))
   
   // --- STATE HUB ---
   const [bankLoading, setBankLoading] = useState(false)
@@ -315,7 +313,9 @@ function MockBuilderContent() {
                     <div className="space-y-2">
                        <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Test Type</Label>
                        <Select value={mockData.mockType || "FULL"} onValueChange={(v: any) => setMockData({...mockData, mockType: v})}>
-                          <SelectTrigger className="h-11 rounded-xl bg-slate-50 border-none font-bold text-[10px] uppercase"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="h-11 rounded-xl bg-slate-50 border-none font-bold text-[10px] uppercase">
+                            <SelectValue />
+                          </SelectTrigger>
                           <SelectContent>
                              <SelectItem value="FULL">Full Length Mock</SelectItem>
                              <SelectItem value="SUBJECT">Subject-Wise Test</SelectItem>
@@ -327,7 +327,9 @@ function MockBuilderContent() {
                     <div className="space-y-2">
                        <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Access Level</Label>
                        <Select value={mockData.accessLevel || "FREE"} onValueChange={(v: any) => setMockData({...mockData, accessLevel: v})}>
-                          <SelectTrigger className="h-11 rounded-xl bg-slate-50 border-none font-bold text-[10px] uppercase"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="h-11 rounded-xl bg-slate-50 border-none font-bold text-[10px] uppercase">
+                            <SelectValue />
+                          </SelectTrigger>
                           <SelectContent>
                              <SelectItem value="FREE">Public (FREE)</SelectItem>
                              <SelectItem value="PREMIUM">Elite (PREMIUM)</SelectItem>
@@ -388,7 +390,9 @@ function MockBuilderContent() {
                     <div className="space-y-2">
                        <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Language Mode</Label>
                        <Select value={mockData.languageMode} onValueChange={(v: any) => setMockData({...mockData, languageMode: v})}>
-                          <SelectTrigger className="h-11 rounded-xl bg-white border-slate-200 font-black uppercase text-[9px]"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="h-11 rounded-xl bg-white border-slate-200 font-black uppercase text-[9px]">
+                            <SelectValue />
+                          </SelectTrigger>
                           <SelectContent>
                              <SelectItem value="ENGLISH_PUNJABI">English & ਪੰਜਾਬੀ</SelectItem>
                              <SelectItem value="ENGLISH_HINDI">English & हिन्दी</SelectItem>

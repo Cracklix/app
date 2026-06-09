@@ -21,8 +21,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { MockType } from "@/types"
 
 /**
- * @fileOverview Institutional Bulk Ingestion Hub v4.0.
- * Strictly follows the "Question EN \n Question PA \n (A) EN / PA" format.
+ * @fileOverview Institutional Bulk Ingestion Hub v4.1.
+ * FIXED: JSX syntax error on SelectValue tags.
  */
 
 export default function BulkImportPage() {
@@ -172,14 +172,18 @@ Correct Answer: (B) West / ਸਹੀ ਉੱਤਰ: ਪੱਛਮ * English Explan
                 <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Board</Label>
                   <Select value={metadata.boardId} onValueChange={val => setMetadata({...metadata, boardId: val})}>
-                    <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm"><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm">
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
                     <SelectContent>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
                    <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Subject</Label>
                    <Select value={metadata.subjectId} onValueChange={val => setMetadata({...metadata, subjectId: val})}>
-                     <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm"><SelectValue placeholder="Select" /></SelectTrigger>
+                     <SelectTrigger className="rounded-xl bg-slate-50 border-none h-14 font-bold text-sm">
+                        <SelectValue placeholder="Select" />
+                     </SelectTrigger>
                      <SelectContent>{subjects?.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                    </Select>
                 </div>
