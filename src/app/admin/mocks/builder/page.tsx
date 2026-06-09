@@ -39,7 +39,8 @@ import {
   FileWarning,
   History,
   RefreshCw,
-  Award
+  Award,
+  AlertTriangle
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, limit, getDocs, writeBatch, where, documentId, orderBy, deleteDoc } from "firebase/firestore"
@@ -51,9 +52,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v52.0.
- * UPDATED: Registry Statistics moved to small boxes at the top.
- * FIXED: Re-aligned all buttons and switches for proper spacing.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v55.0.
+ * UPDATED: Assignment Hub (Left Column) perfectly matched to user screenshot.
+ * FIXED: 4-line list height and emerald/rose marks cards.
  */
 
 export default function MockBuilderPage() {
@@ -322,10 +323,11 @@ function MockBuilderContent() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10">
         
-        {/* LEFT COLUMN: ASSIGNMENT HUB */}
+        {/* LEFT COLUMN: ASSIGNMENT HUB (SAME TO SAME) */}
         <div className="lg:col-span-4 space-y-8">
-           <Card className="border-none shadow-xl rounded-[2.5rem] bg-white p-6 md:p-8 space-y-10 border border-slate-100">
+           <Card className="border-none shadow-xl rounded-[2.5rem] bg-white p-6 md:p-10 space-y-10 border border-slate-100">
               
+              {/* DISTRIBUTION MODE */}
               <div className="space-y-4">
                 <Select value={mockData.assignmentMode} onValueChange={(v: MockAssignmentMode) => setMockData({...mockData, assignmentMode: v})}>
                   <SelectTrigger className="h-16 rounded-2xl bg-[#0B1528] text-white border-none font-black uppercase text-[11px] tracking-[0.15em] px-6 shadow-2xl flex items-center justify-between">
@@ -339,9 +341,10 @@ function MockBuilderContent() {
                 </Select>
               </div>
 
+              {/* TARGET AUTHORITY BOARDS (4 LINE LIST) */}
               <div className="space-y-4 text-left">
-                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">TARGET AUTHORITY BOARDS</Label>
-                <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
+                <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">TARGET AUTHORITY BOARDS</Label>
+                <div className="space-y-2 max-h-[180px] overflow-y-auto custom-scrollbar pr-2">
                    {boards?.map((b: any) => (
                       <div 
                          key={b.id} 
@@ -360,9 +363,10 @@ function MockBuilderContent() {
                 </div>
               </div>
 
+              {/* TARGET RECRUITMENT VERTICALS (4 LINE LIST) */}
               <div className="space-y-4 text-left">
-                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">TARGET RECRUITMENT VERTICALS</Label>
-                <div className="space-y-2 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">TARGET RECRUITMENT VERTICALS</Label>
+                <div className="space-y-2 max-h-[180px] overflow-y-auto custom-scrollbar pr-2">
                    {uniqueExams.map((e: any) => {
                       const isSelected = mockData.examIds?.includes(e.id);
                       return (
@@ -384,8 +388,9 @@ function MockBuilderContent() {
                 </div>
               </div>
 
+              {/* LANGUAGE MODE DROPDOWN */}
               <div className="space-y-4 pt-6 border-t border-slate-50">
-                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">LANGUAGE MODE</Label>
+                <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">LANGUAGE MODE</Label>
                 <Select value={mockData.languageMode} onValueChange={(v: LanguageDisplayMode) => setMockData({...mockData, languageMode: v})}>
                   <SelectTrigger className="h-16 rounded-2xl bg-white border-2 border-slate-100 shadow-sm font-black text-[11px] uppercase px-6 tracking-widest flex items-center justify-between">
                     <SelectValue />
@@ -398,14 +403,65 @@ function MockBuilderContent() {
                 </Select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                 <div className="space-y-2">
-                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">DURATION (MIN)</Label>
-                    <Input type="number" value={mockData.duration} onChange={e => setMockData({...mockData, duration: parseInt(e.target.value)})} className="h-14 rounded-xl bg-slate-50 border-none font-black text-center text-lg" />
+              {/* DURATION & ATTEMPT LIMIT GRID */}
+              <div className="grid grid-cols-2 gap-6 pt-4">
+                 <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1 flex items-center gap-2">
+                       <Clock className="h-3 w-3" /> DURATION (MIN)
+                    </Label>
+                    <Input 
+                       type="number" 
+                       value={mockData.duration} 
+                       onChange={e => setMockData({...mockData, duration: parseInt(e.target.value)})} 
+                       className="h-16 rounded-2xl bg-slate-50 border-none font-black text-center text-xl shadow-inner" 
+                    />
                  </div>
-                 <div className="space-y-2">
-                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">LIMIT</Label>
-                    <Input type="number" value={mockData.attemptLimit} onChange={e => setMockData({...mockData, attemptLimit: parseInt(e.target.value)})} className="h-14 rounded-xl bg-slate-50 border-none font-black text-center text-lg" />
+                 <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1 flex items-center gap-2">
+                       <Lock className="h-3 w-3" /> ATTEMPT LIMIT
+                    </Label>
+                    <Select 
+                       value={mockData.attemptLimit?.toString()} 
+                       onValueChange={v => setMockData({...mockData, attemptLimit: parseInt(v)})}
+                    >
+                       <SelectTrigger className="h-16 rounded-2xl bg-white border-2 border-[#F97316] font-black text-[11px] uppercase px-4 shadow-xl">
+                          <SelectValue placeholder="UNLIMITED" />
+                       </SelectTrigger>
+                       <SelectContent className="rounded-xl">
+                          <SelectItem value="0">UNLIMITED</SelectItem>
+                          <SelectItem value="1">1 ATTEMPT</SelectItem>
+                          <SelectItem value="2">2 ATTEMPTS</SelectItem>
+                          <SelectItem value="3">3 ATTEMPTS</SelectItem>
+                       </SelectContent>
+                    </Select>
+                 </div>
+              </div>
+
+              {/* POSITIVE & PENALTY CARDS (SAME AS SCREENSHOT) */}
+              <div className="grid grid-cols-2 gap-6 pt-6">
+                 <div className="bg-[#F0FDF4] p-8 rounded-[2.5rem] border border-[#DCFCE7] text-center space-y-4 shadow-sm group hover:shadow-lg transition-all">
+                    <p className="text-[10px] font-black text-[#10B981] uppercase tracking-widest flex items-center justify-center gap-2">
+                       <Zap className="h-3 w-3" /> POSITIVE (+)
+                    </p>
+                    <Input 
+                       type="number" 
+                       step="0.1"
+                       value={mockData.positiveMarks} 
+                       onChange={e => setFormData({...mockData, positiveMarks: parseFloat(e.target.value)})}
+                       className="h-10 bg-transparent border-none text-center font-black text-4xl text-[#10B981] p-0 focus-visible:ring-0" 
+                    />
+                 </div>
+                 <div className="bg-[#FEF2F2] p-8 rounded-[2.5rem] border border-[#FEE2E2] text-center space-y-4 shadow-sm group hover:shadow-lg transition-all">
+                    <p className="text-[10px] font-black text-[#F43F5E] uppercase tracking-widest flex items-center justify-center gap-2">
+                       <AlertTriangle className="h-3 w-3" /> PENALTY (-)
+                    </p>
+                    <Input 
+                       type="number" 
+                       step="0.01"
+                       value={mockData.negativeMarks} 
+                       onChange={e => setFormData({...mockData, negativeMarks: parseFloat(e.target.value)})}
+                       className="h-10 bg-transparent border-none text-center font-black text-4xl text-[#F43F5E] p-0 focus-visible:ring-0" 
+                    />
                  </div>
               </div>
 
@@ -445,7 +501,7 @@ function MockBuilderContent() {
                     <div className="absolute top-0 right-0 p-10 opacity-5"><Zap className="h-48 w-48" /></div>
                     
                     <div className="relative z-10 flex flex-col space-y-8">
-                        {/* 1. TOP METRICS & FILTERS */}
+                        {/* 1. TOP METRICS & FILTERS (AS REQUESTED: SMALL BOXES AT TOP) */}
                         <div className="space-y-6">
                            <div className="flex flex-wrap items-center justify-between gap-6 pb-6 border-b border-white/5">
                               <div className="flex items-center gap-6">
@@ -497,7 +553,7 @@ function MockBuilderContent() {
                            </div>
                         </div>
 
-                        {/* 3. TACTICAL COMMAND BAR */}
+                        {/* 3. TACTICAL COMMAND BAR (RESTORED TO 7:00 AM STATE) */}
                         <div className="space-y-8 pt-8 border-t border-white/10">
                           
                           <div className="flex flex-col md:flex-row items-end gap-8">
@@ -540,7 +596,7 @@ function MockBuilderContent() {
                     </div>
                   </div>
 
-                  {/* QUESTION LIST */}
+                  {/* QUESTION LIST (WHITE CARDS) */}
                   <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                     {bankLoading ? (
                       Array.from({length: 4}).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-[2rem]" />)
