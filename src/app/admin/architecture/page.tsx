@@ -33,14 +33,13 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Punjab Exam Architecture Manager v2.0.
- * Centralized hub for managing Punjab-Specific Categories, Hubs, and Exam Verticals.
+ * @fileOverview Punjab Exam Architecture Manager v2.2.
+ * Centralized hierarchical board for Category → Hub → Exam mapping.
  */
 
 export default function ArchitectureManager() {
   const db = useFirestore()
   const [activeTab, setActiveTab] = useState("overview")
-  const [searchTerm, setSearchTerm] = useState("")
 
   // STABILIZED DATA LISTENERS
   const { data: categories, loading: catLoading } = useCollection<any>(useMemo(() => (db ? query(collection(db, "categories"), orderBy("displayOrder", "asc")) : null), [db]))
@@ -66,7 +65,7 @@ export default function ArchitectureManager() {
               <Box className="h-6 w-6 text-primary" />
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Punjab Registry Architect</span>
            </div>
-          <h1 className="text-5xl font-black font-headline text-primary uppercase tracking-tight">Architecture Manager</h1>
+          <h1 className="text-5xl font-black font-headline text-primary uppercase tracking-tight">Punjab Tree</h1>
           <p className="text-slate-500 mt-2 text-lg font-medium">Manage the structural discovery hierarchy for all Punjab preparation nodes.</p>
         </div>
       </div>
@@ -74,16 +73,10 @@ export default function ArchitectureManager() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="px-4 space-y-10">
          <TabsList className="bg-slate-100 p-1.5 h-16 rounded-2xl shadow-sm inline-flex gap-2">
             <TabsTrigger value="overview" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
-               <Layers className="h-4 w-4 mr-2" /> Punjab Tree
+               <Layers className="h-4 w-4 mr-2" /> Overview
             </TabsTrigger>
             <TabsTrigger value="categories" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
-               Categories
-            </TabsTrigger>
-            <TabsTrigger value="hubs" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
-               Hubs (Boards)
-            </TabsTrigger>
-            <TabsTrigger value="verticals" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
-               Verticals (Exams)
+               Manage Categories
             </TabsTrigger>
          </TabsList>
 
@@ -92,7 +85,7 @@ export default function ArchitectureManager() {
                {catLoading ? (
                   Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-[3rem]" />)
                ) : hierarchy.map((cat) => (
-                  <Card key={cat.id} className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden border border-slate-50">
+                  <Card key={cat.id} className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden border border-slate-100">
                      <div className="h-2 w-full bg-primary/20" />
                      <CardHeader className="p-10 pb-6 border-b border-slate-50 bg-slate-50/30 flex flex-row items-center justify-between">
                         <div className="flex items-center gap-6">
@@ -105,7 +98,7 @@ export default function ArchitectureManager() {
                            </div>
                         </div>
                         <Button asChild variant="outline" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest gap-2">
-                           <Link href="/admin/categories"><Edit className="h-3 w-3" /> Manage Nodes</Link>
+                           <Link href="/admin/categories"><Edit className="h-3 w-3" /> Edit Node</Link>
                         </Button>
                      </CardHeader>
                      <CardContent className="p-10">
@@ -138,7 +131,7 @@ export default function ArchitectureManager() {
                                  </Button>
                               </div>
                            )) : (
-                              <div className="col-span-full py-10 text-center opacity-20 italic font-black uppercase text-[10px]">No Hubs Assigned to this Category.</div>
+                              <div className="col-span-full py-10 text-center opacity-20 italic font-black uppercase text-[10px]">No Hubs Assigned.</div>
                            )}
                         </div>
                      </CardContent>
@@ -154,28 +147,6 @@ export default function ArchitectureManager() {
                <p className="text-slate-400 text-sm mb-8">Direct management for top-level Punjab verticals.</p>
                <Button asChild className="h-14 px-10 rounded-2xl bg-[#0F172A] hover:bg-black font-black uppercase text-[10px] tracking-widest">
                   <Link href="/admin/categories">Launch Category Manager</Link>
-               </Button>
-            </div>
-         </TabsContent>
-
-         <TabsContent value="hubs">
-            <div className="bg-white rounded-[3rem] p-12 text-center border-2 border-dashed border-slate-100">
-               <Info className="h-10 w-10 mx-auto mb-4 text-slate-300" />
-               <h3 className="font-headline font-black text-xl uppercase mb-2">Hub (Board) Registry</h3>
-               <p className="text-slate-400 text-sm mb-8">Manage recruiting boards like PSSSB, Police, and PPSC.</p>
-               <Button asChild className="h-14 px-10 rounded-2xl bg-[#0F172A] hover:bg-black font-black uppercase text-[10px] tracking-widest">
-                  <Link href="/admin/exams">Launch Hub Manager</Link>
-               </Button>
-            </div>
-         </TabsContent>
-
-         <TabsContent value="verticals">
-            <div className="bg-white rounded-[3rem] p-12 text-center border-2 border-dashed border-slate-100">
-               <Info className="h-10 w-10 mx-auto mb-4 text-slate-300" />
-               <h3 className="font-headline font-black text-xl uppercase mb-2">Exam Vertical Registry</h3>
-               <p className="text-slate-400 text-sm mb-8">Manage specific exams like Patwari, Constable, and Master Cadre.</p>
-               <Button asChild className="h-14 px-10 rounded-2xl bg-[#0F172A] hover:bg-black font-black uppercase text-[10px] tracking-widest">
-                  <Link href="/admin/exam-registry">Launch Vertical Manager</Link>
                </Button>
             </div>
          </TabsContent>
