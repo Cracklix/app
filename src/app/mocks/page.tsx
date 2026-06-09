@@ -28,8 +28,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @file Overview Final Exam Gateway Node v10.0.
- * UPDATED: Multi-Exam statistical audit. Handles mocks mapped to multiple verticals.
+ * @file Overview Final Exam Gateway Node v11.0.
+ * UPDATED: Strictly enforced official branding for CTET, PSTET, and PSEB.
  */
 
 export default function MocksGatewayPage() {
@@ -79,6 +79,10 @@ export default function MocksGatewayPage() {
     return map;
   }, [mocks]);
 
+  const ctetOfficialLogo = "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png";
+  const pstetOfficialLogo = "https://pstet.pseb.ac.in/img/main-logo-2.png";
+  const psebOfficialLogo = "https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png";
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body">
       <Navbar />
@@ -109,7 +113,18 @@ export default function MocksGatewayPage() {
                b.abbreviation?.toLowerCase() === exam.boardId?.toLowerCase()
              );
              
-             const logoUrl = exam.iconUrl || board?.iconUrl;
+             const abbrev = board?.abbreviation?.toUpperCase() || exam.boardId?.toUpperCase();
+             let logoUrl = exam.iconUrl || board?.iconUrl;
+
+             // BRANDING AUDIT
+             const isCtet = abbrev === 'CTET' || abbrev === 'CBSE' || exam.name.toUpperCase().includes('CTET');
+             const isPstet = abbrev === 'PSTET' || (exam.name.toUpperCase().includes('PSTET') && !isCtet);
+             const isPseb = abbrev === 'PSEB' || abbrev === 'EDUCATION' || (exam.name.toUpperCase().includes('PSEB') && !isCtet && !isPstet);
+
+             if (isCtet) logoUrl = ctetOfficialLogo;
+             else if (isPstet) logoUrl = pstetOfficialLogo;
+             else if (isPseb) logoUrl = psebOfficialLogo;
+
              const stats = statsMap[exam.id] || { full: 0, pyq: 0, sectional: 0, subject: 0 };
              const isImgFailed = failedImages[exam.id];
              const isArmy = exam.boardId?.toLowerCase() === 'army' || exam.id?.toLowerCase().includes('army');
@@ -128,7 +143,7 @@ export default function MocksGatewayPage() {
                                     alt="Board Logo" 
                                     className={cn(
                                       "w-full h-full object-contain p-2.5 transition-transform duration-500 group-hover:scale-110", 
-                                      isArmy ? "scale-150" : isPolice ? "scale-125" : ""
+                                      isArmy ? "scale-150" : (isPolice || isCtet || isPstet || isPseb) ? "scale-125" : ""
                                     )} 
                                     onError={() => setFailedImages(p => ({...p, [exam.id]: true}))}
                                   />
