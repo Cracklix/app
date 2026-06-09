@@ -51,9 +51,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v64.0.
- * UPDATED: Added standalone Punjabi/Hindi modes and hardened Question Bank filters.
- * FIXED: Resolved filter mismatch by implementing cascading board-exam dependency.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v65.0.
+ * UPDATED: Integrated canonical Subject Picker for section management.
+ * FIXED: Removed duplicate subjects from pick-list and ensured cascading board-exam filters.
  */
 
 export default function MockBuilderPage() {
@@ -74,11 +74,11 @@ function MockBuilderContent() {
   const isEditing = !!mockId
 
   // --- DATA LISTENERS ---
-  const { data: existingMock } = useDoc<any>(useMemo(() => (db && mockId ? doc(db, "mocks", mockId) : null), [db, mockId]))
   const { data: categories } = useCollection<any>(useMemo(() => (db ? query(collection(db, "categories"), orderBy("displayOrder", "asc")) : null), [db]))
   const { data: boards } = useCollection<any>(useMemo(() => (db ? query(collection(db, "boards"), orderBy("displayOrder", "asc")) : null), [db]))
   const { data: rawExams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
   const { data: subjects } = useCollection<any>(useMemo(() => (db ? query(collection(db, "subjects"), orderBy("name", "asc")) : null), [db]))
+  const { data: existingMock } = useDoc<any>(useMemo(() => (db && mockId ? doc(db, "mocks", mockId) : null), [db, mockId]))
   
   // --- STATE HUB ---
   const [bankLoading, setBankLoading] = useState(false)
@@ -201,9 +201,13 @@ function MockBuilderContent() {
 
   const filteredSubjectsForPicking = useMemo(() => {
     if (!subjects) return [];
-    return subjects.filter((s: any) => 
-      s.name?.toLowerCase().includes(subjectSearch.toLowerCase())
-    ).sort((a: any, b: any) => a.name.localeCompare(b.name));
+    const seen = new Set();
+    return subjects.filter((s: any) => {
+      const key = s.name?.toLowerCase().trim();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return s.name?.toLowerCase().includes(subjectSearch.toLowerCase());
+    }).sort((a: any, b: any) => a.name.localeCompare(b.name));
   }, [subjects, subjectSearch]);
 
   // --- ACTIONS ---
@@ -539,7 +543,7 @@ function MockBuilderContent() {
                     <div className="absolute top-0 right-0 p-10 opacity-5"><Zap className="h-48 w-48" /></div>
                     
                     <div className="relative z-10 flex flex-col space-y-10">
-                        {/* 1. TOP STATS (Registry Hub Styles) */}
+                        {/* 1. TOP STATS */}
                         <div className="flex flex-wrap items-center justify-between gap-6 pb-8 border-b border-white/5">
                            <div className="flex items-center gap-6">
                               <div className="bg-white/5 px-4 py-2.5 rounded-xl border border-white/10 flex items-center gap-3">
@@ -592,7 +596,7 @@ function MockBuilderContent() {
 
                         <div className="h-px w-full bg-white/10" />
 
-                        {/* 3. TACTICAL COMMAND BAR ("Same to Same") */}
+                        {/* 3. TACTICAL COMMAND BAR */}
                         <div className="space-y-10">
                           <div className="flex flex-col md:flex-row items-end gap-6">
                               <div className="flex-1 space-y-4 text-left w-full">

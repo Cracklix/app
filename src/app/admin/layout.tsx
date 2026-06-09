@@ -42,8 +42,8 @@ import { Button } from "@/components/ui/button";
 import BackButton from "@/components/navigation/BackButton";
 
 /**
- * @fileOverview Institutional Sidebar Restoration v114.0.
- * UPDATED: Added MOCK ARCHITECT to Content Management section.
+ * @fileOverview Institutional Sidebar Restoration v115.0.
+ * UPDATED: Optimized module ordering with MOCK ARCHITECT at the top of Content Management.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
