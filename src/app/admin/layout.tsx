@@ -27,7 +27,8 @@ import {
   GraduationCap,
   Rocket,
   ArrowLeftRight,
-  Box
+  Box,
+  Layers
 } from "lucide-react"
 import Link from "next/link"
 import Logo from "@/components/brand/Logo"
@@ -40,8 +41,8 @@ import { Button } from "@/components/ui/button";
 import BackButton from "@/components/navigation/BackButton";
 
 /**
- * @fileOverview Institutional Security Protocol v104.0.
- * RESTORED: Sidebar labels exactly matching morning screenshot: DASHBOARD, AUTHORITY HUB, EXAM REGISTRY, SUBJECT LIST.
+ * @fileOverview Institutional Security Protocol v105.0.
+ * UPDATED: Sidebar labels strictly matching the provided screenshot.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -96,21 +97,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Master Registry</SidebarGroupLabel>
             <SidebarMenu>
               <AdminNavItem icon={<LayoutDashboard />} label="DASHBOARD" href="/admin" active={pathname === "/admin"} />
-              <AdminNavItem icon={<Landmark className="text-amber-400" />} label="AUTHORITY HUB" href="/admin/exams" active={pathname === "/admin/exams"} />
-              <AdminNavItem icon={<GraduationCap className="text-emerald-400" />} label="EXAM REGISTRY" href="/admin/exam-registry" active={pathname === "/admin/exam-registry"} />
+              <AdminNavItem icon={<Layers />} label="CATEGORIES" href="/admin/categories" active={pathname === "/admin/categories"} />
+              <AdminNavItem icon={<Landmark className="text-amber-400" />} label="HUBS (BOARDS)" href="/admin/exams" active={pathname === "/admin/exams"} />
+              <AdminNavItem icon={<GraduationCap className="text-emerald-400" />} label="VERTICAL REGISTRY" href="/admin/exam-registry" active={pathname === "/admin/exam-registry"} />
               <AdminNavItem icon={<SearchCode className="text-emerald-400" />} label="SUBJECT LIST" href="/admin/subjects" active={pathname === "/admin/subjects"} />
-            </SidebarMenu>
-          </SidebarGroup>
-
-          <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Content Engines</SidebarGroupLabel>
-            <SidebarMenu>
               <AdminNavItem icon={<Box />} label="GLOBAL BANK" href="/admin/questions" active={pathname === "/admin/questions"} />
-              <AdminNavItem icon={<Zap className="text-primary" />} label="MOCK MANAGER" href="/admin/mocks" active={pathname === "/admin/mocks"} />
-              <AdminNavItem icon={<Zap className="text-orange-400" />} label="MOCK ARCHITECT" href="/admin/mocks/builder" active={pathname === "/admin/mocks/builder"} />
               <AdminNavItem icon={<Rocket className="text-primary" />} label="BULK INGESTION" href="/admin/bulk-import" active={pathname === "/admin/bulk-import"} />
-              <AdminNavItem icon={<Newspaper className="text-emerald-400" />} label="CURRENT AFFAIRS" href="/admin/current-affairs" active={pathname === "/admin/current-affairs"} />
-              <AdminNavItem icon={<FileText className="text-rose-400" />} label="STUDY NOTES" href="/admin/notes" active={pathname === "/admin/notes"} />
             </SidebarMenu>
           </SidebarGroup>
 

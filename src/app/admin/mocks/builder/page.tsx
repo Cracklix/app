@@ -49,8 +49,8 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v46.0.
- * RESTORED: Perfectly matching the morning 7:00 AM screenshot.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v48.0.
+ * UPDATED: Strictly matching the provided screenshot layout and card design.
  */
 
 export default function MockBuilderPage() {
@@ -390,7 +390,7 @@ function MockBuilderContent() {
 
                  <div className="space-y-4 text-left">
                     <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">TARGET AUTHORITY BOARDS</Label>
-                    <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                    <div className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
                        {boards?.map((b: any) => (
                           <div 
                              key={b.id} 
@@ -406,6 +406,31 @@ function MockBuilderContent() {
                              <span className="text-[11px] font-black text-[#0F172A] uppercase tracking-tight">{b.abbreviation} HUB</span>
                           </div>
                        ))}
+                    </div>
+                 </div>
+
+                 <div className="pt-6 border-t border-slate-50 space-y-6">
+                    <div className="space-y-2">
+                       <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">LANGUAGE MODE</Label>
+                       <Select value={mockData.languageMode} onValueChange={(v: LanguageDisplayMode) => setMockData({...mockData, languageMode: v})}>
+                          <SelectTrigger className="h-14 rounded-xl bg-slate-50 border-none font-bold text-sm uppercase"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                             <SelectItem value="ENGLISH_PUNJABI">ENGLISH & ਪੰਜਾਬੀ</SelectItem>
+                             <SelectItem value="ENGLISH_HINDI">ENGLISH & हिन्दी</SelectItem>
+                             <SelectItem value="ENGLISH">ENGLISH ONLY</SelectItem>
+                          </SelectContent>
+                       </Select>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                       <div className="space-y-2">
+                          <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">DURATION (MIN)</Label>
+                          <Input type="number" value={mockData.duration} onChange={e => setMockData({...mockData, duration: parseInt(e.target.value)})} className="h-14 rounded-xl bg-slate-50 border-none font-black text-center text-lg" />
+                       </div>
+                       <div className="space-y-2">
+                          <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">LIMIT</Label>
+                          <Input type="number" value={mockData.attemptLimit} onChange={e => setMockData({...mockData, attemptLimit: parseInt(e.target.value)})} className="h-14 rounded-xl bg-slate-50 border-none font-black text-center text-lg" />
+                       </div>
                     </div>
                  </div>
               </div>
@@ -438,247 +463,250 @@ function MockBuilderContent() {
            </div>
 
            {/* CONTENT PANELS */}
-           {activeRightTab === 'BANK' ? (
-              <div className="bg-[#0B1528] rounded-[3rem] p-8 md:p-14 text-white space-y-8 shadow-4xl relative overflow-hidden flex-1 flex flex-col min-h-[850px]">
-                 <div className="absolute top-0 right-0 p-10 opacity-5"><Zap className="h-48 w-48" /></div>
-                 
-                 <div className="relative z-10 flex-1 flex flex-col space-y-8">
-                    {/* 1. TOP FILTERS */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-                       <div className="space-y-3">
-                          <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">SOURCE BOARD HUB</Label>
-                          <Select value={filterBoard} onValueChange={setFilterBoard}>
-                             <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-2xl font-bold text-xs text-white px-6"><SelectValue placeholder="All Authorities" /></SelectTrigger>
-                             <SelectContent>
-                                <SelectItem value="all">All Boards</SelectItem>
-                                {boards?.map(b => <SelectItem key={b.id} value={b.id}>{b.abbreviation} Hub</SelectItem>)}
-                             </SelectContent>
-                          </Select>
-                       </div>
-                       <div className="space-y-3">
-                          <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">RECRUITMENT VERTICAL</Label>
-                          <Select value={filterExam} onValueChange={setFilterExam}>
-                             <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-2xl font-bold text-xs text-white px-6"><SelectValue placeholder="All Verticals" /></SelectTrigger>
-                             <SelectContent>
-                                <SelectItem value="all">All Exams</SelectItem>
-                                {uniqueExams.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
-                             </SelectContent>
-                          </Select>
-                       </div>
-                       <div className="space-y-3">
-                          <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">SUBJECT NODE</Label>
-                          <Select value={filterSubject} onValueChange={setFilterSubject}>
-                             <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-2xl font-bold text-xs text-white px-6"><SelectValue placeholder="All Subjects" /></SelectTrigger>
-                             <SelectContent>
-                                <SelectItem value="all">All Subjects</SelectItem>
-                                {subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-                             </SelectContent>
-                          </Select>
-                       </div>
-                    </div>
+           <div className="flex-1 flex flex-col space-y-8">
+              {activeRightTab === 'BANK' ? (
+                <>
+                  <div className="bg-[#0B1528] rounded-[3rem] p-8 md:p-14 text-white space-y-8 shadow-4xl relative overflow-hidden flex flex-col">
+                    <div className="absolute top-0 right-0 p-10 opacity-5"><Zap className="h-48 w-48" /></div>
+                    
+                    <div className="relative z-10 flex flex-col space-y-8">
+                        {/* 1. TOP FILTERS */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                          <div className="space-y-3">
+                              <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">SOURCE BOARD HUB</Label>
+                              <Select value={filterBoard} onValueChange={setFilterBoard}>
+                                <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-2xl font-bold text-xs text-white px-6"><SelectValue placeholder="All Authorities" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Boards</SelectItem>
+                                    {boards?.map(b => <SelectItem key={b.id} value={b.id}>{b.abbreviation} Hub</SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                          </div>
+                          <div className="space-y-3">
+                              <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">RECRUITMENT VERTICAL</Label>
+                              <Select value={filterExam} onValueChange={setFilterExam}>
+                                <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-2xl font-bold text-xs text-white px-6"><SelectValue placeholder="All Verticals" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Exams</SelectItem>
+                                    {uniqueExams.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                          </div>
+                          <div className="space-y-3">
+                              <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">SUBJECT NODE</Label>
+                              <Select value={filterSubject} onValueChange={setFilterSubject}>
+                                <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-2xl font-bold text-xs text-white px-6"><SelectValue placeholder="All Subjects" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Subjects</SelectItem>
+                                    {subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                          </div>
+                        </div>
 
-                    <div className="h-px w-full bg-white/5" />
-
-                    {/* 2. QUESTION LIST HUB */}
-                    <div className="bg-white/5 rounded-[2.5rem] border border-white/10 overflow-hidden flex-1 flex flex-col min-h-[300px] shadow-inner">
-                       <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                          <div className="relative flex-1 max-w-md">
-                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                             <Input 
+                        <div className="bg-white/5 rounded-[1.5rem] p-4 flex items-center justify-between border border-white/5 shadow-inner">
+                          <div className="relative flex-1">
+                              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                              <Input 
                                 placeholder="Search statements..." 
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
-                                className="h-11 pl-11 bg-white/5 border-white/10 rounded-xl font-bold text-sm focus-visible:ring-primary text-white" 
-                             />
+                                className="h-11 pl-11 bg-transparent border-none font-bold text-sm text-white focus-visible:ring-0" 
+                              />
                           </div>
-                          <Badge className="bg-primary/20 text-primary border-none text-[8px] font-black px-4 py-1 rounded-lg shadow-lg">{filteredBank.length} ASSETS FOUND</Badge>
-                       </div>
-                       <ScrollArea className="flex-1 w-full">
-                          <div className="divide-y divide-white/5">
-                             {bankLoading ? (
-                                Array.from({length: 4}).map((_, i) => <Skeleton key={i} className="h-20 w-full bg-white/5" />)
-                             ) : filteredBank.map((q) => (
-                                <div key={q.id} className="p-6 flex items-center justify-between group/q hover:bg-white/5 transition-all cursor-pointer" onClick={() => {
-                                   const checked = bankSelection.includes(q.id);
-                                   setBankSelection(prev => checked ? prev.filter(id => id !== q.id) : [...prev, q.id]);
-                                }}>
-                                   <div className="flex items-center gap-6 min-w-0">
-                                      <div className={cn(
-                                        "h-6 w-6 rounded-md border-2 flex items-center justify-center shrink-0 transition-all",
-                                        bankSelection.includes(q.id) ? "border-primary bg-primary shadow-[0_0_15px_rgba(249,115,22,0.3)]" : "border-white/10"
-                                      )}>
-                                         {bankSelection.includes(q.id) && <Check className="h-4 w-4 text-white" strokeWidth={4} />}
-                                      </div>
-                                      <div className="min-w-0 text-left space-y-1">
-                                         <p className="text-base font-bold text-slate-100 truncate pr-10">{q.englishQuestion}</p>
-                                         <div className="flex items-center gap-3">
-                                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{subjects?.find(s => s.id === q.subjectId)?.name || 'GENERAL HUB'}</span>
-                                            <div className="h-1 w-1 rounded-full bg-white/10" />
-                                            <span className={cn("text-[9px] font-black uppercase", q.status === 'USED' ? 'text-emerald-500' : 'text-primary')}>{q.status || 'UNUSED'}</span>
-                                         </div>
-                                      </div>
-                                   </div>
-                                   <Button 
-                                      variant="ghost" 
-                                      size="icon" 
-                                      onClick={(e) => { e.stopPropagation(); handleDeleteFromBank(q.id); }}
-                                      className="h-11 w-11 text-rose-500 hover:bg-rose-50/20 opacity-0 group-hover/q:opacity-100 transition-opacity"
-                                   >
-                                      <Trash2 className="h-5 w-5" />
-                                   </Button>
-                                </div>
-                             ))}
-                             {filteredBank.length === 0 && (
-                                <div className="py-32 text-center opacity-20 italic font-black uppercase text-xs tracking-widest">No matching registry nodes</div>
-                             )}
-                          </div>
-                       </ScrollArea>
-                    </div>
+                          <Badge className="bg-[#F97316]/20 text-[#F97316] border-none text-[8px] font-black px-4 py-1 rounded-lg shadow-lg">{filteredBank.length} ASSETS FOUND</Badge>
+                        </div>
 
-                    {/* 3. TACTICAL COMMAND BAR */}
-                    <div className="space-y-6 pt-6 border-t border-white/10">
-                       
-                       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
-                          {/* TARGET SECTION HUB */}
-                          <div className="md:col-span-5 space-y-4 text-left">
-                             <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-1">TARGET SECTION HUB</Label>
-                             <select 
-                               value={activeSectionId} 
-                               onChange={e => setActiveSectionId(e.target.value)} 
-                               className="w-full h-16 bg-[#F97316] text-white border-none rounded-2xl px-6 font-black uppercase text-[13px] md:text-[15px] outline-none shadow-3xl tracking-[0.1em] cursor-pointer appearance-none transition-all hover:bg-orange-600 active:scale-95"
-                             >
-                                {sections.map(s => <option key={s.id} value={s.id} className="bg-[#0B1528]">{s.name}</option>)}
-                             </select>
-                          </div>
+                        {/* 3. TACTICAL COMMAND BAR */}
+                        <div className="space-y-6 pt-6 border-t border-white/10">
                           
-                          {/* TOGGLES */}
-                          <div className="md:col-span-4 flex flex-col gap-4">
-                             <div className="flex items-center justify-between bg-white/5 p-4 md:p-5 rounded-2xl border border-white/10 group hover:border-primary/30 transition-all">
-                                <span className="text-[10px] font-black uppercase text-slate-300 tracking-widest">UNUSED ONLY</span>
-                                <Switch checked={hideUsed} onCheckedChange={setHideUsed} className="data-[state=checked]:bg-[#F97316]" />
-                             </div>
-                             <div className="flex items-center justify-between bg-white/5 p-4 md:p-5 rounded-2xl border border-white/10 group hover:border-emerald-500/30 transition-all">
-                                <span className="text-[10px] font-black uppercase text-slate-300 tracking-widest">BLOCK DUPLICATES</span>
-                                <Switch checked={blockDuplicates} onCheckedChange={setBlockDuplicates} className="data-[state=checked]:bg-[#10B981]" />
-                             </div>
-                          </div>
-
-                          {/* SELECT ALL BUTTON */}
-                          <div className="md:col-span-3">
-                             <Button 
-                                onClick={handleSelectAllInBank} 
-                                className="w-full h-16 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-black uppercase text-[11px] tracking-[0.2em] rounded-2xl shadow-xl transition-all"
-                             >
-                                SELECT ALL
-                             </Button>
-                          </div>
-                       </div>
-
-                       {/* LINK BUTTON */}
-                       <div className="pt-2">
-                          <Button 
-                             onClick={handleLinkQuestions}
-                             disabled={bankSelection.length === 0}
-                             className="w-full h-20 bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase text-[12px] md:text-[14px] tracking-[0.3em] rounded-[2rem] shadow-5xl border-none transition-all active:scale-95 gap-4 shadow-emerald-500/10"
-                          >
-                             LINK {bankSelection.length} ASSETS <Zap className="h-6 w-6 fill-current text-emerald-300" />
-                          </Button>
-                       </div>
-                    </div>
-                 </div>
-              </div>
-           ) : (
-              <div className="space-y-6 flex-1 flex flex-col">
-                 <div className="flex items-center justify-between px-4">
-                    <h3 className="text-xl font-headline font-black text-[#0F172A] uppercase flex items-center gap-3">
-                       <Layers className="h-5 w-5 text-primary" /> Active Assembly
-                    </h3>
-                    <Badge className="bg-primary/10 text-primary border-none px-4 py-1 font-black uppercase text-[9px]">{sections.reduce((acc,s) => acc + s.questions.length, 0)} TOTAL LINKED</Badge>
-                 </div>
-
-                 <ScrollArea className="h-[800px] pr-4 flex-1">
-                    <div className="space-y-8">
-                       {sections.map((sec, sIdx) => (
-                          <Card key={sec.id} className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden border border-slate-100">
-                             <div className="flex items-center justify-between p-8 bg-slate-50/50 border-b border-slate-50">
-                                <div className="flex items-center gap-6 text-left">
-                                   <div className="h-10 w-10 bg-[#0F172A] text-white rounded-xl flex items-center justify-center font-black text-sm shadow-xl shrink-0">{sIdx + 1}</div>
-                                   <div>
-                                      <Input 
-                                         value={sec.name} 
-                                         onChange={e => setSections(p => p.map(s => s.id === sec.id ? { ...s, name: e.target.value.toUpperCase() } : s))} 
-                                         className="h-8 w-full md:w-80 bg-transparent border-none font-black uppercase text-xl focus-visible:ring-0 p-0 text-[#0F172A]" 
-                                      />
-                                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">{sec.questions.length} Linked Assets</p>
-                                   </div>
+                          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
+                              <div className="md:col-span-5 space-y-4 text-left">
+                                <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-1">TARGET SECTION HUB</Label>
+                                <select 
+                                  value={activeSectionId} 
+                                  onChange={e => setActiveSectionId(e.target.value)} 
+                                  className="w-full h-16 bg-[#F97316] text-white border-none rounded-2xl px-6 font-black uppercase text-[13px] md:text-[15px] outline-none shadow-3xl tracking-[0.1em] cursor-pointer appearance-none"
+                                >
+                                    {sections.map(s => <option key={s.id} value={s.id} className="bg-[#0B1528]">{s.name}</option>)}
+                                </select>
+                              </div>
+                              
+                              <div className="md:col-span-4 flex flex-col gap-4">
+                                <div className="flex items-center justify-between bg-white/5 p-4 rounded-2xl border border-white/10 group">
+                                    <span className="text-[10px] font-black uppercase text-slate-300 tracking-widest">UNUSED ONLY</span>
+                                    <Switch checked={hideUsed} onCheckedChange={setHideUsed} className="data-[state=checked]:bg-[#F97316]" />
                                 </div>
-                                <Button variant="ghost" size="icon" onClick={() => setSections(p => p.filter(s => s.id !== sec.id))} className="h-12 w-12 text-rose-500 hover:bg-rose-50 rounded-2xl"><Trash2 className="h-5 w-5" /></Button>
-                             </div>
-                             <div className="p-8 space-y-4">
-                                {sec.questions.map((q: any, qIdx: number) => (
-                                   <div key={q.id} className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-2xl group/item hover:bg-white hover:shadow-lg transition-all">
-                                      <div className="flex items-center gap-6 min-w-0">
-                                         <span className="text-point-sm font-black text-slate-300 w-6 uppercase">#{qIdx + 1}</span>
-                                         <p className="text-sm font-bold text-slate-600 truncate text-left">{q.englishQuestion}</p>
+                                <div className="flex items-center justify-between bg-white/5 p-4 rounded-2xl border border-white/10 group">
+                                    <span className="text-[10px] font-black uppercase text-slate-300 tracking-widest">BLOCK DUPLICATES</span>
+                                    <Switch checked={blockDuplicates} onCheckedChange={setBlockDuplicates} className="data-[state=checked]:bg-[#10B981]" />
+                                </div>
+                              </div>
+
+                              <div className="md:col-span-3">
+                                <Button 
+                                    onClick={handleSelectAllInBank} 
+                                    variant="outline"
+                                    className="w-full h-16 border-white/20 bg-transparent hover:bg-white/10 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl shadow-xl"
+                                >
+                                    SELECT ALL FILTERED
+                                </Button>
+                              </div>
+                          </div>
+
+                          <div className="pt-2">
+                              <Button 
+                                onClick={handleLinkQuestions}
+                                disabled={bankSelection.length === 0}
+                                className="w-full h-20 bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase text-[14px] tracking-[0.3em] rounded-[2rem] shadow-5xl border-none transition-all active:scale-95 gap-4"
+                              >
+                                LINK {bankSelection.length} ASSETS <Zap className="h-6 w-6 fill-current" />
+                              </Button>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+
+                  {/* QUESTION LIST BELOW THE BOX */}
+                  <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                    {bankLoading ? (
+                      Array.from({length: 4}).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-[2rem]" />)
+                    ) : filteredBank.map((q) => {
+                      const isSelected = bankSelection.includes(q.id);
+                      const board = boards?.find(b => b.id === q.boardId);
+                      const sub = subjects?.find(s => s.id === q.subjectId);
+                      return (
+                        <Card 
+                          key={q.id} 
+                          onClick={() => setBankSelection(prev => isSelected ? prev.filter(id => id !== q.id) : [...prev, q.id])}
+                          className="border-none shadow-xl rounded-[2rem] bg-white p-6 md:p-8 flex items-center gap-6 cursor-pointer transition-all hover:translate-y-[-4px] border border-slate-100 group"
+                        >
+                           <div className={cn(
+                              "h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                              isSelected ? "border-[#F97316] bg-[#F97316]/10 shadow-[0_0_15px_rgba(249,115,22,0.2)]" : "border-slate-200"
+                           )}>
+                              {isSelected && <div className="h-3 w-3 rounded-full bg-[#F97316]" />}
+                           </div>
+                           
+                           <div className="flex-1 min-w-0 space-y-3">
+                              <div className="flex items-center gap-2">
+                                 <Badge className="bg-[#0B1528] text-white border-none font-black text-[8px] px-2 py-0.5 rounded uppercase tracking-widest">{board?.abbreviation || 'PSSSB'}</Badge>
+                                 <Badge variant="outline" className="text-slate-400 border-slate-200 text-[8px] font-black uppercase px-2 py-0.5">{sub?.name || 'ICT'}</Badge>
+                              </div>
+                              <p className="font-bold text-base md:text-xl text-[#0F172A] leading-tight truncate pr-4">
+                                {q.englishQuestion}
+                              </p>
+                           </div>
+
+                           <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={(e) => { e.stopPropagation(); handleDeleteFromBank(q.id); }}
+                              className="h-10 w-10 text-rose-500 hover:bg-rose-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                           >
+                              <Trash2 className="h-5 w-5" />
+                           </Button>
+                        </Card>
+                      )
+                    })}
+                    {filteredBank.length === 0 && !bankLoading && (
+                      <div className="py-20 text-center opacity-20 italic font-black uppercase text-xs tracking-widest">No matching registry nodes</div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-6 flex-1 flex flex-col">
+                    <div className="flex items-center justify-between px-4">
+                      <h3 className="text-xl font-headline font-black text-[#0F172A] uppercase flex items-center gap-3">
+                          <Layers className="h-5 w-5 text-primary" /> Active Assembly
+                      </h3>
+                      <Badge className="bg-primary/10 text-primary border-none px-4 py-1 font-black uppercase text-[9px]">{sections.reduce((acc,s) => acc + s.questions.length, 0)} TOTAL LINKED</Badge>
+                    </div>
+
+                    <ScrollArea className="h-[700px] pr-4 flex-1">
+                      <div className="space-y-8">
+                          {sections.map((sec, sIdx) => (
+                            <Card key={sec.id} className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden border border-slate-100">
+                                <div className="flex items-center justify-between p-8 bg-slate-50/50 border-b border-slate-50">
+                                  <div className="flex items-center gap-6 text-left">
+                                      <div className="h-10 w-10 bg-[#0F172A] text-white rounded-xl flex items-center justify-center font-black text-sm shadow-xl shrink-0">{sIdx + 1}</div>
+                                      <div>
+                                        <Input 
+                                            value={sec.name} 
+                                            onChange={e => setSections(p => p.map(s => s.id === sec.id ? { ...s, name: e.target.value.toUpperCase() } : s))} 
+                                            className="h-8 w-full md:w-80 bg-transparent border-none font-black uppercase text-xl focus-visible:ring-0 p-0 text-[#0F172A]" 
+                                        />
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">{sec.questions.length} Linked Assets</p>
                                       </div>
-                                      <button 
-                                         onClick={() => setSections(p => p.map(s => s.id === sec.id ? { ...s, questions: s.questions.filter((item: any) => item.id !== q.id) } : s))} 
-                                         className="text-rose-400 hover:text-rose-600 p-2"
-                                      >
-                                         <Trash2 className="h-4 w-4" />
-                                      </button>
-                                   </div>
-                                ))}
-                                {sec.questions.length === 0 && (
-                                   <div className="py-10 text-center opacity-20 italic font-black uppercase text-[10px]">Awaiting link node synchronization...</div>
-                                )}
-                             </div>
-                          </Card>
-                       ))}
+                                  </div>
+                                  <Button variant="ghost" size="icon" onClick={() => setSections(p => p.filter(s => s.id !== sec.id))} className="h-12 w-12 text-rose-500 hover:bg-rose-50 rounded-2xl"><Trash2 className="h-5 w-5" /></Button>
+                                </div>
+                                <div className="p-8 space-y-4">
+                                  {sec.questions.map((q: any, qIdx: number) => (
+                                      <div key={q.id} className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-2xl group/item hover:bg-white hover:shadow-lg transition-all">
+                                        <div className="flex items-center gap-6 min-w-0">
+                                            <span className="text-point-sm font-black text-slate-300 w-6 uppercase">#{qIdx + 1}</span>
+                                            <p className="text-sm font-bold text-slate-600 truncate text-left">{q.englishQuestion}</p>
+                                        </div>
+                                        <button 
+                                            onClick={() => setSections(p => p.map(s => s.id === sec.id ? { ...s, questions: s.questions.filter((item: any) => item.id !== q.id) } : s))} 
+                                            className="text-rose-400 hover:text-rose-600 p-2"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                      </div>
+                                  ))}
+                                  {sec.questions.length === 0 && (
+                                      <div className="py-10 text-center opacity-20 italic font-black uppercase text-[10px]">Awaiting link node synchronization...</div>
+                                  )}
+                                </div>
+                            </Card>
+                          ))}
 
-                       <Popover>
-                          <PopoverTrigger asChild>
-                             <Button className="h-24 w-full bg-white border-dashed border-2 border-slate-200 rounded-[2.5rem] shadow-xl hover:border-primary transition-all flex items-center justify-center gap-4 text-slate-400 font-black uppercase text-[11px] tracking-widest group">
-                                <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform" /> ADD NEW SECTION HUB
-                             </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-[340px] p-0 rounded-[2.5rem] bg-[#0F172A] text-white border-white/10 shadow-5xl overflow-hidden" align="center">
-                             <div className="p-8 border-b border-white/5 space-y-4">
-                                <p className="text-[11px] font-black uppercase text-[#F97316] tracking-[0.3em] text-center">SELECT SUBJECT HUB</p>
-                                <div className="relative">
-                                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                                   <Input 
-                                      placeholder="Search registry..." 
-                                      value={subjectSearch}
-                                      onChange={(e) => setSubjectSearch(e.target.value)}
-                                      className="h-12 pl-12 bg-white/5 border-white/10 rounded-xl font-bold text-sm focus-visible:ring-[#F97316] text-white" 
-                                   />
+                          <Popover>
+                            <PopoverTrigger asChild>
+                                <Button className="h-24 w-full bg-white border-dashed border-2 border-slate-200 rounded-[2.5rem] shadow-xl hover:border-primary transition-all flex items-center justify-center gap-4 text-slate-400 font-black uppercase text-[11px] tracking-widest group">
+                                  <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform" /> ADD NEW SECTION HUB
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[340px] p-0 rounded-[2.5rem] bg-[#0F172A] text-white border-white/10 shadow-5xl overflow-hidden" align="center">
+                                <div className="p-8 border-b border-white/5 space-y-4">
+                                  <p className="text-[11px] font-black uppercase text-[#F97316] tracking-[0.3em] text-center">SELECT SUBJECT HUB</p>
+                                  <div className="relative">
+                                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                                      <Input 
+                                        placeholder="Search registry..." 
+                                        value={subjectSearch}
+                                        onChange={(e) => setSubjectSearch(e.target.value)}
+                                        className="h-12 pl-12 bg-white/5 border-white/10 rounded-xl font-bold text-sm focus-visible:ring-[#F97316] text-white" 
+                                      />
+                                  </div>
                                 </div>
-                             </div>
-                             <ScrollArea className="h-[380px]">
-                                <div className="p-4 space-y-1">
-                                   {filteredSubjectsForPicking.map((s: any) => (
-                                      <button 
-                                         key={s.id}
-                                         onClick={() => addNewSection(s.name)}
-                                         className="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white/5 transition-all text-left group"
-                                      >
-                                         <div className="flex items-center gap-4">
-                                            <SearchCode className="h-4 w-4 text-slate-500 group-hover:text-[#F97316]" />
-                                            <span className="text-[11px] font-black uppercase tracking-tight text-slate-200 group-hover:text-white">{s.name}</span>
-                                         </div>
-                                         <Plus className="h-3.5 w-3.5 text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                      </button>
-                                   ))}
-                                </div>
-                                <ScrollBar className="bg-white/10" />
-                             </ScrollArea>
-                          </PopoverContent>
-                       </Popover>
-                    </div>
-                 </ScrollArea>
-              </div>
-           )}
+                                <ScrollArea className="h-[380px]">
+                                  <div className="p-4 space-y-1">
+                                      {filteredSubjectsForPicking.map((s: any) => (
+                                        <button 
+                                            key={s.id}
+                                            onClick={() => addNewSection(s.name)}
+                                            className="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white/5 transition-all text-left group"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                              <SearchCode className="h-4 w-4 text-slate-500 group-hover:text-[#F97316]" />
+                                              <span className="text-[11px] font-black uppercase tracking-tight text-slate-200 group-hover:text-white">{s.name}</span>
+                                            </div>
+                                            <Plus className="h-3.5 w-3.5 text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        </button>
+                                      ))}
+                                  </div>
+                                  <ScrollBar className="bg-white/10" />
+                                </ScrollArea>
+                            </PopoverContent>
+                          </Popover>
+                      </div>
+                    </ScrollArea>
+                </div>
+              )}
+           </div>
         </div>
       </div>
     </div>
