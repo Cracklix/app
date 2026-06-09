@@ -19,8 +19,8 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Authority Hub v42.0 - Assigned Categories Hub.
- * UPDATED: Added ETT/Cadre logo mapping to PSEB Official branding.
+ * @fileOverview Authority Hub v43.0 - Assigned Categories Hub.
+ * UPDATED: Explicitly separated PSPCL, PSTCL, and Punjab Technical Board branding.
  */
 
 export default function ExamManagement() {
@@ -43,6 +43,8 @@ export default function ExamManagement() {
 
   const psssbOfficialLogo = "https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg";
   const pspclOfficialLogo = "https://pspcl.in/assets/images/logo.png";
+  const pstclOfficialLogo = "https://pstcl.org/images/logo.png";
+  const psbteOfficialLogo = "http://www.punjabteched.com/images/logo.png";
   const ctetOfficialLogo = "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png";
   const pstetOfficialLogo = "https://pstet.pseb.ac.in/img/main-logo-2.png";
   const psebOfficialLogo = "https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png";
@@ -65,7 +67,9 @@ export default function ExamManagement() {
     // MANDATORY BRANDING PROTOCOL (LOCKED)
     const abbrev = editingBoard.abbreviation?.toUpperCase();
     const isPsssb = abbrev === 'PSSSB';
-    const isPspcl = abbrev === 'PSPCL' || abbrev === 'PSTCL';
+    const isPspcl = abbrev === 'PSPCL';
+    const isPstcl = abbrev === 'PSTCL';
+    const isPsbte = abbrev === 'PSBTE' || abbrev.includes('TECH');
     const isCtet = abbrev === 'CTET' || abbrev === 'CBSE';
     const isPstet = abbrev === 'PSTET';
     const isEducation = abbrev === 'EDUCATION' || abbrev === 'PSEB' || abbrev.includes('ETT') || abbrev.includes('CADRE') || abbrev.includes('LECTURER');
@@ -78,6 +82,8 @@ export default function ExamManagement() {
       id: boardId,
       iconUrl: isPsssb ? psssbOfficialLogo : 
                isPspcl ? pspclOfficialLogo : 
+               isPstcl ? pstclOfficialLogo :
+               isPsbte ? psbteOfficialLogo :
                isCtet ? ctetOfficialLogo : 
                isPstet ? pstetOfficialLogo :
                isEducation ? psebOfficialLogo :
@@ -175,7 +181,9 @@ export default function ExamManagement() {
                 const isImageFailed = failedImages[board.id];
                 const abbrev = board.abbreviation?.toUpperCase();
                 const isPsssb = abbrev === 'PSSSB';
-                const isPspcl = abbrev === 'PSPCL' || abbrev === 'PSTCL';
+                const isPspcl = abbrev === 'PSPCL';
+                const isPstcl = abbrev === 'PSTCL';
+                const isPsbte = abbrev === 'PSBTE';
                 const isCtet = abbrev === 'CTET' || abbrev === 'CBSE';
                 const isPstet = abbrev === 'PSTET';
                 const isEducation = abbrev === 'EDUCATION' || abbrev === 'PSEB' || abbrev.includes('ETT') || abbrev.includes('CADRE') || abbrev.includes('LECTURER');
@@ -186,6 +194,8 @@ export default function ExamManagement() {
                 
                 const effectiveIcon = isPsssb ? psssbOfficialLogo : 
                                      isPspcl ? pspclOfficialLogo : 
+                                     isPstcl ? pstclOfficialLogo :
+                                     isPsbte ? psbteOfficialLogo :
                                      isCtet ? ctetOfficialLogo : 
                                      isPstet ? pstetOfficialLogo :
                                      isEducation ? psebOfficialLogo :
@@ -205,7 +215,7 @@ export default function ExamManagement() {
                           ) : (
                             <img 
                               src={effectiveIcon} 
-                              className={cn("h-full w-full object-contain p-2", (isArmy || isCtet || isPstet || isEducation || isPolice || isSsc || isIbps) ? "scale-150" : "")} 
+                              className={cn("h-full w-full object-contain p-2", (isArmy || isCtet || isPstet || isEducation || isPolice || isSsc || isIbps || isPspcl || isPstcl || isPsbte) ? "scale-150" : "")} 
                               referrerPolicy="no-referrer"
                               alt={board.abbreviation}
                               onError={() => setFailedImages(p => ({...p, [board.id]: true}))}
@@ -270,7 +280,7 @@ export default function ExamManagement() {
                         <img 
                           src={editingBoard.iconUrl} 
                           referrerPolicy="no-referrer"
-                          className={cn("absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform", (editingBoard.id === 'army' || editingBoard.abbreviation?.toUpperCase() === 'ARMY' || editingBoard.abbreviation?.toUpperCase() === 'CTET' || editingBoard.abbreviation?.toUpperCase() === 'CBSE' || editingBoard.abbreviation?.toUpperCase() === 'PSTET' || editingBoard.abbreviation?.toUpperCase() === 'EDUCATION' || editingBoard.abbreviation?.toUpperCase() === 'PSEB' || editingBoard.abbreviation?.toUpperCase()?.includes('POLICE') || editingBoard.abbreviation?.toUpperCase() === 'SSC' || editingBoard.abbreviation?.toUpperCase() === 'IBPS') ? "scale-150" : "")} 
+                          className={cn("absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform", (editingBoard.id === 'army' || editingBoard.abbreviation?.toUpperCase() === 'ARMY' || editingBoard.abbreviation?.toUpperCase() === 'CTET' || editingBoard.abbreviation?.toUpperCase() === 'CBSE' || editingBoard.abbreviation?.toUpperCase() === 'PSTET' || editingBoard.abbreviation?.toUpperCase() === 'EDUCATION' || editingBoard.abbreviation?.toUpperCase() === 'PSEB' || editingBoard.abbreviation?.toUpperCase()?.includes('POLICE') || editingBoard.abbreviation?.toUpperCase() === 'SSC' || editingBoard.abbreviation?.toUpperCase() === 'IBPS' || editingBoard.abbreviation?.toUpperCase() === 'PSPCL' || editingBoard.abbreviation?.toUpperCase() === 'PSTCL' || editingBoard.abbreviation?.toUpperCase() === 'PSBTE') ? "scale-150" : "")} 
                           alt="Preview"
                         />
                       ) : (

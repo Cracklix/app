@@ -31,8 +31,8 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Master Registry v4.5.
- * UPDATED: Added Lecturer Cadre and Entrance Logo detection for PSEB.
+ * @fileOverview Institutional Exam Master Registry v4.6.
+ * UPDATED: Added PSPCL, PSTCL, and Punjab Technical Board logo detection.
  */
 
 export default function ExamRegistryPage() {
@@ -93,6 +93,9 @@ export default function ExamRegistryPage() {
   const ctetOfficialLogo = "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png";
   const pstetOfficialLogo = "https://pstet.pseb.ac.in/img/main-logo-2.png";
   const psebOfficialLogo = "https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png";
+  const pspclOfficialLogo = "https://pspcl.in/assets/images/logo.png";
+  const pstclOfficialLogo = "https://pstcl.org/images/logo.png";
+  const psbteOfficialLogo = "http://www.punjabteched.com/images/logo.png";
 
   return (
     <div className="space-y-12 pb-24 text-left">
@@ -143,6 +146,9 @@ export default function ExamRegistryPage() {
                 if (abbrev === 'CTET' || examName.includes('CTET')) forcedLogo = ctetOfficialLogo;
                 else if (abbrev === 'PSTET' || examName.includes('PSTET')) forcedLogo = pstetOfficialLogo;
                 else if (abbrev === 'PSEB' || abbrev === 'EDUCATION' || examName.includes('CADRE') || examName.includes('ENTRANCE')) forcedLogo = psebOfficialLogo;
+                else if (abbrev === 'PSPCL') forcedLogo = pspclOfficialLogo;
+                else if (abbrev === 'PSTCL') forcedLogo = pstclOfficialLogo;
+                else if (abbrev === 'PSBTE') forcedLogo = psbteOfficialLogo;
 
                 return (
                   <TableRow key={e.id} className="hover:bg-slate-50 border-slate-50 transition-colors group">
@@ -196,7 +202,7 @@ export default function ExamRegistryPage() {
                   </select>
                </div>
                <div className="space-y-2">
-                  <Label className="text-[10px) font-black uppercase text-slate-500 ml-1">Relational Category</Label>
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Relational Category</Label>
                   <select value={editingExam?.categoryId || ""} onChange={e => setEditingExam({...editingExam, categoryId: e.target.value})} className="w-full h-12 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none">
                      <option value="">Select Category</option>
                      {categories?.map((c:any) => <option key={c.id} value={c.id}>{c.title}</option>)}
