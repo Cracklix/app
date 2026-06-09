@@ -27,7 +27,9 @@ import {
   DollarSign,
   Gem,
   History,
-  ShieldAlert
+  ShieldAlert,
+  ClipboardCheck,
+  LayoutGrid
 } from "lucide-react"
 import Link from "next/link"
 import Logo from "@/components/brand/Logo"
@@ -40,13 +42,13 @@ import { Button } from "@/components/ui/button";
 import BackButton from "@/components/navigation/BackButton";
 
 /**
- * @fileOverview Institutional Sidebar Restoration v113.0.
- * UPDATED: Standardized labels: DASHBOARD, CATEGORIES, HUBS (BOARDS), VERTICAL REGISTRY, SUBJECT LIST, GLOBAL BANK, BULK INGESTION.
+ * @fileOverview Institutional Sidebar Restoration v114.0.
+ * UPDATED: Added MOCK ARCHITECT to Content Management section.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }: { children: React.Node }) {
   const { user, profile, loading } = useUser()
   const auth = useAuth()
   const router = useRouter()
@@ -108,6 +110,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <SidebarGroup className="mt-4">
             <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Content Management</SidebarGroupLabel>
             <SidebarMenu>
+              <AdminNavItem icon={<LayoutGrid className="text-orange-500" />} label="MOCK ARCHITECT" href="/admin/mocks/builder" active={pathname === "/admin/mocks/builder"} />
               <AdminNavItem icon={<Zap className="text-primary" />} label="MOCK MANAGER" href="/admin/mocks" active={pathname === "/admin/mocks"} />
               <AdminNavItem icon={<Newspaper className="text-blue-400" />} label="CURRENT AFFAIRS" href="/admin/current-affairs" active={pathname === "/admin/current-affairs"} />
               <AdminNavItem icon={<FileText className="text-emerald-400" />} label="NOTES LIBRARY" href="/admin/notes" active={pathname === "/admin/notes"} />

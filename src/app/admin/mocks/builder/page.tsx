@@ -51,7 +51,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v62.0.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v64.0.
  * UPDATED: Added standalone Punjabi/Hindi modes and hardened Question Bank filters.
  * FIXED: Resolved filter mismatch by implementing cascading board-exam dependency.
  */
@@ -455,7 +455,7 @@ function MockBuilderContent() {
                        type="number" 
                        value={isNaN(mockData.duration) ? "" : mockData.duration} 
                        onChange={e => setMockData({...mockData, duration: parseInt(e.target.value) || 0})} 
-                       className="h-16 rounded-2xl bg-slate-50 border-none font-black text-center text-xl shadow-inner" 
+                       className="h-16 rounded-2xl bg-slate-50/50 border-none font-black text-center text-xl shadow-inner" 
                     />
                  </div>
                  <div className="space-y-3">
