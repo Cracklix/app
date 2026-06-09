@@ -52,7 +52,7 @@ import BackButton from "@/components/navigation/BackButton";
 
 /**
  * @fileOverview Institutional Security Protocol v99.6.
- * UPDATED: Removed Exam Architecture Manager.
+ * MATCHED: User Screenshot Sidebar Labels.
  */
 
 // FOUNDER WHITELIST - PERMANENT AUTHORITY
@@ -108,9 +108,8 @@ export default function AdminLayout({ children }: { children: React.Node }) {
             <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Master Registry</SidebarGroupLabel>
             <SidebarMenu>
               <AdminNavItem icon={<LayoutDashboard />} label="Dashboard" href="/admin" active={pathname === "/admin"} />
-              <AdminNavItem icon={<TableOfContents className="text-blue-400" />} label="Categories" href="/admin/categories" active={pathname === "/admin/categories"} />
-              <AdminNavItem icon={<Landmark className="text-amber-400" />} label="Hubs (Boards)" href="/admin/exams" active={pathname === "/admin/exams"} />
-              <AdminNavItem icon={<GraduationCap className="text-emerald-400" />} label="Vertical Registry" href="/admin/exam-registry" active={pathname === "/admin/exam-registry"} />
+              <AdminNavItem icon={<Landmark className="text-amber-400" />} label="Authority Hub" href="/admin/exams" active={pathname === "/admin/exams"} />
+              <AdminNavItem icon={<GraduationCap className="text-emerald-400" />} label="Exam Registry" href="/admin/exam-registry" active={pathname === "/admin/exam-registry"} />
               <AdminNavItem icon={<SearchCode className="text-emerald-400" />} label="Subject List" href="/admin/subjects" active={pathname === "/admin/subjects"} />
               <AdminNavItem icon={<Database />} label="Global Bank" href="/admin/questions" active={pathname === "/admin/questions"} />
               <AdminNavItem icon={<Rocket className="text-primary" />} label="Bulk Ingestion" href="/admin/bulk-import" active={pathname === "/admin/bulk-import"} />
