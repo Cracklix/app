@@ -38,7 +38,8 @@ import {
   Check,
   FileWarning,
   History,
-  RefreshCw
+  RefreshCw,
+  Award
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, limit, getDocs, writeBatch, where, documentId, orderBy, deleteDoc } from "firebase/firestore"
@@ -50,9 +51,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v50.0.
- * UPDATED: Strictly matched Left Column UI to user screenshot (Distribution/Boards/Verticals).
- * FIXED: Removed center search, increased question font, and fixed button clipping.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v51.0.
+ * UPDATED: Permanently removed search bar from bank tactical box.
+ * FIXED: Added Filtered vs Total bank statistics node.
  */
 
 export default function MockBuilderPage() {
@@ -86,7 +87,6 @@ function MockBuilderContent() {
   const [activeRightTab, setActiveRightTab] = useState<'BANK' | 'ASSEMBLY'>('BANK')
   
   // Question Bank Filters
-  const [searchTerm, setSearchTerm] = useState("")
   const [filterBoard, setFilterBoard] = useState("all")
   const [filterExam, setFilterExam] = useState("all")
   const [filterSubject, setFilterSubject] = useState("all")
@@ -183,15 +183,14 @@ function MockBuilderContent() {
   const filteredBank = useMemo(() => {
     const allSelectedIds = sections.flatMap(s => s.questions.map(q => q.id));
     return questionBank.filter((q: any) => {
-      const matchesSearch = !searchTerm || (q.englishQuestion?.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesBoard = filterBoard === "all" || q.boardId === filterBoard;
       const matchesExam = filterExam === "all" || q.examId === filterExam;
       const matchesSub = filterSubject === "all" || q.subjectId === filterSubject;
       const notInThisMock = !allSelectedIds.includes(q.id) || !blockDuplicates;
       const usedGuard = !hideUsed || (q.status !== 'USED');
-      return matchesSearch && matchesBoard && matchesExam && matchesSub && notInThisMock && usedGuard;
+      return matchesBoard && matchesExam && matchesSub && notInThisMock && usedGuard;
     })
-  }, [questionBank, searchTerm, filterBoard, filterExam, filterSubject, hideUsed, blockDuplicates, sections])
+  }, [questionBank, filterBoard, filterExam, filterSubject, hideUsed, blockDuplicates, sections])
 
   const filteredSubjectsForPicking = useMemo(() => {
     if (!subjects) return [];
@@ -323,11 +322,10 @@ function MockBuilderContent() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10">
         
-        {/* LEFT COLUMN: ASSIGNMENT HUB (SAME TO SAME UI) */}
+        {/* LEFT COLUMN: ASSIGNMENT HUB */}
         <div className="lg:col-span-4 space-y-8">
            <Card className="border-none shadow-xl rounded-[2.5rem] bg-white p-6 md:p-8 space-y-10 border border-slate-100">
               
-              {/* Distribution Mode Dropdown (Dark) */}
               <div className="space-y-4">
                 <Select value={mockData.assignmentMode} onValueChange={(v: MockAssignmentMode) => setMockData({...mockData, assignmentMode: v})}>
                   <SelectTrigger className="h-16 rounded-2xl bg-[#0B1528] text-white border-none font-black uppercase text-[11px] tracking-[0.15em] px-6 shadow-2xl flex items-center justify-between">
@@ -341,7 +339,6 @@ function MockBuilderContent() {
                 </Select>
               </div>
 
-              {/* Target Authority Boards */}
               <div className="space-y-4 text-left">
                 <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">TARGET AUTHORITY BOARDS</Label>
                 <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
@@ -363,7 +360,6 @@ function MockBuilderContent() {
                 </div>
               </div>
 
-              {/* Target Recruitment Verticals */}
               <div className="space-y-4 text-left">
                 <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">TARGET RECRUITMENT VERTICALS</Label>
                 <div className="space-y-2 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
@@ -388,7 +384,6 @@ function MockBuilderContent() {
                 </div>
               </div>
 
-              {/* Language Mode Dropdown (White) */}
               <div className="space-y-4 pt-6 border-t border-slate-50">
                 <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">LANGUAGE MODE</Label>
                 <Select value={mockData.languageMode} onValueChange={(v: LanguageDisplayMode) => setMockData({...mockData, languageMode: v})}>
@@ -403,7 +398,6 @@ function MockBuilderContent() {
                 </Select>
               </div>
 
-              {/* Metadata Inputs */}
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-2">
                     <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">DURATION (MIN)</Label>
@@ -451,7 +445,7 @@ function MockBuilderContent() {
                     <div className="absolute top-0 right-0 p-10 opacity-5"><Zap className="h-48 w-48" /></div>
                     
                     <div className="relative z-10 flex flex-col space-y-8">
-                        {/* 1. TOP FILTERS & SEARCH */}
+                        {/* 1. TOP FILTERS */}
                         <div className="space-y-6">
                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
                               <div className="space-y-3">
@@ -486,21 +480,26 @@ function MockBuilderContent() {
                               </div>
                            </div>
 
-                           <div className="bg-white/5 rounded-2xl p-4 flex items-center justify-between border border-white/10">
-                              <div className="relative flex-1">
-                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                                 <Input 
-                                   placeholder="Search statements..." 
-                                   value={searchTerm}
-                                   onChange={e => setSearchTerm(e.target.value)}
-                                   className="h-11 pl-11 bg-transparent border-none font-bold text-sm text-white focus-visible:ring-0" 
-                                 />
+                           {/* REGISTRY STATISTICS NODE (REPLACES SEARCH BAR) */}
+                           <div className="bg-white/5 rounded-2xl p-5 md:p-7 flex items-center justify-between border border-white/10 shadow-inner">
+                              <div className="flex items-center gap-8 md:gap-12">
+                                 <div className="flex flex-col">
+                                    <span className="text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest">REGISTRY FILTERED</span>
+                                    <span className="text-sm md:text-2xl font-black text-white">{filteredBank.length} ASSETS</span>
+                                 </div>
+                                 <div className="w-px h-10 bg-white/10" />
+                                 <div className="flex flex-col">
+                                    <span className="text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest">TOTAL BANK</span>
+                                    <span className="text-sm md:text-2xl font-black text-white">{questionBank.length} ASSETS</span>
+                                 </div>
                               </div>
-                              <Badge className="bg-[#F97316] text-white border-none text-[8px] font-black px-4 py-1.5 rounded-lg shadow-xl">{filteredBank.length} ASSETS FOUND</Badge>
+                              <Badge className="bg-[#F97316] text-white border-none text-[8px] md:text-[11px] font-black px-6 py-2 rounded-xl shadow-2xl uppercase tracking-tighter">
+                                 Verified Hub
+                              </Badge>
                            </div>
                         </div>
 
-                        {/* 3. TACTICAL COMMAND BAR (MATCHING SCREENSHOT) */}
+                        {/* 3. TACTICAL COMMAND BAR */}
                         <div className="space-y-6 pt-6 border-t border-white/10">
                           
                           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
@@ -543,7 +542,7 @@ function MockBuilderContent() {
                     </div>
                   </div>
 
-                  {/* QUESTION LIST (WHITE CARDS) */}
+                  {/* QUESTION LIST */}
                   <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                     {bankLoading ? (
                       Array.from({length: 4}).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-[2rem]" />)
@@ -555,7 +554,7 @@ function MockBuilderContent() {
                         <Card 
                           key={q.id} 
                           onClick={() => setBankSelection(prev => isSelected ? prev.filter(id => id !== q.id) : [...prev, q.id])}
-                          className="border-none shadow-xl rounded-[2.5rem] bg-white p-8 md:p-10 flex items-center gap-8 cursor-pointer transition-all hover:translate-y-[-4px] border border-slate-100 group overflow-hidden"
+                          className="border-none shadow-xl rounded-[2.5rem] bg-white p-8 md:p-12 flex items-center gap-8 cursor-pointer transition-all hover:translate-y-[-4px] border border-slate-100 group overflow-hidden"
                         >
                            <div className={cn(
                               "h-12 w-12 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
@@ -569,7 +568,7 @@ function MockBuilderContent() {
                                  <Badge className="bg-[#0B1528] text-white border-none font-black text-[9px] px-3 py-1 rounded uppercase tracking-widest">{board?.abbreviation || 'PSSSB'}</Badge>
                                  <Badge variant="outline" className="text-slate-400 border-slate-200 text-[9px] font-black uppercase px-3 py-1">{sub?.name || 'ICT'}</Badge>
                               </div>
-                              <p className="font-bold text-lg md:text-2xl text-[#0F172A] leading-relaxed antialiased break-words">
+                              <p className="font-black text-lg md:text-2xl text-[#0F172A] leading-tight antialiased break-words">
                                 {q.englishQuestion}
                               </p>
                            </div>
@@ -625,8 +624,8 @@ function MockBuilderContent() {
                                             <p className="text-sm font-bold text-slate-600 truncate text-left">{q.englishQuestion}</p>
                                         </div>
                                         <button 
-                                            onClick={() => setSections(p => p.map(s => s.id === sec.id ? { ...s, questions: s.questions.filter((item: any) => item.id !== q.id) } : s))} 
                                             className="text-rose-400 hover:text-rose-600 p-2 shrink-0"
+                                            onClick={() => setSections(p => p.map(s => s.id === sec.id ? { ...s, questions: s.questions.filter((item: any) => item.id !== q.id) } : s))} 
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </button>
