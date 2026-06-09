@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useMemo, useEffect, Suspense } from "react"
@@ -49,8 +50,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v49.0.
- * UPDATED: Relocated search, increased question font size, fixed button responsiveness.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v50.0.
+ * UPDATED: Strictly matched Left Column UI to user screenshot (Distribution/Boards/Verticals).
+ * FIXED: Removed center search, increased question font, and fixed button clipping.
  */
 
 export default function MockBuilderPage() {
@@ -98,7 +100,7 @@ function MockBuilderContent() {
   // Mock Metadata & Architecture
   const [mockData, setMockData] = useState<any>({
     title: "", 
-    assignmentMode: "SINGLE" as MockAssignmentMode,
+    assignmentMode: "MULTIPLE" as MockAssignmentMode,
     targetCategoryId: "all",
     boardIds: [] as string[],
     examIds: [] as string[],
@@ -124,7 +126,7 @@ function MockBuilderContent() {
     if (!db) return
     setBankLoading(true)
     try {
-      const q = query(collection(db, "questions"), limit(1500))
+      const q = query(collection(db, "questions"), limit(2000))
       const snap = await getDocs(q)
       setQuestionBank(snap.docs.map(d => ({ ...d.data(), id: d.id })))
     } finally {
@@ -140,7 +142,7 @@ function MockBuilderContent() {
     if (existingMock && questionBank.length > 0) {
       setMockData({ 
         ...existingMock,
-        assignmentMode: existingMock.assignmentMode || "SINGLE",
+        assignmentMode: existingMock.assignmentMode || "MULTIPLE",
         boardIds: existingMock.boardIds || (existingMock.boardId ? [existingMock.boardId] : []),
         examIds: existingMock.examIds || (existingMock.examId ? [existingMock.examId] : [])
       });
@@ -172,12 +174,11 @@ function MockBuilderContent() {
       return true;
     }).sort((a: any, b: any) => a.name.localeCompare(b.name));
 
-    if (mockData.targetCategoryId && mockData.targetCategoryId !== 'all') {
-       const validBoardIds = boards?.filter(b => b.categoryId === mockData.targetCategoryId).map(b => b.id) || [];
-       return filtered.filter(e => validBoardIds.includes(e.boardId));
+    if (mockData.boardIds?.length > 0) {
+       return filtered.filter(e => mockData.boardIds.includes(e.boardId));
     }
     return filtered;
-  }, [rawExams, boards, mockData.targetCategoryId]);
+  }, [rawExams, mockData.boardIds]);
 
   const filteredBank = useMemo(() => {
     const allSelectedIds = sections.flatMap(s => s.questions.map(q => q.id));
@@ -284,6 +285,14 @@ function MockBuilderContent() {
      });
   };
 
+  const toggleExamId = (id: string) => {
+     const current = mockData.examIds || [];
+     setMockData({
+        ...mockData,
+        examIds: current.includes(id) ? current.filter(x => x !== id) : [...current, id]
+     });
+  };
+
   const addNewSection = (name: string) => {
     const newId = `sec-${Date.now()}`;
     setSections([...sections, { id: newId, name: name.toUpperCase(), questions: [] }]);
@@ -292,10 +301,10 @@ function MockBuilderContent() {
   }
 
   return (
-    <div className="max-w-[1600px] mx-auto space-y-6 pb-32 text-left pt-2 md:pt-4">
+    <div className="max-w-[1600px] mx-auto space-y-6 pb-32 text-left pt-2 md:pt-4 px-2 md:px-4">
       
       {/* TOP HEADER */}
-      <div className="flex flex-wrap items-center justify-between gap-6 px-4">
+      <div className="flex flex-wrap items-center justify-between gap-6">
         <div className="flex items-center gap-6">
           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl border bg-white h-12 w-12 shadow-sm">
              <ChevronLeft className="h-6 w-6" />
@@ -306,138 +315,110 @@ function MockBuilderContent() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-           <Button variant="ghost" className="h-10 text-[9px] font-black uppercase tracking-widest text-slate-400 gap-2">
-              <History className="h-4 w-4" /> Load Existing Series
-           </Button>
-           <Button onClick={handlePublish} disabled={isPublishing} className="bg-[#0F172A] hover:bg-black text-white font-black px-10 h-14 rounded-xl uppercase text-[10px] tracking-[0.2em] gap-3 shadow-3xl">
+           <Button onClick={handlePublish} disabled={isPublishing} className="bg-[#0F172A] hover:bg-black text-white font-black px-8 md:px-10 h-14 rounded-xl uppercase text-[10px] tracking-[0.2em] gap-3 shadow-3xl">
             {isPublishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ClipboardCheck className="h-5 w-5" />} Deploy Series
            </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10 px-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10">
         
-        {/* LEFT COLUMN: ASSIGNMENT HUB */}
+        {/* LEFT COLUMN: ASSIGNMENT HUB (SAME TO SAME UI) */}
         <div className="lg:col-span-4 space-y-8">
-           <Card className="border-none shadow-xl rounded-[2.5rem] bg-white p-8 md:p-10 space-y-8 border border-slate-100">
-              <div className="space-y-6">
-                 <div className="space-y-2 text-left">
-                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">CREATE NEW +</Label>
-                    <Select value="default">
-                       <SelectTrigger className="h-14 rounded-2xl bg-[#0F172A] text-white border-none font-black uppercase text-[10px] tracking-widest">
-                          <SelectValue placeholder="NEW SERIES" />
-                       </SelectTrigger>
-                       <SelectContent>
-                          <SelectItem value="default">NEW SERIES HUB</SelectItem>
-                       </SelectContent>
-                    </Select>
-                 </div>
+           <Card className="border-none shadow-xl rounded-[2.5rem] bg-white p-6 md:p-8 space-y-10 border border-slate-100">
+              
+              {/* Distribution Mode Dropdown (Dark) */}
+              <div className="space-y-4">
+                <Select value={mockData.assignmentMode} onValueChange={(v: MockAssignmentMode) => setMockData({...mockData, assignmentMode: v})}>
+                  <SelectTrigger className="h-16 rounded-2xl bg-[#0B1528] text-white border-none font-black uppercase text-[11px] tracking-[0.15em] px-6 shadow-2xl flex items-center justify-between">
+                     <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0B1528] text-white border-white/10 rounded-2xl">
+                     <SelectItem value="SINGLE">SINGLE VERTICAL</SelectItem>
+                     <SelectItem value="MULTIPLE">MULTIPLE VERTICALS</SelectItem>
+                     <SelectItem value="AUTHORITY">AUTHORITY HUB (BROADCAST)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
+              {/* Target Authority Boards */}
+              <div className="space-y-4 text-left">
+                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">TARGET AUTHORITY BOARDS</Label>
+                <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
+                   {boards?.map((b: any) => (
+                      <div 
+                         key={b.id} 
+                         onClick={() => toggleBoardId(b.id)}
+                         className="flex items-center space-x-4 p-4 bg-slate-50/50 rounded-2xl hover:bg-slate-100 transition-all cursor-pointer group"
+                      >
+                         <div className={cn(
+                            "h-6 w-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                            mockData.boardIds?.includes(b.id) ? "border-[#F97316] bg-[#F97316] shadow-lg shadow-orange-500/20" : "border-slate-200"
+                         )}>
+                            {mockData.boardIds?.includes(b.id) && <Check className="h-3.5 w-3.5 text-white" />}
+                         </div>
+                         <span className="text-[11px] font-black text-[#0F172A] uppercase tracking-tight">{b.abbreviation} HUB</span>
+                      </div>
+                   ))}
+                </div>
+              </div>
+
+              {/* Target Recruitment Verticals */}
+              <div className="space-y-4 text-left">
+                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">TARGET RECRUITMENT VERTICALS</Label>
+                <div className="space-y-2 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                   {uniqueExams.map((e: any) => {
+                      const isSelected = mockData.examIds?.includes(e.id);
+                      return (
+                        <div 
+                           key={e.id} 
+                           onClick={() => toggleExamId(e.id)}
+                           className="flex items-center space-x-4 p-4 bg-slate-50/50 rounded-2xl hover:bg-slate-100 transition-all cursor-pointer group"
+                        >
+                           <div className={cn(
+                              "h-6 w-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                              isSelected ? "border-[#F97316] bg-[#F97316]" : "border-slate-200"
+                           )}>
+                              {isSelected && <Check className="h-3.5 w-3.5 text-white" />}
+                           </div>
+                           <span className="text-[11px] font-black text-[#0F172A] uppercase tracking-tight">{e.name}</span>
+                        </div>
+                      )
+                   })}
+                </div>
+              </div>
+
+              {/* Language Mode Dropdown (White) */}
+              <div className="space-y-4 pt-6 border-t border-slate-50">
+                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">LANGUAGE MODE</Label>
+                <Select value={mockData.languageMode} onValueChange={(v: LanguageDisplayMode) => setMockData({...mockData, languageMode: v})}>
+                  <SelectTrigger className="h-16 rounded-2xl bg-white border-2 border-slate-100 shadow-sm font-black text-[11px] uppercase px-6 tracking-widest flex items-center justify-between">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-2xl">
+                    <SelectItem value="ENGLISH_PUNJABI">ENGLISH & ਪੰਜਾਬੀ</SelectItem>
+                    <SelectItem value="ENGLISH_HINDI">ENGLISH & हिन्दी</SelectItem>
+                    <SelectItem value="ENGLISH">ENGLISH ONLY</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Metadata Inputs */}
+              <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-2">
-                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">SERIES TITLE</Label>
-                    <Input 
-                      value={mockData.title} 
-                      onChange={e => setMockData({...mockData, title: e.target.value})}
-                      placeholder="e.g. Patwari Full Mock 01" 
-                      className="h-14 rounded-2xl bg-slate-50 border-none font-bold text-lg focus-visible:ring-primary" 
-                    />
+                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">DURATION (MIN)</Label>
+                    <Input type="number" value={mockData.duration} onChange={e => setMockData({...mockData, duration: parseInt(e.target.value)})} className="h-14 rounded-xl bg-slate-50 border-none font-black text-center text-lg" />
                  </div>
-
-                 <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                       <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">TEST TYPE</Label>
-                       <Select value={mockData.mockType} onValueChange={(v: MockType) => setMockData({...mockData, mockType: v})}>
-                          <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none font-black text-[9px] uppercase"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                             <SelectItem value="FULL">FULL LENGTH MOCK</SelectItem>
-                             <SelectItem value="SUBJECT">SUBJECT TEST</SelectItem>
-                             <SelectItem value="SECTIONAL">SECTIONAL TEST</SelectItem>
-                          </SelectContent>
-                       </Select>
-                    </div>
-                    <div className="space-y-2">
-                       <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">ACCESS LEVEL</Label>
-                       <Select value={mockData.accessLevel} onValueChange={(v: AccessLevel) => setMockData({...mockData, accessLevel: v})}>
-                          <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none font-black text-[9px] uppercase"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                             <SelectItem value="FREE">PUBLIC (FREE)</SelectItem>
-                             <SelectItem value="PREMIUM">ELITE (PREMIUM)</SelectItem>
-                          </SelectContent>
-                       </Select>
-                    </div>
+                 <div className="space-y-2">
+                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">LIMIT</Label>
+                    <Input type="number" value={mockData.attemptLimit} onChange={e => setMockData({...mockData, attemptLimit: parseInt(e.target.value)})} className="h-14 rounded-xl bg-slate-50 border-none font-black text-center text-lg" />
                  </div>
               </div>
 
-              <div className="space-y-8 pt-6 border-t border-slate-50">
-                 <div className="flex items-center gap-3">
-                    <LayoutGrid className="h-4 w-4 text-[#F97316]" />
-                    <h2 className="text-[10px] font-black uppercase text-[#F97316] tracking-[0.3em]">ASSIGNMENT HUB</h2>
-                 </div>
-
-                 <div className="space-y-2 text-left">
-                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">DISTRIBUTION MODE</Label>
-                    <Select value={mockData.assignmentMode} onValueChange={(v: MockAssignmentMode) => setMockData({...mockData, assignmentMode: v, boardIds: [], examIds: []})}>
-                       <SelectTrigger className="h-14 rounded-2xl bg-[#0F172A] text-white border-none shadow-xl font-black uppercase text-[10px] tracking-widest px-6">
-                          <SelectValue />
-                       </SelectTrigger>
-                       <SelectContent>
-                          <SelectItem value="SINGLE">SINGLE VERTICAL</SelectItem>
-                          <SelectItem value="MULTIPLE">MULTIPLE VERTICALS</SelectItem>
-                          <SelectItem value="AUTHORITY">AUTHORITY HUB (BROADCAST)</SelectItem>
-                       </SelectContent>
-                    </Select>
-                 </div>
-
-                 <div className="space-y-4 text-left">
-                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">TARGET AUTHORITY BOARDS</Label>
-                    <div className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
-                       {boards?.map((b: any) => (
-                          <div 
-                             key={b.id} 
-                             onClick={() => toggleBoardId(b.id)}
-                             className="flex items-center space-x-4 p-4 bg-white rounded-2xl hover:bg-slate-50 transition-all cursor-pointer shadow-sm border border-slate-100 group"
-                          >
-                             <div className={cn(
-                                "h-6 w-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                                mockData.boardIds?.includes(b.id) ? "border-primary bg-primary shadow-lg" : "border-slate-200"
-                             )}>
-                                {mockData.boardIds?.includes(b.id) && <Check className="h-3.5 w-3.5 text-white" />}
-                             </div>
-                             <span className="text-[11px] font-black text-[#0F172A] uppercase tracking-tight">{b.abbreviation} HUB</span>
-                          </div>
-                       ))}
-                    </div>
-                 </div>
-
-                 <div className="pt-6 border-t border-slate-50 space-y-6">
-                    <div className="space-y-2">
-                       <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">LANGUAGE MODE</Label>
-                       <Select value={mockData.languageMode} onValueChange={(v: LanguageDisplayMode) => setMockData({...mockData, languageMode: v})}>
-                          <SelectTrigger className="h-14 rounded-xl bg-slate-50 border-none font-bold text-sm uppercase"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                             <SelectItem value="ENGLISH_PUNJABI">ENGLISH & ਪੰਜਾਬੀ</SelectItem>
-                             <SelectItem value="ENGLISH_HINDI">ENGLISH & हिन्दी</SelectItem>
-                             <SelectItem value="ENGLISH">ENGLISH ONLY</SelectItem>
-                          </SelectContent>
-                       </Select>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                       <div className="space-y-2">
-                          <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">DURATION (MIN)</Label>
-                          <Input type="number" value={mockData.duration} onChange={e => setMockData({...mockData, duration: parseInt(e.target.value)})} className="h-14 rounded-xl bg-slate-50 border-none font-black text-center text-lg" />
-                       </div>
-                       <div className="space-y-2">
-                          <Label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">LIMIT</Label>
-                          <Input type="number" value={mockData.attemptLimit} onChange={e => setMockData({...mockData, attemptLimit: parseInt(e.target.value)})} className="h-14 rounded-xl bg-slate-50 border-none font-black text-center text-lg" />
-                       </div>
-                    </div>
-                 </div>
-              </div>
            </Card>
         </div>
 
-        {/* RIGHT COLUMN: SWITCHER HUB */}
+        {/* RIGHT COLUMN: TACTICAL HUB */}
         <div className="lg:col-span-8 flex flex-col space-y-6">
            
            {/* SWITCHER TABS */}
@@ -445,7 +426,7 @@ function MockBuilderContent() {
               <button 
                 onClick={() => setActiveRightTab('BANK')}
                 className={cn(
-                  "px-8 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center gap-2",
+                  "px-6 md:px-8 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center gap-2",
                   activeRightTab === 'BANK' ? "bg-[#0B1528] text-white shadow-xl" : "text-slate-400 hover:text-[#0B1528]"
                 )}
               >
@@ -454,7 +435,7 @@ function MockBuilderContent() {
               <button 
                 onClick={() => setActiveRightTab('ASSEMBLY')}
                 className={cn(
-                  "px-8 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center gap-2",
+                  "px-6 md:px-8 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center gap-2",
                   activeRightTab === 'ASSEMBLY' ? "bg-[#0B1528] text-white shadow-xl" : "text-slate-400 hover:text-[#0B1528]"
                 )}
               >
@@ -466,7 +447,7 @@ function MockBuilderContent() {
            <div className="flex-1 flex flex-col space-y-8">
               {activeRightTab === 'BANK' ? (
                 <>
-                  <div className="bg-[#0B1528] rounded-[3rem] p-8 md:p-12 text-white space-y-8 shadow-4xl relative overflow-hidden flex flex-col">
+                  <div className="bg-[#0B1528] rounded-[2.5rem] md:rounded-[3rem] p-6 md:p-12 text-white space-y-8 shadow-4xl relative overflow-hidden flex flex-col">
                     <div className="absolute top-0 right-0 p-10 opacity-5"><Zap className="h-48 w-48" /></div>
                     
                     <div className="relative z-10 flex flex-col space-y-8">
@@ -474,9 +455,9 @@ function MockBuilderContent() {
                         <div className="space-y-6">
                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
                               <div className="space-y-3">
-                                 <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">BOARD HUB</Label>
+                                 <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">SOURCE BOARD HUB</Label>
                                  <Select value={filterBoard} onValueChange={setFilterBoard}>
-                                    <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-2xl font-bold text-xs text-white px-6"><SelectValue placeholder="All Authorities" /></SelectTrigger>
+                                    <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-2xl font-bold text-xs text-white px-6"><SelectValue placeholder="All Hubs" /></SelectTrigger>
                                     <SelectContent>
                                        <SelectItem value="all">All Boards</SelectItem>
                                        {boards?.map(b => <SelectItem key={b.id} value={b.id}>{b.abbreviation} Hub</SelectItem>)}
@@ -484,7 +465,7 @@ function MockBuilderContent() {
                                  </Select>
                               </div>
                               <div className="space-y-3">
-                                 <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">VERTICAL</Label>
+                                 <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">RECRUITMENT VERTICAL</Label>
                                  <Select value={filterExam} onValueChange={setFilterExam}>
                                     <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-2xl font-bold text-xs text-white px-6"><SelectValue placeholder="All Verticals" /></SelectTrigger>
                                     <SelectContent>
@@ -494,7 +475,7 @@ function MockBuilderContent() {
                                  </Select>
                               </div>
                               <div className="space-y-3">
-                                 <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">NODE</Label>
+                                 <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] ml-1">SUBJECT NODE</Label>
                                  <Select value={filterSubject} onValueChange={setFilterSubject}>
                                     <SelectTrigger className="h-14 bg-white/5 border-white/10 rounded-2xl font-bold text-xs text-white px-6"><SelectValue placeholder="All Subjects" /></SelectTrigger>
                                     <SelectContent>
@@ -515,48 +496,45 @@ function MockBuilderContent() {
                                    className="h-11 pl-11 bg-transparent border-none font-bold text-sm text-white focus-visible:ring-0" 
                                  />
                               </div>
-                              <Badge className="bg-[#F97316]/20 text-[#F97316] border-none text-[8px] font-black px-4 py-1 rounded-lg">{filteredBank.length} ASSETS FOUND</Badge>
+                              <Badge className="bg-[#F97316] text-white border-none text-[8px] font-black px-4 py-1.5 rounded-lg shadow-xl">{filteredBank.length} ASSETS FOUND</Badge>
                            </div>
                         </div>
 
-                        {/* 3. TACTICAL COMMAND BAR */}
+                        {/* 3. TACTICAL COMMAND BAR (MATCHING SCREENSHOT) */}
                         <div className="space-y-6 pt-6 border-t border-white/10">
                           
                           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-                              <div className="md:col-span-5 space-y-4 text-left">
+                              <div className="md:col-span-6 space-y-4 text-left">
                                 <Label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-1">TARGET SECTION HUB</Label>
-                                <button className="w-full h-16 bg-[#F97316] hover:bg-orange-600 text-white rounded-2xl font-black uppercase text-[15px] shadow-3xl tracking-[0.1em] transition-all">
-                                   GENERAL
+                                <button className="w-full h-16 bg-[#F97316] hover:bg-orange-600 text-white rounded-2xl font-black uppercase text-[15px] shadow-5xl tracking-[0.1em] transition-all">
+                                   GENERAL HUB
                                 </button>
                               </div>
                               
-                              <div className="md:col-span-4 flex flex-col gap-4">
-                                <div className="flex items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10">
-                                    <span className="text-[10px] font-black uppercase text-slate-300">UNUSED ONLY</span>
+                              <div className="md:col-span-6 flex flex-col md:flex-row gap-4 md:items-center">
+                                <div className="flex-1 flex items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10">
+                                    <span className="text-[10px] font-black uppercase text-slate-300 tracking-widest">UNUSED ONLY</span>
                                     <Switch checked={hideUsed} onCheckedChange={setHideUsed} className="data-[state=checked]:bg-[#F97316]" />
                                 </div>
-                                <div className="flex items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10">
-                                    <span className="text-[10px] font-black uppercase text-slate-300">BLOCK DUPLICATES</span>
+                                <div className="flex-1 flex items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10">
+                                    <span className="text-[10px] font-black uppercase text-slate-300 tracking-widest">BLOCK DUPLICATES</span>
                                     <Switch checked={blockDuplicates} onCheckedChange={setBlockDuplicates} className="data-[state=checked]:bg-[#10B981]" />
                                 </div>
                               </div>
-
-                              <div className="md:col-span-3">
-                                <Button 
-                                    onClick={handleSelectAllInBank} 
-                                    variant="outline"
-                                    className="w-full h-16 border-white/20 bg-transparent hover:bg-white/10 text-white font-black uppercase text-[9px] tracking-widest rounded-xl"
-                                >
-                                    SELECT ALL FILTERED
-                                </Button>
-                              </div>
                           </div>
 
-                          <div className="pt-2">
+                          <div className="flex flex-col md:flex-row gap-4">
+                              <Button 
+                                  onClick={handleSelectAllInBank} 
+                                  variant="outline"
+                                  className="h-16 flex-1 border-white/20 bg-transparent hover:bg-white/10 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl"
+                              >
+                                  SELECT ALL FILTERED
+                              </Button>
                               <Button 
                                 onClick={handleLinkQuestions}
                                 disabled={bankSelection.length === 0}
-                                className="w-full h-20 bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase text-[14px] tracking-[0.3em] rounded-[2rem] shadow-5xl border-none transition-all active:scale-95 gap-4"
+                                className="h-16 flex-[2] bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase text-[14px] tracking-[0.3em] rounded-xl shadow-5xl border-none transition-all active:scale-95 gap-4"
                               >
                                 LINK {bankSelection.length} ASSETS <Zap className="h-6 w-6 fill-current" />
                               </Button>
@@ -565,7 +543,7 @@ function MockBuilderContent() {
                     </div>
                   </div>
 
-                  {/* QUESTION LIST BELOW THE BOX */}
+                  {/* QUESTION LIST (WHITE CARDS) */}
                   <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                     {bankLoading ? (
                       Array.from({length: 4}).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-[2rem]" />)
@@ -577,13 +555,13 @@ function MockBuilderContent() {
                         <Card 
                           key={q.id} 
                           onClick={() => setBankSelection(prev => isSelected ? prev.filter(id => id !== q.id) : [...prev, q.id])}
-                          className="border-none shadow-xl rounded-[2.5rem] bg-white p-8 md:p-10 flex items-center gap-8 cursor-pointer transition-all hover:translate-y-[-4px] border border-slate-100 group"
+                          className="border-none shadow-xl rounded-[2.5rem] bg-white p-8 md:p-10 flex items-center gap-8 cursor-pointer transition-all hover:translate-y-[-4px] border border-slate-100 group overflow-hidden"
                         >
                            <div className={cn(
-                              "h-10 w-10 md:h-12 md:w-12 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                              "h-12 w-12 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
                               isSelected ? "border-[#F97316] bg-[#F97316]/10 shadow-[0_0_15px_rgba(249,115,22,0.2)]" : "border-slate-200"
                            )}>
-                              {isSelected && <div className="h-4 w-4 rounded-full bg-[#F97316]" />}
+                              {isSelected && <div className="h-5 w-5 rounded-full bg-[#F97316]" />}
                            </div>
                            
                            <div className="flex-1 min-w-0 space-y-4 text-left">
@@ -591,7 +569,7 @@ function MockBuilderContent() {
                                  <Badge className="bg-[#0B1528] text-white border-none font-black text-[9px] px-3 py-1 rounded uppercase tracking-widest">{board?.abbreviation || 'PSSSB'}</Badge>
                                  <Badge variant="outline" className="text-slate-400 border-slate-200 text-[9px] font-black uppercase px-3 py-1">{sub?.name || 'ICT'}</Badge>
                               </div>
-                              <p className="font-bold text-lg md:text-2xl text-[#0F172A] leading-relaxed antialiased">
+                              <p className="font-bold text-lg md:text-2xl text-[#0F172A] leading-relaxed antialiased break-words">
                                 {q.englishQuestion}
                               </p>
                            </div>
@@ -642,13 +620,13 @@ function MockBuilderContent() {
                                 <div className="p-8 space-y-4">
                                   {sec.questions.map((q: any, qIdx: number) => (
                                       <div key={q.id} className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-2xl group/item hover:bg-white hover:shadow-lg transition-all">
-                                        <div className="flex items-center gap-6 min-w-0">
-                                            <span className="text-point-sm font-black text-slate-300 w-6 uppercase">#{qIdx + 1}</span>
+                                        <div className="flex items-center gap-6 min-w-0 flex-1">
+                                            <span className="text-sm font-black text-slate-300 w-6 shrink-0 uppercase">#{qIdx + 1}</span>
                                             <p className="text-sm font-bold text-slate-600 truncate text-left">{q.englishQuestion}</p>
                                         </div>
                                         <button 
                                             onClick={() => setSections(p => p.map(s => s.id === sec.id ? { ...s, questions: s.questions.filter((item: any) => item.id !== q.id) } : s))} 
-                                            className="text-rose-400 hover:text-rose-600 p-2"
+                                            className="text-rose-400 hover:text-rose-600 p-2 shrink-0"
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </button>
@@ -664,7 +642,7 @@ function MockBuilderContent() {
                           <Popover>
                             <PopoverTrigger asChild>
                                 <Button className="h-24 w-full bg-white border-dashed border-2 border-slate-200 rounded-[2.5rem] shadow-xl hover:border-primary transition-all flex items-center justify-center gap-4 text-slate-400 font-black uppercase text-[11px] tracking-widest group">
-                                  <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform" /> ADD NEW SECTION HUB
+                                  <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform" /> ADD NEW SUBJECT HUB
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-[340px] p-0 rounded-[2.5rem] bg-[#0F172A] text-white border-white/10 shadow-5xl overflow-hidden" align="center">
