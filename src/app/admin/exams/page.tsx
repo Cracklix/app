@@ -19,8 +19,8 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Authority Hub v46.0.
- * UPDATED: Permanently set Teaching logo for all Education/Teaching hubs.
+ * @fileOverview Authority Hub v47.0.
+ * UPDATED: Permanently set Technical logo for all Punjab Technical hubs.
  */
 
 export default function ExamManagement() {
@@ -42,15 +42,13 @@ export default function ExamManagement() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const psssbOfficialLogo = "https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg";
-  const pspclOfficialLogo = "https://pspcl.in/assets/images/logo.png";
-  const pstclOfficialLogo = "https://pstcl.org/images/logo.png";
-  const psbteOfficialLogo = "https://www.punjabteched.com/images/Clogo-blue.gif";
   const policeOfficialLogo = "https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png";
   const sscOfficialLogo = "https://ssc.gov.in/assets/sscLogo.webp";
   const ibpsOfficialLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2383XvJjgCoK15EkKqSOXXBCfm1WsMNWYcw&s";
   
-  // PERMANENT TEACHING LOGO
+  // PERMANENT LOGO REGISTRY
   const teachingOfficialLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT77AiJp2d3yn7Lwjk7LG6nDeLpQC_ZnFs6FZg4yAieypyMsmctxNGWRdk&s=10";
+  const technicalOfficialLogo = "https://affiliation.pbteched.net/assets/images/banner-5.png";
 
   const handleSave = async () => {
     if (!db || !editingBoard) return
@@ -66,10 +64,8 @@ export default function ExamManagement() {
     
     const abbrev = editingBoard.abbreviation?.toUpperCase();
     const isTeaching = editingBoard.categoryId === 'punjab-teaching' || abbrev === 'PSTET' || abbrev === 'CTET' || abbrev === 'EDUCATION' || abbrev === 'PSEB';
+    const isTechnical = editingBoard.categoryId === 'punjab-technical' || abbrev === 'PSPCL' || abbrev === 'PSTCL' || abbrev === 'PSBTE';
     const isPsssb = abbrev === 'PSSSB';
-    const isPspcl = abbrev === 'PSPCL';
-    const isPstcl = abbrev === 'PSTCL';
-    const isPsbte = abbrev === 'PSBTE';
     const isPolice = abbrev.includes('POLICE');
     const isSsc = abbrev === 'SSC';
     const isIbps = abbrev === 'IBPS';
@@ -78,10 +74,8 @@ export default function ExamManagement() {
       ...editingBoard, 
       id: boardId,
       iconUrl: isTeaching ? teachingOfficialLogo :
+               isTechnical ? technicalOfficialLogo :
                isPsssb ? psssbOfficialLogo : 
-               isPspcl ? pspclOfficialLogo : 
-               isPstcl ? pstclOfficialLogo :
-               isPsbte ? psbteOfficialLogo :
                isPolice ? policeOfficialLogo :
                isSsc ? sscOfficialLogo :
                isIbps ? ibpsOfficialLogo :
@@ -177,20 +171,16 @@ export default function ExamManagement() {
                 const abbrev = board.abbreviation?.toUpperCase();
                 
                 const isTeaching = board.categoryId === 'punjab-teaching' || abbrev === 'PSTET' || abbrev === 'CTET' || abbrev === 'EDUCATION' || abbrev === 'PSEB';
+                const isTechnical = board.categoryId === 'punjab-technical' || abbrev === 'PSPCL' || abbrev === 'PSTCL' || abbrev === 'PSBTE';
                 const isPsssb = abbrev === 'PSSSB';
-                const isPspcl = abbrev === 'PSPCL';
-                const isPstcl = abbrev === 'PSTCL';
-                const isPsbte = abbrev === 'PSBTE';
                 const isPolice = abbrev.includes('POLICE');
                 const isSsc = abbrev === 'SSC';
                 const isIbps = abbrev === 'IBPS';
                 const isArmy = board.id?.toLowerCase() === 'army' || abbrev === 'ARMY';
                 
                 const effectiveIcon = isTeaching ? teachingOfficialLogo :
+                                     isTechnical ? technicalOfficialLogo :
                                      isPsssb ? psssbOfficialLogo : 
-                                     isPspcl ? pspclOfficialLogo : 
-                                     isPstcl ? pstclOfficialLogo :
-                                     isPsbte ? psbteOfficialLogo :
                                      isPolice ? policeOfficialLogo :
                                      isSsc ? sscOfficialLogo :
                                      isIbps ? ibpsOfficialLogo :
@@ -207,7 +197,7 @@ export default function ExamManagement() {
                           ) : (
                             <img 
                               src={effectiveIcon} 
-                              className={cn("h-full w-full object-contain p-2", (isArmy || isTeaching || isPolice || isSsc || isIbps || isPspcl || isPstcl || isPsbte) ? "scale-150" : "")} 
+                              className={cn("h-full w-full object-contain p-2", (isArmy || isTeaching || isTechnical || isPolice || isSsc || isIbps) ? "scale-125" : "")} 
                               referrerPolicy="no-referrer"
                               alt={board.abbreviation}
                               onError={() => setFailedImages(p => ({...p, [board.id]: true}))}
@@ -272,7 +262,7 @@ export default function ExamManagement() {
                         <img 
                           src={editingBoard.iconUrl} 
                           referrerPolicy="no-referrer"
-                          className={cn("absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform", (editingBoard.categoryId === 'punjab-teaching' || editingBoard.abbreviation?.toUpperCase() === 'PSTET' || editingBoard.abbreviation?.toUpperCase() === 'CTET' || editingBoard.abbreviation?.toUpperCase() === 'EDUCATION' || editingBoard.abbreviation?.toUpperCase() === 'PSEB') ? "scale-150" : "")} 
+                          className={cn("absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform", (editingBoard.categoryId === 'punjab-teaching' || editingBoard.categoryId === 'punjab-technical' || editingBoard.abbreviation?.toUpperCase() === 'PSTET' || editingBoard.abbreviation?.toUpperCase() === 'CTET' || editingBoard.abbreviation?.toUpperCase() === 'EDUCATION' || editingBoard.abbreviation?.toUpperCase() === 'PSEB') ? "scale-125" : "")} 
                           alt="Preview"
                         />
                       ) : (

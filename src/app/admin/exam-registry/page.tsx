@@ -31,8 +31,8 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Master Registry v5.0.
- * UPDATED: Permanently set official Teaching logo for relevant verticals.
+ * @fileOverview Institutional Exam Master Registry v5.1.
+ * UPDATED: Permanently set Technical logo for relevant verticals.
  */
 
 export default function ExamRegistryPage() {
@@ -89,13 +89,9 @@ export default function ExamRegistryPage() {
     } finally { setIsSaving(false) }
   }
 
-  // OFFICIAL LOGO REGISTRY
-  const pspclOfficialLogo = "https://pspcl.in/assets/images/logo.png";
-  const pstclOfficialLogo = "https://pstcl.org/images/logo.png";
-  const psbteOfficialLogo = "https://www.punjabteched.com/images/Clogo-blue.gif";
-  
-  // PERMANENT TEACHING LOGO
+  // PERMANENT LOGO REGISTRY
   const teachingOfficialLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT77AiJp2d3yn7Lwjk7LG6nDeLpQC_ZnFs6FZg4yAieypyMsmctxNGWRdk&s=10";
+  const technicalOfficialLogo = "https://affiliation.pbteched.net/assets/images/banner-5.png";
 
   return (
     <div className="space-y-12 pb-24 text-left">
@@ -126,7 +122,7 @@ export default function ExamRegistryPage() {
             <TableHeader className="bg-slate-50/50">
               <TableRow className="border-slate-50 h-20">
                 <TableHead className="px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Vertical Identity</TableHead>
-                <TableHead className="text-[10px) font-black uppercase tracking-widest text-slate-500">Board Hub</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Board Hub</TableHead>
                 <TableHead className="text-center text-[10px] font-black uppercase tracking-widest text-slate-500">Registry Category</TableHead>
                 <TableHead className="text-right px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Actions</TableHead>
               </TableRow>
@@ -143,12 +139,11 @@ export default function ExamRegistryPage() {
                 const examName = e.name?.toUpperCase() || "";
                 
                 const isTeaching = e.categoryId === 'punjab-teaching' || abbrev === 'CTET' || abbrev === 'PSTET' || abbrev === 'EDUCATION' || examName.includes('CADRE') || examName.includes('TEACHER') || examName.includes('PROFESSOR') || examName.includes('PRINCIPAL') || examName.includes('ENTRANCE');
+                const isTechnical = e.categoryId === 'punjab-technical' || abbrev === 'PSPCL' || abbrev === 'PSTCL' || abbrev === 'PSBTE' || abbrev === 'TECHNICAL';
 
                 let forcedLogo = e.iconUrl || board?.iconUrl;
                 if (isTeaching) forcedLogo = teachingOfficialLogo;
-                else if (abbrev === 'PSPCL') forcedLogo = pspclOfficialLogo;
-                else if (abbrev === 'PSTCL') forcedLogo = pstclOfficialLogo;
-                else if (abbrev === 'PSBTE') forcedLogo = psbteOfficialLogo;
+                else if (isTechnical) forcedLogo = technicalOfficialLogo;
 
                 return (
                   <TableRow key={e.id} className="hover:bg-slate-50 border-slate-50 transition-colors group">
@@ -156,7 +151,7 @@ export default function ExamRegistryPage() {
                       <div className="flex items-center gap-6">
                         <div className="h-12 w-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
                             {forcedLogo && !failedImages[e.id] ? (
-                              <img src={forcedLogo} className={cn("h-full w-full object-contain p-2", isTeaching ? "scale-150" : "")} referrerPolicy="no-referrer" onError={() => setFailedImages(p => ({ ...p, [e.id]: true }))} />
+                              <img src={forcedLogo} className={cn("h-full w-full object-contain p-2", (isTeaching || isTechnical) ? "scale-125" : "")} referrerPolicy="no-referrer" onError={() => setFailedImages(p => ({ ...p, [e.id]: true }))} />
                             ) : (
                               <div className="h-full w-full bg-amber-50 flex items-center justify-center text-amber-600 font-black text-xs">{e.name?.[0]?.toUpperCase()}</div>
                             )}

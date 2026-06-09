@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Hub Explorer (Hub -> Exams).
- * UPDATED: Permanently set official Teaching logo for relevant verticals.
+ * UPDATED: Permanently set official Technical logo for relevant verticals.
  */
 
 export default function HubExamsPage() {
@@ -58,12 +58,9 @@ export default function HubExamsPage() {
 
   if (hubLoading) return <div className="h-screen bg-white flex items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
 
-  const pspclLogo = "https://pspcl.in/assets/images/logo.png";
-  const pstclLogo = "https://pstcl.org/images/logo.png";
-  const psbteLogo = "https://www.punjabteched.com/images/Clogo-blue.gif";
-
-  // PERMANENT TEACHING LOGO
+  // PERMANENT LOGO REGISTRY
   const teachingOfficialLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT77AiJp2d3yn7Lwjk7LG6nDeLpQC_ZnFs6FZg4yAieypyMsmctxNGWRdk&s=10";
+  const technicalOfficialLogo = "https://affiliation.pbteched.net/assets/images/banner-5.png";
 
   return (
     <div className="min-h-screen bg-slate-50/50 font-body">
@@ -105,14 +102,14 @@ export default function HubExamsPage() {
                   const stats = statsMap[exam.id] || { full: 0, subject: 0, pyq: 0, sectional: 0 };
                   const name = exam.name?.toUpperCase() || "";
                   const abbrev = hub?.abbreviation?.toUpperCase() || "";
+                  const categoryId = exam.categoryId;
                   
-                  const isTeaching = exam.categoryId === 'punjab-teaching' || abbrev === 'CTET' || abbrev === 'PSTET' || abbrev === 'EDUCATION' || name.includes('CADRE') || name.includes('TEACHER') || name.includes('PROFESSOR') || name.includes('PRINCIPAL') || name.includes('ENTRANCE');
+                  const isTeaching = categoryId === 'punjab-teaching' || abbrev === 'CTET' || abbrev === 'PSTET' || abbrev === 'EDUCATION' || name.includes('TEACHER') || name.includes('PROFESSOR') || name.includes('PRINCIPAL');
+                  const isTechnical = categoryId === 'punjab-technical' || abbrev === 'PSPCL' || abbrev === 'PSTCL' || abbrev === 'PSBTE' || abbrev === 'TECHNICAL';
 
                   let forcedLogo = exam.iconUrl || hub?.iconUrl;
                   if (isTeaching) forcedLogo = teachingOfficialLogo;
-                  else if (abbrev === 'PSPCL') forcedLogo = pspclLogo;
-                  else if (abbrev === 'PSTCL') forcedLogo = pstclLogo;
-                  else if (abbrev === 'PSBTE') forcedLogo = psbteLogo;
+                  else if (isTechnical) forcedLogo = technicalOfficialLogo;
 
                   return (
                     <Link key={exam.id} href={`/exams/${exam.id}`}>
@@ -120,7 +117,7 @@ export default function HubExamsPage() {
                           <div className="flex justify-between items-start mb-10">
                              <div className="h-16 w-16 md:h-20 md:w-20 rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all group-hover:shadow-xl shadow-inner relative overflow-hidden shrink-0">
                                 {forcedLogo && !failedImages[exam.id] ? (
-                                   <img src={forcedLogo} className={cn("w-full h-full object-contain p-2.5 transition-transform duration-500 group-hover:scale-110", isTeaching ? "scale-150" : "")} alt="Logo" referrerPolicy="no-referrer" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
+                                   <img src={forcedLogo} className={cn("w-full h-full object-contain p-2.5 transition-transform duration-500 group-hover:scale-110", (isTeaching || isTechnical) ? "scale-125" : "")} alt="Logo" referrerPolicy="no-referrer" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
                                 ) : (
                                    <GraduationCap className="h-8 w-8 text-primary" />
                                 )}
