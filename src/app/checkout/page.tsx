@@ -18,8 +18,8 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Institutional Checkout Hub v50.0.
- * UPDATED: Integrated Razorpay Secure Online Gateway alongside Manual Node.
+ * @fileOverview Institutional Checkout Hub v55.0.
+ * Standardized to include Razorpay Secure Online Gateway.
  */
 
 export default function CheckoutPage() {
@@ -49,15 +49,6 @@ function CheckoutContent() {
     if (!loading && !user) router.push("/login")
   }, [user, loading, router])
 
-  const upiId = settings?.upiId || "arshdeepgrewal1122-1@oksbi";
-  const upiLink = `upi://pay?pa=${upiId}&pn=Cracklix&am=${planData?.price || 0}&cu=INR`;
-  const qrUrl = settings?.qrCodeUrl || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`;
-
-  const handleCopyUPI = () => {
-    navigator.clipboard.writeText(upiId);
-    toast({ title: "UPI ID Copied" });
-  };
-
   const handleRazorpayPayment = async () => {
     if (!user || !profile || !planData || onlineProcessing) return;
 
@@ -79,7 +70,7 @@ function CheckoutContent() {
         amount: orderData.amount,
         currency: orderData.currency,
         name: "CRACKLIX",
-        description: `${planData.name} Preparation Node`,
+        description: `${planData.name} Elite Pass`,
         order_id: orderData.orderId,
         handler: async function (response: any) {
           try {
@@ -95,15 +86,20 @@ function CheckoutContent() {
 
             const verifyData = await verifyRes.json();
             if (verifyData.success) {
-              toast({ title: "Payment Verified", description: "Elite Pass activated instantly." });
+              toast({ title: "Audit Success", description: "Elite Pass activated instantly." });
               router.push("/payment/success?plan=" + planData.name);
             } else {
-              throw new Error(verifyData.error || "Verification failed");
+              throw new Error(verifyData.error || "Registry sync failed.");
             }
           } catch (e: any) {
-            toast({ variant: "destructive", title: "Audit Failed", description: e.message });
+            toast({ variant: "destructive", title: "Verification Failed", description: e.message });
             router.push("/payment/failed");
           }
+        },
+        modal: {
+           ondismiss: function() {
+              setOnlineProcessing(false);
+           }
         },
         prefill: {
           name: profile.name,
@@ -116,10 +112,18 @@ function CheckoutContent() {
       const rzp = new (window as any).Razorpay(options);
       rzp.open();
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Gateway Error", description: e.message });
-    } finally {
+      toast({ variant: "destructive", title: "Gateway Hub Error", description: e.message });
       setOnlineProcessing(false);
     }
+  };
+
+  const upiId = settings?.upiId || "arshdeepgrewal1122-1@oksbi";
+  const upiLink = `upi://pay?pa=${upiId}&pn=Cracklix&am=${planData?.price || 0}&cu=INR`;
+  const qrUrl = settings?.qrCodeUrl || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`;
+
+  const handleCopyUPI = () => {
+    navigator.clipboard.writeText(upiId);
+    toast({ title: "UPI ID Copied" });
   };
 
   const handleManualPayment = async () => {
@@ -161,15 +165,14 @@ function CheckoutContent() {
              <ArrowLeft className="h-6 w-6 text-[#0F172A]" />
            </Button>
            <div className="text-left">
-              <h1 className="text-4xl font-headline font-black text-[#0F172A] uppercase tracking-tight">Final Registry Audit</h1>
-              <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-1 text-left">Secure Payment Gateway Hub</p>
+              <h1 className="text-4xl font-headline font-black text-[#0F172A] uppercase tracking-tight">Checkout</h1>
+              <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-1">Secure Transaction Node</p>
            </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 text-left">
            <div className="lg:col-span-7 space-y-10">
               
-              {/* ONLINE GATEWAY NODE */}
               <Card className="border-none shadow-5xl rounded-[3rem] bg-[#0F172A] text-white overflow-hidden group">
                  <CardHeader className="p-10 pb-4">
                     <div className="flex items-center gap-4 mb-2">
@@ -177,7 +180,7 @@ function CheckoutContent() {
                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Recommended Gateway</span>
                     </div>
                     <CardTitle className="font-headline font-black text-2xl uppercase">Secure Online Payment</CardTitle>
-                    <CardDescription className="text-slate-400 font-medium">Instant pass activation via Cards, UPI, or Netbanking.</CardDescription>
+                    <CardDescription className="text-slate-400 font-medium">Instant activation via Cards, UPI, or Netbanking.</CardDescription>
                  </CardHeader>
                  <CardContent className="p-10 pt-4">
                     <Button 
@@ -188,40 +191,30 @@ function CheckoutContent() {
                        {onlineProcessing ? <Loader2 className="h-6 w-6 animate-spin" /> : <Zap className="h-6 w-6 fill-current" />}
                        PAY SECURELY NOW
                     </Button>
-                    <div className="mt-8 flex items-center justify-center gap-6 opacity-40">
-                       <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" className="h-4 grayscale invert" alt="PP" />
-                       <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-6 grayscale" alt="MC" />
-                       <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Visa_2014_logo_detail.svg" className="h-3 grayscale invert" alt="VI" />
-                    </div>
                  </CardContent>
               </Card>
 
-              {/* MANUAL HUB NODE */}
               <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden opacity-80 hover:opacity-100 transition-opacity">
                  <CardHeader className="p-10 bg-slate-50/50 border-b border-slate-100">
                     <div className="flex items-center gap-4 mb-2">
                        <QrCode className="h-5 w-5 text-slate-400" />
-                       <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Alternative Node</span>
+                       <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Alternative Hub</span>
                     </div>
-                    <CardTitle className="font-headline font-black text-xl uppercase text-[#0F172A]">Manual UPI Submission</CardTitle>
+                    <CardTitle className="font-headline font-black text-xl uppercase text-[#0F172A]">Manual UPI Node</CardTitle>
                  </CardHeader>
                  <CardContent className="p-10 space-y-10">
                     <div className="flex flex-col items-center gap-10">
-                       <div className="h-48 w-48 bg-white rounded-3xl border-2 border-slate-50 flex items-center justify-center p-4 shadow-xl relative group overflow-hidden">
+                       <div className="h-48 w-48 bg-white rounded-3xl border-2 border-slate-50 flex items-center justify-center p-4 shadow-xl">
                           <img src={qrUrl} alt="Audit QR" className="w-full h-full object-contain" />
                        </div>
-                       
-                       <div className="w-full space-y-4">
-                          <div className="p-5 bg-slate-900 rounded-2xl border border-white/5 flex items-center justify-between shadow-2xl">
-                             <div className="min-w-0 flex-1">
-                                <p className="text-[8px] font-black text-primary uppercase tracking-widest mb-1">Institutional UPI ID</p>
-                                <p className="text-base font-black text-white truncate">{upiId}</p>
-                             </div>
-                             <Button size="icon" variant="ghost" onClick={handleCopyUPI} className="text-primary hover:bg-white/10 rounded-xl"><Copy className="h-5 w-5" /></Button>
+                       <div className="w-full p-5 bg-slate-900 rounded-2xl border border-white/5 flex items-center justify-between shadow-2xl">
+                          <div className="min-w-0 flex-1">
+                             <p className="text-[8px] font-black text-primary uppercase tracking-widest mb-1">UPI ID</p>
+                             <p className="text-base font-black text-white truncate">{upiId}</p>
                           </div>
+                          <Button size="icon" variant="ghost" onClick={handleCopyUPI} className="text-primary hover:bg-white/10 rounded-xl"><Copy className="h-5 w-5" /></Button>
                        </div>
                     </div>
-
                     <div className="space-y-4 pt-8 border-t border-slate-100">
                        <div className="space-y-2">
                           <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">UTR / 12-Digit Transaction ID</Label>
@@ -229,7 +222,7 @@ function CheckoutContent() {
                             value={utr}
                             onChange={e => setUtr(e.target.value.replace(/\D/g, '').slice(0,12))}
                             placeholder="Enter 12-digit number" 
-                            className="h-14 rounded-xl border-slate-200 bg-slate-50 font-black text-xl tracking-widest text-[#0F172A] text-center" 
+                            className="h-14 rounded-xl border-slate-200 bg-slate-50 font-black text-xl tracking-widest text-center" 
                           />
                        </div>
                        <Button 
@@ -250,10 +243,9 @@ function CheckoutContent() {
                  <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-110 transition-transform duration-[3000ms]"><Gem className="h-48 w-48" /></div>
                  <div className="relative z-10 space-y-12">
                     <div className="space-y-2 text-center">
-                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Plan Node Registry</p>
+                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Order Registry</p>
                        <h3 className="text-3xl md:text-5xl font-headline font-black uppercase leading-tight">{planData.name}</h3>
                     </div>
-                    
                     <div className="space-y-5 pt-8 border-t border-white/5">
                        <div className="flex justify-between items-center text-sm font-bold text-slate-400 uppercase tracking-widest">
                           <span>Institutional Fee</span>
@@ -266,13 +258,6 @@ function CheckoutContent() {
                     </div>
                  </div>
               </Card>
-
-              <div className="p-8 bg-white rounded-[2.5rem] border border-slate-100 shadow-xl flex items-start gap-4">
-                 <Lock className="h-5 w-5 text-slate-300 shrink-0 mt-1" />
-                 <p className="text-[10px] font-bold text-slate-500 leading-relaxed uppercase">
-                    Your transaction node is audited via PCI-DSS compliant secure gateways. All data is encrypted with SSL/TLS protocols.
-                 </p>
-              </div>
            </div>
         </div>
       </main>

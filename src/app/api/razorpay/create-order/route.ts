@@ -5,8 +5,8 @@ import { initializeFirebase } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
 /**
- * @fileOverview Server-side order creation for Razorpay.
- * Strictly prevents exposure of Secret Keys to the client.
+ * @fileOverview Secure Razorpay Order Creation Node.
+ * Handles server-side order generation to protect sensitive keys.
  */
 
 const razorpay = new Razorpay({
@@ -20,21 +20,27 @@ export async function POST(req: Request) {
     const { firestore: db } = initializeFirebase();
 
     if (!userId || !planId) {
-      return NextResponse.json({ error: 'Missing mandatory audit nodes.' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing mandatory session data.' }, { status: 400 });
     }
 
-    // 1. Fetch Plan details from Registry
+    // 1. Audit Plan Registry
     const planSnap = await getDoc(doc(db, "passes", planId));
     if (!planSnap.exists()) {
-      return NextResponse.json({ error: 'Invalid Plan Registry Node.' }, { status: 404 });
+      return NextResponse.json({ error: 'Invalid Pass Node.' }, { status: 404 });
     }
     const planData = planSnap.data();
 
-    // 2. Create Razorpay Order
+    // 2. Razorpay Order Generation
+    const amountInPaise = Math.round(planData.price * 100);
+    
+    if (amountInPaise < 100) {
+      return NextResponse.json({ error: 'Minimum transaction value not met.' }, { status: 400 });
+    }
+
     const options = {
-      amount: Math.round(planData.price * 100), // Amount in paise
+      amount: amountInPaise,
       currency: "INR",
-      receipt: `receipt_${Date.now()}_${userId.slice(-6)}`,
+      receipt: `node_${Date.now()}_${userId.slice(-4)}`,
       notes: {
         userId,
         planId,
@@ -50,7 +56,7 @@ export async function POST(req: Request) {
       currency: order.currency
     });
   } catch (error: any) {
-    console.error('[RAZORPAY ORDER ERROR]:', error);
-    return NextResponse.json({ error: 'Failed to initialize transaction node.' }, { status: 500 });
+    console.error('[RAZORPAY_ORDER_FAILURE]:', error);
+    return NextResponse.json({ error: 'Gateway failed to initialize.' }, { status: 500 });
   }
 }

@@ -5,8 +5,8 @@ import { initializeFirebase } from '@/firebase';
 import { doc, updateDoc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 
 /**
- * @fileOverview Payment Signature Verification Hub.
- * Hardened node for cryptographic audit of gateway responses.
+ * @fileOverview Hardened Payment Signature Verification.
+ * Performs HMAC-SHA256 audit and synchronizes institutional registry.
  */
 
 export async function POST(req: Request) {
@@ -21,30 +21,26 @@ export async function POST(req: Request) {
 
     const secret = process.env.RAZORPAY_KEY_SECRET!;
 
-    // 1. Cryptographic Audit
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSignature = crypto
-      .createHmac('sha256', secret)
-      .update(body.toString())
-      .digest('hex');
+    // 1. Cryptographic Audit (HMAC-SHA256)
+    const hmac = crypto.createHmac('sha256', secret);
+    hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
+    const generated_signature = hmac.digest('hex');
 
-    const isAuthentic = expectedSignature === razorpay_signature;
-
-    if (!isAuthentic) {
-      return NextResponse.json({ error: 'Signature Mismatch - Integrity Compromised' }, { status: 400 });
+    if (generated_signature !== razorpay_signature) {
+      return NextResponse.json({ error: 'Security Compromised: Signature Mismatch' }, { status: 400 });
     }
 
     const { firestore: db } = initializeFirebase();
 
-    // 2. Fetch Plan Metadata
+    // 2. Fetch Plan Metadata for Expiry Calculation
     const planSnap = await getDoc(doc(db, "passes", planId));
     const planData = planSnap?.data();
     
     if (!planData) {
-      return NextResponse.json({ error: 'Plan Node Missing' }, { status: 404 });
+      return NextResponse.json({ error: 'Registry Sync Error: Plan Missing' }, { status: 404 });
     }
 
-    // 3. Activate Elite Pass
+    // 3. Institutional Registry Upgrade (Elite Pass Activation)
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + (planData.durationDays || 30));
 
@@ -61,7 +57,7 @@ export async function POST(req: Request) {
       updatedAt: serverTimestamp()
     });
 
-    // 4. Log Transaction Node
+    // 4. Ledger Entry
     const paymentRef = doc(db, 'payment_requests', razorpay_payment_id);
     await setDoc(paymentRef, {
       id: razorpay_payment_id,
@@ -78,7 +74,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('[VERIFICATION ERROR]:', error);
-    return NextResponse.json({ error: 'Internal Registry Synchronization Error' }, { status: 500 });
+    console.error('[RAZORPAY_VERIFY_FAILURE]:', error);
+    return NextResponse.json({ error: 'Registry synchronization failed.' }, { status: 500 });
   }
 }
