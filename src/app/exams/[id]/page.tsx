@@ -33,8 +33,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v16.0.
- * UPDATED: Multi-Exam Assignment Audit. Mocks linked via array are now correctly discovered.
+ * @fileOverview Institutional Exam Hub v16.1.
+ * UPDATED: Implemented mandatory branding engine for CTET, PSTET, and PSEB official logos.
  */
 
 export default function ExamHubPage() {
@@ -107,7 +107,19 @@ export default function ExamHubPage() {
     b.abbreviation?.toLowerCase() === exam.boardId?.toLowerCase()
   );
 
-  const logoUrl = exam.iconUrl || activeBoard?.iconUrl;
+  const abbrev = activeBoard?.abbreviation?.toUpperCase() || exam.boardId?.toUpperCase();
+  const ctetOfficialLogo = "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png";
+  const pstetOfficialLogo = "https://pstet.pseb.ac.in/img/main-logo-2.png";
+  const psebOfficialLogo = "https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png";
+
+  let logoUrl = exam.iconUrl || activeBoard?.iconUrl;
+  const isCtet = abbrev === 'CTET' || abbrev === 'CBSE' || exam.name.toUpperCase().includes('CTET');
+  const isPstet = abbrev === 'PSTET' || exam.name.toUpperCase().includes('PSTET');
+  const isPseb = abbrev === 'PSEB' || abbrev === 'EDUCATION' || exam.name.toUpperCase().includes('PSEB');
+
+  if (isCtet) logoUrl = ctetOfficialLogo;
+  if (isPstet) logoUrl = pstetOfficialLogo;
+  if (isPseb) logoUrl = psebOfficialLogo;
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body">
@@ -121,7 +133,13 @@ export default function ExamHubPage() {
                </button>
                <div className="h-10 w-10 md:h-14 md:w-14 rounded-xl bg-white border border-slate-100 flex items-center justify-center relative overflow-hidden shrink-0 shadow-inner">
                   {logoUrl && !imgFailed ? (
-                    <img src={logoUrl} className="w-full h-full object-contain p-1.5" alt="Logo" referrerPolicy="no-referrer" onError={() => setImgFailed(true)} />
+                    <img 
+                      src={logoUrl} 
+                      className={cn("w-full h-full object-contain p-1.5 transition-transform", (isCtet || isPstet || isPseb) ? "scale-150" : "")} 
+                      alt="Logo" 
+                      referrerPolicy="no-referrer" 
+                      onError={() => setImgFailed(true)} 
+                    />
                   ) : (
                     <GraduationCap className="h-5 w-5 md:h-8 md:w-8 text-slate-300" />
                   )}

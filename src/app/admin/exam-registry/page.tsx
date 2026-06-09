@@ -27,8 +27,8 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Master Registry v2.7.
- * UPDATED: Enforced mandatory branding for CTET, PSTET, and PSEB exams.
+ * @fileOverview Institutional Exam Master Registry v2.8.
+ * UPDATED: Enforced mandatory branding for CTET, PSTET, and PSEB exams across all registry nodes.
  */
 
 export default function ExamRegistryPage() {
@@ -94,6 +94,7 @@ export default function ExamRegistryPage() {
     } finally { setIsMerging(false) }
   }
 
+  // OFFICIAL LOGO REGISTRY
   const ctetOfficialLogo = "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png";
   const pstetOfficialLogo = "https://pstet.pseb.ac.in/img/main-logo-2.png";
   const psebOfficialLogo = "https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png";
@@ -114,7 +115,7 @@ export default function ExamRegistryPage() {
               <GitMerge className="h-5 w-5 text-emerald-500" /> Normalization Engine
            </Button>
            <Button onClick={() => setEditingExam({ name: "", boardId: "", category: "STATE" })} className="bg-primary hover:bg-orange-600 h-16 px-10 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 shadow-2xl transition-all active:scale-95">
-              <Plus className="h-5 w-5" /> Register New Hub
+              Plus Register New Hub
            </Button>
         </div>
       </div>
@@ -146,8 +147,8 @@ export default function ExamRegistryPage() {
                 
                 let forcedLogo = e.iconUrl || board?.iconUrl;
                 if (abbrev === 'CTET' || abbrev === 'CBSE' || e.name.toUpperCase().includes('CTET')) forcedLogo = ctetOfficialLogo;
-                if (abbrev === 'PSTET') forcedLogo = pstetOfficialLogo;
-                if (abbrev === 'PSEB' || abbrev === 'EDUCATION') forcedLogo = psebOfficialLogo;
+                if (abbrev === 'PSTET' || e.name.toUpperCase().includes('PSTET')) forcedLogo = pstetOfficialLogo;
+                if (abbrev === 'PSEB' || abbrev === 'EDUCATION' || e.name.toUpperCase().includes('PSEB')) forcedLogo = psebOfficialLogo;
 
                 const isImgFailed = failedImages[e.id];
 

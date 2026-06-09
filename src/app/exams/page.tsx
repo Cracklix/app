@@ -18,8 +18,8 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview High-Density Responsive Exam Catalog v14.0.
- * UPDATED: Mandatory official logo for CTET Paper 1 & 2.
+ * @fileOverview High-Density Responsive Exam Catalog v14.1.
+ * UPDATED: Strictly enforced official logos for CTET, PSTET, and PSEB with optimized scaling.
  */
 
 export default function ExamsCatalog() {
@@ -151,8 +151,8 @@ function CatalogContent() {
               let logoUrl = exam.iconUrl || board?.iconUrl;
               
               const isCtet = abbrev === 'CTET' || abbrev === 'CBSE' || exam.name.toUpperCase().includes('CTET');
-              const isPstet = abbrev === 'PSTET';
-              const isPseb = abbrev === 'PSEB' || abbrev === 'EDUCATION';
+              const isPstet = abbrev === 'PSTET' || exam.name.toUpperCase().includes('PSTET');
+              const isPseb = abbrev === 'PSEB' || abbrev === 'EDUCATION' || exam.name.toUpperCase().includes('PSEB');
 
               if (isCtet) logoUrl = ctetOfficialLogo;
               if (isPstet) logoUrl = pstetOfficialLogo;
@@ -168,7 +168,7 @@ function CatalogContent() {
               const isPolice = bid.includes('police') || abbrev?.includes('POLICE');
               const isPower = bid.includes('pspcl') || bid.includes('pstcl') || abbrev?.includes('PSPCL');
               const isSsc = bid === 'ssc' || exam.id?.toLowerCase().includes('ssc') || abbrev === 'SSC';
-              const isEdu = bid.includes('education') || bid.includes('pseb') || abbrev === 'PSEB' || exam.name?.toLowerCase().includes('ett') || exam.name?.toLowerCase().includes('master');
+              const isEdu = isPseb || exam.name?.toLowerCase().includes('ett') || exam.name?.toLowerCase().includes('master');
 
               return (
                 <Card key={exam.id} className="border-none shadow-lg hover:shadow-2xl transition-all duration-300 rounded-xl md:rounded-[3rem] bg-white group overflow-hidden text-left h-full flex flex-col border border-slate-100 p-4 md:p-10 relative">
@@ -186,7 +186,7 @@ function CatalogContent() {
                                 <img 
                                   src={logoUrl} 
                                   className={cn("w-full h-full object-contain p-1.5 md:p-2 transition-transform duration-500 group-hover:scale-105", 
-                                    isArmy ? "scale-125" : (isPolice || isEdu || isCtet || isPstet) ? "scale-110 p-1" : (isPower || isSsc) ? "scale-110" : ""
+                                    isArmy ? "scale-125" : (isPolice || isEdu || isCtet || isPstet) ? "scale-150 p-1" : (isPower || isSsc) ? "scale-110" : ""
                                   )} 
                                   alt="Board Logo" 
                                   referrerPolicy="no-referrer" 
