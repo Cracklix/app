@@ -19,8 +19,8 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 
 /**
- * @fileOverview Authority Hub v57.0.
- * FIXED: Unterminated string constant and corrected icon resolution.
+ * @fileOverview Authority Hub v58.0.
+ * FIXED: Unterminated string constant resolved. Corrected PSSSB logo mapping.
  */
 
 export default function ExamManagement() {

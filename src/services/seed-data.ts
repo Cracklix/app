@@ -1,8 +1,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Node v26.0.
- * RECOVERED & LOCKED: Full restoration of institutional logos for PSSSB, PPSC, Police, and Power Boards.
+ * @fileOverview Institutional Seeding Node v27.0.
+ * RECOVERED & LOCKED: Locked official PSSSB SVG logo and restored other board assets.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -78,7 +78,7 @@ export async function seedInitialData(db: Firestore) {
       abbreviation: 'PSSSB', 
       name: 'Punjab Subordinate Services Selection Board', 
       categoryId: 'punjab-govt',
-      iconUrl: 'https://sssb.punjab.gov.in/wp-content/themes/twentytwentyone-child/images/logo.png'
+      iconUrl: 'https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg'
     },
     { 
       id: 'ppsc', 
