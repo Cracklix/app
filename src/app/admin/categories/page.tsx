@@ -19,12 +19,12 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Governance Node v10.0.
- * High-fidelity management for the top-level verticals with deep-links to Hubs/Exams.
+ * @fileOverview Institutional Category Governance Node v11.0.
+ * UPDATED: Permanent Emblem for Punjab Government Exams.
  */
 
 const CATEGORY_ICONS: Record<string, any> = {
-  "punjab-govt": <ShieldCheck className="h-6 w-6" />,
+  "punjab-govt": <img src="https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png" className="h-full w-full object-contain p-1" />,
   "punjab-teaching": <GraduationCap className="h-6 w-6" />,
   "punjab-technical": <Zap className="h-6 w-6" />,
   "banking": <Wallet className="h-6 w-6" />,

@@ -16,12 +16,11 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 /**
  * @fileOverview Institutional Master Registry Landing.
- * UPDATED: Dynamic Hub counting to ensure visibility of preparation depth.
- * RESTORED: Original icon fallback system.
+ * UPDATED: Permanent Emblem for Punjab Government Exams.
  */
 
 const CATEGORY_ICONS: Record<string, any> = {
-  "punjab-govt": <ShieldCheck className="h-10 w-10 md:h-12 md:w-12" />,
+  "punjab-govt": <img src="https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png" className="h-full w-full object-contain p-2" />,
   "punjab-teaching": <GraduationCap className="h-10 w-10 md:h-12 md:w-12" />,
   "punjab-technical": <Zap className="h-10 w-10 md:h-12 md:w-12" />,
   "banking": <Wallet className="h-10 w-10 md:h-12 md:w-12" />,

@@ -16,13 +16,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Explorer v5.0.
- * FIXED: Hardened counting logic to resolve "0 Verticals" issue.
- * RESTORED: Original icon identities (Cap for Teaching, Shield for Police).
+ * @fileOverview Institutional Category Explorer v6.0.
+ * UPDATED: Permanent Emblem for Punjab Government Exams.
  */
 
 const CATEGORY_META: Record<string, any> = {
-  "punjab-govt": { title: "Punjab Government", icon: <ShieldCheck className="h-full w-full" /> },
+  "punjab-govt": { title: "Punjab Government", icon: <img src="https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png" className="h-full w-full object-contain" /> },
   "punjab-teaching": { title: "Punjab Teaching", icon: <GraduationCap className="h-full w-full" /> },
   "punjab-technical": { title: "Punjab Technical", icon: <Zap className="h-full w-full" /> },
   "banking": { title: "Banking Exams", icon: <Wallet className="h-full w-full" /> },

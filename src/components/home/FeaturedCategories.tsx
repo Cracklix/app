@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils';
 
 /**
  * @fileOverview Institutional Category Entry Nodes.
- * Replaces the Mastery Hub with a structured 5-node entry system.
+ * UPDATED: Permanent Emblem for Punjab Government Exams.
  */
 
 const CATEGORIES = [
@@ -28,7 +28,7 @@ const CATEGORIES = [
     id: "punjab-govt",
     title: "Punjab Government",
     desc: "Police, PSSSB, PPSC & state board recruitments.",
-    icon: <ShieldCheck className="h-8 w-8" />,
+    icon: <img src="https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png" className="h-full w-full object-contain" />,
     color: "text-primary",
     bgColor: "bg-orange-50",
     exams: "250+ Exams"
@@ -101,7 +101,7 @@ export default function FeaturedCategories() {
           >
              <Link href={`/exams/category/${cat.id}`}>
                 <Card className="border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100 p-8 text-left relative">
-                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">{cat.icon}</div>
+                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">{cat.id !== 'punjab-govt' && cat.icon}</div>
                    
                    <div className={cn("h-16 w-16 rounded-2xl flex items-center justify-center mb-8 shadow-inner transition-transform group-hover:scale-110", cat.bgColor, cat.color)}>
                       {cat.icon}

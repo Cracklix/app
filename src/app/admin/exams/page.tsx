@@ -19,8 +19,8 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Authority Hub v50.0.
- * RECOVERED: Unique fallback icons based on board identity.
+ * @fileOverview Authority Hub v50.1.
+ * FIXED: Unterminated string constant in Dialog markup.
  */
 
 export default function ExamManagement() {
@@ -211,7 +211,7 @@ export default function ExamManagement() {
 
       <Dialog open={!!editingBoard} onOpenChange={(open) => !open && !isSaving && !isUploading && setEditingBoard(null)}>
         <DialogContent className="sm:max-w-xl rounded-[3rem] bg-white border-none shadow-4xl p-0 overflow-hidden text-left flex flex-col">
-          <div className="h-2 w-full bg-[#0F172A] />
+          <div className="h-2 w-full bg-[#0F172A]" />
           <DialogHeader className="p-10 pb-0 text-left">
             <div className="flex justify-between items-center">
                <DialogTitle className="text-2xl font-black font-headline uppercase text-[#0F172A]">{editingBoard?.id ? "Update Registry" : "New Authority Node"}</DialogTitle>

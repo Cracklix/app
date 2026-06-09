@@ -2,8 +2,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Node v16.0.
- * UPDATED: Strictly enforcing the 5 requested categories for the Master Registry.
+ * @fileOverview Institutional Seeding Node v17.0.
+ * UPDATED: Strictly enforcing the 5 requested categories with permanent emblem for Punjab Govt.
  * FIXED: Canonical IDs and order for Punjab Govt, Teaching, Technical, Banking, and Central.
  */
 
@@ -19,6 +19,7 @@ export async function seedInitialData(db: Firestore) {
       highlight: "STATE LEVEL",
       color: "text-primary",
       bgColor: "bg-orange-50",
+      iconUrl: "https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png",
       displayOrder: 1
     },
     {
