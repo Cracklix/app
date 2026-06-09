@@ -52,10 +52,9 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Mock Architect v12.5.
- * UPDATED: Enhanced Question Bank display with Board Identity.
- * FIXED: Strictly removed all duplicate board and exam entries using ID and Name normalization.
- * STYLE: Set Target Vertical labels to high-contrast black.
+ * @fileOverview Institutional Mock Architect v12.6.
+ * FIXED: Visibility of dropdown text and layout overlap in Dark Filter Hub.
+ * STYLE: Optimized bottom action row for desktop stability.
  */
 
 export default function MockBuilderPage() {
@@ -471,41 +470,41 @@ function MockBuilderContent() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10 text-left">
                        <div className="space-y-3">
                           <Label className="text-[9px] font-black uppercase text-slate-400 flex items-center gap-2">Source Board Hub</Label>
-                          <select value={filterBoard} onChange={e => setFilterBoard(e.target.value)} className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 font-bold text-sm outline-none transition-all focus:border-primary">
-                             <option value="all">All Boards</option>
-                             {uniqueBoards?.map((b:any) => <option key={b.id} value={b.id}>{b.abbreviation}</option>)}
+                          <select value={filterBoard} onChange={e => setFilterBoard(e.target.value)} className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 font-bold text-sm outline-none transition-all focus:border-primary text-white">
+                             <option value="all" className="text-slate-900">All Boards</option>
+                             {uniqueBoards?.map((b:any) => <option key={b.id} value={b.id} className="text-slate-900">{b.abbreviation}</option>)}
                           </select>
                        </div>
                        <div className="space-y-3">
                           <Label className="text-[9px] font-black uppercase text-slate-400 flex items-center gap-2">Recruitment Vertical</Label>
-                          <select value={filterExam} onChange={e => setFilterExam(e.target.value)} className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 font-bold text-sm outline-none transition-all focus:border-primary">
-                             <option value="all">All Exams</option>
-                             {uniqueExams?.map((ex:any) => <option key={ex.id} value={ex.id}>{ex.name}</option>)}
+                          <select value={filterExam} onChange={e => setFilterExam(e.target.value)} className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 font-bold text-sm outline-none transition-all focus:border-primary text-white">
+                             <option value="all" className="text-slate-900">All Exams</option>
+                             {uniqueExams?.map((ex:any) => <option key={ex.id} value={ex.id} className="text-slate-900">{ex.name}</option>)}
                           </select>
                        </div>
                        <div className="space-y-3">
                           <Label className="text-[9px] font-black uppercase text-slate-400 flex items-center gap-2">Subject Node</Label>
-                          <select value={filterSubject} onChange={e => setFilterSubject(e.target.value)} className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 font-bold text-sm outline-none transition-all focus:border-primary">
-                             <option value="all">All Subjects</option>
-                             {subjects?.map((s:any) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                          <select value={filterSubject} onChange={e => setFilterSubject(e.target.value)} className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 font-bold text-sm outline-none transition-all focus:border-primary text-white">
+                             <option value="all" className="text-slate-900">All Subjects</option>
+                             {subjects?.map((s:any) => <option key={s.id} value={s.id} className="text-slate-900">{s.name}</option>)}
                           </select>
                        </div>
                     </div>
 
-                    <div className="flex flex-wrap items-end justify-between gap-6 pt-8 border-t border-white/5 relative z-10">
-                       <div className="flex flex-wrap items-end gap-6">
+                    <div className="pt-8 border-t border-white/5 relative z-10">
+                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
                           <div className="space-y-3 text-left">
                              <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Target Section Hub</Label>
                              <select 
                                value={activeSectionId} 
                                onChange={e => setActiveSectionId(e.target.value)} 
-                               className="h-12 bg-primary/20 text-white border border-primary/20 rounded-xl px-4 font-black uppercase text-[10px] outline-none min-w-[220px] shadow-inner"
+                               className="w-full h-12 bg-primary/20 text-white border border-primary/20 rounded-xl px-4 font-black uppercase text-[10px] outline-none shadow-inner"
                              >
-                                {sections.map(s => <option key={s.id} value={s.id} className="bg-[#0B1528] text-white">{s.name}</option>)}
+                                {sections.map(s => <option key={s.id} value={s.id} className="text-slate-900">{s.name}</option>)}
                              </select>
                           </div>
                           
-                          <div className="flex items-center gap-4 bg-white/5 px-6 h-12 rounded-xl border border-white/5 shadow-inner">
+                          <div className="flex items-center justify-between bg-white/5 px-6 h-12 rounded-xl border border-white/5 shadow-inner">
                              <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Unused Only</span>
                              <Switch checked={hideUsed} onCheckedChange={setHideUsed} className="data-[state=checked]:bg-primary" />
                           </div>
@@ -516,15 +515,15 @@ function MockBuilderContent() {
                           >
                              {bankSelection.length === filteredBank.length ? 'Deselect All' : 'Select All'}
                           </button>
-                       </div>
 
-                       <Button 
-                         onClick={handleLinkQuestions}
-                         disabled={bankSelection.length === 0}
-                         className="h-16 px-10 bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase text-[11px] tracking-[0.2em] rounded-2xl shadow-3xl shadow-emerald-500/20 border-none transition-all active:scale-95 min-w-[200px]"
-                       >
-                          Link {bankSelection.length} Assets
-                       </Button>
+                          <Button 
+                            onClick={handleLinkQuestions}
+                            disabled={bankSelection.length === 0}
+                            className="h-16 px-6 bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase text-[11px] tracking-[0.2em] rounded-2xl shadow-3xl shadow-emerald-500/20 border-none transition-all active:scale-95 w-full"
+                          >
+                             Link {bankSelection.length} Assets
+                          </Button>
+                       </div>
                     </div>
                  </div>
 
