@@ -52,9 +52,8 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v70.0.
- * UPDATED: Standardized visibility with 14px equivalent fonts and top-aligned rectangular stats.
- * FIXED: Replaced "ASSETS" with "Q" and implemented compact "MANAGED" spacing.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v71.0.
+ * UPDATED: Implemented display limiting for Question Bank to resolve memory instability.
  */
 
 export default function MockBuilderPage() {
@@ -94,6 +93,7 @@ function MockBuilderContent() {
   const [hideUsed, setHideUsed] = useState(true)
   const [blockDuplicates, setBlockDuplicates] = useState(true)
   const [bankSelection, setBankSelection] = useState<string[]>([])
+  const [displayLimit, setDisplayLimit] = useState(100)
   
   // Subject Picker State
   const [subjectSearch, setSubjectSearch] = useState("")
@@ -127,6 +127,7 @@ function MockBuilderContent() {
     if (!db) return
     setBankLoading(true)
     try {
+      // Fetch a reasonable maximum for construction to maintain browser performance
       const q = query(collection(db, "questions"), limit(2000))
       const snap = await getDocs(q)
       setQuestionBank(snap.docs.map(d => ({ ...d.data(), id: d.id })))
@@ -199,6 +200,10 @@ function MockBuilderContent() {
       return matchesBoard && matchesExam && matchesSub && notInThisMock && usedGuard;
     })
   }, [questionBank, filterBoard, filterExam, filterSubject, hideUsed, blockDuplicates, sections])
+
+  const visibleBank = useMemo(() => {
+     return filteredBank.slice(0, displayLimit);
+  }, [filteredBank, displayLimit]);
 
   const filteredSubjectsForPicking = useMemo(() => {
     if (!subjects) return [];
@@ -673,7 +678,7 @@ function MockBuilderContent() {
                   <div className="space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
                     {bankLoading ? (
                       Array.from({length: 4}).map((_, i) => <Skeleton key={i} className="h-40 w-full rounded-[2.5rem] bg-slate-50" />)
-                    ) : filteredBank.map((q) => {
+                    ) : visibleBank.map((q) => {
                       const isSelected = bankSelection.includes(q.id);
                       const board = boards?.find(b => b.id === q.boardId);
                       const sub = subjects?.find(s => s.id === q.subjectId);
@@ -715,6 +720,16 @@ function MockBuilderContent() {
                         </Card>
                       )
                     })}
+                    {filteredBank.length > displayLimit && (
+                      <div className="flex justify-center pt-10">
+                        <Button 
+                          onClick={() => setDisplayLimit(prev => prev + 100)}
+                          className="h-16 px-12 rounded-2xl bg-white border-2 border-slate-100 text-[#0F172A] font-black uppercase tracking-widest text-xs hover:bg-slate-50 shadow-xl"
+                        >
+                          Load More Questions ({filteredBank.length - displayLimit} Remaining)
+                        </Button>
+                      </div>
+                    )}
                     {filteredBank.length === 0 && !bankLoading && (
                       <div className="py-40 text-center opacity-20 flex flex-col items-center gap-6 grayscale">
                          <Database className="h-24 w-24" />

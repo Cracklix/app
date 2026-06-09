@@ -19,8 +19,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Paginated Question Bank Hub v31.0.
- * UPDATED: Synchronized filters with the exhaustive Punjab Registry.
+ * @fileOverview Paginated Question Bank Hub v32.0.
+ * FIXED: Resolved infinite loop by removing lastDoc from fetchQuestions dependency array.
  */
 
 type QuestionFilterType = 'ALL' | 'UNUSED' | 'USED' | 'LOCKED' | 'DUPLICATE' | 'REPEATED';
@@ -60,7 +60,7 @@ function QuestionBankContent() {
 
   const activeBoard = useMemo(() => boards?.find((b: any) => b.id === boardParam), [boards, boardParam]);
 
-  const fetchQuestions = useCallback(async (isNext = false) => {
+  const fetchQuestions = useCallback(async (nextCursor: any = null) => {
     if (!db) return
     setLoading(true)
     
@@ -72,28 +72,34 @@ function QuestionBankContent() {
       if (activeTab === 'REPEATED') constraints.push(where("usedCount", ">", 1))
       if (activeTab === 'UNUSED') constraints.push(where("status", "==", "UNUSED"));
       if (boardParam !== "all") constraints.push(where("boardId", "==", boardParam))
-      if (isNext && lastDoc) constraints.push(startAfter(lastDoc))
+      
+      // Use the cursor passed as parameter instead of relying on external state in dependencies
+      if (nextCursor) constraints.push(startAfter(nextCursor))
 
       const q = query(collection(db, "questions"), ...constraints)
       const snap = await getDocs(q)
       const newQs = snap.docs.map(d => ({ ...d.data(), id: d.id }))
       
-      if (isNext) setQuestions(prev => [...prev, ...newQs])
-      else { setQuestions(newQs); setSelectedIds([]); }
+      if (nextCursor) {
+        setQuestions(prev => [...prev, ...newQs])
+      } else {
+        setQuestions(newQs)
+        setSelectedIds([])
+      }
       
-      setLastDoc(snap.docs[snap.docs.length - 1])
+      setLastDoc(snap.docs[snap.docs.length - 1] || null)
       setHasMore(snap.docs.length === 50)
     } catch (e: any) {
       toast({ variant: "destructive", title: "Sync Failed" })
     } finally {
       setLoading(false)
     }
-  }, [db, boardParam, activeTab, lastDoc, toast])
+  }, [db, boardParam, activeTab, toast])
 
   useEffect(() => {
     setLastDoc(null)
     setHasMore(true)
-    fetchQuestions(false)
+    fetchQuestions(null)
   }, [boardParam, activeTab, fetchQuestions]);
 
   const filteredQuestions = useMemo(() => {
@@ -196,7 +202,7 @@ function QuestionBankContent() {
       
       {hasMore && (
         <div className="flex justify-center mt-8">
-          <Button onClick={() => fetchQuestions(true)} disabled={loading} className="rounded-2xl h-14 px-12 bg-white border border-slate-200 text-[#0F172A] font-black uppercase text-[10px] tracking-widest gap-3 shadow-xl hover:bg-slate-50">
+          <Button onClick={() => fetchQuestions(lastDoc)} disabled={loading} className="rounded-2xl h-14 px-12 bg-white border border-slate-200 text-[#0F172A] font-black uppercase text-[10px] tracking-widest gap-3 shadow-xl hover:bg-slate-50">
             {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <RefreshCw className="h-5 w-5" />} Sync Next Ledger
           </Button>
         </div>
