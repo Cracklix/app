@@ -52,9 +52,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v67.0.
- * UPDATED: Optimized typography and visibility for maximum clarity.
- * FIXED: Oval marks cards and bold font scaling for both mobile and desktop.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v70.0.
+ * UPDATED: Standardized visibility with 14px equivalent fonts and top-aligned rectangular stats.
+ * FIXED: Replaced "ASSETS" with "Q" and implemented compact "MANAGED" spacing.
  */
 
 export default function MockBuilderPage() {
@@ -216,7 +216,7 @@ function MockBuilderContent() {
     const toAdd = questionBank.filter(q => bankSelection.includes(q.id));
     setSections(prev => prev.map(s => s.id === activeSectionId ? { ...s, questions: [...s.questions, ...toAdd] } : s));
     setBankSelection([]);
-    toast({ title: `Linked ${toAdd.length} Assets` });
+    toast({ title: `Linked ${toAdd.length} Q` });
   }
 
   const handleSelectAllInBank = () => {
@@ -336,23 +336,23 @@ function MockBuilderContent() {
         
         {/* LEFT COLUMN: ASSIGNMENT HUB */}
         <div className="lg:col-span-4 space-y-8">
-           <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-6 md:p-12 space-y-12 border border-slate-100">
+           <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-6 md:p-10 space-y-8 border border-slate-100">
               
-              <div className="space-y-4">
-                 <Label className="text-[10px] md:text-xs font-black uppercase text-slate-500 tracking-[0.2em] ml-1">SERIES TITLE</Label>
+              <div className="space-y-3">
+                 <Label className="text-[14px] font-black uppercase text-slate-500 tracking-tight ml-1">SERIES TITLE</Label>
                  <Input 
                    value={mockData.title} 
                    onChange={e => setMockData({...mockData, title: e.target.value})}
-                   className="h-16 md:h-20 rounded-2xl bg-slate-50/50 border-none font-black text-lg md:text-2xl px-8 shadow-inner focus-visible:ring-primary text-[#0F172A]" 
+                   className="h-14 md:h-16 rounded-2xl bg-slate-50/50 border-none font-black text-lg md:text-xl px-6 shadow-inner focus-visible:ring-primary text-[#0F172A]" 
                    placeholder="e.g. Patwari High Fidelity Mock 1"
                  />
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                 <div className="space-y-4">
-                    <Label className="text-[10px] md:text-xs font-black uppercase text-slate-500 tracking-[0.2em] ml-1">TEST TYPE</Label>
+              <div className="grid grid-cols-2 gap-4">
+                 <div className="space-y-3">
+                    <Label className="text-[14px] font-black uppercase text-slate-500 tracking-tight ml-1">TEST TYPE</Label>
                     <Select value={mockData.mockType} onValueChange={(v: MockType) => setMockData({...mockData, mockType: v})}>
-                       <SelectTrigger className="h-14 md:h-16 rounded-xl bg-slate-50/50 border-none font-black text-[11px] uppercase px-6">
+                       <SelectTrigger className="h-12 md:h-14 rounded-xl bg-slate-50/50 border-none font-black text-[12px] uppercase px-4">
                           <SelectValue />
                        </SelectTrigger>
                        <SelectContent className="rounded-xl">
@@ -363,10 +363,10 @@ function MockBuilderContent() {
                        </SelectContent>
                     </Select>
                  </div>
-                 <div className="space-y-4">
-                    <Label className="text-[10px] md:text-xs font-black uppercase text-slate-500 tracking-[0.2em] ml-1">ACCESS LEVEL</Label>
+                 <div className="space-y-3">
+                    <Label className="text-[14px] font-black uppercase text-slate-500 tracking-tight ml-1">ACCESS LEVEL</Label>
                     <Select value={mockData.accessLevel} onValueChange={(v: AccessLevel) => setMockData({...mockData, accessLevel: v})}>
-                       <SelectTrigger className="h-14 md:h-16 rounded-xl bg-slate-50/50 border-none font-black text-[11px] uppercase px-6">
+                       <SelectTrigger className="h-12 md:h-14 rounded-xl bg-slate-50/50 border-none font-black text-[12px] uppercase px-4">
                           <SelectValue />
                        </SelectTrigger>
                        <SelectContent className="rounded-xl">
@@ -377,144 +377,132 @@ function MockBuilderContent() {
                  </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <Select value={mockData.assignmentMode} onValueChange={(v: MockAssignmentMode) => setMockData({...mockData, assignmentMode: v})}>
-                  <SelectTrigger className="h-16 md:h-20 rounded-2xl bg-[#0B1528] text-white border-none font-black uppercase text-[12px] tracking-[0.2em] px-8 shadow-2xl flex items-center justify-between group">
+                  <SelectTrigger className="h-14 md:h-16 rounded-2xl bg-[#0B1528] text-white border-none font-black uppercase text-[12px] tracking-widest px-6 shadow-2xl flex items-center justify-between">
                      <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-[#0B1528] text-white border-white/10 rounded-2xl p-2">
-                     <SelectItem value="SINGLE" className="rounded-xl py-3 focus:bg-white/10 font-bold uppercase text-[10px] tracking-widest">SINGLE VERTICAL</SelectItem>
-                     <SelectItem value="MULTIPLE" className="rounded-xl py-3 focus:bg-white/10 font-bold uppercase text-[10px] tracking-widest">MULTIPLE VERTICALS</SelectItem>
-                     <SelectItem value="AUTHORITY" className="rounded-xl py-3 focus:bg-white/10 font-bold uppercase text-[10px] tracking-widest">AUTHORITY HUB (BROADCAST)</SelectItem>
+                     <SelectItem value="SINGLE" className="rounded-xl py-3 focus:bg-white/10 font-bold uppercase text-[10px]">SINGLE VERTICAL</SelectItem>
+                     <SelectItem value="MULTIPLE" className="rounded-xl py-3 focus:bg-white/10 font-bold uppercase text-[10px]">MULTIPLE VERTICALS</SelectItem>
+                     <SelectItem value="AUTHORITY" className="rounded-xl py-3 focus:bg-white/10 font-bold uppercase text-[10px]">AUTHORITY HUB</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-4 text-left">
-                <Label className="text-[10px] md:text-xs font-black uppercase text-slate-500 tracking-[0.2em] ml-1">TARGET AUTHORITY BOARDS</Label>
-                <div className="space-y-2 max-h-[180px] overflow-y-auto custom-scrollbar pr-3">
+              <div className="space-y-3 text-left">
+                <Label className="text-[14px] font-black uppercase text-slate-500 tracking-tight ml-1">TARGET BOARDS</Label>
+                <div className="space-y-2 max-h-[160px] overflow-y-auto custom-scrollbar pr-2">
                    {boards?.map((b: any) => (
                       <div 
                          key={b.id} 
                          onClick={() => toggleBoardId(b.id)}
-                         className="flex items-center space-x-4 p-4 md:p-5 bg-slate-50/50 rounded-2xl hover:bg-slate-100 transition-all cursor-pointer group"
+                         className="flex items-center space-x-3 p-3 md:p-4 bg-slate-50/50 rounded-xl hover:bg-slate-100 transition-all cursor-pointer group"
                       >
                          <div className={cn(
-                            "h-7 w-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                            mockData.boardIds?.includes(b.id) ? "border-[#F97316] bg-[#F97316] shadow-lg shadow-orange-500/20" : "border-slate-300 bg-white"
+                            "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                            mockData.boardIds?.includes(b.id) ? "border-[#F97316] bg-[#F97316]" : "border-slate-300 bg-white"
                          )}>
-                            {mockData.boardIds?.includes(b.id) && <Check className="h-4 w-4 text-white" />}
+                            {mockData.boardIds?.includes(b.id) && <Check className="h-3 w-3 text-white stroke-[3px]" />}
                          </div>
-                         <span className="text-[12px] font-black text-[#0F172A] uppercase tracking-tight truncate">{b.abbreviation} HUB</span>
+                         <span className="text-[12px] font-black text-[#0F172A] uppercase truncate">{b.abbreviation} HUB</span>
                       </div>
                    ))}
                 </div>
               </div>
 
-              <div className="space-y-4 text-left">
-                <Label className="text-[10px] md:text-xs font-black uppercase text-slate-500 tracking-[0.2em] ml-1">TARGET RECRUITMENT VERTICALS</Label>
-                <div className="space-y-2 max-h-[180px] overflow-y-auto custom-scrollbar pr-3">
+              <div className="space-y-3 text-left">
+                <Label className="text-[14px] font-black uppercase text-slate-500 tracking-tight ml-1">TARGET VERTICALS</Label>
+                <div className="space-y-2 max-h-[160px] overflow-y-auto custom-scrollbar pr-2">
                    {uniqueExams.map((e: any) => {
                       const isSelected = mockData.examIds?.includes(e.id);
                       return (
                         <div 
                            key={e.id} 
                            onClick={() => toggleExamId(e.id)}
-                           className="flex items-center space-x-4 p-4 md:p-5 bg-slate-50/50 rounded-2xl hover:bg-slate-100 transition-all cursor-pointer group"
+                           className="flex items-center space-x-3 p-3 md:p-4 bg-slate-50/50 rounded-xl hover:bg-slate-100 transition-all cursor-pointer group"
                         >
                            <div className={cn(
-                              "h-7 w-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                              "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
                               isSelected ? "border-[#F97316] bg-[#F97316]" : "border-slate-300 bg-white"
                            )}>
-                              {isSelected && <Check className="h-4 w-4 text-white" />}
+                              {isSelected && <Check className="h-3 w-3 text-white stroke-[3px]" />}
                            </div>
-                           <span className="text-[12px] font-black text-[#0F172A] uppercase tracking-tight truncate">{e.name}</span>
+                           <span className="text-[12px] font-black text-[#0F172A] uppercase truncate">{e.name}</span>
                         </div>
                       )
                    })}
                 </div>
               </div>
 
-              <div className="space-y-4 pt-6 border-t border-slate-50">
-                <Label className="text-[10px] md:text-xs font-black uppercase text-slate-500 tracking-[0.2em] ml-1">LANGUAGE HUB</Label>
+              <div className="space-y-3 pt-4 border-t border-slate-50">
+                <Label className="text-[14px] font-black uppercase text-slate-500 tracking-tight ml-1">LANGUAGE HUB</Label>
                 <Select value={mockData.languageMode} onValueChange={(v: LanguageDisplayMode) => setMockData({...mockData, languageMode: v})}>
-                  <SelectTrigger className="h-16 md:h-20 rounded-2xl bg-white border-2 border-slate-100 shadow-sm font-black text-[12px] uppercase px-8 tracking-[0.1em] flex items-center justify-between">
+                  <SelectTrigger className="h-12 md:h-14 rounded-xl bg-white border-2 border-slate-100 shadow-sm font-black text-[12px] uppercase px-6 tracking-tight flex items-center justify-between">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="rounded-2xl p-2">
-                    <SelectItem value="ENGLISH_PUNJABI" className="rounded-xl py-3 font-bold uppercase text-[10px] tracking-widest">ENGLISH & ਪੰਜਾਬੀ</SelectItem>
-                    <SelectItem value="ENGLISH_HINDI" className="rounded-xl py-3 font-bold uppercase text-[10px] tracking-widest">ENGLISH & हिन्दी</SelectItem>
-                    <SelectItem value="ENGLISH" className="rounded-xl py-3 font-bold uppercase text-[10px] tracking-widest">ENGLISH ONLY</SelectItem>
-                    <SelectItem value="PUNJABI" className="rounded-xl py-3 font-bold uppercase text-[10px] tracking-widest">ਪੰਜਾਬੀ ONLY</SelectItem>
-                    <SelectItem value="HINDI" className="rounded-xl py-3 font-bold uppercase text-[10px] tracking-widest">हिन्दी ONLY</SelectItem>
+                  <SelectContent className="rounded-xl p-2">
+                    <SelectItem value="ENGLISH_PUNJABI" className="py-3 font-bold uppercase text-[10px]">ENGLISH & ਪੰਜਾਬੀ</SelectItem>
+                    <SelectItem value="ENGLISH_HINDI" className="py-3 font-bold uppercase text-[10px]">ENGLISH & हिन्दी</SelectItem>
+                    <SelectItem value="ENGLISH" className="py-3 font-bold uppercase text-[10px]">ENGLISH ONLY</SelectItem>
+                    <SelectItem value="PUNJABI" className="py-3 font-bold uppercase text-[10px]">ਪੰਜਾਬੀ ONLY</SelectItem>
+                    <SelectItem value="HINDI" className="py-3 font-bold uppercase text-[10px]">हिन्दी ONLY</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="grid grid-cols-2 gap-6 pt-4">
-                 <div className="space-y-4">
-                    <Label className="text-[10px] md:text-xs font-black uppercase text-slate-500 tracking-widest ml-1 flex items-center gap-2">
-                       <Clock className="h-4 w-4" /> DURATION (MIN)
+              <div className="grid grid-cols-2 gap-4">
+                 <div className="space-y-3">
+                    <Label className="text-[14px] font-black uppercase text-slate-500 tracking-tight ml-1 flex items-center gap-2">
+                       <Clock className="h-3.5 w-3.5" /> MINS
                     </Label>
                     <Input 
                        type="number" 
                        value={isNaN(mockData.duration) ? "" : mockData.duration} 
                        onChange={e => setMockData({...mockData, duration: parseInt(e.target.value) || 0})} 
-                       className="h-16 md:h-20 rounded-2xl bg-slate-50/50 border-none font-black text-center text-2xl shadow-inner focus-visible:ring-primary" 
+                       className="h-12 md:h-14 rounded-xl bg-slate-50/50 border-none font-black text-center text-xl shadow-inner focus-visible:ring-primary" 
                     />
                  </div>
-                 <div className="space-y-4">
-                    <Label className="text-[10px] md:text-xs font-black uppercase text-slate-500 tracking-widest ml-1 flex items-center gap-2">
-                       <Lock className="h-4 w-4" /> ATTEMPT LIMIT
+                 <div className="space-y-3">
+                    <Label className="text-[14px] font-black uppercase text-slate-500 tracking-tight ml-1 flex items-center gap-2">
+                       <Lock className="h-3.5 w-3.5" /> LIMIT
                     </Label>
                     <Select 
                        value={mockData.attemptLimit?.toString()} 
                        onValueChange={v => setMockData({...mockData, attemptLimit: parseInt(v) || 0})}
                     >
-                       <SelectTrigger className="h-16 md:h-20 rounded-2xl bg-white border-2 border-[#F97316] font-black text-[12px] uppercase px-6 shadow-xl focus:ring-0">
+                       <SelectTrigger className="h-12 md:h-14 rounded-xl bg-white border-2 border-[#F97316] font-black text-[12px] uppercase px-4 shadow-xl focus:ring-0">
                           <SelectValue placeholder="UNLIMITED" />
                        </SelectTrigger>
                        <SelectContent className="rounded-xl">
-                          <SelectItem value="0" className="py-3 font-bold">UNLIMITED</SelectItem>
-                          <SelectItem value="1" className="py-3 font-bold">1 ATTEMPT</SelectItem>
-                          <SelectItem value="2" className="py-3 font-bold">2 ATTEMPTS</SelectItem>
-                          <SelectItem value="3" className="py-3 font-bold">3 ATTEMPTS</SelectItem>
+                          <SelectItem value="0" className="py-2 font-bold">UNLIMITED</SelectItem>
+                          <SelectItem value="1" className="py-2 font-bold">1 ATTEMPT</SelectItem>
+                          <SelectItem value="2" className="py-2 font-bold">2 ATTEMPTS</SelectItem>
+                          <SelectItem value="3" className="py-2 font-bold">3 ATTEMPTS</SelectItem>
                        </SelectContent>
                     </Select>
                  </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6 pt-6">
-                 {/* POSITIVE MARKS CARD - MATCHED TO OVAL SCREENSHOT */}
-                 <div className="bg-[#F0FDF4] p-8 md:p-12 rounded-[4rem] md:rounded-[5rem] border-2 border-[#DCFCE7] text-center space-y-6 shadow-lg group hover:shadow-2xl transition-all duration-500 flex flex-col items-center">
-                    <div className="space-y-2">
-                       <p className="text-[11px] md:text-[14px] font-black text-[#10B981] uppercase tracking-[0.2em] flex items-center justify-center gap-2">
-                          POSITIVE
-                       </p>
-                       <p className="text-[10px] md:text-[14px] font-black text-[#10B981] uppercase tracking-[0.2em] leading-none">(+)</p>
-                    </div>
+              <div className="grid grid-cols-2 gap-4 pt-4">
+                 <div className="bg-[#F0FDF4] p-6 rounded-[3rem] border-2 border-[#DCFCE7] text-center space-y-3 flex flex-col items-center">
+                    <p className="text-[11px] font-black text-[#10B981] uppercase tracking-widest">POSITIVE (+)</p>
                     <Input 
                        type="number" 
                        step="0.1"
                        value={isNaN(mockData.positiveMarks) ? "" : mockData.positiveMarks} 
                        onChange={e => setMockData({...mockData, positiveMarks: parseFloat(e.target.value) || 0})}
-                       className="h-20 bg-transparent border-none text-center font-black text-5xl md:text-7xl text-[#10B981] p-0 focus-visible:ring-0 tabular-nums" 
+                       className="h-12 bg-transparent border-none text-center font-black text-3xl md:text-5xl text-[#10B981] p-0 focus-visible:ring-0 tabular-nums" 
                     />
                  </div>
-                 {/* PENALTY MARKS CARD - MATCHED TO OVAL SCREENSHOT */}
-                 <div className="bg-[#FEF2F2] p-8 md:p-12 rounded-[4rem] md:rounded-[5rem] border-2 border-[#FEE2E2] text-center space-y-6 shadow-lg group hover:shadow-2xl transition-all duration-500 flex flex-col items-center">
-                    <div className="space-y-2">
-                       <p className="text-[11px] md:text-[14px] font-black text-[#F43F5E] uppercase tracking-[0.2em] flex items-center justify-center gap-2">
-                          PENALTY
-                       </p>
-                       <p className="text-[10px] md:text-[14px] font-black text-[#F43F5E] uppercase tracking-[0.2em] leading-none">(-)</p>
-                    </div>
+                 <div className="bg-[#FEF2F2] p-6 rounded-[3rem] border-2 border-[#FEE2E2] text-center space-y-3 flex flex-col items-center">
+                    <p className="text-[11px] font-black text-[#F43F5E] uppercase tracking-widest">PENALTY (-)</p>
                     <Input 
                        type="number" 
                        step="0.01"
                        value={isNaN(mockData.negativeMarks) ? "" : mockData.negativeMarks} 
                        onChange={e => setMockData({...mockData, negativeMarks: parseFloat(e.target.value) || 0})}
-                       className="h-20 bg-transparent border-none text-center font-black text-5xl md:text-7xl text-[#F43F5E] p-0 focus-visible:ring-0 tabular-nums" 
+                       className="h-12 bg-transparent border-none text-center font-black text-3xl md:text-5xl text-[#F43F5E] p-0 focus-visible:ring-0 tabular-nums" 
                     />
                  </div>
               </div>
@@ -522,82 +510,82 @@ function MockBuilderContent() {
         </div>
 
         {/* RIGHT COLUMN: TACTICAL HUB */}
-        <div className="lg:col-span-8 flex flex-col space-y-8">
+        <div className="lg:col-span-8 flex flex-col space-y-6">
            
-           <div className="flex items-center gap-4 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm w-fit animate-in fade-in slide-in-from-left-4 duration-500">
+           <div className="flex items-center gap-4 bg-white p-1.5 rounded-xl border border-slate-100 shadow-sm w-fit animate-in fade-in slide-in-from-left-4 duration-500">
               <button 
                 onClick={() => setActiveRightTab('BANK')}
                 className={cn(
-                  "px-8 md:px-12 py-4 rounded-xl font-black uppercase text-[11px] tracking-[0.2em] transition-all flex items-center gap-3",
+                  "px-6 md:px-10 py-3 rounded-lg font-black uppercase text-[11px] tracking-tight transition-all flex items-center gap-2.5",
                   activeRightTab === 'BANK' ? "bg-[#0B1528] text-white shadow-2xl" : "text-slate-400 hover:text-[#0B1528] hover:bg-slate-50"
                 )}
               >
-                 <Database className="h-5 w-5" /> Global Bank
+                 <Database className="h-4 w-4" /> Global Bank
               </button>
               <button 
                 onClick={() => setActiveRightTab('ASSEMBLY')}
                 className={cn(
-                  "px-8 md:px-12 py-4 rounded-xl font-black uppercase text-[11px] tracking-[0.2em] transition-all flex items-center gap-3",
+                  "px-6 md:px-10 py-3 rounded-lg font-black uppercase text-[11px] tracking-tight transition-all flex items-center gap-2.5",
                   activeRightTab === 'ASSEMBLY' ? "bg-[#0B1528] text-white shadow-2xl" : "text-slate-400 hover:text-[#0B1528] hover:bg-slate-50"
                 )}
               >
-                 <Layers className="h-5 w-5" /> Assembly Hub
+                 <Layers className="h-4 w-4" /> Assembly Hub
               </button>
            </div>
 
-           <div className="flex-1 flex flex-col space-y-10">
+           <div className="flex-1 flex flex-col space-y-8">
               {activeRightTab === 'BANK' ? (
                 <>
-                  <div className="bg-[#0B1528] rounded-[3rem] p-8 md:p-14 text-white space-y-12 shadow-5xl relative overflow-hidden flex flex-col animate-in zoom-in-95 duration-500">
+                  <div className="bg-[#0B1528] rounded-[2.5rem] p-6 md:p-10 text-white space-y-8 shadow-5xl relative overflow-hidden flex flex-col animate-in zoom-in-95 duration-500">
                     <div className="absolute top-0 right-0 p-12 opacity-5"><Zap className="h-64 w-64" /></div>
                     
-                    <div className="relative z-10 flex flex-col space-y-12">
-                        {/* 1. TOP STATS BOXES */}
-                        <div className="flex flex-wrap items-center justify-between gap-6 pb-10 border-b border-white/5">
-                           <div className="flex flex-wrap items-center gap-4 md:gap-8">
-                              <div className="bg-white/5 px-6 py-3 rounded-2xl border border-white/10 flex items-center gap-4 shadow-inner">
-                                 <span className="text-[9px] md:text-[11px] font-black text-slate-500 uppercase tracking-widest">REGISTRY FILTERED</span>
-                                 <span className="text-sm md:text-xl font-black text-primary tabular-nums">{filteredBank.length} ASSETS</span>
+                    <div className="relative z-10 flex flex-col space-y-8">
+                        {/* 1. TOP STATS NODES (RECTANGULAR & SMALL) */}
+                        <div className="flex items-center justify-between gap-4 pb-6 border-b border-white/5">
+                           <div className="flex gap-4">
+                              <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/10 flex flex-col items-start gap-1 shadow-inner min-w-[120px]">
+                                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-tight">FILTERED</span>
+                                 <span className="text-sm md:text-xl font-black text-primary tabular-nums">{filteredBank.length} Q</span>
                               </div>
-                              <div className="bg-white/5 px-6 py-3 rounded-2xl border border-white/10 flex items-center gap-4 shadow-inner">
-                                 <span className="text-[9px] md:text-[11px] font-black text-slate-500 uppercase tracking-widest">TOTAL BANK</span>
-                                 <span className="text-sm md:text-xl font-black text-white tabular-nums">{questionBank.length} ASSETS</span>
+                              <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/10 flex flex-col items-start gap-1 shadow-inner min-w-[120px]">
+                                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-tight">TOTAL BANK</span>
+                                 <span className="text-sm md:text-xl font-black text-white tabular-nums">{questionBank.length} Q</span>
                               </div>
                            </div>
-                           <Badge className="bg-[#F97316] text-white border-none text-[10px] md:text-[12px] font-black px-6 py-2 rounded-xl shadow-3xl uppercase tracking-[0.1em]">
+                           <Badge className="bg-[#F97316] text-white border-none text-[10px] font-black px-4 py-1.5 rounded-lg shadow-3xl uppercase tracking-widest hidden sm:block">
                               Official Hub
                            </Badge>
                         </div>
 
                         {/* 2. THREE COLUMN FILTER */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 text-left">
-                           <div className="space-y-4">
-                              <Label className="text-[10px] md:text-xs font-black uppercase text-slate-500 tracking-[0.3em] ml-1">SOURCE BOARD HUB</Label>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                           <div className="space-y-2">
+                              <Label className="text-[14px] font-black uppercase text-slate-500 tracking-tight ml-1">BOARD HUB</Label>
                               <Select value={filterBoard} onValueChange={(v) => { setFilterBoard(v); setFilterExam("all"); }}>
-                                 <SelectTrigger className="h-16 md:h-20 bg-white/5 border-white/10 rounded-2xl font-black text-[12px] text-white px-8 shadow-xl transition-all focus:ring-0"><SelectValue placeholder="All..." /></SelectTrigger>
-                                 <SelectContent className="bg-[#0B1528] text-white border-white/10 rounded-2xl p-2">
-                                    <SelectItem value="all" className="rounded-xl py-3 font-bold uppercase text-[10px]">All Board Hubs</SelectItem>
-                                    {boards?.map(b => <SelectItem key={b.id} value={b.id} className="rounded-xl py-3 font-bold uppercase text-[10px]">{b.abbreviation} Hub</SelectItem>)}
+                                 <SelectTrigger className="h-12 bg-white/5 border-white/10 rounded-xl font-black text-[12px] text-white px-4 focus:ring-0"><SelectValue placeholder="All..." /></SelectTrigger>
+                                 <SelectContent className="bg-[#0B1528] text-white border-white/10 rounded-xl">
+                                    <SelectItem value="all" className="font-bold uppercase text-[10px]">All Boards</SelectItem>
+                                    {boards?.map(b => <SelectItem key={b.id} value={b.id} className="font-bold uppercase text-[10px]">{b.abbreviation}</SelectItem>)}
                                  </SelectContent>
                               </Select>
                            </div>
-                           <div className="space-y-4">
-                              <Label className="text-[10px] md:text-xs font-black uppercase text-slate-500 tracking-[0.3em] ml-1">RECRUITMENT VERTICAL</Label>
+                           <div className="space-y-2">
+                              <Label className="text-[14px] font-black uppercase text-slate-500 tracking-tight ml-1">VERTICAL</Label>
                               <Select value={filterExam} onValueChange={setFilterExam}>
-                                 <SelectTrigger className="h-16 md:h-20 bg-white/5 border-white/10 rounded-2xl font-black text-[12px] text-white px-8 shadow-xl transition-all focus:ring-0"><SelectValue placeholder="All..." /></SelectTrigger>
-                                 <SelectContent className="bg-[#0B1528] text-white border-white/10 rounded-2xl p-2 max-h-[350px]">
-                                    <SelectItem value="all" className="rounded-xl py-3 font-bold uppercase text-[10px]">All Verticals</SelectItem>
-                                    {bankExams.map(e => <SelectItem key={e.id} value={e.id} className="rounded-xl py-3 font-bold uppercase text-[10px]">{e.name}</SelectItem>)}
+                                 <SelectTrigger className="h-12 bg-white/5 border-white/10 rounded-xl font-black text-[12px] text-white px-4 focus:ring-0"><SelectValue placeholder="All..." /></SelectTrigger>
+                                 <SelectContent className="bg-[#0B1528] text-white border-white/10 rounded-xl max-h-[350px]">
+                                    <SelectItem value="all" className="font-bold uppercase text-[10px]">All Verticals</SelectItem>
+                                    {bankExams.map(e => <SelectItem key={e.id} value={e.id} className="font-bold uppercase text-[10px]">{e.name}</SelectItem>)}
                                  </SelectContent>
                               </Select>
                            </div>
-                           <div className="space-y-4">
-                              <Label className="text-[10px] md:text-xs font-black uppercase text-slate-500 tracking-[0.3em] ml-1">SUBJECT NODE</Label>
+                           <div className="space-y-2">
+                              <Label className="text-[14px] font-black uppercase text-slate-500 tracking-tight ml-1">NODE</Label>
                               <Select value={filterSubject} onValueChange={setSubjectFilter}>
-                                 <SelectTrigger className="h-16 md:h-20 bg-white/5 border-white/10 rounded-2xl font-black text-[12px] text-white px-8 shadow-xl transition-all focus:ring-0"><SelectValue placeholder="All..." /></SelectTrigger>
-                                 <SelectContent className="bg-[#0B1528] text-white border-white/10 rounded-2xl p-2 max-h-[350px]">
-                                    <SelectItem value="all" className="rounded-xl py-3 font-bold uppercase text-[10px]">All Subject Nodes</SelectItem>
-                                    {subjects?.map(s => <SelectItem key={s.id} value={s.id} className="rounded-xl py-3 font-bold uppercase text-[10px]">{s.name}</SelectItem>)}
+                                 <SelectTrigger className="h-12 bg-white/5 border-white/10 rounded-xl font-black text-[12px] text-white px-4 focus:ring-0"><SelectValue placeholder="All..." /></SelectTrigger>
+                                 <SelectContent className="bg-[#0B1528] text-white border-white/10 rounded-xl max-h-[350px]">
+                                    <SelectItem value="all" className="font-bold uppercase text-[10px]">All Nodes</SelectItem>
+                                    {subjects?.map(s => <SelectItem key={s.id} value={s.id} className="font-bold uppercase text-[10px]">{s.name}</SelectItem>)}
                                  </SelectContent>
                               </Select>
                            </div>
@@ -606,31 +594,31 @@ function MockBuilderContent() {
                         <div className="h-px w-full bg-white/10" />
 
                         {/* 3. TACTICAL COMMAND BAR */}
-                        <div className="space-y-12">
-                          <div className="flex flex-col md:flex-row items-end gap-6 md:gap-10">
-                              <div className="flex-1 space-y-4 text-left w-full">
-                                <div className="text-[10px] md:text-xs font-black uppercase text-slate-500 tracking-[0.4em] leading-tight">
-                                   TARGET<br/>SECTION HUB
-                                </div>
+                        <div className="space-y-8">
+                          <div className="flex flex-col md:flex-row items-end gap-6">
+                              <div className="flex-1 space-y-2 text-left w-full">
+                                <Label className="text-[14px] font-black uppercase text-slate-500 tracking-tight ml-1 leading-tight">
+                                   TARGET SECTION HUB
+                                </Label>
                                 <Popover>
                                    <PopoverTrigger asChild>
-                                      <button className="w-full h-20 md:h-24 bg-[#F97316] hover:bg-orange-600 text-white rounded-[1.8rem] md:rounded-[2.5rem] font-black uppercase text-[18px] md:text-[24px] shadow-5xl tracking-[0.1em] transition-all flex items-center justify-center px-8 border-none active:scale-95 group">
+                                      <button className="w-full h-16 bg-[#F97316] hover:bg-orange-600 text-white rounded-2xl font-black uppercase text-[20px] shadow-5xl tracking-tight transition-all flex items-center justify-center px-6 border-none active:scale-95 group truncate">
                                          {sections.find(s => s.id === activeSectionId)?.name || "GENERAL HUB"}
                                       </button>
                                    </PopoverTrigger>
-                                   <PopoverContent className="w-[320px] md:w-[400px] bg-[#0F172A] border-white/10 p-0 rounded-[3rem] shadow-5xl z-[1001] overflow-hidden">
-                                      <div className="p-10 pb-6 border-b border-white/5 flex items-center justify-between">
-                                         <p className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em]">GENERAL HUB</p>
+                                   <PopoverContent className="w-[320px] md:w-[400px] bg-[#0F172A] border-white/10 p-0 rounded-[2rem] shadow-5xl z-[1001] overflow-hidden">
+                                      <div className="p-8 pb-4 border-b border-white/5 flex items-center justify-between">
+                                         <p className="text-[12px] font-black uppercase text-slate-500 tracking-widest">GENERAL HUB</p>
                                          <Badge className="bg-primary/20 text-primary border-none text-[8px] font-black">{sections.length} NODES</Badge>
                                       </div>
                                       <ScrollArea className="h-72">
-                                         <div className="space-y-2 p-6">
+                                         <div className="space-y-1.5 p-4">
                                             {sections.map(s => (
                                                <button 
                                                   key={s.id} 
                                                   onClick={() => setActiveSectionId(s.id)}
                                                   className={cn(
-                                                     "w-full p-5 rounded-2xl text-left font-black uppercase text-[13px] tracking-widest transition-all",
+                                                     "w-full p-4 rounded-xl text-left font-black uppercase text-[13px] tracking-tight transition-all",
                                                      activeSectionId === s.id ? "bg-[#F97316] text-white shadow-xl" : "text-slate-400 hover:bg-white/5 hover:text-white"
                                                   )}
                                                >
@@ -643,38 +631,38 @@ function MockBuilderContent() {
                                 </Popover>
                               </div>
                               
-                              <div className="flex-[2] flex gap-4 md:gap-6 w-full">
-                                <div className="flex-1 flex items-center justify-between bg-white/5 px-8 py-4 rounded-[1.8rem] md:rounded-[2.5rem] border border-white/10 h-20 md:h-24 group hover:bg-white/10 transition-all cursor-pointer shadow-inner">
+                              <div className="flex-[2] flex gap-4 w-full">
+                                <div className="flex-1 flex items-center justify-between bg-white/5 px-6 py-3 rounded-2xl border border-white/10 h-16 group hover:bg-white/10 transition-all cursor-pointer shadow-inner">
                                     <div className="flex flex-col text-left">
-                                       <span className="text-[10px] md:text-xs font-black uppercase text-slate-300 leading-tight">UNUSED</span>
-                                       <span className="text-[10px] md:text-xs font-black uppercase text-slate-300 leading-tight">ONLY</span>
+                                       <span className="text-[12px] font-black uppercase text-slate-300 leading-none">UNUSED</span>
+                                       <span className="text-[12px] font-black uppercase text-slate-300 leading-none mt-1">ONLY</span>
                                     </div>
-                                    <Switch checked={hideUsed} onCheckedChange={setHideUsed} className="data-[state=checked]:bg-[#F97316] scale-110 md:scale-125" />
+                                    <Switch checked={hideUsed} onCheckedChange={setHideUsed} className="data-[state=checked]:bg-[#F97316] scale-110" />
                                 </div>
-                                <div className="flex-1 flex items-center justify-between bg-white/5 px-8 py-4 rounded-[1.8rem] md:rounded-[2.5rem] border border-white/10 h-20 md:h-24 group hover:bg-white/10 transition-all cursor-pointer shadow-inner">
+                                <div className="flex-1 flex items-center justify-between bg-white/5 px-6 py-3 rounded-2xl border border-white/10 h-16 group hover:bg-white/10 transition-all cursor-pointer shadow-inner">
                                     <div className="flex flex-col text-left">
-                                       <span className="text-[10px] md:text-xs font-black uppercase text-slate-300 leading-tight">BLOCK</span>
-                                       <span className="text-[10px] md:text-xs font-black uppercase text-slate-300 leading-tight">REPEATS</span>
+                                       <span className="text-[12px] font-black uppercase text-slate-300 leading-none">BLOCK</span>
+                                       <span className="text-[12px] font-black uppercase text-slate-300 leading-none mt-1">REPEATS</span>
                                     </div>
-                                    <Switch checked={blockDuplicates} onCheckedChange={setBlockDuplicates} className="data-[state=checked]:bg-[#10B981] scale-110 md:scale-125" />
+                                    <Switch checked={blockDuplicates} onCheckedChange={setBlockDuplicates} className="data-[state=checked]:bg-[#10B981] scale-110" />
                                 </div>
                               </div>
                           </div>
 
-                          <div className="flex flex-col md:flex-row gap-6 md:gap-10">
+                          <div className="flex flex-col md:flex-row gap-6">
                               <Button 
                                   onClick={handleSelectAllInBank} 
                                   variant="outline"
-                                  className="h-20 md:h-24 flex-1 border-white/10 bg-white/5 hover:bg-white/10 text-white font-black uppercase text-[12px] md:text-[14px] tracking-[0.3em] rounded-[1.8rem] md:rounded-[2.5rem] shadow-xl active:scale-95"
+                                  className="h-16 flex-1 border-white/10 bg-white/5 hover:bg-white/10 text-white font-black uppercase text-[14px] tracking-tight rounded-2xl shadow-xl active:scale-95 truncate"
                               >
-                                  SELECT ALL ASSETS
+                                  SELECT ALL FILTERED
                               </Button>
                               <Button 
                                 onClick={handleLinkQuestions}
                                 disabled={bankSelection.length === 0}
-                                className="h-20 md:h-24 flex-[2] bg-[#10B981] hover:bg-[#0E946A] text-white font-black uppercase text-[18px] md:text-[26px] tracking-[0.3em] rounded-[1.8rem] md:rounded-[2.5rem] shadow-5xl border-none transition-all active:scale-95 gap-5"
+                                className="h-16 flex-[2] bg-[#10B981] hover:bg-[#0E946A] text-white font-black uppercase text-[20px] md:text-[24px] tracking-tight rounded-2xl shadow-5xl border-none transition-all active:scale-95 gap-3"
                               >
-                                LINK {bankSelection.length} ASSETS <Zap className="h-8 w-8 md:h-10 md:w-10 fill-current" />
+                                LINK {bankSelection.length} Q <Zap className="h-6 w-6 fill-current" />
                               </Button>
                           </div>
                         </div>
@@ -684,7 +672,7 @@ function MockBuilderContent() {
                   {/* QUESTION LIST HUB */}
                   <div className="space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
                     {bankLoading ? (
-                      Array.from({length: 4}).map((_, i) => <Skeleton key={i} className="h-40 w-full rounded-[3rem] bg-slate-50" />)
+                      Array.from({length: 4}).map((_, i) => <Skeleton key={i} className="h-40 w-full rounded-[2.5rem] bg-slate-50" />)
                     ) : filteredBank.map((q) => {
                       const isSelected = bankSelection.includes(q.id);
                       const board = boards?.find(b => b.id === q.boardId);
@@ -694,24 +682,24 @@ function MockBuilderContent() {
                           key={q.id} 
                           onClick={() => setBankSelection(prev => isSelected ? prev.filter(id => id !== q.id) : [...prev, q.id])}
                           className={cn(
-                            "border-none shadow-xl rounded-[3rem] bg-white p-8 md:p-12 flex items-center gap-8 md:gap-12 cursor-pointer transition-all duration-500 hover:translate-y-[-6px] border border-slate-100 group overflow-hidden relative",
+                            "border-none shadow-xl rounded-[2.5rem] bg-white p-6 md:p-10 flex items-center gap-6 md:gap-10 cursor-pointer transition-all duration-500 hover:translate-y-[-6px] border border-slate-100 group overflow-hidden relative",
                             isSelected && "ring-2 ring-primary/20 bg-primary/5"
                           )}
                         >
                            <div className={cn(
-                              "h-12 w-12 md:h-16 md:w-16 rounded-full border-[3px] flex items-center justify-center shrink-0 transition-all duration-500",
+                              "h-10 w-10 md:h-14 md:w-14 rounded-full border-[3px] flex items-center justify-center shrink-0 transition-all duration-500",
                               isSelected ? "border-[#F97316] bg-[#F97316] shadow-2xl" : "border-slate-200 bg-white"
                            )}>
-                              {isSelected && <Check className="h-6 w-6 md:h-8 md:w-8 text-white stroke-[4px]" />}
+                              {isSelected && <Check className="h-5 w-5 md:h-6 md:w-6 text-white stroke-[4px]" />}
                            </div>
                            
-                           <div className="flex-1 min-w-0 space-y-6 text-left">
-                              <div className="flex flex-wrap items-center gap-4">
-                                 <Badge className="bg-[#0B1528] text-white border-none font-black text-[10px] px-4 py-1 rounded-lg uppercase tracking-widest shadow-lg">{board?.abbreviation || 'PSSSB'}</Badge>
-                                 <Badge variant="outline" className="text-slate-400 border-slate-200 text-[10px] font-black uppercase px-4 py-1 rounded-lg bg-slate-50">{sub?.name || 'ICT'}</Badge>
+                           <div className="flex-1 min-w-0 space-y-4 text-left">
+                              <div className="flex flex-wrap items-center gap-3">
+                                 <Badge className="bg-[#0B1528] text-white border-none font-black text-[9px] px-3 py-1 rounded-lg uppercase shadow-lg">{board?.abbreviation || 'PSSSB'}</Badge>
+                                 <Badge variant="outline" className="text-slate-400 border-slate-200 text-[9px] font-black uppercase px-3 py-1 rounded-lg bg-slate-50">{sub?.name || 'ICT'}</Badge>
                                  {q.status === 'USED' && <Badge className="bg-emerald-50 text-emerald-600 border-none text-[8px] font-black uppercase">USED</Badge>}
                               </div>
-                              <p className="font-black text-lg md:text-3xl text-[#0F172A] leading-[1.2] antialiased break-words tracking-tight group-hover:text-primary transition-colors">
+                              <p className="font-black text-lg md:text-2xl text-[#0F172A] leading-[1.2] antialiased break-words tracking-tight group-hover:text-primary transition-colors">
                                 {q.englishQuestion}
                               </p>
                            </div>
@@ -720,9 +708,9 @@ function MockBuilderContent() {
                               variant="ghost" 
                               size="icon" 
                               onClick={(e) => { e.stopPropagation(); handleDeleteFromBank(q.id); }}
-                              className="h-14 w-14 text-rose-500 hover:bg-rose-50 opacity-0 group-hover:opacity-100 transition-all shrink-0 rounded-2xl"
+                              className="h-12 w-12 text-rose-500 hover:bg-rose-50 opacity-0 group-hover:opacity-100 transition-all shrink-0 rounded-xl"
                            >
-                              <Trash2 className="h-8 w-8" />
+                              <Trash2 className="h-6 w-6" />
                            </Button>
                         </Card>
                       )
@@ -730,7 +718,7 @@ function MockBuilderContent() {
                     {filteredBank.length === 0 && !bankLoading && (
                       <div className="py-40 text-center opacity-20 flex flex-col items-center gap-6 grayscale">
                          <Database className="h-24 w-24" />
-                         <p className="font-black font-headline text-2xl uppercase tracking-[0.4em]">Registry Hub Empty</p>
+                         <p className="font-black font-headline text-2xl uppercase tracking-widest">Registry Hub Empty</p>
                       </div>
                     )}
                   </div>
@@ -742,48 +730,48 @@ function MockBuilderContent() {
                           <Layers className="h-7 w-7 text-primary" /> Active Assembly Hub
                       </h3>
                       <Badge className="bg-[#0F172A] text-white border-none px-6 py-2 rounded-xl font-black uppercase text-[11px] tracking-widest shadow-xl">
-                         {sections.reduce((acc,s) => acc + s.questions.length, 0)} ASSETS LINKED
+                         {sections.reduce((acc,s) => acc + s.questions.length, 0)} Q LINKED
                       </Badge>
                     </div>
 
                     <ScrollArea className="h-[800px] pr-6 flex-1">
-                      <div className="space-y-10">
+                      <div className="space-y-8">
                           {sections.map((sec, sIdx) => (
-                            <Card key={sec.id} className="border-none shadow-3xl rounded-[3.5rem] bg-white overflow-hidden border border-slate-100 group/sec">
-                                <div className="flex items-center justify-between p-10 bg-slate-50/50 border-b border-slate-50">
-                                  <div className="flex items-center gap-8 text-left">
-                                      <div className="h-14 w-14 bg-[#0F172A] text-white rounded-[1.2rem] flex items-center justify-center font-black text-xl shadow-2xl shrink-0 group-hover/sec:bg-primary transition-colors">
+                            <Card key={sec.id} className="border-none shadow-3xl rounded-[2.5rem] bg-white overflow-hidden border border-slate-100 group/sec">
+                                <div className="flex items-center justify-between p-8 bg-slate-50/50 border-b border-slate-50">
+                                  <div className="flex items-center gap-6 text-left">
+                                      <div className="h-12 w-12 bg-[#0F172A] text-white rounded-xl flex items-center justify-center font-black text-xl shadow-2xl shrink-0 group-hover/sec:bg-primary transition-colors">
                                          {sIdx + 1}
                                       </div>
                                       <div>
                                         <Input 
                                             value={sec.name} 
                                             onChange={e => setSections(p => p.map(s => s.id === sec.id ? { ...s, name: e.target.value.toUpperCase() } : s))} 
-                                            className="h-10 w-full md:w-[450px] bg-transparent border-none font-black uppercase text-2xl md:text-3xl focus-visible:ring-0 p-0 text-[#0F172A]" 
+                                            className="h-10 w-full md:w-[450px] bg-transparent border-none font-black uppercase text-xl md:text-2xl focus-visible:ring-0 p-0 text-[#0F172A]" 
                                         />
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">{sec.questions.length} Linked Prep Nodes</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{sec.questions.length} Linked Prep Nodes</p>
                                       </div>
                                   </div>
-                                  <Button variant="ghost" size="icon" onClick={() => setSections(p => p.filter(s => s.id !== sec.id))} className="h-14 w-14 text-rose-500 hover:bg-rose-50 rounded-[1.2rem] transition-all"><Trash2 className="h-7 w-7" /></Button>
+                                  <Button variant="ghost" size="icon" onClick={() => setSections(p => p.filter(s => s.id !== sec.id))} className="h-12 w-12 text-rose-500 hover:bg-rose-50 rounded-xl transition-all"><Trash2 className="h-6 w-6" /></Button>
                                 </div>
-                                <div className="p-10 space-y-6">
+                                <div className="p-8 space-y-4">
                                   {sec.questions.map((q: any, qIdx: number) => (
-                                      <div key={q.id} className="flex items-center justify-between p-6 bg-slate-50/50 border border-slate-100 rounded-3xl group/item hover:bg-white hover:shadow-2xl hover:border-primary/20 transition-all duration-300">
-                                        <div className="flex items-center gap-8 min-w-0 flex-1">
-                                            <span className="text-xl font-black text-slate-300 w-8 shrink-0">#{qIdx + 1}</span>
-                                            <p className="text-base font-bold text-slate-600 truncate text-left">{q.englishQuestion}</p>
+                                      <div key={q.id} className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-2xl group/item hover:bg-white hover:shadow-2xl transition-all duration-300">
+                                        <div className="flex items-center gap-6 min-w-0 flex-1">
+                                            <span className="text-lg font-black text-slate-300 w-6 shrink-0">#{qIdx + 1}</span>
+                                            <p className="text-sm font-bold text-slate-600 truncate text-left">{q.englishQuestion}</p>
                                         </div>
                                         <button 
-                                            className="text-slate-300 hover:text-rose-600 p-3 shrink-0 transition-colors"
+                                            className="text-slate-300 hover:text-rose-600 p-2 shrink-0 transition-colors"
                                             onClick={() => setSections(p => p.map(s => s.id === sec.id ? { ...s, questions: s.questions.filter((item: any) => item.id !== q.id) } : s))} 
                                         >
-                                            <Trash2 className="h-6 w-6" />
+                                            <Trash2 className="h-5 w-5" />
                                         </button>
                                       </div>
                                   ))}
                                   {sec.questions.length === 0 && (
                                       <div className="py-20 text-center opacity-20 italic font-black uppercase text-[12px] tracking-widest flex flex-col items-center gap-4">
-                                         <Zap className="h-12 w-12" />
+                                         <Zap className="h-10 w-10" />
                                          Awaiting link node synchronization...
                                       </div>
                                   )}
@@ -793,38 +781,38 @@ function MockBuilderContent() {
 
                           <Popover>
                             <PopoverTrigger asChild>
-                                <Button className="h-28 w-full bg-white border-dashed border-4 border-slate-200 rounded-[3rem] shadow-xl hover:border-primary hover:shadow-2xl transition-all flex items-center justify-center gap-6 text-slate-300 hover:text-primary font-black uppercase text-[12px] md:text-[14px] tracking-[0.4em] group active:scale-[0.98]">
-                                  <Plus className="h-8 w-8 group-hover:rotate-90 transition-transform" /> ADD NEW SUBJECT HUB
+                                <Button className="h-24 w-full bg-white border-dashed border-4 border-slate-200 rounded-[2.5rem] shadow-xl hover:border-primary hover:shadow-2xl transition-all flex items-center justify-center gap-4 text-slate-300 hover:text-primary font-black uppercase text-[14px] tracking-widest group active:scale-[0.98]">
+                                  <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform" /> ADD NEW SUBJECT HUB
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-[340px] md:w-[450px] p-0 rounded-[3.5rem] bg-[#0F172A] text-white border-white/10 shadow-5xl overflow-hidden z-[1001]">
-                                <div className="p-10 border-b border-white/5 space-y-6">
-                                  <p className="text-[12px] font-black uppercase text-[#F97316] tracking-[0.4em] text-center leading-none">SELECT SUBJECT HUB</p>
+                            <PopoverContent className="w-[340px] md:w-[450px] p-0 rounded-[2.5rem] bg-[#0F172A] text-white border-white/10 shadow-5xl overflow-hidden z-[1001]">
+                                <div className="p-8 border-b border-white/5 space-y-4">
+                                  <p className="text-[12px] font-black uppercase text-[#F97316] tracking-widest text-center leading-none">SELECT SUBJECT HUB</p>
                                   <div className="relative">
-                                      <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+                                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                                       <Input 
                                         placeholder="Search master registry..." 
                                         value={subjectSearch}
                                         onChange={(e) => setSubjectSearch(e.target.value)}
-                                        className="h-14 md:h-16 pl-14 bg-white/5 border-white/10 rounded-2xl font-bold text-base focus-visible:ring-[#F97316] text-white placeholder:text-slate-600" 
+                                        className="h-12 pl-12 bg-white/5 border-white/10 rounded-xl font-bold text-sm focus-visible:ring-[#F97316] text-white placeholder:text-slate-600" 
                                       />
                                   </div>
                                 </div>
-                                <ScrollArea className="h-[450px]">
-                                  <div className="p-6 space-y-2">
+                                <ScrollArea className="h-[400px]">
+                                  <div className="p-4 space-y-1.5">
                                       {filteredSubjectsForPicking.map((s: any) => (
                                         <button 
                                             key={s.id}
                                             onClick={() => addNewSection(s.name)}
-                                            className="w-full flex items-center justify-between p-5 rounded-2xl hover:bg-white/5 transition-all text-left group"
+                                            className="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white/5 transition-all text-left group"
                                         >
-                                            <div className="flex items-center gap-6">
-                                              <div className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-500 group-hover:text-[#F97316] transition-colors">
-                                                 <SearchCode className="h-5 w-5" />
+                                            <div className="flex items-center gap-4">
+                                              <div className="h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-500 group-hover:text-[#F97316] transition-colors">
+                                                 <SearchCode className="h-4 w-4" />
                                               </div>
                                               <span className="text-[13px] font-black uppercase tracking-tight text-slate-300 group-hover:text-white transition-colors">{s.name}</span>
                                             </div>
-                                            <Plus className="h-5 w-5 text-slate-700 opacity-0 group-hover:opacity-100 transition-all" />
+                                            <Plus className="h-4 w-4 text-slate-700 opacity-0 group-hover:opacity-100 transition-all" />
                                         </button>
                                       ))}
                                   </div>

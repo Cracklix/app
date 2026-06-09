@@ -105,7 +105,7 @@ export default function ExamHubPage() {
   const activeBoard = boards?.find((b: any) => b.id === exam.boardId || b.abbreviation === exam.boardId);
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body (text-left print:bg-white print:pb-0)">
+    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body text-left print:bg-white print:pb-0">
       <Navbar />
       
       <section className="bg-white border-b border-slate-100 py-6 md:py-12 text-left">
@@ -222,7 +222,7 @@ function MockList({ data, results, isPassActive, user }: { data: any[], results:
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {data.map((mock: any) => {
             const result = results?.find((r: any) => r.mockId === mock.id);
-            const tier = (mock.accessLevel || 'FREE').toUpperCase();
+            const tier = (mock.accessLevel || mock.accessType || 'FREE').toUpperCase();
             const locked = tier === 'PREMIUM' && !isPassActive;
 
             return (
