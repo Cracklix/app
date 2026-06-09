@@ -1,6 +1,7 @@
 
 "use client"
 
+import React, { useMemo, useState } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useDoc, useCollection, useFirestore, useUser } from "@/firebase"
@@ -30,13 +31,12 @@ import {
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useMemo, useState } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v20.0.
- * UPDATED: Multi-Tab architecture (Mocks, Subject, PYQ, Sectional, CA, Notes, Analytics).
+ * @fileOverview Institutional Exam Hub v21.0.
+ * FIXED: Resolved React ReferenceError by adding React to imports.
  */
 
 export default function ExamHubPage() {
@@ -105,7 +105,7 @@ export default function ExamHubPage() {
   const activeBoard = boards?.find((b: any) => b.id === exam.boardId || b.abbreviation === exam.boardId);
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body">
+    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body (text-left print:bg-white print:pb-0)">
       <Navbar />
       
       <section className="bg-white border-b border-slate-100 py-6 md:py-12 text-left">

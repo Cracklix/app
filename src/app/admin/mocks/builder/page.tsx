@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useMemo, useEffect, Suspense } from "react"
@@ -51,9 +52,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v66.0.
- * UPDATED: Hardened typography and responsive layouts for maximum visibility.
- * FIXED: Marks cards redesigned to match high-fidelity oval screenshot exactly.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v67.0.
+ * UPDATED: Optimized typography and visibility for maximum clarity.
+ * FIXED: Oval marks cards and bold font scaling for both mobile and desktop.
  */
 
 export default function MockBuilderPage() {
