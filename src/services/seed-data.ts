@@ -2,8 +2,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v51.0.
- * UPDATED: Locked official PSPCL logo for ALM/Lineman verticals.
+ * @fileOverview Institutional Punjab-Centric Seeding Node v52.0.
+ * UPDATED: Locked official Punjab Police logo for Head Constable / ASI verticals.
  * LOCKED: Official institutional URLs for PSSSB, Police, PSPCL, and Teaching Hubs.
  */
 
@@ -156,6 +156,7 @@ export async function seedInitialData(db: Firestore) {
   const mandatoryExams = [
     // Govt
     { id: 'police-constable', name: 'Police Constable', boardId: 'punjab-police', categoryId: 'punjab-govt', displayOrder: 1 },
+    { id: 'police-head-constable', name: 'Head Constable / ASI', boardId: 'punjab-police', categoryId: 'punjab-govt', displayOrder: 1.5, iconUrl: 'https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png' },
     { id: 'police-si', name: 'Police Sub-Inspector', boardId: 'punjab-police', categoryId: 'punjab-govt', displayOrder: 2 },
     { id: 'pcs-prelims', name: 'PCS Prelims', boardId: 'ppsc', categoryId: 'punjab-govt', displayOrder: 3 },
     
@@ -164,6 +165,7 @@ export async function seedInitialData(db: Firestore) {
     { id: 'ett-cadre', name: 'ETT Cadre', boardId: 'teaching-hub', categoryId: 'punjab-teaching', displayOrder: 5 },
     { id: 'lecturer-cadre', name: 'Lecturer Cadre', boardId: 'teaching-hub', categoryId: 'punjab-teaching', displayOrder: 6 },
     { id: 'pstet-p1', name: 'PSTET Paper 1', boardId: 'pstet-hub', categoryId: 'punjab-teaching', displayOrder: 7 },
+    { id: 'ctet-p2', name: 'CTET Paper 2', boardId: 'ctet-hub', categoryId: 'punjab-teaching', displayOrder: 7.5, iconUrl: 'https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png' },
     
     // Technical
     { 
