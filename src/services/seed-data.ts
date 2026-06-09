@@ -2,8 +2,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, getDocs, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Node v5.0.
- * UPDATED: Explicitly seeding CTET/PSTET Papers and Teaching Cadre.
+ * @fileOverview Institutional Seeding Node v6.0.
+ * UPDATED: Explicitly seeding Education Department Cadres (ETT, Master, Lecturer, Entrance).
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -89,6 +89,8 @@ export async function seedInitialData(db: Firestore) {
     { id: 'pstet-p2', name: 'PSTET Paper 2', boardId: 'pstet-hub', categoryId: 'punjab-teaching' },
     { id: 'master-cadre', name: 'Master Cadre', boardId: 'education-board', categoryId: 'punjab-teaching' },
     { id: 'ett-cadre', name: 'ETT (Elementary Teacher)', boardId: 'education-board', categoryId: 'punjab-teaching' },
+    { id: 'lecturer-cadre', name: 'Lecturer Cadre', boardId: 'education-board', categoryId: 'punjab-teaching' },
+    { id: 'teaching-entrance', name: 'ETT/B.Ed Entrance Exam', boardId: 'education-board', categoryId: 'punjab-teaching' },
     { id: 'constable', name: 'Police Constable', boardId: 'punjab-police', categoryId: 'punjab-govt' },
     { id: 'sub-inspector', name: 'Police Sub-Inspector', boardId: 'punjab-police', categoryId: 'punjab-govt' },
   ];

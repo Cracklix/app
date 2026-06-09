@@ -19,8 +19,8 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Authority Hub v41.0 - Assigned Categories Hub.
- * UPDATED: Added categoryId relational mapping for board hubs.
+ * @fileOverview Authority Hub v42.0 - Assigned Categories Hub.
+ * UPDATED: Added ETT/Cadre logo mapping to PSEB Official branding.
  */
 
 export default function ExamManagement() {
@@ -68,7 +68,7 @@ export default function ExamManagement() {
     const isPspcl = abbrev === 'PSPCL' || abbrev === 'PSTCL';
     const isCtet = abbrev === 'CTET' || abbrev === 'CBSE';
     const isPstet = abbrev === 'PSTET';
-    const isEducation = abbrev === 'EDUCATION' || abbrev === 'PSEB' || abbrev.includes('ETT') || abbrev.includes('MASTER') || abbrev.includes('LECTURER');
+    const isEducation = abbrev === 'EDUCATION' || abbrev === 'PSEB' || abbrev.includes('ETT') || abbrev.includes('CADRE') || abbrev.includes('LECTURER');
     const isPolice = abbrev.includes('POLICE');
     const isSsc = abbrev === 'SSC';
     const isIbps = abbrev === 'IBPS';
@@ -178,7 +178,7 @@ export default function ExamManagement() {
                 const isPspcl = abbrev === 'PSPCL' || abbrev === 'PSTCL';
                 const isCtet = abbrev === 'CTET' || abbrev === 'CBSE';
                 const isPstet = abbrev === 'PSTET';
-                const isEducation = abbrev === 'EDUCATION' || abbrev === 'PSEB' || abbrev.includes('ETT') || abbrev.includes('MASTER') || abbrev.includes('LECTURER');
+                const isEducation = abbrev === 'EDUCATION' || abbrev === 'PSEB' || abbrev.includes('ETT') || abbrev.includes('CADRE') || abbrev.includes('LECTURER');
                 const isPolice = abbrev.includes('POLICE');
                 const isSsc = abbrev === 'SSC';
                 const isIbps = abbrev === 'IBPS';

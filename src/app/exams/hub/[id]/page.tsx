@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Hub Explorer (Hub -> Exams).
- * UPDATED: Strictly enforcing CTET/PSTET official logos in Exam Cards.
+ * UPDATED: Strictly enforcing CTET/PSTET and PSEB official logos in Exam Cards.
  */
 
 export default function HubExamsPage() {
@@ -60,6 +60,7 @@ export default function HubExamsPage() {
 
   const ctetLogo = "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png";
   const pstetLogo = "https://pstet.pseb.ac.in/img/main-logo-2.png";
+  const psebLogo = "https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png";
 
   return (
     <div className="min-h-screen bg-slate-50/50 font-body">
@@ -99,8 +100,13 @@ export default function HubExamsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                {exams.map((exam) => {
                   const stats = statsMap[exam.id] || { full: 0, subject: 0, pyq: 0, sectional: 0 };
-                  const name = exam.name?.toUpperCase();
-                  const forcedLogo = name.includes('CTET') ? ctetLogo : name.includes('PSTET') ? pstetLogo : (exam.iconUrl || hub?.iconUrl);
+                  const name = exam.name?.toUpperCase() || "";
+                  const abbrev = hub?.abbreviation?.toUpperCase() || "";
+                  
+                  let forcedLogo = exam.iconUrl || hub?.iconUrl;
+                  if (name.includes('CTET')) forcedLogo = ctetLogo;
+                  else if (name.includes('PSTET')) forcedLogo = pstetLogo;
+                  else if (abbrev === 'EDUCATION' || abbrev === 'PSEB' || name.includes('CADRE') || name.includes('ENTRANCE')) forcedLogo = psebLogo;
 
                   return (
                     <Link key={exam.id} href={`/exams/${exam.id}`}>
