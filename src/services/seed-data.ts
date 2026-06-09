@@ -2,8 +2,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v50.0.
- * UPDATED: Streamlined hierarchy focusing exclusively on Punjab recruitments.
+ * @fileOverview Institutional Punjab-Centric Seeding Node v51.0.
+ * UPDATED: Locked official PSPCL logo for ALM/Lineman verticals.
  * LOCKED: Official institutional URLs for PSSSB, Police, PSPCL, and Teaching Hubs.
  */
 
@@ -166,8 +166,22 @@ export async function seedInitialData(db: Firestore) {
     { id: 'pstet-p1', name: 'PSTET Paper 1', boardId: 'pstet-hub', categoryId: 'punjab-teaching', displayOrder: 7 },
     
     // Technical
-    { id: 'pspcl-alm', name: 'PSPCL ALM', boardId: 'pspcl', categoryId: 'punjab-technical', displayOrder: 8 },
-    { id: 'pstcl-alm', name: 'PSTCL ALM', boardId: 'pstcl', categoryId: 'punjab-technical', displayOrder: 9 },
+    { 
+      id: 'pspcl-alm', 
+      name: 'PSPCL ALM / Lineman', 
+      boardId: 'pspcl', 
+      categoryId: 'punjab-technical', 
+      displayOrder: 8,
+      iconUrl: 'https://www.pspcl.in/assets/images/logo.png' 
+    },
+    { 
+      id: 'pstcl-alm', 
+      name: 'PSTCL ALM / Lineman', 
+      boardId: 'pstcl', 
+      categoryId: 'punjab-technical', 
+      displayOrder: 9,
+      iconUrl: 'https://www.pspcl.in/assets/images/logo.png' 
+    },
     { id: 'je-electrical', name: 'JE Electrical', boardId: 'pspcl', categoryId: 'punjab-technical', displayOrder: 10 },
     
     // General
