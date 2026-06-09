@@ -2,8 +2,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, getDocs, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Node v4.1.
- * UPDATED: Strictly implements canonical Board IDs to prevent duplicate Hubs.
+ * @fileOverview Institutional Seeding Node v5.0.
+ * UPDATED: Explicitly seeding CTET/PSTET Papers and Teaching Cadre.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -14,7 +14,7 @@ export async function seedInitialData(db: Firestore) {
     {
       id: "punjab-govt",
       title: "Punjab Government Exams",
-      description: "PSSSB, PPSC, Punjab Police, Revenue & State Departments.",
+      description: "Police, PSSSB, PPSC, Revenue & State Departments.",
       highlight: "STATE LEVEL",
       color: "text-primary",
       bgColor: "bg-orange-50",
@@ -62,16 +62,18 @@ export async function seedInitialData(db: Firestore) {
     await setDoc(doc(db, 'categories', cat.id), { ...cat, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 2. HUBS (Boards) - Mapped to Categories using CANONICAL IDs
+  // 2. HUBS (Boards)
   const psssbLogo = "https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg";
   const psebLogo = "https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png";
+  const pstetLogo = "https://pstet.pseb.ac.in/img/main-logo-2.png";
+  const ctetLogo = "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png";
   
   const boards = [
     { id: 'psssb', abbreviation: 'PSSSB', name: 'Punjab Subordinate Services Selection Board', region: 'Punjab', category: 'STATE_BOARD', categoryId: 'punjab-govt', iconUrl: psssbLogo },
     { id: 'punjab-police', abbreviation: 'POLICE', name: 'Punjab Police Recruitment Board', region: 'Punjab', category: 'DEFENCE_BOARD', categoryId: 'punjab-govt', iconUrl: "https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png" },
     { id: 'education-board', abbreviation: 'EDUCATION', name: 'Education Recruitment Board Punjab', region: 'Punjab', category: 'TEACHING_BOARD', categoryId: 'punjab-teaching', iconUrl: psebLogo },
-    { id: 'pstet-hub', abbreviation: 'PSTET', name: 'Punjab State Teacher Eligibility Test Hub', region: 'Punjab', category: 'TEACHING_BOARD', categoryId: 'punjab-teaching', iconUrl: psebLogo },
-    { id: 'ctet-hub', abbreviation: 'CTET', name: 'Central Teacher Eligibility Test Hub', region: 'Punjab', category: 'TEACHING_BOARD', categoryId: 'punjab-teaching', iconUrl: "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png" },
+    { id: 'pstet-hub', abbreviation: 'PSTET', name: 'Punjab State Teacher Eligibility Test', region: 'Punjab', category: 'TEACHING_BOARD', categoryId: 'punjab-teaching', iconUrl: pstetLogo },
+    { id: 'ctet-hub', abbreviation: 'CTET', name: 'Central Teacher Eligibility Test', region: 'Punjab', category: 'TEACHING_BOARD', categoryId: 'punjab-teaching', iconUrl: ctetLogo },
     { id: 'pspcl', abbreviation: 'PSPCL', name: 'Punjab State Power Corporation Limited', region: 'Punjab', category: 'TECHNICAL', categoryId: 'punjab-technical', iconUrl: "https://pspcl.in/assets/images/logo.png" }
   ];
 
@@ -79,27 +81,21 @@ export async function seedInitialData(db: Firestore) {
     await setDoc(doc(db, 'boards', b.id), { ...b, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 3. EXAMS (Verticals) - Relational Migration
-  const examsSnap = await getDocs(collection(db, "exams"));
-  const batch = writeBatch(db);
-  
-  examsSnap.docs.forEach(d => {
-    const data = d.data();
-    let catId = data.categoryId || 'punjab-govt';
-    let boardId = data.boardId || 'psssb';
-    
-    const name = (data.name || "").toUpperCase();
-    if (name.includes('PSTET')) { catId = 'punjab-teaching'; boardId = 'pstet-hub'; }
-    else if (name.includes('CTET')) { catId = 'punjab-teaching'; boardId = 'ctet-hub'; }
-    else if (name.includes('CADRE') || name.includes('ETT') || name.includes('TEACHING')) { catId = 'punjab-teaching'; boardId = 'education-board'; }
-    else if (name.includes('PSPCL') || name.includes('JE ') || name.includes('ALM')) { catId = 'punjab-technical'; boardId = 'pspcl'; }
-    else if (name.includes('IBPS') || name.includes('BANK')) { catId = 'banking'; boardId = 'banking-hub'; }
-    else if (name.includes('SSC') || name.includes('ARMY')) { catId = 'central-govt'; boardId = 'central-hub'; }
+  // 3. EXAMS (Verticals) - EXPLICIT SEEDING
+  const mandatoryExams = [
+    { id: 'ctet-p1', name: 'CTET Paper 1', boardId: 'ctet-hub', categoryId: 'punjab-teaching' },
+    { id: 'ctet-p2', name: 'CTET Paper 2', boardId: 'ctet-hub', categoryId: 'punjab-teaching' },
+    { id: 'pstet-p1', name: 'PSTET Paper 1', boardId: 'pstet-hub', categoryId: 'punjab-teaching' },
+    { id: 'pstet-p2', name: 'PSTET Paper 2', boardId: 'pstet-hub', categoryId: 'punjab-teaching' },
+    { id: 'master-cadre', name: 'Master Cadre', boardId: 'education-board', categoryId: 'punjab-teaching' },
+    { id: 'ett-cadre', name: 'ETT (Elementary Teacher)', boardId: 'education-board', categoryId: 'punjab-teaching' },
+    { id: 'constable', name: 'Police Constable', boardId: 'punjab-police', categoryId: 'punjab-govt' },
+    { id: 'sub-inspector', name: 'Police Sub-Inspector', boardId: 'punjab-police', categoryId: 'punjab-govt' },
+  ];
 
-    batch.update(d.ref, { categoryId: catId, boardId: boardId });
-  });
-  
-  await batch.commit();
+  for (const ex of mandatoryExams) {
+    await setDoc(doc(db, 'exams', ex.id), { ...ex, updatedAt: serverTimestamp() }, { merge: true });
+  }
 
   console.log('[AUDIT] Hierarchical Registry Deduplicated and Synchronized.');
 }

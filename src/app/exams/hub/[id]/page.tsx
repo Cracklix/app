@@ -10,14 +10,14 @@ import { collection, query, where, doc } from "firebase/firestore"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, GraduationCap, Zap, BookOpen, Layers, Shield, Loader2, FileText, Layout } from "lucide-react"
+import { ChevronLeft, ChevronRight, GraduationCap, Zap, BookOpen, Layers, Shield, Loader2, FileText } from "lucide-react"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Hub Explorer (Hub -> Exams).
- * UPDATED: Uses high-fidelity Exam Cards with 4-grid stats.
+ * UPDATED: Strictly enforcing CTET/PSTET official logos in Exam Cards.
  */
 
 export default function HubExamsPage() {
@@ -58,6 +58,9 @@ export default function HubExamsPage() {
 
   if (hubLoading) return <div className="h-screen bg-white flex items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
 
+  const ctetLogo = "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png";
+  const pstetLogo = "https://pstet.pseb.ac.in/img/main-logo-2.png";
+
   return (
     <div className="min-h-screen bg-slate-50/50 font-body">
       <Navbar />
@@ -96,13 +99,16 @@ export default function HubExamsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                {exams.map((exam) => {
                   const stats = statsMap[exam.id] || { full: 0, subject: 0, pyq: 0, sectional: 0 };
+                  const name = exam.name?.toUpperCase();
+                  const forcedLogo = name.includes('CTET') ? ctetLogo : name.includes('PSTET') ? pstetLogo : (exam.iconUrl || hub?.iconUrl);
+
                   return (
                     <Link key={exam.id} href={`/exams/${exam.id}`}>
                        <Card className="border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[3rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100 p-10 text-left">
                           <div className="flex justify-between items-start mb-10">
                              <div className="h-16 w-16 md:h-20 md:w-20 rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center transition-all group-hover:shadow-xl shadow-inner relative overflow-hidden shrink-0">
-                                {hub?.iconUrl && !failedImages[hub.id] ? (
-                                   <img src={hub.iconUrl} className="w-full h-full object-contain p-2.5 transition-transform duration-500 group-hover:scale-110" alt="Logo" referrerPolicy="no-referrer" />
+                                {forcedLogo && !failedImages[exam.id] ? (
+                                   <img src={forcedLogo} className={cn("w-full h-full object-contain p-2.5 transition-transform duration-500 group-hover:scale-110", name.includes('CTET') ? "scale-125" : "")} alt="Logo" referrerPolicy="no-referrer" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
                                 ) : (
                                    <GraduationCap className="h-8 w-8 text-primary" />
                                 )}
@@ -121,7 +127,7 @@ export default function HubExamsPage() {
                              <StatNode icon={<Zap className="text-primary h-3 w-3" />} count={stats.full} label="FULL MOCKS" />
                              <StatNode icon={<BookOpen className="text-blue-500 h-3 w-3" />} count={stats.subject} label="SUBJECT" />
                              <StatNode icon={<FileText className="text-emerald-500 h-3 w-3" />} count={stats.pyq} label="PYQS" />
-                             <StatNode icon={<Layout className="text-orange-500 h-3 w-3" />} count={stats.sectional} label="SECTIONAL" />
+                             <StatNode icon={<Layers className="text-orange-500 h-3 w-3" />} count={stats.sectional} label="SECTIONAL" />
                           </div>
 
                           <div className="mt-10">
@@ -156,12 +162,4 @@ function StatNode({ icon, count, label }: any) {
       </div>
     </div>
   )
-}
-
-function Layout({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>
-    </svg>
-  );
 }

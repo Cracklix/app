@@ -31,8 +31,8 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Master Registry v3.0.
- * UPDATED: Integrated boardId and categoryId relational assignments.
+ * @fileOverview Institutional Exam Master Registry v4.0.
+ * UPDATED: Hardened CTET/PSTET Logo isolation.
  */
 
 export default function ExamRegistryPage() {
@@ -89,20 +89,6 @@ export default function ExamRegistryPage() {
     } finally { setIsSaving(false) }
   }
 
-  const handleDeepMerge = async () => {
-    if (!db || !mergeSource || !mergeTarget) return
-    setIsMerging(true)
-    try {
-      const qSnap = await getDocs(query(collection(db, "questions"), where("examId", "==", mergeSource), limit(200)))
-      const batch = writeBatch(db)
-      qSnap.docs.forEach(d => batch.update(doc(db, "questions", d.id), { examId: mergeTarget, updatedAt: serverTimestamp() }))
-      batch.delete(doc(db, "exams", mergeSource))
-      await batch.commit()
-      toast({ title: "Merge Complete" })
-      setMergeDialogOpen(false)
-    } finally { setIsMerging(false) }
-  }
-
   // OFFICIAL LOGO REGISTRY
   const ctetOfficialLogo = "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png";
   const pstetOfficialLogo = "https://pstet.pseb.ac.in/img/main-logo-2.png";
@@ -120,9 +106,6 @@ export default function ExamRegistryPage() {
           <p className="text-slate-500 mt-2 text-lg font-medium">Manage specific exam verticals mapped to Boards and Categories.</p>
         </div>
         <div className="flex gap-4">
-           <Button onClick={() => setMergeDialogOpen(true)} variant="outline" className="h-16 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 border-slate-200 bg-white">
-              <GitMerge className="h-5 w-5 text-emerald-500" /> Normalization Engine
-           </Button>
            <Button onClick={() => setEditingExam({ name: "", boardId: "", categoryId: "", category: "STATE" })} className="bg-primary hover:bg-orange-600 h-16 px-10 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 shadow-2xl transition-all active:scale-95">
               Plus Register New Vertical
            </Button>
@@ -158,7 +141,7 @@ export default function ExamRegistryPage() {
                 let forcedLogo = e.iconUrl || board?.iconUrl;
                 if (abbrev === 'CTET' || e.name.toUpperCase().includes('CTET')) forcedLogo = ctetOfficialLogo;
                 else if (abbrev === 'PSTET' || e.name.toUpperCase().includes('PSTET')) forcedLogo = pstetOfficialLogo;
-                else if (abbrev === 'PSEB' || e.name.toUpperCase().includes('PSEB')) forcedLogo = psebOfficialLogo;
+                else if (abbrev === 'PSEB' || abbrev === 'EDUCATION' || e.name.toUpperCase().includes('MASTER CADRE')) forcedLogo = psebOfficialLogo;
 
                 return (
                   <TableRow key={e.id} className="hover:bg-slate-50 border-slate-50 transition-colors group">
@@ -222,10 +205,6 @@ export default function ExamRegistryPage() {
                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Vertical Name</Label>
                   <Input value={editingExam?.name} onChange={e => setEditingExam({...editingExam, name: e.target.value})} className="h-12 rounded-xl font-bold" placeholder="e.g. Constable District Cadre" />
                </div>
-               <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Marketing Category (Internal)</Label>
-                  <Input value={editingExam?.category} onChange={e => setEditingExam({...editingExam, category: e.target.value})} className="h-12 rounded-xl" placeholder="e.g. Police" />
-               </div>
             </div>
             <DialogFooter className="p-10 pt-0">
                <Button onClick={handleSaveExam} disabled={isSaving} className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl transition-all">
@@ -234,8 +213,6 @@ export default function ExamRegistryPage() {
             </DialogFooter>
          </DialogContent>
       </Dialog>
-
-      {/* Merge Dialog logic preserved */}
     </div>
   )
 }
