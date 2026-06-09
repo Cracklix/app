@@ -2,9 +2,9 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Node v39.0.
+ * @fileOverview Institutional Seeding Node v45.0.
  * LOCKED: Official institutional URLs for all recruitment boards.
- * UPDATED: PPSC Hub locked with requested S3 asset.
+ * UPDATED: Added Banking and Central Government Hubs + Exams.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -130,6 +130,49 @@ export async function seedInitialData(db: Firestore) {
       name: 'Education Recruitment Board Punjab', 
       categoryId: 'punjab-teaching', 
       iconUrl: 'https://static.pseb.ac.in/uploads/1648628722_PSEBlogo_2.png' 
+    },
+    // NATIONAL & BANKING HUBS
+    {
+      id: 'ibps',
+      abbreviation: 'IBPS',
+      name: 'Institute of Banking Personnel Selection',
+      categoryId: 'banking',
+      iconUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/3/3c/Institute_of_Banking_Personnel_Selection_Logo.png/200px-Institute_of_Banking_Personnel_Selection_Logo.png'
+    },
+    {
+      id: 'sbi',
+      abbreviation: 'SBI',
+      name: 'State Bank of India',
+      categoryId: 'banking',
+      iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/State_Bank_of_India_logo.svg/1024px-State_Bank_of_India_logo.svg.png'
+    },
+    {
+      id: 'ssc',
+      abbreviation: 'SSC',
+      name: 'Staff Selection Commission',
+      categoryId: 'central-govt',
+      iconUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/0/03/Staff_Selection_Commission_logo.png/200px-Staff_Selection_Commission_logo.png'
+    },
+    {
+      id: 'upsc',
+      abbreviation: 'UPSC',
+      name: 'Union Public Service Commission',
+      categoryId: 'central-govt',
+      iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/UPSC_logo.png'
+    },
+    {
+      id: 'railways',
+      abbreviation: 'RRB',
+      name: 'Railway Recruitment Board',
+      categoryId: 'central-govt',
+      iconUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/4/45/IRLogo.png/200px-IRLogo.png'
+    },
+    {
+      id: 'indian-army',
+      abbreviation: 'ARMY',
+      name: 'Indian Army Recruitment',
+      categoryId: 'central-govt',
+      iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Emblem_of_the_Indian_Army.svg/1200px-Emblem_of_the_Indian_Army.svg.png'
     }
   ];
 
@@ -162,11 +205,20 @@ export async function seedInitialData(db: Firestore) {
       categoryId: 'punjab-teaching', 
       iconUrl: 'https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/uploads/2023/03/2023032156.png' 
     },
+    // NATIONAL & BANKING VERTICALS
+    { id: 'ibps-po', name: 'IBPS PO (Probationary Officer)', boardId: 'ibps', categoryId: 'banking' },
+    { id: 'ibps-clerk', name: 'IBPS Clerk', boardId: 'ibps', categoryId: 'banking' },
+    { id: 'sbi-po', name: 'SBI PO', boardId: 'sbi', categoryId: 'banking' },
+    { id: 'ssc-cgl', name: 'SSC CGL (Graduate Level)', boardId: 'ssc', categoryId: 'central-govt' },
+    { id: 'ssc-chsl', name: 'SSC CHSL (10+2 Level)', boardId: 'ssc', categoryId: 'central-govt' },
+    { id: 'upsc-prelims', name: 'UPSC Civil Services Prelims', boardId: 'upsc', categoryId: 'central-govt' },
+    { id: 'rrb-ntpc', name: 'RRB NTPC (Non-Technical)', boardId: 'railways', categoryId: 'central-govt' },
+    { id: 'army-gd', name: 'Army GD (General Duty)', boardId: 'indian-army', categoryId: 'central-govt' }
   ];
 
   for (const ex of mandatoryExams) {
     await setDoc(doc(db, 'exams', ex.id), { ...ex, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  console.log('[AUDIT] Registry Logos and Hierarchies Synchronized.');
+  console.log('[AUDIT] Registry Logos and National/Banking Hierarchies Synchronized.');
 }
