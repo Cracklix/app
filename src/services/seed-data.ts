@@ -2,8 +2,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, getDocs, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Node v7.0.
- * UPDATED: Explicitly separating PSPCL, PSTCL, and Punjab Technical Board Hubs.
+ * @fileOverview Institutional Seeding Node v8.0.
+ * UPDATED: 3-Hub Teaching Hierarchy (PSTET, CTET, Education Recruitment Hub).
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -88,14 +88,23 @@ export async function seedInitialData(db: Firestore) {
 
   // 3. EXAMS (Verticals) - EXPLICIT SEEDING
   const mandatoryExams = [
-    // Teaching
-    { id: 'ctet-p1', name: 'CTET Paper 1', boardId: 'ctet-hub', categoryId: 'punjab-teaching' },
-    { id: 'ctet-p2', name: 'CTET Paper 2', boardId: 'ctet-hub', categoryId: 'punjab-teaching' },
+    // PSTET Hub
     { id: 'pstet-p1', name: 'PSTET Paper 1', boardId: 'pstet-hub', categoryId: 'punjab-teaching' },
     { id: 'pstet-p2', name: 'PSTET Paper 2', boardId: 'pstet-hub', categoryId: 'punjab-teaching' },
+    
+    // CTET Hub
+    { id: 'ctet-p1', name: 'CTET Paper 1', boardId: 'ctet-hub', categoryId: 'punjab-teaching' },
+    { id: 'ctet-p2', name: 'CTET Paper 2', boardId: 'ctet-hub', categoryId: 'punjab-teaching' },
+    
+    // Education Recruitment Hub (PSEB/EDUCATION)
+    { id: 'ett-cadre', name: 'ETT Cadre', boardId: 'education-board', categoryId: 'punjab-teaching' },
     { id: 'master-cadre', name: 'Master Cadre', boardId: 'education-board', categoryId: 'punjab-teaching' },
-    { id: 'ett-cadre', name: 'ETT (Elementary Teacher)', boardId: 'education-board', categoryId: 'punjab-teaching' },
     { id: 'lecturer-cadre', name: 'Lecturer Cadre', boardId: 'education-board', categoryId: 'punjab-teaching' },
+    { id: 'principal', name: 'Principal', boardId: 'education-board', categoryId: 'punjab-teaching' },
+    { id: 'assistant-professor', name: 'Assistant Professor', boardId: 'education-board', categoryId: 'punjab-teaching' },
+    { id: 'head-teacher', name: 'Head Teacher', boardId: 'education-board', categoryId: 'punjab-teaching' },
+    { id: 'computer-teacher', name: 'Computer Teacher', boardId: 'education-board', categoryId: 'punjab-teaching' },
+    { id: 'physical-edu-teacher', name: 'Physical Education Teacher', boardId: 'education-board', categoryId: 'punjab-teaching' },
     { id: 'teaching-entrance', name: 'ETT/B.Ed Entrance Exam', boardId: 'education-board', categoryId: 'punjab-teaching' },
     
     // Govt

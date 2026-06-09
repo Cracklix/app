@@ -19,8 +19,8 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Authority Hub v43.0 - Assigned Categories Hub.
- * UPDATED: Explicitly separated PSPCL, PSTCL, and Punjab Technical Board branding.
+ * @fileOverview Authority Hub v44.0 - Teaching Hub Restructure.
+ * UPDATED: Explicitly synchronized Education Recruitment Hub branding.
  */
 
 export default function ExamManagement() {

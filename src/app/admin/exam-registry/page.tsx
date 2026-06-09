@@ -31,8 +31,8 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Master Registry v4.6.
- * UPDATED: Added PSPCL, PSTCL, and Punjab Technical Board logo detection.
+ * @fileOverview Institutional Exam Master Registry v4.7.
+ * UPDATED: Hardened logo detection for Cadre exams and Teacher posts.
  */
 
 export default function ExamRegistryPage() {
@@ -145,7 +145,7 @@ export default function ExamRegistryPage() {
                 let forcedLogo = e.iconUrl || board?.iconUrl;
                 if (abbrev === 'CTET' || examName.includes('CTET')) forcedLogo = ctetOfficialLogo;
                 else if (abbrev === 'PSTET' || examName.includes('PSTET')) forcedLogo = pstetOfficialLogo;
-                else if (abbrev === 'PSEB' || abbrev === 'EDUCATION' || examName.includes('CADRE') || examName.includes('ENTRANCE')) forcedLogo = psebOfficialLogo;
+                else if (abbrev === 'PSEB' || abbrev === 'EDUCATION' || examName.includes('CADRE') || examName.includes('ENTRANCE') || examName.includes('PROFESSOR') || examName.includes('TEACHER') || examName.includes('PRINCIPAL')) forcedLogo = psebOfficialLogo;
                 else if (abbrev === 'PSPCL') forcedLogo = pspclOfficialLogo;
                 else if (abbrev === 'PSTCL') forcedLogo = pstclOfficialLogo;
                 else if (abbrev === 'PSBTE') forcedLogo = psbteOfficialLogo;
