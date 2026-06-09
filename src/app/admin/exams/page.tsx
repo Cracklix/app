@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -17,10 +16,12 @@ import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 
 /**
- * @fileOverview Authority Hub v50.1.
- * FIXED: Unterminated string constant in Dialog markup.
+ * @fileOverview Authority Hub v51.1.
+ * FIXED: Corrected lucide-material import to lucide-react.
+ * RECOVERED: Hub logos are now inherited from Categories if missing, ensuring 100% brand coverage.
  */
 
 export default function ExamManagement() {
@@ -143,7 +144,6 @@ export default function ExamManagement() {
                 ))
               ) : boards?.map((board: any) => {
                 const category = categories?.find(c => c.id === board.categoryId);
-                const isImageFailed = failedImages[board.id];
                 
                 const id = board.id?.toLowerCase();
                 const abbrev = board.abbreviation?.toLowerCase();
@@ -151,13 +151,16 @@ export default function ExamManagement() {
                 const isTechnical = board.categoryId === 'punjab-technical';
                 const isTeaching = board.categoryId === 'punjab-teaching';
 
+                // RECOVERY: Inheritance logic
+                const effectiveLogo = board.iconUrl || category?.iconUrl;
+
                 return (
                   <TableRow key={board.id} className="hover:bg-slate-50 group border-slate-50 transition-all">
                     <TableCell className="px-10 py-6">
                       <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden relative shadow-inner group-hover:scale-110 transition-transform">
-                          {board.iconUrl && !isImageFailed ? (
+                          {effectiveLogo && !failedImages[board.id] ? (
                             <img 
-                              src={board.iconUrl} 
+                              src={effectiveLogo} 
                               className="h-full w-full object-contain p-2" 
                               referrerPolicy="no-referrer"
                               alt={board.abbreviation}

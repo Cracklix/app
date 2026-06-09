@@ -16,9 +16,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Hub Explorer v5.0.
- * RECOVERED: Restored original icon identities (Cap for Teaching, Shield for Police).
- * UPDATED: Synchronized branding for new teaching slugs.
+ * @fileOverview Institutional Hub Explorer v6.0.
+ * RECOVERED: Restored hierarchical branding ensures individual exams inherit official logos from parent Hubs or Categories.
  */
 
 export default function HubExamsPage() {
@@ -36,6 +35,7 @@ export default function HubExamsPage() {
   }, [db, hub]);
 
   const { data: exams, loading: examsLoading } = useCollection<any>(examsQuery);
+  const { data: categories } = useCollection<any>(useMemo(() => (db ? collection(db, "categories") : null), [db]));
   const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]));
 
   const statsMap = useMemo(() => {
@@ -107,7 +107,8 @@ export default function HubExamsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                {exams.map((exam) => {
                   const stats = statsMap[exam.id] || { full: 0, subject: 0, pyq: 0, sectional: 0 };
-                  const effectiveLogo = exam.iconUrl || hub?.iconUrl;
+                  const category = categories?.find((c: any) => c.id === exam.categoryId);
+                  const effectiveLogo = exam.iconUrl || hub?.iconUrl || category?.iconUrl;
 
                   return (
                     <Link key={exam.id} href={`/exams/${exam.id}`}>

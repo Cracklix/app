@@ -2,15 +2,14 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Node v17.0.
- * UPDATED: Strictly enforcing the 5 requested categories with permanent emblem for Punjab Govt.
- * FIXED: Canonical IDs and order for Punjab Govt, Teaching, Technical, Banking, and Central.
+ * @fileOverview Institutional Seeding Node v18.0.
+ * UPDATED: Persistent Institutional Logos locked into Categories and Hubs.
  */
 
 export async function seedInitialData(db: Firestore) {
   console.log('[AUDIT] Initializing Persistent Registry Sync...');
 
-  // 1. CORE CATEGORIES (Strictly 5 nodes)
+  // 1. CORE CATEGORIES (Strictly 5 nodes with permanent logos)
   const categories = [
     {
       id: "punjab-govt",
@@ -29,6 +28,7 @@ export async function seedInitialData(db: Firestore) {
       highlight: "EDUCATIONAL",
       color: "text-blue-600",
       bgColor: "bg-blue-50",
+      iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT77AiJp2d3yn7Lwjk7LG6nDeLpQC_ZnFs6FZg4yAieypyMsmctxNGWRdk&s=10",
       displayOrder: 2
     },
     {
@@ -38,6 +38,7 @@ export async function seedInitialData(db: Firestore) {
       highlight: "POWER & IT",
       color: "text-amber-500",
       bgColor: "bg-amber-50",
+      iconUrl: "https://affiliation.pbteched.net/assets/images/banner-5.png",
       displayOrder: 3
     },
     {
@@ -109,11 +110,14 @@ export async function seedInitialData(db: Firestore) {
     { id: 'pspcl-assa', name: 'ASSA (PSPCL)', boardId: 'pspcl', categoryId: 'punjab-technical' },
     { id: 'pstcl-alm', name: 'ALM (PSTCL)', boardId: 'pstcl', categoryId: 'punjab-technical' },
     { id: 'psbte-je-elec', name: 'JE Electrical', boardId: 'psbte', categoryId: 'punjab-technical' },
+    { id: 'psbte-je-civil', name: 'JE Civil', boardId: 'psbte', categoryId: 'punjab-technical' },
+    { id: 'psbte-je-mech', name: 'JE Mechanical', boardId: 'psbte', categoryId: 'punjab-technical' },
     
     // Govt Hubs
     { id: 'constable', name: 'Police Constable', boardId: 'punjab-police', categoryId: 'punjab-govt' },
     { id: 'sub-inspector', name: 'Police Sub-Inspector', boardId: 'punjab-police', categoryId: 'punjab-govt' },
     { id: 'patwari', name: 'Revenue Patwari', boardId: 'psssb', categoryId: 'punjab-govt' },
+    { id: 'psssb-clerk', name: 'PSSSB Clerk', boardId: 'psssb', categoryId: 'punjab-govt' },
   ];
 
   for (const ex of mandatoryExams) {

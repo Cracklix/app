@@ -33,8 +33,8 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Master Registry v5.3.
- * RESTORED: Standard Lucide Icons used as default identity.
+ * @fileOverview Institutional Exam Master Registry v6.0.
+ * RECOVERED: Hierarchical branding logic ensures all verticals display recovered institutional logos.
  */
 
 export default function ExamRegistryPage() {
@@ -42,10 +42,6 @@ export default function ExamRegistryPage() {
   const { toast } = useToast()
   
   const [searchTerm, setSearchTerm] = useState("")
-  const [isMerging, setIsMerging] = useState(false)
-  const [mergeDialogOpen, setMergeDialogOpen] = useState(false)
-  const [mergeSource, setMergeSource] = useState<string>("")
-  const [mergeTarget, setMergeTarget] = useState<string>("")
   const [isSaving, setIsSaving] = useState(false)
   const [editingExam, setEditingExam] = useState<any>(null)
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
@@ -132,7 +128,7 @@ export default function ExamRegistryPage() {
                 ))
               ) : filteredExams.map((e) => {
                 const board = boards?.find((b: any) => b.id === e.boardId || b.abbreviation === e.boardId);
-                const cat = categories?.find((c: any) => c.id === e.categoryId);
+                const category = categories?.find((c: any) => c.id === e.categoryId);
                 
                 const catId = e.categoryId;
                 const isGovt = catId === 'punjab-govt';
@@ -140,13 +136,14 @@ export default function ExamRegistryPage() {
                 const isTechnical = catId === 'punjab-technical';
                 const isBank = catId === 'banking';
 
-                const effectiveLogo = e.iconUrl || board?.iconUrl;
+                // RECOVERY LOGIC: Use Exam Logo -> Board Logo -> Category Logo -> Fallback Icon
+                const effectiveLogo = e.iconUrl || board?.iconUrl || category?.iconUrl;
 
                 return (
                   <TableRow key={e.id} className="hover:bg-slate-50 border-slate-50 transition-colors group">
                     <TableCell className="px-10 py-8">
                       <div className="flex items-center gap-6">
-                        <div className="h-12 w-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                        <div className="h-12 w-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative">
                             {effectiveLogo && !failedImages[e.id] ? (
                               <img 
                                 src={effectiveLogo} 
@@ -174,7 +171,7 @@ export default function ExamRegistryPage() {
                       <Badge variant="outline" className="bg-white border-slate-100 text-primary text-[8px] font-black uppercase px-2 py-0.5">{board?.abbreviation || e.boardId || 'NONE'}</Badge>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[8px] uppercase">{cat?.title || "UNCATEGORIZED"}</Badge>
+                      <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[8px] uppercase">{category?.title || "UNCATEGORIZED"}</Badge>
                     </TableCell>
                     <TableCell className="text-right px-10">
                       <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100 transition-all">
