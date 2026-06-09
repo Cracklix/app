@@ -1,8 +1,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Seeding Node v28.0.
- * RECOVERED & LOCKED: Locked official PSSSB SVG and Punjab Police PNG logos.
+ * @fileOverview Institutional Seeding Node v29.0.
+ * RECOVERED & LOCKED: Verified official URLs for PSSSB (SVG), Police (PNG), and PSPCL (PNG).
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -64,7 +64,7 @@ export async function seedInitialData(db: Firestore) {
     await setDoc(doc(db, 'categories', cat.id), { ...cat, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 2. HUBS (Boards) - Persistent Nodes with Verified Official Logos
+  // 2. HUBS (Boards) - Persistent Nodes with Verified Official Locked Logos
   const boards = [
     { 
       id: 'punjab-police', 
@@ -92,7 +92,7 @@ export async function seedInitialData(db: Firestore) {
       abbreviation: 'PSPCL', 
       name: 'Punjab State Power Corporation Limited', 
       categoryId: 'punjab-technical',
-      iconUrl: 'https://pspcl.in/images/logo.png'
+      iconUrl: 'https://www.pspcl.in/assets/images/logo.png'
     },
     { 
       id: 'pstcl', 

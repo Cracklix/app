@@ -6,8 +6,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 /**
  * @fileOverview A component that listens for FirestorePermissionError events 
  * and throws them as uncaught exceptions to trigger the Next.js error overlay.
- * UPDATED: Hardened to handle non-Error objects and prevent [object Event] crashes 
- * by using a check and deferred throw.
+ * UPDATED: Hardened to prevent [object Event] crashes by checking error type.
  */
 export function FirebaseErrorListener() {
   useEffect(() => {
@@ -20,7 +19,7 @@ export function FirebaseErrorListener() {
           throw error;
         }, 0);
       } else {
-        // 2. Fallback for non-standard events (e.g. from generic try/catch leaks)
+        // 2. Fallback for non-standard events (prevents nextjs crash)
         console.error("[CBT SECURITY EVENT]:", error);
       }
     };
