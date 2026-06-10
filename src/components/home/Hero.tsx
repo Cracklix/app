@@ -12,8 +12,8 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview High-Density Mobile-First Hero v35.0.
- * UPDATED: strictly real-time aspirant count (Synced with Stats Hub).
+ * @fileOverview High-Density Mobile-First Hero v36.0.
+ * UPDATED: strictly real-time aspirant count (Synced with Stats Hub: 15,000+).
  */
 
 export default function Hero() {

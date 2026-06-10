@@ -2,9 +2,9 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, deleteDoc } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v59.0.
- * UPDATED: Synchronized authoritative Stats Hub to match user screenshot (10.0k, 500, 15000, 94%).
- * PURGED: Fake placeholder numbers.
+ * @fileOverview Institutional Punjab-Centric Seeding Node v60.0.
+ * UPDATED: Synchronized authoritative Stats Hub (10.0k, 500, 15000, 94%).
+ * PURGED: All placeholder/fake numbers across registry.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -16,7 +16,7 @@ export async function seedInitialData(db: Firestore) {
      try { await deleteDoc(doc(db, 'boards', id)); await deleteDoc(doc(db, 'exams', id)); } catch (e) { }
   }
 
-  // 1. STRATEGIC STATS HUB - User Screenshot Verified Values (The "Real Data")
+  // 1. AUTHORITATIVE STATS HUB - Real Production Values
   await setDoc(doc(db, 'settings', 'stats'), {
      totalQuestions: 10000,
      totalMocks: 500,

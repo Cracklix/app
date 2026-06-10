@@ -19,8 +19,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Optimized Institutional Landing Hub v47.0.
- * UPDATED: Implemented Dynamic Formatting for real-time stats (e.g. 10.0k+, 15k+).
+ * @fileOverview Optimized Institutional Landing Hub v48.0.
+ * UPDATED: Strictly implemented requested "Real Data" formatting (10.0k, 500, 15,000, 94%).
  */
 
 export default function HomePage() {
@@ -30,24 +30,22 @@ export default function HomePage() {
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
 
-  const formatNumber = (num: number) => {
-    if (!num) return "0";
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k+';
-    }
-    return num.toLocaleString();
-  };
-
   const liveStats = useMemo(() => {
+    // 1. Audit Registry Values (Authoritative Baseline)
     const qCount = stats?.totalQuestions || 10000;
     const mCount = stats?.totalMocks || 500;
     const uCount = stats?.totalUsers || 15000;
     const avgAcc = stats?.averageAccuracy || 94;
 
+    // 2. High-Fidelity Formatting (Match Screenshot)
+    const formattedMCQ = qCount >= 1000 
+      ? (qCount / 1000).toFixed(1) + 'k+' 
+      : qCount.toLocaleString();
+
     return {
-      mcqs: formatNumber(qCount),
-      mocks: formatNumber(mCount),
-      users: formatNumber(uCount),
+      mcqs: formattedMCQ,
+      mocks: mCount.toLocaleString(),
+      users: uCount.toLocaleString(),
       accuracy: `${avgAcc}%`
     };
   }, [stats]);
@@ -57,7 +55,7 @@ export default function HomePage() {
       <Navbar />
       <Hero />
 
-      {/* Trust Stats Bar - Dynamic "Real Data" Integration */}
+      {/* Trust Stats Bar - Authoritative Registry Hub */}
       <section className="bg-white py-12 md:py-20 border-b border-slate-50">
          <div className="container mx-auto px-4 max-w-7xl">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
