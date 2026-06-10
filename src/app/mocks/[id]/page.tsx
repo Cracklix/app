@@ -29,8 +29,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Individual Mock Gateway v19.6.
- * FIXED: Resolved JSX syntax errors and unmatched brackets.
+ * @fileOverview Individual Mock Gateway v19.7.
+ * FIXED: Resolved FeatureNode syntax error preventing production builds.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];

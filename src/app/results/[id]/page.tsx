@@ -24,7 +24,10 @@ import {
   Clock,
   Printer,
   AlertCircle,
-  Lock
+  Lock,
+  ChevronLeft,
+  XCircle,
+  HelpCircle
 } from "lucide-react"
 import { useUser, useFirestore, useCollection } from "@/firebase"
 import { collection, query, where, doc, getDoc, documentId, getDocs, limit, orderBy } from "firebase/firestore"
@@ -36,9 +39,11 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 /**
- * @fileOverview Test Results Hub v12.0.
- * HARDENED: Premium Access Firewall. Non-pass holders cannot access premium result nodes.
+ * @fileOverview Test Results Hub v14.0.
+ * UPDATED: Integrated Real-Time filter counts (Correct/Wrong/Skipped) for Answer Review.
  */
+
+const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 export default function ResultPage() {
   const params = useParams()
@@ -105,10 +110,11 @@ export default function ResultPage() {
           const mData = mockSnap.data();
           setMockData(mData);
 
-          // PREMIUM ACCESS FIREWALL
           const tier = (mData.accessLevel || mData.accessType || 'FREE').trim().toUpperCase();
           const isPremium = tier === 'PREMIUM';
-          const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN';
+          const userEmail = user?.email?.toLowerCase();
+          const isFounder = userEmail && SUPER_ADMIN_WHITELIST.includes(userEmail);
+          const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || isFounder;
           
           let hasActivePass = false;
           if (isAdmin) hasActivePass = true;
@@ -142,14 +148,37 @@ export default function ResultPage() {
       }
     }
     loadQuestions()
-  }, [db, sessionData, mockId, resultsLoading, profile]);
+  }, [db, sessionData, mockId, resultsLoading, profile, user]);
+
+  const stats = useMemo(() => {
+    if (!questions.length || !sessionData?.answers) return { correct: 0, wrong: 0, skipped: 0 };
+    
+    let correct = 0;
+    let wrong = 0;
+    let skipped = 0;
+
+    questions.forEach((q, i) => {
+      const userAns = sessionData.answers[i];
+      if (userAns === undefined || userAns === null) {
+        skipped++;
+      } else {
+        const correctOptIdx = ['A', 'B', 'C', 'D'].indexOf(q.correctAnswer);
+        if (userAns === correctOptIdx) correct++;
+        else wrong++;
+      }
+    });
+
+    return { correct, wrong, skipped };
+  }, [questions, sessionData]);
 
   const filteredQuestions = useMemo(() => {
      return questions.map((q, i) => ({ ...q, index: i })).filter((q) => {
         const ans = sessionData?.answers?.[q.index];
+        const isCorrect = ans !== undefined && ['A','B','C','D'][ans] === q.correctAnswer;
+        
         if (activeReviewFilter === 'ALL') return true;
-        if (activeReviewFilter === 'CORRECT') return ans !== undefined && ['A','B','C','D'][ans] === q.correctAnswer;
-        if (activeReviewFilter === 'WRONG') return ans !== undefined && ['A','B','C','D'][ans] !== q.correctAnswer;
+        if (activeReviewFilter === 'CORRECT') return isCorrect;
+        if (activeReviewFilter === 'WRONG') return ans !== undefined && !isCorrect;
         if (activeReviewFilter === 'SKIPPED') return ans === undefined || ans === null;
         return true;
      });
@@ -206,23 +235,23 @@ export default function ResultPage() {
                  </div>
                  
                  <div className="flex items-center gap-8 bg-white/5 backdrop-blur-3xl p-8 rounded-[2.5rem] border border-white/10 shadow-5xl">
-                    <div className="text-center space-y-1">
+                    <div className="text-center min-w-[100px] space-y-1">
                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">RANK</p>
                        <p className="text-3xl md:text-5xl font-headline font-black text-primary leading-none">#{merit.rank}</p>
                     </div>
                     <div className="h-16 w-px bg-white/10" />
-                    <div className="text-center space-y-1">
-                       <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">PERCENTILE</p>
-                       <p className="text-3xl md:text-5xl font-headline font-black text-emerald-400 leading-none">{merit.percentile}%</p>
+                    <div className="text-center min-w-[100px] space-y-1">
+                       <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">ACCURACY</p>
+                       <p className="text-3xl md:text-5xl font-headline font-black text-emerald-400 leading-none">{sessionData.accuracy}%</p>
                     </div>
                  </div>
               </div>
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 pt-10 border-t border-white/5">
                  <div className="text-left space-y-1"><p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">SCORE</p><p className="text-3xl md:text-5xl font-headline font-black text-primary">{Number(sessionData.score).toFixed(1)}</p></div>
-                 <div className="text-left space-y-1"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">ACCURACY</p><p className="text-3xl md:text-5xl font-headline font-black text-emerald-400">{sessionData.accuracy}%</p></div>
-                 <div className="text-left space-y-1"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">TOTAL Qs</p><p className="text-3xl md:text-5xl font-headline font-black text-blue-400">{sessionData.totalQuestions}</p></div>
+                 <div className="text-left space-y-1"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">TOTAL QUESTIONS</p><p className="text-3xl md:text-5xl font-headline font-black text-blue-400">{sessionData.totalQuestions}</p></div>
                  <div className="text-left space-y-1"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">TIME TAKEN</p><p className="text-3xl md:text-5xl font-headline font-black text-white">{Math.floor(sessionData.timeTaken / 60)}m</p></div>
+                 <div className="text-left space-y-1"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">PERCENTILE</p><p className="text-3xl md:text-5xl font-headline font-black text-emerald-400">{merit.percentile}%</p></div>
               </div>
            </CardContent>
         </Card>
@@ -233,25 +262,82 @@ export default function ResultPage() {
               <TabsTrigger value="TOPPER" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full data-[state=active]:bg-[#0B1528] data-[state=active]:text-white">Top 100 Merit</TabsTrigger>
            </TabsList>
 
-           <TabsContent value="SOLUTIONS" className="space-y-6">
-              <div className="flex gap-2 pb-4 overflow-x-auto no-scrollbar">
-                 {activeReviewFilter !== 'ALL' && <button onClick={() => setActiveReviewFilter('ALL')} className="px-6 py-2 rounded-xl text-[9px] font-black uppercase border-2 border-slate-100 text-slate-400 hover:bg-slate-50">Reset</button>}
-                 {['CORRECT', 'WRONG', 'SKIPPED'].map((f: any) => (
-                    <button key={f} onClick={() => setActiveReviewFilter(f)} className={cn("px-6 py-2 rounded-xl text-[9px] font-black uppercase border-2 transition-all", activeReviewFilter === f ? "bg-primary border-primary text-white" : "bg-white border-slate-100 text-slate-400")}>{f}</button>
-                 ))}
+           <TabsContent value="SOLUTIONS" className="space-y-8">
+              <div className="flex flex-wrap gap-3 pb-2 overflow-x-auto no-scrollbar">
+                 <FilterBtn 
+                    active={activeReviewFilter === 'ALL'} 
+                    onClick={() => setActiveReviewFilter('ALL')} 
+                    label="ALL QUESTIONS" 
+                    count={questions.length} 
+                    icon={<BarChart3 className="h-3 w-3" />}
+                    activeColor="bg-primary border-primary"
+                 />
+                 <FilterBtn 
+                    active={activeReviewFilter === 'CORRECT'} 
+                    onClick={() => setActiveReviewFilter('CORRECT')} 
+                    label="CORRECT" 
+                    count={stats.correct} 
+                    icon={<CheckCircle2 className="h-3 w-3" />}
+                    activeColor="bg-emerald-500 border-emerald-500"
+                    textColor="text-emerald-500"
+                 />
+                 <FilterBtn 
+                    active={activeReviewFilter === 'WRONG'} 
+                    onClick={() => setActiveReviewFilter('WRONG')} 
+                    label="WRONG" 
+                    count={stats.wrong} 
+                    icon={<XCircle className="h-3 w-3" />}
+                    activeColor="bg-rose-500 border-rose-500"
+                    textColor="text-rose-500"
+                 />
+                 <FilterBtn 
+                    active={activeReviewFilter === 'SKIPPED'} 
+                    onClick={() => setActiveReviewFilter('SKIPPED')} 
+                    label="SKIPPED" 
+                    count={stats.skipped} 
+                    icon={<HelpCircle className="h-3 w-3" />}
+                    activeColor="bg-slate-500 border-slate-500"
+                    textColor="text-slate-400"
+                 />
               </div>
+
               <div className="grid grid-cols-1 gap-6">
-                 {filteredQuestions.map((q) => {
+                 {filteredQuestions.length > 0 ? filteredQuestions.map((q) => {
                     const ans = sessionData.answers?.[q.index];
                     const isCorrect = ans !== undefined && ['A','B','C','D'][ans] === q.correctAnswer;
+                    const isSkipped = ans === undefined || ans === null;
+                    
                     return (
-                       <Card key={q.id} className="border-none shadow-xl rounded-[2.5rem] overflow-hidden bg-white text-left relative">
-                          <div className={cn("absolute top-0 left-0 w-2 h-full", isCorrect ? 'bg-emerald-500' : ans === undefined ? 'bg-slate-200' : 'bg-rose-500')} />
-                          <CardContent className="p-8 md:p-10">
-                             <div className="flex items-center gap-6 mb-8">
-                                <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-inner", isCorrect ? "bg-emerald-50 text-emerald-600" : "bg-slate-50 text-slate-300")}>{q.index + 1}</div>
-                                <Badge variant="outline" className="border-slate-100 text-slate-400 uppercase text-[8px] font-black">{q.subjectId}</Badge>
+                       <Card key={q.id} className="border-none shadow-xl rounded-[2.5rem] overflow-hidden bg-white text-left relative transition-all hover:shadow-2xl">
+                          <div className={cn(
+                             "absolute top-0 left-0 w-2.5 h-full transition-all", 
+                             isCorrect ? 'bg-emerald-500' : isSkipped ? 'bg-slate-200' : 'bg-rose-500'
+                          )} />
+                          <CardContent className="p-8 md:p-12">
+                             <div className="flex items-center justify-between mb-8">
+                                <div className="flex items-center gap-6">
+                                   <div className={cn(
+                                      "h-14 w-14 rounded-2xl flex items-center justify-center font-black text-2xl shadow-inner transition-all", 
+                                      isCorrect ? "bg-emerald-50 text-emerald-600" : isSkipped ? "bg-slate-50 text-slate-400" : "bg-rose-50 text-rose-600"
+                                   )}>
+                                      {q.index + 1}
+                                   </div>
+                                   <div className="space-y-1">
+                                      <Badge variant="outline" className="border-slate-100 text-slate-400 uppercase text-[8px] font-black tracking-widest">{q.subjectId}</Badge>
+                                      <div className="flex items-center gap-2">
+                                         {isCorrect ? (
+                                            <span className="text-[10px] font-black text-emerald-600 uppercase flex items-center gap-1.5"><CheckCircle2 className="h-3 w-3" /> Correct Answer</span>
+                                         ) : isSkipped ? (
+                                            <span className="text-[10px] font-black text-slate-400 uppercase flex items-center gap-1.5"><HelpCircle className="h-3 w-3" /> Not Attempted</span>
+                                         ) : (
+                                            <span className="text-[10px] font-black text-rose-600 uppercase flex items-center gap-1.5"><XCircle className="h-3 w-3" /> Incorrect Choice</span>
+                                         )}
+                                      </div>
+                                   </div>
+                                </div>
+                                <Button variant="ghost" size="icon" className="h-10 w-10 text-slate-200 hover:text-primary"><BrainCircuit className="h-5 w-5" /></Button>
                              </div>
+
                              <QuestionRenderer 
                                 question={q} 
                                 language={mockData?.languageMode || 'ENGLISH_PUNJABI'}
@@ -262,7 +348,12 @@ export default function ResultPage() {
                           </CardContent>
                        </Card>
                     )
-                 })}
+                 }) : (
+                    <div className="py-24 text-center bg-white rounded-[3rem] border-2 border-dashed border-slate-100 opacity-20">
+                       <HelpCircle className="h-16 w-16 mx-auto mb-4" />
+                       <p className="font-headline font-black text-xl uppercase tracking-widest">No matching questions in this category.</p>
+                    </div>
+                 )}
               </div>
            </TabsContent>
 
@@ -270,14 +361,20 @@ export default function ResultPage() {
               <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden p-8">
                  <div className="space-y-4">
                     {sortedGlobalResults.slice(0, 10).map((r: any, i: number) => (
-                       <div key={r.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                       <div key={r.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:bg-white hover:shadow-xl transition-all">
                           <div className="flex items-center gap-4">
-                             <span className="font-black text-slate-300 w-6">#{i+1}</span>
-                             <p className="font-bold text-[#0F172A] uppercase">{r.userName}</p>
+                             <span className="font-black text-slate-300 w-6 text-lg">#{i+1}</span>
+                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black uppercase text-xs">
+                                {r.userName?.[0] || 'A'}
+                             </div>
+                             <p className="font-bold text-[#0F172A] uppercase tracking-tight">{r.userName}</p>
                           </div>
                           <div className="flex gap-8 items-center">
-                             <span className="text-xs font-black text-primary">{r.score?.toFixed(1) || '0.0'} PTS</span>
-                             <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[9px]">{r.accuracy}%</Badge>
+                             <div className="text-right hidden sm:block">
+                                <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">SCORE</p>
+                                <p className="text-sm font-black text-primary leading-none">{r.score?.toFixed(1) || '0.0'}</p>
+                             </div>
+                             <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[9px] h-8 px-4 flex items-center">{r.accuracy}% Accuracy</Badge>
                           </div>
                        </div>
                     ))}
@@ -290,3 +387,18 @@ export default function ResultPage() {
     </div>
   )
 }
+
+function FilterBtn({ active, onClick, label, count, icon, activeColor, textColor = "text-slate-400" }: any) {
+   return (
+      <button 
+        onClick={onClick} 
+        className={cn(
+           "px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border-2 transition-all flex items-center gap-3 active:scale-95",
+           active ? `${activeColor} text-white shadow-xl` : `bg-white border-slate-100 ${textColor} hover:border-slate-200`
+        )}
+      >
+         {icon} {label} <span className={cn("ml-1 opacity-60 tabular-nums")}>({count})</span>
+      </button>
+   )
+}
+
