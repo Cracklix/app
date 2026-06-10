@@ -16,8 +16,8 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Hardened Production Checkout Hub v4.2.
- * UPDATED: Enhanced Gateway Key Validation and Error Feedback.
+ * @fileOverview Hardened Production Checkout Hub v4.4.
+ * FIXED: Escaped JSX characters and implemented hydration guard for window.origin.
  */
 
 export default function CheckoutPage() {
@@ -39,26 +39,32 @@ function CheckoutContent() {
   const [processing, setProcessing] = useState(false)
   const [onlineProcessing, setOnlineProcessing] = useState(false)
   const [utr, setUtr] = useState("")
+  const [origin, setOrigin] = useState("")
 
   const { data: settings } = useDoc<any>(useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]));
   const { data: planData, loading: planLoading } = useDoc<any>(useMemo(() => (db && planId ? doc(db, 'passes', planId) : null), [db, planId]));
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setOrigin(window.location.origin);
+    }
+  }, []);
+
+  useEffect(() => {
     if (!loading && !user) router.push("/login")
   }, [user, loading, router])
 
-  const isProductionDomain = useMemo(() => {
-     if (typeof window === 'undefined') return true;
-     const origin = window.location.origin;
-     return !origin.includes('localhost') && !origin.includes('cloudworkstations.dev');
-  }, []);
+  const isWhitelistedDomain = useMemo(() => {
+     if (!origin) return true;
+     // Add your production domains here
+     const approved = ['https://cracklix.com', 'https://www.cracklix.com', 'https://cracklix.vercel.app'];
+     return approved.some(domain => origin === domain);
+  }, [origin]);
 
   const handleCashfreePayment = async () => {
     if (!user || !profile || !planData || onlineProcessing) return;
 
     setOnlineProcessing(true);
-    const siteUrl = window.location.origin;
-
     try {
       const orderRes = await fetch('/api/cashfree/create-order', {
         method: 'POST',
@@ -66,7 +72,7 @@ function CheckoutContent() {
         body: JSON.stringify({ 
           planId, 
           userId: user.uid,
-          origin: siteUrl 
+          origin: origin 
         })
       });
 
@@ -82,7 +88,6 @@ function CheckoutContent() {
         return;
       }
 
-      // Match SDK mode with API environment
       const mode = orderData.environment || (process.env.NEXT_PUBLIC_CASHFREE_ENV === 'production' ? 'production' : 'sandbox');
       const cashfree = (window as any).Cashfree({ mode });
 
@@ -96,7 +101,7 @@ function CheckoutContent() {
       toast({ 
         variant: "destructive", 
         title: "Transaction Error", 
-        description: "Could not initialize secure payment node. Check console for details." 
+        description: "Could not initialize secure payment node." 
       });
       setOnlineProcessing(false);
     }
@@ -115,12 +120,14 @@ function CheckoutContent() {
       <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="lazyOnload" />
       
       <main className="container mx-auto px-4 md:px-6 py-12 md:py-24 max-w-5xl">
-        {!isProductionDomain && (
-           <div className="mb-10 p-6 bg-rose-50 border-2 border-rose-100 rounded-3xl flex items-center gap-6 animate-in fade-in slide-in-from-top-4">
-              <AlertTriangle className="h-8 w-8 text-rose-500 shrink-0" />
+        {!isWhitelistedDomain && (
+           <div className="mb-10 p-6 bg-amber-50 border-2 border-amber-100 rounded-3xl flex items-center gap-6 animate-in fade-in slide-in-from-top-4">
+              <AlertTriangle className="h-8 w-8 text-amber-500 shrink-0" />
               <div className="text-left">
-                 <p className="text-[10px] font-black uppercase text-rose-600 tracking-widest">Environment Notice</p>
-                 <p className="text-sm font-medium text-rose-500">Development mode active. Ensure keys match the environment in Vercel settings.</p>
+                 <p className="text-[10px] font-black uppercase text-amber-600 tracking-widest">Gateway Whitelisting Required</p>
+                 <p className="text-sm font-medium text-amber-700">
+                    This domain is not approved by Cashfree. Go to your <b>Cashfree Dashboard &gt; Developers &gt; Whitelisting</b> and add <code>{origin}</code> to enable payments.
+                 </p>
               </div>
            </div>
         )}
@@ -194,14 +201,14 @@ function CheckoutContent() {
                              if(utr.length < 12) { toast({variant:"destructive", title:"Invalid UTR"}); return; }
                              setProcessing(true);
                              await submitManualPayment({ userId: user!.uid, userEmail: user!.email!, userName: profile!.name, planId, transactionId: utr });
-                             toast({title:"Submitted", description:"Arsh Grewal Management will audit your payment shortly."});
+                             toast({title:"Submitted", description:"Management will review your payment shortly."});
                              router.push("/dashboard");
                           }}
                           disabled={processing}
                           className="w-full h-14 bg-slate-200 hover:bg-slate-300 text-slate-600 font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all border-none gap-3"
                        >
                           {processing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
-                          Audit Manual Transfer
+                          Submit Manual Transfer
                        </Button>
                     </div>
                  </CardContent>
@@ -213,7 +220,7 @@ function CheckoutContent() {
                  <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12"><Gem className="h-48 w-48" /></div>
                  <div className="relative z-10 space-y-12">
                     <div className="space-y-2 text-center">
-                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Aspirant Pass</p>
+                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Student Pass</p>
                        <h3 className="text-3xl md:text-5xl font-headline font-black uppercase leading-tight">{planData.name}</h3>
                     </div>
                     <div className="space-y-5 pt-8 border-t border-white/5">

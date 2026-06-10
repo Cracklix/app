@@ -20,15 +20,16 @@ import {
   Zap,
   Play,
   AlertCircle,
-  Home
+  Home,
+  Target
 } from "lucide-react"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Individual Mock Gateway v19.2.
- * FIXED: Resolved syntax error in FeatureNode component.
+ * @fileOverview Individual Mock Gateway v19.4.
+ * FIXED: Resolved JSX syntax error and ensured clean component termination.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -190,11 +191,11 @@ export default function MockOverviewPage() {
 }
 
 function FeatureNode({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
-   return (
-      <div className="p-10 rounded-[2.5rem] bg-slate-50 border border-slate-100 space-y-4 text-center">
-         <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center mx-auto shadow-xl">{icon}</div>
-         <h3 className="text-xl font-black text-[#0F172A] uppercase">{title}</h3>
-         <p className="text-slate-400 font-bold uppercase text-[9px] tracking-widest">{desc}</p>
-      </div>
-   );
+  return (
+    <div className="p-10 rounded-[2.5rem] bg-slate-50 border border-slate-100 space-y-4 text-center">
+      <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center mx-auto shadow-xl">{icon}</div>
+      <h3 className="text-xl font-black text-[#0F172A] uppercase">{title}</h3>
+      <p className="text-slate-400 font-bold uppercase text-[9px] tracking-widest">{desc}</p>
+    </div>
+  );
 }
