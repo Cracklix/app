@@ -14,13 +14,15 @@ import MeetFounder from "@/components/home/MeetFounder";
 import Footer from "@/components/layout/Footer";
 import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
-import { BookOpen, Zap, Users, Target } from "lucide-react";
+import { BookOpen, Zap, Users, Target, Activity } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Optimized Institutional Landing Hub v56.0.
- * UPDATED: Strictly 0-Baseline. Pulls real-time original data only.
+ * @fileOverview Optimized Institutional Landing Hub v57.0.
+ * UPDATED: High-fidelity "Box" design for live statistics. 
+ * Real-time original data only (0-Baseline).
  */
 
 export default function HomePage() {
@@ -37,7 +39,7 @@ export default function HomePage() {
     const uCount = stats?.totalUsers || 0;
     const avgAcc = stats?.averageAccuracy || 0;
 
-    // 2. High-Fidelity Formatting (Only converts to k+ if count > 1000)
+    // 2. High-Fidelity Formatting
     const formatNumber = (num: number) => {
        if (num >= 1000) return (num / 1000).toFixed(1) + 'k+';
        return num.toString();
@@ -56,32 +58,33 @@ export default function HomePage() {
       <Navbar />
       <Hero />
 
-      {/* Trust Stats Bar - Authoritative Registry Hub */}
-      <section className="bg-white py-12 md:py-20 border-b border-slate-50">
+      {/* Trust Stats Bar - High-Fidelity Boxed Layout */}
+      <section className="bg-white py-12 md:py-24 border-b border-slate-50 relative overflow-hidden">
+         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/10 to-transparent" />
          <div className="container mx-auto px-4 max-w-7xl">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                <TrustCard 
                   loading={statsLoading}
-                  icon={<BookOpen className="text-[#F97316] h-5 w-5 md:h-8 md:w-8" />} 
+                  icon={<BookOpen className="text-primary h-5 w-5 md:h-8 md:w-8" />} 
                   label="MCQ BANK" 
                   val={liveStats.mcqs} 
                />
                <TrustCard 
                   loading={statsLoading}
-                  icon={<Zap className="text-[#3B82F6] h-5 w-5 md:h-8 md:w-8" />} 
+                  icon={<Zap className="text-blue-500 h-5 w-5 md:h-8 md:w-8" />} 
                   label="MOCKS LIVE" 
                   val={liveStats.mocks} 
                />
                <TrustCard 
                   loading={statsLoading}
-                  icon={<Users className="text-[#10B981] h-5 w-5 md:h-8 md:w-8" />} 
+                  icon={<Users className="text-emerald-500 h-5 w-5 md:h-8 md:w-8" />} 
                   label="ASPIRANTS" 
                   val={liveStats.users} 
-                  highlight={liveStats.users !== "0"}
+                  isLive
                />
                <TrustCard 
                   loading={statsLoading}
-                  icon={<Target className="text-[#EAB308] h-5 w-5 md:h-8 md:w-8" />} 
+                  icon={<Target className="text-amber-500 h-5 w-5 md:h-8 md:w-8" />} 
                   label="AVG ACCURACY" 
                   val={liveStats.accuracy} 
                />
@@ -107,22 +110,27 @@ export default function HomePage() {
   );
 }
 
-function TrustCard({ icon, label, val, loading, highlight = false }: any) {
+function TrustCard({ icon, label, val, loading, isLive }: any) {
    return (
-      <div className={cn(
-        "flex items-center gap-6 md:gap-8 p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] transition-all duration-500 border border-slate-50 h-full bg-white shadow-sm",
-        highlight 
-          ? "shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] scale-105 z-10 border-slate-100" 
-          : "hover:bg-slate-50/30 hover:shadow-xl"
-      )}>
-         <div className="h-14 w-14 md:h-20 md:w-20 rounded-[1.5rem] md:rounded-[2rem] bg-white flex items-center justify-center shrink-0 border border-slate-100 shadow-sm">{icon}</div>
-         <div className="text-left space-y-1.5">
+      <div className="bg-white p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-slate-100 shadow-xl hover:shadow-2xl transition-all duration-500 group relative flex flex-col items-center text-center space-y-4">
+         {isLive && (
+            <div className="absolute top-6 right-8 flex items-center gap-1.5">
+               <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+               <span className="text-[7px] font-black text-emerald-500 uppercase tracking-widest">Live</span>
+            </div>
+         )}
+         
+         <div className="h-14 w-14 md:h-18 md:w-18 rounded-[1.2rem] md:rounded-[1.5rem] bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
+            {icon}
+         </div>
+         
+         <div className="space-y-1">
             {loading ? (
-               <Skeleton className="h-8 w-24 bg-slate-200" />
+               <Skeleton className="h-8 w-24 bg-slate-100 mx-auto" />
             ) : (
-               <p className="text-3xl md:text-6xl font-headline font-black text-[#0F172A] leading-none tracking-tighter tabular-nums">{val}</p>
+               <p className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] leading-none tracking-tighter tabular-nums">{val}</p>
             )}
-            <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 truncate">{label}</p>
+            <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">{label}</p>
          </div>
       </div>
    )
