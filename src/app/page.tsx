@@ -19,14 +19,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Optimized Institutional Landing Hub v52.0.
- * UPDATED: Zero-baseline sync. All dummy numbers replaced with Real Data from Firestore.
+ * @fileOverview Optimized Institutional Landing Hub v53.0.
+ * UPDATED: Absolute 0-Baseline Sync. All placeholder figures removed.
  */
 
 export default function HomePage() {
   const db = useFirestore();
 
-  // STABILIZED DATA LISTENERS - Pulling from Authoritative Node
+  // STABILIZED DATA LISTENERS
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
 
@@ -40,7 +40,7 @@ export default function HomePage() {
     // 2. High-Fidelity Formatting (Only apply 'k+' if actually over 1000)
     const formatNumber = (num: number) => {
        if (num >= 1000) return (num / 1000).toFixed(1) + 'k+';
-       return num.toLocaleString();
+       return num.toString();
     }
 
     return {

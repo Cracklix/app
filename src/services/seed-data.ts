@@ -2,8 +2,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, deleteDoc } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v63.0.
- * UPDATED: Zero-baseline initialization. All dummy/fake counts deleted.
+ * @fileOverview Institutional Punjab-Centric Seeding Node v64.0.
+ * UPDATED: Zero-baseline initialization. All placeholder counts reset to 0.
  */
 
 export async function seedInitialData(db: Firestore) {
