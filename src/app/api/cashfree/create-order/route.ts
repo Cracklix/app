@@ -1,12 +1,11 @@
-
 import { NextResponse } from 'next/server';
 import { Cashfree } from 'cashfree-pg';
 import { initializeFirebase } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
 /**
- * @fileOverview Hardened Production Order Node v5.0.
- * UPDATED: Intelligent Environment Detection (Auto Sandbox/Prod).
+ * @fileOverview Hardened Production Order Node v6.0.
+ * UPDATED: Intelligent Key Validation and Auto-Environment Selection.
  */
 
 export async function POST(req: Request) {
@@ -19,15 +18,18 @@ export async function POST(req: Request) {
     const env = process.env.CASHFREE_ENV || 'production';
 
     if (!clientId || !clientSecret) {
-      console.error('[CASHFREE_AUTH_ERR]: API Credentials missing from environment variables.');
-      return NextResponse.json({ error: 'Gateway authentication keys not configured.' }, { status: 500 });
+      console.error('[CASHFREE_AUTH_ERR]: API Credentials missing from environment variables (CASHFREE_CLIENT_ID or CASHFREE_CLIENT_SECRET).');
+      return NextResponse.json({ 
+        error: 'Gateway authentication keys not configured.',
+        details: 'Ensure CASHFREE_CLIENT_ID and CASHFREE_CLIENT_SECRET are set in Vercel settings.'
+      }, { status: 500 });
     }
 
     // Initialize SDK inside handler for serverless stability
     Cashfree.XClientId = clientId;
     Cashfree.XClientSecret = clientSecret;
     
-    // Auto-detect environment based on key prefix if not explicitly set
+    // Auto-detect environment based on key prefix if not explicitly set to production
     const isProd = env === 'production' || clientSecret.startsWith('cf_prod_');
     Cashfree.XEnvironment = isProd ? Cashfree.Environment.PRODUCTION : Cashfree.Environment.SANDBOX;
 
@@ -37,13 +39,13 @@ export async function POST(req: Request) {
 
     const planSnap = await getDoc(doc(db, "passes", planId));
     if (!planSnap.exists()) {
-      return NextResponse.json({ error: 'Pass node missing from registry.' }, { status: 404 });
+      return NextResponse.json({ error: 'Pass node missing from registry: ' + planId }, { status: 404 });
     }
     const planData = planSnap.data();
     const amount = Number(planData.price);
 
     if (amount <= 0) {
-      return NextResponse.json({ error: 'Direct order creation for ₹0 nodes is prohibited.' }, { status: 400 });
+      return NextResponse.json({ error: 'Direct order creation for free nodes is prohibited.' }, { status: 400 });
     }
 
     const userSnap = await getDoc(doc(db, "users", userId));

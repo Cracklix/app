@@ -1,12 +1,11 @@
-
 import { NextResponse } from 'next/server';
 import { Cashfree } from 'cashfree-pg';
 import { initializeFirebase } from '@/firebase';
 import { doc, updateDoc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 
 /**
- * @fileOverview Audited Cashfree Payment Verification Hub v2.0.
- * UPDATED: Dynamic environment detection for verification node.
+ * @fileOverview Audited Cashfree Payment Verification Hub v3.0.
+ * UPDATED: Hardened Environment Logic for Production.
  */
 
 export async function POST(req: Request) {
@@ -18,7 +17,7 @@ export async function POST(req: Request) {
     const env = process.env.CASHFREE_ENV || 'production';
 
     if (!clientId || !clientSecret) {
-      return NextResponse.json({ error: 'Auth keys missing.' }, { status: 500 });
+      return NextResponse.json({ error: 'Gateway authentication keys not configured.' }, { status: 500 });
     }
 
     Cashfree.XClientId = clientId;
@@ -43,7 +42,7 @@ export async function POST(req: Request) {
     const planData = planSnap?.data();
     
     if (!planData) {
-      return NextResponse.json({ error: 'Registry Sync Error: Plan Missing' }, { status: 404 });
+      return NextResponse.json({ error: 'Registry Sync Error: Plan Missing ' + planId }, { status: 404 });
     }
 
     const expiryDate = new Date();

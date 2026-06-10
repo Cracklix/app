@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useSearchParams, useRouter } from "next/navigation"
@@ -17,8 +16,8 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Hardened Production Checkout Hub v4.1.
- * UPDATED: Dynamic Cashfree mode detection.
+ * @fileOverview Hardened Production Checkout Hub v4.2.
+ * UPDATED: Enhanced Gateway Key Validation and Error Feedback.
  */
 
 export default function CheckoutPage() {
@@ -72,7 +71,16 @@ function CheckoutContent() {
       });
 
       const orderData = await orderRes.json();
-      if (orderData.error) throw new Error(orderData.error);
+      
+      if (orderData.error) {
+        toast({ 
+          variant: "destructive", 
+          title: "Gateway Error", 
+          description: orderData.details || orderData.error 
+        });
+        setOnlineProcessing(false);
+        return;
+      }
 
       // Match SDK mode with API environment
       const mode = orderData.environment || (process.env.NEXT_PUBLIC_CASHFREE_ENV === 'production' ? 'production' : 'sandbox');
@@ -87,8 +95,8 @@ function CheckoutContent() {
       console.error('[CHECKOUT_FAILURE]', e);
       toast({ 
         variant: "destructive", 
-        title: "Gateway Error", 
-        description: e.message || "Could not initialize secure payment node." 
+        title: "Transaction Error", 
+        description: "Could not initialize secure payment node. Check console for details." 
       });
       setOnlineProcessing(false);
     }
@@ -112,7 +120,7 @@ function CheckoutContent() {
               <AlertTriangle className="h-8 w-8 text-rose-500 shrink-0" />
               <div className="text-left">
                  <p className="text-[10px] font-black uppercase text-rose-600 tracking-widest">Environment Notice</p>
-                 <p className="text-sm font-medium text-rose-500">Development mode active. Ensure keys match the environment.</p>
+                 <p className="text-sm font-medium text-rose-500">Development mode active. Ensure keys match the environment in Vercel settings.</p>
               </div>
            </div>
         )}

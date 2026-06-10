@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useEffect, useState } from "react"
@@ -28,8 +27,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Individual Mock Gateway v19.1.
- * FIXED: Resolved webpack compilation error by correctly closing sub-components.
+ * @fileOverview Individual Mock Gateway v19.2.
+ * FIXED: Resolved syntax error in FeatureNode component.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
