@@ -2,8 +2,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, deleteDoc } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v57.0.
- * UPDATED: Initialized Trending Hubs to match user screenshot.
+ * @fileOverview Institutional Punjab-Centric Seeding Node v58.0.
+ * UPDATED: Synchronized authoritative Stats Hub to match user screenshot (10.0k, 500, 15000, 94%).
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -15,7 +15,7 @@ export async function seedInitialData(db: Firestore) {
      try { await deleteDoc(doc(db, 'boards', id)); await deleteDoc(doc(db, 'exams', id)); } catch (e) { }
   }
 
-  // 1. STRATEGIC STATS HUB - Original Screenshot Values
+  // 1. STRATEGIC STATS HUB - User Screenshot Verified Values
   await setDoc(doc(db, 'settings', 'stats'), {
      totalQuestions: 10000,
      totalMocks: 500,
@@ -107,7 +107,7 @@ export async function seedInitialData(db: Firestore) {
     { id: 'pstet-paper-1', name: 'PSTET Paper 1', boardId: 'pstet-hub', categoryId: 'punjab-teaching', displayOrder: 10 },
     { id: 'psssb-patwari', name: 'Revenue Patwari', boardId: 'psssb', categoryId: 'punjab-general', displayOrder: 30 },
     { id: 'psssb-clerk', name: 'Clerk / DEO', boardId: 'psssb', categoryId: 'punjab-general', displayOrder: 31 },
-    // TRENDING NODES
+    // TRENDING NODES FROM SCREENSHOT
     { id: 'punjab-anganwadi', name: 'PUNJAB ANGANWADI / NTT', boardId: 'psssb', categoryId: 'punjab-govt', isTrending: true, displayOrder: 0 },
     { id: 'army-gd', name: 'ARMY GD (GENERAL DUTY)', boardId: 'high-court', categoryId: 'punjab-govt', isTrending: true, displayOrder: 0 },
     { id: 'assistant-professor', name: 'ASSISTANT PROFESSOR', boardId: 'ppsc', categoryId: 'punjab-teaching', isTrending: true, displayOrder: 0 },

@@ -19,19 +19,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Optimized Institutional Landing Hub v44.0.
- * UPDATED: Strictly matched trust bar data and style to user screenshot (10.0k+, 500, 15,000, 94%).
+ * @fileOverview Optimized Institutional Landing Hub v45.0.
+ * UPDATED: Strictly matched trust bar data and layout to user screenshot (10.0k+, 500, 15,000, 94%).
  */
 
 export default function HomePage() {
   const db = useFirestore();
 
-  // STABILIZED DATA LISTENERS (Metadata only for home page performance)
+  // STABILIZED DATA LISTENERS
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
 
   const liveStats = useMemo(() => {
-    // Default high-fidelity placeholders if registry stats haven't been seeded
+    // Exact figures from the provided institutional screenshot
     const qCount = stats?.totalQuestions || 10000;
     const mCount = stats?.totalMocks || 500;
     const uCount = stats?.totalUsers || 15000;
@@ -39,7 +39,7 @@ export default function HomePage() {
 
     return {
       mcqs: qCount >= 10000 ? "10.0k+" : qCount.toLocaleString(),
-      mocks: mCount,
+      mocks: mCount.toLocaleString(),
       users: uCount.toLocaleString(),
       accuracy: `${avgAcc}%`
     };
@@ -50,32 +50,32 @@ export default function HomePage() {
       <Navbar />
       <Hero />
 
-      {/* Trust Stats Bar - "Same to Same" Screenshot Update */}
-      <section className="bg-white py-8 md:py-16 border-b border-slate-50">
+      {/* Trust Stats Bar - "Same to Same" Screenshot Verified */}
+      <section className="bg-white py-12 md:py-20 border-b border-slate-50">
          <div className="container mx-auto px-4 max-w-7xl">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
                <TrustCard 
                   loading={statsLoading}
-                  icon={<BookOpen className="text-primary h-4 w-4 md:h-6 md:w-6" />} 
+                  icon={<BookOpen className="text-[#F97316] h-5 w-5 md:h-8 md:w-8" />} 
                   label="MCQ BANK" 
                   val={liveStats.mcqs} 
                />
                <TrustCard 
                   loading={statsLoading}
-                  icon={<Zap className="text-blue-500 h-4 w-4 md:h-6 md:w-6" />} 
+                  icon={<Zap className="text-[#3B82F6] h-5 w-5 md:h-8 md:w-8" />} 
                   label="MOCKS LIVE" 
                   val={liveStats.mocks} 
                />
                <TrustCard 
                   loading={statsLoading}
-                  icon={<Users className="text-emerald-500 h-4 w-4 md:h-6 md:w-6" />} 
+                  icon={<Users className="text-[#10B981] h-5 w-5 md:h-8 md:w-8" />} 
                   label="ASPIRANTS" 
                   val={liveStats.users} 
                   highlight
                />
                <TrustCard 
                   loading={statsLoading}
-                  icon={<Target className="text-amber-500 h-4 w-4 md:h-6 md:w-6" />} 
+                  icon={<Target className="text-[#EAB308] h-5 w-5 md:h-8 md:w-8" />} 
                   label="AVG ACCURACY" 
                   val={liveStats.accuracy} 
                />
@@ -104,19 +104,19 @@ export default function HomePage() {
 function TrustCard({ icon, label, val, loading, highlight = false }: any) {
    return (
       <div className={cn(
-        "flex items-center gap-4 md:gap-6 p-4 md:p-10 rounded-[2rem] md:rounded-[3rem] transition-all duration-500 border border-slate-50 h-full",
+        "flex items-center gap-6 md:gap-8 p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] transition-all duration-500 border border-slate-50 h-full",
         highlight 
-          ? "bg-white shadow-[0_35px_60px_-15px_rgba(0,0,0,0.1)] scale-105 z-10" 
-          : "bg-slate-50/30 hover:bg-white hover:shadow-2xl"
+          ? "bg-white shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] scale-105 z-10 border-slate-100" 
+          : "bg-white hover:bg-slate-50/30 hover:shadow-xl"
       )}>
-         <div className="h-10 w-10 md:h-16 md:w-16 rounded-2xl md:rounded-3xl bg-white flex items-center justify-center shrink-0 border border-slate-100 shadow-sm">{icon}</div>
-         <div className="text-left space-y-1">
+         <div className="h-14 w-14 md:h-20 md:w-20 rounded-[1.5rem] md:rounded-[2rem] bg-white flex items-center justify-center shrink-0 border border-slate-100 shadow-sm">{icon}</div>
+         <div className="text-left space-y-1.5">
             {loading ? (
-               <Skeleton className="h-6 w-16 bg-slate-200" />
+               <Skeleton className="h-8 w-24 bg-slate-200" />
             ) : (
-               <p className="text-lg md:text-5xl font-headline font-black text-[#0F172A] leading-none tracking-tighter">{val}</p>
+               <p className="text-3xl md:text-6xl font-headline font-black text-[#0F172A] leading-none tracking-tighter tabular-nums">{val}</p>
             )}
-            <p className="text-[7px] md:text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 truncate">{label}</p>
+            <p className="text-[9px] md:text-[13px] font-black uppercase tracking-[0.3em] text-slate-400 truncate">{label}</p>
          </div>
       </div>
    )
