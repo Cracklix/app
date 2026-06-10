@@ -35,8 +35,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v25.0.
- * UPDATED: Standardized tab labels: Full Length Mock, Subject-Wise Test, Sectional Test, PYQ Paper.
+ * @fileOverview Institutional Exam Hub v26.0.
+ * FIXED: Re-implemented Attempt Audit logic to correctly count results mapped to this vertical.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -94,15 +94,20 @@ export default function ExamHubPage() {
     }
   }, [rawMocks, rawNotes, caHub, examId, exam])
 
+  // HARDENED ATTEMPT AUDIT LOGIC
   const examPerformance = useMemo(() => {
-     const examResults = (userResults || []).filter(r => r.mockId?.includes(examId) || groupedContent.FULL.some(m => m.id === r.mockId));
+     const allAssociatedMocks = [...groupedContent.FULL, ...groupedContent.SUBJECT, ...groupedContent.SECTIONAL, ...groupedContent.PYQ];
+     const mockIds = new Set(allAssociatedMocks.map(m => m.id));
+
+     const examResults = (userResults || []).filter(r => mockIds.has(r.mockId));
+     
      if (examResults.length === 0) return { attempted: 0, avgAcc: 0, bestScore: 0 };
      return {
         attempted: examResults.length,
         avgAcc: Math.round(examResults.reduce((acc, r) => acc + (r.accuracy || 0), 0) / examResults.length),
         bestScore: Math.max(...examResults.map(r => r.score || 0))
      }
-  }, [userResults, examId, groupedContent.FULL]);
+  }, [userResults, groupedContent]);
 
   if (examLoading || userLoading) return <div className="h-screen flex items-center justify-center bg-white"><Skeleton className="h-16 w-16 rounded-full animate-pulse" /></div>
   if (!exam) return null;
