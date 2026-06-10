@@ -1,4 +1,3 @@
-
 'use client';
 
 import { 
@@ -22,7 +21,8 @@ import {
   Sparkles,
   Newspaper,
   Award,
-  FileStack
+  FileStack,
+  Download
 } from "lucide-react";
 import Link from "next/link";
 import { useUser, useAuth } from "@/firebase";
@@ -37,11 +37,12 @@ import { Button } from "@/components/ui/button";
 
 /**
  * @fileOverview Institutional Sidebar.
- * UPDATED: Removed PYQ Repository link as per user request (moved to Mocks section).
+ * UPDATED: Added "Install App" button for mobile PWA support.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
+  const [canInstall, setCanInstall] = useState(false);
   const { profile } = useUser();
   const auth = useAuth();
   const router = useRouter();
@@ -51,12 +52,26 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     setMounted(true);
+    if ((window as any).deferredPrompt) setCanInstall(true);
   }, []);
 
   const handleLogout = async () => {
     await signOut(auth);
     onClose();
     router.push('/');
+  };
+
+  const handleInstallClick = async () => {
+    const prompt = (window as any).deferredPrompt;
+    if (prompt) {
+      prompt.prompt();
+      const { outcome } = await prompt.userChoice;
+      if (outcome === 'accepted') {
+        setCanInstall(false);
+        (window as any).deferredPrompt = null;
+      }
+      onClose();
+    }
   };
 
   const shareText = "Prepare for Punjab Government Exams with Cracklix. Join 15,000+ students today!";
@@ -139,6 +154,19 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
 
         {/* 2. MENU ITEMS */}
         <div className="flex flex-col py-6">
+          {canInstall && (
+             <button 
+                onClick={handleInstallClick}
+                className="flex items-center justify-between px-6 h-[64px] transition-all group border-l-4 border-emerald-500 bg-emerald-500/5 mb-2"
+             >
+                <div className="flex items-center gap-5">
+                   <Download className="h-5 w-5 shrink-0 text-emerald-400 group-hover:scale-110 transition-transform" />
+                   <span className="text-[14px] uppercase tracking-tight font-black text-white">Download App</span>
+                </div>
+                <Badge className="bg-emerald-500 text-white border-none text-[8px] font-black uppercase animate-pulse">INSTALL</Badge>
+             </button>
+          )}
+
           {menuItems.map((item) => {
             const isActive = mounted && pathname === item.href;
             

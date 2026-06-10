@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { Menu, Search, Zap, CreditCard, LogOut, ShieldCheck, Megaphone, Target, LayoutGrid, Award, Gem, User, Sparkles, Newspaper, AlertCircle, Clock, FileStack } from "lucide-react";
+import { Menu, Search, Zap, CreditCard, LogOut, ShieldCheck, Megaphone, Target, LayoutGrid, Award, Gem, User, Sparkles, Newspaper, AlertCircle, Clock, FileStack, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
 import { useState, useMemo, useEffect } from "react";
@@ -29,6 +29,7 @@ const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [canInstall, setCanInstall] = useState(false);
   const { user, profile, loading } = useUser();
   const auth = useAuth();
   const db = useFirestore();
@@ -37,6 +38,17 @@ export default function Navbar() {
 
   useEffect(() => {
     setMounted(true);
+    
+    // Check if install prompt is available
+    const checkInstall = () => {
+      if ((window as any).deferredPrompt) setCanInstall(true);
+    };
+    
+    window.addEventListener('beforeinstallprompt', checkInstall);
+    // Initial check
+    checkInstall();
+    
+    return () => window.removeEventListener('beforeinstallprompt', checkInstall);
   }, []);
   
   const settingsRef = useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]);
@@ -45,6 +57,16 @@ export default function Navbar() {
   const handleLogout = async () => {
     await signOut(auth);
     router.push('/');
+  };
+
+  const handleInstallApp = async () => {
+    const prompt = (window as any).deferredPrompt;
+    if (prompt) {
+      prompt.prompt();
+      const { outcome } = await prompt.userChoice;
+      if (outcome === 'accepted') setCanInstall(false);
+      (window as any).deferredPrompt = null;
+    }
   };
 
   // PERMANENT AUTHORITY CHECK (Absolute Bypass)
@@ -79,12 +101,6 @@ export default function Navbar() {
         <div className="bg-primary text-white py-1 md:py-1.5 flex items-center overflow-hidden relative shadow-2xl pointer-events-none h-6 md:h-8">
           <div className="flex items-center gap-2 animate-marquee whitespace-nowrap min-w-full">
             <Megaphone className="h-3 w-3 shrink-0 ml-4" />
-            <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em]">
-              {settings.announcement}
-            </p>
-            {/* Extended gap between repeated items to prevent overlap */}
-            <span className="mx-40 md:mx-80" />
-            <Megaphone className="h-3 w-3 shrink-0" />
             <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em]">
               {settings.announcement}
             </p>
@@ -133,6 +149,16 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
+            {canInstall && (
+              <Button 
+                onClick={handleInstallApp}
+                variant="outline" 
+                className="hidden md:flex h-10 px-4 rounded-xl border-emerald-500/20 bg-emerald-500/10 text-emerald-400 font-black uppercase text-[9px] tracking-widest gap-2 hover:bg-emerald-500 hover:text-white transition-all shadow-lg"
+              >
+                 <Download className="h-3.5 w-3.5" /> Install App
+              </Button>
+            )}
+
             {user && passStatus && (
                <div className={cn(
                  "hidden lg:flex items-center gap-3 px-4 py-1.5 rounded-xl border-2 transition-all",

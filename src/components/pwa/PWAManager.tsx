@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -8,20 +7,26 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Institutional PWA Lifecycle Manager v4.0.
- * UPDATED: Hardened registration for "sw.js" and refined install prompt visibility.
+ * @fileOverview Institutional PWA Lifecycle Manager v5.1.
+ * FIXED: Resolved "window is not defined" SSR error with hydration guard.
  */
 export default function PWAManager() {
   const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+
     // 1. Service Worker registration
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').then(
-        (reg) => console.log('[PWA] ServiceWorker registered successfully'),
+        (reg) => {
+          console.log('[PWA] ServiceWorker registered');
+          window.dispatchEvent(new CustomEvent('sw-ready'));
+        },
         (err) => console.log('[PWA] ServiceWorker registration failed:', err)
       );
     }
@@ -29,12 +34,14 @@ export default function PWAManager() {
     // 2. Install prompt listener
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
+      (window as any).deferredPrompt = e;
       setDeferredPrompt(e);
       
-      // Delay prompt to improve UX
       const timer = setTimeout(() => {
         const isExcluded = pathname?.includes('/attempt') || pathname?.startsWith('/admin');
-        if (!isExcluded && !window.matchMedia('(display-mode: standalone)').matches) {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        
+        if (!isExcluded && !isStandalone) {
           setShowPrompt(true);
         }
       }, 5000);
@@ -44,41 +51,53 @@ export default function PWAManager() {
 
     const handleAppInstalled = () => {
       setDeferredPrompt(null);
+      if (typeof window !== 'undefined') {
+        (window as any).deferredPrompt = null;
+      }
       setShowPrompt(false);
       setIsInstalled(true);
-      console.log('[PWA] App successfully installed on user device.');
+      console.log('[PWA] Installed successfully');
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', handleAppInstalled);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.addEventListener('appinstalled', handleAppInstalled);
 
-    // Initial check for standalone mode
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setIsInstalled(true);
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        setIsInstalled(true);
+      }
     }
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        window.removeEventListener('appinstalled', handleAppInstalled);
+      }
     };
   }, [pathname]);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
+    const prompt = deferredPrompt || (typeof window !== 'undefined' ? (window as any).deferredPrompt : null);
+    if (!prompt) return;
 
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
+    prompt.prompt();
+    const { outcome } = await prompt.userChoice;
     
     if (outcome === 'accepted') {
-      console.log('[PWA] User accepted installation');
       setShowPrompt(false);
     }
     
     setDeferredPrompt(null);
+    if (typeof window !== 'undefined') {
+      (window as any).deferredPrompt = null;
+    }
   };
 
-  // Do not show if installed, no prompt available, or in CBT mode
-  if (isInstalled || !deferredPrompt) return null;
+  // Hydration Guard: Return null during SSR
+  if (!mounted) return null;
+
+  const hasGlobalPrompt = typeof window !== 'undefined' && (window as any).deferredPrompt;
+  if (isInstalled || (!deferredPrompt && !hasGlobalPrompt)) return null;
 
   return (
     <AnimatePresence>
@@ -100,7 +119,7 @@ export default function PWAManager() {
 
             <div className="flex-1 min-w-0 text-left">
                <h4 className="text-[13px] font-black uppercase tracking-tight leading-none mb-1">Install CRACKLIX App</h4>
-               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Fast access to Mocks</p>
+               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Instant access to tests</p>
             </div>
 
             <div className="flex items-center gap-2">
