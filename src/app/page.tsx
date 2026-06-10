@@ -19,7 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Optimized Institutional Landing Hub v45.0.
+ * @fileOverview Optimized Institutional Landing Hub v46.0.
  * UPDATED: Strictly matched trust bar data and layout to user screenshot (10.0k+, 500, 15,000, 94%).
  */
 
@@ -104,10 +104,10 @@ export default function HomePage() {
 function TrustCard({ icon, label, val, loading, highlight = false }: any) {
    return (
       <div className={cn(
-        "flex items-center gap-6 md:gap-8 p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] transition-all duration-500 border border-slate-50 h-full",
+        "flex items-center gap-6 md:gap-8 p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] transition-all duration-500 border border-slate-50 h-full bg-white shadow-sm",
         highlight 
-          ? "bg-white shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] scale-105 z-10 border-slate-100" 
-          : "bg-white hover:bg-slate-50/30 hover:shadow-xl"
+          ? "shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] scale-105 z-10 border-slate-100" 
+          : "hover:bg-slate-50/30 hover:shadow-xl"
       )}>
          <div className="h-14 w-14 md:h-20 md:w-20 rounded-[1.5rem] md:rounded-[2rem] bg-white flex items-center justify-center shrink-0 border border-slate-100 shadow-sm">{icon}</div>
          <div className="text-left space-y-1.5">

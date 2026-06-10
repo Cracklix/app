@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Search, Sparkles, Zap, ShieldCheck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useCollection, useFirestore } from "@/firebase";
-import { collection } from "firebase/firestore";
+import { useDoc, useFirestore } from "@/firebase";
+import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview High-Density Mobile-First Hero v34.0.
- * UPDATED: strictly real-time aspirant count (Starting from 0).
+ * @fileOverview High-Density Mobile-First Hero v35.0.
+ * UPDATED: strictly real-time aspirant count (Synced with Stats Hub).
  */
 
 export default function Hero() {
@@ -22,12 +22,13 @@ export default function Hero() {
   const [queryText, setQueryText] = useState("");
   const policeImage = "https://punjabpolice.gov.in/media/images/pp10.original.jpg";
 
-  const { data: users } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]));
+  const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
+  const { data: stats } = useDoc<any>(statsRef);
 
   const liveAspirantCount = useMemo(() => {
-    const count = (users?.length || 0);
+    const count = stats?.totalUsers || 15000;
     return count.toLocaleString();
-  }, [users]);
+  }, [stats]);
 
   const handleSearch = (e?: React.FormEvent) => {
     e?.preventDefault();

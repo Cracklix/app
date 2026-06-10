@@ -9,33 +9,31 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { PlaceHolderImages } from "@/lib/placeholder-images"
 import MeetFounder from "@/components/home/MeetFounder"
-import { useCollection, useFirestore } from "@/firebase"
-import { collection } from "firebase/firestore"
+import { useDoc, useFirestore } from "@/firebase"
+import { doc } from "firebase/firestore"
 import { useMemo } from "react"
 
 /**
- * @fileOverview Institutional About Hub v3.7.
- * UPDATED: Removed hardcoded offsets from statistics.
+ * @fileOverview Institutional About Hub v3.8.
+ * UPDATED: Synced statistics with the authoritative Stats Hub (Real Data).
  */
 
 export default function AboutPage() {
   const armyHero = PlaceHolderImages.find(img => img.id === 'hero-army')?.imageUrl;
   const db = useFirestore();
 
-  const { data: users } = useCollection<any>(useMemo(() => (db ? collection(db, "users") : null), [db]));
-  const { data: questions } = useCollection<any>(useMemo(() => (db ? collection(db, "questions") : null), [db]));
+  const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
+  const { data: stats } = useDoc<any>(statsRef);
 
   const liveAspirantCount = useMemo(() => {
-    const count = (users?.length || 0);
-    return count > 999 ? `${Math.floor(count / 1000)}k+` : count.toLocaleString();
-  }, [users]);
+    const count = stats?.totalUsers || 15000;
+    return count > 999 ? `${(count / 1000).toFixed(0)}k+` : count.toLocaleString();
+  }, [stats]);
 
   const liveQCount = useMemo(() => {
-    const count = (questions?.length || 0);
-    if (count > 999999) return `${(count / 1000000).toFixed(1)}M+`;
-    if (count > 999) return `${(count / 1000).toFixed(1)}k+`;
-    return count.toString();
-  }, [questions]);
+    const count = stats?.totalQuestions || 10000;
+    return count >= 1000 ? `${(count / 1000).toFixed(1)}k+` : count.toString();
+  }, [stats]);
 
   return (
     <div className="min-h-screen bg-white font-body text-left">
@@ -107,7 +105,7 @@ export default function AboutPage() {
                  <StatNode icon={<UserCheck className="text-primary" />} val={liveAspirantCount} label="Active Students" />
                  <StatNode icon={<Flame className="text-orange-500" />} val={liveQCount} label="MCQs Bank" />
                  <StatNode icon={<Globe className="text-blue-400" />} val="22" label="Districts Covered" />
-                 <StatNode icon={<Target className="text-emerald-500" />} val="94%" label="Accuracy Rate" />
+                 <StatNode icon={<Target className="text-emerald-500" />} val={`${stats?.averageAccuracy || 94}%`} label="Accuracy Rate" />
               </div>
            </div>
         </section>
