@@ -6,19 +6,20 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Trash2, Edit, Search, Loader2, Landmark, GraduationCap, Save, Shield, Zap, SearchCode } from "lucide-react"
+import { Plus, Trash2, Edit, Search, Loader2, Landmark, GraduationCap, Save, Shield, Zap, SearchCode, Star } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, doc, deleteDoc, setDoc, serverTimestamp, orderBy } from "firebase/firestore"
+import { collection, query, doc, deleteDoc, setDoc, serverTimestamp, orderBy, updateDoc } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Exam Vertical Registry v9.0.
- * UPDATED: High-Fidelity UI matching institutional standards.
+ * @fileOverview Exam Vertical Registry v10.0.
+ * UPDATED: Added isTrending governance for Home Page discovery.
  */
 
 export default function ExamRegistryPage() {
@@ -53,10 +54,25 @@ export default function ExamRegistryPage() {
     setIsSaving(true)
     const id = editingExam.id || editingExam.name.toLowerCase().replace(/\s+/g, '-')
     try {
-      await setDoc(doc(db, "exams", id), { ...editingExam, id, updatedAt: serverTimestamp() }, { merge: true })
+      await setDoc(doc(db, "exams", id), { 
+        ...editingExam, 
+        id, 
+        isTrending: editingExam.isTrending || false,
+        updatedAt: serverTimestamp() 
+      }, { merge: true })
       toast({ title: "Vertical Synced" })
       setEditingExam(null)
     } finally { setIsSaving(false) }
+  }
+
+  const toggleTrending = async (id: string, current: boolean) => {
+    if (!db) return;
+    try {
+       await updateDoc(doc(db, "exams", id), { isTrending: !current, updatedAt: serverTimestamp() });
+       toast({ title: "Discovery Updated", description: current ? "Removed from Trending" : "Added to Trending Hub" });
+    } catch (e) {
+       toast({ variant: "destructive", title: "Sync Failed" });
+    }
   }
 
   return (
@@ -68,9 +84,9 @@ export default function ExamRegistryPage() {
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Recruitment Vertical Registry</span>
            </div>
           <h1 className="text-4xl md:text-6xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Exam Registry</h1>
-          <p className="text-slate-500 font-medium text-lg">Manage specific exam verticals mapped to Board Hubs.</p>
+          <p className="text-slate-500 font-medium text-lg">Manage specific exam verticals and Home Page trending items.</p>
         </div>
-        <Button onClick={() => setEditingExam({ name: "", boardId: "", categoryId: "", displayOrder: 1 })} className="bg-[#0F172A] hover:bg-black text-white h-16 px-12 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-3xl gap-3 transition-all active:scale-95 border-none">
+        <Button onClick={() => setEditingExam({ name: "", boardId: "", categoryId: "", displayOrder: 1, isTrending: false })} className="bg-[#0F172A] hover:bg-black text-white h-16 px-12 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-3xl gap-3 transition-all active:scale-95 border-none">
           <Plus className="h-5 w-5 text-primary" /> Register New Vertical
         </Button>
       </div>
@@ -94,13 +110,14 @@ export default function ExamRegistryPage() {
               <TableRow className="border-slate-50 h-20">
                 <TableHead className="px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Vertical Identity</TableHead>
                 <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Authority Board</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">Trending</TableHead>
                 <TableHead className="text-right px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Audit Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}><TableCell colSpan={3} className="px-10 py-8"><Skeleton className="h-12 w-full rounded-2xl bg-slate-50" /></TableCell></TableRow>
+                  <TableRow key={i}><TableCell colSpan={4} className="px-10 py-8"><Skeleton className="h-12 w-full rounded-2xl bg-slate-50" /></TableCell></TableRow>
                 ))
               ) : filteredExams.map((e) => {
                 const board = boards?.find((b: any) => b.id === e.boardId || b.abbreviation === e.boardId);
@@ -121,6 +138,11 @@ export default function ExamRegistryPage() {
                       <Badge variant="outline" className="bg-primary/5 border-none text-primary text-[8px] font-black uppercase px-3 py-1 rounded-lg">
                         {board?.abbreviation || e.boardId || 'NONE'} HUB
                       </Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                       <button onClick={() => toggleTrending(e.id, !!e.isTrending)} className="focus:outline-none">
+                          <Star className={cn("h-6 w-6 transition-all", e.isTrending ? "text-amber-500 fill-current" : "text-slate-200 hover:text-amber-200")} />
+                       </button>
                     </TableCell>
                     <TableCell className="text-right px-10">
                       <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100 transition-all">
@@ -160,6 +182,14 @@ export default function ExamRegistryPage() {
                <div className="space-y-2 text-left">
                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Vertical Name</Label>
                   <Input value={editingExam?.name ?? ""} onChange={e => setEditingExam({...editingExam, name: e.target.value})} className="h-12 rounded-xl font-bold" placeholder="e.g. Constable District Cadre" />
+               </div>
+
+               <div className="flex items-center justify-between p-6 bg-amber-50 rounded-2xl border border-amber-100">
+                  <div className="space-y-1">
+                     <p className="text-[10px] font-black uppercase text-amber-900">Show in Trending Hubs</p>
+                     <p className="text-[8px] font-bold text-amber-700 uppercase tracking-widest">Displays vertical on Home Page</p>
+                  </div>
+                  <Switch checked={editingExam?.isTrending} onCheckedChange={v => setEditingExam({...editingExam, isTrending: v})} />
                </div>
             </div>
             <DialogFooter className="p-10 pt-0">
