@@ -20,8 +20,8 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Optimized Institutional Landing Hub v58.0.
- * UPDATED: Real-time statistics linkage and boxy UI refinement.
+ * @fileOverview Optimized Institutional Landing Hub v59.0.
+ * UPDATED: Replaced all static counters with real-time registry listeners.
  */
 
 export default function HomePage() {

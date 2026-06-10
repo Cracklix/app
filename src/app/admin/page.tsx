@@ -30,8 +30,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Command Center v36.0.
- * UPDATED: Auto-trigger stats sync on mount to ensure Home Page always displays real data.
+ * @fileOverview Institutional Command Center v37.0.
+ * UPDATED: Hardened real-time statistics synchronization protocol.
  */
 
 export default function AdminDashboard() {
@@ -133,7 +133,7 @@ export default function AdminDashboard() {
               <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 truncate">Registry Command Hub</span>
            </div>
           <h1 className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-tight truncate">Admin Center</h1>
-          <p className="text-slate-500 mt-1 md:mt-2 text-sm md:text-lg font-medium">Monitoring Preparation Nodes & Financial Distribution.</p>
+          <p className="text-slate-500 mt-1 md:text-2xl text-sm font-medium">Monitoring Preparation Nodes & Financial Distribution.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
            <Button onClick={() => handleSyncLiveStats()} disabled={isStatsSyncing} className="h-12 md:h-14 bg-primary hover:bg-orange-600 text-white rounded-xl md:rounded-2xl font-black shadow-xl uppercase tracking-widest text-xs px-8">
