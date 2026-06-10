@@ -19,14 +19,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Optimized Institutional Landing Hub v51.0.
- * UPDATED: Zero-baseline sync. Removed all dummy/placeholder fallbacks.
+ * @fileOverview Optimized Institutional Landing Hub v52.0.
+ * UPDATED: Zero-baseline sync. All dummy numbers replaced with Real Data from Firestore.
  */
 
 export default function HomePage() {
   const db = useFirestore();
 
-  // STABILIZED DATA LISTENERS
+  // STABILIZED DATA LISTENERS - Pulling from Authoritative Node
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
 
@@ -38,12 +38,13 @@ export default function HomePage() {
     const avgAcc = stats?.averageAccuracy || 0;
 
     // 2. High-Fidelity Formatting (Only apply 'k+' if actually over 1000)
-    const formattedMCQ = qCount >= 1000 
-      ? (qCount / 1000).toFixed(1) + 'k+' 
-      : qCount.toLocaleString();
+    const formatNumber = (num: number) => {
+       if (num >= 1000) return (num / 1000).toFixed(1) + 'k+';
+       return num.toLocaleString();
+    }
 
     return {
-      mcqs: formattedMCQ,
+      mcqs: formatNumber(qCount),
       mocks: mCount.toLocaleString(),
       users: uCount.toLocaleString(),
       accuracy: `${avgAcc}%`

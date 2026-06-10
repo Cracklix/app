@@ -30,8 +30,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Command Center v33.0.
- * UPDATED: Zero-floor sync protocol. Absolute real database counts are now prioritized.
+ * @fileOverview Institutional Command Center v34.0.
+ * UPDATED: Zero-baseline sync protocol. Absolute real database counts are now prioritized.
  */
 
 export default function AdminDashboard() {
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
      if (!db) return;
      setIsStatsSyncing(true);
      try {
-        // 1. Audit Registry Counts (Absolute Reality)
+        // 1. Audit Registry Counts (Absolute Reality from Database)
         const [qSnap, mSnap, uSnap, rSnap] = await Promise.all([
            getDocs(collection(db, "questions")),
            getDocs(collection(db, "mocks")),
@@ -90,7 +90,7 @@ export default function AdminDashboard() {
            updatedAt: serverTimestamp()
         }, { merge: true });
 
-        toast({ title: "Live Sync Complete", description: "All public trust bars are now synchronized with absolute database counts." });
+        toast({ title: "Live Sync Complete", description: `Database audited: ${qSnap.size} MCQs, ${uSnap.size} Aspirants.` });
      } catch (e) {
         toast({ variant: "destructive", title: "Sync Failed" });
      } finally {
