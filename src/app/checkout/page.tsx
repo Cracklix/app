@@ -16,7 +16,7 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Hardened Production Checkout Hub v4.4.
+ * @fileOverview Hardened Production Checkout Hub v4.5.
  * FIXED: Escaped JSX characters and implemented hydration guard for window.origin.
  */
 
@@ -56,9 +56,8 @@ function CheckoutContent() {
 
   const isWhitelistedDomain = useMemo(() => {
      if (!origin) return true;
-     // Add your production domains here
      const approved = ['https://cracklix.com', 'https://www.cracklix.com', 'https://cracklix.vercel.app'];
-     return approved.some(domain => origin === domain);
+     return approved.some(domain => origin === domain || origin.includes('vercel.app'));
   }, [origin]);
 
   const handleCashfreePayment = async () => {
