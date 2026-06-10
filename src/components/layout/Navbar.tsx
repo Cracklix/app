@@ -130,9 +130,6 @@ export default function Navbar() {
               <Link href="/current-affairs" className={cn("transition-colors flex items-center gap-2 hover:text-white pointer-events-auto", pathname === '/current-affairs' ? 'text-white' : '')}>
                 <Newspaper className="h-4 w-4 text-primary" /> Current Affairs
               </Link>
-              <Link href="/pyqs" className={cn("transition-colors flex items-center gap-2 hover:text-white pointer-events-auto", pathname === '/pyqs' ? 'text-white' : '')}>
-                <FileStack className="h-4 w-4 text-primary" /> PYQs
-              </Link>
             </div>
           </div>
 
