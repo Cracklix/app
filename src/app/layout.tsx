@@ -1,4 +1,3 @@
-
 import type {Metadata, Viewport} from 'next';
 import './globals.css';
 import { Inter } from "next/font/google";
@@ -30,9 +29,14 @@ export const metadata: Metadata = {
     telephone: false,
   },
   other: {
-    'founder': 'Arsh Grewal',
-    'developer': 'Arsh Grewal',
-    'platform': 'Cracklix'
+    'mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-capable': 'yes',
+    'application-name': 'CRACKLIX',
+    'apple-mobile-web-app-title': 'CRACKLIX',
+    'theme-color': '#0B1528',
+    'msapplication-navbutton-color': '#0B1528',
+    'apple-mobile-web-app-status-bar-style': 'black-translucent',
+    'msapplication-starturl': '/'
   }
 };
 
@@ -56,8 +60,6 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body className={`${inter.variable} font-body antialiased bg-white text-[#0F172A] min-h-screen pb-20 md:pb-0`}>
         <FirebaseClientProvider>

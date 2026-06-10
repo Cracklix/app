@@ -1,15 +1,14 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Download, X, ShieldCheck, Zap, Loader2 } from 'lucide-react';
+import { X, ShieldCheck, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Institutional PWA Lifecycle Manager v3.1.
- * UPDATED: Optimized installation flow and refined event listeners.
+ * @fileOverview Institutional PWA Lifecycle Manager v3.2.
+ * UPDATED: Optimized service worker registration and install prompt state.
  */
 export default function PWAManager() {
   const pathname = usePathname();
@@ -22,8 +21,8 @@ export default function PWAManager() {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').then(
-          (reg) => console.log('[PWA] ServiceWorker registered'),
-          (err) => console.log('[PWA] ServiceWorker failed:', err)
+          (reg) => console.log('[PWA] ServiceWorker registered successfully'),
+          (err) => console.log('[PWA] ServiceWorker registration failed:', err)
         );
       });
     }
@@ -33,12 +32,13 @@ export default function PWAManager() {
       e.preventDefault();
       setDeferredPrompt(e);
       
-      // Show prompt after a short delay on non-critical pages
+      // Delay prompt to improve UX and ensure SW is ready
       const timer = setTimeout(() => {
-        if (!pathname?.includes('/attempt') && !pathname?.startsWith('/admin')) {
+        const isExcluded = pathname?.includes('/attempt') || pathname?.startsWith('/admin');
+        if (!isExcluded) {
           setShowPrompt(true);
         }
-      }, 5000);
+      }, 6000);
       
       return () => clearTimeout(timer);
     };
@@ -52,6 +52,7 @@ export default function PWAManager() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
+    // Initial check for standalone mode
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setIsInstalled(true);
     }
@@ -67,12 +68,16 @@ export default function PWAManager() {
 
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    console.log(`[PWA] Install choice: ${outcome}`);
+    
+    if (outcome === 'accepted') {
+      console.log('[PWA] User accepted installation');
+    }
     
     setDeferredPrompt(null);
     setShowPrompt(false);
   };
 
+  // Do not show if installed, no prompt available, or in CBT mode
   if (isInstalled || !deferredPrompt) return null;
 
   return (
@@ -95,7 +100,7 @@ export default function PWAManager() {
 
             <div className="flex-1 min-w-0 text-left">
                <h4 className="text-[13px] font-black uppercase tracking-tight leading-none mb-1">Install CRACKLIX App</h4>
-               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Fast Offline Access</p>
+               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Instant Offline Access</p>
             </div>
 
             <div className="flex items-center gap-2">

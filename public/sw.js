@@ -1,7 +1,6 @@
-
 /**
- * @fileOverview Institutional Service Worker v1.0.
- * Satisfies PWA Installability requirements and provides offline fallback.
+ * @fileOverview Institutional PWA Service Worker v1.0.
+ * Handles offline caching and installability requirements.
  */
 
 const CACHE_NAME = 'cracklix-v1';
@@ -18,33 +17,24 @@ self.addEventListener('install', (event) => {
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests for internal assets
-  if (event.request.method !== 'GET') return;
-
+  // Stale-while-revalidate strategy
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request).catch(() => {
-        // Optional: return offline page if needed
+    caches.match(event.request).then((cachedResponse) => {
+      const fetchPromise = fetch(event.request).then((networkResponse) => {
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, networkResponse.clone());
+        });
+        return networkResponse;
       });
+      return cachedResponse || fetchPromise;
+    }).catch(() => {
+      // Offline fallback for navigation requests
+      if (event.request.mode === 'navigate') {
+        return caches.match('/');
+      }
     })
   );
 });
