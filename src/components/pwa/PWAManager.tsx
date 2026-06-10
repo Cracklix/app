@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Institutional PWA Lifecycle Manager.
- * Features: Service Worker registration and non-intrusive Install Prompt.
+ * @fileOverview Institutional PWA Lifecycle Manager v3.0.
+ * UPDATED: Fixed installation flow and prompt triggers.
  */
 export default function PWAManager() {
   const pathname = usePathname();
@@ -17,37 +17,35 @@ export default function PWAManager() {
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
-    // 1. Register Service Worker
+    // 1. Service Worker registration
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').then(
-          (registration) => {
-            console.log('[PWA] ServiceWorker registered:', registration.scope);
-          },
-          (err) => {
-            console.log('[PWA] ServiceWorker registration failed:', err);
-          }
+        navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(
+          (reg) => console.log('[PWA] ServiceWorker registered'),
+          (err) => console.log('[PWA] ServiceWorker failed:', err)
         );
       });
     }
 
-    // 2. Listen for Install Prompt
-    const handleBeforeInstallPrompt = (e: Event) => {
+    // 2. Install prompt listener
+    const handleBeforeInstallPrompt = (e: any) => {
+      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
+      // Stash the event so it can be triggered later.
       setDeferredPrompt(e);
       
-      // Delay prompt visibility
+      // Delay visibility to ensure engagement
       const timer = setTimeout(() => {
-        // Only show prompt on non-critical pages
-        if (!pathname?.includes('/attempt') && !pathname?.includes('/admin')) {
+        if (!pathname?.includes('/attempt') && !pathname?.startsWith('/admin')) {
           setShowPrompt(true);
         }
-      }, 5000);
+      }, 8000);
       
       return () => clearTimeout(timer);
     };
 
     const handleAppInstalled = () => {
+      console.log('[PWA] App successfully installed');
       setDeferredPrompt(null);
       setShowPrompt(false);
       setIsInstalled(true);
@@ -56,6 +54,7 @@ export default function PWAManager() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
+    // Initial check for display mode
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setIsInstalled(true);
     }
@@ -68,27 +67,34 @@ export default function PWAManager() {
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
+
+    // Show the native install prompt
     deferredPrompt.prompt();
+
+    // Wait for the user to respond to the prompt
     const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      console.log('[PWA] User accepted install');
-    }
+    console.log(`[PWA] User choice: ${outcome}`);
+    
+    // We've used the prompt, and can't use it again, throw it away
     setDeferredPrompt(null);
     setShowPrompt(false);
   };
 
-  if (pathname?.includes('/attempt') || pathname?.startsWith('/admin')) return null;
+  // Guard: Hide UI on critical pages or if already installed/not prompted
+  if (pathname?.includes('/attempt') || pathname?.startsWith('/admin') || isInstalled || !deferredPrompt) {
+    return null;
+  }
 
   return (
     <AnimatePresence>
-      {showPrompt && !isInstalled && (
+      {showPrompt && (
         <motion.div
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           className="fixed bottom-24 md:bottom-10 left-4 right-4 md:left-auto md:right-10 z-[2000] md:w-96"
         >
-          <div className="bg-[#0F172A] text-white p-5 rounded-[2rem] shadow-5xl border border-white/10 flex items-center gap-4 relative overflow-hidden group">
+          <div className="bg-[#0F172A] text-white p-5 rounded-[2.5rem] shadow-5xl border border-white/10 flex items-center gap-4 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 group-hover:scale-110 transition-transform">
               <ShieldCheck className="h-20 w-20" />
             </div>
@@ -99,13 +105,13 @@ export default function PWAManager() {
 
             <div className="flex-1 min-w-0 text-left">
                <h4 className="text-[13px] font-black uppercase tracking-tight leading-none mb-1">Install CRACKLIX App</h4>
-               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Fast access to Punjab Mocks</p>
+               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Offline Access & Fast Loading</p>
             </div>
 
             <div className="flex items-center gap-2">
                <Button 
                 onClick={handleInstallClick}
-                className="h-10 px-4 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[9px] tracking-widest rounded-xl shadow-lg border-none"
+                className="h-10 px-4 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[9px] tracking-widest rounded-xl shadow-lg border-none transition-all active:scale-95"
                >
                   Install
                </Button>

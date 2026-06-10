@@ -1,13 +1,12 @@
-
 /**
- * @fileOverview Institutional PWA Service Worker v1.0.
- * Strategy: Stale-While-Revalidate for maximum CBT engine stability.
+ * @fileOverview Institutional Service Worker for CRACKLIX.
+ * Strategy: Stale-While-Revalidate for ultra-fast boots and offline availability.
  */
 
-const CACHE_NAME = 'cracklix-cache-v1';
+const CACHE_NAME = 'cracklix-cache-v2';
 const ASSETS_TO_CACHE = [
   '/',
-  '/manifest.json',
+  '/offline',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png'
 ];
@@ -25,25 +24,27 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
           }
         })
       );
     })
   );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  // Ignore non-GET requests (Firebase/Auth)
-  if (event.request.method !== 'GET') return;
+  // Skip cross-origin requests
+  if (!event.request.url.startsWith(self.location.origin)) return;
 
+  // Stale-While-Revalidate strategy
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
-        // Cache successful GET responses for assets
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+        // Cache successful GET responses
+        if (networkResponse && networkResponse.status === 200 && event.request.method === 'GET') {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
@@ -51,9 +52,9 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       }).catch(() => {
-        // Offline fallback for main navigation
+        // Offline fallback for navigation requests
         if (event.request.mode === 'navigate') {
-          return caches.match('/');
+          return caches.match('/offline') || caches.match('/');
         }
       });
 
@@ -62,19 +63,15 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Foundational Listener for Push Notifications
+// Push notification listener
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : { title: 'Exam Alert', body: 'New update from Cracklix.' };
-  const options = {
-    body: data.body,
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-192x192.png',
-    data: data.url
-  };
-  event.waitUntil(self.registration.showNotification(data.title, options));
-});
-
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  event.waitUntil(clients.openWindow(event.notification.data || '/'));
+  
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: '/icons/icon-192x192.png',
+      badge: '/icons/icon-192x192.png'
+    })
+  );
 });
