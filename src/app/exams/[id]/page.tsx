@@ -35,9 +35,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v23.0.
- * HARDENED: Integrated Pass Hub access logic. Premium mocks show "Unlock with Pass" workflow.
+ * @fileOverview Institutional Exam Hub v24.0.
+ * UPDATED: Standardized gated button to "UNLOCK TEST" for Premium mocks.
+ * HARDENED: Integrated Founder bypass in access firewall.
  */
+
+const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 export default function ExamHubPage() {
   const params = useParams()
@@ -61,13 +64,16 @@ export default function ExamHubPage() {
 
   // PASS ACCESS FIREWALL
   const isPassActive = useMemo(() => {
-     if (!profile) return false;
-     if (profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN') return true;
+     if (!user || !profile) return false;
+     const userEmail = user.email?.toLowerCase();
+     const isFounder = userEmail && SUPER_ADMIN_WHITELIST.includes(userEmail);
+     if (profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN' || isFounder) return true;
+     
      if (profile.pass?.active === true) {
         return new Date(profile.pass.expiryDate) > new Date();
      }
      return false;
-  }, [profile]);
+  }, [user, profile]);
 
   const groupedContent = useMemo(() => {
     const mocks = (rawMocks || []).filter(m => {
@@ -244,11 +250,11 @@ function MockList({ data, results, isPassActive, user }: { data: any[], results:
                   </div>
                   <div className="mt-8">
                      {locked ? (
-                        <Button onClick={() => router.push('/pass')} className="w-full h-14 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase text-[10px] rounded-2xl shadow-xl gap-2 border-none">
-                           <Lock className="h-4 w-4" /> UNLOCK PASS
+                        <Button onClick={() => router.push('/pass')} className="w-full h-14 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase text-[10px] rounded-2xl shadow-xl gap-2 border-none transition-all active:scale-95">
+                           <Lock className="h-4 w-4" /> UNLOCK TEST
                         </Button>
                      ) : (
-                        <Button onClick={() => router.push(user ? `/mocks/${mock.id}/instructions` : `/login?returnUrl=/mocks/${mock.id}`)} className="w-full h-14 bg-slate-900 hover:bg-black text-white font-black uppercase text-[10px] rounded-2xl shadow-xl gap-2 border-none">
+                        <Button onClick={() => router.push(user ? `/mocks/${mock.id}/instructions` : `/login?returnUrl=/mocks/${mock.id}`)} className="w-full h-14 bg-slate-900 hover:bg-black text-white font-black uppercase text-[10px] rounded-2xl shadow-xl gap-2 border-none transition-all active:scale-95">
                            <Play className="h-4 w-4 fill-current" /> START TEST
                         </Button>
                      )}
