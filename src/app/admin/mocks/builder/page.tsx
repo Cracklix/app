@@ -52,8 +52,8 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v72.0.
- * UPDATED: Oval Emerald/Rose marks cards matching screenshot. Small 8px rectangle stats.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v75.0.
+ * FIXED: Resolved initialization hang (black screen) for new mocks. 8px rectangle stats.
  */
 
 export default function MockBuilderPage() {
@@ -81,6 +81,7 @@ function MockBuilderContent() {
   const { data: existingMock } = useDoc<any>(useMemo(() => (db && mockId ? doc(db, "mocks", mockId) : null), [db, mockId]))
   
   // --- STATE HUB ---
+  const [isInitializing, setIsInitializing] = useState(true)
   const [bankLoading, setBankLoading] = useState(false)
   const [questionBank, setQuestionBank] = useState<any[]>([])
   const [isPublishing, setIsPublishing] = useState(false)
@@ -139,31 +140,45 @@ function MockBuilderContent() {
     fetchBank()
   }, [db])
 
+  // HARDENED INITIALIZATION FLOW
   useEffect(() => {
-    if (existingMock && questionBank.length > 0) {
-      setMockData({ 
-        ...existingMock,
-        assignmentMode: existingMock.assignmentMode || "MULTIPLE",
-        boardIds: existingMock.boardIds || (existingMock.boardId ? [existingMock.boardId] : []),
-        examIds: existingMock.examIds || (existingMock.examId ? [existingMock.examId] : [])
-      });
+    async function loadInitialState() {
+      if (!db) return;
+      
+      if (!mockId) {
+        // Handle new mock state transition
+        setIsInitializing(false);
+        return;
+      }
 
-      if (existingMock.questionIds) {
-        let currentIndex = 0;
-        const hydratedSections = (existingMock.sections || [{ name: 'GENERAL HUB', count: existingMock.questionIds.length }]).map((s: any, idx: number) => {
-          const count = parseInt(s.count) || 0;
-          const sectionQIds = existingMock.questionIds.slice(currentIndex, currentIndex + count);
-          currentIndex += count;
-          return { 
-            id: `sec-${idx + 1}`, 
-            name: s.name, 
-            questions: sectionQIds.map(id => questionBank.find(q => q.id === id)).filter(Boolean) 
-          };
+      // Handle existing mock state transition
+      if (existingMock && questionBank.length > 0) {
+        setMockData({ 
+          ...existingMock,
+          assignmentMode: existingMock.assignmentMode || "MULTIPLE",
+          boardIds: existingMock.boardIds || (existingMock.boardId ? [existingMock.boardId] : []),
+          examIds: existingMock.examIds || (existingMock.examId ? [existingMock.examId] : [])
         });
-        setSections(hydratedSections);
+
+        if (existingMock.questionIds) {
+          let currentIndex = 0;
+          const hydratedSections = (existingMock.sections || [{ name: 'GENERAL HUB', count: existingMock.questionIds.length }]).map((s: any, idx: number) => {
+            const count = parseInt(s.count) || 0;
+            const sectionQIds = existingMock.questionIds.slice(currentIndex, currentIndex + count);
+            currentIndex += count;
+            return { 
+              id: `sec-${idx + 1}`, 
+              name: s.name, 
+              questions: sectionQIds.map(id => questionBank.find(q => q.id === id)).filter(Boolean) 
+            };
+          });
+          setSections(hydratedSections);
+        }
+        setIsInitializing(false);
       }
     }
-  }, [existingMock, questionBank])
+    loadInitialState();
+  }, [db, existingMock, questionBank, mockId]);
 
   const uniqueExams = useMemo(() => {
     if (!rawExams) return [];
@@ -314,6 +329,8 @@ function MockBuilderContent() {
     setSubjectSearch("");
     setActiveSectionId(newId);
   }
+
+  if (isInitializing) return <div className="h-screen w-full flex flex-col items-center justify-center bg-[#0B1528] space-y-8"><Zap className="h-16 w-16 text-primary animate-pulse" /><p className="text-[11px] font-black uppercase tracking-[0.5em] text-primary">Synchronizing Access Registry...</p></div>;
 
   return (
     <div className="max-w-[1600px] mx-auto space-y-6 pb-40 text-left pt-2 md:pt-4 px-2 md:px-6">
@@ -550,19 +567,19 @@ function MockBuilderContent() {
                     <div className="absolute top-0 right-0 p-12 opacity-5"><Zap className="h-64 w-64" /></div>
                     
                     <div className="relative z-10 flex flex-col space-y-8">
-                        {/* 1. TOP STATS NODES (RECTANGULAR & SMALL) */}
+                        {/* 1. TOP STATS NODES (SMALL RECTANGLES @ 8PX) */}
                         <div className="flex items-center justify-between gap-4 pb-6 border-b border-white/5">
                            <div className="flex gap-4">
                               <div className="bg-white/5 px-4 py-2 rounded-lg border border-white/10 flex flex-col items-start gap-1 shadow-inner min-w-[110px]">
-                                 <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">FILTERED</span>
+                                 <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none">REGISTRY FILTERED</span>
                                  <span className="text-[14px] font-black text-primary tabular-nums">{filteredBank.length} Q</span>
                               </div>
                               <div className="bg-white/5 px-4 py-2 rounded-lg border border-white/10 flex flex-col items-start gap-1 shadow-inner min-w-[110px]">
-                                 <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">TOTAL BANK</span>
+                                 <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none">TOTAL BANK</span>
                                  <span className="text-[14px] font-black text-white tabular-nums">{questionBank.length} Q</span>
                               </div>
                            </div>
-                           <Badge className="bg-[#F97316] text-white border-none text-[9px] font-black px-4 py-1.5 rounded-lg shadow-3xl uppercase tracking-widest hidden sm:block">
+                           <Badge className="bg-[#F97316] text-white border-none text-[8px] font-black px-4 py-1.5 rounded-lg shadow-3xl uppercase tracking-widest hidden sm:block">
                               Official Hub
                            </Badge>
                         </div>
