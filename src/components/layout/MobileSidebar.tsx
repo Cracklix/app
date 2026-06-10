@@ -1,3 +1,4 @@
+
 'use client';
 
 import { 
@@ -35,7 +36,8 @@ import { Button } from "@/components/ui/button";
 
 /**
  * @fileOverview Institutional Sidebar.
- * FIXED: Ambiguous Tailwind class resolved by moving duration to style prop.
+ * UPDATED: "Home Page" promoted to primary position for universal accessibility.
+ * TOUCH TARGETS: Optimized for mobile ergonomics.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -82,8 +84,8 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   ];
 
   const menuItems = [
-    { label: "My Exam Dashboard", href: "/my-exams", icon: Target },
     { label: "Home Page", href: "/", icon: Home },
+    { label: "My Exam Dashboard", href: "/my-exams", icon: Target },
     { label: "Elite Pass Hub", href: "/pass", icon: Gem, badge: "ACTIVATE" },
     { label: "Practice Tests", href: "/mocks", icon: Zap },
     { label: "Current Affairs Hub", href: "/current-affairs", icon: Newspaper },
@@ -168,7 +170,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                 <button 
                   key={item.label}
                   onClick={() => { item.onClick!(); }}
-                  className="flex items-center justify-between px-6 h-[46px] transition-all group border-l-4 border-transparent hover:bg-white/5"
+                  className="flex items-center justify-between px-6 h-[54px] transition-all group border-l-4 border-transparent hover:bg-white/5 active:bg-white/10"
                 >
                   {content}
                 </button>
@@ -181,8 +183,8 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                 href={item.href || '#'}
                 onClick={onClose}
                 className={cn(
-                  "flex items-center justify-between px-6 h-[46px] transition-all group border-l-4",
-                  isActive ? "bg-primary/10 border-primary" : "hover:bg-white/5 border-transparent"
+                  "flex items-center justify-between px-6 h-[54px] transition-all group border-l-4",
+                  isActive ? "bg-primary/10 border-primary" : "hover:bg-white/5 border-transparent active:bg-white/10"
                 )}
               >
                 {content}
@@ -194,7 +196,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
           
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-5 px-6 h-[46px] text-rose-500 hover:bg-rose-500/5 transition-all w-full text-left group"
+            className="flex items-center gap-5 px-6 h-[54px] text-rose-500 hover:bg-rose-500/5 transition-all w-full text-left group active:bg-rose-500/10"
           >
             <LogOut className="h-5 w-5 shrink-0" />
             <span className="text-[14px] font-black uppercase tracking-tight">Logout</span>

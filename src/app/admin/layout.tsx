@@ -41,10 +41,12 @@ import { signOut } from "firebase/auth"
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import BackButton from "@/components/navigation/BackButton";
+import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Institutional Sidebar Restoration v127.0.
+ * @fileOverview Institutional Sidebar Restoration v128.0.
  * UPDATED: Optimized for mobile with auto-closing sheet on navigation.
+ * HOME BUTTON: Logo in sidebar standardized to anchor to Admin Home.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -90,13 +92,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user || !isAdmin) return null
 
   const SideNavContent = ({ onLinkClick }: { onLinkClick?: () => void }) => (
-    <div className="flex flex-col h-full bg-[#0F172A] pointer-events-auto">
-       <div className="p-6">
-          <Logo variant="light" className="origin-left" />
+    <div className="flex flex-col h-full bg-[#0F172A] pointer-events-auto select-none">
+       <div className="p-6 border-b border-white/5">
+          <Logo variant="light" className="origin-left" href="/admin" />
        </div>
        <div className="flex-1 custom-scrollbar overflow-y-auto overflow-x-hidden pb-10">
           <SidebarGroup>
-            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Master Registry</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Master Registry</SidebarGroupLabel>
             <SidebarMenu>
               <AdminNavItem icon={<LayoutDashboard />} label="DASHBOARD" href="/admin" active={pathname === "/admin"} onClick={onLinkClick} />
               <AdminNavItem icon={<Layers />} label="CATEGORIES" href="/admin/categories" active={pathname === "/admin/categories"} onClick={onLinkClick} />
@@ -109,7 +111,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </SidebarGroup>
 
           <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Content Management</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Content Management</SidebarGroupLabel>
             <SidebarMenu>
               <AdminNavItem icon={<LayoutGrid className="text-orange-500" />} label="MOCK ARCHITECT" href="/admin/mocks/builder" active={pathname === "/admin/mocks/builder"} onClick={onLinkClick} />
               <AdminNavItem icon={<Zap className="text-primary" />} label="MOCK MANAGER" href="/admin/mocks" active={pathname === "/admin/mocks"} onClick={onLinkClick} />
@@ -122,7 +124,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </SidebarGroup>
 
           <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Users & Revenue</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Users & Revenue</SidebarGroupLabel>
             <SidebarMenu>
               <AdminNavItem icon={<Users className="text-blue-400" />} label="STUDENT HUB" href="/admin/users" active={pathname === "/admin/users"} onClick={onLinkClick} />
               <AdminNavItem icon={<DollarSign className="text-emerald-400" />} label="REVENUE HUB" href="/admin/payments" active={pathname === "/admin/payments"} onClick={onLinkClick} />
@@ -132,7 +134,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </SidebarGroup>
 
           <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Integrity & Governance</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Integrity & Governance</SidebarGroupLabel>
             <SidebarMenu>
               <AdminNavItem icon={<History className="text-slate-400" />} label="AUDIT TRAIL" href="/admin/audit-logs" active={pathname === "/admin/audit-logs"} onClick={onLinkClick} />
               <AdminNavItem icon={<ShieldAlert className="text-rose-500" />} label="CBT INTEGRITY" href="/admin/qa" active={pathname === "/admin/qa"} onClick={onLinkClick} />
@@ -147,7 +149,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   icon={<ArrowLeftRight className="text-primary" />} 
                   label="Exit to Dashboard" 
                   href="/dashboard" 
-                  className="bg-primary/10 border-l-4 border-primary"
+                  className="bg-primary/10 border-l-4 border-primary mt-4"
                   onClick={onLinkClick}
                />
             </SidebarMenu>
@@ -199,14 +201,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div className="h-4 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
               <div className="flex items-center gap-2 truncate">
                  <ShieldCheck className="h-3.5 w-3.5 text-primary shrink-0" />
-                 <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#0F172A] truncate">Admin Active</span>
+                 <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#0F172A] truncate">Admin Hub</span>
               </div>
             </div>
             
             <div className="flex items-center gap-2 md:gap-4">
                <Button asChild variant="outline" className="hidden sm:flex h-10 px-4 rounded-xl border-slate-200 font-black uppercase text-[9px] tracking-widest gap-2 hover:bg-slate-50 shadow-sm transition-all active:scale-95">
-                  <Link href="/dashboard">
-                     <ArrowLeftRight className="h-3.5 w-3.5 text-primary" /> Student Side
+                  <Link href="/">
+                     <ArrowLeftRight className="h-3.5 w-3.5 text-primary" /> View Home
                   </Link>
                </Button>
                <Button variant="ghost" size="icon" onClick={handleLogout} className="text-slate-400 hover:text-rose-500 rounded-xl cursor-pointer">
@@ -232,7 +234,11 @@ function AdminNavItem({ icon, label, href, active, className, onClick }: { icon:
         asChild 
         isActive={active}
         onClick={onClick}
-        className={`px-6 transition-all font-medium h-12 group cursor-pointer ${active ? 'bg-white/5 text-primary' : 'hover:bg-white/5 hover:text-primary text-white/60'} ${className}`}
+        className={cn(
+          "px-6 transition-all font-medium h-12 group cursor-pointer",
+          active ? "bg-white/5 text-primary" : "hover:bg-white/5 hover:text-primary text-white/60",
+          className
+        )}
       >
         <Link href={href} className="flex items-center gap-4 w-full text-left pointer-events-auto">
           <div className="shrink-0 flex items-center justify-center size-5">

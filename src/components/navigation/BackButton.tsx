@@ -15,6 +15,7 @@ interface BackButtonProps {
 /**
  * @fileOverview Universal Institutional Navigation Node.
  * FIXED: Reduced mobile padding to prevent header overflow.
+ * TOUCH TARGET: Optimized for mobile ergonomics.
  */
 export default function BackButton({ 
   label = 'Back', 
@@ -36,7 +37,7 @@ export default function BackButton({
       variant="ghost"
       onClick={handleBack}
       className={cn(
-        "group flex items-center gap-1.5 md:gap-2 h-10 md:h-12 px-1 md:px-4 rounded-xl text-slate-500 hover:text-[#0F172A] hover:bg-slate-50 transition-all active:scale-95 shrink-0",
+        "group flex items-center gap-1 md:gap-2 h-10 md:h-12 px-2 md:px-4 rounded-xl text-slate-500 hover:text-[#0F172A] hover:bg-slate-50 transition-all active:scale-95 shrink-0",
         className
       )}
     >
