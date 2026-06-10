@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ShieldCheck, Lock, ArrowLeft, Loader2, QrCode, CheckCircle2, Gem, Copy, Zap, CreditCard } from "lucide-react"
+import { ShieldCheck, Lock, ArrowLeft, Loader2, QrCode, CheckCircle2, Gem, Copy, Zap, CreditCard, AlertTriangle } from "lucide-react"
 import { useUser, useDoc, useFirestore } from "@/firebase"
 import { useEffect, useState, Suspense, useMemo } from "react"
 import { useToast } from "@/hooks/use-toast"
@@ -17,8 +17,8 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Institutional Checkout Node v3.0.
- * UPDATED: Anchored to production Vercel domain to prevent Cloud Workstation origin issues.
+ * @fileOverview Hardened Production Checkout Hub v4.0.
+ * UPDATED: Dynamic origin support and environment validation.
  */
 
 export default function CheckoutPage() {
@@ -48,14 +48,21 @@ function CheckoutContent() {
     if (!loading && !user) router.push("/login")
   }, [user, loading, router])
 
+  const isProductionDomain = useMemo(() => {
+     if (typeof window === 'undefined') return true;
+     const origin = window.location.origin;
+     const target = process.env.NEXT_PUBLIC_SITE_URL || "";
+     return target ? origin.includes(new URL(target).hostname) : true;
+  }, []);
+
   const handleCashfreePayment = async () => {
     if (!user || !profile || !planData || onlineProcessing) return;
 
     setOnlineProcessing(true);
     
-    // Determine authoritative origin
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
-    console.log(`[CHECKOUT] Initializing Cashfree Flow for ${planId} with Site URL: ${siteUrl}`);
+    // Dynamic Origin for wide-environment support
+    const siteUrl = window.location.origin;
+    console.log(`[CHECKOUT] Initializing Cashfree Flow with origin: ${siteUrl}`);
 
     try {
       const orderRes = await fetch('/api/cashfree/create-order', {
@@ -71,9 +78,7 @@ function CheckoutContent() {
       const orderData = await orderRes.json();
       if (orderData.error) throw new Error(orderData.error);
 
-      console.log('[CHECKOUT] Order Created. Launching SDK mode: production');
-      
-      // Force production mode to match CF production keys
+      // Force production mode for live keys
       const cashfree = (window as any).Cashfree({ mode: 'production' });
 
       await cashfree.checkout({
@@ -85,8 +90,8 @@ function CheckoutContent() {
       console.error('[CHECKOUT_FAILURE]', e);
       toast({ 
         variant: "destructive", 
-        title: "Gateway Connection Error", 
-        description: e.message || "Failed to initialize payment gateway." 
+        title: "Gateway Error", 
+        description: e.message || "Could not initialize secure payment node." 
       });
       setOnlineProcessing(false);
     }
@@ -105,6 +110,16 @@ function CheckoutContent() {
       <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="lazyOnload" />
       
       <main className="container mx-auto px-4 md:px-6 py-12 md:py-24 max-w-5xl">
+        {!isProductionDomain && (
+           <div className="mb-10 p-6 bg-rose-50 border-2 border-rose-100 rounded-3xl flex items-center gap-6 animate-in fade-in slide-in-from-top-4">
+              <AlertTriangle className="h-8 w-8 text-rose-500 shrink-0" />
+              <div className="text-left">
+                 <p className="text-[10px] font-black uppercase text-rose-600 tracking-widest">Environment Warning</p>
+                 <p className="text-sm font-medium text-rose-500">Non-whitelisted domain detected. Ensure this origin is added to your Cashfree Merchant Dashboard.</p>
+              </div>
+           </div>
+        )}
+
         <div className="flex items-center gap-6 mb-12">
            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl h-14 w-14 border border-slate-200 bg-white shadow-sm">
              <ArrowLeft className="h-6 w-6 text-[#0F172A]" />
@@ -118,14 +133,14 @@ function CheckoutContent() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 text-left">
            <div className="lg:col-span-7 space-y-10">
               
-              <Card className="border-none shadow-5xl rounded-[3rem] bg-[#0F172A] text-white overflow-hidden group">
+              <Card className="border-none shadow-5xl rounded-[3rem] bg-[#0B1528] text-white overflow-hidden group">
                  <CardHeader className="p-10 pb-4">
                     <div className="flex items-center gap-4 mb-2">
                        <CreditCard className="h-6 w-6 text-primary" />
                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Fast Activation</span>
                     </div>
-                    <CardTitle className="font-headline font-black text-2xl uppercase">Cashfree Checkout</CardTitle>
-                    <CardDescription className="text-slate-400 font-medium">Automatic verification via UPI, Cards, or Netbanking.</CardDescription>
+                    <CardTitle className="font-headline font-black text-2xl uppercase">Cashfree Secure</CardTitle>
+                    <CardDescription className="text-slate-400 font-medium">Auto-verify via UPI, Cards, or Netbanking.</CardDescription>
                  </CardHeader>
                  <CardContent className="p-10 pt-4">
                     <Button 
@@ -134,7 +149,7 @@ function CheckoutContent() {
                       className="w-full h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-3xl shadow-primary/20 transition-all active:scale-95 border-none gap-4"
                     >
                        {onlineProcessing ? <Loader2 className="h-6 w-6 animate-spin" /> : <Zap className="h-6 w-6 fill-current" />}
-                       PAY SECURELY WITH CASHFREE
+                       PROCEED TO SECURE PAYMENT
                     </Button>
                  </CardContent>
               </Card>
@@ -143,9 +158,9 @@ function CheckoutContent() {
                  <CardHeader className="p-10 bg-slate-50/50 border-b border-slate-100">
                     <div className="flex items-center gap-4 mb-2">
                        <QrCode className="h-5 w-5 text-slate-400" />
-                       <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Manual Gateway</span>
+                       <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Manual Node</span>
                     </div>
-                    <CardTitle className="font-headline font-black text-xl uppercase text-[#0F172A]">Direct UPI Node</CardTitle>
+                    <CardTitle className="font-headline font-black text-xl uppercase text-[#0F172A]">Direct UPI Transfer</CardTitle>
                  </CardHeader>
                  <CardContent className="p-10 space-y-10">
                     <div className="flex flex-col items-center gap-10">
@@ -175,14 +190,14 @@ function CheckoutContent() {
                              if(utr.length < 12) { toast({variant:"destructive", title:"Invalid UTR"}); return; }
                              setProcessing(true);
                              await submitManualPayment({ userId: user!.uid, userEmail: user!.email!, userName: profile!.name, planId, transactionId: utr });
-                             toast({title:"Submitted", description:"Admin will audit your payment shortly."});
+                             toast({title:"Submitted", description:"Arsh Grewal Management will audit your payment shortly."});
                              router.push("/dashboard");
                           }}
                           disabled={processing}
                           className="w-full h-14 bg-slate-200 hover:bg-slate-300 text-slate-600 font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all border-none gap-3"
                        >
                           {processing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
-                          Submit Manual Proof
+                          Audit Manual Transfer
                        </Button>
                     </div>
                  </CardContent>
@@ -194,7 +209,7 @@ function CheckoutContent() {
                  <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12"><Gem className="h-48 w-48" /></div>
                  <div className="relative z-10 space-y-12">
                     <div className="space-y-2 text-center">
-                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Order Registry</p>
+                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Aspirant Pass</p>
                        <h3 className="text-3xl md:text-5xl font-headline font-black uppercase leading-tight">{planData.name}</h3>
                     </div>
                     <div className="space-y-5 pt-8 border-t border-white/5">

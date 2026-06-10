@@ -1,9 +1,10 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     /**
-     * @fileOverview Enterprise RBAC Security Protocol v2.0.
-     * Hardened for 10k+ Aspirants with strict ownership and authority gates.
+     * @fileOverview Hardened Institutional RBAC Protocol v3.0.
+     * UPDATED: Strict ownership for attempts and results to prevent bypass.
      */
 
     function isAuthenticated() {
@@ -48,6 +49,10 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+    match /categories/{catId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
     match /ads/{adId} {
       allow read: if true;
       allow write: if true; // stats incrementation
@@ -60,7 +65,7 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
-    match /current_affairs/{caId} {
+    match /current_affairs_hub/{caId} {
       allow read: if true;
       allow write: if isAdmin();
     }
@@ -79,7 +84,7 @@ service cloud.firestore {
     }
 
     match /results/{resultId} {
-      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow read: if isAuthenticated() && (resultId.split('_')[0] == request.auth.uid || isAdmin());
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAdmin();
     }
