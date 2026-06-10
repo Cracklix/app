@@ -52,9 +52,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v78.0.
- * FIXED: Implemented 8px rectangular stats and 14px managed typography. 
- * ALIGNMENT: Target Section Hub moved to left of switches.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v80.0.
+ * FIXED: Standardized 14px managed typography and 8px rectangular stats.
+ * ALIGNMENT: Target Section Hub positioned to left of switches.
  */
 
 export default function MockBuilderPage() {
@@ -174,6 +174,12 @@ function MockBuilderContent() {
     }
     loadInitialState();
   }, [db, existingMock, questionBank, mockId]);
+
+  const bankExams = useMemo(() => {
+    if (!rawExams) return [];
+    if (filterBoard === "all") return rawExams;
+    return rawExams.filter((e: any) => e.boardId === filterBoard);
+  }, [rawExams, filterBoard]);
 
   const uniqueExams = useMemo(() => {
     if (!rawExams) return [];
@@ -426,7 +432,7 @@ function MockBuilderContent() {
                               "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
                               isSelected ? "border-[#F97316] bg-[#F97316]" : "border-slate-300 bg-white"
                            )}>
-                              {isSelected && <Check className="h-3 w-3 text-white stroke-[3px]" />}
+                              {isSelected && <Check className="h-3 w-3 text-white stroke-[4px]" />}
                            </div>
                            <span className="text-[12px] font-black text-[#0F172A] uppercase truncate">{e.name}</span>
                         </div>

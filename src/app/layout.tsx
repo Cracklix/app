@@ -2,7 +2,7 @@
 import type {Metadata, Viewport} from 'next';
 import './globals.css';
 import { Inter } from "next/font/google";
-import { Toaster } from "@/components/ui/toast";
+import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import MobileNav from '@/components/layout/MobileNav';
 import PWAManager from '@/components/pwa/PWAManager';
