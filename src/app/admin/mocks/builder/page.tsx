@@ -52,8 +52,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v82.0.
- * UPDATED: Fixed Tactical Hub layout to prevent button clipping and managed Block Repeats/Select All nodes.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v83.0.
+ * UPDATED: Fixed "Add Subject Hub" button distortion and responsive layout issues.
+ * STABILITY: Centered empty states and calibrated mobile scaling.
  */
 
 export default function MockBuilderPage() {
@@ -524,7 +525,7 @@ function MockBuilderContent() {
         </div>
 
         {/* RIGHT COLUMN: TACTICAL HUB */}
-        <div className="lg:col-span-8 flex flex-col space-y-6">
+        <div className="lg:col-span-8 flex flex-col space-y-6 min-w-0">
            
            <div className="flex items-center gap-4 bg-white p-1.5 rounded-xl border border-slate-100 shadow-sm w-fit animate-in fade-in slide-in-from-left-4 duration-500">
               <button 
@@ -547,7 +548,7 @@ function MockBuilderContent() {
               </button>
            </div>
 
-           <div className="flex-1 flex flex-col space-y-8">
+           <div className="flex-1 flex flex-col space-y-8 min-w-0">
               {activeRightTab === 'BANK' ? (
                 <>
                   <div className="bg-[#0B1528] rounded-[2.5rem] p-6 md:p-10 text-white space-y-8 shadow-5xl relative overflow-hidden flex flex-col animate-in zoom-in-95 duration-500">
@@ -751,55 +752,55 @@ function MockBuilderContent() {
                   </div>
                 </>
               ) : (
-                <div className="space-y-8 flex-1 flex flex-col animate-in fade-in duration-500">
-                    <div className="flex items-center justify-between px-6">
-                      <h3 className="text-[14px] font-headline font-black text-[#0F172A] uppercase flex items-center gap-4">
-                          <Layers className="h-7 w-7 text-primary" /> Active Assembly Hub
+                <div className="space-y-8 flex-1 flex flex-col animate-in fade-in duration-500 min-w-0">
+                    <div className="flex items-center justify-between px-2 md:px-6">
+                      <h3 className="text-[12px] md:text-[14px] font-headline font-black text-[#0F172A] uppercase flex items-center gap-4">
+                          <Layers className="h-5 w-5 md:h-7 md:w-7 text-primary" /> Active Assembly Hub
                       </h3>
-                      <Badge className="bg-[#0F172A] text-white border-none px-6 py-2 rounded-xl font-black uppercase text-[14px] tracking-widest shadow-xl">
+                      <Badge className="bg-[#0F172A] text-white border-none px-4 md:px-6 py-2 rounded-xl font-black uppercase text-[10px] md:text-[14px] tracking-widest shadow-xl">
                          {sections.reduce((acc,s) => acc + s.questions.length, 0)} Q LINKED
                       </Badge>
                     </div>
 
-                    <ScrollArea className="h-[800px] pr-6 flex-1">
-                      <div className="space-y-8">
+                    <ScrollArea className="h-[800px] pr-2 md:pr-6 flex-1">
+                      <div className="space-y-6 md:space-y-8">
                           {sections.map((sec, sIdx) => (
                             <Card key={sec.id} className="border-none shadow-3xl rounded-[2.5rem] bg-white overflow-hidden border border-slate-100 group/sec">
-                                <div className="flex items-center justify-between p-8 bg-slate-50/50 border-b border-slate-50">
-                                  <div className="flex items-center gap-6 text-left">
-                                      <div className="h-12 w-12 bg-[#0F172A] text-white rounded-xl flex items-center justify-center font-black text-xl shadow-2xl shrink-0 group-hover/sec:bg-primary transition-colors">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between p-6 md:p-8 bg-slate-50/50 border-b border-slate-50 gap-4">
+                                  <div className="flex items-center gap-4 md:gap-6 text-left">
+                                      <div className="h-10 w-10 md:h-12 md:w-12 bg-[#0F172A] text-white rounded-xl flex items-center justify-center font-black text-lg md:text-xl shadow-2xl shrink-0 group-hover/sec:bg-primary transition-colors">
                                          {sIdx + 1}
                                       </div>
-                                      <div>
+                                      <div className="min-w-0 flex-1">
                                         <Input 
                                             value={sec.name} 
                                             onChange={e => setSections(p => p.map(s => s.id === sec.id ? { ...s, name: e.target.value.toUpperCase() } : s))} 
-                                            className="h-10 w-full md:w-[450px] bg-transparent border-none font-black uppercase text-xl md:text-2xl focus-visible:ring-0 p-0 text-[#0F172A]" 
+                                            className="h-10 w-full bg-transparent border-none font-black uppercase text-lg md:text-2xl focus-visible:ring-0 p-0 text-[#0F172A] truncate" 
                                         />
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{sec.questions.length} Linked Prep Nodes</p>
+                                        <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{sec.questions.length} Linked Prep Nodes</p>
                                       </div>
                                   </div>
-                                  <button onClick={() => setSections(p => p.filter(s => s.id !== sec.id))} className="h-12 w-12 text-rose-500 hover:bg-rose-50 rounded-xl transition-all flex items-center justify-center border-none bg-transparent active:scale-90"><Trash2 className="h-6 w-6" /></button>
+                                  <button onClick={() => setSections(p => p.filter(s => s.id !== sec.id))} className="h-10 w-10 md:h-12 md:w-12 text-rose-500 hover:bg-rose-50 rounded-xl transition-all flex items-center justify-center border-none bg-transparent active:scale-90"><Trash2 className="h-5 w-5 md:h-6 md:w-6" /></button>
                                 </div>
-                                <div className="p-8 space-y-4">
+                                <div className="p-6 md:p-8 space-y-3 md:space-y-4">
                                   {sec.questions.map((q: any, qIdx: number) => (
-                                      <div key={q.id} className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-2xl group/item hover:bg-white hover:shadow-2xl transition-all duration-300">
-                                        <div className="flex items-center gap-6 min-w-0 flex-1">
-                                            <span className="text-lg font-black text-slate-300 w-6 shrink-0">#{qIdx + 1}</span>
-                                            <p className="text-sm font-bold text-slate-600 truncate text-left">{q.englishQuestion}</p>
+                                      <div key={q.id} className="flex items-center justify-between p-3 md:p-4 bg-slate-50/50 border border-slate-100 rounded-xl md:rounded-2xl group/item hover:bg-white hover:shadow-2xl transition-all duration-300">
+                                        <div className="flex items-center gap-4 md:gap-6 min-w-0 flex-1">
+                                            <span className="text-sm md:text-lg font-black text-slate-300 w-6 shrink-0">#{qIdx + 1}</span>
+                                            <p className="text-xs md:text-sm font-bold text-slate-600 truncate text-left">{q.englishQuestion}</p>
                                         </div>
                                         <button 
                                             className="text-slate-300 hover:text-rose-600 p-2 shrink-0 transition-colors bg-transparent border-none"
                                             onClick={() => setSections(p => p.map(s => s.id === sec.id ? { ...s, questions: s.questions.filter((item: any) => item.id !== q.id) } : s))} 
                                         >
-                                            <Trash2 className="h-5 w-5" />
+                                            <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
                                         </button>
                                       </div>
                                   ))}
                                   {sec.questions.length === 0 && (
-                                      <div className="py-20 text-center opacity-20 italic font-black uppercase text-[12px] tracking-widest flex flex-col items-center gap-4">
-                                         <Zap className="h-10 w-10" />
-                                         Awaiting link node synchronization...
+                                      <div className="py-16 md:py-20 text-center opacity-20 italic font-black uppercase text-[10px] md:text-[12px] tracking-widest flex flex-col items-center justify-center gap-4 w-full">
+                                         <Zap className="h-8 w-8 md:h-10 md:w-10" />
+                                         <span>Awaiting link node synchronization...</span>
                                       </div>
                                   )}
                                 </div>
@@ -808,38 +809,38 @@ function MockBuilderContent() {
 
                           <Popover>
                             <PopoverTrigger asChild>
-                                <Button className="h-24 w-full bg-white border-dashed border-4 border-slate-200 rounded-[2.5rem] shadow-xl hover:border-primary hover:shadow-2xl transition-all flex items-center justify-center gap-4 text-slate-300 hover:text-primary font-black uppercase text-[14px] tracking-widest group active:scale-[0.98]">
-                                  <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform" /> ADD NEW SUBJECT HUB
+                                <Button className="h-16 md:h-24 w-full bg-white border-dashed border-[3px] md:border-4 border-slate-200 rounded-[1.5rem] md:rounded-[2.5rem] shadow-xl hover:border-primary hover:shadow-2xl transition-all flex items-center justify-center gap-3 md:gap-4 text-slate-300 hover:text-primary font-black uppercase text-[11px] md:text-[14px] tracking-widest group active:scale-[0.98]">
+                                  <Plus className="h-5 w-5 md:h-6 md:w-6 group-hover:rotate-90 transition-transform" /> ADD NEW SUBJECT HUB
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-[340px] md:w-[450px] p-0 rounded-[2.5rem] bg-[#0F172A] text-white border-white/10 shadow-5xl overflow-hidden z-[1001] text-left">
-                                <div className="p-8 border-b border-white/5 space-y-4 text-center">
-                                  <p className="text-[12px] font-black uppercase text-[#F97316] tracking-widest leading-none">SELECT SUBJECT HUB</p>
+                            <PopoverContent className="w-[300px] md:w-[450px] p-0 rounded-[2rem] md:rounded-[2.5rem] bg-[#0F172A] text-white border-white/10 shadow-5xl overflow-hidden z-[1001] text-left">
+                                <div className="p-6 md:p-8 border-b border-white/5 space-y-4">
+                                  <p className="text-[11px] md:text-[12px] font-black uppercase text-[#F97316] tracking-widest leading-none text-center">SELECT SUBJECT HUB</p>
                                   <div className="relative">
                                       <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                                       <Input 
                                         placeholder="Search master registry..." 
                                         value={subjectSearch}
                                         onChange={(e) => setSubjectSearch(e.target.value)}
-                                        className="h-12 pl-12 bg-white/5 border-white/10 rounded-xl font-bold text-sm focus-visible:ring-[#F97316] text-white placeholder:text-slate-600" 
+                                        className="h-11 md:h-12 pl-12 bg-white/5 border-white/10 rounded-xl font-bold text-sm focus-visible:ring-[#F97316] text-white placeholder:text-slate-600" 
                                       />
                                   </div>
                                 </div>
-                                <ScrollArea className="h-[400px]">
-                                  <div className="p-4 space-y-1.5">
+                                <ScrollArea className="h-[300px] md:h-[400px]">
+                                  <div className="p-3 md:p-4 space-y-1">
                                       {filteredSubjectsForPicking.map((s: any) => (
                                         <button 
                                             key={s.id}
                                             onClick={() => addNewSection(s.name)}
-                                            className="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white/5 transition-all text-left group border-none bg-transparent"
+                                            className="w-full flex items-center justify-between p-3 md:p-4 rounded-xl hover:bg-white/5 transition-all text-left group border-none bg-transparent"
                                         >
-                                            <div className="flex items-center gap-4">
-                                              <div className="h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-500 group-hover:text-[#F97316] transition-colors">
+                                            <div className="flex items-center gap-3 md:gap-4 min-w-0">
+                                              <div className="h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-500 group-hover:text-[#F97316] transition-colors shrink-0">
                                                  <SearchCode className="h-4 w-4" />
                                               </div>
-                                              <span className="text-[14px] font-black uppercase tracking-tight text-slate-300 group-hover:text-white transition-colors">{s.name}</span>
+                                              <span className="text-[12px] md:text-[14px] font-black uppercase tracking-tight text-slate-300 group-hover:text-white transition-colors truncate">{s.name}</span>
                                             </div>
-                                            <Plus className="h-4 w-4 text-slate-700 opacity-0 group-hover:opacity-100 transition-all" />
+                                            <Plus className="h-4 w-4 text-slate-700 opacity-0 group-hover:opacity-100 transition-all shrink-0" />
                                         </button>
                                       ))}
                                   </div>
