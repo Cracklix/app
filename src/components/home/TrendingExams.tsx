@@ -12,8 +12,8 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 /**
- * @fileOverview High-Fidelity Trending Grid v5.0.
- * UPDATED: Integrated official logos for all trending verticals.
+ * @fileOverview High-Fidelity Trending Grid v6.0.
+ * UPDATED: Replaced difficult words with easy ones (Hubs -> Exams).
  */
 
 export default function TrendingExams() {
@@ -43,7 +43,7 @@ export default function TrendingExams() {
       <div className="flex items-center justify-between">
          <div className="flex items-center gap-3">
             <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-rose-500" />
-            <h2 className="text-2xl md:text-4xl font-headline font-black text-[#0F172A] uppercase tracking-widest leading-none">TRENDING HUBS</h2>
+            <h2 className="text-2xl md:text-4xl font-headline font-black text-[#0F172A] uppercase tracking-widest leading-none">POPULAR EXAMS</h2>
          </div>
       </div>
 
@@ -88,7 +88,7 @@ export default function TrendingExams() {
                         </div>
 
                         <div className="mt-8 flex items-center gap-2 text-[9px] font-black uppercase text-primary tracking-widest group-hover:gap-4 transition-all">
-                           <Zap className="h-3.5 w-3.5 fill-current" /> GO TO HUB <ChevronRight className="h-3 w-3" />
+                           <Zap className="h-3.5 w-3.5 fill-current" /> VIEW EXAM <ChevronRight className="h-3 w-3" />
                         </div>
                      </Card>
                   </Link>

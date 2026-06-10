@@ -20,8 +20,8 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Optimized Institutional Landing Hub v59.0.
- * UPDATED: Replaced all static counters with real-time registry listeners.
+ * @fileOverview Optimized Institutional Landing Hub v60.0.
+ * UPDATED: Replaced difficult words with easy ones (Aspirants -> Students).
  */
 
 export default function HomePage() {
@@ -65,19 +65,19 @@ export default function HomePage() {
                <TrustCard 
                   loading={statsLoading}
                   icon={<BookOpen className="text-primary h-6 w-6 md:h-8 md:w-8" />} 
-                  label="MCQ BANK" 
+                  label="QUESTIONS" 
                   val={liveStats.mcqs} 
                />
                <TrustCard 
                   loading={statsLoading}
                   icon={<Zap className="text-blue-500 h-6 w-6 md:h-8 md:w-8" />} 
-                  label="MOCKS LIVE" 
+                  label="TESTS LIVE" 
                   val={liveStats.mocks} 
                />
                <TrustCard 
                   loading={statsLoading}
                   icon={<Users className="text-emerald-500 h-6 w-6 md:h-8 md:w-8" />} 
-                  label="ASPIRANTS" 
+                  label="STUDENTS" 
                   val={liveStats.users} 
                   isLive
                />

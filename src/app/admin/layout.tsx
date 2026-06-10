@@ -44,9 +44,8 @@ import BackButton from "@/components/navigation/BackButton";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Institutional Sidebar Restoration v128.0.
- * UPDATED: Optimized for mobile with auto-closing sheet on navigation.
- * HOME BUTTON: Logo in sidebar standardized to anchor to Admin Home.
+ * @fileOverview Institutional Sidebar Restoration v129.0.
+ * UPDATED: Replaced difficult words with easy ones (Master Registry -> Main Database).
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -85,7 +84,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!mounted || loading) return (
     <div className="h-screen w-full bg-[#0F172A] flex flex-col items-center justify-center space-y-6">
        <ShieldCheck className="h-12 w-12 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500">Initializing Registry...</p>
+       <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500">Loading Data...</p>
     </div>
   )
   
@@ -98,35 +97,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
        </div>
        <div className="flex-1 custom-scrollbar overflow-y-auto overflow-x-hidden pb-10">
           <SidebarGroup>
-            <SidebarGroupLabel className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Master Registry</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Main Database</SidebarGroupLabel>
             <SidebarMenu>
               <AdminNavItem icon={<LayoutDashboard />} label="DASHBOARD" href="/admin" active={pathname === "/admin"} onClick={onLinkClick} />
               <AdminNavItem icon={<Layers />} label="CATEGORIES" href="/admin/categories" active={pathname === "/admin/categories"} onClick={onLinkClick} />
               <AdminNavItem icon={<Landmark className="text-amber-400" />} label="HUBS (BOARDS)" href="/admin/exams" active={pathname === "/admin/exams"} onClick={onLinkClick} />
-              <AdminNavItem icon={<GraduationCap className="text-emerald-400" />} label="EXAM REGISTRY" href="/admin/exam-registry" active={pathname === "/admin/exam-registry"} onClick={onLinkClick} />
+              <AdminNavItem icon={<GraduationCap className="text-emerald-400" />} label="EXAM LIST" href="/admin/exam-registry" active={pathname === "/admin/exam-registry"} onClick={onLinkClick} />
               <AdminNavItem icon={<SearchCode className="text-emerald-400" />} label="SUBJECT LIST" href="/admin/subjects" active={pathname === "/admin/subjects"} onClick={onLinkClick} />
-              <AdminNavItem icon={<Box />} label="GLOBAL BANK" href="/admin/questions" active={pathname === "/admin/questions"} onClick={onLinkClick} />
-              <AdminNavItem icon={<Rocket className="text-primary" />} label="BULK INGESTION" href="/admin/bulk-import" active={pathname === "/admin/bulk-import"} onClick={onLinkClick} />
+              <AdminNavItem icon={<Box />} label="QUESTION BANK" href="/admin/questions" active={pathname === "/admin/questions"} onClick={onLinkClick} />
+              <AdminNavItem icon={<Rocket className="text-primary" />} label="BULK UPLOAD" href="/admin/bulk-import" active={pathname === "/admin/bulk-import"} onClick={onLinkClick} />
             </SidebarMenu>
           </SidebarGroup>
 
           <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Content Management</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Content Hub</SidebarGroupLabel>
             <SidebarMenu>
-              <AdminNavItem icon={<LayoutGrid className="text-orange-500" />} label="MOCK ARCHITECT" href="/admin/mocks/builder" active={pathname === "/admin/mocks/builder"} onClick={onLinkClick} />
+              <AdminNavItem icon={<LayoutGrid className="text-orange-500" />} label="MOCK BUILDER" href="/admin/mocks/builder" active={pathname === "/admin/mocks/builder"} onClick={onLinkClick} />
               <AdminNavItem icon={<Zap className="text-primary" />} label="MOCK MANAGER" href="/admin/mocks" active={pathname === "/admin/mocks"} onClick={onLinkClick} />
               <AdminNavItem icon={<Newspaper className="text-blue-400" />} label="CURRENT AFFAIRS" href="/admin/current-affairs" active={pathname === "/admin/current-affairs"} onClick={onLinkClick} />
-              <AdminNavItem icon={<FileText className="text-emerald-400" />} label="NOTES LIBRARY" href="/admin/notes" active={pathname === "/admin/notes"} onClick={onLinkClick} />
-              <AdminNavItem icon={<FileStack className="text-amber-400" />} label="PYQ REPOSITORY" href="/admin/pyqs" active={pathname === "/admin/pyqs"} onClick={onLinkClick} />
+              <AdminNavItem icon={<FileText className="text-emerald-400" />} label="STUDY NOTES" href="/admin/notes" active={pathname === "/admin/notes"} onClick={onLinkClick} />
+              <AdminNavItem icon={<FileStack className="text-amber-400" />} label="PYQ ARCHIVE" href="/admin/pyqs" active={pathname === "/admin/pyqs"} onClick={onLinkClick} />
               <AdminNavItem icon={<Sparkles className="text-primary" />} label="FREE HUB CMS" href="/admin/free-content" active={pathname === "/admin/free-content"} onClick={onLinkClick} />
-              <AdminNavItem icon={<Bell className="text-orange-400" />} label="EXAM GAZETTE" href="/admin/notifications" active={pathname === "/admin/notifications"} onClick={onLinkClick} />
+              <AdminNavItem icon={<Bell className="text-orange-400" />} label="EXAM NEWS" href="/admin/notifications" active={pathname === "/admin/notifications"} onClick={onLinkClick} />
             </SidebarMenu>
           </SidebarGroup>
 
           <SidebarGroup className="mt-4">
             <SidebarGroupLabel className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Users & Revenue</SidebarGroupLabel>
             <SidebarMenu>
-              <AdminNavItem icon={<Users className="text-blue-400" />} label="STUDENT HUB" href="/admin/users" active={pathname === "/admin/users"} onClick={onLinkClick} />
+              <AdminNavItem icon={<Users className="text-blue-400" />} label="STUDENT LIST" href="/admin/users" active={pathname === "/admin/users"} onClick={onLinkClick} />
               <AdminNavItem icon={<DollarSign className="text-emerald-400" />} label="REVENUE HUB" href="/admin/payments" active={pathname === "/admin/payments"} onClick={onLinkClick} />
               <AdminNavItem icon={<ShieldCheck className="text-primary" />} label="MANUAL VERIFY" href="/admin/payments/verify" active={pathname === "/admin/payments/verify"} onClick={onLinkClick} />
               <AdminNavItem icon={<Gem className="text-amber-400" />} label="PASS MANAGER" href="/admin/passes" active={pathname === "/admin/passes"} onClick={onLinkClick} />
@@ -134,12 +133,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </SidebarGroup>
 
           <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Integrity & Governance</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">System Health</SidebarGroupLabel>
             <SidebarMenu>
-              <AdminNavItem icon={<History className="text-slate-400" />} label="AUDIT TRAIL" href="/admin/audit-logs" active={pathname === "/admin/audit-logs"} onClick={onLinkClick} />
-              <AdminNavItem icon={<ShieldAlert className="text-rose-500" />} label="CBT INTEGRITY" href="/admin/qa" active={pathname === "/admin/qa"} onClick={onLinkClick} />
-              <AdminNavItem icon={<HeartPulse className="text-rose-500" />} label="SYSTEM HEALTH" href="/admin/health" active={pathname === "/admin/health"} onClick={onLinkClick} />
-              <AdminNavItem icon={<Settings className="text-primary" />} label="SYSTEM PORTAL" href="/admin/settings" active={pathname === "/admin/settings"} onClick={onLinkClick} />
+              <AdminNavItem icon={<History className="text-slate-400" />} label="ACTIVITY LOGS" href="/admin/audit-logs" active={pathname === "/admin/audit-logs"} onClick={onLinkClick} />
+              <AdminNavItem icon={<ShieldAlert className="text-rose-500" />} label="ERROR CHECK" href="/admin/qa" active={pathname === "/admin/qa"} onClick={onLinkClick} />
+              <AdminNavItem icon={<HeartPulse className="text-rose-500" />} label="PLATFORM STATUS" href="/admin/health" active={pathname === "/admin/health"} onClick={onLinkClick} />
+              <AdminNavItem icon={<Settings className="text-primary" />} label="SYSTEM SETTINGS" href="/admin/settings" active={pathname === "/admin/settings"} onClick={onLinkClick} />
             </SidebarMenu>
           </SidebarGroup>
 

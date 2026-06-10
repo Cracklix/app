@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -19,8 +20,8 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview High-Fidelity Question Engine v34.0.
- * UPDATED: Strict single-language isolation for Language Subjects (English/Punjabi/Hindi).
+ * @fileOverview High-Fidelity Question Engine v35.0.
+ * UPDATED: Replaced difficult words with easy ones (Rationale -> Explanation).
  */
 export default function QuestionRenderer({ 
   question, 
@@ -71,7 +72,7 @@ export default function QuestionRenderer({
   return (
     <div className={cn("w-full text-left font-body bg-white text-[#0F172A] p-4 md:p-10 flex flex-col select-none rounded-[1.5rem] md:rounded-[2.5rem] shadow-sm", className)}>
       
-      {/* 1. DIAGNOSTIC INFO ROW */}
+      {/* 1. QUESTION INFO ROW */}
       {!showSolution && (
         <div className="flex items-center justify-between mb-6 md:mb-10 px-1">
            <div className="flex items-center gap-2 md:gap-4">
@@ -160,20 +161,20 @@ export default function QuestionRenderer({
         <div className="mt-8 md:mt-10 pt-8 md:pt-10 border-t border-slate-100 space-y-4 md:space-y-6 animate-in fade-in slide-in-from-top-2 duration-500">
            <div className="flex items-center gap-3">
               <Badge className="bg-[#F0FDF4] text-[#047857] border-none font-black text-[10px] md:text-xs uppercase px-4 md:px-5 py-1.5 rounded-lg shadow-sm">
-                <Info className="h-3 w-3 mr-2 inline" /> Institutional Solution
+                <Info className="h-3 w-3 mr-2 inline" /> Official Explanation
               </Badge>
            </div>
            
            <div className="bg-[#F8FAFC] p-6 md:p-8 rounded-[2rem] border border-[#F1F5F9] text-[#475569] leading-relaxed font-medium text-sm md:text-base space-y-6">
               <div className="flex items-center gap-2 pb-4 border-b border-slate-200/50">
-                 <span className="font-black text-[#0B1528] uppercase text-[10px] tracking-widest">Official Key:</span>
+                 <span className="font-black text-[#0B1528] uppercase text-[10px] tracking-widest">Correct Answer:</span>
                  <span className="h-6 w-6 rounded-lg bg-[#0B1528] text-white flex items-center justify-center font-black text-xs">{q.correctAnswer}</span>
               </div>
               
               <div className="space-y-6">
                  {showEn && q.englishExplanation && (
                     <div className="space-y-2">
-                       <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">English Rationale</p>
+                       <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">English Explanation</p>
                        <MathText text={q.englishExplanation} />
                     </div>
                  )}
@@ -190,7 +191,7 @@ export default function QuestionRenderer({
                     </div>
                  )}
                  {!(showEn && q.englishExplanation) && !(showPa && q.punjabiExplanation) && !(showHi && q.hindiExplanation) && (
-                    <MathText text="Institutional rationale pending audit." />
+                    <MathText text="Explanation coming soon." />
                  )}
               </div>
            </div>

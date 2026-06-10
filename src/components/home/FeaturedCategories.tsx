@@ -22,15 +22,15 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Institutional Category Entry Nodes v3.0.
- * UPDATED: Implemented real-time dynamic counting for exams. Placeholder counts (250+, 120+, etc.) removed.
+ * @fileOverview Institutional Category Entry Nodes v4.0.
+ * UPDATED: Replaced difficult words with easy ones (Registry -> List).
  */
 
 const CATEGORY_META = [
   {
     id: "punjab-govt",
     title: "Punjab Government",
-    desc: "Police, PSSSB, PPSC & state board recruitments.",
+    desc: "Police, PSSSB, PPSC & state board exams.",
     icon: <img src="https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png" className="h-full w-full object-contain" />,
     color: "text-primary",
     bgColor: "bg-orange-50"
@@ -38,7 +38,7 @@ const CATEGORY_META = [
   {
     id: "punjab-teaching",
     title: "Punjab Teaching",
-    desc: "PSTET, CTET, Master Cadre & ETT verticals.",
+    desc: "PSTET, CTET, Master Cadre & ETT exams.",
     icon: <GraduationCap className="h-8 w-8" />,
     color: "text-blue-600",
     bgColor: "bg-blue-50"
@@ -54,7 +54,7 @@ const CATEGORY_META = [
   {
     id: "banking",
     title: "Banking Exams",
-    desc: "IBPS, PO, SO, SBI & RBI specialized mocks.",
+    desc: "IBPS, PO, SO, SBI & RBI special tests.",
     icon: <Wallet className="h-8 w-8" />,
     color: "text-emerald-600",
     bgColor: "bg-emerald-50"
@@ -62,7 +62,7 @@ const CATEGORY_META = [
   {
     id: "central-govt",
     title: "Central Govt",
-    desc: "SSC, Railways, Army & National registries.",
+    desc: "SSC, Railways, Army & National exams.",
     icon: <Globe className="h-8 w-8" />,
     color: "text-indigo-600",
     bgColor: "bg-indigo-50"
@@ -89,12 +89,12 @@ export default function FeaturedCategories() {
         <div className="space-y-2">
            <div className="flex items-center gap-2">
               <Landmark className="h-4 w-4 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">Registry Categories</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">EXAM CATEGORIES</span>
            </div>
            <h2 className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-none">
               STUDY BY <span className="text-primary">CATEGORY</span>
            </h2>
-           <p className="text-slate-500 text-sm md:text-lg font-medium">Reorganized for scalable preparation discovery.</p>
+           <p className="text-slate-500 text-sm md:text-lg font-medium">Browse tests for your target exams.</p>
         </div>
         <Button asChild variant="ghost" className="text-primary font-black uppercase text-[10px] tracking-widest gap-2">
            <Link href="/exams">View All Categories <ArrowRight className="h-4 w-4" /></Link>
@@ -141,4 +141,3 @@ export default function FeaturedCategories() {
     </section>
   );
 }
-

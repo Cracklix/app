@@ -122,10 +122,10 @@ export default function Navbar() {
                 <Target className="h-4 w-4 text-primary" /> My Exams
               </Link>
               <Link href="/mocks" className={cn("transition-colors hover:text-white pointer-events-auto", pathname === '/mocks' ? 'text-white' : '')}>
-                Mocks
+                Practice Tests
               </Link>
               <Link href="/pass" className={cn("transition-all flex items-center gap-2 px-5 py-2 rounded-xl border pointer-events-auto", pathname === '/pass' ? 'bg-primary border-primary text-white shadow-xl shadow-primary/20' : 'bg-primary/10 border-primary/20 text-primary/80 hover:text-primary hover:bg-primary/20')}>
-                <Gem className="h-4 w-4" /> PASS
+                <Gem className="h-4 w-4" /> GET PASS
               </Link>
               <Link href="/current-affairs" className={cn("transition-colors flex items-center gap-2 hover:text-white pointer-events-auto", pathname === '/current-affairs' ? 'text-white' : '')}>
                 <Newspaper className="h-4 w-4 text-primary" /> Current Affairs
@@ -164,8 +164,8 @@ export default function Navbar() {
                   <DropdownMenuLabel className="px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">Student Area</DropdownMenuLabel>
                   <DropdownNavItem href="/profile" icon={<User className="h-4 w-4 text-blue-400" />} label="My Profile" />
                   <DropdownNavItem href="/dashboard" icon={<Award className="h-4 w-4 text-emerald-400" />} label="My Results" />
-                  <DropdownNavItem href="/pass" icon={<Gem className="h-4 w-4 text-primary" />} label="Elite Pass Hub" />
-                  {isAdmin && <DropdownNavItem href="/admin" icon={<ShieldCheck className="h-4 w-4 text-rose-500" />} label="Admin Portal" className="bg-rose-500/10 mt-1" />}
+                  <DropdownNavItem href="/pass" icon={<Gem className="h-4 w-4 text-primary" />} label="Elite Pass" />
+                  {isAdmin && <DropdownNavItem href="/admin" icon={<ShieldCheck className="h-4 w-4 text-rose-500" />} label="Admin Panel" className="bg-rose-500/10 mt-1" />}
                   <DropdownMenuSeparator className="bg-white/5 my-2" />
                   <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl transition-all focus:bg-white/5 focus:text-rose-500 text-rose-500/80"><LogOut className="h-4 w-4 shrink-0" /><span className="font-bold text-[12px] tracking-tight uppercase">Logout</span></DropdownMenuItem>
                 </DropdownMenuContent>

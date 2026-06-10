@@ -1,3 +1,4 @@
+
 'use client';
 
 import { motion } from "framer-motion";
@@ -8,8 +9,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Founder & Lead Developer Section v2.3.
- * UPDATED: Optimized for small mobile screens (320px) to prevent text cutoff.
+ * @fileOverview Official Founder & Lead Developer Section v2.4.
+ * UPDATED: Replaced difficult words with easy ones (Mission Profile -> Story).
  */
 
 export default function MeetFounder() {
@@ -72,7 +73,7 @@ export default function MeetFounder() {
                   <div className="space-y-1">
                     <h3 className="text-2xl sm:text-4xl md:text-6xl font-headline font-black text-[#0F172A] uppercase leading-tight tracking-tight break-words">Arsh Grewal</h3>
                     <p className="text-primary font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-[7px] md:text-xs flex items-center justify-center md:justify-start gap-2">
-                       <Target className="h-3 w-3" /> Platform Architect
+                       <Target className="h-3 w-3" /> Platform Designer
                     </p>
                   </div>
                </div>
@@ -80,14 +81,14 @@ export default function MeetFounder() {
                <div className="relative">
                   <div className="absolute -left-6 top-0 bottom-0 w-1 bg-primary/20 rounded-full hidden md:block" />
                   <p className="text-xs md:text-xl text-slate-500 font-medium leading-relaxed antialiased text-center md:text-left break-words">
-                     Founder and Lead Developer of <span className="text-[#0F172A] font-black">CRACKLIX</span>, dedicated to building a modern, fast, and reliable platform for competitive exam preparation. Focused on delivering high-quality mock tests, PYQs, current affairs, analytics, and multilingual learning experiences to help students succeed.
+                     Founder and Lead Developer of <span className="text-[#0F172A] font-black">CRACKLIX</span>, dedicated to building a fast and reliable platform for exam preparation. I focus on high-quality tests, study notes, and easy learning to help students succeed.
                   </p>
                </div>
 
                <div className="pt-4 md:pt-8 border-t border-slate-200/60 flex flex-col gap-6 md:gap-8">
                   <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 md:gap-6">
                      <Button asChild className="w-full sm:w-auto h-12 md:h-16 px-6 md:px-12 bg-[#0F172A] hover:bg-black text-white rounded-lg md:rounded-2xl font-black uppercase text-[9px] md:text-[11px] tracking-widest shadow-xl border-none transition-all active:scale-95 group/btn">
-                        <Link href="/about">Full Mission Profile <ArrowRight className="ml-2 h-4 w-4 text-primary group-hover/btn:translate-x-1 transition-transform" /></Link>
+                        <Link href="/about">My Full Story <ArrowRight className="ml-2 h-4 w-4 text-primary group-hover/btn:translate-x-1 transition-transform" /></Link>
                      </Button>
                      <div className="text-center md:text-left">
                         <p className="text-[9px] md:text-[10px] font-black uppercase text-[#0F172A] tracking-tighter leading-none">CRACKLIX Hub</p>

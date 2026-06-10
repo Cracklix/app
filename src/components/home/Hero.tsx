@@ -12,8 +12,8 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview High-Density Mobile-First Hero v39.0.
- * UPDATED: Zero-baseline. Aspirant count is strictly dynamic (defaults to 0).
+ * @fileOverview High-Density Mobile-First Hero v40.0.
+ * UPDATED: Replaced difficult words with easy ones (Node -> Hub, Prep -> Study).
  */
 
 export default function Hero() {
@@ -55,13 +55,13 @@ export default function Hero() {
             <div className="space-y-2 md:space-y-6">
                <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20">
                   <Sparkles className="h-2.5 w-2.5 text-primary" />
-                  <span className="text-[7px] md:text-[10px] font-black text-primary uppercase tracking-widest">Punjab's No. 1 Prep Node</span>
+                  <span className="text-[7px] md:text-[10px] font-black text-primary uppercase tracking-widest">Punjab's No. 1 Study Hub</span>
                </div>
                <h1 className="text-3xl md:text-5xl lg:text-7xl font-headline font-black leading-[1.1] text-white uppercase tracking-tight">
                   CRACK EVERY <br/> <span className="text-primary">RECRUITMENT.</span>
                </h1>
                <p className="text-[13px] md:text-xl text-slate-400 font-medium max-w-lg leading-relaxed">
-                  High-fidelity practice series for PSSSB, PPSC, Police, and Army. Updated pattern based preparation.
+                  Best practice series for PSSSB, PPSC, Police, and Army. Updated pattern based study plans.
                </p>
             </div>
 
@@ -107,8 +107,8 @@ export default function Hero() {
                      <ShieldCheck className="h-6 w-6 text-white" />
                   </div>
                   <div className="text-left pr-4">
-                     <p className="text-[8px] font-black uppercase text-slate-400 leading-none mb-1">Live Success</p>
-                     <p className="text-lg font-headline font-black text-[#0F172A] leading-none uppercase">{liveAspirantCount} Aspirants</p>
+                     <p className="text-[8px] font-black uppercase text-slate-400 leading-none mb-1">Success Stories</p>
+                     <p className="text-lg font-headline font-black text-[#0F172A] leading-none uppercase">{liveAspirantCount} Students</p>
                   </div>
                </div>
             </div>
