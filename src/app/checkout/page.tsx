@@ -18,8 +18,8 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Institutional Checkout Hub v55.1.
- * FIXED: Replaced arbitrary Tailwind duration with inline style to resolve build warnings.
+ * @fileOverview Institutional Checkout Hub v57.0.
+ * UPDATED: Replaced Razorpay with Cashfree Payments SDK v3.
  */
 
 export default function CheckoutPage() {
@@ -49,13 +49,13 @@ function CheckoutContent() {
     if (!loading && !user) router.push("/login")
   }, [user, loading, router])
 
-  const handleRazorpayPayment = async () => {
+  const handleCashfreePayment = async () => {
     if (!user || !profile || !planData || onlineProcessing) return;
 
     setOnlineProcessing(true);
     try {
-      // 1. Create Order Hub
-      const orderRes = await fetch('/api/razorpay/create-order', {
+      // 1. Create Order Hub (Backend)
+      const orderRes = await fetch('/api/cashfree/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ planId, userId: user.uid })
@@ -64,53 +64,16 @@ function CheckoutContent() {
       const orderData = await orderRes.json();
       if (orderData.error) throw new Error(orderData.error);
 
-      // 2. Launch Gateway Modal
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, 
-        amount: orderData.amount,
-        currency: orderData.currency,
-        name: "CRACKLIX",
-        description: `${planData.name} Elite Pass`,
-        order_id: orderData.orderId,
-        handler: async function (response: any) {
-          try {
-            const verifyRes = await fetch('/api/razorpay/verify-payment', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                ...response,
-                userId: user.uid,
-                planId: planId
-              })
-            });
+      // 2. Initialize SDK & Launch Checkout
+      const cashfree = (window as any).Cashfree({
+         mode: process.env.NEXT_PUBLIC_CASHFREE_ENV === 'production' ? 'production' : 'sandbox'
+      });
 
-            const verifyData = await verifyRes.json();
-            if (verifyData.success) {
-              toast({ title: "Audit Success", description: "Elite Pass activated instantly." });
-              router.push("/payment/success?plan=" + planData.name);
-            } else {
-              throw new Error(verifyData.error || "Registry sync failed.");
-            }
-          } catch (e: any) {
-            toast({ variant: "destructive", title: "Verification Failed", description: e.message });
-            router.push("/payment/failed");
-          }
-        },
-        modal: {
-           ondismiss: function() {
-              setOnlineProcessing(false);
-           }
-        },
-        prefill: {
-          name: profile.name,
-          email: user.email,
-          contact: profile.phone
-        },
-        theme: { color: "#F97316" }
-      };
+      await cashfree.checkout({
+         paymentSessionId: orderData.payment_session_id,
+         redirectTarget: "_self" 
+      });
 
-      const rzp = new (window as any).Razorpay(options);
-      rzp.open();
     } catch (e: any) {
       toast({ variant: "destructive", title: "Gateway Hub Error", description: e.message });
       setOnlineProcessing(false);
@@ -157,7 +120,7 @@ function CheckoutContent() {
   return (
     <div className="min-h-screen bg-slate-50/50 font-body">
       <Navbar />
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="lazyOnload" />
       
       <main className="container mx-auto px-4 md:px-6 py-12 md:py-24 max-w-5xl">
         <div className="flex items-center gap-6 mb-12">
@@ -179,17 +142,17 @@ function CheckoutContent() {
                        <CreditCard className="h-6 w-6 text-primary" />
                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Recommended Gateway</span>
                     </div>
-                    <CardTitle className="font-headline font-black text-2xl uppercase">Secure Online Payment</CardTitle>
-                    <CardDescription className="text-slate-400 font-medium">Instant activation via Cards, UPI, or Netbanking.</CardDescription>
+                    <CardTitle className="font-headline font-black text-2xl uppercase">Cashfree Online Node</CardTitle>
+                    <CardDescription className="text-slate-400 font-medium">Instant activation via UPI, Cards, or Netbanking.</CardDescription>
                  </CardHeader>
                  <CardContent className="p-10 pt-4">
                     <Button 
-                      onClick={handleRazorpayPayment}
+                      onClick={handleCashfreePayment}
                       disabled={onlineProcessing}
                       className="w-full h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-3xl shadow-primary/20 transition-all active:scale-95 border-none gap-4"
                     >
                        {onlineProcessing ? <Loader2 className="h-6 w-6 animate-spin" /> : <Zap className="h-6 w-6 fill-current" />}
-                       PAY SECURELY NOW
+                       PAY SECURELY WITH CASHFREE
                     </Button>
                  </CardContent>
               </Card>
