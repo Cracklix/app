@@ -1,7 +1,8 @@
+
 'use client';
 
 import Link from "next/link";
-import { Menu, Search, Zap, CreditCard, LogOut, ShieldCheck, Megaphone, Target, LayoutGrid, Award, Gem, User, Sparkles, Newspaper, AlertCircle, Clock } from "lucide-react";
+import { Menu, Search, Zap, CreditCard, LogOut, ShieldCheck, Megaphone, Target, LayoutGrid, Award, Gem, User, Sparkles, Newspaper, AlertCircle, Clock, FileStack } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
 import { useState, useMemo, useEffect } from "react";
@@ -128,6 +129,9 @@ export default function Navbar() {
               </Link>
               <Link href="/current-affairs" className={cn("transition-colors flex items-center gap-2 hover:text-white pointer-events-auto", pathname === '/current-affairs' ? 'text-white' : '')}>
                 <Newspaper className="h-4 w-4 text-primary" /> Current Affairs
+              </Link>
+              <Link href="/pyqs" className={cn("transition-colors flex items-center gap-2 hover:text-white pointer-events-auto", pathname === '/pyqs' ? 'text-white' : '')}>
+                <FileStack className="h-4 w-4 text-primary" /> PYQs
               </Link>
             </div>
           </div>

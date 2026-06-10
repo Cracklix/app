@@ -21,7 +21,8 @@ import {
   Shield,
   Sparkles,
   Newspaper,
-  Award
+  Award,
+  FileStack
 } from "lucide-react";
 import Link from "next/link";
 import { useUser, useAuth } from "@/firebase";
@@ -36,8 +37,7 @@ import { Button } from "@/components/ui/button";
 
 /**
  * @fileOverview Institutional Sidebar.
- * UPDATED: "Home Page" promoted to primary position for universal accessibility.
- * TOUCH TARGETS: Optimized for mobile ergonomics.
+ * UPDATED: Added PYQ Repository link after Current Affairs Hub.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -89,6 +89,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
     { label: "Elite Pass Hub", href: "/pass", icon: Gem, badge: "ACTIVATE" },
     { label: "Practice Tests", href: "/mocks", icon: Zap },
     { label: "Current Affairs Hub", href: "/current-affairs", icon: Newspaper },
+    { label: "PYQ Repository", href: "/pyqs", icon: FileStack },
     { label: "Share Cracklix", icon: Share2, onClick: () => setIsShareOpen(true) },
     { label: "Help & Support", href: "/contact", icon: MessageCircleQuestion },
   ];

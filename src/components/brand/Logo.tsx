@@ -12,7 +12,7 @@ interface LogoProps {
 
 /**
  * @fileOverview Refactored Brand Identity Node.
- * Standardized as the universal "Home" anchor for the entire platform.
+ * UPDATED: Logo SVG matched to provided image (Thick C + Orange Check + Dark Circle).
  * PERFORMANCE: Pure SVG rendering for ultra-fast LCP.
  */
 export default function Logo({ className = "", variant = 'light', showTagline = true, href = "/" }: LogoProps) {
@@ -21,20 +21,27 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
   return (
     <Link href={href} className={`flex items-center gap-1.5 md:gap-3 group pointer-events-auto select-none ${className}`}>
       <div className="relative w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 flex items-center justify-center shrink-0">
-        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full transition-transform group-hover:scale-105 duration-300">
-          <circle cx="20" cy="20" r="18" stroke={isLightVariant ? "rgba(255,255,255,0.1)" : "rgba(15,23,42,0.05)"} strokeWidth="4" />
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full transition-transform group-hover:scale-105 duration-300">
+          {/* Foundation Circle - Solid Fill matched to provided image */}
+          <circle cx="50" cy="50" r="48" fill={isLightVariant ? "rgba(255,255,255,0.08)" : "#0F172A"} />
+          
+          {/* Thick White 'C' */}
           <path 
-            d="M32 10C29.5 7.5 25.5 6 21 6C12.7157 6 6 12.7157 6 21C6 29.2843 12.7157 36 21 36C25.5 36 29.5 34.5 32 32" 
-            stroke={isLightVariant ? "#FFFFFF" : "#0F172A"} 
-            strokeWidth="5" 
+            d="M75 35C70 26 61 20 50 20C33.4315 20 20 33.4315 20 50C20 66.5685 33.4315 80 50 80C61 80 70 74 75 65" 
+            stroke="white" 
+            strokeWidth="12" 
             strokeLinecap="round" 
+            fill="none"
           />
+          
+          {/* Bold Orange Checkmark */}
           <path 
-            d="M16 21L20 25L30 15" 
+            d="M40 52L50 62L78 32" 
             stroke="#F97316" 
-            strokeWidth="5" 
+            strokeWidth="12" 
             strokeLinecap="round" 
             strokeLinejoin="round" 
+            fill="none"
           />
         </svg>
       </div>
