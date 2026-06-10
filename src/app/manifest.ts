@@ -13,7 +13,6 @@ export default function manifest(): MetadataRoute.Manifest {
     display: 'standalone',
     background_color: '#FFFFFF',
     theme_color: '#0B1528',
-    orientation: 'portrait-primary',
     icons: [
       {
         src: '/icons/icon-192x192.png',
@@ -32,12 +31,10 @@ export default function manifest(): MetadataRoute.Manifest {
       {
         name: 'My Exams',
         url: '/my-exams',
-        icons: [{ src: '/icons/icon-192x192.png', sizes: '192x192' }],
       },
       {
         name: 'Mock Tests',
         url: '/mocks',
-        icons: [{ src: '/icons/icon-192x192.png', sizes: '192x192' }],
       },
     ],
   };

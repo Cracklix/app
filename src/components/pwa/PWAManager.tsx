@@ -2,9 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Download, X, ShieldCheck } from 'lucide-react';
+import { Download, X, ShieldCheck, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
@@ -78,7 +77,7 @@ export default function PWAManager() {
     setShowPrompt(false);
   };
 
-  if (pathname?.includes('/attempt')) return null;
+  if (pathname?.includes('/attempt') || pathname?.startsWith('/admin')) return null;
 
   return (
     <AnimatePresence>
@@ -95,10 +94,10 @@ export default function PWAManager() {
             </div>
             
             <div className="h-12 w-12 rounded-2xl bg-primary/20 flex items-center justify-center shrink-0 border border-primary/20">
-               <Download className="h-6 w-6 text-primary" />
+               <Zap className="h-6 w-6 text-primary fill-current" />
             </div>
 
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 text-left">
                <h4 className="text-[13px] font-black uppercase tracking-tight leading-none mb-1">Install CRACKLIX App</h4>
                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Fast access to Punjab Mocks</p>
             </div>

@@ -1,13 +1,15 @@
 /**
- * @fileOverview Institutional PWA Service Worker.
- * Handles caching, offline support, and push notifications.
+ * @fileOverview Institutional Service Worker v1.0.
+ * Handles offline caching and background synchronization.
  */
 
-const CACHE_NAME = 'cracklix-v1';
+const CACHE_NAME = 'cracklix-cache-v1';
+const OFFLINE_URL = '/offline.html';
+
 const ASSETS_TO_CACHE = [
   '/',
-  '/offline',
-  '/manifest.json'
+  '/manifest.json',
+  '/globals.css',
 ];
 
 self.addEventListener('install', (event) => {
@@ -34,34 +36,35 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Stale-While-Revalidate Fetch Strategy
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+  // Strategy: Stale-While-Revalidate
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match('/');
+      })
+    );
+    return;
+  }
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
-        // Update cache with fresh version
-        if (networkResponse && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-        }
-        return networkResponse;
-      }).catch(() => {
-        // If network fails and no cache, maybe return offline page
-        return cachedResponse;
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request).then((fetchResponse) => {
+        return caches.open(CACHE_NAME).then((cache) => {
+          // Cache only successful GET requests
+          if (event.request.method === 'GET' && fetchResponse.status === 200) {
+            cache.put(event.request, fetchResponse.clone());
+          }
+          return fetchResponse;
+        });
       });
-
-      return cachedResponse || fetchPromise;
     })
   );
 });
 
-// Push Notification Listener (FCM Scaffolding)
+// Push Notification Listener
 self.addEventListener('push', (event) => {
-  const data = event.data ? event.data.json() : { title: 'Exam Alert', body: 'New update from Cracklix.' };
+  const data = event.data ? event.data.json() : { title: 'Cracklix Update', body: 'Check your new exam notifications.' };
   
   const options = {
     body: data.body,

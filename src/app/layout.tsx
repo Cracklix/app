@@ -12,7 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Cracklix | Punjab Exam Authority Hub',
+  title: 'Cracklix | Punjab Exam Hub',
   description: "Punjab's most trusted government exam preparation platform. PSSSB, PPSC, Punjab Police, and more.",
   manifest: '/manifest.json',
   authors: [{ name: 'Arsh Grewal', url: 'https://cracklix.com' }],
