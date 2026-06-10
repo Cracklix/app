@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useSearchParams, useRouter } from "next/navigation"
@@ -6,6 +5,8 @@ import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { ShieldCheck, Lock, ArrowLeft, Loader2, QrCode, CheckCircle2, Gem, Copy, Zap, CreditCard } from "lucide-react"
 import { useUser, useDoc, useFirestore } from "@/firebase"
 import { useEffect, useState, Suspense, useMemo } from "react"
@@ -13,6 +14,11 @@ import { useToast } from "@/hooks/use-toast"
 import { submitManualPayment } from "@/app/actions/payment"
 import { doc } from "firebase/firestore"
 import Script from "next/script"
+
+/**
+ * @fileOverview Institutional Checkout Node v2.1.
+ * FIXED: Added missing Label and Input component imports.
+ */
 
 export default function CheckoutPage() {
   return (
