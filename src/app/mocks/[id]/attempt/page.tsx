@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Elite CBT Attempt Engine v17.0.
+ * @fileOverview Elite CBT Attempt Engine v18.0.
  * HARDENED: Strict access firewall. Premium mocks are locked even against direct URL manipulation.
  */
 
@@ -125,7 +125,7 @@ export default function MockAttemptPage() {
       userId: user.uid, userName: user.displayName || 'Aspirant', mockId, mockTitle,
       score: Math.max(0, score), totalQuestions: questions.length, accuracy: Math.max(0, Math.round((score / (Object.keys(answers).length * positiveMarks || 1)) * 100)),
       timeTaken: Math.round((Date.now() - startTime) / 1000), answers, timestamp: new Date().toISOString(), createdAt: serverTimestamp(),
-      accessLevel: mockData?.accessLevel || 'FREE' // Save access level for result gating
+      accessLevel: mockData?.accessLevel || 'FREE' 
     };
     await setDoc(doc(db, "results", `${user.uid}_${mockId}`), resultPayload);
     await updateDoc(doc(db, "attempts", `${user.uid}_${mockId}`), { status: 'COMPLETED', updatedAt: serverTimestamp() });

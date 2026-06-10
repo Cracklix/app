@@ -36,7 +36,7 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 /**
- * @fileOverview Test Results Hub v11.0.
+ * @fileOverview Test Results Hub v12.0.
  * HARDENED: Premium Access Firewall. Non-pass holders cannot access premium result nodes.
  */
 

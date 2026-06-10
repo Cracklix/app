@@ -35,7 +35,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v22.0.
+ * @fileOverview Institutional Exam Hub v23.0.
  * HARDENED: Integrated Pass Hub access logic. Premium mocks show "Unlock with Pass" workflow.
  */
 
@@ -222,7 +222,7 @@ function MockList({ data, results, isPassActive, user }: { data: any[], results:
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {data.map((mock: any) => {
             const result = results?.find((r: any) => r.mockId === mock.id);
-            const tier = (mock.accessLevel || mock.accessType || 'FREE').toUpperCase();
+            const tier = (mock.accessLevel || mock.accessType || 'FREE').trim().toUpperCase();
             const isPremium = tier === 'PREMIUM';
             const locked = isPremium && !isPassActive;
 

@@ -27,7 +27,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Individual Mock Gateway v16.0.
+ * @fileOverview Individual Mock Gateway v17.0.
  * HARDENED: Authentication & Premium Access Firewall with returnUrl persistence.
  */
 
