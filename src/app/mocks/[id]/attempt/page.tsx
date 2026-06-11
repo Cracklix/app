@@ -26,8 +26,8 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened CBT Engine v32.0 (Production Verified).
- * FIXED: Missing 'cn' import resolved to prevent ReferenceError.
+ * @fileOverview Hardened CBT Engine v33.0 (Production Verified).
+ * FIXED: Explicit import of 'cn' utility to resolve ReferenceError.
  * FEATURES: Instant submission lock, Cloud Sync Heartbeat, and Auto-Submit logic.
  */
 
