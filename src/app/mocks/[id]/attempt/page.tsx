@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -12,7 +13,7 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer";
 import QuestionPalette from "@/components/mocks/QuestionPalette";
 import SubjectTabs from "@/components/exam/SubjectTabs";
 import { Button } from "@/components/ui/button";
-import { Loader2, Play, ShieldCheck, CheckCircle2, Zap, LogOut, Lock, AlertTriangle } from "lucide-react";
+import { Loader2, Play, ShieldCheck, CheckCircle2, Zap, LogOut, Lock, AlertTriangle, Cloud } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,10 +23,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Hardened CBT Engine v30.0 (Production Verified).
- * FIXED: Accurate scoring logic and precise time usage tracking.
+ * @fileOverview Hardened CBT Engine v31.0 (Production Verified).
+ * FEATURES: Instant submission lock, Cloud Sync Heartbeat, and Auto-Submit logic.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -56,6 +58,8 @@ export default function MockAttemptPage() {
   const setAnswer = useExamStore(s => s.setAnswer);
   const startTime = useExamStore(s => s.startTime);
   const language = useExamStore(s => s.language); 
+  const isSyncing = useExamStore(s => s.isSyncing);
+  const timeLeft = useExamStore(s => s.timeLeft);
 
   useEffect(() => {
     async function loadExam() {
@@ -124,7 +128,6 @@ export default function MockAttemptPage() {
     const attemptedIndices = Object.keys(answers).map(Number);
     const attemptedCount = attemptedIndices.length;
 
-    // Hardened Mark Parsing
     const posMarks = parseFloat(mockData.positiveMarks?.toString()) || 1;
     const negMarks = parseFloat(mockData.negativeMarks?.toString()) || 0.25;
 
@@ -163,28 +166,25 @@ export default function MockAttemptPage() {
     };
 
     try {
-      // 1. Save Result Document
       await setDoc(doc(db, "results", `${user.uid}_${mockId}`), resultPayload);
-      
-      // 2. Mark Attempt Completed
       await updateDoc(doc(db, "attempts", `${user.uid}_${mockId}`), { 
         status: 'COMPLETED', 
         updatedAt: serverTimestamp() 
       });
-
       toast({ title: "Test Submitted", description: "Audit complete. Syncing state rankings..." });
-      
-      // 3. Force brief delay for Firestore consistency
-      setTimeout(() => {
-         router.push(`/results/${mockId}`);
-      }, 500);
-
+      router.push(`/results/${mockId}`);
     } catch (e) {
-      console.error("Submission Error:", e);
-      toast({ variant: "destructive", title: "Sync Failed", description: "Registry update interrupted." });
+      toast({ variant: "destructive", title: "Sync Failed" });
       setIsSubmittingFinal(false);
     }
   }, [db, user, profile, isSubmittingFinal, questions, answers, router, mockId, mockTitle, mockData, startTime, toast]);
+
+  // Auto-Submit on Timeout
+  useEffect(() => {
+     if (!isInitializing && timeLeft === 0 && !isSubmittingFinal) {
+        handleSubmitFinal();
+     }
+  }, [timeLeft, isInitializing, isSubmittingFinal, handleSubmitFinal]);
 
   if (isInitializing) return <div className="h-screen w-full flex flex-col items-center justify-center bg-[#0B1528] space-y-8"><Zap className="h-16 w-16 text-primary animate-pulse" /><p className="text-[11px] font-black uppercase tracking-[0.5em] text-primary">Synchronizing Access Registry...</p></div>;
 
@@ -192,6 +192,18 @@ export default function MockAttemptPage() {
     <div className="flex flex-col h-[100dvh] bg-white font-body select-none overflow-hidden relative">
       <AntiCheat />
       <ExamHeader onPaletteToggle={() => setIsPaletteOpen(true)} onExitRequest={() => setShowExitModal(true)} />
+      
+      {/* CLOUD SYNC STATUS */}
+      <div className="absolute top-20 right-6 z-[120] pointer-events-none hidden md:block">
+         <div className={cn(
+            "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-500",
+            isSyncing ? "bg-primary/10 border-primary/20 text-primary" : "bg-emerald-50 border-emerald-100 text-emerald-600"
+         )}>
+            <Cloud className={cn("h-3 w-3", isSyncing && "animate-bounce")} />
+            <span className="text-[8px] font-black uppercase tracking-widest">{isSyncing ? 'Syncing...' : 'Registry Safe'}</span>
+         </div>
+      </div>
+
       <main className="flex-1 flex flex-col overflow-hidden bg-slate-50/30">
         <AnimatePresence>{isPaused && (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-[100] bg-[#0B1528]/95 backdrop-blur-xl flex items-center justify-center p-6"><div className="bg-white rounded-[3rem] p-12 space-y-8 text-center max-w-sm"><div className="h-20 w-20 bg-orange-50 rounded-[2rem] flex items-center justify-center mx-auto text-primary shadow-2xl"><Play className="h-10 w-10 fill-current" /></div><h2 className="text-2xl font-headline font-black text-[#0F172A] uppercase">Test Paused</h2><Button onClick={() => setPaused(false)} className="w-full h-16 bg-primary text-white rounded-2xl font-black uppercase text-[10px]">Resume Test</Button></div></motion.div>)}</AnimatePresence>
         <div className="flex-1 flex flex-col overflow-hidden"><SubjectTabs /><div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center"><div className="w-full max-w-5xl p-2 md:p-6 space-y-4">{questions[currentIdx] && <motion.div key={currentIdx} initial={{ opacity: 0, x: 5 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.15 }}><QuestionRenderer language={language} question={{...questions[currentIdx], displayId: (currentIdx + 1).toString()}} selectedAnswer={answers[currentIdx]} onSelect={(idx) => setAnswer(currentIdx, idx, db)} className="shadow-md border-none p-4 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem]" /></motion.div>}<TacticalFooter onSubmit={() => setShowSubmitModal(true)} /></div></div></div>

@@ -6,7 +6,7 @@ import { useParams, useRouter, usePathname } from "next/navigation"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useDoc, useFirestore, useUser } from "@/firebase"
-import { doc, collection, query, where, getDocs, limit } from "firebase/firestore"
+import { doc, collection, query, where, getDocs, limit, getDoc } from "firebase/firestore"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
@@ -22,15 +22,16 @@ import {
   Play,
   AlertCircle,
   Home,
-  Target
+  Target,
+  RefreshCw
 } from "lucide-react"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Individual Mock Gateway v19.7.
- * FIXED: Resolved FeatureNode syntax error preventing production builds.
+ * @fileOverview Individual Mock Gateway v19.8.
+ * UPDATED: Integrated Resume/Reattempt logic with attemptLimit checks.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -47,6 +48,7 @@ export default function MockOverviewPage() {
   
   const [isLocked, setIsLocked] = useState(false);
   const [accessChecked, setAccessChecked] = useState(false);
+  const [activeAttempt, setActiveAttempt] = useState<any>(null);
   const [previousAttempts, setPreviousAttempts] = useState<any[]>([]);
 
   useEffect(() => {
@@ -64,7 +66,14 @@ export default function MockOverviewPage() {
       const isPremium = tier === 'PREMIUM';
       
       try {
-        const resSnap = await getDocs(query(collection(db, "results"), where("userId", "==", user.uid), where("mockId", "==", mockId), limit(1)));
+        // 1. Check for Active/In-Progress Attempt
+        const attemptSnap = await getDoc(doc(db, "attempts", `${user.uid}_${mockId}`));
+        if (attemptSnap.exists()) {
+           setActiveAttempt(attemptSnap.data());
+        }
+
+        // 2. Check Result Registry
+        const resSnap = await getDocs(query(collection(db, "results"), where("userId", "==", user.uid), where("mockId", "==", mockId)));
         setPreviousAttempts(resSnap.docs.map(d => d.data()));
       } catch (e) {}
 
@@ -93,7 +102,8 @@ export default function MockOverviewPage() {
      return Math.max(0, mock.attemptLimit - previousAttempts.length);
   }, [mock, previousAttempts]);
 
-  const isLimitReached = attemptsLeft === 0;
+  const isLimitReached = attemptsLeft === 0 && (!activeAttempt || activeAttempt.status === 'COMPLETED');
+  const isResumable = activeAttempt && activeAttempt.status === 'IN_PROGRESS';
 
   if (mockLoading || userLoading || (user && !accessChecked)) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-6">
@@ -162,13 +172,21 @@ export default function MockOverviewPage() {
                       <Lock className="h-5 w-5 md:h-7 md:w-7" /> UNLOCK TEST
                     </Button>
                  ) : isLimitReached ? (
-                    <div className="bg-rose-50 border-2 border-rose-100 p-8 rounded-[2rem] flex items-center gap-6 text-left shadow-2xl">
-                       <AlertCircle className="h-10 w-10 text-rose-600" />
-                       <div><p className="text-xs font-black uppercase text-rose-700 tracking-widest mb-1">Limit Reached</p><p className="text-lg font-bold text-rose-500 uppercase leading-none">Max attempts audited.</p></div>
+                    <div className="flex flex-col gap-4">
+                       <div className="bg-rose-50 border-2 border-rose-100 p-8 rounded-[2rem] flex items-center gap-6 text-left shadow-2xl">
+                          <AlertCircle className="h-10 w-10 text-rose-600" />
+                          <div><p className="text-xs font-black uppercase text-rose-700 tracking-widest mb-1">Limit Reached</p><p className="text-lg font-bold text-rose-500 uppercase leading-none">Max attempts audited.</p></div>
+                       </div>
+                       <Button asChild variant="outline" className="h-14 rounded-2xl border-slate-200 font-black uppercase text-[10px] tracking-widest gap-2">
+                          <Link href={`/results/${mockId}`}><Target className="h-4 w-4" /> View Last Result</Link>
+                       </Button>
                     </div>
                  ) : (
                     <Button asChild className="w-full h-16 md:h-20 px-12 md:px-20 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.2em] text-[11px] md:text-sm rounded-[1.5rem] md:rounded-[2.5rem] shadow-4xl border-none transition-all active:scale-95">
-                      <Link href={`/mocks/${mockId}/instructions`} className="flex items-center justify-center gap-4"><Play className="h-6 w-6 fill-current" /> START TEST <ArrowRight className="h-5 w-5" /></Link>
+                      <Link href={`/mocks/${mockId}/instructions`} className="flex items-center justify-center gap-4">
+                        {isResumable ? <RefreshCw className="h-6 w-6" /> : <Play className="h-6 w-6 fill-current" />} 
+                        {isResumable ? 'RESUME TEST' : 'START TEST'} <ArrowRight className="h-5 w-5" />
+                      </Link>
                     </Button>
                  )}
               </div>

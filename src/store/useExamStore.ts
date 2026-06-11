@@ -1,3 +1,4 @@
+
 'use client';
 
 import { create } from 'zustand';
@@ -8,9 +9,9 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
 /**
- * @fileOverview Elite CBT Global Store v35.0 (Production Hardened).
+ * @fileOverview Elite CBT Global Store v36.0 (Production Hardened).
  * PERFORMANCE: Synchronized timestamp management for high-fidelity time usage tracking.
- * FIXED: startTime is now preserved strictly to ensure accurate test duration results.
+ * UPDATED: Integrated Cloud Sync Heartbeat to reassure users of data persistence.
  */
 
 interface ExamStore extends AttemptState {
@@ -23,6 +24,7 @@ interface ExamStore extends AttemptState {
   isPaused: boolean;
   isSubmitting: boolean;
   isPaletteVisible: boolean;
+  isSyncing: boolean;
 
   // Actions
   initExam: (mockId: string, mockTitle: string, userId: string, questions: Question[], duration: number, savedState?: any, languageMode?: LanguageDisplayMode) => void;
@@ -47,6 +49,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
   isPaused: false,
   isSubmitting: false,
   isPaletteVisible: true,
+  isSyncing: false,
 
   answers: {},
   status: {},
@@ -63,7 +66,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const now = Date.now();
     const state = get();
     
-    // Prevent re-initialization if already in progress for the same mock
+    // Prevent re-initialization if already in progress for the same session
     if (state.mockId === mockId && state.questions.length > 0 && !savedState) return;
 
     const isCompleted = savedState?.status === 'COMPLETED';
@@ -97,7 +100,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       violations: isStale ? 0 : (savedState?.violations || 0),
       currentIdx: isStale ? 0 : (savedState?.currentIdx || 0),
       currentSectionId: questions[isStale ? 0 : (savedState?.currentIdx || 0)]?.sectionId || '',
-      isPaused: false, isSubmitting: false
+      isPaused: false, isSubmitting: false, isSyncing: false
     });
 
     if (userId && mockId && !savedState) {
@@ -146,10 +149,22 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     if (!userId || !mockId || !db) return;
     const newAnswers = { ...answers };
     const newStatus = { ...status };
-    if (optionIdx === null) { delete newAnswers[idx]; newStatus[idx] = 'not-answered'; }
-    else { newAnswers[idx] = optionIdx; newStatus[idx] = 'answered'; }
+    
+    set({ isSyncing: true });
+    if (optionIdx === null) { 
+       delete newAnswers[idx]; 
+       newStatus[idx] = 'not-answered'; 
+    } else { 
+       newAnswers[idx] = optionIdx; 
+       newStatus[idx] = 'answered'; 
+    }
     set({ answers: newAnswers, status: newStatus });
-    updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), { [`answers.${idx}`]: optionIdx, [`status.${idx}`]: newStatus[idx], updatedAt: serverTimestamp() }).catch(() => {});
+    
+    updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), { 
+      [`answers.${idx}`]: optionIdx, 
+      [`status.${idx}`]: newStatus[idx], 
+      updatedAt: serverTimestamp() 
+    }).then(() => set({ isSyncing: false })).catch(() => set({ isSyncing: false }));
   },
 
   clearAnswer: (idx, db) => {
@@ -157,21 +172,36 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     if (!userId || !mockId || !db) return;
     const newAnswers = { ...answers };
     const newStatus = { ...status };
+    
+    set({ isSyncing: true });
     delete newAnswers[idx];
     newStatus[idx] = 'not-answered';
     set({ answers: newAnswers, status: newStatus });
-    updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), { [`answers.${idx}`]: null, [`status.${idx}`]: 'not-answered', updatedAt: serverTimestamp() }).catch(() => {});
+    
+    updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), { 
+       [`answers.${idx}`]: null, 
+       [`status.${idx}`]: 'not-answered', 
+       updatedAt: serverTimestamp() 
+    }).then(() => set({ isSyncing: false })).catch(() => set({ isSyncing: false }));
   },
 
   markForReview: (idx, db) => {
     const { status, answers, userId, mockId } = get();
     if (!userId || !mockId || !db) return;
     const newStatus = { ...status };
-    const hasAnswer = answers[idx] !== undefined;
+    const hasAnswer = answers[idx] !== undefined && answers[idx] !== null;
+    
+    set({ isSyncing: true });
     newStatus[idx] = hasAnswer ? 'answered-marked' : 'marked';
     set({ status: newStatus });
-    updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), { [`status.${idx}`]: newStatus[idx], updatedAt: serverTimestamp() }).catch(() => {});
-    get().saveAndNext(db);
+    
+    updateDoc(doc(db, 'attempts', `${userId}_${mockId}`), { 
+       [`status.${idx}`]: newStatus[idx], 
+       updatedAt: serverTimestamp() 
+    }).then(() => {
+       set({ isSyncing: false });
+       get().saveAndNext(db);
+    }).catch(() => set({ isSyncing: false }));
   },
 
   saveAndNext: (db) => {
