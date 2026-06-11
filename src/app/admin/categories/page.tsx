@@ -18,14 +18,14 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Governance Node v12.5.
- * UPDATED: Locked permanent logo for Teaching category.
+ * @fileOverview Institutional Category Governance Node v12.6.
+ * UPDATED: Locked permanent logo for Technical category.
  */
 
 const CATEGORY_ICONS: Record<string, any> = {
   "punjab-govt": <img src="https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png" className="h-full w-full object-contain p-1" />,
   "punjab-teaching": <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10" className="h-full w-full object-contain p-1" />,
-  "punjab-technical": <Zap className="h-6 w-6" />,
+  "punjab-technical": <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo0ZK9JI5KMfg9RoNdIwcsNlpx5IcPBWuKZw&s" className="h-full w-full object-contain p-1" />,
   "banking": <Wallet className="h-6 w-6" />,
   "central-govt": <Globe className="h-6 w-6" />
 };
@@ -132,7 +132,7 @@ export default function CategoryManagement() {
                   <TableRow key={cat.id} className="hover:bg-slate-50 group border-slate-50 transition-all">
                     <TableCell className="px-10 py-8">
                        <div className="flex items-center gap-6">
-                          <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center font-black shadow-inner bg-slate-50 text-slate-300", cat.color)}>
+                          <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center font-black shadow-inner bg-slate-50 text-slate-300")}>
                              {CATEGORY_ICONS[cat.id] || <Layers className="h-6 w-6" />}
                           </div>
                           <div>

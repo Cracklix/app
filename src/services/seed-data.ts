@@ -1,8 +1,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v68.3.
- * UPDATED: Applied new permanent logo for Punjab Teaching Exams.
+ * @fileOverview Institutional Punjab-Centric Seeding Node v68.4.
+ * UPDATED: Added permanent logo for Punjab Technical Exams.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -30,6 +30,16 @@ export async function seedInitialData(db: Firestore) {
       bgColor: "bg-blue-50",
       iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10",
       displayOrder: 2
+    },
+    {
+      id: "punjab-technical",
+      title: "Punjab Technical Exams",
+      description: "PSPCL, PSTCL, ALM and Technical Board recruitment nodes.",
+      highlight: "POWER & TECH",
+      color: "text-amber-500",
+      bgColor: "bg-amber-50",
+      iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo0ZK9JI5KMfg9RoNdIwcsNlpx5IcPBWuKZw&s",
+      displayOrder: 3
     }
   ];
 

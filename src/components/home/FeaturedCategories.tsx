@@ -21,8 +21,8 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Institutional Category Entry Nodes v4.4.
- * UPDATED: Locked permanent logo for Punjab Teaching Exams.
+ * @fileOverview Institutional Category Entry Nodes v4.5.
+ * UPDATED: Locked permanent logo for Punjab Technical Exams.
  */
 
 const CATEGORY_META = [
@@ -46,7 +46,7 @@ const CATEGORY_META = [
     id: "punjab-technical",
     title: "Punjab Technical",
     desc: "PSPCL, PSTCL, ALM & Technical Assistant posts.",
-    icon: <Zap className="h-8 w-8" />,
+    icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo0ZK9JI5KMfg9RoNdIwcsNlpx5IcPBWuKZw&s" className="h-full w-full object-contain" />,
     color: "text-amber-500",
     bgColor: "bg-amber-50"
   },
@@ -111,7 +111,9 @@ export default function FeaturedCategories() {
           >
              <Link href={`/exams/category/${cat.id}`}>
                 <Card className="border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100 p-8 text-left relative">
-                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">{cat.id !== 'punjab-govt' && cat.id !== 'punjab-teaching' && cat.icon}</div>
+                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
+                      {cat.id !== 'punjab-govt' && cat.id !== 'punjab-teaching' && cat.id !== 'punjab-technical' && cat.icon}
+                   </div>
                    
                    <div className={cn("h-16 w-16 rounded-2xl flex items-center justify-center mb-8 shadow-inner transition-transform group-hover:scale-110", cat.bgColor, cat.color)}>
                       <div className="h-full w-full flex items-center justify-center overflow-hidden rounded-xl">
