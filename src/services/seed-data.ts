@@ -1,8 +1,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v68.4.
- * UPDATED: Added permanent logo for Punjab Technical Exams.
+ * @fileOverview Institutional Punjab-Centric Seeding Node v69.0.
+ * UPDATED: Locked permanent logo for Punjab General Exams.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -13,12 +13,12 @@ export async function seedInitialData(db: Firestore) {
   const categories = [
     {
       id: "punjab-govt",
-      title: "Punjab Government Exams",
+      title: "Punjab General Exams",
       description: "Police, PSSSB, PPSC and major state board recruitments.",
       highlight: "STATE LEVEL",
       color: "text-primary",
       bgColor: "bg-orange-50",
-      iconUrl: "https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png",
+      iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR8W5eTBPdzztA7cziqnMmtWk9InL1yflUD_xb4vAsLw&s=10",
       displayOrder: 1
     },
     {

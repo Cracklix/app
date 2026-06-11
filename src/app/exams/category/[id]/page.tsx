@@ -15,12 +15,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Explorer v7.8.
- * UPDATED: Locked permanent logo for Punjab Banking & Cooperative category.
+ * @fileOverview Institutional Category Explorer v8.0.
+ * UPDATED: Locked permanent logo for Punjab General category.
  */
 
 const CATEGORY_META: Record<string, any> = {
-  "punjab-govt": { title: "Punjab Government", icon: <img src="https://static.pseb.ac.in/psebwebsite/front_assets/sites/default/files/inline-images/emblem.png" className="h-full w-full object-contain" /> },
+  "punjab-govt": { title: "Punjab General", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR8W5eTBPdzztA7cziqnMmtWk9InL1yflUD_xb4vAsLw&s=10" className="h-full w-full object-contain" /> },
   "punjab-teaching": { title: "Punjab Teaching", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10" className="h-full w-full object-contain" /> },
   "punjab-technical": { title: "Punjab Technical", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo0ZK9JI5KMfg9RoNdIwcsNlpx5IcPBWuKZw&s" className="h-full w-full object-contain" /> },
   "banking": { title: "Punjab Banking & Coop", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7McWqZqOgKy-BakccvR02WQdEQFrwuvmHBG5rYJzuEg&s=10" className="h-full w-full object-contain" /> },
