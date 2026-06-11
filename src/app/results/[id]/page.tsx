@@ -39,8 +39,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 /**
- * @fileOverview Test Results Hub v14.0.
- * UPDATED: Integrated Real-Time filter counts (Correct/Wrong/Skipped) for Answer Review.
+ * @fileOverview Test Results Hub v15.0.
+ * UPDATED: High-fidelity score display with negative mark support and visual warnings.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -214,6 +214,8 @@ export default function ResultPage() {
 
   if (!sessionData) return <div className="h-screen flex items-center justify-center text-slate-400 font-black uppercase text-xs">Registry Node Missing</div>
 
+  const isNegativeScore = sessionData.score < 0;
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 font-body pb-safe text-left print:bg-white print:pb-0">
       <Navbar />
@@ -248,7 +250,13 @@ export default function ResultPage() {
               </div>
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 pt-10 border-t border-white/5">
-                 <div className="text-left space-y-1"><p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">SCORE</p><p className="text-3xl md:text-5xl font-headline font-black text-primary">{Number(sessionData.score).toFixed(1)}</p></div>
+                 <div className="text-left space-y-1">
+                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">SCORE</p>
+                    <p className={cn("text-3xl md:text-5xl font-headline font-black", isNegativeScore ? "text-rose-500" : "text-primary")}>
+                       {Number(sessionData.score).toFixed(2)}
+                    </p>
+                    {isNegativeScore && <Badge className="bg-rose-500/20 text-rose-400 border-none text-[8px] font-black uppercase px-2 py-0.5 mt-1">Negative Range</Badge>}
+                 </div>
                  <div className="text-left space-y-1"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">TOTAL QUESTIONS</p><p className="text-3xl md:text-5xl font-headline font-black text-blue-400">{sessionData.totalQuestions}</p></div>
                  <div className="text-left space-y-1"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">TIME TAKEN</p><p className="text-3xl md:text-5xl font-headline font-black text-white">{Math.floor(sessionData.timeTaken / 60)}m</p></div>
                  <div className="text-left space-y-1"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">PERCENTILE</p><p className="text-3xl md:text-5xl font-headline font-black text-emerald-400">{merit.percentile}%</p></div>
@@ -372,7 +380,7 @@ export default function ResultPage() {
                           <div className="flex gap-8 items-center">
                              <div className="text-right hidden sm:block">
                                 <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">SCORE</p>
-                                <p className="text-sm font-black text-primary leading-none">{r.score?.toFixed(1) || '0.0'}</p>
+                                <p className="text-sm font-black text-primary leading-none">{r.score?.toFixed(2) || '0.00'}</p>
                              </div>
                              <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[9px] h-8 px-4 flex items-center">{r.accuracy}% Accuracy</Badge>
                           </div>
@@ -401,4 +409,3 @@ function FilterBtn({ active, onClick, label, count, icon, activeColor, textColor
       </button>
    )
 }
-

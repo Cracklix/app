@@ -25,8 +25,8 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Hardened CBT Engine v20.0.
- * AUDIT: Multi-layer security firewall prevents pass bypass via URL manipulation.
+ * @fileOverview Hardened CBT Engine v21.0.
+ * UPDATED: Precise scoring logic allows negative marks to be recorded and displayed.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -62,17 +62,14 @@ export default function MockAttemptPage() {
     async function loadExam() {
       if (!db || !user || !mockId) return;
       try {
-        // 1. RE-VERIFY PROFILE (FIREWALL)
         const profileSnap = await getDoc(doc(db, "users", user.uid));
         const currentProfile = profileSnap.data();
         
-        // 2. FETCH MOCK NODE
         const mockSnap = await getDoc(doc(db, "mocks", mockId));
         if (!mockSnap.exists()) throw new Error("Test node not found in registry.");
         const mData = mockSnap.data();
         setMockData(mData);
 
-        // 3. HARDENED PASS AUDIT
         const tier = (mData.accessLevel || mData.accessType || 'FREE').trim().toUpperCase();
         const isPremium = tier === 'PREMIUM';
         const userEmail = user.email?.toLowerCase();
@@ -93,7 +90,6 @@ export default function MockAttemptPage() {
            return;
         }
 
-        // 4. INGESTION HUB
         const questionIds = mData.questionIds || [];
         const fetchedQuestions: any[] = [];
         const chunks = [];
@@ -126,22 +122,41 @@ export default function MockAttemptPage() {
     let score = 0;
     const positiveMarks = mockData?.positiveMarks || 1;
     const negativeMarks = mockData?.negativeMarks || 0.25;
+    
     questions.forEach((q, idx) => {
       const studentAnsIdx = answers[idx];
       if (studentAnsIdx === undefined || studentAnsIdx === null) return;
-      if (['A', 'B', 'C', 'D'].indexOf(q.correctAnswer) === studentAnsIdx) score += positiveMarks;
-      else score -= negativeMarks;
+      if (['A', 'B', 'C', 'D'].indexOf(q.correctAnswer) === studentAnsIdx) {
+        score += positiveMarks;
+      } else {
+        score -= negativeMarks;
+      }
     });
+
     const resultPayload = {
-      userId: user.uid, userName: user.displayName || 'Aspirant', mockId, mockTitle,
-      score: Math.max(0, score), totalQuestions: questions.length, accuracy: Math.max(0, Math.round((score / (Object.keys(answers).length * positiveMarks || 1)) * 100)),
-      timeTaken: Math.round((Date.now() - startTime) / 1000), answers, timestamp: new Date().toISOString(), createdAt: serverTimestamp(),
+      userId: user.uid, 
+      userName: user.displayName || 'Aspirant', 
+      mockId, 
+      mockTitle,
+      score: score, // NO FLOORING: Allow negative scores for accurate reporting
+      totalQuestions: questions.length, 
+      accuracy: Math.max(0, Math.round((score / (Object.keys(answers).length * positiveMarks || 1)) * 100)),
+      timeTaken: Math.round((Date.now() - startTime) / 1000), 
+      answers, 
+      timestamp: new Date().toISOString(), 
+      createdAt: serverTimestamp(),
       accessLevel: mockData?.accessLevel || 'FREE' 
     };
-    await setDoc(doc(db, "results", `${user.uid}_${mockId}`), resultPayload);
-    await updateDoc(doc(db, "attempts", `${user.uid}_${mockId}`), { status: 'COMPLETED', updatedAt: serverTimestamp() });
-    router.push(`/results/${mockId}`);
-  }, [db, user, isSubmittingFinal, questions, answers, router, mockId, mockTitle, mockData, startTime]);
+
+    try {
+      await setDoc(doc(db, "results", `${user.uid}_${mockId}`), resultPayload);
+      await updateDoc(doc(db, "attempts", `${user.uid}_${mockId}`), { status: 'COMPLETED', updatedAt: serverTimestamp() });
+      router.push(`/results/${mockId}`);
+    } catch (e) {
+      toast({ variant: "destructive", title: "Sync Failed", description: "Could not save result to cloud." });
+      setIsSubmittingFinal(false);
+    }
+  }, [db, user, isSubmittingFinal, questions, answers, router, mockId, mockTitle, mockData, startTime, toast]);
 
   if (isInitializing) return <div className="h-screen w-full flex flex-col items-center justify-center bg-[#0B1528] space-y-8"><Zap className="h-16 w-16 text-primary animate-pulse" /><p className="text-[11px] font-black uppercase tracking-[0.5em] text-primary">Synchronizing Access Registry...</p></div>;
 
