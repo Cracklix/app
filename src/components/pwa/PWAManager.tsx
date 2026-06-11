@@ -1,14 +1,13 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { X, ShieldCheck, Zap, Download } from 'lucide-react';
+import { X, ShieldCheck, Zap, Download, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Institutional PWA Lifecycle Manager v6.0.
+ * @fileOverview Institutional PWA Lifecycle Manager v7.1.
  * FIXED: Advanced hydration guard and global event broadcasting for UI sync.
  */
 export default function PWAManager() {
@@ -26,6 +25,7 @@ export default function PWAManager() {
       navigator.serviceWorker.register('/sw.js').then(
         (reg) => {
           console.log('[PWA] ServiceWorker registered');
+          window.dispatchEvent(new CustomEvent('sw-ready'));
         },
         (err) => console.log('[PWA] ServiceWorker registration failed:', err)
       );
@@ -33,15 +33,16 @@ export default function PWAManager() {
 
     // 2. Install prompt listener
     const handleBeforeInstallPrompt = (e: any) => {
+      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
-      // Store event globally for other components to access
+      // Stash the event so it can be triggered later.
       (window as any).deferredPrompt = e;
       setDeferredPrompt(e);
       
-      // Dispatch custom event to notify Navbar/Sidebar
+      // Notify components like Navbar/Sidebar that the app is installable
       window.dispatchEvent(new CustomEvent('pwa-installable'));
       
-      // Show automated banner after delay
+      // Delay prompt visibility for non-intrusive experience
       const timer = setTimeout(() => {
         const isExcluded = pathname?.includes('/attempt') || pathname?.startsWith('/admin');
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
@@ -49,7 +50,7 @@ export default function PWAManager() {
         if (!isExcluded && !isStandalone) {
           setShowPrompt(true);
         }
-      }, 5000);
+      }, 4000);
       
       return () => clearTimeout(timer);
     };
@@ -79,7 +80,9 @@ export default function PWAManager() {
     const prompt = deferredPrompt || (window as any).deferredPrompt;
     if (!prompt) return;
 
+    // Show the native browser prompt
     prompt.prompt();
+    // Wait for the user to respond to the prompt
     const { outcome } = await prompt.userChoice;
     
     if (outcome === 'accepted') {
@@ -112,7 +115,7 @@ export default function PWAManager() {
 
             <div className="flex-1 min-w-0 text-left">
                <h4 className="text-[13px] font-black uppercase tracking-tight leading-none mb-1">Install CRACKLIX App</h4>
-               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Instant access to tests</p>
+               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Fast access to mocks</p>
             </div>
 
             <div className="flex items-center gap-2">
@@ -120,7 +123,7 @@ export default function PWAManager() {
                 onClick={handleInstallClick}
                 className="h-10 px-4 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[9px] tracking-widest rounded-xl shadow-lg border-none transition-all active:scale-95 gap-2"
                >
-                  <Download className="h-3 w-3" /> Install
+                  <Download className="h-3 w-3" /> Get
                </Button>
                <button 
                 onClick={() => setShowPrompt(false)}

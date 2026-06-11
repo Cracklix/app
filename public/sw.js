@@ -1,10 +1,9 @@
-
 /**
- * @fileOverview Institutional PWA Service Worker v2.0.
- * REQUIRED: Must have a 'fetch' listener for the browser to enable "Add to Home Screen".
+ * @fileOverview Institutional PWA Service Worker v8.0.
+ * HARDENED: Mandatory fetch listener enabled for Chrome installability.
  */
 
-const CACHE_NAME = 'cracklix-cache-v1';
+const CACHE_NAME = 'cracklix-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/manifest.webmanifest',
@@ -23,12 +22,10 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
+        keys.map((key) => {
+          if (key !== CACHE_NAME) return caches.delete(key);
         })
       );
     })
@@ -36,7 +33,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// MANDATORY: Fetch listener enables installability
+// MANDATORY: The fetch listener is what makes Chrome show the "Install App" prompt
 self.addEventListener('fetch', (event) => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
@@ -50,6 +47,17 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
       return response || fetch(event.request);
+    })
+  );
+});
+
+self.addEventListener('push', (event) => {
+  const data = event.data ? event.data.json() : {};
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'CRACKLIX Alert', {
+      body: data.message || 'Check out new mock tests.',
+      icon: '/icons/icon-192x192.png',
+      badge: '/icons/icon-192x192.png'
     })
   );
 });

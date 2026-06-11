@@ -34,10 +34,11 @@ import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Institutional Mobile Sidebar v5.0.
- * UPDATED: Refined spacing and typography for mobile scanning.
+ * @fileOverview Institutional Mobile Sidebar v6.0.
+ * UPDATED: Integrated PWA Install button for discovery.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
