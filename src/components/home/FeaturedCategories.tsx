@@ -21,8 +21,8 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Institutional Category Entry Nodes v4.7.
- * UPDATED: Locked permanent logo for Central Govt Exams.
+ * @fileOverview Institutional Category Entry Nodes v4.8.
+ * UPDATED: Locked permanent logo for Punjab Banking & Cooperative category.
  */
 
 const CATEGORY_META = [
@@ -52,9 +52,9 @@ const CATEGORY_META = [
   },
   {
     id: "banking",
-    title: "Banking Exams",
-    desc: "IBPS, PO, SO, SBI & RBI special tests.",
-    icon: <img src="https://3.imimg.com/data3/KV/NL/MY-14548641/bank-exams.png" className="h-full w-full object-contain" />,
+    title: "Punjab Banking & Coop",
+    desc: "State Cooperative Bank, Apex, PADB and Central Bank nodes.",
+    icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7McWqZqOgKy-BakccvR02WQdEQFrwuvmHBG5rYJzuEg&s=10" className="h-full w-full object-contain" />,
     color: "text-emerald-600",
     bgColor: "bg-emerald-50"
   },
