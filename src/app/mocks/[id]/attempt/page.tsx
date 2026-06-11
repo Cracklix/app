@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -24,9 +23,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened CBT Engine v31.0 (Production Verified).
+ * @fileOverview Hardened CBT Engine v32.0 (Production Verified).
+ * FIXED: Missing 'cn' import resolved to prevent ReferenceError.
  * FEATURES: Instant submission lock, Cloud Sync Heartbeat, and Auto-Submit logic.
  */
 

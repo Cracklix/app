@@ -1,9 +1,9 @@
 /**
- * @fileOverview Production Service Worker for Cracklix PWA.
- * Browsers require a functional fetch listener to enable "Install App" features.
+ * @fileOverview Institutional PWA Service Worker v2.0.
+ * Hardened to prevent ChunkLoadError while ensuring offline installability.
  */
 
-const CACHE_NAME = 'cracklix-cache-v1';
+const CACHE_NAME = 'cracklix-v2';
 const PRECACHE_ASSETS = [
   '/',
   '/manifest.webmanifest',
@@ -11,46 +11,52 @@ const PRECACHE_ASSETS = [
   '/icons/icon-512x512.png'
 ];
 
-// 1. Install Event - Cache initial assets
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_ASSETS);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS))
   );
+  self.skipWaiting();
 });
 
-// 2. Activate Event - Clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    caches.keys().then((keys) => Promise.all(
+      keys.map((key) => {
+        if (key !== CACHE_NAME) return caches.delete(key);
+      })
+    ))
   );
-  return self.clients.claim();
+  self.clients.claim();
 });
 
-// 3. Fetch Event - Network-First strategy to prevent stale CBT chunks
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
-  if (event.request.method !== 'GET') return;
+  // 1. Next.js Static Chunks - Network-First Strategy
+  // Prevents ChunkLoadError by prioritizing fresh JS while falling back to cache
+  if (event.request.url.includes('/_next/static/')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const resClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
 
+  // 2. Standard Assets - Cache-First Strategy
   event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        // If it's a valid response, maybe cache it (optional)
-        return response;
-      })
-      .catch(() => {
-        // Fallback to cache if network fails (offline support)
-        return caches.match(event.request);
-      })
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request).then((fetchRes) => {
+        return caches.open(CACHE_NAME).then((cache) => {
+          // Only cache successful GET requests
+          if (event.request.method === 'GET' && fetchRes.status === 200) {
+            cache.put(event.request, fetchRes.clone());
+          }
+          return fetchRes;
+        });
+      });
+    })
   );
 });
