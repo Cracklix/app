@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -102,15 +101,15 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-[1000] w-full pointer-events-auto">
       {settings?.showAnnouncement && (
-        <div className="bg-primary text-white py-1 md:py-1.5 flex items-center overflow-hidden relative shadow-2xl pointer-events-none h-6 md:h-8">
+        <div className="bg-primary text-white py-1 md:py-1.5 flex items-center overflow-hidden relative shadow-2xl pointer-events-none h-7 md:h-8">
           <div className="flex items-center gap-2 animate-marquee whitespace-nowrap min-w-full">
             <Megaphone className="h-3 w-3 shrink-0 ml-4" />
-            <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em]">
+            <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em]">
               {settings.announcement}
             </p>
             <span className="mx-40 md:mx-80" />
             <Megaphone className="h-3 w-3 shrink-0" />
-            <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em]">
+            <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em]">
               {settings.announcement}
             </p>
             <span className="mx-40 md:mx-80" />
@@ -119,21 +118,21 @@ export default function Navbar() {
       )}
 
       <nav className="w-full bg-[#0B1528] border-b border-white/5 py-2 md:py-3 shadow-xl backdrop-blur-md bg-opacity-95">
-        <div className="container mx-auto max-w-[98%] lg:max-w-[90%] flex items-center justify-between px-2">
+        <div className="container mx-auto max-w-full flex items-center justify-between px-3 md:px-6">
           <div className="flex items-center gap-2 md:gap-8">
-            <div className="flex items-center gap-1 md:gap-6">
+            <div className="flex items-center gap-2 md:gap-6">
                <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
                  <SheetTrigger asChild>
-                   <button className="text-white p-2 hover:bg-white/5 rounded-2xl transition-all active:scale-90 cursor-pointer border border-white/5 focus:outline-none">
-                     <Menu className="h-5 w-5" />
+                   <button className="text-white p-2.5 hover:bg-white/5 rounded-2xl transition-all active:scale-90 cursor-pointer border border-white/10 focus:outline-none shrink-0">
+                     <Menu className="h-6 w-6" />
                    </button>
                  </SheetTrigger>
-                 <SheetContent side="left" className="p-0 border-none w-[290px] overflow-hidden shadow-5xl transition-all duration-200 bg-[#0F172A] z-[2000] top-0 h-screen">
+                 <SheetContent side="left" className="p-0 border-none w-[280px] overflow-hidden shadow-5xl transition-all duration-200 bg-[#0F172A] z-[2001] top-0 h-screen">
                    <SheetHeader className="sr-only"><SheetTitle>Menu Hub</SheetTitle></SheetHeader>
                    <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
                  </SheetContent>
                </Sheet>
-               <Logo variant="light" className="origin-left scale-105" />
+               <Logo variant="light" className="origin-left scale-90 sm:scale-100" />
             </div>
 
             <div className="hidden lg:flex items-center gap-10 text-[12px] font-black uppercase tracking-[0.2em] text-[#7A8B9E]">
@@ -165,7 +164,7 @@ export default function Navbar() {
 
             {user && passStatus && (
                <div className={cn(
-                 "hidden lg:flex items-center gap-3 px-4 py-1.5 rounded-xl border-2 transition-all",
+                 "hidden sm:flex items-center gap-3 px-4 py-1.5 rounded-xl border-2 transition-all",
                  passStatus.active ? "bg-emerald-50/10 border-emerald-500/20 text-emerald-400" : "bg-rose-50/10 border-rose-500/20 text-rose-400"
                )}>
                   {passStatus.active ? <Gem className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
@@ -176,7 +175,7 @@ export default function Navbar() {
                </div>
             )}
 
-            <Link href="/search" className="text-slate-400 hover:text-white p-2 rounded-2xl hover:bg-white/5 transition-all active:scale-95 border border-white/5 pointer-events-auto">
+            <Link href="/search" className="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-white/5 transition-all active:scale-95 border border-white/5 pointer-events-auto">
               <Search className="h-5 w-5" />
             </Link>
 
@@ -189,7 +188,7 @@ export default function Navbar() {
                     <StudentAvatar profile={profile} className="h-full w-full border-none" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-60 bg-[#0F172A] border-white/10 text-white rounded-[2rem] p-2 shadow-5xl animate-in fade-in zoom-in-95 duration-200 z-[1001]" align="end">
+                <DropdownMenuContent className="w-60 bg-[#0F172A] border-white/10 text-white rounded-[2rem] p-2 shadow-5xl animate-in fade-in zoom-in-95 duration-200 z-[2001]" align="end">
                   <DropdownMenuLabel className="px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">Student Area</DropdownMenuLabel>
                   <DropdownNavItem href="/profile" icon={<User className="h-4 w-4 text-blue-400" />} label="My Profile" />
                   <DropdownNavItem href="/dashboard" icon={<Award className="h-4 w-4 text-emerald-400" />} label="My Results" />

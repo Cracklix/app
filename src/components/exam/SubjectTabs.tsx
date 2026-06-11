@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useExamStore } from '@/store/useExamStore';
@@ -6,8 +5,8 @@ import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 
 /**
- * @fileOverview High-Fidelity Subject Hub v7.0.
- * Perfectly aligns with the user screenshot: white background, bold orange border for active state.
+ * @fileOverview Refined Subject Switching Hub.
+ * UPDATED: Fixed horizontal width for mobile to prevent overflow/cutting.
  */
 export default function SubjectTabs() {
   const questions = useExamStore(s => s.questions);
@@ -44,7 +43,7 @@ export default function SubjectTabs() {
   const activeSectionId = questions[currentIdx]?.sectionId || 'General Hub';
 
   return (
-    <nav className="bg-white border-b border-slate-100 h-16 flex items-center px-4 overflow-x-auto no-scrollbar gap-3 shrink-0 sticky top-0 z-40 shadow-sm">
+    <nav className="bg-white border-b border-slate-100 h-14 md:h-16 flex items-center px-3 overflow-x-auto no-scrollbar gap-2 shrink-0 sticky top-0 z-40 shadow-sm">
       {sections.map((s) => {
         const isActive = activeSectionId === s.id;
         return (
@@ -52,13 +51,13 @@ export default function SubjectTabs() {
             key={s.id}
             onClick={() => setCurrentIdx(s.startIdx)}
             className={cn(
-              "h-11 flex items-center justify-center px-4 rounded-xl border-2 transition-all whitespace-nowrap min-w-[48%] md:min-w-[200px]",
+              "h-10 md:h-11 flex items-center justify-center px-4 rounded-xl border-2 transition-all whitespace-nowrap min-w-[130px] md:min-w-[180px]",
               isActive 
-                ? "border-primary text-primary bg-white shadow-md" 
+                ? "border-primary text-primary bg-white shadow-sm" 
                 : "border-slate-100 text-slate-400 bg-white"
             )}
           >
-            <span className="text-[10px] md:text-[11px] font-black uppercase tracking-tighter leading-tight text-center truncate">
+            <span className="text-[9px] md:text-[10px] font-[900] uppercase tracking-tighter leading-tight text-center truncate">
                {s.name.replace(/-/g, ' ')}
             </span>
           </button>

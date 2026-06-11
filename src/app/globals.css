@@ -42,10 +42,10 @@
     pointer-events: auto;
   }
   
-  h1 { @apply text-xl md:text-5xl font-black uppercase tracking-tight leading-tight; }
-  h2 { @apply text-lg md:text-3xl font-black uppercase tracking-tight; }
-  h3 { @apply text-base md:text-2xl font-black uppercase tracking-tight; }
-  p { @apply text-xs md:text-base text-slate-500 font-medium; }
+  h1 { @apply text-2xl md:text-5xl font-black uppercase tracking-tight leading-tight; }
+  h2 { @apply text-xl md:text-3xl font-black uppercase tracking-tight; }
+  h3 { @apply text-lg md:text-2xl font-black uppercase tracking-tight; }
+  p { @apply text-[13px] md:text-base text-slate-500 font-medium; }
 }
 
 .mobile-app-shell {
@@ -54,7 +54,7 @@
 }
 
 .pb-safe {
-  padding-bottom: calc(env(safe-area-inset-bottom) + 76px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -95,4 +95,9 @@
 
 .pointer-events-auto {
   pointer-events: auto !important;
+}
+
+/* Fix for mobile text clipping on clamped items */
+.truncate-mobile {
+  @apply block overflow-hidden text-ellipsis whitespace-nowrap;
 }

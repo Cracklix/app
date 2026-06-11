@@ -1,4 +1,3 @@
-
 'use client';
 
 import { motion } from "framer-motion";
@@ -12,8 +11,8 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview High-Density Mobile-First Hero v40.0.
- * UPDATED: Replaced difficult words with easy ones (Node -> Hub, Prep -> Study).
+ * @fileOverview Responsive Mobile-First Hero v41.0.
+ * UPDATED: Fixed font-clipping on mobile headings.
  */
 
 export default function Hero() {
@@ -38,54 +37,54 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative pt-6 pb-10 md:pt-20 md:pb-32 bg-[#08152D] overflow-hidden">
+    <section className="relative pt-8 pb-12 md:pt-20 md:pb-32 bg-[#08152D] overflow-hidden">
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
          <div className="h-full w-full bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:30px_30px]" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10 max-w-7xl text-left">
-        <div className="grid lg:grid-cols-2 gap-8 md:gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
           
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="space-y-4 md:space-y-10"
+            className="space-y-6 md:space-y-10"
           >
-            <div className="space-y-2 md:space-y-6">
-               <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20">
-                  <Sparkles className="h-2.5 w-2.5 text-primary" />
-                  <span className="text-[7px] md:text-[10px] font-black text-primary uppercase tracking-widest">Punjab's No. 1 Study Hub</span>
+            <div className="space-y-4 md:space-y-6">
+               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+                  <Sparkles className="h-3 w-3 text-primary" />
+                  <span className="text-[8px] md:text-[10px] font-black text-primary uppercase tracking-widest">Punjab's No. 1 Study Hub</span>
                </div>
-               <h1 className="text-3xl md:text-5xl lg:text-7xl font-headline font-black leading-[1.1] text-white uppercase tracking-tight">
-                  CRACK EVERY <br/> <span className="text-primary">RECRUITMENT.</span>
+               <h1 className="text-3xl sm:text-5xl lg:text-7xl font-headline font-black leading-[1.1] text-white uppercase tracking-tight break-words">
+                  CRACK EVERY <br className="hidden sm:block"/> <span className="text-primary">RECRUITMENT.</span>
                </h1>
-               <p className="text-[13px] md:text-xl text-slate-400 font-medium max-w-lg leading-relaxed">
+               <p className="text-sm md:text-xl text-slate-400 font-medium max-w-lg leading-relaxed">
                   Best practice series for PSSSB, PPSC, Police, and Army. Updated pattern based study plans.
                </p>
             </div>
 
             <form onSubmit={handleSearch} className="relative group max-w-lg">
-               <div className="relative flex items-center bg-white rounded-lg md:rounded-2xl p-1 shadow-2xl">
-                  <Search className="absolute left-3 h-3.5 w-3.5 md:h-5 md:w-5 text-slate-400" />
+               <div className="relative flex items-center bg-white rounded-xl md:rounded-2xl p-1.5 shadow-2xl">
+                  <Search className="absolute left-4 h-4 w-4 md:h-5 md:w-5 text-slate-400" />
                   <Input 
                     placeholder="Search Patwari, SI, Army..." 
                     value={queryText}
                     onChange={(e) => setQueryText(e.target.value)}
-                    className="h-10 md:h-16 pl-9 md:pl-12 pr-4 border-none text-xs md:text-lg font-medium text-[#0F172A] bg-transparent focus-visible:ring-0 w-full"
+                    className="h-11 md:h-16 pl-10 md:pl-12 pr-4 border-none text-[13px] md:text-lg font-medium text-[#0F172A] bg-transparent focus-visible:ring-0 w-full"
                   />
                   <Button 
                     type="submit"
-                    className="h-8 md:h-13 px-4 md:px-8 bg-[#0F172A] text-white font-black uppercase text-[8px] md:text-[11px] tracking-widest rounded-md md:rounded-xl ml-1"
+                    className="h-9 md:h-13 px-5 md:px-8 bg-[#0F172A] text-white font-black uppercase text-[9px] md:text-[11px] tracking-widest rounded-lg md:rounded-xl ml-1 shrink-0"
                   >
                     Search
                   </Button>
                </div>
             </form>
 
-            <div className="flex flex-wrap gap-4 mt-6">
-              <Button asChild className="bg-primary hover:bg-orange-600 text-white px-12 py-4 rounded-xl font-black uppercase tracking-widest text-[11px] h-16 shadow-2xl shadow-primary/30 transition-all active:scale-95 border-none group">
-                 <Link href="/exams">Start Practice <Zap className="ml-3 h-4 w-4 group-hover:scale-125 transition-transform" /></Link>
+            <div className="flex gap-4 mt-8">
+              <Button asChild className="bg-primary hover:bg-orange-600 text-white px-8 md:px-12 rounded-xl font-black uppercase tracking-[0.1em] text-[10px] md:text-[11px] h-14 md:h-16 shadow-2xl transition-all active:scale-95 border-none group flex-1 sm:flex-none">
+                 <Link href="/exams" className="flex items-center justify-center gap-3">START PRACTICE <Zap className="h-4 w-4 fill-current" /></Link>
               </Button>
             </div>
           </motion.div>
