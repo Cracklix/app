@@ -6,7 +6,7 @@ import { useFirestore } from '@/firebase';
 
 /**
  * @file Overview High-Fidelity Tactical Action Bar.
- * REFINED: Reordered buttons and set Save & Next to Orange per user request.
+ * UPDATED: Restored "Save & Next" as the persistent primary action.
  */
 export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const currentIdx = useExamStore(s => s.currentIdx);
@@ -16,8 +16,7 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const saveAndNext = useExamStore(s => s.saveAndNext);
   
   const db = useFirestore();
-  const isLast = currentIdx === questions.length - 1;
-
+  
   return (
     <div className="w-full grid grid-cols-3 gap-3 pt-6 pb-8 bg-white/80 backdrop-blur-sm sticky bottom-0 z-40">
       <Button 
@@ -37,10 +36,10 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
       </Button>
 
       <Button 
-        onClick={isLast ? onSubmit : () => saveAndNext(db)}
+        onClick={() => saveAndNext(db)}
         className="h-14 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl font-black uppercase text-[10px] tracking-tight shadow-xl shadow-orange-500/20 active:scale-95 border-none"
       >
-        {isLast ? 'Finish Test' : 'Save & Next'}
+        Save & Next
       </Button>
     </div>
   );
