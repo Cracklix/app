@@ -34,8 +34,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v30.0.
- * UPDATED: Responsive Tab scrolling and vertical stacking for mobile.
+ * @fileOverview Institutional Exam Hub v30.1.
+ * FIXED: Resolved Runtime ReferenceError on notes query.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -56,7 +56,7 @@ export default function ExamHubPage() {
   const hubQuery = useMemo(() => (db ? query(collection(db, "current_affairs_hub"), where("status", "==", "PUBLISHED")) : null), [db])
 
   const { data: rawMocks, loading: mocksLoading } = useCollection<any>(mocksQuery)
-  const { data: rawNotes, loading: notesLoading } = useCollection<any>(rawNotesQuery)
+  const { data: rawNotes, loading: notesLoading } = useCollection<any>(notesQuery)
   const { data: userResults, loading: resultsLoading } = useCollection<any>(resultsQuery)
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
   const { data: caHub, loading: caLoading } = useCollection<any>(hubQuery);
