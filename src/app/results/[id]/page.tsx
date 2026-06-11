@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -38,8 +39,9 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 /**
- * @fileOverview Test Results Hub v16.0.
- * UPDATED: High-fidelity score display with explicit negative mark support and visual warnings.
+ * @fileOverview Test Results Hub v17.0.
+ * UPDATED: High-fidelity score display with explicit negative mark support.
+ * PERFORMANCE: Rose-colored warning for negative scores.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];

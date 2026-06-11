@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -24,8 +25,9 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Hardened CBT Engine v22.0.
- * UPDATED: Precise scoring logic allows negative marks to be recorded and displayed.
+ * @fileOverview Hardened CBT Engine v23.0.
+ * UPDATED: Precise scoring logic Subtraction allows raw negative marks to be stored.
+ * RELIABILITY: Implemented double-click prevention on submission.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -118,9 +120,10 @@ export default function MockAttemptPage() {
   const handleSubmitFinal = useCallback(async () => {
     if (!db || isSubmittingFinal || !user) return;
     setIsSubmittingFinal(true);
+    
     let score = 0;
-    const positiveMarks = mockData?.positiveMarks || 1;
-    const negativeMarks = mockData?.negativeMarks || 0.25;
+    const positiveMarks = Number(mockData?.positiveMarks) || 1;
+    const negativeMarks = Number(mockData?.negativeMarks) || 0.25;
     
     questions.forEach((q, idx) => {
       const studentAnsIdx = answers[idx];
@@ -137,7 +140,7 @@ export default function MockAttemptPage() {
       userName: user.displayName || 'Aspirant', 
       mockId, 
       mockTitle,
-      score: score, // NO FLOORING: Allow negative scores for accurate reporting
+      score: score, // NO FLOORING: Preserve raw negative values
       totalQuestions: questions.length, 
       accuracy: Math.max(0, Math.round((score / (Object.keys(answers).length * positiveMarks || 1)) * 100)),
       timeTaken: Math.round((Date.now() - startTime) / 1000), 

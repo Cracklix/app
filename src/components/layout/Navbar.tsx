@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -26,8 +27,8 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v17.0.
- * UPDATED: Optimized PWA Install button visibility and live status nodes.
+ * @fileOverview Institutional Navbar v18.0.
+ * UPDATED: Corrected PWA Install visibility logic via Service Worker detection.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -51,7 +52,7 @@ export default function Navbar() {
     window.addEventListener('pwa-installable', checkInstall);
     window.addEventListener('pwa-installed', () => setCanInstall(false));
     
-    // Immediate check
+    // Immediate check for existing prompt event
     checkInstall();
     
     return () => {
