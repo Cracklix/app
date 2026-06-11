@@ -18,7 +18,7 @@ import {
   sendPasswordResetEmail,
   updateProfile
 } from "firebase/auth"
-import { doc, setDoc, getDoc } from "firebase/firestore"
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
@@ -26,8 +26,8 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 
 /**
- * @fileOverview Optimized Login Hub v7.0.
- * UPDATED: Default redirect strictly set to Home Page (/) per high-fidelity logic.
+ * @fileOverview Optimized Login Hub v8.0.
+ * UPDATED: Hardened Google Sign-In with robust error handling and account selection forcing.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -79,9 +79,9 @@ function LoginContent() {
     try {
       if (mode === 'login') {
         await signInWithEmailAndPassword(auth, email, password)
-        toast({ title: "Login Successful", description: "Welcome back!" })
+        toast({ title: "Login Successful", description: "Welcome back to the Prep Hub!" })
         startTransition(() => {
-          router.push(returnUrl)
+          router.replace(returnUrl)
         })
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
@@ -96,46 +96,75 @@ function LoginContent() {
           role: isSuperAdmin ? 'SUPER_ADMIN' : 'STUDENT',
           state: "Punjab",
           createdAt: new Date().toISOString(),
+          updatedAt: serverTimestamp(),
           status: 'Free',
           pinnedExams: []
         })
-        toast({ title: "Account Created", description: "Welcome to Cracklix!" })
+        toast({ title: "Account Created", description: "Welcome to Cracklix! Start your first mock." })
         startTransition(() => {
-          router.push(returnUrl)
+          router.replace(returnUrl)
         })
       }
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Error", description: error.message })
+      toast({ variant: "destructive", title: "Auth Error", description: error.message })
       setLoading(false)
     }
   }
 
   const handleGoogleSignIn = async () => {
-    const provider = new GoogleAuthProvider()
+    if (loading) return;
     setLoading(true)
+    
     try {
+      const provider = new GoogleAuthProvider()
+      // Force account selection to prevent sticky sessions
+      provider.setCustomParameters({ prompt: 'select_account' })
+      
       const result = await signInWithPopup(auth, provider)
       const user = result.user
-      const userSnap = await getDoc(doc(db, 'users', user.uid))
       
-      const isSuperAdmin = user.email && SUPER_ADMIN_WHITELIST.includes(user.email.toLowerCase());
+      if (!user.email) throw new Error("Google account email is mandatory.");
+
+      const userRef = doc(db, 'users', user.uid)
+      const userSnap = await getDoc(userRef)
+      
+      const isSuperAdmin = SUPER_ADMIN_WHITELIST.includes(user.email.toLowerCase());
       
       if (!userSnap.exists()) {
-        await setDoc(doc(db, 'users', user.uid), {
-          id: user.uid, name: user.displayName || "Student",
-          email: user.email, role: isSuperAdmin ? 'SUPER_ADMIN' : 'STUDENT',
-          state: "Punjab", createdAt: new Date().toISOString(), status: 'Free',
-          pinnedExams: []
+        await setDoc(userRef, {
+          id: user.uid, 
+          name: user.displayName || "Aspirant",
+          email: user.email, 
+          role: isSuperAdmin ? 'SUPER_ADMIN' : 'STUDENT',
+          state: "Punjab", 
+          createdAt: new Date().toISOString(), 
+          updatedAt: serverTimestamp(),
+          status: 'Free',
+          pinnedExams: [],
+          phone: user.phoneNumber || ""
         })
       } else if (isSuperAdmin && userSnap.data().role !== 'SUPER_ADMIN') {
-        await setDoc(doc(db, 'users', user.uid), { role: 'SUPER_ADMIN' }, { merge: true });
+        await setDoc(userRef, { role: 'SUPER_ADMIN', updatedAt: serverTimestamp() }, { merge: true });
       }
 
+      toast({ title: "Welcome", description: `Signed in as ${user.displayName}` })
+      
       startTransition(() => {
-        router.push(returnUrl)
+        router.replace(returnUrl)
       })
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Login Failed", description: error.message })
+      console.error("[GOOGLE_AUTH_FAILURE]:", error);
+      
+      let errorMessage = error.message;
+      if (error.code === 'auth/popup-blocked') {
+        errorMessage = "Sign-in popup blocked. Please allow popups for this site.";
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = "Sign-in cancelled.";
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        return; // Silent return for overlapping clicks
+      }
+
+      toast({ variant: "destructive", title: "Login Failed", description: errorMessage })
       setLoading(false)
     }
   }
