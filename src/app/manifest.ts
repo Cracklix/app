@@ -1,8 +1,8 @@
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Institutional PWA Manifest Configuration v5.0.
- * Hardened to meet strict Chrome/Android installability criteria.
+ * @fileOverview Institutional PWA Manifest Configuration v6.0.
+ * UPDATED: Optimized icon metadata to meet Chrome's strict install criteria.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -20,12 +20,6 @@ export default function manifest(): MetadataRoute.Manifest {
         src: '/icons/icon-192x192.png',
         sizes: '192x192',
         type: 'image/png',
-        purpose: 'any',
-      },
-      {
-        src: '/icons/icon-192x192.png',
-        sizes: '192x192',
-        type: 'image/png',
         purpose: 'maskable',
       },
       {
@@ -33,12 +27,6 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any',
-      },
-      {
-        src: '/icons/icon-512x512.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'maskable',
       },
     ],
     shortcuts: [
