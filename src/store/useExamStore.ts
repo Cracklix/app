@@ -8,7 +8,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
 /**
- * @fileOverview Elite CBT Global Store v33.0 (Production Optimized).
+ * @fileOverview Elite CBT Global Store v35.0 (Production Hardened).
  * PERFORMANCE: Synchronized timestamp management for high-fidelity time usage tracking.
  * FIXED: startTime is now preserved strictly to ensure accurate test duration results.
  */

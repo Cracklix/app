@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * @fileOverview Hardened CBT Engine v25.0 (Production Optimized).
+ * @fileOverview Hardened CBT Engine v30.0 (Production Verified).
  * FIXED: Accurate scoring logic and precise time usage tracking.
  */
 

@@ -6,7 +6,7 @@ import { useFirestore } from '@/firebase';
 
 /**
  * @file Overview High-Fidelity Tactical Action Bar.
- * UPDATED: Restored "Save & Next" as the persistent primary action.
+ * UPDATED: Restored standard "Mark for Review" and "Clear Response" flow.
  */
 export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const currentIdx = useExamStore(s => s.currentIdx);
@@ -32,7 +32,7 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
         onClick={() => clearAnswer(currentIdx, db)}
         className="h-14 rounded-xl font-black uppercase text-[10px] tracking-tight border-slate-300 text-[#0F172A] bg-white active:scale-95 shadow-sm"
       >
-        Clear
+        Clear Response
       </Button>
 
       <Button 
