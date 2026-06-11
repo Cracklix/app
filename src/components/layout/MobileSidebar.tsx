@@ -1,3 +1,4 @@
+
 'use client';
 
 import { 
@@ -38,8 +39,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Institutional Mobile Sidebar v6.1.
- * UPDATED: Integrated Live Pass Status with Expiry.
+ * @fileOverview Institutional Mobile Sidebar v7.0.
+ * UPDATED: Integrated Bulletproof PWA Install Node and Live Pass Status.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -192,13 +193,13 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
           {canInstall && (
              <button 
                 onClick={handleInstallClick}
-                className="flex items-center justify-between px-6 h-[58px] transition-all group border-l-4 border-emerald-500 bg-emerald-500/5 mb-1"
+                className="flex items-center justify-between px-6 h-[58px] transition-all group border-l-4 border-emerald-500 bg-emerald-500/5 mb-1 animate-in slide-in-from-left-4"
              >
                 <div className="flex items-center gap-4">
                    <Download className="h-5 w-5 shrink-0 text-emerald-400" />
                    <span className="text-[13px] uppercase tracking-tight font-black text-white">Install App</span>
                 </div>
-                <Badge className="bg-emerald-500 text-white border-none text-[8px] font-black uppercase">GET</Badge>
+                <Badge className="bg-emerald-500 text-white border-none text-[8px] font-black uppercase animate-pulse">GET</Badge>
              </button>
           )}
 

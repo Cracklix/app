@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -25,6 +26,10 @@ import { cn } from "@/lib/utils";
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
+/**
+ * @fileOverview Institutional Navbar v15.0.
+ * UPDATED: Integrated Live Pass Status and Bulletproof PWA Install triggers.
+ */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -38,7 +43,6 @@ export default function Navbar() {
   useEffect(() => {
     setMounted(true);
     
-    // Check if app is installable
     const checkInstall = () => {
       if (typeof window !== 'undefined' && (window as any).deferredPrompt) {
         setCanInstall(true);
@@ -47,11 +51,12 @@ export default function Navbar() {
 
     window.addEventListener('pwa-installable', checkInstall);
     window.addEventListener('pwa-installed', () => setCanInstall(false));
+    
+    // Immediate check
     checkInstall();
     
     return () => {
       window.removeEventListener('pwa-installable', checkInstall);
-      window.removeEventListener('pwa-installed', () => setCanInstall(false));
     };
   }, []);
   
@@ -158,7 +163,7 @@ export default function Navbar() {
               <Button 
                 onClick={handleInstallApp}
                 variant="outline" 
-                className="hidden sm:flex h-10 px-4 rounded-xl border-emerald-500/20 bg-emerald-500/10 text-emerald-400 font-black uppercase text-[9px] tracking-widest gap-2 hover:bg-emerald-500 hover:text-white transition-all shadow-lg"
+                className="hidden sm:flex h-10 px-4 rounded-xl border-emerald-500/20 bg-emerald-500/10 text-emerald-400 font-black uppercase text-[9px] tracking-widest gap-2 hover:bg-emerald-500 hover:text-white transition-all shadow-lg animate-pulse"
               >
                  <Download className="h-3.5 w-3.5" /> Install App
               </Button>

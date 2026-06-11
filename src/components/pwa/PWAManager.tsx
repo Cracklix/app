@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -7,8 +8,8 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Institutional PWA Lifecycle Manager v8.0.
- * UPDATED: Fixed "window is not defined" and hardened install event capture.
+ * @fileOverview Institutional PWA Lifecycle Manager v9.0.
+ * HARDENED: Reliable 'beforeinstallprompt' capture for production environments.
  */
 export default function PWAManager() {
   const pathname = usePathname();
@@ -25,35 +26,29 @@ export default function PWAManager() {
       navigator.serviceWorker.register('/sw.js').then(
         (reg) => {
           console.log('[PWA] ServiceWorker registered');
-          // Notify app that SW is ready
-          window.dispatchEvent(new CustomEvent('sw-ready'));
         },
         (err) => console.log('[PWA] ServiceWorker registration failed:', err)
       );
     }
 
-    // 2. Install prompt listener
+    // 2. Capture Install Prompt
     const handleBeforeInstallPrompt = (e: any) => {
-      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
-      // Stash the event so it can be triggered later.
+      // Store event globally for other UI nodes
       (window as any).deferredPrompt = e;
       setDeferredPrompt(e);
       
-      // Notify components like Navbar/Sidebar that the app is installable
+      // Dispatch custom event for Navbar and Sidebar
       window.dispatchEvent(new CustomEvent('pwa-installable'));
       
-      // Delay prompt visibility for non-intrusive experience
-      const timer = setTimeout(() => {
-        const isExcluded = pathname?.includes('/attempt') || pathname?.startsWith('/admin');
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        
-        if (!isExcluded && !isStandalone) {
-          setShowPrompt(true);
-        }
-      }, 6000); // 6 second delay for better user experience
+      // Automatic popup logic for students
+      const isExcluded = pathname?.includes('/attempt') || pathname?.startsWith('/admin');
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
       
-      return () => clearTimeout(timer);
+      if (!isExcluded && !isStandalone) {
+        const timer = setTimeout(() => setShowPrompt(true), 5000);
+        return () => clearTimeout(timer);
+      }
     };
 
     const handleAppInstalled = () => {
@@ -81,9 +76,7 @@ export default function PWAManager() {
     const prompt = deferredPrompt || (window as any).deferredPrompt;
     if (!prompt) return;
 
-    // Show the native browser prompt
     prompt.prompt();
-    // Wait for the user to respond to the prompt
     const { outcome } = await prompt.userChoice;
     
     if (outcome === 'accepted') {
@@ -93,8 +86,7 @@ export default function PWAManager() {
     }
   };
 
-  if (!mounted) return null;
-  if (isInstalled) return null;
+  if (!mounted || isInstalled) return null;
 
   return (
     <AnimatePresence>
