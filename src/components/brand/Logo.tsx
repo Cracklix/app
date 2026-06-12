@@ -13,14 +13,13 @@ interface LogoProps {
 
 /**
  * @fileOverview Official Cracklix Logo Component.
- * MATCHES: High-fidelity image style with white 'Crack' and orange 'lix'.
- * Tagline refined with flanking horizontal orange accents.
+ * UPDATED: Integrated new high-fidelity image icon and refined 3D typography.
  */
 export function LogoIcon({ className = "" }: { className?: string }) {
   return (
     <div className={cn("relative shrink-0 flex items-center justify-center", className)}>
       <img 
-        src="https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png" 
+        src="https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png" 
         alt="Cracklix Emblem" 
         className="w-full h-full object-contain"
         referrerPolicy="no-referrer"
@@ -33,12 +32,12 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
   const isDark = variant === 'dark';
 
   return (
-    <Link href={href} className={cn("flex items-center gap-1 md:gap-2 group pointer-events-auto select-none shrink-0", className)}>
+    <Link href={href} className={cn("flex items-center gap-0 md:gap-1 group pointer-events-auto select-none shrink-0", className)}>
       {/* 1. Official Emblem Node */}
       <LogoIcon className="w-12 h-12 md:w-20 md:h-20" />
 
       {!iconOnly && (
-        <div className="flex flex-col items-start justify-center leading-none -ml-1">
+        <div className="flex flex-col items-start justify-center leading-none -ml-1 md:-ml-2">
           {/* 2. Brand Name Node (Split White/Orange) */}
           <div className="flex items-baseline">
             <span className={cn(
@@ -58,15 +57,15 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
           
           {/* 3. Accented Tagline Node */}
           {showTagline && (
-            <div className="mt-1.5 flex items-center gap-2 w-full">
-              <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent to-[#F97316] opacity-80" />
+            <div className="mt-1 flex items-center gap-2 w-full">
+              <div className="h-[1.2px] flex-1 bg-[#F97316] opacity-80" />
               <span className={cn(
                 "text-[7px] md:text-[11px] font-black uppercase tracking-[0.05em] whitespace-nowrap",
                 isDark ? "text-slate-500" : "text-white"
               )}>
                 PUNJAB&apos;S NO.1 STUDY HUB
               </span>
-              <div className="h-[1.5px] flex-1 bg-gradient-to-l from-transparent to-[#F97316] opacity-80" />
+              <div className="h-[1.2px] flex-1 bg-[#F97316] opacity-80" />
             </div>
           )}
         </div>

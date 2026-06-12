@@ -1,8 +1,8 @@
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Institutional PWA Manifest Configuration v9.0.
- * UPDATED: Fixed permanent image source for app icons with the new provider asset.
+ * @fileOverview Institutional PWA Manifest Configuration v10.0.
+ * UPDATED: Synchronized with the latest high-fidelity Cracklix logo icon.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -17,13 +17,13 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: 'portrait',
     icons: [
       {
-        src: 'https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png',
+        src: 'https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'maskable',
       },
       {
-        src: 'https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png',
+        src: 'https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'any',

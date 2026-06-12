@@ -18,9 +18,9 @@ export const metadata: Metadata = {
   authors: [{ name: 'Arsh Grewal', url: 'https://cracklix.com' }],
   icons: {
     icon: [
-      { url: 'https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png', sizes: '192x192', type: 'image/png' },
+      { url: 'https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png', sizes: '192x192', type: 'image/png' },
     ],
-    apple: 'https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png',
+    apple: 'https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png',
   },
   appleWebApp: {
     capable: true,
