@@ -17,9 +17,8 @@ import { ShieldCheck, Zap, Trophy, Target } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Official Hub v80.0 (Production Hardened).
- * FIXED: Hydration errors resolved by deferring dynamic stats until after client mount.
- * FIXED: Synchronized main container structure with Hero for a glitch-free initial render.
+ * @fileOverview Official Hub v81.0 (Production Hardened).
+ * FIXED: Hydration errors resolved by strictly identical SSR skeleton.
  */
 
 export default function HomePage() {
@@ -36,7 +35,6 @@ export default function HomePage() {
   const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
 
   const liveStats = useMemo(() => {
-    // Provide safe defaults for initial render/SSR
     if (!mounted || !stats) return { hubs: "8+", solutions: "10k+", rankers: "15k+", accuracy: "94%" };
     
     const hubs = stats.totalBoards || 8;

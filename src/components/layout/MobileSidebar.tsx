@@ -38,7 +38,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Institutional Mobile Sidebar v16.0.
+ * @fileOverview Institutional Mobile Sidebar v17.0.
  * BRANDING: Pass badge background set to Cracklix Orange (bg-primary) for better contrast.
  * IDENTITY: Real-time sync for pass status.
  */
@@ -235,7 +235,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                 <button 
                   key={item.label}
                   onClick={() => { item.onClick!(); }}
-                  className="flex items-center justify-between px-6 h-[54px] transition-all group border-l-4 border-transparent active:bg-white/5"
+                  className="flex items-center justify-between px-6 h-[58px] transition-all group border-l-4 border-transparent active:bg-white/5"
                 >
                   {content}
                 </button>
@@ -248,7 +248,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                 href={item.href || '#'}
                 onClick={onClose}
                 className={cn(
-                  "flex items-center justify-between px-6 h-[54px] transition-all group border-l-4",
+                  "flex items-center justify-between px-6 h-[58px] transition-all group border-l-4",
                   isActive ? "bg-primary/10 border-primary" : "hover:bg-white/5 border-transparent"
                 )}
               >
@@ -261,7 +261,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
           
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-4 px-6 h-[54px] text-rose-500 active:bg-rose-500/5 transition-all w-full text-left"
+            className="flex items-center gap-4 px-6 h-[58px] text-rose-500 active:bg-rose-500/5 transition-all w-full text-left"
           >
             <LogOut className="h-5 w-5 shrink-0" />
             <span className="text-[13px] font-black uppercase tracking-tight">Logout</span>

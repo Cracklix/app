@@ -8,7 +8,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
 /**
- * @fileOverview Elite CBT Global Store v41.0 (Production Hardened).
+ * @fileOverview Elite CBT Global Store v42.0 (Production Hardened).
  * FIXED: Resolved blank screen glitch during re-takes by forcing a clean state reset.
  * FIXED: Properly clearing answers and session metadata for fresh attempts.
  */

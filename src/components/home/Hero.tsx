@@ -13,8 +13,8 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Hero Hub v75.0 (Production Hardened).
- * FIXED: Hydration mismatch resolved by using a mounted guard for dynamic text and counts.
+ * @fileOverview Official Hero Hub v76.0 (Hardened).
+ * FIXED: Hydration mismatch resolved by locking headline text and using mounted guards.
  * BRANDING: Verified Content icon set to Cracklix Orange (bg-primary).
  */
 
@@ -35,7 +35,6 @@ export default function Hero() {
   const { data: stats } = useDoc<any>(statsRef);
 
   const liveStudentCount = useMemo(() => {
-    // Return placeholder during SSR to prevent mismatch
     if (!mounted || !stats) return "15k+";
     const count = stats?.totalUsers || 0;
     if (count > 999) return `${(count / 1000).toFixed(1)}k+`;
@@ -68,7 +67,6 @@ export default function Hero() {
                <div className="min-h-[60px] md:min-h-[140px]">
                   <h1 className="text-3xl sm:text-5xl lg:text-7xl font-headline font-black leading-[1.1] text-white uppercase tracking-tight break-words">
                      CRACK EVERY <br className="hidden sm:block" /> 
-                     {/* Hydration safe: Heading text is now strictly locked to EXAM. */}
                      <span className="text-primary">EXAM.</span>
                   </h1>
                </div>
