@@ -37,8 +37,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import ShareButton from "@/components/navigation/ShareButton"
 
 /**
- * @fileOverview Optimized Student Dashboard v18.0 (Production Verified).
- * SIMPLIFIED: Replaced technical terms with easy words (History, Score, Check).
+ * @fileOverview Optimized Student Dashboard v18.1.
+ * UPDATED: Granular time formatting to prevent "0m" display for short test sessions.
  */
 
 export default function StudentDashboard() {
@@ -69,8 +69,16 @@ export default function StudentDashboard() {
     const total = results.length
     const avgAcc = Math.round(results.reduce((acc: number, r: any) => acc + (r.accuracy || 0), 0) / total)
     const totalSeconds = results.reduce((acc: number, r: any) => acc + (r.timeTaken || 0), 0)
-    const hoursSpent = totalSeconds / 3600
-    const timeFormatted = hoursSpent >= 1 ? `${hoursSpent.toFixed(1)}h` : `${Math.round(totalSeconds / 60)}m`
+    
+    // GRANULAR TIME FORMATTING
+    let timeFormatted = "0s";
+    if (totalSeconds >= 3600) {
+      timeFormatted = `${(totalSeconds / 3600).toFixed(1)}h`;
+    } else if (totalSeconds >= 60) {
+      timeFormatted = `${Math.floor(totalSeconds / 60)}m`;
+    } else {
+      timeFormatted = `${totalSeconds}s`;
+    }
     
     const uniqueDays = new Set(results.map(r => new Date(r.timestamp).toDateString()))
     const streak = uniqueDays.size
