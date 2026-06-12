@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -30,14 +31,15 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import StudentAvatar from "@/components/brand/StudentAvatar"
 
 /**
- * @fileOverview Test Results Hub v27.0 (Hardened).
+ * @fileOverview Test Results Hub v28.0 (Stability Hardened).
+ * UPDATED: Optimized ID fetching logic to handle both Session IDs and Mock IDs correctly.
  * UPDATED: Displaying student's real names with email fallback for state merit lists.
  */
 
 export default function ResultPage() {
   const params = useParams()
   const router = useRouter()
-  const mockId = params.id as string
+  const resultId = params.id as string
   const db = useFirestore()
   const { user, profile } = useUser()
   const { toast } = useToast()
@@ -46,25 +48,44 @@ export default function ResultPage() {
   const [mockData, setMockData] = useState<any>(null)
   const [loadingContent, setLoadingContent] = useState(true)
   const [activeReviewFilter, setActiveReviewFilter] = useState<'ALL' | 'CORRECT' | 'WRONG' | 'SKIPPED'>('ALL')
+  const [sessionData, setSessionData] = useState<any>(null);
 
-  // 1. FETCH USER RESULT
-  const resultsQuery = useMemo(() => {
-    if (!db || !user) return null
-    return query(collection(db, "results"), where("userId", "==", user.uid), where("mockId", "==", mockId), limit(1))
-  }, [db, user, mockId])
+  // 1. HARDENED RESULT FETCHING (Tries Doc ID, then Mock ID)
+  useEffect(() => {
+    async function fetchResult() {
+      if (!db || !user || !resultId) return;
+      setLoadingContent(true);
+      
+      try {
+        // First try fetching by document ID (Session ID)
+        const docRef = doc(db, "results", resultId);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+           setSessionData(docSnap.data());
+        } else {
+           // Fallback: search by mockId for this user
+           const q = query(collection(db, "results"), where("userId", "==", user.uid), where("mockId", "==", resultId), limit(1));
+           const snap = await getDocs(q);
+           if (!snap.empty) {
+              setSessionData(snap.docs[0].data());
+           }
+        }
+      } catch (e) {
+        console.error("Result Fetch Error:", e);
+      } finally {
+        // Content loading stays true until questions are fetched in the next effect
+      }
+    }
+    fetchResult();
+  }, [db, user, resultId]);
 
-  const { data: rawResultDocs, loading: resultsLoading } = useCollection<any>(resultsQuery)
-  
-  const sessionData = useMemo(() => {
-    if (!rawResultDocs || rawResultDocs.length === 0) return null
-    return rawResultDocs[0]
-  }, [rawResultDocs])
-
-  // 2. FETCH GLOBAL BENCHMARKS
+  // 2. FETCH GLOBAL BENCHMARKS (once sessionData is loaded)
+  const mockIdForRank = sessionData?.mockId || resultId;
   const globalResultsQuery = useMemo(() => {
-    if (!db || !mockId) return null
-    return query(collection(db, "results"), where("mockId", "==", mockId), limit(200))
-  }, [db, mockId])
+    if (!db || !mockIdForRank) return null
+    return query(collection(db, "results"), where("mockId", "==", mockIdForRank), limit(200))
+  }, [db, mockIdForRank])
 
   const { data: rawGlobalResults } = useCollection<any>(globalResultsQuery)
 
@@ -91,13 +112,13 @@ export default function ResultPage() {
      return { rank: actualRank, total, percentile };
   }, [meritList, sessionData, user]);
 
+  // 3. FETCH QUESTIONS AND MOCK DATA
   useEffect(() => {
     async function loadQuestions() {
-      if (!db || !sessionData || !mockId) {
-        if (!resultsLoading && !sessionData) setLoadingContent(false);
+      if (!db || !sessionData) {
         return;
       }
-      setLoadingContent(true)
+      const mockId = sessionData.mockId;
       try {
         const mockSnap = await getDoc(doc(db, "mocks", mockId))
         if (mockSnap.exists()) {
@@ -115,7 +136,7 @@ export default function ResultPage() {
       } finally { setLoadingContent(false) }
     }
     loadQuestions()
-  }, [db, sessionData, mockId, resultsLoading]);
+  }, [db, sessionData]);
 
   const filteredQuestions = useMemo(() => {
      return questions.map((q, i) => ({ ...q, index: i })).filter((q) => {
@@ -129,7 +150,7 @@ export default function ResultPage() {
      });
   }, [questions, sessionData, activeReviewFilter]);
 
-  if (resultsLoading || loadingContent) return <div className="h-screen flex items-center justify-center bg-white"><Loader2 className="h-10 w-10 text-primary animate-spin" /></div>
+  if (loadingContent) return <div className="h-screen flex items-center justify-center bg-white"><Loader2 className="h-10 w-10 text-primary animate-spin" /></div>
 
   if (!sessionData) return (
      <div className="h-screen flex flex-col items-center justify-center text-center bg-white p-6 space-y-6">
@@ -167,7 +188,7 @@ export default function ResultPage() {
 
            <div className="flex gap-2 shrink-0 ml-0 md:ml-4">
               <Button asChild className="h-9 px-4 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[8px] tracking-widest rounded-lg shadow-lg border-none">
-                 <Link href={`/mocks/${mockId}/instructions`}><RefreshCw className="h-3 w-3 mr-1" /> RE-TAKE</Link>
+                 <Link href={`/mocks/${sessionData.mockId}/instructions`}><RefreshCw className="h-3 w-3 mr-1" /> RE-TAKE</Link>
               </Button>
            </div>
         </div>
