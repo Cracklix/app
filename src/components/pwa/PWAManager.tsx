@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Institutional PWA Lifecycle Manager v18.0.
+ * @fileOverview Institutional PWA Lifecycle Manager v19.0.
  * HARDENED: Reliable 'beforeinstallprompt' capture and prominent mobile floating banner.
+ * FIXED: Ensures deferredPrompt is stored globally for the Navbar and Sidebar.
  */
 export default function PWAManager() {
   const pathname = usePathname();
@@ -37,7 +38,7 @@ export default function PWAManager() {
       (window as any).deferredPrompt = e;
       setDeferredPrompt(e);
       
-      // Dispatch custom event for Navbar and Sidebar
+      // Dispatch custom event for Navbar and Sidebar to show install buttons
       window.dispatchEvent(new CustomEvent('pwa-installable'));
       
       // Automatic popup logic for students

@@ -38,8 +38,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Institutional Mobile Sidebar v18.0 (Hardened).
- * BRANDING: Active Pass badge background set to Cracklix Orange (bg-primary) for better contrast.
+ * @fileOverview Institutional Mobile Sidebar v19.0 (Hardened).
+ * UPDATED: Reliable 'Install App' trigger for Android/iOS downloads.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -96,6 +96,8 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
         (window as any).deferredPrompt = null;
       }
       onClose();
+    } else {
+       toast({ title: "App Installed", description: "The Cracklix app is already on your device or not supported by this browser." });
     }
   };
 
@@ -158,7 +160,6 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                 </h2>
                 {passStatus ? (
                    <div className="flex flex-col gap-1.5">
-                      {/* BRANDING: Orange badge for high visibility */}
                       <Badge className={cn(
                         "border-none px-3 py-1 rounded-md font-black uppercase text-[7px] tracking-widest shadow-xl w-fit text-white",
                         passStatus.active ? "bg-primary" : "bg-rose-600"
@@ -190,16 +191,21 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
 
         {/* 2. MENU ITEMS */}
         <div className="flex flex-col py-4">
-          {canInstall && (
+          {mounted && canInstall && (
              <button 
                 onClick={handleInstallClick}
-                className="flex items-center justify-between px-6 h-[58px] transition-all group border-l-4 border-emerald-500 bg-emerald-500/5 mb-1 animate-in slide-in-from-left-4"
+                className="flex items-center justify-between px-6 h-[64px] transition-all group border-l-4 border-emerald-500 bg-emerald-500/10 mb-2 animate-in slide-in-from-left-4"
              >
                 <div className="flex items-center gap-4">
-                   <Download className="h-5 w-5 shrink-0 text-emerald-400" />
-                   <span className="text-[13px] uppercase tracking-tight font-black text-white">Install App</span>
+                   <div className="h-10 w-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                      <Download className="h-5 w-5" />
+                   </div>
+                   <div className="text-left">
+                      <span className="text-[14px] uppercase tracking-tight font-black text-white block">Download App</span>
+                      <p className="text-[8px] font-bold text-emerald-400 uppercase tracking-widest">Install for fast access</p>
+                   </div>
                 </div>
-                <Badge className="bg-emerald-50 text-white border-none text-[8px] font-black uppercase animate-pulse">GET</Badge>
+                <Badge className="bg-emerald-500 text-white border-none text-[8px] font-black uppercase animate-pulse shadow-md">INSTALL</Badge>
              </button>
           )}
 

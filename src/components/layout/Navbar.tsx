@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -27,8 +26,8 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v25.1.
- * UPDATED: Reduced responsive breakpoint from XL to LG for better desktop link visibility.
+ * @fileOverview Institutional Navbar v26.0 (PWA Ready).
+ * UPDATED: Added persistent Install App button for mobile downloads.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -198,8 +197,8 @@ export default function Navbar() {
             )}
           </div>
         </div>
-      </nav>
-    </div>
+      </div>
+    </nav>
   );
 }
 

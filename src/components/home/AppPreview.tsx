@@ -1,25 +1,41 @@
 'use client';
 
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Smartphone, CheckCircle2, Map as MapIcon, Globe, ShieldCheck } from "lucide-react";
+import { Smartphone, CheckCircle2, Map as MapIcon, Globe, ShieldCheck, Download, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Apple, Play } from "lucide-react";
 import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Final Regional Hub Section v7.0.
- * Fixed: Maps now render directly with object-contain to prevent cropping.
- * Language: Replaced technical jargon with simple words.
+ * @fileOverview Final Regional Hub Section v8.0.
+ * UPDATED: Promoted 'Download App' (PWA) installation method for students.
  */
 
 export default function AppPreview() {
   const db = useFirestore();
+  const [canInstall, setCanInstall] = useState(false);
   const punjabMap = "https://www.mapsofindia.com/maps/punjab/punjab-map.jpg";
   const indiaMap = "https://www.mapsofindia.com/images2/india-map.jpg";
 
   const { data: settings } = useDoc<any>(useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]));
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window as any).deferredPrompt) {
+       setCanInstall(true);
+    }
+    const handleInstallable = () => setCanInstall(true);
+    window.addEventListener('pwa-installable', handleInstallable);
+    return () => window.removeEventListener('pwa-installable', handleInstallable);
+  }, []);
+
+  const handleInstallClick = async () => {
+    const prompt = (window as any).deferredPrompt;
+    if (prompt) {
+      prompt.prompt();
+    }
+  };
 
   const playStoreLink = settings?.playStoreUrl || "#";
   const appStoreLink = settings?.appStoreUrl || "#";
@@ -43,34 +59,37 @@ export default function AppPreview() {
               <span className="text-primary">MOBILE APP</span>
             </h2>
             <p className="text-base md:text-xl text-slate-500 font-medium leading-relaxed max-w-lg">
-              Download the official mobile app to access practice tests and exam solutions anywhere in Punjab.
+              Install the official Cracklix app on your phone to get instant notifications and access tests offline.
             </p>
 
             <ul className="space-y-3 md:space-y-5 pt-2">
+               <FeatureItem text="Direct Home Screen Access" />
                <FeatureItem text="Bilingual Tests (English & Punjabi)" />
-               <FeatureItem text="Detailed Step-by-Step Solutions" />
-               <FeatureItem text="State Merit Rankings" />
+               <FeatureItem text="Instant Admit Card & Result Alerts" />
             </ul>
 
-            <div className="flex flex-wrap gap-4 pt-4 md:pt-8">
-              <a href={appStoreLink} target="_blank" rel="noopener noreferrer" className="flex-1 sm:flex-none">
-                <Button className="w-full sm:w-auto h-14 md:h-16 px-6 md:px-8 bg-[#0F172A] hover:bg-black text-white rounded-2xl flex items-center gap-3 md:gap-4 shadow-xl transition-all active:scale-95">
-                  <Apple className="h-6 w-6 md:h-8 md:w-8" />
-                  <div className="text-left">
-                    <p className="text-[8px] md:text-[10px] uppercase font-bold opacity-50 leading-none">Download on</p>
-                    <p className="text-lg md:text-xl font-bold mt-1 leading-none">App Store</p>
-                  </div>
-                </Button>
-              </a>
-              <a href={playStoreLink} target="_blank" rel="noopener noreferrer" className="flex-1 sm:flex-none">
-                <Button className="w-full sm:w-auto h-14 md:h-16 px-6 md:px-8 bg-[#0F172A] hover:bg-black text-white rounded-2xl flex items-center gap-3 md:gap-4 shadow-xl transition-all active:scale-95">
-                  <Play className="h-6 w-6 md:h-8 md:w-8" />
-                  <div className="text-left">
-                    <p className="text-[8px] md:text-[10px] uppercase font-bold opacity-50 leading-none">Get it on</p>
-                    <p className="text-lg md:text-xl font-bold mt-1 leading-none">Google Play</p>
-                  </div>
-                </Button>
-              </a>
+            <div className="flex flex-col sm:flex-row gap-4 pt-4 md:pt-8">
+              <Button 
+                onClick={handleInstallClick}
+                className="w-full sm:w-auto h-16 md:h-20 px-10 bg-[#0F172A] hover:bg-black text-white rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center gap-4 shadow-3xl transition-all active:scale-95 border-none"
+              >
+                <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-primary flex items-center justify-center shadow-xl">
+                   <Download className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                </div>
+                <div className="text-left">
+                  <p className="text-[10px] md:text-[11px] uppercase font-black tracking-widest text-primary leading-none">DOWNLOAD NOW</p>
+                  <p className="text-lg md:text-xl font-black uppercase text-white mt-1 leading-none tracking-tight">INSTALL APP</p>
+                </div>
+              </Button>
+              
+              <div className="flex gap-4">
+                 <a href={appStoreLink} target="_blank" rel="noopener noreferrer" className="flex-1 sm:flex-none">
+                   <Button variant="outline" size="icon" className="h-16 w-16 md:h-20 md:w-20 rounded-2xl border-slate-100 bg-slate-50 hover:bg-white shadow-lg"><Apple className="h-6 w-6 md:h-8 md:w-8" /></Button>
+                 </a>
+                 <a href={playStoreLink} target="_blank" rel="noopener noreferrer" className="flex-1 sm:flex-none">
+                   <Button variant="outline" size="icon" className="h-16 w-16 md:h-20 md:w-20 rounded-2xl border-slate-100 bg-slate-50 hover:bg-white shadow-lg"><Play className="h-6 w-6 md:h-8 md:w-8" /></Button>
+                 </a>
+              </div>
             </div>
           </motion.div>
 
