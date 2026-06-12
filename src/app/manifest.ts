@@ -2,8 +2,8 @@
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Institutional PWA Manifest Configuration v15.0.
- * UPDATED: Optimized with high-fidelity square icons for mobile launcher stability.
+ * @fileOverview Institutional PWA Manifest Configuration v16.0.
+ * UPDATED: Optimized for Google Play Store (TWA) compatibility with maskable icons.
  */
 export default function manifest(): MetadataRoute.Manifest {
   const iconUrl = 'https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png';

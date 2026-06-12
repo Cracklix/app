@@ -1,21 +1,51 @@
 
 /**
- * @fileOverview Core PWA Service Worker for Cracklix.
- * Required for browser "Install" prompt visibility.
+ * @fileOverview Cracklix Core Service Worker v2.0.
+ * Mandatory for PWA installability and Play Store TWA compliance.
  */
 
-const CACHE_NAME = 'cracklix-v1';
+const CACHE_NAME = 'cracklix-v2';
+const OFFLINE_URL = '/';
 
 self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll([
+        OFFLINE_URL,
+        '/manifest.webmanifest',
+      ]);
+    })
+  );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(clients.claim());
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+  self.clients.claim();
 });
 
-// Mandatory fetch handler for PWA installability
 self.addEventListener('fetch', (event) => {
-  // We can implement offline caching here later if needed
-  return;
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match(OFFLINE_URL);
+      })
+    );
+  } else {
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        return response || fetch(event.request);
+      })
+    );
+  }
 });
