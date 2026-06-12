@@ -1,3 +1,4 @@
+
 import type {Metadata, Viewport} from 'next';
 import './globals.css';
 import { Inter } from "next/font/google";
@@ -11,6 +12,8 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const masterLogo = 'https://i.ibb.co/0yBPqGP6/1000110138-removebg-preview.png';
+
 export const metadata: Metadata = {
   title: 'Cracklix | Punjab Exam Hub',
   description: "Punjab's most trusted government exam preparation platform. PSSSB, PPSC, Punjab Police, and more.",
@@ -18,9 +21,10 @@ export const metadata: Metadata = {
   authors: [{ name: 'Arsh Grewal', url: 'https://cracklix.com' }],
   icons: {
     icon: [
-      { url: 'https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png', sizes: '192x192', type: 'image/png' },
+      { url: masterLogo, sizes: '32x32', type: 'image/png' },
+      { url: masterLogo, sizes: '192x192', type: 'image/png' },
     ],
-    apple: 'https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png',
+    apple: masterLogo,
   },
   appleWebApp: {
     capable: true,
