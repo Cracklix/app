@@ -27,9 +27,9 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v31.0 (Stability Hardened).
- * FIXED: Balanced JSX tags and enforced hydration safety.
- * ADDED: Persistent Install button for PWA.
+ * @fileOverview Institutional Navbar v35.0 (PWA Optimized).
+ * FIXED: Balanced JSX tags and resolved build errors.
+ * ADDED: Reliable 'Install App' prompt for PWA.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
