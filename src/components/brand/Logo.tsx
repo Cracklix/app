@@ -11,7 +11,7 @@ interface LogoProps {
 
 /**
  * @fileOverview Official Cracklix Master Logo Hub.
- * RESTORED: Professional scale and balanced margins for institutional alignment.
+ * UPDATED: Compact scale for high-density professional navigation.
  */
 export function LogoIcon({ className = "" }: { className?: string }) {
   return (
@@ -30,8 +30,8 @@ export function LogoIcon({ className = "" }: { className?: string }) {
 
 export default function Logo({ className = "", variant = 'light', href = "/" }: LogoProps) {
   return (
-    <Link href={href} className={cn("flex items-center group pointer-events-auto select-none shrink-0 -ml-4 md:-ml-6", className)}>
-      <LogoIcon className="w-full h-full max-w-[200px] md:max-w-[300px] max-h-12 md:max-h-14" />
+    <Link href={href} className={cn("flex items-center group pointer-events-auto select-none shrink-0 -ml-2 md:-ml-4", className)}>
+      <LogoIcon className="w-full h-full max-w-[140px] md:max-w-[220px] max-h-8 md:max-h-10" />
     </Link>
   );
 }
