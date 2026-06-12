@@ -44,8 +44,8 @@ import BackButton from "@/components/navigation/BackButton";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Institutional Sidebar Restoration v131.0.
- * UPDATED: Admin header height increased and logo scale reset for a bolder look.
+ * @fileOverview Institutional Sidebar Restoration v132.0.
+ * UPDATED: Increased header height significantly to match the new larger logo scale.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -178,7 +178,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </Sidebar>
         
         <SidebarInset className="flex flex-col bg-white min-w-0 max-w-full relative">
-          <header className="h-16 md:h-24 border-b border-slate-200 flex items-center px-4 md:px-6 justify-between bg-white sticky top-0 z-[100] shrink-0">
+          <header className="h-24 md:h-32 border-b border-slate-200 flex items-center px-4 md:px-6 justify-between bg-white sticky top-0 z-[100] shrink-0">
             <div className="flex items-center gap-2 overflow-hidden">
               <div className="lg:hidden">
                  <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>

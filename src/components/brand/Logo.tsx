@@ -11,7 +11,7 @@ interface LogoProps {
 
 /**
  * @fileOverview Official Cracklix Master Logo Hub.
- * UPDATED: Increased max dimensions for a bolder brand presence while maintaining 1024px fidelity.
+ * UPDATED: Significantly increased max dimensions and added negative margin to shift left.
  */
 export function LogoIcon({ className = "" }: { className?: string }) {
   return (
@@ -30,12 +30,13 @@ export function LogoIcon({ className = "" }: { className?: string }) {
 
 export default function Logo({ className = "", variant = 'light', href = "/" }: LogoProps) {
   return (
-    <Link href={href} className={cn("flex items-center group pointer-events-auto select-none shrink-0", className)}>
+    <Link href={href} className={cn("flex items-center group pointer-events-auto select-none shrink-0 -ml-6 md:-ml-10", className)}>
       {/* 
          STRICT REQUIREMENT: 1024x1024px display scale.
-         Updated max-w and max-h to significantly increase visibility in navigation bars.
+         Max dimensions significantly increased for prominent branding.
+         Negative left margin pulls the logo "1 inch" left.
       */}
-      <LogoIcon className="w-[1024px] h-[1024px] max-w-[200px] md:max-w-[320px] max-h-16 md:max-h-24" />
+      <LogoIcon className="w-[1024px] h-[1024px] max-w-[350px] md:max-w-[500px] max-h-20 md:max-h-32" />
     </Link>
   );
 }
