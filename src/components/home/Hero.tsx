@@ -13,9 +13,8 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Simplified Official Hero Hub v53.0.
- * FIXED: Resolved hydration mismatch by ensuring server/client render parity.
- * SIMPLIFIED: Replaced technical terms with student-friendly words.
+ * @fileOverview Simplified Official Hero Hub v54.0.
+ * UPDATED: Changed Verified Content icon background to Orange.
  */
 
 export default function Hero() {
@@ -121,7 +120,7 @@ export default function Hero() {
                   
                   <div className="absolute bottom-4 left-4 right-4 md:bottom-8 md:left-8 md:right-8 flex items-center justify-between">
                      <div className="bg-white/20 backdrop-blur-xl px-4 py-2 md:px-6 md:py-4 rounded-xl md:rounded-2xl border border-white/20 shadow-2xl flex items-center gap-3 md:gap-4">
-                        <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg">
+                        <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-primary flex items-center justify-center shadow-lg">
                            <ShieldCheck className="h-4 w-4 md:h-5 md:w-5 text-white" />
                         </div>
                         <div className="text-left">

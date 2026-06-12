@@ -38,8 +38,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Institutional Mobile Sidebar v8.3.
- * FIXED: High-contrast pass status visibility for dark theme.
+ * @fileOverview Institutional Mobile Sidebar v8.4.
+ * UPDATED: Set Active Pass background to Orange.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -160,7 +160,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                    <div className="flex flex-col gap-1">
                       <Badge className={cn(
                         "border-none px-2 py-0.5 rounded-md font-black uppercase text-[7px] tracking-widest shadow-lg w-fit text-white",
-                        passStatus.active ? "bg-emerald-600" : "bg-rose-600"
+                        passStatus.active ? "bg-primary" : "bg-rose-600"
                       )}>
                          {passStatus.label}
                       </Badge>
