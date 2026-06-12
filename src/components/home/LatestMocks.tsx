@@ -13,8 +13,8 @@ import { cn } from "@/lib/utils"
 import { useRouter, usePathname } from "next/navigation"
 
 /**
- * @fileOverview High-Density Mock Feed v20.1.
- * UPDATED: Reduced button text size for better containment.
+ * @fileOverview High-Density Mock Feed v20.2.
+ * RESTORED: Unlock button for premium preparation nodes.
  */
 
 export default function LatestMocks() {
@@ -28,7 +28,9 @@ export default function LatestMocks() {
 
   const hasActivePass = useMemo(() => {
      if (!profile) return false;
-     const isAdmin = profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN';
+     const userEmail = user?.email?.toLowerCase();
+     const isFounder = userEmail && ['arshdeepgrewal1122@gmail.com'].includes(userEmail);
+     const isAdmin = profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN' || isFounder;
      if (isAdmin) return true;
 
      if (profile.pass && profile.pass.active === true) {
@@ -38,7 +40,7 @@ export default function LatestMocks() {
      }
      
      return false;
-  }, [profile]);
+  }, [profile, user]);
 
   const mocks = useMemo(() => {
     if (!rawMocks) return []
@@ -82,7 +84,7 @@ export default function LatestMocks() {
             const board = boards?.find((b: any) => b.id === (mock.boardIds?.[0] || mock.boardId));
             const tier = (mock.accessLevel || mock.accessType || 'FREE').trim().toUpperCase();
             const isPremium = tier === 'PREMIUM';
-            const locked = isPremium && user && !hasActivePass;
+            const locked = isPremium && !hasActivePass;
 
             return (
               <motion.div key={mock.id} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} viewport={{ once: true }}>
@@ -120,7 +122,7 @@ export default function LatestMocks() {
           }) : !loading && (
             <div className="col-span-full py-20 text-center opacity-20 flex flex-col items-center gap-4">
                <Sparkles className="h-10 w-10 text-slate-300" />
-               <p className="font-black uppercase tracking-widest text-[10px]">Awaiting Mock Node Deployment</p>
+               <p className="font-black uppercase tracking-widest text-[10px]">Awaiting Mock Deployment</p>
             </div>
           )}
         </div>

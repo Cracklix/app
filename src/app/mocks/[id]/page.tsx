@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useEffect, useState } from "react"
@@ -30,8 +29,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Individual Mock Gateway v19.9.
- * UPDATED: Shrunk FeatureNode section for a more professional "Testbook" style.
+ * @fileOverview Individual Mock Gateway v19.10.
+ * RESTORED: Unlock button for premium preparation nodes.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -66,13 +65,11 @@ export default function MockOverviewPage() {
       const isPremium = tier === 'PREMIUM';
       
       try {
-        // 1. Check for Active/In-Progress Attempt
         const attemptSnap = await getDoc(doc(db, "attempts", `${user.uid}_${mockId}`));
         if (attemptSnap.exists()) {
            setActiveAttempt(attemptSnap.data());
         }
 
-        // 2. Check Result Registry
         const resSnap = await getDocs(query(collection(db, "results"), where("userId", "==", user.uid), where("mockId", "==", mockId)));
         setPreviousAttempts(resSnap.docs.map(d => d.data()));
       } catch (e) {}
@@ -108,7 +105,7 @@ export default function MockOverviewPage() {
   if (mockLoading || userLoading || (user && !accessChecked)) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-6">
        <Zap className="h-12 w-12 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Synchronizing Prep Node...</p>
+       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Syncing Prep Item...</p>
     </div>
   );
 
@@ -120,9 +117,9 @@ export default function MockOverviewPage() {
           <Info className="h-10 w-10 opacity-20" />
        </div>
        <div className="text-center space-y-2">
-          <p className="font-black uppercase tracking-[0.3em] text-[10px] text-slate-400">Registry Sync Error</p>
+          <p className="font-black uppercase tracking-[0.3em] text-[10px] text-slate-400">Sync Error</p>
           <h2 className="text-3xl font-headline font-black text-[#0F172A] uppercase">Test Not Found</h2>
-          <p className="text-sm font-medium text-slate-500 max-w-xs mx-auto">This preparation series might have been archived or removed from the live registry.</p>
+          <p className="text-sm font-medium text-slate-500 max-w-xs mx-auto">This preparation item might have been archived or removed from the official list.</p>
        </div>
        <Button asChild className="h-14 px-10 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl gap-3">
           <Link href="/"><Home className="h-4 w-4" /> Return to Hub</Link>
@@ -175,7 +172,7 @@ export default function MockOverviewPage() {
                     <div className="flex flex-col gap-4">
                        <div className="bg-rose-50 border-2 border-rose-100 p-8 rounded-[2rem] flex items-center gap-6 text-left shadow-2xl">
                           <AlertCircle className="h-10 w-10 text-rose-600" />
-                          <div><p className="text-xs font-black uppercase text-rose-700 tracking-widest mb-1">Limit Reached</p><p className="text-lg font-bold text-rose-500 uppercase leading-none">Max attempts audited.</p></div>
+                          <div><p className="text-xs font-black uppercase text-rose-700 tracking-widest mb-1">Limit Reached</p><p className="text-lg font-bold text-rose-500 uppercase leading-none">Max attempts reviewed.</p></div>
                        </div>
                        <Button asChild variant="outline" className="h-14 rounded-2xl border-slate-200 font-black uppercase text-[10px] tracking-widest gap-2">
                           <Link href={`/results/${mockId}`}><Target className="h-4 w-4" /> View Last Result</Link>
@@ -197,7 +194,7 @@ export default function MockOverviewPage() {
         <section className="py-12 md:py-20 bg-white">
            <div className="container mx-auto px-4 max-w-6xl">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
-                 <FeatureNode icon={<ShieldCheck className="text-emerald-500 h-5 w-5" />} title="Verified Hub" desc="Official board patterns" />
+                 <FeatureNode icon={<ShieldCheck className="text-emerald-500 h-5 w-5" />} title="Official Hub" desc="Official board patterns" />
                  <FeatureNode icon={<Zap className="text-primary h-5 w-5" />} title="Logic Solutions" desc="Step-by-step explanations" />
                  <FeatureNode icon={<Target className="text-blue-500 h-5 w-5" />} title="State Rankings" desc="See where you stand" />
               </div>

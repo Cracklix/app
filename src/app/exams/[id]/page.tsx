@@ -34,8 +34,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Exam Hub v30.1.
- * UPDATED: Renamed "News" to "Current Affairs" in the dashboard tabs.
+ * @fileOverview Institutional Exam Hub v30.2.
+ * RESTORED: Unlock button for premium preparation nodes.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -47,7 +47,7 @@ export default function ExamHubPage() {
   const { user, profile, loading: userLoading } = useUser()
   const examId = params.id as string
 
-  // 1. PRIMARY REGISTRY LISTENERS
+  // 1. PRIMARY OFFICIAL LIST LISTENERS
   const { data: exam, loading: examLoading } = useDoc<any>(useMemo(() => (db && examId ? doc(db, "exams", examId) : null), [db, examId]))
   
   const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true)) : null), [db]);
@@ -69,7 +69,8 @@ export default function ExamHubPage() {
      if (profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN' || isFounder) return true;
      
      if (profile.pass?.active === true) {
-        return new Date(profile.pass.expiryDate) > new Date();
+        const expiry = new Date(profile.pass.expiryDate);
+        return expiry > new Date();
      }
      return false;
   }, [user, profile]);
@@ -95,7 +96,7 @@ export default function ExamHubPage() {
     }
   }, [rawMocks, rawNotes, caHub, examId, exam])
 
-  // HARDENED PERFORMANCE AUDIT
+  // HARDENED PERFORMANCE CHECK
   const examPerformance = useMemo(() => {
      if (!rawMocks || !userResults) return { attempted: 0, avgAcc: 0, bestScore: 0 };
      
@@ -144,7 +145,7 @@ export default function ExamHubPage() {
                   <div className="min-w-0 space-y-2">
                      <div className="flex items-center gap-2">
                         <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase px-2 py-0.5 rounded shadow-sm">
-                           {activeBoard?.abbreviation || 'GOVT'} HUB
+                           {activeBoard?.abbreviation || 'OFFICIAL'} HUB
                         </Badge>
                      </div>
                      <h1 className="text-xl md:text-5xl font-black text-[#0F172A] uppercase leading-tight tracking-tight truncate">
@@ -205,7 +206,7 @@ export default function ExamHubPage() {
                                  </div>
                                  <div className="space-y-0.5">
                                     <h3 className="text-sm font-black text-[#0F172A] uppercase leading-tight truncate max-w-[160px]">{item.title}</h3>
-                                    <p className="text-[9px] font-bold text-slate-400 uppercase">{item.month} Hub</p>
+                                    <p className="text-[9px] font-bold text-slate-400 uppercase">{item.month} Updates</p>
                                  </div>
                               </div>
                               <ChevronRight className="h-4 w-4 text-slate-200 group-hover:text-primary transition-all" />
@@ -248,7 +249,7 @@ function MockList({ data, results, isPassActive, user, loading }: any) {
    if (data.length === 0) return (
       <div className="py-24 text-center opacity-20 flex flex-col items-center gap-4">
          <Zap className="h-10 w-10 text-slate-300" />
-         <p className="font-headline font-black text-lg uppercase tracking-widest">Registry Hub Empty</p>
+         <p className="font-headline font-black text-lg uppercase tracking-widest">Section Empty</p>
       </div>
    );
 
@@ -269,7 +270,7 @@ function MockList({ data, results, isPassActive, user, loading }: any) {
                      )}>
                         {isPremium ? '🔒 PREMIUM' : 'FREE'}
                      </Badge>
-                     {result && <Badge className="bg-primary text-white border-none text-[7px] font-black px-2 py-0.5 rounded uppercase">AUDITED</Badge>}
+                     {result && <Badge className="bg-primary text-white border-none text-[7px] font-black px-2 py-0.5 rounded uppercase">CHECKED</Badge>}
                   </div>
                   
                   <h3 className="text-base md:text-2xl font-black text-[#0F172A] uppercase leading-tight mb-6 md:mb-8 flex-1 group-hover:text-primary transition-colors">
