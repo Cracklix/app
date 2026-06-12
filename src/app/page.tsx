@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo, useState, useEffect } from "react";
@@ -15,9 +14,8 @@ import MeetFounder from "@/components/home/MeetFounder";
 import Footer from "@/components/layout/Footer";
 
 /**
- * @fileOverview Official Home Hub v100.0.
- * UPDATED: Optimized Sectional Hierarchy to match wireframe.
- * Hero -> Trending -> Stats -> Why Cracklix -> Anchor Zone (Continue Learning/Categories).
+ * @fileOverview Official Home Hub v102.0 (Restored).
+ * RESTORED: Premium sequential flow aligned with student preparation cycles.
  */
 
 export default function HomePage() {
@@ -31,7 +29,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-white font-body pb-safe overflow-x-hidden text-left">
       <Navbar />
       
-      {/* 1. PRIMARY HERO HUB */}
+      {/* 1. PRIMARY HERO HUB (Restored Academy Style) */}
       <Hero />
 
       {/* 2. TRENDING EXAMS ROW */}
@@ -47,7 +45,6 @@ export default function HomePage() {
          {/* --- ANCHOR ZONE: NO CHANGE BELOW THIS --- */}
          <ContinueLearning />
          <FeaturedCategories />
-         
          <LatestMocks />
       </div>
 
