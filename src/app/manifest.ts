@@ -2,7 +2,7 @@
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Optimized Institutional PWA Manifest v17.0.
+ * @fileOverview Optimized Institutional PWA Manifest v18.0.
  * Optimized for Google Play Store (TWA) with maskable icons and high-fidelity branding.
  */
 export default function manifest(): MetadataRoute.Manifest {

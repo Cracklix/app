@@ -12,7 +12,6 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const masterLogo = 'https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png';
 const squareIcon = 'https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png';
 
 export const metadata: Metadata = {
