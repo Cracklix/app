@@ -24,15 +24,37 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import React from "react"
+import React, { useMemo } from "react"
+import { useFirestore, useDoc } from "@/firebase"
+import { doc } from "firebase/firestore"
+import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Premium Founder's Story Hub v2.0.
- * UPDATED: Integrated real impact data (15k+ Aspirants, 10k+ MCQs) with glassmorphism design.
+ * @fileOverview Premium Founder's Story Hub v3.0.
+ * UPDATED: Integrated live status synchronization for Aspirants and MCQs.
  */
 
 export default function AboutPage() {
+  const db = useFirestore();
   const founderImg = "https://i.ibb.co/5hkxTtKS/Whats-App-Image-2026-05-28-at-10-31-36-AM.jpg";
+
+  // STABILIZED DATA LISTENERS
+  const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
+  const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
+
+  const liveStats = useMemo(() => {
+    if (!stats) return { aspirants: "...", mcqs: "..." };
+    
+    const formatNumber = (num: number) => {
+       if (num >= 1000) return (num / 1000).toFixed(1) + 'k+';
+       return num.toString();
+    }
+    
+    return {
+      aspirants: formatNumber(stats.totalUsers || 15000),
+      mcqs: formatNumber(stats.totalQuestions || 10000)
+    };
+  }, [stats]);
 
   return (
     <div className="min-h-screen bg-[#020817] text-white font-body overflow-x-hidden selection:bg-primary/30 text-left">
@@ -128,10 +150,20 @@ export default function AboutPage() {
                        </p>
                     </div>
 
-                    {/* REAL IMPACT NODES */}
+                    {/* REAL IMPACT NODES - LIVE STATUS */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6">
-                       <ImpactNode label="REAL ASPIRANTS" val="15k+" icon={<Users className="text-primary" />} />
-                       <ImpactNode label="VERIFIED MCQs" val="10k+" icon={<ShieldCheck className="text-emerald-500" />} />
+                       <ImpactNode 
+                          label="LIVE ASPIRANTS" 
+                          val={liveStats.aspirants} 
+                          icon={<Users className="text-primary" />} 
+                          loading={statsLoading}
+                       />
+                       <ImpactNode 
+                          label="VERIFIED MCQs" 
+                          val={liveStats.mcqs} 
+                          icon={<ShieldCheck className="text-emerald-500" />} 
+                          loading={statsLoading}
+                       />
                     </div>
                  </motion.div>
               </div>
@@ -242,14 +274,18 @@ export default function AboutPage() {
   )
 }
 
-function ImpactNode({ label, val, icon }: any) {
+function ImpactNode({ label, val, icon, loading }: any) {
    return (
       <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 flex items-center gap-6 shadow-xl group hover:border-primary/30 transition-all">
          <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
             {icon}
          </div>
          <div className="text-left">
-            <p className="text-2xl font-headline font-black text-white leading-none">{val}</p>
+            {loading ? (
+               <Skeleton className="h-8 w-20 bg-white/10" />
+            ) : (
+               <p className="text-2xl font-headline font-black text-white leading-none tabular-nums">{val}</p>
+            )}
             <p className="text-[9px] font-black uppercase text-slate-500 tracking-widest mt-1.5">{label}</p>
          </div>
       </div>
@@ -265,7 +301,7 @@ function ValueCard({ icon, title, desc }: any) {
        </div>
        <div className="space-y-4 flex-1">
           <h3 className="text-3xl md:text-4xl font-headline font-black text-white uppercase tracking-tight group-hover:text-primary transition-colors">{title}</h3>
-          <p className="text-lg text-slate-400 font-medium leading-relaxed leading-relaxed">{desc}</p>
+          <p className="text-lg text-slate-400 font-medium leading-relaxed">{desc}</p>
        </div>
     </Card>
   )
