@@ -27,8 +27,8 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v25.0.
- * UPDATED: Optimized naming and mobile install button.
+ * @fileOverview Institutional Navbar v25.1.
+ * UPDATED: Reduced responsive breakpoint from XL to LG for better desktop link visibility.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -130,7 +130,7 @@ export default function Navbar() {
                </Sheet>
                <Logo variant="light" className="origin-left" />
 
-            <div className="hidden xl:flex items-center gap-10 text-[12px] font-black uppercase tracking-[0.2em] text-[#7A8B9E] ml-10">
+            <div className="hidden lg:flex items-center gap-10 text-[12px] font-black uppercase tracking-[0.2em] text-[#7A8B9E] ml-10">
               <Link href="/my-exams" className={cn("transition-colors flex items-center gap-2 hover:text-white pointer-events-auto", pathname === '/my-exams' ? 'text-white' : '')}>
                 <Target className="h-4 w-4 text-primary" /> My Exams
               </Link>

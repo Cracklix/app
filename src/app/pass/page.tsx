@@ -10,20 +10,25 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { useUser, useFirestore, useCollection, useDoc } from "@/firebase"
 import { doc, updateDoc, serverTimestamp, collection } from "firebase/firestore"
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Elite PASS Registry Hub v11.2.
- * UPDATED: Replaced specific year with Latest Pattern branding.
+ * @fileOverview Elite PASS Registry Hub v11.5.
+ * FIXED: Hydration guard implemented for live pass status and free trial visibility.
  */
 export default function PassPage() {
   const { user, profile, loading: userLoading } = useUser()
   const db = useFirestore()
   const { toast } = useToast()
   const [claiming, setClaiming] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const { data: settings } = useDoc<any>(useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]));
   const passQuery = useMemo(() => (db ? collection(db, "passes") : null), [db])
@@ -80,8 +85,9 @@ export default function PassPage() {
   }
 
   const showFreeTrial = useMemo(() => {
+     if (!mounted) return false;
      return settings?.freeTrialEnabled !== false && !profile?.pass?.freePassClaimed;
-  }, [settings, profile]);
+  }, [settings, profile, mounted]);
 
   return (
     <div className="min-h-screen bg-[#020817] font-body pb-safe overflow-x-hidden text-white">
@@ -93,11 +99,11 @@ export default function PassPage() {
         <div className="text-center space-y-6 mb-16 md:mb-24">
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Badge className={cn(
-                 "px-6 py-2 rounded-full font-black uppercase text-[10px] tracking-[0.2em] mb-8 shadow-2xl",
+                 "px-6 py-2 rounded-full font-black uppercase text-[10px] tracking-[0.2em] mb-8 shadow-2xl transition-all",
                  activePassLabel === 'PASS EXPIRED' ? "bg-rose-500/20 text-rose-400 border-rose-500/30" :
-                 activePassLabel ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : "bg-primary/20 text-primary border-primary/30"
+                 (mounted && activePassLabel) ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : "bg-primary/20 text-primary border-primary/30"
               )}>
-                 {activePassLabel || "Institutional Preparation Registry Latest Pattern"}
+                 {mounted ? (activePassLabel || "Institutional Preparation Registry Latest Pattern") : "Synchronizing Registry..."}
               </Badge>
               <h1 className="text-4xl md:text-8xl font-headline font-black tracking-tight uppercase leading-[0.9]">
                  ELITE <span className="text-primary">MASTER PASS</span>
@@ -108,7 +114,7 @@ export default function PassPage() {
            </motion.div>
         </div>
 
-        {showFreeTrial && (
+        {mounted && showFreeTrial && (
            <div className="max-w-xl mx-auto mb-24 animate-in zoom-in-95 duration-500">
               <Card className="bg-emerald-500/10 border-2 border-emerald-500/20 rounded-[3rem] p-10 text-center space-y-8 shadow-3xl shadow-emerald-500/5 group hover:border-emerald-500/40 transition-all">
                  <div className="h-16 w-16 bg-emerald-500 text-white rounded-2xl flex items-center justify-center mx-auto shadow-2xl">
