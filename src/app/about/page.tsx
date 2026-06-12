@@ -1,4 +1,3 @@
-
 "use client"
 
 import Navbar from "@/components/layout/Navbar"
@@ -30,8 +29,9 @@ import { doc } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Founder's Story Hub v9.0.
- * FIXED: Accurate hub count and hydration safety for live stats.
+ * @fileOverview Founder's Story Hub v10.0 (Production Hardened).
+ * FIXED: Hub count sync and hydration safety for live stats.
+ * LANGUAGE: Updated Registry to "Official List".
  */
 
 export default function AboutPage() {

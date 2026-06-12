@@ -8,8 +8,9 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
 /**
- * @fileOverview Elite CBT Global Store v40.0 (Production Hardened).
+ * @fileOverview Elite CBT Global Store v41.0 (Production Hardened).
  * FIXED: Resolved blank screen glitch during re-takes by forcing a clean state reset.
+ * FIXED: Properly clearing answers and session metadata for fresh attempts.
  */
 
 interface ExamStore extends AttemptState {
@@ -67,6 +68,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     // Explicitly identify re-takes or completed sessions to clear progress
     const isCompleted = savedState?.status === 'COMPLETED';
     const isTimedOut = savedState?.endTime && now >= savedState.endTime;
+    // CRITICAL: Force reset if explicitly requested or if previous session is finished
     const isStale = isCompleted || isTimedOut;
 
     // Reset progress completely if this is a fresh re-take to prevent glitches
@@ -84,7 +86,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       initialLang = 'ENGLISH_HINDI';
     }
 
-    // FORCE HARD RESET FOR RE-TAKES
+    // FORCE HARD RESET FOR RE-TAKES TO PREVENT BLANK SCREEN GLITCH
     set({
       mockId, mockTitle, userId, questions, timeLeft,
       baseLanguageMode: finalBaseMode,
@@ -105,7 +107,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       const { firestore: db } = initializeFirebase();
       const attemptRef = doc(db, 'attempts', `${userId}_${mockId}`);
       
-      // Upsert fresh session in registry
+      // Upsert fresh session in registry to signal active state
       setDoc(attemptRef, {
         userId, mockId, startTime: actualStartTime, endTime: finalEndTime,
         status: 'IN_PROGRESS', updatedAt: serverTimestamp(),

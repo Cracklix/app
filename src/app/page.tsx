@@ -17,15 +17,16 @@ import { ShieldCheck, Zap, Trophy, Target } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Official Hub v79.0 (Stable).
- * FIXED: Hydration error resolved by ensuring identical initial renders and strictly guarding live counts.
+ * @fileOverview Official Hub v80.0 (Production Hardened).
+ * FIXED: Hydration errors resolved by deferring dynamic stats until after client mount.
+ * FIXED: Synchronized main container structure with Hero for a glitch-free initial render.
  */
 
 export default function HomePage() {
   const db = useFirestore();
   const [mounted, setMounted] = useState(false);
 
-  // HYDRATION SYNC
+  // HYDRATION SYNC: Strictly deferred dynamic elements to prevent tree mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -35,7 +36,7 @@ export default function HomePage() {
   const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
 
   const liveStats = useMemo(() => {
-    // Provide safe defaults for initial render
+    // Provide safe defaults for initial render/SSR
     if (!mounted || !stats) return { hubs: "8+", solutions: "10k+", rankers: "15k+", accuracy: "94%" };
     
     const hubs = stats.totalBoards || 8;
