@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -27,8 +26,8 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v18.0.
- * UPDATED: Corrected PWA Install visibility logic via Service Worker detection.
+ * @fileOverview Institutional Navbar v19.0.
+ * UPDATED: Optimized hydration pattern. Component structure renders immediately.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -52,7 +51,6 @@ export default function Navbar() {
     window.addEventListener('pwa-installable', checkInstall);
     window.addEventListener('pwa-installed', () => setCanInstall(false));
     
-    // Immediate check for existing prompt event
     checkInstall();
     
     return () => {
@@ -95,15 +93,6 @@ export default function Navbar() {
       expiry: expiry.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
     };
   }, [profile]);
-
-  if (!mounted) {
-    return (
-      <div className="h-16 w-full bg-[#0B1528] flex items-center justify-between px-6 border-b border-white/5">
-        <Skeleton className="h-8 w-32 bg-white/5" />
-        <Skeleton className="h-10 w-10 rounded-full bg-white/5" />
-      </div>
-    );
-  }
 
   return (
     <div className="sticky top-0 z-[1000] w-full pointer-events-auto">
@@ -159,7 +148,7 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
-            {canInstall && (
+            {mounted && canInstall && (
               <Button 
                 onClick={handleInstallApp}
                 variant="outline" 
@@ -169,7 +158,7 @@ export default function Navbar() {
               </Button>
             )}
 
-            {user && passStatus && (
+            {mounted && user && passStatus && (
                <div className={cn(
                  "hidden sm:flex items-center gap-3 px-4 py-1.5 rounded-xl border-2 transition-all",
                  passStatus.active ? "bg-emerald-50/10 border-emerald-500/20 text-emerald-400" : "bg-rose-50/10 border-rose-500/20 text-rose-400"
@@ -186,8 +175,8 @@ export default function Navbar() {
               <Search className="h-5 w-5" />
             </Link>
 
-            {loading ? (
-              <Skeleton className="h-9 w-9 md:h-10 md:w-10 rounded-full bg-white/5" />
+            {!mounted || loading ? (
+              <Skeleton className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-white/5" />
             ) : user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

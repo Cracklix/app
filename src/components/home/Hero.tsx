@@ -11,11 +11,11 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Refined Institutional Hero Hub v48.0.
- * UPDATED: Fully responsive layout. Image node is now visible on both Mobile and Desktop.
- * FIX: Removed 'hidden' constraints to ensure universal asset delivery.
+ * @fileOverview Refined Institutional Hero Hub v49.0.
+ * UPDATED: Optimized hydration pattern. Main structure renders immediately to prevent blank screens.
  */
 
 export default function Hero() {
@@ -28,7 +28,7 @@ export default function Hero() {
     setMounted(true);
   }, []);
   
-  const policeImage = PlaceHolderImages.find(img => img.id === 'hero-police')?.imageUrl || "https://picsum.photos/seed/police/800/600";
+  const policeImage = PlaceHolderImages.find(img => img.id === 'hero-police')?.imageUrl || "https://punjabpolice.gov.in/media/images/pp10.original.jpg";
 
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats } = useDoc<any>(statsRef);
@@ -46,10 +46,6 @@ export default function Hero() {
     }
   };
 
-  if (!mounted) {
-    return <section className="min-h-[600px] bg-[#08152D] w-full" />;
-  }
-
   return (
     <section className="relative pt-8 pb-12 md:pt-20 md:pb-32 bg-[#08152D] overflow-hidden min-h-[600px] flex items-center">
       {/* Institutional Background Pattern */}
@@ -62,8 +58,8 @@ export default function Hero() {
           
           {/* LEFT: CONTENT HUB */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={mounted ? { opacity: 0, y: 20 } : false}
+            animate={mounted ? { opacity: 1, y: 0 } : false}
             transition={{ duration: 0.6 }}
             className="space-y-6 md:space-y-10"
           >
@@ -108,10 +104,10 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* RIGHT: PHOTO NODE (Universal Visibility) */}
+          {/* RIGHT: PHOTO NODE */}
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={mounted ? { opacity: 0, scale: 0.95 } : false}
+            animate={mounted ? { opacity: 1, scale: 1 } : false}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative w-full block"
           >
@@ -150,7 +146,11 @@ export default function Hero() {
                   </div>
                   <div className="text-left md:pr-4">
                      <p className="text-[7px] md:text-[9px] font-black uppercase text-slate-400 leading-none mb-1 md:mb-1.5">Live Aspirants</p>
-                     <p className="text-lg md:text-2xl font-headline font-black text-[#0F172A] leading-none uppercase">{liveAspirantCount}</p>
+                     {mounted ? (
+                        <p className="text-lg md:text-2xl font-headline font-black text-[#0F172A] leading-none uppercase">{liveAspirantCount}</p>
+                     ) : (
+                        <Skeleton className="h-6 w-16 bg-slate-100" />
+                     )}
                   </div>
                </div>
             </div>
