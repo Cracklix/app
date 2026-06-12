@@ -2,7 +2,7 @@
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Institutional PWA Manifest Configuration v14.0.
+ * @fileOverview Institutional PWA Manifest Configuration v15.0.
  * UPDATED: Optimized with high-fidelity square icons for mobile launcher stability.
  */
 export default function manifest(): MetadataRoute.Manifest {
@@ -39,7 +39,7 @@ export default function manifest(): MetadataRoute.Manifest {
         description: 'View your pinned exam hubs',
       },
       {
-        name: 'Mock Tests',
+        name: 'Practice Tests',
         url: '/mocks',
         description: 'Browse all available practice tests',
       },
