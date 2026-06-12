@@ -14,8 +14,8 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Hero Hub v60.0.
- * FIXED: Resolved hydration mismatches by ensuring consistent headline text ("EXAM.") and client-side dynamic rendering.
+ * @fileOverview Official Hero Hub v62.0.
+ * FIXED: Strictly locked text synchronization and hydration guards for "EXAM."
  */
 
 export default function Hero() {

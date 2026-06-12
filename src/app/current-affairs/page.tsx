@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo, useState } from "react"
@@ -36,8 +37,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 /**
- * @fileOverview Official Current Affairs Hub v10.2.
- * SIMPLIFIED: Replaced technical jargon with easy words (Hub, Daily Updates).
+ * @fileOverview Official Current Affairs Hub v10.5.
+ * UPDATED: Enhanced Merit List identity logic (Email fallback).
  */
 
 const HUB_TYPES = [
@@ -58,12 +59,19 @@ export default function FreeContentHub() {
   const hubQuery = useMemo(() => (db ? query(collection(db, "current_affairs_hub"), where("status", "==", "PUBLISHED")) : null), [db])
   const { data: hubItems, loading } = useCollection<any>(hubQuery)
   
-  const rankingQuery = useMemo(() => (db ? query(collection(db, "results"), where("accuracy", ">", 80)) : null), [db])
+  const rankingQuery = useMemo(() => (db ? query(collection(db, "results")) : null), [db])
   const { data: results } = useCollection<any>(rankingQuery)
 
   const topRankers = useMemo(() => {
      if (!results) return [];
-     return [...results].sort((a, b) => b.score - a.score).slice(0, 3);
+     // Get unique users best score
+     const map = new Map();
+     results.forEach(r => {
+        if (!map.has(r.userId) || map.get(r.userId).score < r.score) {
+           map.set(r.userId, r);
+        }
+     });
+     return Array.from(map.values()).sort((a, b) => b.score - a.score).slice(0, 5);
   }, [results]);
 
   const filteredItems = useMemo(() => {
@@ -199,23 +207,26 @@ export default function FreeContentHub() {
                             <Medal className="h-6 w-6 text-primary" />
                             <h3 className="font-headline font-black text-xl uppercase">Top Students</h3>
                          </div>
-                         <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Rankings Hub</p>
+                         <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Merit List</p>
                       </div>
                       <CardContent className="p-8 space-y-6">
-                         {topRankers?.map((res: any, idx: number) => (
-                           <div key={res.id} className="flex items-center justify-between">
-                              <div className="flex items-center gap-4 text-left">
-                                 <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center text-white font-black text-xs shadow-lg", idx === 0 ? "bg-amber-400" : idx === 1 ? "bg-slate-300" : "bg-orange-400")}>
-                                    #{idx + 1}
+                         {topRankers?.map((res: any, idx: number) => {
+                            const name = (res.userName && res.userName !== 'Aspirant' && res.userName !== 'Student') ? res.userName : (res.userEmail || "Student");
+                            return (
+                              <div key={res.id} className="flex items-center justify-between">
+                                 <div className="flex items-center gap-4 text-left">
+                                    <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center text-white font-black text-xs shadow-lg", idx === 0 ? "bg-amber-400" : idx === 1 ? "bg-slate-300" : "bg-orange-400")}>
+                                       #{idx + 1}
+                                    </div>
+                                    <div className="min-w-0">
+                                       <p className="font-bold text-[#0F172A] text-sm uppercase truncate max-w-[120px]">{name}</p>
+                                       <p className="text-[8px] font-black text-slate-400 uppercase">Score: {res.score}</p>
+                                    </div>
                                  </div>
-                                 <div>
-                                    <p className="font-bold text-[#0F172A] text-sm uppercase truncate max-w-[120px]">{res.userName || "Student"}</p>
-                                    <p className="text-[8px] font-black text-slate-400 uppercase">Score: {res.score}</p>
-                                 </div>
+                                 <span className="text-xs font-black text-emerald-600">{res.accuracy}%</span>
                               </div>
-                              <span className="text-xs font-black text-emerald-600">{res.accuracy}%</span>
-                           </div>
-                         ))}
+                            );
+                         })}
                          <div className="pt-4 border-t border-slate-50">
                             <Button asChild variant="ghost" className="w-full font-black uppercase text-[9px] tracking-widest text-primary gap-2">
                                <Link href="/leaderboard">Full Merit List <ChevronRight className="h-3 w-3" /></Link>
@@ -224,9 +235,9 @@ export default function FreeContentHub() {
                       </CardContent>
                    </Card>
 
-                   <Card className="border-none bg-primary text-white shadow-4xl rounded-[3rem] p-10 space-y-8 relative overflow-hidden group cursor-pointer">
+                   <Card className="border-none bg-primary text-white shadow-4xl rounded-[3rem] p-10 space-y-8 relative overflow-hidden group cursor-pointer text-left">
                       <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-110 transition-transform"><MessageCircle className="h-40 w-40" /></div>
-                      <div className="relative z-10 space-y-6 text-left">
+                      <div className="relative z-10 space-y-6">
                          <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center text-primary shadow-2xl">
                             <MessageCircle className="h-8 w-8 fill-current" />
                          </div>

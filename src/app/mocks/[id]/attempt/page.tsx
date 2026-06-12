@@ -27,8 +27,8 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened CBT Engine v35.1.
- * FIXED: Explicit import of 'cn' and optimized scoring engine.
+ * @fileOverview Hardened CBT Engine v36.0 (Merit Hardened).
+ * UPDATED: Captured userEmail in results for high-fidelity state rankings.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -70,7 +70,7 @@ export default function MockAttemptPage() {
         const currentProfile = profileSnap.data();
         
         const mockSnap = await getDoc(doc(db, "mocks", mockId));
-        if (!mockSnap.exists()) throw new Error("Test node not found in registry.");
+        if (!mockSnap.exists()) throw new Error("Test item not found.");
         const mData = mockSnap.data();
         setMockData(mData);
 
@@ -89,7 +89,7 @@ export default function MockAttemptPage() {
         }
 
         if (isPremium && !hasActivePass) {
-           toast({ variant: "destructive", title: "Security Rejection", description: "Premium test node requires an active Elite Pass." });
+           toast({ variant: "destructive", title: "Security Rejection", description: "Elite pass required for this test." });
            router.push('/pass');
            return;
         }
@@ -102,7 +102,7 @@ export default function MockAttemptPage() {
         chunkSnaps.forEach(snap => snap.docs.forEach(d => fetchedQuestions.push({ ...d.data(), id: d.id })));
         const sortedQs = questionIds.map(id => fetchedQuestions.find(q => q.id === id)).filter(Boolean);
         
-        if (sortedQs.length === 0) throw new Error("Registry bank empty for this node.");
+        if (sortedQs.length === 0) throw new Error("No questions available.");
 
         const attemptSnap = await getDoc(doc(db, "attempts", `${user.uid}_${mockId}`));
         initExam(mockId, mData.title || "Elite Series", user.uid, sortedQs, mData.duration || 120, attemptSnap.exists() ? attemptSnap.data() : undefined, mData.languageMode);
@@ -151,6 +151,7 @@ export default function MockAttemptPage() {
     const resultPayload = {
       userId: user.uid, 
       userName: profile?.name || user.displayName || 'Aspirant', 
+      userEmail: user.email || "",
       mockId, 
       mockTitle: mockData.title || mockTitle,
       score: parseFloat(rawScore.toFixed(2)),
@@ -172,7 +173,7 @@ export default function MockAttemptPage() {
         status: 'COMPLETED', 
         updatedAt: serverTimestamp() 
       });
-      toast({ title: "Test Submitted", description: "Audit complete. Syncing state rankings..." });
+      toast({ title: "Test Submitted", description: "Final audit complete. Results saved." });
       router.push(`/results/${mockId}`);
     } catch (e) {
       toast({ variant: "destructive", title: "Sync Failed" });
@@ -186,21 +187,20 @@ export default function MockAttemptPage() {
      }
   }, [timeLeft, isInitializing, isSubmittingFinal, handleSubmitFinal]);
 
-  if (isInitializing) return <div className="h-screen w-full flex flex-col items-center justify-center bg-[#0B1528] space-y-8"><Zap className="h-16 w-16 text-primary animate-pulse" /><p className="text-[11px] font-black uppercase tracking-[0.5em] text-primary">Synchronizing Access Registry...</p></div>;
+  if (isInitializing) return <div className="h-screen w-full flex flex-col items-center justify-center bg-[#0B1528] space-y-8"><Zap className="h-16 w-16 text-primary animate-pulse" /><p className="text-[11px] font-black uppercase tracking-[0.5em] text-primary">Synchronizing Access...</p></div>;
 
   return (
     <div className="flex flex-col h-[100dvh] bg-white font-body select-none overflow-hidden relative">
       <AntiCheat />
       <ExamHeader onPaletteToggle={() => setIsPaletteOpen(true)} onExitRequest={() => setShowExitModal(true)} />
       
-      {/* CLOUD SYNC STATUS */}
       <div className="absolute top-20 right-6 z-[120] pointer-events-none hidden md:block">
          <div className={cn(
             "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-500",
             isSyncing ? "bg-primary/10 border-primary/20 text-primary" : "bg-emerald-50 border-emerald-100 text-emerald-600"
          )}>
             <Cloud className={cn("h-3 w-3", isSyncing && "animate-bounce")} />
-            <span className="text-[8px] font-black uppercase tracking-widest">{isSyncing ? 'Syncing...' : 'Registry Safe'}</span>
+            <span className="text-[8px] font-black uppercase tracking-widest">{isSyncing ? 'Syncing...' : 'Safe Hub'}</span>
          </div>
       </div>
 
@@ -247,14 +247,14 @@ export default function MockAttemptPage() {
         </SheetContent>
       </Sheet>
 
-      <Dialog open={showExitModal} onOpenChange={showExitModal && !isSubmittingFinal ? setShowExitModal : undefined}>
+      <Dialog open={showExitModal} onOpenChange={show => !isSubmittingFinal && setShowExitModal(show)}>
         <DialogContent className="max-w-[440px] rounded-[2.5rem] p-12 bg-white text-center">
           <div className="space-y-10">
             <div className="h-16 w-16 bg-blue-50/50 rounded-2xl flex items-center justify-center mx-auto text-blue-500">
               <LogOut className="h-8 w-8" />
             </div>
             <DialogTitle className="text-3xl font-headline font-black uppercase text-[#0F172A]">Pause Test?</DialogTitle>
-            <p className="text-sm font-bold text-slate-400 uppercase">Your progress will be saved in the registry.</p>
+            <p className="text-sm font-bold text-slate-400 uppercase">Progress will be saved.</p>
             <div className="flex gap-4 pt-4">
               <Button variant="ghost" onClick={() => setShowExitModal(false)} className="flex-1 h-16 font-black uppercase text-[11px]">Cancel</Button>
               <Button onClick={() => { setPaused(false); setShowExitModal(false); router.push('/dashboard'); }} className="flex-1 h-16 bg-[#F97316] text-white rounded-xl font-black uppercase text-[11px] shadow-xl border-none">Save & Exit</Button>
@@ -269,12 +269,12 @@ export default function MockAttemptPage() {
             <div className="h-24 w-24 bg-primary/20 rounded-[3rem] flex items-center justify-center mx-auto text-primary shadow-3xl">
               <ShieldCheck className="h-12 w-12" />
             </div>
-            <DialogTitle className="text-3xl font-headline font-black uppercase text-white">Final Submission</DialogTitle>
-            <p className="text-slate-400 font-medium">Ready to audit your preparation node?</p>
+            <DialogTitle className="text-3xl font-headline font-black uppercase text-white">Submit Final</DialogTitle>
+            <p className="text-slate-400 font-medium">Review complete? Audit your score now.</p>
             <div className="flex gap-4 pt-4">
               <Button variant="ghost" onClick={() => setShowSubmitModal(false)} disabled={isSubmittingFinal} className="flex-1 h-16 text-slate-500 font-black uppercase text-[10px]">Go Back</Button>
               <Button onClick={handleSubmitFinal} disabled={isSubmittingFinal} className="flex-1 h-16 bg-primary text-white font-black uppercase text-[10px] rounded-2xl shadow-3xl border-none">
-                {isSubmittingFinal ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />} Finish Audit
+                {isSubmittingFinal ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />} Finish Test
               </Button>
             </div>
           </div>

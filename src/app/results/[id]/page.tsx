@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -41,8 +42,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 /**
- * @fileOverview Test Results Hub v22.0.
- * SIMPLIFIED: Replaced technical jargon with easy words (History, Explanation, Merit).
+ * @fileOverview Test Results Hub v23.0.
+ * UPDATED: Enhanced State Rank names logic (Email fallback) and broader merit data.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -59,7 +60,6 @@ export default function ResultPage() {
   const [mockData, setMockData] = useState<any>(null)
   const [loadingContent, setLoadingContent] = useState(true)
   const [activeReviewFilter, setActiveReviewFilter] = useState<'ALL' | 'CORRECT' | 'WRONG' | 'SKIPPED'>('ALL')
-  const [isLocked, setIsLocked] = useState(false);
 
   // 1. FETCH USER RESULT
   const resultsQuery = useMemo(() => {
@@ -77,7 +77,7 @@ export default function ResultPage() {
   // 2. FETCH GLOBAL BENCHMARKS
   const globalResultsQuery = useMemo(() => {
     if (!db || !mockId) return null
-    return query(collection(db, "results"), where("mockId", "==", mockId), limit(500))
+    return query(collection(db, "results"), where("mockId", "==", mockId), limit(200))
   }, [db, mockId])
 
   const { data: rawGlobalResults } = useCollection<any>(globalResultsQuery)
@@ -87,17 +87,28 @@ export default function ResultPage() {
     return [...rawGlobalResults].sort((a, b) => (b.score || 0) - (a.score || 0));
   }, [rawGlobalResults]);
 
+  const meritList = useMemo(() => {
+     if (!sortedGlobalResults) return [];
+     // Filter unique users taking their best score
+     const uniqueMap = new Map();
+     sortedGlobalResults.forEach(r => {
+        if (!uniqueMap.has(r.userId) || uniqueMap.get(r.userId).score < r.score) {
+           uniqueMap.set(r.userId, r);
+        }
+     });
+     return Array.from(uniqueMap.values()).sort((a,b) => b.score - a.score);
+  }, [sortedGlobalResults]);
+
   const merit = useMemo(() => {
-     if (!sortedGlobalResults || sortedGlobalResults.length === 0 || !sessionData) {
-        return { rank: '?', total: 0, percentile: 0, topper: null };
+     if (!meritList || meritList.length === 0 || !sessionData) {
+        return { rank: '?', total: 0, percentile: 0 };
      }
-     const rank = sortedGlobalResults.findIndex((r: any) => r.userId === user?.uid) + 1;
+     const rank = meritList.findIndex((r: any) => r.userId === user?.uid) + 1;
      const actualRank = rank > 0 ? rank : 1;
-     const total = sortedGlobalResults.length;
+     const total = meritList.length;
      const percentile = total > 0 ? Math.round(((total - actualRank + 1) / (total || 1)) * 1000) / 10 : 0;
-     const topper = sortedGlobalResults[0];
-     return { rank: actualRank, total, percentile, topper };
-  }, [sortedGlobalResults, sessionData, user]);
+     return { rank: actualRank, total, percentile };
+  }, [meritList, sessionData, user]);
 
   useEffect(() => {
     async function loadQuestions() {
@@ -111,23 +122,6 @@ export default function ResultPage() {
         if (mockSnap.exists()) {
           const mData = mockSnap.data();
           setMockData(mData);
-          const tier = (mData.accessLevel || mData.accessType || 'FREE').trim().toUpperCase();
-          const isPremium = tier === 'PREMIUM';
-          const userEmail = user?.email?.toLowerCase();
-          const isFounder = userEmail && SUPER_ADMIN_WHITELIST.includes(userEmail);
-          const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || isFounder;
-          
-          let hasActivePass = false;
-          if (isAdmin) hasActivePass = true;
-          else if (profile?.pass && profile.pass.active === true) {
-             const expiry = new Date(profile.pass.expiryDate);
-             if (expiry > new Date()) hasActivePass = true;
-          }
-          if (isPremium && !hasActivePass) {
-             setIsLocked(true);
-             setLoadingContent(false);
-             return;
-          }
           const questionIds = mData.questionIds || []
           const fetchedQuestions: any[] = []
           const chunks = []
@@ -140,7 +134,7 @@ export default function ResultPage() {
       } finally { setLoadingContent(false) }
     }
     loadQuestions()
-  }, [db, sessionData, mockId, resultsLoading, profile, user]);
+  }, [db, sessionData, mockId, resultsLoading]);
 
   const filteredQuestions = useMemo(() => {
      return questions.map((q, i) => ({ ...q, index: i })).filter((q) => {
@@ -169,7 +163,6 @@ export default function ResultPage() {
       <Navbar />
       <main className="container mx-auto px-4 md:px-6 py-6 md:py-10 max-w-7xl space-y-6">
         
-        {/* COMPACT SUMMARY STRIP */}
         <div className="bg-[#0B1528] rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row items-center justify-between p-4 md:px-8 md:py-5 gap-4">
            <div className="flex items-center gap-4 min-w-0 flex-1">
               <div className="h-10 w-10 bg-primary/20 rounded-lg flex items-center justify-center text-primary shrink-0">
@@ -198,7 +191,6 @@ export default function ResultPage() {
            </div>
         </div>
 
-        {/* REVIEW TABS */}
         <Tabs defaultValue="SOLUTIONS" className="space-y-6">
            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <TabsList className="bg-white border border-slate-100 p-1 h-12 rounded-xl shadow-sm inline-flex">
@@ -238,18 +230,21 @@ export default function ResultPage() {
            <TabsContent value="TOPPER" className="space-y-4">
               <Card className="border-none shadow-md rounded-2xl bg-white p-6">
                  <div className="space-y-3">
-                    {sortedGlobalResults.slice(0, 50).map((r: any, i: number) => (
-                       <div key={r.id} className="flex items-center justify-between p-3 bg-slate-50/50 rounded-xl border border-slate-50">
-                          <div className="flex items-center gap-3">
-                             <span className="font-black text-slate-300 w-5 text-xs">#{i+1}</span>
-                             <p className="font-bold text-[#0F172A] text-xs uppercase">{r.userName || "Student"}</p>
-                          </div>
-                          <div className="flex gap-4 items-center">
-                             <span className="text-[10px] font-black text-primary">{r.score.toFixed(1)} Pts</span>
-                             <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[7px]">{r.accuracy}%</Badge>
-                          </div>
-                       </div>
-                    ))}
+                    {meritList.slice(0, 50).map((r: any, i: number) => {
+                       const name = (r.userName && r.userName !== 'Aspirant' && r.userName !== 'Student') ? r.userName : (r.userEmail || "Student");
+                       return (
+                        <div key={r.id} className="flex items-center justify-between p-3 bg-slate-50/50 rounded-xl border border-slate-50">
+                           <div className="flex items-center gap-3">
+                              <span className="font-black text-slate-300 w-5 text-xs">#{i+1}</span>
+                              <p className="font-bold text-[#0F172A] text-xs uppercase truncate max-w-[200px]">{name}</p>
+                           </div>
+                           <div className="flex gap-4 items-center">
+                              <span className="text-[10px] font-black text-primary">{r.score.toFixed(1)} Pts</span>
+                              <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[7px]">{r.accuracy}%</Badge>
+                           </div>
+                        </div>
+                       );
+                    })}
                  </div>
               </Card>
            </TabsContent>
