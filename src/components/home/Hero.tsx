@@ -17,9 +17,9 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 
 /**
- * @fileOverview High-Fidelity Hero Restoration v60.0.
- * STYLED: Perfectly matched to user-provided screenshot reference.
- * FEATURES: Integrated search node, large orange CTA, and Police visual hub.
+ * @fileOverview High-Fidelity Hero Restoration v62.0.
+ * UPDATED: Integrated PPSC into the headline and restored the massive Punjabi tagline.
+ * STYLED: Perfectly matched to user-provided screenshot reference with dual-language impact.
  */
 export default function Hero() {
   const router = useRouter();
@@ -59,20 +59,29 @@ export default function Hero() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-20 items-center">
           
           {/* LEFT: CONTENT HUB */}
-          <div className="lg:col-span-6 space-y-8 md:space-y-12">
+          <div className="lg:col-span-7 space-y-8 md:space-y-12">
             <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-1.5 rounded-full shadow-2xl">
               <Zap className="h-3 w-3 text-primary fill-current" />
-              <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-primary">PUNJAB&apos;S NO. 1 STUDY CENTER</span>
+              <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-primary">PUNJAB'S NO. 1 STUDY CENTER</span>
             </div>
 
-            <div className="space-y-6">
-               <h1 className="text-[3.5rem] md:text-[6rem] font-black leading-[0.9] tracking-tighter uppercase text-white flex flex-col">
-                  <span>CRACK EVERY</span>
-                  <span className="text-primary">EXAM.</span>
-               </h1>
-               <p className="text-lg md:text-2xl font-medium text-slate-400 max-w-xl leading-relaxed">
-                  The most trusted practice tests for PSSSB, PPSC, Police, and Army. Latest pattern based study plans for guaranteed success.
-               </p>
+            <div className="space-y-8">
+               <div className="space-y-2">
+                  <h1 className="text-[3rem] md:text-[6.5rem] font-black leading-[0.85] tracking-tighter uppercase text-white flex flex-col">
+                     <span>ਤਿਆਰੀ ਪੰਜਾਬ ਦੀ,</span>
+                     <span className="text-primary">ਸੁਪਨਾ ਸਰਕਾਰੀ</span>
+                     <span className="text-primary">ਅਫ਼ਸਰ ਦਾ!</span>
+                  </h1>
+               </div>
+               
+               <div className="space-y-4">
+                  <h2 className="text-xl md:text-4xl font-headline font-black text-white uppercase tracking-tight">
+                     CRACK PSSSB, PPSC & POLICE.
+                  </h2>
+                  <p className="text-base md:text-xl font-medium text-slate-400 max-w-xl leading-relaxed">
+                     The most trusted practice tests for Punjab Government Exams. Latest pattern based study plans verified by experts.
+                  </p>
+               </div>
             </div>
 
             {/* INTEGRATED SEARCH HUB */}
@@ -82,7 +91,7 @@ export default function Hero() {
                   <Input 
                     value={searchQuery}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search Patwari, SI, Army..." 
+                    placeholder="Search Patwari, SI, PPSC..." 
                     className="h-14 md:h-16 pl-14 border-none bg-transparent text-slate-900 font-bold text-base md:text-lg focus-visible:ring-0 placeholder:text-slate-400"
                   />
                   <Button type="submit" className="bg-[#0B1528] hover:bg-black text-white px-8 md:px-12 h-12 md:h-14 rounded-xl md:rounded-lg font-black uppercase text-[10px] md:text-xs tracking-widest border-none ml-2">
@@ -102,7 +111,7 @@ export default function Hero() {
           </div>
 
           {/* RIGHT: VISUAL HUB */}
-          <div className="lg:col-span-6 relative group">
+          <div className="lg:col-span-5 relative group">
              <div className="relative aspect-[4/3] md:aspect-[16/11] rounded-[3rem] md:rounded-[4rem] overflow-hidden shadow-5xl border-[8px] border-white/5 bg-[#0F172A]">
                 <Image 
                   src={heroImage} 
