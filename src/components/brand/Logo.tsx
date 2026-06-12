@@ -19,45 +19,67 @@ interface LogoProps {
 export function LogoIcon({ className = "", isDark = false }: { className?: string, isDark?: boolean }) {
   return (
     <div className={cn("relative shrink-0", className)}>
-      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-2xl">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
         <defs>
-          <filter id="logoGlow" x="-25%" y="-25%" width="150%" height="150%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
+          {/* Glow Filter for Orange Elements */}
+          <filter id="orangeGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="2.5" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
-          <linearGradient id="orange3dGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          
+          {/* 3D Drop Shadow for Depth */}
+          <filter id="depthShadow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.5" />
+          </filter>
+
+          {/* Orange Gradient for 3D Effect */}
+          <linearGradient id="orange3d" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#FB923C" />
-            <stop offset="50%" stopColor="#F97316" />
             <stop offset="100%" stopColor="#EA580C" />
+          </linearGradient>
+
+          {/* Silver/White Gradient for Inner C */}
+          <linearGradient id="silver3d" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFFFFF" />
+            <stop offset="100%" stopColor="#E2E8F0" />
           </linearGradient>
         </defs>
 
-        {/* 3D Stylized Circular 'C' */}
+        {/* 1. Outer Orange Glowing Arc (The 'C' Wrap) */}
         <path 
-          d="M78 28C72 18 61 14 50 14C30 14 14 30 14 50C14 70 30 86 50 86C61 86 72 82 78 72" 
-          stroke="url(#orange3dGrad)" 
-          strokeWidth="10" 
+          d="M75 30C68 20 58 15 48 15C28 15 12 31 12 50C12 69 28 85 48 85C58 85 68 80 75 70" 
+          stroke="url(#orange3d)" 
+          strokeWidth="8" 
           strokeLinecap="round"
-          filter="url(#logoGlow)"
+          filter="url(#orangeGlow)"
         />
 
-        {/* Integrated Orange Checkmark with Glowing Effect */}
+        {/* 2. Inner Bold White 'C' */}
         <path 
-          d="M36 52L48 64L86 28" 
-          stroke="url(#orange3dGrad)" 
+          d="M48 24C34 24 22 36 22 50C22 64 34 76 48 76C55 76 60 73 65 68" 
+          stroke="url(#silver3d)" 
+          strokeWidth="10" 
+          strokeLinecap="round"
+          filter="url(#depthShadow)"
+        />
+
+        {/* 3. Integrated Glowing Checkmark */}
+        <path 
+          d="M32 52L45 65L88 22" 
+          stroke="url(#orange3d)" 
           strokeWidth="12" 
           strokeLinecap="round" 
           strokeLinejoin="round"
-          filter="url(#logoGlow)"
+          filter="url(#orangeGlow)"
         />
         
-        {/* Studio Lighting Highlights */}
+        {/* 4. Lighting Highlight on Checkmark */}
         <path 
-          d="M38 52L48 62L84 30" 
+          d="M34 52L45 63L85 24" 
           stroke="white" 
-          strokeWidth="2.5" 
+          strokeWidth="2" 
           strokeLinecap="round" 
-          opacity="0.4"
+          opacity="0.3"
         />
       </svg>
     </div>
@@ -69,35 +91,40 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
 
   return (
     <Link href={href} className={cn("flex items-center gap-4 group pointer-events-auto select-none shrink-0", className)}>
-      <LogoIcon isDark={isDark} className="w-12 h-12 md:w-14 md:h-14" />
+      <LogoIcon isDark={isDark} className="w-12 h-12 md:w-16 md:h-16" />
 
       {!iconOnly && (
         <div className="flex flex-col items-start justify-center leading-none">
           <div className="flex items-baseline font-headline">
+            {/* "Crackli" in White with Silver edges (Shadow simulation) */}
             <span className={cn(
-              "text-3xl md:text-4xl font-[900] tracking-tighter",
+              "text-3xl md:text-5xl font-[900] tracking-tighter drop-shadow-md",
               isDark ? "text-[#0F172A]" : "text-white"
             )} style={{ 
-               textShadow: isDark ? 'none' : '0px 2px 4px rgba(0,0,0,0.3)',
-               background: isDark ? 'none' : 'linear-gradient(to bottom, #FFFFFF 0%, #E2E8F0 100%)',
-               WebkitBackgroundClip: isDark ? 'none' : 'text',
-               WebkitTextFillColor: isDark ? '#0F172A' : 'transparent'
+               textShadow: '0px 2px 0px rgba(226, 232, 240, 0.5)'
             }}>
               Crackli
             </span>
-            <span className="text-3xl md:text-4xl font-[900] tracking-tighter text-[#F97316] drop-shadow-lg">
+            {/* "x" in Bright Orange */}
+            <span className="text-3xl md:text-5xl font-[900] tracking-tighter text-[#F97316] drop-shadow-lg">
               x
             </span>
           </div>
           
           {showTagline && (
-            <div className="mt-1">
+            <div className="mt-1.5 flex items-center gap-2 w-full">
+              {/* Decorative Horizontal Line Left */}
+              <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#F97316]/60" />
+              
               <span className={cn(
-                "text-[7px] md:text-[9px] font-black uppercase tracking-[0.25em] whitespace-nowrap",
-                isDark ? "text-slate-400" : "text-white"
+                "text-[7px] md:text-[10px] font-black uppercase tracking-[0.2em] whitespace-nowrap",
+                isDark ? "text-slate-500" : "text-white"
               )}>
                 PUNJAB&apos;S NO.1 STUDY HUB
               </span>
+              
+              {/* Decorative Horizontal Line Right */}
+              <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#F97316]/60" />
             </div>
           )}
         </div>
