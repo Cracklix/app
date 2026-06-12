@@ -13,8 +13,8 @@ import PopularExams from "@/components/home/PopularExams";
 import TrendingExams from "@/components/home/TrendingExams";
 
 /**
- * @fileOverview Official Home Hub v135.0 (Institutional Reference Match).
- * FLOW: Hero (with Integrated Stats) -> Trending -> Popular Exams Card -> Categories -> Mocks.
+ * @fileOverview Official Home Hub v145.0 (Strict Design Reference Match).
+ * FLOW: Hero (Integrated Stats & Readiness) -> Popular Exams Card Hub -> Categories -> Content.
  */
 
 export default function HomePage() {
@@ -28,27 +28,24 @@ export default function HomePage() {
     <main className="min-h-screen bg-white font-body pb-safe overflow-x-hidden text-left">
       <Navbar />
       
-      {/* 1. INSTITUTIONAL HERO HUB (Dark Navy + Police BG + Stats Strip) */}
+      {/* 1. INSTITUTIONAL HERO HUB (Matched to ibb.co/F4D0JLHP) */}
       <Hero />
 
-      {/* 2. TRENDING VERTICALS HUB (Badge Strip) */}
-      <TrendingExams />
-
-      {/* 3. POPULAR EXAMS HUB (Refined White Card with Icons & Feature Checklist) */}
+      {/* 2. POPULAR EXAMS HUB (Refined White Card with Institutional Checklist) */}
       <PopularExams />
 
       <div className="container mx-auto px-4 py-8 md:py-16 max-w-7xl space-y-16 md:space-y-32">
-         {/* 4. CONTINUITY HUB (Only visible for logged-in students) */}
+         {/* 3. CONTINUITY HUB (Only visible for logged-in students) */}
          <ContinueLearning />
          
-         {/* 5. DISCOVERY HUB (Category Grids) */}
+         {/* 4. DISCOVERY HUB (Category Grids) */}
          <FeaturedCategories />
          
-         {/* 6. RECENT CONTENT FEED (Latest Practice Mocks) */}
+         {/* 5. RECENT CONTENT FEED (Latest Practice Mocks) */}
          <LatestMocks />
       </div>
 
-      {/* 7. TRUST & BRAND IDENTITY (App Installation & Founder Bio) */}
+      {/* 6. TRUST & BRAND IDENTITY (App Installation & Founder Bio) */}
       <AppPreview />
       <MeetFounder />
       
