@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -11,7 +12,8 @@ interface LogoProps {
 
 /**
  * @fileOverview Official Cracklix Logo Component.
- * UPDATED: Significantly increased emblem dimensions for mobile and desktop prominence.
+ * UPDATED: Optimized dimensions for a professional education-platform look.
+ * Size calibrated for h-14/h-16 navbars.
  */
 export function LogoIcon({ className = "" }: { className?: string }) {
   return (
@@ -29,8 +31,12 @@ export function LogoIcon({ className = "" }: { className?: string }) {
 export default function Logo({ className = "", variant = 'light', href = "/" }: LogoProps) {
   return (
     <Link href={href} className={cn("flex items-center group pointer-events-auto select-none shrink-0", className)}>
-      {/* Official Emblem Node - Dimensions increased significantly as requested */}
-      <LogoIcon className="w-20 h-20 md:w-36 md:h-36" />
+      {/* 
+         Professional Scaling: 
+         Mobile: 48px (w-12) 
+         Desktop: 64px (w-16)
+      */}
+      <LogoIcon className="w-12 h-12 md:w-16 md:h-16" />
     </Link>
   );
 }
