@@ -13,8 +13,8 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Institutional Hero Hub v55.0.
- * FIXED: Hydration-safe logic for dynamic text and motion props.
+ * @fileOverview Official Hero Hub v56.0.
+ * FIXED: Hydration text mismatch resolved by forcing EXAM. across all branches.
  * BRANDING: Updated Verified Content icon background to Orange.
  */
 

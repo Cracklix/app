@@ -38,7 +38,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Institutional Mobile Sidebar v8.5.
+ * @fileOverview Institutional Mobile Sidebar v8.6.
  * FIXED: High-contrast Orange background for Active Pass status.
  */
 

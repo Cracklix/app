@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -20,8 +19,8 @@ interface QuestionRendererProps {
 }
 
 /**
- * @fileOverview High-Fidelity Question Engine v37.0 (Ultra-Compact).
- * UPDATED: Consolidated Question Info into a single high-density line.
+ * @fileOverview High-Fidelity Question Engine v38.0 (Simplified).
+ * UPDATED: Simplified "Solution Logic" to "Answer Explanation".
  */
 export default function QuestionRenderer({ 
   question, 
@@ -144,7 +143,7 @@ export default function QuestionRenderer({
       {/* 4. SOLUTION HUB */}
       {showSolution && (
         <div className="mt-6 pt-6 border-t border-slate-100 space-y-3">
-           <Badge className="bg-emerald-50 text-emerald-700 border-none font-black text-[9px] uppercase px-3 py-1">Solution Logic</Badge>
+           <Badge className="bg-emerald-50 text-emerald-700 border-none font-black text-[9px] uppercase px-3 py-1">Answer Explanation</Badge>
            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 text-slate-600 leading-relaxed font-medium text-xs md:text-sm space-y-3">
               <p className="font-black text-[10px] uppercase text-[#0B1528] pb-2 border-b border-slate-200/50">Correct Key: {q.correctAnswer}</p>
               {showEn && q.englishExplanation && <MathText text={q.englishExplanation} className="text-inherit" />}
