@@ -2,11 +2,11 @@
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Institutional PWA Manifest Configuration v12.0.
- * UPDATED: Synchronized with the latest high-fidelity "Pura Logo" (Full Branding).
+ * @fileOverview Institutional PWA Manifest Configuration v13.0.
+ * UPDATED: Optimized with high-fidelity square icons for mobile launcher stability.
  */
 export default function manifest(): MetadataRoute.Manifest {
-  const logoUrl = 'https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png';
+  const iconUrl = 'https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png';
 
   return {
     name: 'CRACKLIX | Punjab Exam Hub',
@@ -20,13 +20,13 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: 'portrait',
     icons: [
       {
-        src: logoUrl,
+        src: iconUrl,
         sizes: '192x192',
         type: 'image/png',
         purpose: 'maskable',
       },
       {
-        src: logoUrl,
+        src: iconUrl,
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any',

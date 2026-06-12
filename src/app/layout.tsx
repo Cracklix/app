@@ -13,6 +13,7 @@ const inter = Inter({
 });
 
 const masterLogo = 'https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png';
+const squareIcon = 'https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png';
 
 export const metadata: Metadata = {
   title: 'Cracklix | Punjab Exam Hub',
@@ -21,10 +22,11 @@ export const metadata: Metadata = {
   authors: [{ name: 'Arsh Grewal', url: 'https://cracklix.com' }],
   icons: {
     icon: [
-      { url: masterLogo, sizes: '32x32', type: 'image/png' },
-      { url: masterLogo, sizes: '192x192', type: 'image/png' },
+      { url: squareIcon, sizes: '32x32', type: 'image/png' },
+      { url: squareIcon, sizes: '192x192', type: 'image/png' },
+      { url: squareIcon, sizes: '512x512', type: 'image/png' },
     ],
-    apple: masterLogo,
+    apple: squareIcon,
   },
   appleWebApp: {
     capable: true,
