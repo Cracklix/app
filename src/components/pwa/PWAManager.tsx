@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Institutional PWA Lifecycle Manager v16.0.
+ * @fileOverview Institutional PWA Lifecycle Manager v17.0.
  * HARDENED: Reliable 'beforeinstallprompt' capture and prominent mobile floating banner.
  */
 export default function PWAManager() {
@@ -47,7 +47,7 @@ export default function PWAManager() {
       
       if (!isExcluded && !isStandalone) {
         // Show after a brief delay to ensure the user has settled
-        const timer = setTimeout(() => setShowPrompt(true), 5000);
+        const timer = setTimeout(() => setShowPrompt(true), 3000);
         return () => clearTimeout(timer);
       }
     };

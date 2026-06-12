@@ -1,7 +1,7 @@
 
 /**
- * @fileOverview Cracklix PWA Service Worker.
- * This is mandatory for the "Install App" button to appear on mobile devices.
+ * @fileOverview Core PWA Service Worker for Cracklix.
+ * Required for browser "Install" prompt visibility.
  */
 
 const CACHE_NAME = 'cracklix-v1';
@@ -14,8 +14,8 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(clients.claim());
 });
 
-// Mandatory fetch listener for PWA installability
+// Mandatory fetch handler for PWA installability
 self.addEventListener('fetch', (event) => {
-  // Pass-through for now to ensure online-first behavior while satisfying PWA requirements
+  // We can implement offline caching here later if needed
   return;
 });
