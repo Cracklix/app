@@ -27,7 +27,7 @@ const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
  * @fileOverview Institutional Navbar v24.0.
- * RESTORED: Optimized header height and spacing for a professional look.
+ * UPDATED: Renamed "News" to "Current Affairs" for better context.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -114,7 +114,7 @@ export default function Navbar() {
       )}
 
       <nav className="w-full bg-[#0B1528] border-b border-white/5 h-20 md:h-24 flex items-center shadow-xl backdrop-blur-md bg-opacity-95">
-        <div className="container mx-auto max-w-full flex items-center justify-between px-3 md:px-6">
+        <div className="container mx-auto max-full flex items-center justify-between px-3 md:px-6">
           <div className="flex items-center gap-2 md:gap-4">
                <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
                  <SheetTrigger asChild>
@@ -140,7 +140,7 @@ export default function Navbar() {
                 <Gem className="h-4 w-4" /> GET PASS
               </Link>
               <Link href="/current-affairs" className={cn("transition-colors flex items-center gap-2 hover:text-white pointer-events-auto", pathname === '/current-affairs' ? 'text-white' : '')}>
-                <Newspaper className="h-4 w-4 text-primary" /> News
+                <Newspaper className="h-4 w-4 text-primary" /> Current Affairs
               </Link>
             </div>
           </div>

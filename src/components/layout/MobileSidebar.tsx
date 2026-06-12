@@ -39,7 +39,7 @@ import { Badge } from "@/components/ui/badge";
 
 /**
  * @fileOverview Institutional Mobile Sidebar v8.0.
- * UPDATED: Bulletproof PWA Install trigger and live pass integration.
+ * UPDATED: Renamed "Latest News" to "Current Affairs".
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -128,7 +128,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
     { label: "Exam Hub", href: "/my-exams", icon: Target },
     { label: "Elite Pass", href: "/pass", icon: Gem, badge: "PRO" },
     { label: "Practice Tests", href: "/mocks", icon: Zap },
-    { label: "Latest News", href: "/current-affairs", icon: Newspaper },
+    { label: "Current Affairs", href: "/current-affairs", icon: Newspaper },
     { label: "Share App", icon: Share2, onClick: () => setIsShareOpen(true) },
     { label: "Contact Us", href: "/contact", icon: MessageCircleQuestion },
   ];
@@ -160,7 +160,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                    <div className="flex flex-col gap-1">
                       <Badge className={cn(
                         "border-none px-2 py-0.5 rounded-md font-black uppercase text-[7px] tracking-widest shadow-lg w-fit",
-                        passStatus.active ? "bg-emerald-500 text-white" : "bg-rose-500 text-white"
+                        passStatus.active ? "bg-emerald-50 text-white" : "bg-rose-50 text-white"
                       )}>
                          {passStatus.label}
                       </Badge>

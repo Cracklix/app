@@ -35,7 +35,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Exam Hub v30.1.
- * FIXED: Resolved Runtime ReferenceError on notes query.
+ * UPDATED: Renamed "News" to "Current Affairs" in the dashboard tabs.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -176,7 +176,7 @@ export default function ExamHubPage() {
                   <DashboardTab value="FULL" label="Full Mock" icon={<Zap />} />
                   <DashboardTab value="SUBJECT" label="Subjects" icon={<BookOpen />} />
                   <DashboardTab value="SECTIONAL" label="Sectional" icon={<List />} />
-                  <DashboardTab value="CA" label="News" icon={<Newspaper />} />
+                  <DashboardTab value="CA" label="Current Affairs" icon={<Newspaper />} />
                   <DashboardTab value="PYQ" label="PYQ" icon={<Layers />} />
                   <DashboardTab value="NOTES" label="Notes" icon={<FileText />} />
                </TabsList>

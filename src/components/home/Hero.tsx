@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * @fileOverview Refined Institutional Hero Hub v49.0.
- * UPDATED: Optimized hydration pattern. Main structure renders immediately to prevent blank screens.
+ * UPDATED: Removed redundant secondary action button for a cleaner focus.
  */
 
 export default function Hero() {
@@ -97,9 +97,6 @@ export default function Hero() {
             <div className="flex flex-wrap gap-4 mt-8">
               <Button asChild className="bg-primary hover:bg-orange-600 text-white px-8 md:px-12 rounded-xl font-black uppercase tracking-[0.1em] text-[10px] md:text-[11px] h-14 md:h-16 shadow-2xl transition-all active:scale-95 border-none group">
                  <Link href="/exams" className="flex items-center justify-center gap-3">START PRACTICE <Zap className="h-4 w-4 fill-current" /></Link>
-              </Button>
-              <Button asChild variant="ghost" className="text-slate-400 hover:text-white uppercase font-black tracking-widest text-[9px] md:text-[10px]">
-                 <Link href="/pyqs">Official Papers</Link>
               </Button>
             </div>
           </motion.div>
