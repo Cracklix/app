@@ -1,4 +1,3 @@
-
 'use client';
 
 import { motion } from "framer-motion";
@@ -14,9 +13,9 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 /**
- * @fileOverview High-Fidelity Hero Hub v91.0 (Recovery & Sharpness Fix).
- * FIXED: Reliable image rendering via high-definition Picsum node.
- * FIXED: Persistent "Install App" trigger for PWA.
+ * @fileOverview Refined Hero Hub v92.0 (Size Optimized).
+ * FIXED: Reduced size of "Verified Content" and "Live Students" badges.
+ * FIXED: High-definition image rendering with stable PWA prompt logic.
  */
 
 export default function Hero() {
@@ -161,11 +160,11 @@ export default function Hero() {
             <div className="relative aspect-video sm:aspect-[4/3] w-full max-w-[620px] lg:ml-auto mx-auto mt-10 lg:mt-0">
                <div className="absolute -inset-6 md:-inset-10 bg-primary/15 blur-[100px] rounded-full opacity-50" />
                
-               <div className="relative h-full w-full rounded-[2rem] md:rounded-[3.5rem] overflow-hidden border-[4px] md:border-[10px] border-white/5 shadow-5xl bg-[#0F172A] group">
+               <div className="relative h-full w-full rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden border-[4px] md:border-[8px] border-white/5 shadow-5xl bg-[#0F172A] group">
                   {mounted && policeImage && (
                     <Image 
                       src={policeImage.imageUrl} 
-                      alt="Punjab Police HD Preparation" 
+                      alt="Punjab Police HD" 
                       fill
                       priority
                       className="object-cover transition-transform duration-[2s] group-hover:scale-110"
@@ -175,26 +174,26 @@ export default function Hero() {
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#08152D]/80 via-transparent to-transparent opacity-60" />
                   
-                  <div className="absolute bottom-4 left-4 right-4 md:bottom-8 md:left-8 md:right-8 flex items-center justify-between">
-                     <div className="bg-white/10 backdrop-blur-xl px-4 py-2 md:px-6 md:py-4 rounded-xl md:rounded-2xl border border-white/20 shadow-2xl flex items-center gap-3 md:gap-4">
-                        <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-primary flex items-center justify-center shadow-lg">
-                           <ShieldCheck className="h-4 w-4 md:h-5 md:w-5 text-white" />
+                  <div className="absolute bottom-3 left-3 right-3 md:bottom-6 md:left-6 md:right-6 flex items-center justify-between">
+                     <div className="bg-white/10 backdrop-blur-xl px-3 py-1.5 md:px-4 md:py-2.5 rounded-lg md:rounded-xl border border-white/20 shadow-2xl flex items-center gap-2 md:gap-3">
+                        <div className="h-6 w-6 md:h-8 md:w-8 rounded-md md:rounded-lg bg-primary flex items-center justify-center shadow-lg">
+                           <ShieldCheck className="h-3.5 w-3.5 md:h-5 md:w-5 text-white" />
                         </div>
                         <div className="text-left">
-                           <p className="text-[7px] md:text-[8px] font-black uppercase text-white leading-none mb-1">Official Hub</p>
-                           <p className="text-sm md:text-lg font-black text-white leading-none uppercase">VERIFIED CONTENT</p>
+                           <p className="text-[6px] md:text-[7px] font-black uppercase text-white leading-none mb-0.5">Official Hub</p>
+                           <p className="text-[10px] md:text-sm font-black text-white leading-none uppercase">VERIFIED CONTENT</p>
                         </div>
                      </div>
                   </div>
                </div>
 
-               <div className="absolute -bottom-4 -right-2 md:-bottom-6 md:-right-6 bg-white p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] shadow-3xl flex items-center gap-3 md:gap-4 border border-slate-50">
-                  <div className="h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner">
-                     <Zap className="h-5 w-5 md:h-7 md:w-7 text-primary fill-current" />
+               <div className="absolute -bottom-3 -right-1 md:-bottom-4 md:-right-4 bg-white p-3 md:p-5 rounded-xl md:rounded-2xl shadow-3xl flex items-center gap-2 md:gap-3 border border-slate-50">
+                  <div className="h-8 w-8 md:h-11 md:w-11 rounded-lg md:rounded-xl bg-primary/10 flex items-center justify-center shadow-inner">
+                     <Zap className="h-4 w-4 md:h-6 md:w-6 text-primary fill-current" />
                   </div>
-                  <div className="text-left md:pr-4">
-                     <p className="text-[7px] md:text-[9px] font-black uppercase text-slate-400 leading-none mb-1 md:mb-1.5">Live Students</p>
-                     <p className="text-lg md:text-2xl font-headline font-black text-[#0F172A] leading-none uppercase">
+                  <div className="text-left md:pr-2">
+                     <p className="text-[6px] md:text-[8px] font-black uppercase text-slate-400 leading-none mb-1">Live Students</p>
+                     <p className="text-sm md:text-lg font-headline font-black text-[#0F172A] leading-none uppercase">
                         {mounted ? liveStudentCount : "15k+"}
                      </p>
                   </div>
