@@ -9,13 +9,11 @@ import LatestMocks from "@/components/home/LatestMocks";
 import AppPreview from "@/components/home/AppPreview";
 import MeetFounder from "@/components/home/MeetFounder";
 import Footer from "@/components/layout/Footer";
-import TrendingExams from "@/components/home/TrendingExams";
-import StatsBar from "@/components/home/StatsBar";
-import Features from "@/components/home/Features";
+import PopularExams from "@/components/home/PopularExams";
 
 /**
- * @fileOverview Official Home Hub v110.0 (Wireframe Aligned).
- * ORDER: Hero -> Trending -> Stats -> Why Cracklix -> Anchor Zone (Continue Learning -> Categories).
+ * @fileOverview Official Home Hub v120.0 (Unified Content Design).
+ * ORDER: Hero (inc. Stats) -> Popular Exams Hub -> Continue Learning -> Categories -> Latest Mocks.
  */
 
 export default function HomePage() {
@@ -26,31 +24,27 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-white font-body pb-safe overflow-x-hidden text-left">
+    <main className="min-h-screen bg-slate-50/50 font-body pb-safe overflow-x-hidden text-left">
       <Navbar />
       
-      {/* 1. HERO HUB */}
+      {/* 1. HERO HUB (Background image + Main Headline + Stats) */}
       <Hero />
 
-      {/* 2. TRENDING EXAMS (MATCHED TO WIREFRAME) */}
-      <TrendingExams />
+      {/* 2. POPULAR EXAMS HUB (White card with checklist) */}
+      <PopularExams />
 
-      {/* 3. LIVE STATS */}
-      <StatsBar />
-
-      {/* 4. WHY CRACKLIX? */}
-      <Features />
-
-      <div className="container mx-auto px-4 py-12 md:py-24 max-w-7xl space-y-16 md:space-y-32">
-         {/* 5. ANCHOR ZONE (NO CHANGE) */}
+      <div className="container mx-auto px-4 py-8 md:py-16 max-w-7xl space-y-16 md:space-y-32">
+         {/* 3. CONTINUITY ZONE */}
          <ContinueLearning />
+         
+         {/* 4. DISCOVERY ZONE */}
          <FeaturedCategories />
          
-         {/* 6. RECENT CONTENT */}
+         {/* 5. RECENT CONTENT */}
          <LatestMocks />
       </div>
 
-      {/* 7. TRUST & IDENTITY NODES */}
+      {/* 6. TRUST & IDENTITY NODES */}
       <AppPreview />
       <MeetFounder />
       
