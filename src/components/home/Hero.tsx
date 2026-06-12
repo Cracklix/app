@@ -1,3 +1,4 @@
+
 'use client';
 
 import { motion } from "framer-motion";
@@ -17,9 +18,9 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 
 /**
- * @fileOverview High-Fidelity Hero Restoration v63.0.
- * UPDATED: Expanded vertical list to include PSPCL, PSTET, CTET, Master Cadre, and ETT Cadre.
- * STYLED: Perfectly matched to user-provided screenshot reference with massive bilingual impact.
+ * @fileOverview High-Fidelity Hero Restoration v64.0 (Permanent Visual Fix).
+ * UPDATED: Set permanent official Punjab Police slider image.
+ * UPDATED: Maintained massive Punjabi tagline and multi-vertical list.
  */
 export default function Hero() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function Hero() {
     setMounted(true);
   }, []);
 
-  const heroImage = PlaceHolderImages.find(img => img.id === 'hero-police')?.imageUrl || "https://punjabpolice.gov.in/media/images/pp10.original.jpg";
+  const heroImage = PlaceHolderImages.find(img => img.id === 'hero-police')?.imageUrl || "https://grppunjab.org/wp-content/uploads/2025/09/PP10_slider.jpg";
 
   const handleAction = (path: string) => {
     if (!user) {
@@ -119,7 +120,7 @@ export default function Hero() {
                   alt="Punjab Police Official Hub" 
                   className="object-cover opacity-90 transition-transform duration-[3s] group-hover:scale-105" 
                   priority
-                  data-ai-hint="punjab police officers"
+                  data-ai-hint="punjab police"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                 

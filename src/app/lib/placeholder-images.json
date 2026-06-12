@@ -9,9 +9,9 @@
     },
     {
       "id": "hero-police",
-      "description": "Punjab Police Strategic Asset HD",
-      "imageUrl": "https://picsum.photos/seed/punjab-police-hd/1920/1280",
-      "imageHint": "police officer"
+      "description": "Official Punjab Police Slider Image",
+      "imageUrl": "https://grppunjab.org/wp-content/uploads/2025/09/PP10_slider.jpg",
+      "imageHint": "punjab police"
     },
     {
       "id": "hero-academy",
@@ -34,7 +34,7 @@
     {
       "id": "hero-punjab",
       "description": "Punjab Heritage Hero",
-      "imageUrl": "https://picsum.photos/seed/punjab-education/1200/800",
+      "imageUrl": "https://picsum.photos/seed/punjab-hero/1200/800",
       "imageHint": "university students"
     },
     {
@@ -52,8 +52,8 @@
     {
       "id": "mock-police",
       "description": "Punjab Police Operational Readiness",
-      "imageUrl": "https://picsum.photos/seed/police-training/800/600",
-      "imageHint": "police training"
+      "imageUrl": "https://punjabpolice.gov.in/media/images/pp7.original.jpg",
+      "imageHint": "punjab police"
     },
     {
       "id": "founder-arsh",
