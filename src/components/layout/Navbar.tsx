@@ -26,9 +26,8 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v27.0 (Hardened).
- * FIXED: Tag mismatch syntax error on line 200.
- * UPDATED: Robust PWA download prompt capture.
+ * @fileOverview Institutional Navbar v28.0 (Structural Hardening).
+ * FIXED: Balanced JSX tags to resolve 'Expected </', got 'jsx text' error.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -117,18 +116,18 @@ export default function Navbar() {
       <nav className="w-full bg-[#0B1528] border-b border-white/5 h-20 md:h-24 flex items-center shadow-xl backdrop-blur-md bg-opacity-95">
         <div className="container mx-auto max-full flex items-center justify-between px-3 md:px-6">
           <div className="flex items-center gap-2 md:gap-4">
-               <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-                 <SheetTrigger asChild>
-                   <button className="text-white p-2.5 hover:bg-white/5 rounded-2xl transition-all active:scale-90 cursor-pointer border border-white/10 focus:outline-none shrink-0 z-10">
-                     <Menu className="h-6 w-6" />
-                   </button>
-                 </SheetTrigger>
-                 <SheetContent side="left" className="p-0 border-none w-[280px] overflow-hidden shadow-5xl transition-all duration-200 bg-[#0F172A] z-[2001] top-0 h-screen">
-                   <SheetHeader className="sr-only"><SheetTitle>Menu Hub</SheetTitle></SheetHeader>
-                   <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
-                 </SheetContent>
-               </Sheet>
-               <Logo variant="light" className="origin-left" />
+            <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+              <SheetTrigger asChild>
+                <button className="text-white p-2.5 hover:bg-white/5 rounded-2xl transition-all active:scale-90 cursor-pointer border border-white/10 focus:outline-none shrink-0 z-10">
+                  <Menu className="h-6 w-6" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 border-none w-[280px] overflow-hidden shadow-5xl transition-all duration-200 bg-[#0F172A] z-[2001] top-0 h-screen">
+                <SheetHeader className="sr-only"><SheetTitle>Menu Hub</SheetTitle></SheetHeader>
+                <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
+              </SheetContent>
+            </Sheet>
+            <Logo variant="light" className="origin-left" />
 
             <div className="hidden lg:flex items-center gap-10 text-[12px] font-black uppercase tracking-[0.2em] text-[#7A8B9E] ml-10">
               <Link href="/my-exams" className={cn("transition-colors flex items-center gap-2 hover:text-white pointer-events-auto", pathname === '/my-exams' ? 'text-white' : '')}>
