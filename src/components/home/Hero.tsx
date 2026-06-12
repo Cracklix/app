@@ -8,19 +8,24 @@ import {
   ShieldCheck,
   Zap,
   Search,
-  ChevronRight
+  ChevronRight,
+  Target,
+  Award,
+  Users,
+  GraduationCap,
+  Star
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import Image from "next/image";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview High-Fidelity Hero Restoration v65.0.
- * UPDATED: Optimized text sizes for better layout balance.
- * UPDATED: Maintained massive Punjabi tagline and multi-vertical list.
+ * @fileOverview Premium Hero Command Center v81.0 (Syntax Hardened).
+ * DESIGN: Staggered "Floating Node" layout with institutional command bar.
+ * FIX: Balanced JSX tags and ensured strict motion.div closing.
  */
 export default function Hero() {
   const router = useRouter();
@@ -32,7 +37,11 @@ export default function Hero() {
     setMounted(true);
   }, []);
 
-  const heroImage = PlaceHolderImages.find(img => img.id === 'hero-police')?.imageUrl || "https://grppunjab.org/wp-content/uploads/2025/09/PP10_slider.jpg";
+  const heroImage = "https://grppunjab.org/wp-content/uploads/2025/09/PP10_slider.jpg";
+
+  const boards = [
+    "PSSSB", "POLICE", "PPSC", "PSPCL", "PSTET", "CTET", "MASTER CADRE", "ETT CADRE"
+  ];
 
   const handleAction = (path: string) => {
     if (!user) {
@@ -52,108 +61,170 @@ export default function Hero() {
   if (!mounted) return null;
 
   return (
-    <section className="relative pt-12 pb-16 md:pt-20 md:pb-24 bg-[#0B1528] overflow-hidden text-left">
-      {/* Subtle Grid Background */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+    <section className="relative pt-12 pb-24 md:pt-24 md:pb-32 bg-[#0B1528] overflow-hidden text-left">
+      {/* Dynamic Background Elements */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 blur-[140px] rounded-full pointer-events-none opacity-50" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none opacity-30" />
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
       <div className="container mx-auto px-4 md:px-8 relative z-10 max-w-7xl">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-20 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24 items-center">
           
-          {/* LEFT: CONTENT HUB */}
-          <div className="lg:col-span-7 space-y-6 md:space-y-10">
-            <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-1.5 rounded-full shadow-2xl">
-              <Zap className="h-3 w-3 text-primary fill-current" />
-              <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-primary">PUNJAB'S NO. 1 STUDY CENTER</span>
-            </div>
+          {/* LEFT: STRATEGIC CONTENT */}
+          <div className="lg:col-span-7 space-y-10">
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-2xl shadow-2xl backdrop-blur-md"
+            >
+              <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-primary">Punjab's Smartest Exam Preparation Platform</span>
+            </motion.div>
 
-            <div className="space-y-6">
-               <div className="space-y-2">
-                  <h1 className="text-2xl md:text-5xl font-black leading-tight tracking-tight uppercase text-white flex flex-col">
-                     <span>ਤਿਆਰੀ ਪੰਜਾਬ ਦੀ,</span>
-                     <span className="text-primary">ਸੁਪਨਾ ਸਰਕਾਰੀ</span>
-                     <span className="text-primary">ਅਫ਼ਸਰ ਦਾ!</span>
+            <div className="space-y-8">
+               <motion.div 
+                 initial={{ opacity: 0, x: -20 }}
+                 animate={{ opacity: 1, x: 0 }}
+                 transition={{ delay: 0.1 }}
+                 className="space-y-4"
+               >
+                  <h1 className="text-3xl md:text-6xl lg:text-7xl font-headline font-black leading-[1.05] tracking-tight text-white uppercase">
+                     ਤਿਆਰੀ ਪੰਜਾਬ ਦੀ, <br />
+                     <span className="text-primary">ਸੁਪਨਾ ਸਰਕਾਰੀ ਅਫ਼ਸਰ ਦਾ!</span>
                   </h1>
-               </div>
-               
-               <div className="space-y-4">
-                  <h2 className="text-lg md:text-2xl font-headline font-black text-white uppercase tracking-tight leading-tight">
-                     CRACK PSSSB, POLICE, PSPCL, PSTET, CTET, MASTER CADRE, ETT CADRE & OTHER PUNJAB GOVT EXAMS.
-                  </h2>
-                  <p className="text-sm md:text-lg font-medium text-slate-400 max-w-xl leading-relaxed">
-                     The most trusted practice tests for Punjab Government Exams. Latest pattern based study plans verified by experts.
+                  <p className="text-slate-400 text-base md:text-xl font-medium max-w-xl leading-relaxed">
+                     Crack PSSSB, Police, PPSC, PSTET, PSPCL & High Court with high-fidelity mocks and analytics.
                   </p>
-               </div>
+               </motion.div>
+               
+               {/* BOARDS REGISTRY GRID */}
+               <motion.div 
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 transition={{ delay: 0.2 }}
+                 className="space-y-4"
+               >
+                  <p className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] ml-1">Assigned Boards Hub</p>
+                  <div className="flex flex-wrap gap-2 md:gap-3">
+                     {boards.map((board) => (
+                        <Badge key={board} variant="outline" className="bg-white/5 border-white/10 text-white hover:border-primary/50 hover:text-primary transition-all px-4 py-2 rounded-xl font-black text-[9px] md:text-[11px] uppercase tracking-widest shadow-sm">
+                           {board}
+                        </Badge>
+                     ))}
+                     <Badge variant="outline" className="bg-primary/10 border-primary/20 text-primary px-4 py-2 rounded-xl font-black text-[9px] md:text-[11px] uppercase tracking-widest">+ OTHERS</Badge>
+                  </div>
+               </motion.div>
             </div>
 
-            {/* INTEGRATED SEARCH HUB */}
-            <form onSubmit={handleSearch} className="relative w-full max-w-xl group">
-               <div className="relative flex items-center bg-white rounded-2xl md:rounded-[1.2rem] overflow-hidden p-1 shadow-2xl">
-                  <Search className="absolute left-6 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+            {/* COMMAND CENTER SEARCH */}
+            <motion.form 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              onSubmit={handleSearch} 
+              className="relative w-full max-w-2xl group"
+            >
+               <div className="relative flex items-center bg-white rounded-2xl md:rounded-[1.5rem] overflow-hidden p-1.5 shadow-5xl ring-8 ring-white/5">
+                  <Search className="absolute left-6 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                   <Input 
                     value={searchQuery}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search Patwari, SI, PPSC..." 
-                    className="h-12 md:h-14 pl-14 border-none bg-transparent text-slate-900 font-bold text-base md:text-lg focus-visible:ring-0 placeholder:text-slate-400"
+                    placeholder="Search for tests or notes..." 
+                    className="h-14 md:h-16 pl-14 border-none bg-transparent text-slate-900 font-bold text-base md:text-xl focus-visible:ring-0 placeholder:text-slate-400"
                   />
-                  <Button type="submit" className="bg-[#0B1528] hover:bg-black text-white px-6 md:px-10 h-10 md:h-12 rounded-xl md:rounded-lg font-black uppercase text-[10px] md:text-xs tracking-widest border-none ml-2">
+                  <Button type="submit" className="bg-[#0B1528] hover:bg-black text-white px-8 md:px-12 h-12 md:h-14 rounded-xl md:rounded-[1.2rem] font-black uppercase text-[10px] md:text-xs tracking-widest border-none ml-2 shadow-xl active:scale-95 transition-all">
                      SEARCH
                   </Button>
                </div>
-            </form>
+            </motion.form>
 
-            <div className="pt-2">
+            <motion.div 
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               transition={{ delay: 0.4 }}
+               className="pt-4 flex flex-col sm:flex-row items-center gap-6"
+            >
               <Button 
                 onClick={() => handleAction('/mocks')}
-                className="bg-primary hover:bg-orange-600 transition-all font-black px-12 h-14 md:h-16 rounded-2xl text-white flex items-center justify-center gap-4 shadow-4xl uppercase text-[10px] md:text-xs tracking-[0.2em] border-none active:scale-95"
+                className="w-full sm:w-auto bg-primary hover:bg-orange-600 transition-all font-black px-12 h-16 md:h-20 rounded-2xl md:rounded-3xl text-white flex items-center justify-center gap-4 shadow-4xl shadow-orange-500/20 uppercase text-[11px] md:text-sm tracking-[0.2em] border-none active:scale-95"
               >
-                START PRACTICE <Zap className="h-5 w-5 fill-current" />
+                START FREE MOCK <Zap className="h-6 w-6 fill-current" />
               </Button>
-            </div>
+              <Button 
+                onClick={() => handleAction('/exams')}
+                variant="outline"
+                className="w-full sm:w-auto border-white/10 hover:bg-white/5 text-white h-16 md:h-20 px-12 rounded-2xl md:rounded-3xl font-black uppercase text-[11px] md:text-sm tracking-[0.2em] transition-all"
+              >
+                EXPLORE EXAMS
+              </Button>
+            </motion.div>
           </div>
 
-          {/* RIGHT: VISUAL HUB */}
-          <div className="lg:col-span-5 relative group">
-             <div className="relative aspect-[4/3] md:aspect-[16/11] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden shadow-5xl border-[6px] border-white/5 bg-[#0F172A]">
-                <Image 
-                  src={heroImage} 
-                  fill 
-                  alt="Punjab Police Official Hub" 
-                  className="object-cover opacity-90 transition-transform duration-[3s] group-hover:scale-105" 
-                  priority
-                  data-ai-hint="punjab police"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                
-                {/* STATUS OVERLAY */}
-                <div className="absolute bottom-8 left-8">
-                   <div className="bg-black/30 backdrop-blur-xl px-6 py-4 rounded-[1.5rem] border border-white/10 shadow-4xl flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-xl">
-                         <ShieldCheck className="h-6 w-6" />
+          {/* RIGHT: FLOATING VISUAL HUB */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="lg:col-span-5 relative"
+          >
+             <div className="relative group">
+                {/* Visual Anchor Container */}
+                <div className="relative aspect-[4/3] md:aspect-[16/11] rounded-[3rem] md:rounded-[4rem] overflow-hidden shadow-6xl border-[1px] border-white/10 bg-[#0F172A] z-10">
+                   <Image 
+                     src={heroImage} 
+                     fill 
+                     alt="Punjab Police Authority Hub" 
+                     className="object-cover opacity-90 transition-transform duration-[4s] group-hover:scale-105" 
+                     priority
+                     data-ai-hint="punjab police"
+                   />
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                   
+                   {/* STATUS OVERLAY */}
+                   <div className="absolute top-8 left-8">
+                      <div className="bg-black/40 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white/10 shadow-4xl flex items-center gap-3">
+                         <div className="h-8 w-8 rounded-xl bg-primary flex items-center justify-center text-white shadow-xl">
+                            <ShieldCheck className="h-5 w-5" />
+                         </div>
+                         <p className="text-[10px] font-black text-white uppercase tracking-widest">Official Content Hub</p>
                       </div>
-                      <div className="text-left">
-                         <p className="text-[8px] font-black uppercase tracking-widest text-white/60 mb-0.5">OFFICIAL HUB</p>
-                         <p className="text-base font-black text-white uppercase tracking-tight">VERIFIED CONTENT</p>
-                      </div>
+                   </div>
+
+                   {/* LIVE COUNTER CARD */}
+                   <div className="absolute bottom-8 right-8">
+                      <motion.div 
+                         initial={{ x: 20, opacity: 0 }}
+                         animate={{ x: 0, opacity: 1 }}
+                         transition={{ delay: 1 }}
+                         className="bg-white rounded-[2rem] p-6 flex items-center gap-4 shadow-5xl border border-white"
+                      >
+                         <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0 shadow-inner">
+                            <Zap className="h-6 w-6 text-primary fill-current" />
+                         </div>
+                         <div className="text-left pr-4 text-black">
+                            <div className="flex items-center gap-1.5 mb-0.5">
+                               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                               <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Real-Time Prep</p>
+                            </div>
+                            <p className="text-3xl font-headline font-black text-[#0B1528] leading-none tabular-nums">94%</p>
+                            <p className="text-[8px] font-bold text-slate-500 uppercase mt-1">Accuracy Index</p>
+                         </div>
+                      </motion.div>
                    </div>
                 </div>
 
-                {/* LIVE STUDENT OVERLAY */}
-                <div className="absolute bottom-6 right-6 md:bottom-8 md:right-8 animate-in fade-in zoom-in duration-700">
-                   <div className="bg-white rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-6 flex items-center gap-4 shadow-5xl border border-white shadow-orange-500/10">
-                      <div className="h-10 w-10 md:h-12 md:w-12 rounded-2xl bg-orange-50 flex items-center justify-center shrink-0">
-                         <Zap className="h-5 w-5 md:h-6 md:w-6 text-primary fill-current" />
-                      </div>
-                      <div className="text-left pr-2">
-                         <p className="text-[8px] md:text-[9px] font-black uppercase text-slate-400 tracking-widest mb-0.5">LIVE STUDENTS</p>
-                         <p className="text-2xl md:text-4xl font-black text-[#0B1528] leading-none tabular-nums">15k+</p>
-                      </div>
-                   </div>
+                {/* Decorative Background Glow and Icons */}
+                <div className="absolute -inset-12 bg-primary/5 blur-[100px] rounded-full -z-10" />
+                
+                <div className="absolute -top-6 -right-6 h-20 w-20 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl flex items-center justify-center shadow-2xl z-[12] animate-in zoom-in duration-1000 delay-500">
+                   <Target className="h-8 w-8 text-primary" />
+                </div>
+                
+                <div className="absolute -bottom-6 -left-6 h-24 w-24 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] flex items-center justify-center shadow-2xl z-[12] animate-in zoom-in duration-1000 delay-700">
+                   <Award className="h-10 w-10 text-primary" />
                 </div>
              </div>
-
-             {/* Background Decoration */}
-             <div className="absolute -inset-10 bg-primary/10 blur-[120px] rounded-full -z-10 opacity-30 pointer-events-none" />
-          </div>
+          </motion.div>
 
         </div>
       </div>
