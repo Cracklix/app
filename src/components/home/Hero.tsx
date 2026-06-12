@@ -7,14 +7,29 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Zap, ShieldCheck, Download, Target, Sparkles, Activity as ActivityIcon, Users, LayoutGrid, ArrowRight, Play, Clock, MessageSquare, Trophy } from "lucide-react";
+import { 
+  Zap, 
+  ShieldCheck, 
+  Download, 
+  Target, 
+  Sparkles, 
+  Activity as ActivityIcon, 
+  Users, 
+  LayoutGrid, 
+  ArrowRight, 
+  Play, 
+  Clock, 
+  MessageSquare, 
+  Trophy,
+  RefreshCw 
+} from "lucide-react";
 import { useDoc, useFirestore, useUser } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Hero Hub v160.0.
- * REPLACED: Static image with Interactive Live Dashboard Mockup.
+ * @fileOverview High-Fidelity Hero Hub v160.1.
+ * FIXED: Missing RefreshCw import to resolve Next.js crash.
  * FEATURES: Live Countdown, Activity Feed, Video Simulation, PWA Install Trigger.
  */
 
@@ -40,7 +55,7 @@ export default function Hero() {
   // Simulated Live Activity Feed Data
   const [activities, setActivities] = useState<Activity[]>([
     { id: 1, initials: 'AM', name: 'Amanpreet M.', action: 'just cleared Mock Test #4', status: 'Rank #2', isRank: true },
-    { id: 2, initials: 'KS', name: 'Kuldeep Singh', action: 'unlocked Police Batch', status: '10s ago' },
+    { id: 2, initials: 'KS', name: 'Kuldeep Singh', action: 'unlocked Punjab Police Batch', status: '10s ago' },
   ]);
 
   useEffect(() => {
@@ -97,7 +112,7 @@ export default function Hero() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-24 items-center">
           
           {/* 2. LEFT COLUMN: Main Typography & CTA */}
-          <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
+          <div className="lg:col-span-7 space-y-12 text-center lg:text-left">
             
             {/* Tagline Badge */}
             <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 backdrop-blur-xl px-5 py-2 rounded-full text-[11px] font-black tracking-[0.3em] text-primary shadow-2xl">
@@ -108,66 +123,69 @@ export default function Hero() {
               PUNJAB&apos;S NO.1 STUDY HUB
             </div>
 
-            {/* Main Headline (Punjab Identity) */}
-            <div className="space-y-2">
-               <h1 className="text-4xl md:text-7xl lg:text-8xl font-black leading-[0.85] tracking-tighter uppercase drop-shadow-4xl">
-                 ਤਿਆਰੀ ਪੰਜਾਬ ਦੀ, <br />
-                 <span className="text-primary">ਸੁਪਨਾ ਸਰਕਾਰੀ ਅਫ਼ਸਰ ਦਾ!</span>
+            {/* Main Massive Headline */}
+            <div className="space-y-4">
+               <h1 className="text-4xl md:text-[8rem] font-black leading-[0.85] tracking-tighter uppercase drop-shadow-4xl flex flex-col items-center lg:items-start">
+                 <span className="text-white">ਤਿਆਰੀ ਪੰਜਾਬ ਦੀ,</span>
+                 <span className="text-primary">ਸੁਪਨਾ ਸਰਕਾਰੀ</span>
+                 <span className="text-primary">ਅਫ਼ਸਰ ਦਾ!</span>
                </h1>
-               <p className="text-sm md:text-xl font-black text-slate-500 uppercase tracking-[0.3em] leading-none opacity-80 mt-4">
-                  Prepare for Punjab, Dream of a Govt. Officer!
-               </p>
             </div>
             
-            <p className="text-base md:text-xl text-slate-400 font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0">
-               Crack <span className="text-white font-bold">PSSSB, POLICE, PSPCL, PSTET, CTET, ETT & MASTER CADRE</span> with India&apos;s most accurate mock tests and regional rankings.
-            </p>
+            <div className="space-y-6">
+              <p className="text-base md:text-2xl font-black text-white uppercase tracking-[0.2em] opacity-90">
+                 CRACK PSSSB, POLICE, PSPCL, PSTET, CTET, ETT & MASTER CADRE
+              </p>
+              <p className="text-base md:text-xl text-slate-400 font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                 Prepare for Punjab, Dream of a Govt. Officer! Join India&apos;s most accurate mock test platform with real-time regional rankings.
+              </p>
+            </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
               <Button 
                 onClick={() => handleActionClick('/mocks')}
-                className="bg-primary hover:bg-orange-600 transition-all font-black px-10 h-16 md:h-20 rounded-2xl text-white flex items-center justify-center gap-3 group shadow-3xl shadow-primary/20 uppercase text-[11px] tracking-[0.2em] border-none active:scale-95"
+                className="bg-primary hover:bg-orange-600 transition-all font-black px-12 h-16 md:h-20 rounded-2xl text-white flex items-center justify-center gap-3 group shadow-3xl shadow-primary/20 uppercase text-[11px] tracking-[0.2em] border-none active:scale-95"
               >
                 START FREE DEMO 
                 <Zap className="w-5 h-5 fill-current group-hover:scale-125 transition-transform" />
               </Button>
               <Button 
                 onClick={() => handleActionClick('/pass')}
-                className="border border-white/10 hover:border-white/30 bg-white/5 hover:bg-white/10 text-white font-black px-10 h-16 md:h-20 rounded-2xl transition-all uppercase text-[11px] tracking-[0.2em] active:scale-95 shadow-xl"
+                className="border border-white/10 hover:border-white/30 bg-white/5 hover:bg-white/10 text-white font-black px-12 h-16 md:h-20 rounded-2xl transition-all uppercase text-[11px] tracking-[0.2em] active:scale-95 shadow-xl"
               >
-                ENROLL IN ELITE HUB
+                ENROLL NOW
               </Button>
             </div>
 
             {/* Mobile PWA Install Trigger */}
             {canInstall && (
-               <div className="pt-2 animate-in fade-in slide-in-from-top-2 duration-700">
+               <div className="pt-2 animate-in fade-in slide-in-from-top-2 duration-700 flex justify-center lg:justify-start">
                   <Button 
                     onClick={handleInstallClick}
-                    className="h-12 px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black uppercase text-[9px] tracking-widest gap-2 shadow-2xl transition-all active:scale-95"
+                    className="h-12 px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black uppercase text-[9px] tracking-widest gap-2 shadow-2xl transition-all active:scale-95 border-none"
                   >
-                     <Download className="h-4 w-4" /> Install Mobile App
+                     <Download className="h-4 w-4" /> INSTALL MOBILE APP
                      <Badge className="bg-emerald-400 text-emerald-950 border-none ml-2 animate-pulse">NEW</Badge>
                   </Button>
                </div>
             )}
 
             {/* Metrics & Counter Widgets */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-10 border-t border-white/5">
-              <div className="p-5 bg-white/5 rounded-2xl border border-white/10 shadow-inner group hover:bg-white/10 transition-all">
-                <div className="text-3xl font-black text-primary font-headline">10,000+</div>
-                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Total Selections</div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-12 border-t border-white/5">
+              <div className="flex flex-col items-center lg:items-start gap-1">
+                <div className="text-3xl md:text-4xl font-black text-primary font-headline tracking-tighter">10,000+</div>
+                <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Total Selections</div>
               </div>
-              <div className="p-5 bg-white/5 rounded-2xl border border-white/10 shadow-inner group hover:bg-white/10 transition-all">
-                <div className="text-3xl font-black text-emerald-400 flex items-center gap-1.5 justify-center lg:justify-start font-headline">
+              <div className="flex flex-col items-center lg:items-start gap-1">
+                <div className="text-3xl md:text-4xl font-black text-emerald-400 flex items-center gap-1.5 font-headline tracking-tighter">
                   5.2k+ <span className="text-[8px] px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-md animate-pulse font-black uppercase tracking-tighter">Live</span>
                 </div>
-                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Students Testing</div>
+                <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Aspirants Testing</div>
               </div>
-              <div className="p-5 bg-white/5 rounded-2xl border border-white/10 shadow-inner group hover:bg-white/10 transition-all col-span-2 sm:col-span-1">
-                <div className="text-3xl font-black text-blue-400 font-headline">150+</div>
-                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Daily Updated Mocks</div>
+              <div className="flex flex-col items-center lg:items-start gap-1 col-span-2 sm:col-span-1">
+                <div className="text-3xl md:text-4xl font-black text-blue-400 font-headline tracking-tighter">150+</div>
+                <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Daily Updated Mocks</div>
               </div>
             </div>
 
@@ -218,7 +236,7 @@ export default function Hero() {
               <div className="mt-8 space-y-3.5 text-left">
                 <div className="flex items-center justify-between">
                    <p className="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase">Live Activity Hub</p>
-                   <RefreshCw className="h-3 w-3 text-slate-700 animate-spin-slow" />
+                   <RefreshCw className="h-3 w-3 text-slate-700 animate-spin" />
                 </div>
                 
                 {activities.map((act) => (
@@ -267,4 +285,3 @@ export default function Hero() {
     </section>
   );
 }
-
