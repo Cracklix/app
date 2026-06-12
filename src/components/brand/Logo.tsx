@@ -13,16 +13,16 @@ interface LogoProps {
 
 /**
  * @fileOverview Official Cracklix Logo Component.
- * UPDATED: Fixed permanent image-based logo with user-provided high-fidelity asset.
- * MATCHES: Stylized 3D icon and mixed-case "Cracklix" typography.
+ * FIXED: Removed overflow-hidden and stabilized icon dimensions to ensure visibility.
+ * MATCHES: High-fidelity 3D emblem with mixed-case "Cracklix" typography.
  */
 export function LogoIcon({ className = "" }: { className?: string }) {
   return (
-    <div className={cn("relative shrink-0 overflow-hidden", className)}>
+    <div className={cn("relative shrink-0 flex items-center justify-center", className)}>
       <img 
         src="https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png" 
         alt="Cracklix Emblem" 
-        className="w-full h-full object-contain"
+        className="w-full h-full object-contain drop-shadow-xl"
         referrerPolicy="no-referrer"
       />
     </div>
@@ -33,8 +33,8 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
   const isDark = variant === 'dark';
 
   return (
-    <Link href={href} className={cn("flex items-center gap-3 md:gap-4 group pointer-events-auto select-none shrink-0", className)}>
-      <LogoIcon className="w-10 h-10 md:w-14 md:h-14" />
+    <Link href={href} className={cn("flex items-center gap-3 md:gap-5 group pointer-events-auto select-none shrink-0", className)}>
+      <LogoIcon className="w-12 h-12 md:w-16 md:h-16" />
 
       {!iconOnly && (
         <div className="flex flex-col items-start justify-center leading-none">
@@ -44,7 +44,7 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
               "text-2xl md:text-4xl font-[900] tracking-tighter drop-shadow-md",
               isDark ? "text-[#0F172A]" : "text-white"
             )} style={{ 
-               textShadow: '0px 2px 0px rgba(226, 232, 240, 0.1)'
+               textShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)'
             }}>
               Crackli
             </span>
@@ -55,11 +55,11 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
           </div>
           
           {showTagline && (
-            <div className="mt-1 flex items-center gap-2 w-full">
+            <div className="mt-1.5 flex items-center gap-2 w-full">
               <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#F97316]/40" />
               <span className={cn(
-                "text-[6px] md:text-[9px] font-black uppercase tracking-[0.2em] whitespace-nowrap",
-                isDark ? "text-slate-500" : "text-white/70"
+                "text-[7px] md:text-[10px] font-black uppercase tracking-[0.25em] whitespace-nowrap",
+                isDark ? "text-slate-500" : "text-white/80"
               )}>
                 PUNJAB&apos;S NO.1 STUDY HUB
               </span>
