@@ -128,7 +128,7 @@ function AdEntryContent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                  <div className="space-y-3">
                     <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Campaign Headline</Label>
-                    <Input value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="h-14 rounded-2xl bg-slate-50 border-none font-bold text-lg" placeholder="e.g. Patwari Coaching 2026" />
+                    <Input value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="h-14 rounded-2xl bg-slate-50 border-none font-bold text-lg" placeholder="e.g. Patwari Coaching Latest Pattern" />
                  </div>
                  <div className="space-y-3">
                     <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Ad Engine</Label>

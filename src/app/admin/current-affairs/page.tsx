@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
@@ -41,8 +40,8 @@ import { parseBulkQuestions } from "@/lib/parser"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Current Affairs Management Hub v19.7.
- * FIXED: Added missing query and where imports for registry audit.
+ * @fileOverview Institutional Current Affairs Management Hub v19.8.
+ * UPDATED: Replaced specific year with Latest Pattern branding.
  */
 
 export default function AdminCurrentAffairs() {
@@ -202,7 +201,7 @@ export default function AdminCurrentAffairs() {
           <h1 className="text-3xl md:text-5xl font-black font-headline text-primary uppercase tracking-tight leading-tight">CA Manager</h1>
           <p className="text-slate-500 mt-1 md:mt-2 text-sm md:text-lg font-medium">Coordinate Daily, Weekly, and Monthly coverage.</p>
         </div>
-        <button onClick={() => setEditingItem({ title: "", type: "DAILY", month: "January", year: "2026", status: "PUBLISHED", questions: [], language: "English & Punjabi", duration: 15, positiveMarks: 1, negativeMarks: 0.25 })} className="w-full lg:w-auto bg-primary hover:bg-orange-600 text-white h-14 md:h-16 px-10 rounded-2xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 border-none">
+        <button onClick={() => setEditingItem({ title: "", type: "DAILY", month: "January", year: "Latest Pattern", status: "PUBLISHED", questions: [], language: "English & Punjabi", duration: 15, positiveMarks: 1, negativeMarks: 0.25 })} className="w-full lg:w-auto bg-primary hover:bg-orange-600 text-white h-14 md:h-16 px-10 rounded-2xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 border-none">
           <Plus className="h-5 w-5" /> Initialize CA Hub
         </button>
       </div>

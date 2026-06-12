@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -15,8 +14,8 @@ import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * @fileOverview Institutional Administrative Portal v10.0.
- * UPDATED: Optimized mobile typography to prevent large heading cutoffs.
+ * @fileOverview Institutional Administrative Portal v10.1.
+ * UPDATED: Replaced specific year with Latest Pattern terminology.
  */
 
 export default function AdminSettings() {
@@ -27,7 +26,7 @@ export default function AdminSettings() {
   const { data: remoteSettings, loading } = useDoc<any>(settingsRef);
 
   const [formData, setFormData] = useState({
-    announcement: "🔥 Official Punjab 2026 Recruitment Calendar Live.",
+    announcement: "🔥 Official Punjab Latest Pattern Recruitment Calendar Live.",
     showAnnouncement: true,
     platformName: "Cracklix",
     footerText: "Punjab's most advanced government exam portal.",
@@ -168,7 +167,7 @@ export default function AdminSettings() {
                  <div className="space-y-4">
                     <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Share Canonical URL</Label><Input value={formData.shareUrl} onChange={e => setFormData({...formData, shareUrl: e.target.value})} className="h-12 rounded-xl font-bold text-primary" /></div>
                     <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Meta Title</Label><Input value={formData.shareTitle} onChange={e => setFormData({...formData, shareTitle: e.target.value})} className="h-12 rounded-xl font-bold" /></div>
-                    <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Meta Abstract</Label><Textarea value={formData.shareDescription} onChange={e => setFormData({...formData, shareDescription: e.target.value})} className="min-h-[100px] rounded-xl" /></div>
+                    <div className="space-y-2 text-left"><Label className="text-[10px) font-black uppercase text-slate-500 ml-1">Meta Abstract</Label><Textarea value={formData.shareDescription} onChange={e => setFormData({...formData, shareDescription: e.target.value})} className="min-h-[100px] rounded-xl" /></div>
                  </div>
               </Card>
 

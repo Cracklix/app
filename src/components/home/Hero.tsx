@@ -14,8 +14,8 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Refined Institutional Hero Hub v49.0.
- * UPDATED: Removed redundant secondary action button for a cleaner focus.
+ * @fileOverview Refined Institutional Hero Hub v49.1.
+ * UPDATED: Replaced 2026 with Latest Pattern terminology.
  */
 
 export default function Hero() {
@@ -72,7 +72,7 @@ export default function Hero() {
                   CRACK EVERY <br className="hidden sm:block"/> <span className="text-primary">RECRUITMENT.</span>
                </h1>
                <p className="text-sm md:text-xl text-slate-400 font-medium max-w-lg leading-relaxed">
-                  The most trusted practice series for PSSSB, PPSC, Police, and Army. 2026 pattern based study plans for guaranteed success.
+                  The most trusted practice series for PSSSB, PPSC, Police, and Army. Latest pattern based study plans for guaranteed success.
                </p>
             </div>
 
@@ -125,7 +125,7 @@ export default function Hero() {
                   {/* Floating Identity Node */}
                   <div className="absolute bottom-4 left-4 right-4 md:bottom-8 md:left-8 md:right-8 flex items-center justify-between">
                      <div className="bg-white/10 backdrop-blur-xl px-4 py-2 md:px-6 md:py-4 rounded-xl md:rounded-2xl border border-white/20 shadow-2xl flex items-center gap-3 md:gap-4">
-                        <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg">
+                        <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-emerald-50 flex items-center justify-center shadow-lg">
                            <ShieldCheck className="h-4 w-4 md:h-5 md:w-5 text-white" />
                         </div>
                         <div className="text-left">

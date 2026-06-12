@@ -1,4 +1,3 @@
-
 'use client';
 
 import { 
@@ -39,8 +38,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Institutional Mobile Sidebar v8.1.
- * UPDATED: Renamed "Latest News" to "Current Affairs" for platform consistency.
+ * @fileOverview Institutional Mobile Sidebar v8.2.
+ * UPDATED: Replaced 2026 with Latest Pattern branding.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -272,7 +271,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
            <p className="text-[9px] font-black text-primary uppercase tracking-widest text-center">
               Developed by Arsh Grewal
            </p>
-           <p className="text-[7px] font-bold text-slate-600 uppercase tracking-widest leading-none">Cracklix Hub © 2026</p>
+           <p className="text-[7px] font-bold text-slate-600 uppercase tracking-widest leading-none">Cracklix Hub © Latest Pattern</p>
         </div>
       </div>
 

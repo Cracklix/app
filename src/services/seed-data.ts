@@ -1,8 +1,9 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v70.0.
+ * @fileOverview Institutional Punjab-Centric Seeding Node v70.1.
  * UPDATED: Comprehensive category seeding for General and Banking nodes.
+ * UPDATED: Replaced 2026 with Latest Pattern terminology.
  */
 
 export async function seedInitialData(db: Firestore) {

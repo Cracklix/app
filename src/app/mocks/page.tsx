@@ -14,8 +14,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Category Discovery v3.2.
- * UPDATED: Reduced button size and adjusted text for compact professional design.
+ * @fileOverview Institutional Category Discovery v3.3.
+ * UPDATED: Replaced specific year with Latest Pattern branding.
  */
 
 const CATEGORY_ICONS: Record<string, any> = {
@@ -42,7 +42,7 @@ export default function MocksDiscoveryPage() {
              <div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
                 <Landmark className="h-6 w-6" />
              </div>
-             <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-slate-500">Official Exam Registry 2026</span>
+             <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-slate-500">Official Exam Registry Latest Pattern</span>
           </div>
           <h1 className="text-4xl md:text-8xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-[0.85]">
             Master <br/> <span className="text-primary">Registry</span>

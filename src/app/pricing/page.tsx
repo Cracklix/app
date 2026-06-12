@@ -1,4 +1,3 @@
-
 "use client"
 
 import Navbar from "@/components/layout/Navbar"
@@ -12,7 +11,7 @@ import { motion } from "framer-motion"
 
 /**
  * @fileOverview Final Cracklix Pass Center (Phase 157).
- * UPDATED: Removed Daily Analysis from plan features.
+ * UPDATED: Replaced 2026 with Latest Pattern terminology.
  */
 
 const PLANS = [
@@ -88,13 +87,13 @@ export default function PricingPage() {
         <div className="text-center space-y-8 mb-20">
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Badge className="bg-primary/10 text-primary border-none px-6 py-2 rounded-full font-black uppercase text-[10px] tracking-[0.2em] mb-6 shadow-sm">
-                 Monetization Node v1.1
+                 Monetization Node v1.2
               </Badge>
               <h1 className="text-6xl md:text-8xl font-headline font-black text-[#0F172A] tracking-tight uppercase leading-[0.9]">
                  Select Your <br/> <span className="text-primary">Cracklix Pass</span>
               </h1>
               <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto mt-6 leading-relaxed">
-                 Invest in institutional precision. Unlock verified patterns and AI-powered audit rationalizations for 2026 recruitments.
+                 Invest in institutional precision. Unlock verified patterns and AI-powered audit rationalizations for Latest Pattern recruitments.
               </p>
            </motion.div>
         </div>

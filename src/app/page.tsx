@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo } from "react";
@@ -20,8 +19,8 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Optimized Institutional Landing Hub v62.0.
- * UPDATED: Ultra-compact "One-Line" Stats bar with real terminologies and live updates.
+ * @fileOverview Optimized Institutional Landing Hub v62.1.
+ * UPDATED: Replaced 2026 with Latest Pattern branding.
  */
 
 export default function HomePage() {

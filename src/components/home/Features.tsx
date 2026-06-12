@@ -5,14 +5,14 @@ import { Clipboard, Search, TrendingUp, Smartphone } from "lucide-react";
 
 /**
  * @fileOverview Responsive Features Section.
- * Optimized for mobile-first scanning with reduced vertical sprawl.
+ * UPDATED: Replaced 2026 with Latest Pattern terminology.
  */
 
 const features = [
   { 
     icon: <Clipboard className="h-5 w-5 md:h-6 md:w-6" />, 
     title: "Pattern Based Mocks", 
-    desc: "Mocks designed exactly as per the latest 2026 norms.",
+    desc: "Mocks designed exactly as per the latest pattern norms.",
     variant: "blue"
   },
   { 

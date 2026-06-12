@@ -1,4 +1,3 @@
-
 "use client"
 
 import Navbar from "@/components/layout/Navbar"
@@ -17,8 +16,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Elite PASS Registry Hub v11.1.
- * FIXED: Replaced arbitrary Tailwind duration with inline style.
+ * @fileOverview Elite PASS Registry Hub v11.2.
+ * UPDATED: Replaced specific year with Latest Pattern branding.
  */
 export default function PassPage() {
   const { user, profile, loading: userLoading } = useUser()
@@ -98,7 +97,7 @@ export default function PassPage() {
                  activePassLabel === 'PASS EXPIRED' ? "bg-rose-500/20 text-rose-400 border-rose-500/30" :
                  activePassLabel ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : "bg-primary/20 text-primary border-primary/30"
               )}>
-                 {activePassLabel || "Institutional Preparation Registry 2026"}
+                 {activePassLabel || "Institutional Preparation Registry Latest Pattern"}
               </Badge>
               <h1 className="text-4xl md:text-8xl font-headline font-black tracking-tight uppercase leading-[0.9]">
                  ELITE <span className="text-primary">MASTER PASS</span>

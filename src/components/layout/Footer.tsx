@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -10,8 +9,8 @@ import { useMemo } from "react";
 import ShareButton from "@/components/navigation/ShareButton";
 
 /**
- * @fileOverview Final Institutional Footer Node v8.1.
- * Updated: Developer credit corrected to Arsh Grewal.
+ * @fileOverview Final Institutional Footer Node v8.2.
+ * UPDATED: Replaced 2026 with Latest Pattern branding.
  */
 
 export default function Footer() {
@@ -105,7 +104,7 @@ export default function Footer() {
         <div className="mt-24 pt-12 border-t border-white/5 flex flex-col items-center gap-6">
           <div className="flex flex-col items-center text-center">
             <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">
-              © 2026 {content.platformName} | All Rights Reserved.
+              © Latest Pattern {content.platformName} | All Rights Reserved.
             </p>
             <p className="text-primary text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">
                Founder & Lead Developer: Arsh Grewal
