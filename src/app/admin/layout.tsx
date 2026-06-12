@@ -1,4 +1,3 @@
-
 'use client';
 
 import { SidebarProvider, Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
@@ -45,8 +44,8 @@ import BackButton from "@/components/navigation/BackButton";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Institutional Sidebar Restoration v129.0.
- * UPDATED: Added Brand Magic tool link to Content Hub.
+ * @fileOverview Institutional Sidebar Restoration v130.0.
+ * UPDATED: Logo added to Admin Header, 2 spaces (gap-2) to the right of the trigger.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -125,7 +124,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </SidebarGroup>
 
           <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Users & Revenue</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 py-4 text-[10px) font-black uppercase tracking-widest text-white/20 text-left">Users & Revenue</SidebarGroupLabel>
             <SidebarMenu>
               <AdminNavItem icon={<Users className="text-blue-400" />} label="STUDENT LIST" href="/admin/users" active={pathname === "/admin/users"} onClick={onLinkClick} />
               <AdminNavItem icon={<DollarSign className="text-emerald-400" />} label="REVENUE HUB" href="/admin/payments" active={pathname === "/admin/payments"} onClick={onLinkClick} />
@@ -180,7 +179,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         
         <SidebarInset className="flex flex-col bg-white min-w-0 max-w-full relative">
           <header className="h-14 md:h-16 border-b border-slate-200 flex items-center px-4 md:px-6 justify-between bg-white sticky top-0 z-[100] shrink-0">
-            <div className="flex items-center gap-1 md:gap-3 overflow-hidden">
+            <div className="flex items-center gap-2 overflow-hidden">
               <div className="lg:hidden">
                  <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                     <SheetTrigger asChild>
@@ -196,6 +195,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </div>
               <SidebarTrigger className="hidden lg:flex text-[#0F172A] hover:bg-slate-50 cursor-pointer" />
               
+              <Logo variant="dark" className="scale-75 origin-left" href="/admin" />
+
               <div className="h-4 w-[1px] bg-slate-200 mx-2 hidden md:block" />
               <BackButton label="Dashboard" fallback="/admin" className="hidden xs:flex" />
 

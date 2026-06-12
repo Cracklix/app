@@ -26,8 +26,8 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v19.0.
- * UPDATED: Optimized hydration pattern. Component structure renders immediately.
+ * @fileOverview Institutional Navbar v20.0.
+ * UPDATED: Logo positioned 2 spaces (gap-2) to the right of the menu trigger.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -116,7 +116,7 @@ export default function Navbar() {
       <nav className="w-full bg-[#0B1528] border-b border-white/5 py-2 md:py-3 shadow-xl backdrop-blur-md bg-opacity-95">
         <div className="container mx-auto max-w-full flex items-center justify-between px-3 md:px-6">
           <div className="flex items-center gap-2 md:gap-8">
-            <div className="flex items-center gap-2 md:gap-6">
+            <div className="flex items-center gap-2">
                <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
                  <SheetTrigger asChild>
                    <button className="text-white p-2.5 hover:bg-white/5 rounded-2xl transition-all active:scale-90 cursor-pointer border border-white/10 focus:outline-none shrink-0">
