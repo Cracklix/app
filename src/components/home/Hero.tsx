@@ -1,4 +1,3 @@
-
 'use client';
 
 import { motion } from "framer-motion";
@@ -14,9 +13,9 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Refined Institutional Hero Hub v47.0.
- * UPDATED: Optimized for universal visibility across Mobile and Desktop.
- * FIXED: Removed hidden classes to ensure the Punjab Police asset renders in all modes.
+ * @fileOverview Refined Institutional Hero Hub v48.0.
+ * UPDATED: Fully responsive layout. Image node is now visible on both Mobile and Desktop.
+ * FIX: Removed 'hidden' constraints to ensure universal asset delivery.
  */
 
 export default function Hero() {
@@ -109,18 +108,18 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* RIGHT: PHOTO NODE (Now visible on all screens) */}
+          {/* RIGHT: PHOTO NODE (Universal Visibility) */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative w-full"
+            className="relative w-full block"
           >
-            <div className="relative aspect-video sm:aspect-[4/3] w-full max-w-[620px] lg:ml-auto mx-auto mt-6 lg:mt-0">
+            <div className="relative aspect-video sm:aspect-[4/3] w-full max-w-[620px] lg:ml-auto mx-auto mt-10 lg:mt-0">
                {/* Background Glow */}
                <div className="absolute -inset-6 md:-inset-10 bg-primary/10 blur-[100px] rounded-full opacity-50" />
                
-               <div className="relative h-full w-full rounded-[2rem] md:rounded-[3.5rem] overflow-hidden border-[6px] md:border-[10px] border-white/5 shadow-5xl bg-slate-800 group">
+               <div className="relative h-full w-full rounded-[2rem] md:rounded-[3.5rem] overflow-hidden border-[4px] md:border-[10px] border-white/5 shadow-5xl bg-slate-800 group">
                   <img 
                     src={policeImage} 
                     alt="Punjab Police Preparation" 
