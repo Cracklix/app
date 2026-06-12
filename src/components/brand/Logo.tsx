@@ -13,17 +13,17 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview High-Fidelity Cracklix "C-Check" Icon Reconstruction v5.0.
- * MATCHES: Provided image with glowing arcs, bold C, and integrated checkmark.
- * UPDATED: Branding text changed to mixed-case "Cracklix".
+ * @fileOverview High-Fidelity Cracklix "C-Check" Icon Reconstruction v6.0.
+ * MATCHES: Provided style with a full C-style orange glowing wrap.
+ * UPDATED: Branding text strictly mixed-case "Cracklix".
  */
 export function LogoIcon({ className = "", isDark = false }: { className?: string, isDark?: boolean }) {
   return (
     <div className={cn("relative shrink-0", className)}>
       <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-xl">
         <defs>
-          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="2" result="blur" />
+          <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
           <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -37,21 +37,21 @@ export function LogoIcon({ className = "", isDark = false }: { className?: strin
            <rect x="5" y="5" width="90" height="90" rx="25" fill="#0B1528" />
         ) : null}
 
-        {/* Glowing Orange Outer Arc */}
+        {/* Full C-Style Orange Outer Glow Wrap */}
         <path 
-          d="M30 85C20 78 14 65 14 50C14 30 28 14 50 14C65 14 78 20 85 30" 
+          d="M75 22C68 15 59 12 50 12C29 12 12 29 12 50C12 71 29 88 50 88C59 88 68 85 75 78" 
           stroke="#F97316" 
-          strokeWidth="6" 
+          strokeWidth="7" 
           strokeLinecap="round"
           filter="url(#glow)"
           opacity="0.9"
         />
 
-        {/* Main Bold White 'C' */}
+        {/* Main Bold Silver-White 'C' */}
         <path 
           d="M75 40C72 30 62 24 50 24C36 24 26 36 26 50C26 64 36 76 50 76C62 76 72 70 75 60" 
           stroke={isDark ? "#0F172A" : "white"} 
-          strokeWidth="12" 
+          strokeWidth="11" 
           strokeLinecap="round"
           className="drop-shadow-md"
         />
