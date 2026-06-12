@@ -1,4 +1,3 @@
-
 'use client';
 
 import { motion } from "framer-motion";
@@ -7,31 +6,25 @@ import { Button } from "@/components/ui/button";
 import { 
   ShieldCheck,
   Zap,
-  Target,
-  Trophy,
-  Users,
   ArrowRight,
-  BookOpen,
-  ClipboardList,
-  TrendingUp,
-  Globe,
+  Users,
   FileStack,
-  CheckCircle2,
-  Lock,
-  Search,
-  Star
+  Globe,
+  Star,
+  Search
 } from "lucide-react";
 import { useUser, useFirestore, useDoc } from "@/firebase";
-import { cn } from "@/lib/utils";
 import { useState, useEffect, useMemo } from "react";
 import { doc } from "firebase/firestore";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview FINAL PERMANENT HERO v150.0 (Matched to Design Screenshot).
- * FEATURES: Institutional Image Hub, Floating Verified Badge, and Real-Time Stats.
+ * @fileOverview FINAL PERMANENT HERO v155.0 (Strict Design Reference Match).
+ * FEATURES: Institutional Image Hub, Floating Verified Badge, and Integrated Stats.
+ * IMAGE: Locked to https://i.ibb.co/gZCGMQNJ/IMG-20260612-WA0010.jpg
  */
 export default function Hero() {
   const router = useRouter();
@@ -104,9 +97,9 @@ export default function Hero() {
 
               {/* Functional Feature Tags */}
               <div className="flex flex-wrap gap-3">
-                 <FeatureTag icon={<Zap className="text-primary" />} label="500+ Mocks" />
-                 <FeatureTag icon={<FileStack className="text-primary" />} label="Verified PYQs" />
-                 <FeatureTag icon={<Globe className="text-primary" />} label="Bilingual Hub" />
+                 <FeatureTag icon={<Zap />} label="500+ Mocks" />
+                 <FeatureTag icon={<FileStack />} label="Verified PYQs" />
+                 <FeatureTag icon={<Globe />} label="Bilingual Hub" />
               </div>
             </motion.div>
 
@@ -139,7 +132,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* RIGHT: INSTITUTIONAL IMAGE HUB (Matched to Screenshot) */}
+          {/* RIGHT: INSTITUTIONAL IMAGE HUB */}
           <div className="lg:col-span-5 relative">
              <motion.div 
                initial={{ opacity: 0, scale: 0.95 }}
@@ -147,21 +140,21 @@ export default function Hero() {
                className="relative"
              >
                 {/* Visual Glow */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-[3.5rem] blur-2xl opacity-50" />
+                <div className="absolute -inset-1 bg-primary/20 to-blue-500/20 rounded-[3.5rem] blur-2xl opacity-50" />
                 
                 {/* Main Rounded Image Hub */}
                 <div className="relative aspect-[4/5] rounded-[3.5rem] md:rounded-[4.5rem] overflow-hidden border-[6px] border-white/5 shadow-5xl bg-[#1A2333]">
                    <Image 
                       src={heroImageUrl}
-                      alt="Punjab Police Prep"
+                      alt="Punjab Exam Preparation"
                       fill
                       className="object-cover"
                       priority
                       data-ai-hint="punjab police"
                    />
                    
-                   {/* 1. FLOATING VERIFIED CONTENT BADGE (Bottom Left) */}
-                   <div className="absolute bottom-8 left-8 right-auto z-20 animate-in slide-in-from-left-4 duration-700">
+                   {/* 1. FLOATING VERIFIED CONTENT BADGE */}
+                   <div className="absolute bottom-8 left-8 z-20">
                       <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-6 flex items-center gap-4 shadow-2xl">
                          <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-primary flex items-center justify-center text-white shadow-xl shadow-primary/20">
                             <ShieldCheck className="h-6 w-6" />
@@ -173,7 +166,7 @@ export default function Hero() {
                       </div>
                    </div>
 
-                   {/* 2. FLOATING LIVE STUDENTS NODE (Bottom Right - Peek) */}
+                   {/* 2. FLOATING LIVE STUDENTS NODE */}
                    <div className="absolute bottom-[-10px] right-[-10px] z-30">
                       <div className="bg-white rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-5xl flex flex-col items-center gap-2 border border-slate-100">
                          <div className="h-10 w-10 bg-orange-50 rounded-xl flex items-center justify-center text-primary shadow-inner">
@@ -192,26 +185,26 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* BOTTOM STATS STRIP (Integrated Authority) */}
+        {/* BOTTOM STATS STRIP */}
         <div className="mt-20 md:mt-32 bg-[#0F172A] rounded-[2rem] md:rounded-[3.5rem] border border-white/5 shadow-5xl overflow-hidden p-6 md:p-12 relative">
-           <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12"><Trophy className="h-64 w-64" /></div>
+           <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12"><Star className="h-64 w-64 text-primary" /></div>
            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 relative z-10">
               <LegacyStatNode 
                 label="Questions" 
                 val={`${stats?.totalQuestions?.toLocaleString() || '50,000'}+`} 
-                icon={<BookOpen />} 
+                icon={<Zap />} 
                 color="bg-blue-600" 
               />
               <LegacyStatNode 
                 label="Mock Tests" 
                 val={`${stats?.totalMocks || '500'}+`} 
-                icon={<Zap />} 
+                icon={<Star />} 
                 color="bg-emerald-600" 
               />
               <LegacyStatNode 
                 label="State Rank" 
                 val="94%" 
-                icon={<Target />} 
+                icon={<Trophy />} 
                 color="bg-orange-600" 
               />
               <LegacyStatNode 

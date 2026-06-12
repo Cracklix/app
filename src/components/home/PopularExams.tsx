@@ -8,23 +8,20 @@ import {
   BookOpen, 
   Zap, 
   Shield, 
-  CheckCircle2, 
-  Star, 
   ShieldCheck, 
   GraduationCap, 
   Globe, 
   TrendingUp,
   Smartphone,
-  Scale
+  Scale,
+  Star
 } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Final Institutional Popular Exams Card v18.5 (Locked).
- * MATCHED: Perfectly aligned with the reference (ibb.co/F4D0JLHP bottom card).
- * Features: High-fidelity authority grid and institutional trust checklist.
+ * @fileOverview Final Institutional Popular Exams Card v19.0 (Matched to Design Reference).
+ * FEATURES: Single large white container, Board logo grid, and trust checklist.
  */
 
 const BOARDS = [
@@ -55,7 +52,7 @@ export default function PopularExams() {
            className="bg-white shadow-4xl rounded-[3rem] md:rounded-[4rem] overflow-hidden border border-slate-100 flex flex-col lg:grid lg:grid-cols-12"
          >
             
-            {/* LEFT: AUTHORITY LOGO GRID (Col-7) */}
+            {/* LEFT: AUTHORITY LOGO GRID */}
             <div className="lg:col-span-7 p-8 md:p-16 space-y-12 text-left">
                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -93,7 +90,7 @@ export default function PopularExams() {
                </div>
             </div>
 
-            {/* RIGHT: INSTITUTIONAL TRUST CHECKLIST (Col-5) */}
+            {/* RIGHT: INSTITUTIONAL TRUST CHECKLIST */}
             <div className="lg:col-span-5 bg-slate-50 border-l border-slate-100 p-10 md:p-16 flex flex-col justify-center text-left relative overflow-hidden">
                <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12"><ShieldCheck className="h-64 w-64" /></div>
                
