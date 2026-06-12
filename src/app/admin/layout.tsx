@@ -30,7 +30,8 @@ import {
   History,
   ShieldAlert,
   ClipboardCheck,
-  LayoutGrid
+  LayoutGrid,
+  Wand2
 } from "lucide-react"
 import Link from "next/link"
 import Logo from "@/components/brand/Logo"
@@ -45,7 +46,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * @fileOverview Institutional Sidebar Restoration v129.0.
- * UPDATED: Replaced difficult words with easy ones (Master Registry -> Main Database).
+ * UPDATED: Added Brand Magic tool link to Content Hub.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -112,6 +113,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <SidebarGroup className="mt-4">
             <SidebarGroupLabel className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Content Hub</SidebarGroupLabel>
             <SidebarMenu>
+              <AdminNavItem icon={<Wand2 className="text-emerald-400" />} label="BRAND MAGIC" href="/admin/brand-magic" active={pathname === "/admin/brand-magic"} onClick={onLinkClick} />
               <AdminNavItem icon={<LayoutGrid className="text-orange-500" />} label="MOCK BUILDER" href="/admin/mocks/builder" active={pathname === "/admin/mocks/builder"} onClick={onLinkClick} />
               <AdminNavItem icon={<Zap className="text-primary" />} label="MOCK MANAGER" href="/admin/mocks" active={pathname === "/admin/mocks"} onClick={onLinkClick} />
               <AdminNavItem icon={<Newspaper className="text-blue-400" />} label="CURRENT AFFAIRS" href="/admin/current-affairs" active={pathname === "/admin/current-affairs"} onClick={onLinkClick} />
