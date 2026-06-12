@@ -14,7 +14,8 @@ interface LogoProps {
 
 /**
  * @fileOverview High-Fidelity 3D Corporate Logo for Cracklix.
- * MATCHES: Stylized orange 'C', integrated glowing checkmark, and 3D silver-edged typography.
+ * MATCHES: Stylized 3D orange 'C' wrap, integrated glowing checkmark, and silver-edged typography.
+ * TYPOGRAPHY: Mixed-case "Cracklix" as requested.
  */
 export function LogoIcon({ className = "", isDark = false }: { className?: string, isDark?: boolean }) {
   return (
@@ -45,11 +46,11 @@ export function LogoIcon({ className = "", isDark = false }: { className?: strin
           </linearGradient>
         </defs>
 
-        {/* 1. Outer Orange Glowing Arc (The 'C' Wrap) */}
+        {/* 1. Outer Orange Glowing Arc (Full 'C' Wrap) */}
         <path 
-          d="M75 30C68 20 58 15 48 15C28 15 12 31 12 50C12 69 28 85 48 85C58 85 68 80 75 70" 
+          d="M78 30C72 18 58 12 46 12C26 12 10 28 10 50C10 72 26 88 46 88C58 88 72 82 78 70" 
           stroke="url(#orange3d)" 
-          strokeWidth="8" 
+          strokeWidth="9" 
           strokeLinecap="round"
           filter="url(#orangeGlow)"
         />
@@ -96,12 +97,12 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
       {!iconOnly && (
         <div className="flex flex-col items-start justify-center leading-none">
           <div className="flex items-baseline font-headline">
-            {/* "Crackli" in White with Silver edges (Shadow simulation) */}
+            {/* Mixed Case "Cracklix" */}
             <span className={cn(
               "text-3xl md:text-5xl font-[900] tracking-tighter drop-shadow-md",
               isDark ? "text-[#0F172A]" : "text-white"
             )} style={{ 
-               textShadow: '0px 2px 0px rgba(226, 232, 240, 0.5)'
+               textShadow: '0px 2px 0px rgba(226, 232, 240, 0.3)'
             }}>
               Crackli
             </span>
@@ -113,17 +114,13 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
           
           {showTagline && (
             <div className="mt-1.5 flex items-center gap-2 w-full">
-              {/* Decorative Horizontal Line Left */}
               <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#F97316]/60" />
-              
               <span className={cn(
                 "text-[7px] md:text-[10px] font-black uppercase tracking-[0.2em] whitespace-nowrap",
                 isDark ? "text-slate-500" : "text-white"
               )}>
                 PUNJAB&apos;S NO.1 STUDY HUB
               </span>
-              
-              {/* Decorative Horizontal Line Right */}
               <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#F97316]/60" />
             </div>
           )}
