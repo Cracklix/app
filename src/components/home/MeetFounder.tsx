@@ -9,8 +9,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Founder & Lead Developer Section v2.5.
- * FIXED: Normalized name typography to prevent vertical stacking and refined container scaling.
+ * @fileOverview Official Founder & Lead Developer Section v2.6.
+ * FIXED: Resolved name clipping by reducing font size and card padding for a stable layout.
  */
 
 export default function MeetFounder() {
@@ -41,12 +41,12 @@ export default function MeetFounder() {
             initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="bg-slate-50/50 rounded-[2.5rem] md:rounded-[4rem] overflow-hidden shadow-4xl border border-slate-100 flex flex-col md:flex-row items-center p-8 md:p-16 gap-10 md:gap-16 group hover:shadow-5xl transition-all duration-700"
+            className="bg-slate-50/50 rounded-[2.5rem] md:rounded-[4rem] overflow-hidden shadow-4xl border border-slate-100 flex flex-col md:flex-row items-center p-8 md:p-12 lg:p-16 gap-8 md:gap-12 lg:gap-16 group hover:shadow-5xl transition-all duration-700"
           >
             {/* PROFILE IMAGE HUB */}
             <div className="relative shrink-0">
                <div className="absolute -inset-4 bg-gradient-to-tr from-primary to-orange-400 rounded-full blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
-               <div className="relative h-40 w-40 sm:h-56 sm:w-56 md:h-72 md:w-72 rounded-full overflow-hidden border-[4px] md:border-[8px] border-white shadow-2xl bg-[#0B1528] ring-1 ring-slate-200">
+               <div className="relative h-40 w-40 sm:h-52 sm:w-52 md:h-60 md:w-60 lg:h-64 lg:w-64 rounded-full overflow-hidden border-[4px] md:border-[8px] border-white shadow-2xl bg-[#0B1528] ring-1 ring-slate-200">
                   <img 
                     src={founderImg} 
                     alt="Arsh Grewal" 
@@ -58,8 +58,8 @@ export default function MeetFounder() {
                     }}
                   />
                </div>
-               <div className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 h-10 w-10 md:h-16 md:w-16 bg-emerald-500 rounded-xl md:rounded-2xl border-4 border-white flex items-center justify-center text-white shadow-xl">
-                  <ShieldCheck className="h-5 w-5 md:h-8 md:w-8" />
+               <div className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 h-10 w-10 md:h-14 md:w-14 bg-emerald-500 rounded-xl md:rounded-2xl border-4 border-white flex items-center justify-center text-white shadow-xl">
+                  <ShieldCheck className="h-5 w-5 md:h-7 md:w-7" />
                </div>
             </div>
 
@@ -71,7 +71,7 @@ export default function MeetFounder() {
                      <Badge className="bg-[#0F172A] text-white border-none px-3 py-1 rounded-md font-black uppercase text-[8px] md:text-[10px] tracking-widest shadow-lg">Lead Developer</Badge>
                   </div>
                   <div className="space-y-1">
-                    <h3 className="text-3xl sm:text-4xl md:text-5xl font-headline font-black text-[#0F172A] uppercase leading-none tracking-tight break-normal md:whitespace-nowrap">
+                    <h3 className="text-2xl sm:text-3xl md:text-4xl font-headline font-black text-[#0F172A] uppercase leading-none tracking-tight break-normal md:whitespace-nowrap">
                        Arsh Grewal
                     </h3>
                     <p className="text-primary font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-[8px] md:text-xs flex items-center justify-center md:justify-start gap-2">
