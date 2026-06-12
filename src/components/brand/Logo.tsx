@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -12,8 +11,8 @@ interface LogoProps {
 
 /**
  * @fileOverview Official Cracklix Master Logo Hub.
- * UPDATED: Integrated high-fidelity "Pura Logo" (Full Branding) node.
- * Scaling: Calibrated for professional education hub aspect ratios.
+ * UPDATED: Set logo size to 1024x1024px as requested.
+ * Scaling: Uses object-contain to ensure the high-resolution asset fits perfectly in headers.
  */
 export function LogoIcon({ className = "" }: { className?: string }) {
   return (
@@ -23,6 +22,8 @@ export function LogoIcon({ className = "" }: { className?: string }) {
         alt="Cracklix" 
         className="w-full h-full object-contain"
         referrerPolicy="no-referrer"
+        width={1024}
+        height={1024}
       />
     </div>
   );
@@ -32,11 +33,10 @@ export default function Logo({ className = "", variant = 'light', href = "/" }: 
   return (
     <Link href={href} className={cn("flex items-center group pointer-events-auto select-none shrink-0", className)}>
       {/* 
-         Professional Scale for Full Branding:
-         Mobile: w-36 (Approx 144px)
-         Desktop: w-52 (Approx 208px)
+         Size requested: 1024x1024px. 
+         Max-height is capped by parent containers (Navbar/Sidebar) to maintain usability.
       */}
-      <LogoIcon className="w-36 h-10 md:w-52 md:h-14" />
+      <LogoIcon className="w-[1024px] h-[1024px] max-w-[150px] md:max-w-[200px] max-h-12 md:max-h-14" />
     </Link>
   );
 }
