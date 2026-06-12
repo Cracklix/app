@@ -38,8 +38,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Institutional Mobile Sidebar v8.2.
- * UPDATED: Replaced 2026 with Latest Pattern branding.
+ * @fileOverview Institutional Mobile Sidebar v8.3.
+ * FIXED: High-contrast pass status visibility for dark theme.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -152,15 +152,15 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                 </div>
              </div>
              
-             <div className="flex-1 min-w-0 text-left space-y-1">
+             <div className="flex-1 min-w-0 text-left space-y-1.5">
                 <h2 className="text-base font-black text-white leading-tight uppercase tracking-tight truncate">
                    {profile?.name || "Student"}
                 </h2>
                 {passStatus ? (
                    <div className="flex flex-col gap-1">
                       <Badge className={cn(
-                        "border-none px-2 py-0.5 rounded-md font-black uppercase text-[7px] tracking-widest shadow-lg w-fit",
-                        passStatus.active ? "bg-emerald-50 text-white" : "bg-rose-50 text-white"
+                        "border-none px-2 py-0.5 rounded-md font-black uppercase text-[7px] tracking-widest shadow-lg w-fit text-white",
+                        passStatus.active ? "bg-emerald-600" : "bg-rose-600"
                       )}>
                          {passStatus.label}
                       </Badge>

@@ -14,8 +14,8 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Optimized Official Hero Hub v51.0.
- * FIXED: Resolved hydration mismatch by ensuring static text consistency ("EXAM.") and robust mounting guards.
+ * @fileOverview Optimized Official Hero Hub v51.1.
+ * FIXED: Visibility for Verified Content card and icon contrast.
  */
 
 export default function Hero() {
@@ -119,12 +119,12 @@ export default function Hero() {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#08152D] via-transparent to-transparent opacity-60" />
                   
                   <div className="absolute bottom-4 left-4 right-4 md:bottom-8 md:left-8 md:right-8 flex items-center justify-between">
-                     <div className="bg-white/10 backdrop-blur-xl px-4 py-2 md:px-6 md:py-4 rounded-xl md:rounded-2xl border border-white/20 shadow-2xl flex items-center gap-3 md:gap-4">
-                        <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-emerald-50 flex items-center justify-center shadow-lg">
+                     <div className="bg-white/20 backdrop-blur-xl px-4 py-2 md:px-6 md:py-4 rounded-xl md:rounded-2xl border border-white/20 shadow-2xl flex items-center gap-3 md:gap-4">
+                        <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg">
                            <ShieldCheck className="h-4 w-4 md:h-5 md:w-5 text-white" />
                         </div>
                         <div className="text-left">
-                           <p className="text-[7px] md:text-[8px] font-black uppercase text-white/60 leading-none mb-1">Official Hub</p>
+                           <p className="text-[7px] md:text-[8px] font-black uppercase text-white/80 leading-none mb-1">Official Hub</p>
                            <p className="text-sm md:text-lg font-black text-white leading-none uppercase">VERIFIED CONTENT</p>
                         </div>
                      </div>
