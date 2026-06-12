@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 /**
- * @fileOverview Refined Hero Hub v153.0.
- * UPDATED: Removed floating dashboard panels for a cleaner aesthetic.
+ * @fileOverview Refined Hero Hub v154.0.
+ * UPDATED: Added PPSC after PSSSB in the marketing headline.
  * STYLE: Dark Navy & Vibrant Orange Brand Identity.
  */
 
@@ -89,11 +89,11 @@ export default function Hero() {
           <div className="lg:col-span-5 space-y-10 text-left">
             <div className="space-y-6">
                <h1 className="text-4xl md:text-6xl font-headline font-black leading-[0.95] text-white uppercase tracking-tighter">
-                  CRACK PSSSB, POLICE, <br />
+                  CRACK PSSSB, PPSC, POLICE, <br />
                   PSPCL, PSTET, CTET, <br />
                   <span className="text-primary">ETT & MASTER CADRE</span>
                </h1>
-               <p className="text-base md:text-xl text-slate-400 font-medium leading-relaxed max-w-lg">
+               <p className="text-base md:text-xl text-slate-400 font-medium leading-relaxed max-lg">
                   Access institutional grade mock tests with real-time state rankings and AI-powered logic rationalizations.
                </p>
             </div>
@@ -162,3 +162,4 @@ export default function Hero() {
     </section>
   );
 }
+
