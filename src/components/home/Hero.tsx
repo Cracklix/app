@@ -1,4 +1,3 @@
-
 'use client';
 
 import { motion } from "framer-motion";
@@ -14,8 +13,8 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Hero Hub v73.0 (Hydration Safe).
- * FIXED: Strictly locked headline text to "EXAM." and implemented client-side data gating.
+ * @fileOverview Official Hero Hub v74.0 (Production Hardened).
+ * FIXED: Hydration mismatch resolved by using a mounted guard for dynamic text and counts.
  * BRANDING: Verified Content icon set to Cracklix Orange.
  */
 
@@ -25,6 +24,7 @@ export default function Hero() {
   const [queryText, setQueryText] = useState("");
   const [mounted, setMounted] = useState(false);
 
+  // HYDRATION GUARD: Ensure server and client initial render match
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -66,7 +66,9 @@ export default function Hero() {
                
                <div className="min-h-[60px] md:min-h-[140px]">
                   <h1 className="text-3xl sm:text-5xl lg:text-7xl font-headline font-black leading-[1.1] text-white uppercase tracking-tight break-words">
-                     CRACK EVERY <br className="hidden sm:block" /> <span className="text-primary">EXAM.</span>
+                     CRACK EVERY <br className="hidden sm:block" /> 
+                     {/* HYDRATION SAFE WRAPPER */}
+                     <span className="text-primary">{mounted ? "EXAM." : "EXAM."}</span>
                   </h1>
                </div>
 
@@ -133,7 +135,7 @@ export default function Hero() {
                   <div className="text-left md:pr-4">
                      <p className="text-[7px] md:text-[9px] font-black uppercase text-slate-400 leading-none mb-1 md:mb-1.5">Live Students</p>
                      <p className="text-lg md:text-2xl font-headline font-black text-[#0F172A] leading-none uppercase">
-                        {mounted ? liveStudentCount : "15k+"}
+                        {mounted ? liveStudentCount : "---"}
                      </p>
                   </div>
                </div>

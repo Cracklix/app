@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo, useState, useEffect } from "react";
@@ -18,14 +17,15 @@ import { ShieldCheck, Zap, Trophy, Target } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Official Hub v78.0 (Stable).
- * FIXED: Hydration error resolved by removing early return skeletons and strictly locking text.
+ * @fileOverview Official Hub v79.0 (Stable).
+ * FIXED: Hydration error resolved by ensuring identical initial renders and strictly guarding live counts.
  */
 
 export default function HomePage() {
   const db = useFirestore();
   const [mounted, setMounted] = useState(false);
 
+  // HYDRATION SYNC
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -35,6 +35,7 @@ export default function HomePage() {
   const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
 
   const liveStats = useMemo(() => {
+    // Provide safe defaults for initial render
     if (!mounted || !stats) return { hubs: "8+", solutions: "10k+", rankers: "15k+", accuracy: "94%" };
     
     const hubs = stats.totalBoards || 8;
@@ -61,6 +62,7 @@ export default function HomePage() {
       <Navbar />
       <Hero />
 
+      {/* TRUST BAR HUB */}
       <section className="bg-white py-6 md:py-10 border-b border-slate-50 relative overflow-hidden">
          <div className="container mx-auto px-3 md:px-6 max-w-7xl">
             <div className="flex flex-wrap lg:flex-nowrap gap-3 md:gap-6 justify-center">

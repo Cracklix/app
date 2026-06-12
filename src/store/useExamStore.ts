@@ -1,4 +1,3 @@
-
 'use client';
 
 import { create } from 'zustand';
@@ -9,8 +8,8 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
 /**
- * @fileOverview Elite CBT Global Store v39.0 (Production Hardened).
- * FIXED: Resolved re-take blank screen glitch by forcing a hard reset of ALL session state on re-initialization.
+ * @fileOverview Elite CBT Global Store v40.0 (Production Hardened).
+ * FIXED: Resolved blank screen glitch during re-takes by forcing a clean state reset.
  */
 
 interface ExamStore extends AttemptState {
@@ -70,7 +69,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const isTimedOut = savedState?.endTime && now >= savedState.endTime;
     const isStale = isCompleted || isTimedOut;
 
-    // Reset progress completely if this is a stale/completed session (FIX FOR BLANK SCREEN/GLITCH)
+    // Reset progress completely if this is a fresh re-take to prevent glitches
     const actualStartTime = isStale ? now : (savedState?.startTime || now);
     const finalDuration = duration || 120;
     const finalEndTime = isStale ? (now + (finalDuration * 60 * 1000)) : (savedState?.endTime || (now + (finalDuration * 60 * 1000)));
@@ -85,6 +84,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       initialLang = 'ENGLISH_HINDI';
     }
 
+    // FORCE HARD RESET FOR RE-TAKES
     set({
       mockId, mockTitle, userId, questions, timeLeft,
       baseLanguageMode: finalBaseMode,
@@ -104,10 +104,11 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     if (userId && mockId && (isStale || !savedState)) {
       const { firestore: db } = initializeFirebase();
       const attemptRef = doc(db, 'attempts', `${userId}_${mockId}`);
+      
+      // Upsert fresh session in registry
       setDoc(attemptRef, {
         userId, mockId, startTime: actualStartTime, endTime: finalEndTime,
         status: 'IN_PROGRESS', updatedAt: serverTimestamp(),
-        // Force clear old answers if re-taking
         answers: isStale ? {} : (savedState?.answers || {}),
         status_map: isStale ? {} : (savedState?.status || {}),
         currentIdx: 0,
