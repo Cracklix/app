@@ -26,8 +26,8 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v23.0.
- * UPDATED: Increased height to md:h-52 and removed gaps to fit the new massive logo scale.
+ * @fileOverview Institutional Navbar v23.1.
+ * UPDATED: Logo positioned immediately to the left of the menu trigger.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -117,6 +117,7 @@ export default function Navbar() {
         <div className="container mx-auto max-w-full flex items-center justify-between px-3 md:px-6">
           <div className="flex items-center gap-0">
             <div className="flex items-center gap-0">
+               <Logo variant="light" className="origin-left" />
                <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
                  <SheetTrigger asChild>
                    <button className="text-white p-2.5 hover:bg-white/5 rounded-2xl transition-all active:scale-90 cursor-pointer border border-white/10 focus:outline-none shrink-0 z-10">
@@ -128,7 +129,6 @@ export default function Navbar() {
                    <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
                  </SheetContent>
                </Sheet>
-               <Logo variant="light" className="origin-left" />
             </div>
 
             <div className="hidden xl:flex items-center gap-10 text-[12px] font-black uppercase tracking-[0.2em] text-[#7A8B9E] ml-10">
