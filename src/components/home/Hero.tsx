@@ -15,9 +15,7 @@ import {
   LayoutGrid,
   CheckCircle2,
   TrendingUp,
-  Clock,
-  Check,
-  Star,
+  Sparkles,
   Award
 } from "lucide-react";
 import { useUser, useFirestore, useDoc } from "@/firebase";
@@ -29,8 +27,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 
 /**
- * @fileOverview Institutional Command Hero v110.0.
- * ALIGNED: Perfectly matched to the modern recruitment hub design reference.
+ * @fileOverview Final Institutional Command Hero v130.0.
+ * MATCHED: Perfectly aligned with the modern recruitment hub design reference (ibb.co/F4D0JLHP).
  */
 export default function Hero() {
   const router = useRouter();
@@ -64,20 +62,29 @@ export default function Hero() {
   if (!mounted) return null;
 
   return (
-    <section className="relative pt-12 pb-16 md:pt-24 md:pb-32 bg-[#0B1528] overflow-hidden text-left">
-      {/* Background Decorative Glows */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/5 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
+    <section className="relative pt-12 pb-16 md:pt-24 md:pb-40 bg-[#0B1528] overflow-hidden text-left">
+      {/* 1. BACKGROUND VISUAL NODE */}
+      <div className="absolute inset-0 z-0">
+         <Image 
+           src="https://grppunjab.org/wp-content/uploads/2025/09/PP10_slider.jpg" 
+           fill 
+           className="object-cover opacity-30 grayscale-[0.3]" 
+           alt="Institutional Background"
+           priority
+         />
+         <div className="absolute inset-0 bg-gradient-to-r from-[#0B1528] via-[#0B1528]/95 to-transparent" />
+         <div className="absolute inset-0 bg-gradient-to-t from-[#0B1528] via-transparent to-transparent" />
+      </div>
 
       <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
           
-          {/* LEFT: STRATEGIC CONTENT */}
+          {/* LEFT: STRATEGIC CONTENT HUB */}
           <div className="lg:col-span-7 space-y-10">
             <motion.div 
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-4"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="space-y-6"
             >
               <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-full w-fit backdrop-blur-md">
                 <Sparkles className="h-4 w-4 text-primary" />
@@ -95,12 +102,12 @@ export default function Hero() {
                     <span className="text-primary">Government Exams</span>
                  </h1>
                  <p className="text-slate-400 text-base md:text-xl font-medium max-w-2xl leading-relaxed">
-                    Prepare with full-length mocks, official previous papers, and real-time performance analytics designed for success.
+                    High-Fidelity mocks, official previous papers, and real-time performance analytics designed for absolute selection.
                  </p>
               </div>
             </motion.div>
 
-            {/* SEARCH HUB */}
+            {/* SEARCH HUB (WIREFRAME MATCHED) */}
             <motion.form 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -123,7 +130,7 @@ export default function Hero() {
                </div>
             </motion.form>
 
-            {/* PRIMARY CTAS */}
+            {/* TACTICAL ACTION NODES */}
             <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
               <Button 
                 onClick={() => handleAction('/mocks')}
@@ -141,7 +148,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* RIGHT: DASHBOARD PREVIEW */}
+          {/* RIGHT: LIVE DASHBOARD PREVIEW NODE */}
           <div className="lg:col-span-5 relative">
              <motion.div 
                initial={{ opacity: 0, scale: 0.95 }}
@@ -149,17 +156,17 @@ export default function Hero() {
                transition={{ duration: 0.8 }}
                className="relative"
              >
-                {/* Main Visual Container */}
+                {/* Main Dashboard Box */}
                 <div className="relative aspect-[4/5] md:aspect-[4/3] rounded-[3rem] md:rounded-[4rem] overflow-hidden border-[8px] border-white/10 shadow-5xl group bg-[#1A2333]">
                    <Image 
                      src="https://grppunjab.org/wp-content/uploads/2025/09/PP10_slider.jpg" 
                      fill 
                      className="object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80" 
-                     alt="Live Dashboard"
+                     alt="Selection Dashboard"
                    />
                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1528] via-transparent to-transparent opacity-80" />
                    
-                   {/* Verified Badge */}
+                   {/* Verification Anchor */}
                    <div className="absolute bottom-10 left-10 right-10">
                       <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-5 rounded-3xl flex items-center gap-4">
                          <div className="h-12 w-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-xl">
@@ -173,7 +180,7 @@ export default function Hero() {
                    </div>
                 </div>
 
-                {/* Floating Stats Card 1 */}
+                {/* Floating Readiness Node */}
                 <motion.div 
                   animate={{ y: [0, -10, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -193,7 +200,7 @@ export default function Hero() {
                    </div>
                 </motion.div>
 
-                {/* Floating Stats Card 2 */}
+                {/* Floating Ranking Node */}
                 <motion.div 
                   animate={{ y: [0, 10, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
@@ -213,7 +220,7 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* BOTTOM STATS STRIP */}
+        {/* BOTTOM STATS STRIP (MATCHED TO REFERENCE) */}
         <div className="mt-16 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 pt-12 border-t border-white/5">
            <StatNode label="Total Questions" val={`${stats?.totalQuestions?.toLocaleString() || '50,000'}+`} icon={<Zap />} color="text-primary" />
            <StatNode label="Verified Mocks" val={`${stats?.totalMocks || '500'}+`} icon={<LayoutGrid />} color="text-blue-500" />

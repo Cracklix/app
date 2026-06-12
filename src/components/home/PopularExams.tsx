@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview High-Fidelity Popular Exams Hub v16.0.
- * ALIGNED: White institutional card with the professional feature checklist.
+ * @fileOverview Final Institutional Popular Exams Card v18.0.
+ * MATCHED: Clean white card with authority logos and feature checklist on the right.
  */
 
 const BOARDS = [
@@ -22,20 +22,19 @@ const BOARDS = [
 ];
 
 const FEATURES = [
-  { title: "Punjab Focused Content", desc: "100% aligned with state patterns." },
-  { title: "Bilingual Hub", desc: "Study in English + Punjabi (Gurmukhi)." },
+  { title: "Punjab Focused Content", desc: "100% aligned with official state patterns." },
+  { title: "Bilingual Support Hub", desc: "Study in English + Punjabi (Gurmukhi)." },
   { title: "Real Exam Simulation", desc: "High-fidelity CBT attempt engine." },
-  { title: "Advanced Analytics", desc: "Track weak subjects & accuracy." },
-  { title: "Selection Verified", desc: "94% Accuracy in previous papers." }
+  { title: "Selection Verified", desc: "94% Accuracy index for selection." }
 ];
 
 export default function PopularExams() {
   return (
-    <section className="py-12 md:py-24 bg-transparent -mt-16 md:-mt-20">
+    <section className="py-12 md:py-24 bg-slate-50/50 -mt-16 md:-mt-20 relative z-20">
       <div className="container mx-auto px-4 max-w-7xl">
          <div className="bg-white shadow-5xl rounded-[3rem] md:rounded-[4.5rem] overflow-hidden border border-slate-100 flex flex-col lg:flex-row">
             
-            {/* LEFT: AUTHORITY GRID */}
+            {/* LEFT: AUTHORITY REGISTRY GRID */}
             <div className="flex-1 p-8 md:p-16 lg:p-20 space-y-12 text-left">
                <div className="space-y-3">
                   <div className="flex items-center gap-3">
@@ -46,7 +45,7 @@ export default function PopularExams() {
                         Popular <span className="text-primary">Exam Hubs</span>
                      </h2>
                   </div>
-                  <p className="text-slate-400 font-medium text-lg">Browse official preparation nodes for all major boards.</p>
+                  <p className="text-slate-400 font-medium text-lg">Select a recruitment board to browse official preparation nodes.</p>
                </div>
 
                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
@@ -77,9 +76,9 @@ export default function PopularExams() {
                </div>
             </div>
 
-            {/* RIGHT: INSTITUTIONAL CHECKLIST */}
-            <div className="w-full lg:w-[420px] bg-slate-50 border-l border-slate-100 p-8 md:p-16 flex flex-col justify-center text-left">
-               <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-10">Institutional Advantage</h4>
+            {/* RIGHT: INSTITUTIONAL CHECKLIST (GREY SIDEBAR) */}
+            <div className="w-full lg:w-[450px] bg-slate-50 border-l border-slate-100 p-8 md:p-16 flex flex-col justify-center text-left">
+               <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-10">Why Choose Us?</h4>
                <ul className="space-y-10">
                   {FEATURES.map((feat, i) => (
                      <motion.li 
@@ -104,7 +103,7 @@ export default function PopularExams() {
                <div className="mt-16 pt-10 border-t border-slate-200 text-center">
                   <div className="flex items-center justify-center gap-3">
                      <Shield className="h-5 w-5 text-slate-300" />
-                     <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">Registry Secure Hub</span>
+                     <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">Institutional Registry Active</span>
                   </div>
                </div>
             </div>
