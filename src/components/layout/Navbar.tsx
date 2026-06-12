@@ -27,9 +27,8 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v36.0 (PWA & Syntax Hardened).
- * FIXED: Corrected balanced closing tags to resolve build errors.
- * ADDED: 'Install App' trigger for home-screen download.
+ * @fileOverview Institutional Navbar v37.0 (Syntax & PWA Hardened).
+ * FIXED: Balanced JSX tags to resolve compilation error on line 200.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -50,12 +49,12 @@ export default function Navbar() {
       }
     };
 
-    window.addEventListener('pwa-installable', checkInstall);
+    window.addEventListener('pwa-installable', () => setCanInstall(true));
     window.addEventListener('pwa-installed', () => setCanInstall(false));
     checkInstall();
     
     return () => {
-      window.removeEventListener('pwa-installable', checkInstall);
+      window.removeEventListener('pwa-installable', () => setCanInstall(true));
     };
   }, []);
   
@@ -174,55 +173,57 @@ export default function Navbar() {
               <Search className="h-5 w-5" />
             </Link>
 
-            {!mounted || loading ? (
-              <Skeleton className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-white/5" />
-            ) : user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-9 w-9 md:h-11 md:w-11 p-0 rounded-xl md:rounded-2xl overflow-hidden border-2 border-primary/20 hover:border-primary transition-all bg-[#0F172A] shadow-2xl">
-                    <StudentAvatar profile={profile} className="h-full w-full border-none" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-60 bg-[#0F172A] border-white/10 text-white rounded-[2rem] p-2 shadow-5xl z-[2001]" align="end">
-                  <DropdownMenuLabel className="px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">Student Area</DropdownMenuLabel>
-                  <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl transition-all focus:bg-white/5">
-                    <Link href="/profile" className="w-full flex items-center gap-3">
-                      <User className="h-4 w-4 text-blue-400" />
-                      <span className="font-bold text-[12px] tracking-tight uppercase">My Profile</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl transition-all focus:bg-white/5">
-                    <Link href="/dashboard" className="w-full flex items-center gap-3">
-                      <Award className="h-4 w-4 text-emerald-400" />
-                      <span className="font-bold text-[12px] tracking-tight uppercase">My Results</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl transition-all focus:bg-white/5">
-                    <Link href="/pass" className="w-full flex items-center gap-3">
-                      <Gem className="h-4 w-4 text-primary" />
-                      <span className="font-bold text-[12px] tracking-tight uppercase">Elite Pass</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  {isAdmin && (
-                    <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl transition-all focus:bg-white/5 bg-rose-500/10 mt-1">
-                      <Link href="/admin" className="w-full flex items-center gap-3">
-                        <ShieldCheck className="h-4 w-4 text-rose-500" />
-                        <span className="font-bold text-[12px] tracking-tight uppercase">Admin Panel</span>
+            <div className="relative">
+              {!mounted || loading ? (
+                <Skeleton className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-white/5" />
+              ) : user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-9 w-9 md:h-11 md:w-11 p-0 rounded-xl md:rounded-2xl overflow-hidden border-2 border-primary/20 hover:border-primary transition-all bg-[#0F172A] shadow-2xl">
+                      <StudentAvatar profile={profile} className="h-full w-full border-none" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-60 bg-[#0F172A] border-white/10 text-white rounded-[2rem] p-2 shadow-5xl z-[2001]" align="end">
+                    <DropdownMenuLabel className="px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">Student Area</DropdownMenuLabel>
+                    <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl transition-all focus:bg-white/5">
+                      <Link href="/profile" className="w-full flex items-center gap-3">
+                        <User className="h-4 w-4 text-blue-400" />
+                        <span className="font-bold text-[12px] tracking-tight uppercase">My Profile</span>
                       </Link>
                     </DropdownMenuItem>
-                  )}
-                  <DropdownMenuSeparator className="bg-white/5 my-2" />
-                  <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl transition-all focus:bg-white/5 focus:text-rose-500 text-rose-500/80">
-                    <LogOut className="h-4 w-4 shrink-0" />
-                    <span className="font-bold text-[12px] tracking-tight uppercase">Logout</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Button asChild className="bg-primary hover:bg-orange-600 text-white font-black px-4 md:px-8 py-2 rounded-xl h-9 md:h-12 uppercase text-[9px] md:text-[11px] tracking-[0.2em] shadow-2xl transition-all active:scale-90 border-none">
-                <Link href="/login">Login</Link>
-              </Button>
-            )}
+                    <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl transition-all focus:bg-white/5">
+                      <Link href="/dashboard" className="w-full flex items-center gap-3">
+                        <Award className="h-4 w-4 text-emerald-400" />
+                        <span className="font-bold text-[12px] tracking-tight uppercase">My Results</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl transition-all focus:bg-white/5">
+                      <Link href="/pass" className="w-full flex items-center gap-3">
+                        <Gem className="h-4 w-4 text-primary" />
+                        <span className="font-bold text-[12px] tracking-tight uppercase">Elite Pass</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    {isAdmin && (
+                      <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl transition-all focus:bg-white/5 bg-rose-500/10 mt-1">
+                        <Link href="/admin" className="w-full flex items-center gap-3">
+                          <ShieldCheck className="h-4 w-4 text-rose-500" />
+                          <span className="font-bold text-[12px] tracking-tight uppercase">Admin Panel</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator className="bg-white/5 my-2" />
+                    <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-3 px-4 py-3 cursor-pointer rounded-xl transition-all focus:bg-white/5 focus:text-rose-500 text-rose-500/80">
+                      <LogOut className="h-4 w-4 shrink-0" />
+                      <span className="font-bold text-[12px] tracking-tight uppercase">Logout</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button asChild className="bg-primary hover:bg-orange-600 text-white font-black px-4 md:px-8 py-2 rounded-xl h-9 md:h-12 uppercase text-[9px] md:text-[11px] tracking-[0.2em] shadow-2xl transition-all active:scale-90 border-none">
+                  <Link href="/login">Login</Link>
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </nav>

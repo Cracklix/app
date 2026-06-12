@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -7,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Institutional PWA Lifecycle Manager v22.0.
+ * @fileOverview Institutional PWA Lifecycle Manager v23.0.
  * HARDENED: Reliable 'deferredPrompt' capture for home-screen installation.
  */
 export default function PWAManager() {
@@ -42,7 +43,8 @@ export default function PWAManager() {
       const isExcluded = pathname?.includes('/attempt') || pathname?.startsWith('/admin');
       
       if (!isExcluded && !isStandalone) {
-        const timer = setTimeout(() => setShowPrompt(true), 3500);
+        // Show prompt after a short delay for better UX
+        const timer = setTimeout(() => setShowPrompt(true), 4000);
         return () => clearTimeout(timer);
       }
     };

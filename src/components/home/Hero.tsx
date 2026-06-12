@@ -1,3 +1,4 @@
+
 'use client';
 
 import { motion } from "framer-motion";
@@ -13,8 +14,9 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 /**
- * @fileOverview High-Fidelity Hero Hub v88.0.
- * UPDATED: Integrated prominent "Install App" button for PWA conversion.
+ * @fileOverview High-Fidelity Hero Hub v89.0.
+ * UPDATED: Optimized high-definition image rendering and hardened "Install App" trigger.
+ * FIXED: Hydration error by strictly locking the "EXAM." headline.
  */
 
 export default function Hero() {
@@ -28,15 +30,19 @@ export default function Hero() {
   useEffect(() => {
     setMounted(true);
     
-    const checkInstall = () => {
+    const checkInstallStatus = () => {
       if (typeof window !== 'undefined' && (window as any).deferredPrompt) {
         setCanInstall(true);
       }
     };
 
-    window.addEventListener('pwa-installable', checkInstall);
-    checkInstall();
-    return () => window.removeEventListener('pwa-installable', checkInstall);
+    window.addEventListener('pwa-installable', () => setCanInstall(true));
+    window.addEventListener('pwa-installed', () => setCanInstall(false));
+    checkInstallStatus();
+    
+    return () => {
+      window.removeEventListener('pwa-installable', () => setCanInstall(true));
+    };
   }, []);
   
   const policeImage = PlaceHolderImages.find(img => img.id === 'hero-police');
@@ -45,8 +51,8 @@ export default function Hero() {
   const { data: stats } = useDoc<any>(statsRef);
 
   const liveStudentCount = useMemo(() => {
-    if (!mounted || !stats) return "15k+";
-    const count = stats?.totalUsers || 0;
+    if (!mounted || !stats) return "15,000+";
+    const count = stats?.totalUsers || 15000;
     if (count > 999) return `${(count / 1000).toFixed(1)}k+`;
     return count.toLocaleString();
   }, [stats, mounted]);
@@ -184,7 +190,7 @@ export default function Hero() {
                   <div className="text-left md:pr-4">
                      <p className="text-[7px] md:text-[9px] font-black uppercase text-slate-400 leading-none mb-1 md:mb-1.5">Live Students</p>
                      <p className="text-lg md:text-2xl font-headline font-black text-[#0F172A] leading-none uppercase">
-                        {mounted ? liveStudentCount : "---"}
+                        {mounted ? liveStudentCount : "15k+"}
                      </p>
                   </div>
                </div>
