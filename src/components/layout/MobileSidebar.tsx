@@ -1,3 +1,4 @@
+
 'use client';
 
 import { 
@@ -38,8 +39,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Institutional Mobile Sidebar v9.0.
- * FIXED: High-contrast Orange background for Active Pass status.
+ * @fileOverview Institutional Mobile Sidebar v10.0.
+ * UPDATED: Set Active Pass background to Cracklix Orange for consistency.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -75,7 +76,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
     
     return {
       active: active && !isExpired,
-      label: isExpired ? "PASS EXPIRED" : `ACTIVE PASS`,
+      label: isExpired ? "PASS EXPIRED" : `PASS ACTIVE`,
       expiry: expiry.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
     };
   }, [profile]);

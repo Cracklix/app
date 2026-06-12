@@ -1,3 +1,4 @@
+
 'use client';
 
 import { motion } from "framer-motion";
@@ -13,8 +14,8 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Hero Hub v58.0.
- * FIXED: Synchronized heading text to strictly use "EXAM." and implemented stable mounting logic.
+ * @fileOverview Official Hero Hub v60.0.
+ * FIXED: Resolved hydration mismatches by ensuring consistent headline text ("EXAM.") and client-side dynamic rendering.
  */
 
 export default function Hero() {
@@ -33,7 +34,7 @@ export default function Hero() {
   const { data: stats } = useDoc<any>(statsRef);
 
   const liveStudentCount = useMemo(() => {
-    if (!mounted || !stats) return "---";
+    if (!mounted || !stats) return "15k+";
     const count = stats?.totalUsers || 0;
     if (count > 999) return `${(count / 1000).toFixed(1)}k+`;
     return count.toLocaleString();
@@ -132,7 +133,7 @@ export default function Hero() {
                   <div className="text-left md:pr-4">
                      <p className="text-[7px] md:text-[9px] font-black uppercase text-slate-400 leading-none mb-1 md:mb-1.5">Live Students</p>
                      <p className="text-lg md:text-2xl font-headline font-black text-[#0F172A] leading-none uppercase">
-                        {mounted ? liveStudentCount : "---"}
+                        {mounted ? liveStudentCount : "15k+"}
                      </p>
                   </div>
                </div>
