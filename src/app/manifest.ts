@@ -1,8 +1,9 @@
+
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Institutional PWA Manifest Configuration v7.0.
- * UPDATED: Optimized to use new verified icon paths from /public/icons/
+ * @fileOverview Institutional PWA Manifest Configuration v8.0.
+ * UPDATED: Fixed permanent image source for app icons.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -17,14 +18,14 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: 'portrait',
     icons: [
       {
-        src: '/icons/icon-192x192.png',
+        src: 'https://i.ibb.co/3mGRcBnR/icon-192x192-2.png',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'maskable',
       },
       {
-        src: '/icons/icon-512x512.png',
-        sizes: '512x512',
+        src: 'https://i.ibb.co/3mGRcBnR/icon-192x192-2.png',
+        sizes: '192x192',
         type: 'image/png',
         purpose: 'any',
       },
