@@ -11,7 +11,7 @@ interface LogoProps {
 
 /**
  * @fileOverview Official Cracklix Master Logo Hub.
- * UPDATED: Compact scale for high-density professional navigation.
+ * UPDATED: Ultra-compact scale for high-density professional navigation.
  */
 export function LogoIcon({ className = "" }: { className?: string }) {
   return (
@@ -31,7 +31,7 @@ export function LogoIcon({ className = "" }: { className?: string }) {
 export default function Logo({ className = "", variant = 'light', href = "/" }: LogoProps) {
   return (
     <Link href={href} className={cn("flex items-center group pointer-events-auto select-none shrink-0 -ml-2 md:-ml-4", className)}>
-      <LogoIcon className="w-full h-full max-w-[140px] md:max-w-[220px] max-h-8 md:max-h-10" />
+      <LogoIcon className="w-full h-full max-w-[110px] md:max-w-[160px] max-h-6 md:max-h-8" />
     </Link>
   );
 }
