@@ -1,30 +1,32 @@
+
 /**
- * @fileOverview Institutional PWA Service Worker.
- * Enables offline capability and native install prompts for Android/iOS.
+ * @fileOverview Cracklix Service Worker v1.0.
+ * Mandatory for PWA installation on Android and iOS.
  */
 
-const CACHE_NAME = 'cracklix-v1';
-const ASSETS = [
+const CACHE_NAME = 'cracklix-cache-v1';
+const urlsToCache = [
   '/',
-  '/manifest.webmanifest',
-  'https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png'
+  '/manifest.webmanifest'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        return cache.addAll(urlsToCache);
+      })
   );
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only cache GET requests
-  if (event.request.method !== 'GET') return;
-
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+    caches.match(event.request)
+      .then((response) => {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      })
   );
 });

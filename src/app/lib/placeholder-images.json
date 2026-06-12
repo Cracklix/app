@@ -8,6 +8,12 @@
       "imageHint": "police officer"
     },
     {
+      "id": "hero-academy",
+      "description": "Punjab Govt Exams Academy Students",
+      "imageUrl": "https://picsum.photos/seed/academy-students/1200/800",
+      "imageHint": "students classroom"
+    },
+    {
       "id": "promo-psssb",
       "description": "PSSSB Official Institutional Promotion",
       "imageUrl": "https://picsum.photos/seed/sssb-hub/1920/1080",
