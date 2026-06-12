@@ -15,7 +15,7 @@ interface LogoProps {
 /**
  * @fileOverview High-Fidelity 3D Corporate Logo for Cracklix.
  * MATCHES: Stylized 3D orange 'C' wrap, integrated glowing checkmark, and silver-edged typography.
- * TYPOGRAPHY: Mixed-case "Cracklix" as requested.
+ * TYPOGRAPHY: Mixed-case "Cracklix" with premium studio lighting effects.
  */
 export function LogoIcon({ className = "", isDark = false }: { className?: string, isDark?: boolean }) {
   return (
@@ -92,36 +92,36 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
 
   return (
     <Link href={href} className={cn("flex items-center gap-4 group pointer-events-auto select-none shrink-0", className)}>
-      <LogoIcon isDark={isDark} className="w-12 h-12 md:w-16 md:h-16" />
+      <LogoIcon isDark={isDark} className="w-10 h-10 md:w-14 md:h-14" />
 
       {!iconOnly && (
         <div className="flex flex-col items-start justify-center leading-none">
           <div className="flex items-baseline font-headline">
             {/* Mixed Case "Cracklix" */}
             <span className={cn(
-              "text-3xl md:text-5xl font-[900] tracking-tighter drop-shadow-md",
+              "text-2xl md:text-4xl font-[900] tracking-tighter drop-shadow-md",
               isDark ? "text-[#0F172A]" : "text-white"
             )} style={{ 
-               textShadow: '0px 2px 0px rgba(226, 232, 240, 0.3)'
+               textShadow: '0px 2px 0px rgba(226, 232, 240, 0.1)'
             }}>
               Crackli
             </span>
             {/* "x" in Bright Orange */}
-            <span className="text-3xl md:text-5xl font-[900] tracking-tighter text-[#F97316] drop-shadow-lg">
+            <span className="text-2xl md:text-4xl font-[900] tracking-tighter text-[#F97316] drop-shadow-lg">
               x
             </span>
           </div>
           
           {showTagline && (
-            <div className="mt-1.5 flex items-center gap-2 w-full">
-              <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#F97316]/60" />
+            <div className="mt-1 flex items-center gap-2 w-full">
+              <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#F97316]/40" />
               <span className={cn(
-                "text-[7px] md:text-[10px] font-black uppercase tracking-[0.2em] whitespace-nowrap",
-                isDark ? "text-slate-500" : "text-white"
+                "text-[6px] md:text-[9px] font-black uppercase tracking-[0.2em] whitespace-nowrap",
+                isDark ? "text-slate-500" : "text-white/70"
               )}>
                 PUNJAB&apos;S NO.1 STUDY HUB
               </span>
-              <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#F97316]/60" />
+              <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#F97316]/40" />
             </div>
           )}
         </div>
