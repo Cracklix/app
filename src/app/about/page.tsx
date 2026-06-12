@@ -1,4 +1,3 @@
-
 "use client"
 
 import Navbar from "@/components/layout/Navbar"
@@ -24,18 +23,24 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import React, { useMemo } from "react"
+import React, { useMemo, useState, useEffect } from "react"
 import { useFirestore, useDoc } from "@/firebase"
 import { doc } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Premium Founder's Story Hub v4.0.
- * UPDATED: Integrated 3-node live status synchronization (Aspirants, MCQs, Hubs).
+ * @fileOverview Premium Founder's Story Hub v5.0.
+ * FIXED: Hydration error with live stats via isMounted guard.
  */
 
 export default function AboutPage() {
   const db = useFirestore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const founderImg = "https://i.ibb.co/5hkxTtKS/Whats-App-Image-2026-05-28-at-10-31-36-AM.jpg";
 
   // STABILIZED DATA LISTENERS
@@ -158,21 +163,21 @@ export default function AboutPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
                        <ImpactNode 
                           label="LIVE ASPIRANTS" 
-                          val={liveStats.aspirants} 
+                          val={mounted ? liveStats.aspirants : "---"} 
                           icon={<Users className="text-primary" />} 
-                          loading={statsLoading}
+                          loading={statsLoading || !mounted}
                        />
                        <ImpactNode 
                           label="VERIFIED MCQs" 
-                          val={liveStats.mcqs} 
+                          val={mounted ? liveStats.mcqs : "---"} 
                           icon={<ShieldCheck className="text-emerald-500" />} 
-                          loading={statsLoading}
+                          loading={statsLoading || !mounted}
                        />
                        <ImpactNode 
                           label="OFFICIAL HUBS" 
-                          val={liveStats.hubs} 
+                          val={mounted ? liveStats.hubs : "---"} 
                           icon={<Landmark className="text-blue-500" />} 
-                          loading={statsLoading}
+                          loading={statsLoading || !mounted}
                        />
                     </div>
                  </motion.div>

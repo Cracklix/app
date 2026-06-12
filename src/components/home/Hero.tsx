@@ -14,9 +14,8 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Refined Official Hero Hub v49.1.
- * UPDATED: Replaced 2026 with Latest Pattern terminology.
- * SIMPLIFIED: Replaced technical terms with easy words.
+ * @fileOverview Optimized Official Hero Hub v50.0.
+ * FIXED: Resolved hydration error by moving animation conditions and stats display to post-mount.
  */
 
 export default function Hero() {
@@ -49,7 +48,6 @@ export default function Hero() {
 
   return (
     <section className="relative pt-8 pb-12 md:pt-20 md:pb-32 bg-[#08152D] overflow-hidden min-h-[600px] flex items-center">
-      {/* Background Pattern */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
          <div className="h-full w-full bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:30px_30px]" />
       </div>
@@ -57,10 +55,9 @@ export default function Hero() {
       <div className="container mx-auto px-4 relative z-20 max-w-7xl text-left">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-center">
           
-          {/* LEFT: CONTENT HUB */}
           <motion.div
-            initial={mounted ? { opacity: 0, y: 20 } : false}
-            animate={mounted ? { opacity: 1, y: 0 } : false}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="space-y-6 md:space-y-10"
           >
@@ -102,15 +99,13 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* RIGHT: PHOTO NODE */}
           <motion.div 
-            initial={mounted ? { opacity: 0, scale: 0.95 } : false}
-            animate={mounted ? { opacity: 1, scale: 1 } : false}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative w-full block"
           >
             <div className="relative aspect-video sm:aspect-[4/3] w-full max-w-[620px] lg:ml-auto mx-auto mt-10 lg:mt-0">
-               {/* Background Glow */}
                <div className="absolute -inset-6 md:-inset-10 bg-primary/10 blur-[100px] rounded-full opacity-50" />
                
                <div className="relative h-full w-full rounded-[2rem] md:rounded-[3.5rem] overflow-hidden border-[4px] md:border-[10px] border-white/5 shadow-5xl bg-slate-800 group">
@@ -123,7 +118,6 @@ export default function Hero() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#08152D] via-transparent to-transparent opacity-60" />
                   
-                  {/* Floating ID Hub */}
                   <div className="absolute bottom-4 left-4 right-4 md:bottom-8 md:left-8 md:right-8 flex items-center justify-between">
                      <div className="bg-white/10 backdrop-blur-xl px-4 py-2 md:px-6 md:py-4 rounded-xl md:rounded-2xl border border-white/20 shadow-2xl flex items-center gap-3 md:gap-4">
                         <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-emerald-50 flex items-center justify-center shadow-lg">
@@ -137,18 +131,15 @@ export default function Hero() {
                   </div>
                </div>
 
-               {/* Stats Hub */}
-               <div className="absolute -bottom-4 -right-2 md:-bottom-6 md:-right-6 bg-white p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] shadow-3xl flex items-center gap-3 md:gap-4 border border-slate-50 animate-in fade-in slide-in-from-right-4 duration-1000 delay-500">
+               <div className="absolute -bottom-4 -right-2 md:-bottom-6 md:-right-6 bg-white p-4 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] shadow-3xl flex items-center gap-3 md:gap-4 border border-slate-50">
                   <div className="h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner">
                      <Zap className="h-5 w-5 md:h-7 md:w-7 text-primary fill-current" />
                   </div>
                   <div className="text-left md:pr-4">
                      <p className="text-[7px] md:text-[9px] font-black uppercase text-slate-400 leading-none mb-1 md:mb-1.5">Live Students</p>
-                     {mounted ? (
-                        <p className="text-lg md:text-2xl font-headline font-black text-[#0F172A] leading-none uppercase">{liveAspirantCount}</p>
-                     ) : (
-                        <Skeleton className="h-6 w-16 bg-slate-100" />
-                     )}
+                     <p className="text-lg md:text-2xl font-headline font-black text-[#0F172A] leading-none uppercase">
+                        {mounted ? liveAspirantCount : "---"}
+                     </p>
                   </div>
                </div>
             </div>

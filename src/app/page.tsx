@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/home/Hero";
 import FeaturedCategories from "@/components/home/FeaturedCategories";
@@ -19,12 +19,17 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Optimized Institutional Landing Hub v62.1.
- * UPDATED: Replaced 2026 with Latest Pattern branding.
+ * @fileOverview Optimized Institutional Landing Hub v63.0.
+ * FIXED: Hydration error with live stats via isMounted guard.
  */
 
 export default function HomePage() {
   const db = useFirestore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // STABILIZED DATA LISTENERS
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
@@ -59,10 +64,10 @@ export default function HomePage() {
       <section className="bg-white py-6 md:py-10 border-b border-slate-50 relative overflow-hidden">
          <div className="container mx-auto px-3 md:px-6 max-w-7xl">
             <div className="flex flex-wrap lg:flex-nowrap gap-3 md:gap-6 justify-center">
-               <TrustCard loading={statsLoading} icon={<ShieldCheck className="text-emerald-500 h-4 w-4 md:h-5 md:w-5" />} label="VERIFIED HUBS" val={liveStats.hubs} />
-               <TrustCard loading={statsLoading} icon={<Zap className="text-primary h-4 w-4 md:h-5 md:w-5" />} label="LOGIC SOLUTIONS" val={liveStats.solutions} />
-               <TrustCard loading={statsLoading} icon={<Trophy className="text-amber-500 h-4 w-4 md:h-5 md:w-5" />} label="STATE RANKING" val={liveStats.rankers} isLive />
-               <TrustCard loading={statsLoading} icon={<Target className="text-blue-500 h-4 w-4 md:h-5 md:w-5" />} label="AVG ACCURACY" val={liveStats.accuracy} />
+               <TrustCard loading={statsLoading || !mounted} icon={<ShieldCheck className="text-emerald-500 h-4 w-4 md:h-5 md:w-5" />} label="VERIFIED HUBS" val={mounted ? liveStats.hubs : "---"} />
+               <TrustCard loading={statsLoading || !mounted} icon={<Zap className="text-primary h-4 w-4 md:h-5 md:w-5" />} label="LOGIC SOLUTIONS" val={mounted ? liveStats.solutions : "---"} />
+               <TrustCard loading={statsLoading || !mounted} icon={<Trophy className="text-amber-500 h-4 w-4 md:h-5 md:w-5" />} label="STATE RANKING" val={mounted ? liveStats.rankers : "---"} isLive />
+               <TrustCard loading={statsLoading || !mounted} icon={<Target className="text-blue-500 h-4 w-4 md:h-5 md:w-5" />} label="AVG ACCURACY" val={mounted ? liveStats.accuracy : "---"} />
             </div>
          </div>
       </section>
