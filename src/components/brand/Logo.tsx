@@ -13,66 +13,51 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview High-Fidelity Cracklix "C-Check" Icon Reconstruction v6.0.
- * MATCHES: Provided style with a full C-style orange glowing wrap.
- * UPDATED: Branding text strictly mixed-case "Cracklix".
+ * @fileOverview High-Fidelity 3D Corporate Logo for Cracklix.
+ * MATCHES: Stylized orange 'C', integrated glowing checkmark, and 3D silver-edged typography.
  */
 export function LogoIcon({ className = "", isDark = false }: { className?: string, isDark?: boolean }) {
   return (
     <div className={cn("relative shrink-0", className)}>
-      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-xl">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-2xl">
         <defs>
-          <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
+          <filter id="logoGlow" x="-25%" y="-25%" width="150%" height="150%">
             <feGaussianBlur stdDeviation="3" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
-          <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#F97316" />
+          <linearGradient id="orange3dGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FB923C" />
+            <stop offset="50%" stopColor="#F97316" />
             <stop offset="100%" stopColor="#EA580C" />
           </linearGradient>
         </defs>
 
-        {/* Squircle Background (Only for large icon views) */}
-        {className.includes('h-24') || className.includes('h-32') ? (
-           <rect x="5" y="5" width="90" height="90" rx="25" fill="#0B1528" />
-        ) : null}
-
-        {/* Full C-Style Orange Outer Glow Wrap */}
+        {/* 3D Stylized Circular 'C' */}
         <path 
-          d="M75 22C68 15 59 12 50 12C29 12 12 29 12 50C12 71 29 88 50 88C59 88 68 85 75 78" 
-          stroke="#F97316" 
-          strokeWidth="7" 
+          d="M78 28C72 18 61 14 50 14C30 14 14 30 14 50C14 70 30 86 50 86C61 86 72 82 78 72" 
+          stroke="url(#orange3dGrad)" 
+          strokeWidth="10" 
           strokeLinecap="round"
-          filter="url(#glow)"
-          opacity="0.9"
+          filter="url(#logoGlow)"
         />
 
-        {/* Main Bold Silver-White 'C' */}
+        {/* Integrated Orange Checkmark with Glowing Effect */}
         <path 
-          d="M75 40C72 30 62 24 50 24C36 24 26 36 26 50C26 64 36 76 50 76C62 76 72 70 75 60" 
-          stroke={isDark ? "#0F172A" : "white"} 
-          strokeWidth="11" 
-          strokeLinecap="round"
-          className="drop-shadow-md"
-        />
-
-        {/* Sharp Integrated Orange Checkmark */}
-        <path 
-          d="M40 50L52 62L86 32" 
-          stroke="url(#orangeGrad)" 
+          d="M36 52L48 64L86 28" 
+          stroke="url(#orange3dGrad)" 
           strokeWidth="12" 
           strokeLinecap="round" 
           strokeLinejoin="round"
-          filter="url(#glow)"
+          filter="url(#logoGlow)"
         />
         
-        {/* Shine highlight on checkmark */}
+        {/* Studio Lighting Highlights */}
         <path 
-          d="M42 50L52 60L84 34" 
+          d="M38 52L48 62L84 30" 
           stroke="white" 
-          strokeWidth="2" 
+          strokeWidth="2.5" 
           strokeLinecap="round" 
-          opacity="0.3"
+          opacity="0.4"
         />
       </svg>
     </div>
@@ -83,30 +68,36 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
   const isDark = variant === 'dark';
 
   return (
-    <Link href={href} className={cn("flex items-center gap-3 group pointer-events-auto select-none shrink-0", className)}>
-      <LogoIcon isDark={isDark} className="w-10 h-10 md:w-12 md:h-12" />
+    <Link href={href} className={cn("flex items-center gap-4 group pointer-events-auto select-none shrink-0", className)}>
+      <LogoIcon isDark={isDark} className="w-12 h-12 md:w-14 md:h-14" />
 
       {!iconOnly && (
         <div className="flex flex-col items-start justify-center leading-none">
-          <div className="flex items-baseline">
+          <div className="flex items-baseline font-headline">
             <span className={cn(
-              "text-2xl md:text-3xl font-headline font-[900] tracking-tight",
+              "text-3xl md:text-4xl font-[900] tracking-tighter",
               isDark ? "text-[#0F172A]" : "text-white"
-            )}>
-              Crack
+            )} style={{ 
+               textShadow: isDark ? 'none' : '0px 2px 4px rgba(0,0,0,0.3)',
+               background: isDark ? 'none' : 'linear-gradient(to bottom, #FFFFFF 0%, #E2E8F0 100%)',
+               WebkitBackgroundClip: isDark ? 'none' : 'text',
+               WebkitTextFillColor: isDark ? '#0F172A' : 'transparent'
+            }}>
+              Crackli
             </span>
-            <span className="text-2xl md:text-3xl font-headline font-[900] tracking-tight text-primary">
-              lix
+            <span className="text-3xl md:text-4xl font-[900] tracking-tighter text-[#F97316] drop-shadow-lg">
+              x
             </span>
           </div>
           
           {showTagline && (
-            <div className="flex items-center gap-1.5 w-full mt-1">
-              <div className="h-[1px] flex-1 bg-primary/40" />
-              <span className="text-[6px] md:text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 whitespace-nowrap">
-                PUNJAB'S <span className="text-primary">NO.1</span> STUDY HUB
+            <div className="mt-1">
+              <span className={cn(
+                "text-[7px] md:text-[9px] font-black uppercase tracking-[0.25em] whitespace-nowrap",
+                isDark ? "text-slate-400" : "text-white"
+              )}>
+                PUNJAB&apos;S NO.1 STUDY HUB
               </span>
-              <div className="h-[1px] flex-1 bg-primary/40" />
             </div>
           )}
         </div>
