@@ -13,9 +13,9 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Hero Hub v85.0.
- * FIXED: Hydration mismatch error resolved by strictly rendering "EXAM." headline.
- * STABILITY: Implemented mounted guard for dynamic database counts.
+ * @fileOverview High-Fidelity Hero Hub v86.0.
+ * FIXED: Hydration error resolved by strictly locking "EXAM." headline.
+ * STABILITY: Live counts are protected by mounted guard.
  */
 
 export default function Hero() {

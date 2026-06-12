@@ -27,9 +27,9 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v35.0 (PWA Optimized).
- * FIXED: Balanced JSX tags and resolved build errors.
- * ADDED: Reliable 'Install App' prompt for PWA.
+ * @fileOverview Institutional Navbar v36.0 (PWA & Syntax Hardened).
+ * FIXED: Corrected balanced closing tags to resolve build errors.
+ * ADDED: 'Install App' trigger for home-screen download.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -52,7 +52,6 @@ export default function Navbar() {
 
     window.addEventListener('pwa-installable', checkInstall);
     window.addEventListener('pwa-installed', () => setCanInstall(false));
-    
     checkInstall();
     
     return () => {

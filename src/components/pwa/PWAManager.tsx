@@ -8,9 +8,9 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Institutional PWA Lifecycle Manager v20.0.
- * HARDENED: Reliable 'beforeinstallprompt' capture and prominent mobile floating banner.
- * FIXED: Ensures deferredPrompt is stored globally for the Navbar and Sidebar.
+ * @fileOverview Institutional PWA Lifecycle Manager v21.0.
+ * HARDENED: Captures 'beforeinstallprompt' and broadcasts to Navbar/Sidebar.
+ * ADDED: Auto-popup with 3s delay for uninstalled students.
  */
 export default function PWAManager() {
   const pathname = usePathname();
@@ -22,13 +22,11 @@ export default function PWAManager() {
   useEffect(() => {
     setMounted(true);
 
-    // 1. Service Worker registration
+    // 1. Service Worker registration (Mandatory for Install prompt)
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').then(
-        (reg) => {
-          console.log('[PWA] ServiceWorker registered');
-        },
-        (err) => console.log('[PWA] ServiceWorker registration failed:', err)
+        (reg) => console.log('[PWA] Node Sync Active'),
+        (err) => console.log('[PWA] Node Sync Offline')
       );
     }
 
@@ -39,16 +37,14 @@ export default function PWAManager() {
       (window as any).deferredPrompt = e;
       setDeferredPrompt(e);
       
-      // Dispatch custom event for Navbar and Sidebar to show install buttons
+      // Dispatch custom event for Navbar and Sidebar
       window.dispatchEvent(new CustomEvent('pwa-installable'));
       
-      // Automatic popup logic for students
-      const isExcluded = pathname?.includes('/attempt') || pathname?.startsWith('/admin');
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      const isExcluded = pathname?.includes('/attempt') || pathname?.startsWith('/admin');
       
       if (!isExcluded && !isStandalone) {
-        // Show after a brief delay to ensure the user has settled
-        const timer = setTimeout(() => setShowPrompt(true), 3000);
+        const timer = setTimeout(() => setShowPrompt(true), 3500);
         return () => clearTimeout(timer);
       }
     };
@@ -104,13 +100,13 @@ export default function PWAManager() {
               <ShieldCheck className="h-20 w-20" />
             </div>
             
-            <div className="h-12 w-12 rounded-2xl bg-primary/20 flex items-center justify-center shrink-0 border border-primary/20">
+            <div className="h-12 w-12 rounded-2xl bg-primary/20 flex items-center justify-center shrink-0 border border-white/20">
                <Zap className="h-6 w-6 text-primary fill-current" />
             </div>
 
             <div className="flex-1 min-w-0 text-left">
-               <h4 className="text-[13px] font-black uppercase tracking-tight leading-none mb-1">Get CRACKLIX App</h4>
-               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Install for fast access</p>
+               <h4 className="text-[13px] font-black uppercase tracking-tight leading-none mb-1">Download Cracklix</h4>
+               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Install for easy learning</p>
             </div>
 
             <div className="flex items-center gap-2">
@@ -118,7 +114,7 @@ export default function PWAManager() {
                 onClick={handleInstallClick}
                 className="h-10 px-4 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[9px] tracking-widest rounded-xl shadow-lg border-none transition-all active:scale-95 gap-2"
                >
-                  <Download className="h-3 w-3" /> Install
+                  <Download className="h-3.5 w-3.5" /> Install
                </Button>
                <button 
                 onClick={() => setShowPrompt(false)}

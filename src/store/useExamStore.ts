@@ -9,9 +9,9 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
 /**
- * @fileOverview Elite CBT Global Store v46.0 (Stability Hardened).
- * FIXED: Resolved re-take blank screen by forcing a hard state reset if a completed state is detected.
- * SYNC: Robust state clearing for fresh mock attempts.
+ * @fileOverview Elite CBT Global Store v47.0 (Hardened).
+ * FIXED: Re-take reliability forced by strict state reset on initialization.
+ * STABILITY: Identifies stale/completed states to prevent blank screens.
  */
 
 interface ExamStore extends AttemptState {
@@ -66,10 +66,10 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const now = Date.now();
     const state = get();
     
-    // 1. Identify Re-takes or Completed Sessions to trigger a Hard Reset
+    // 1. Audit Session Freshness
     const isCompleted = savedState?.status === 'COMPLETED';
     const isTimedOut = savedState?.endTime && now >= savedState.endTime;
-    const isStale = isCompleted || isTimedOut || (state.mockId !== mockId);
+    const isStale = isCompleted || isTimedOut || (state.mockId !== mockId && state.mockId !== '');
 
     const actualStartTime = isStale ? now : (savedState?.startTime || now);
     const finalDuration = duration || 120;
@@ -85,7 +85,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       initialLang = 'ENGLISH_HINDI';
     }
 
-    // 2. Hard state reset for fresh attempts or re-takes
+    // 2. Clear stale states immediately to prevent blank screens
     set({
       mockId, 
       mockTitle, 
