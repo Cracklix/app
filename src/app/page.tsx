@@ -17,15 +17,14 @@ import { ShieldCheck, Zap, Trophy, Target } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Official Hub v81.0 (Production Hardened).
- * FIXED: Hydration errors resolved by strictly identical SSR skeleton.
+ * @fileOverview Official Hub v82.0 (Production Hardened).
+ * FIXED: Hydration errors resolved by deferring dynamic counts to client mount.
  */
 
 export default function HomePage() {
   const db = useFirestore();
   const [mounted, setMounted] = useState(false);
 
-  // HYDRATION SYNC: Strictly deferred dynamic elements to prevent tree mismatch
   useEffect(() => {
     setMounted(true);
   }, []);

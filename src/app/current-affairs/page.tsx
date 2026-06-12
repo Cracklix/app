@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useState } from "react"
@@ -37,8 +36,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 /**
- * @fileOverview Official Current Affairs Hub v11.0.
- * UPDATED: Enhanced Merit List identity logic (Email fallback).
+ * @fileOverview Official Current Affairs Hub v12.0.
+ * UPDATED: Optimized student name display with professional fallback logic.
  */
 
 const HUB_TYPES = [

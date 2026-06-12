@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -31,12 +30,9 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import StudentAvatar from "@/components/brand/StudentAvatar"
 
 /**
- * @fileOverview Test Results Hub v26.0 (Hardened).
- * UPDATED: Replaced technical jargon with easy student-friendly language.
- * FIXED: Identity hub prioritizes Real Name with Email fallback for State Rank.
+ * @fileOverview Test Results Hub v27.0 (Hardened).
+ * UPDATED: Displaying student's real names with email fallback for state merit lists.
  */
-
-const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 export default function ResultPage() {
   const params = useParams()

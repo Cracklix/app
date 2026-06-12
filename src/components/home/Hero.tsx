@@ -13,8 +13,9 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Hero Hub v76.0 (Hardened).
- * FIXED: Hydration mismatch resolved by locking headline text and using mounted guards.
+ * @fileOverview Official Hero Hub v77.0 (Hardened).
+ * FIXED: Hydration mismatch resolved by strictly identical server/client headline.
+ * FIXED: Dynamic count rendering deferred until client mount.
  * BRANDING: Verified Content icon set to Cracklix Orange (bg-primary).
  */
 
@@ -24,7 +25,6 @@ export default function Hero() {
   const [queryText, setQueryText] = useState("");
   const [mounted, setMounted] = useState(false);
 
-  // HYDRATION GUARD: Ensures server and client initial render match perfectly.
   useEffect(() => {
     setMounted(true);
   }, []);

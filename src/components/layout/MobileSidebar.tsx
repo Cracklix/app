@@ -38,9 +38,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Institutional Mobile Sidebar v17.0.
- * BRANDING: Pass badge background set to Cracklix Orange (bg-primary) for better contrast.
- * IDENTITY: Real-time sync for pass status.
+ * @fileOverview Institutional Mobile Sidebar v18.0 (Hardened).
+ * BRANDING: Active Pass badge background set to Cracklix Orange (bg-primary) for better contrast.
  */
 
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {

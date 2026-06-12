@@ -14,9 +14,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Official Punjab Merit Hub v14.0 (Hardened).
- * FIXED: Hardened real name display with high-fidelity email fallback logic.
- * IDENTITY: Prioritizes verified profile name over generic placeholders.
+ * @fileOverview Official Punjab Merit Hub v15.0 (Hardened).
+ * FIXED: Displaying student's real names with email fallback for ranking hub.
  */
 
 export default function LeaderboardPage() {
