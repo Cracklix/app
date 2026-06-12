@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from "react"
@@ -14,8 +13,8 @@ import { cn } from "@/lib/utils"
 import { useRouter, usePathname } from "next/navigation"
 
 /**
- * @fileOverview High-Density Mock Feed v20.0.
- * UPDATED: Standardized Series labels: Full Length, Subject-Wise, etc.
+ * @fileOverview High-Density Mock Feed v20.1.
+ * UPDATED: Reduced button text size for better containment.
  */
 
 export default function LatestMocks() {
@@ -106,11 +105,11 @@ export default function LatestMocks() {
                   </div>
                   <div className="mt-auto">
                     {locked ? (
-                       <Button onClick={() => router.push('/pass')} className="w-full h-9 md:h-12 bg-orange-500 hover:bg-orange-600 text-white font-black text-[8px] md:text-[10px] uppercase tracking-widest rounded-lg shadow-lg border-none active:scale-95 flex items-center justify-center gap-2">
-                          <Lock className="h-3 w-3" /> UNLOCK TEST
+                       <Button onClick={() => router.push('/pass')} className="w-full h-9 md:h-11 bg-orange-500 hover:bg-orange-600 text-white font-black text-[8px] md:text-[9px] uppercase tracking-widest rounded-lg shadow-lg border-none active:scale-95 flex items-center justify-center gap-2">
+                          <Lock className="h-3 w-3" /> UNLOCK
                        </Button>
                     ) : (
-                       <Button onClick={() => handleAttemptClick(mock.id)} className="w-full h-9 md:h-12 bg-[#0F172A] hover:bg-black text-white font-black text-[8px] md:text-[10px] uppercase tracking-widest rounded-lg shadow-lg border-none active:scale-95">
+                       <Button onClick={() => handleAttemptClick(mock.id)} className="w-full h-9 md:h-11 bg-[#0F172A] hover:bg-black text-white font-black text-[8px] md:text-[9px] uppercase tracking-widest rounded-lg shadow-lg border-none active:scale-95">
                           ATTEMPT NOW
                        </Button>
                     )}

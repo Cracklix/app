@@ -15,8 +15,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Explorer v8.1.
- * UPDATED: Strictly synchronized mapping for Punjab General and Banking logos.
+ * @fileOverview Institutional Category Explorer v8.2.
+ * UPDATED: Optimized button text and height for high-density UI.
  */
 
 const CATEGORY_META: Record<string, any> = {
@@ -122,9 +122,9 @@ export default function CategoryHubsPage() {
                                 <p className="text-[11px] font-black text-[#0F172A] uppercase leading-none">{examCount}</p>
                                 <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">VERTICALS LIVE</p>
                              </div>
-                             <div className="h-9 px-4 rounded-xl bg-slate-900 text-white flex items-center gap-2 font-black uppercase text-[8px] tracking-widest group-hover:bg-primary transition-all">
+                             <Button variant="ghost" className="h-9 px-4 rounded-xl bg-slate-900 text-white flex items-center gap-2 font-black uppercase text-[8px] tracking-widest group-hover:bg-primary transition-all border-none">
                                 OPEN <ChevronRight className="h-3 w-3" />
-                             </div>
+                             </Button>
                           </div>
                        </Card>
                     </Link>

@@ -14,8 +14,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Master Registry Landing v3.1.
- * UPDATED: Aligned mapping with Seed Data for Punjab General and Banking.
+ * @fileOverview Institutional Master Registry Landing v3.2.
+ * UPDATED: Optimized button text size and compact layout.
  */
 
 const CATEGORY_ICONS: Record<string, any> = {
@@ -86,8 +86,8 @@ export default function ExamsEntryPage() {
                            </div>
 
                            <div className="mt-12 pt-8 border-t border-slate-50">
-                              <Button variant="ghost" className="w-full h-16 rounded-2xl bg-slate-900 text-white group-hover:bg-primary transition-all shadow-xl font-black uppercase text-[10px] tracking-widest gap-3">
-                                 Open Category Hub <ChevronRight className="h-4 w-4" />
+                              <Button variant="ghost" className="w-full h-12 md:h-14 rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-black uppercase text-[8px] md:text-[9px] tracking-[0.2em] gap-3 border-none">
+                                 OPEN CATEGORY HUB <ChevronRight className="h-4 w-4" />
                               </Button>
                            </div>
                         </CardContent>

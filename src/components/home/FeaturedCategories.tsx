@@ -21,8 +21,8 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Institutional Category Entry Nodes v5.1.
- * UPDATED: Synchronized labels and icons for Punjab General and Banking.
+ * @fileOverview Institutional Category Entry Nodes v5.2.
+ * UPDATED: Optimized button size and text for high-density layouts.
  */
 
 const CATEGORY_META = [
@@ -135,6 +135,12 @@ export default function FeaturedCategories() {
                       <div className="h-8 w-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                          <ChevronRight className="h-4 w-4" />
                       </div>
+                   </div>
+                   
+                   <div className="mt-6">
+                      <Button variant="ghost" className="w-full h-11 rounded-xl bg-[#0F172A] text-white group-hover:bg-primary transition-all font-black uppercase text-[8px] tracking-[0.15em] gap-2 border-none">
+                         OPEN HUB <ChevronRight className="h-3 w-3" />
+                      </Button>
                    </div>
                 </Card>
              </Link>
