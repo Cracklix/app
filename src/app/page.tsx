@@ -14,13 +14,12 @@ import MeetFounder from "@/components/home/MeetFounder";
 import Footer from "@/components/layout/Footer";
 import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
-import { ShieldCheck, Zap, Trophy, Target } from "lucide-react";
+import { ShieldCheck, Zap, Trophy, Target, Award, Star } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Official Home Hub v86.0.
- * FIXED: Hydration errors resolved via strict client-side mounting guard.
- * PERFORMANCE: Optimized for PWA app feel.
+ * @fileOverview Official Home Hub v90.0.
+ * UPDATED: Premium dark trust bar matching new Hero identity.
  */
 
 export default function HomePage() {
@@ -31,7 +30,6 @@ export default function HomePage() {
     setMounted(true);
   }, []);
 
-  // STABILIZED DATA LISTENERS
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
 
@@ -62,14 +60,15 @@ export default function HomePage() {
       <Navbar />
       <Hero />
 
-      {/* TRUST BAR HUB */}
-      <section className="bg-white py-6 md:py-10 border-b border-slate-50 relative overflow-hidden">
-         <div className="container mx-auto px-3 md:px-6 max-w-7xl">
-            <div className="flex flex-wrap lg:flex-nowrap gap-3 md:gap-6 justify-center">
-               <TrustCard loading={statsLoading || !mounted} icon={<ShieldCheck className="text-emerald-500 h-4 w-4 md:h-5 md:w-5" />} label="OFFICIAL HUBS" val={liveStats.hubs} />
-               <TrustCard loading={statsLoading || !mounted} icon={<Zap className="text-primary h-4 w-4 md:h-5 md:w-5" />} label="STEP SOLUTIONS" val={liveStats.solutions} />
-               <TrustCard loading={statsLoading || !mounted} icon={<Trophy className="text-amber-500 h-4 w-4 md:h-5 md:w-5" />} label="STATE RANKING" val={liveStats.rankers} isLive={true} />
-               <TrustCard loading={statsLoading || !mounted} icon={<Target className="text-blue-500 h-4 w-4 md:h-5 md:w-5" />} label="AVG ACCURACY" val={liveStats.accuracy} />
+      {/* TRUST BAR HUB - DARK ELITE THEME */}
+      <section className="bg-[#0B1528] py-8 md:py-12 border-y border-white/5 relative overflow-hidden">
+         <div className="absolute inset-0 bg-primary/5 opacity-50" />
+         <div className="container mx-auto px-3 md:px-6 max-w-7xl relative z-10">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+               <TrustCard loading={statsLoading || !mounted} icon={<ShieldCheck className="text-primary h-5 w-5 md:h-6 md:w-6" />} label="OFFICIAL HUBS" val={liveStats.hubs} />
+               <TrustCard loading={statsLoading || !mounted} icon={<Zap className="text-primary h-5 w-5 md:h-6 md:w-6" />} label="STEP SOLUTIONS" val={liveStats.solutions} />
+               <TrustCard loading={statsLoading || !mounted} icon={<Trophy className="text-amber-500 h-5 w-5 md:h-6 md:w-6" />} label="STATE RANKING" val={liveStats.rankers} isLive={true} />
+               <TrustCard loading={statsLoading || !mounted} icon={<Target className="text-blue-400 h-5 w-5 md:h-6 md:w-6" />} label="AVG ACCURACY" val={liveStats.accuracy} />
             </div>
          </div>
       </section>
@@ -91,22 +90,22 @@ export default function HomePage() {
 
 function TrustCard({ icon, label, val, loading, isLive }: any) {
    return (
-      <div className="bg-white p-3 md:p-6 rounded-xl md:rounded-[2rem] border border-slate-100 shadow-md hover:shadow-xl transition-all group relative flex items-center gap-3 md:gap-5 flex-1 min-w-[140px] max-w-full lg:max-w-none">
-         <div className="h-8 w-8 md:h-12 md:w-12 rounded-lg md:rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+      <div className="bg-white/5 p-5 md:p-8 rounded-[2rem] border border-white/10 shadow-2xl hover:bg-white/10 transition-all group relative flex items-center gap-4 md:gap-6 flex-1">
+         <div className="h-10 w-10 md:h-16 md:w-16 rounded-xl md:rounded-2xl bg-white/5 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform border border-white/10">
             {icon}
          </div>
-         <div className="space-y-0.5 min-w-0">
+         <div className="space-y-1 min-w-0">
             {loading ? (
-               <Skeleton className="h-4 w-12 bg-slate-100" />
+               <Skeleton className="h-6 w-16 bg-white/10" />
             ) : (
-               <p className="text-sm md:text-2xl font-headline font-black text-[#0F172A] leading-none tabular-nums truncate">{val}</p>
+               <p className="text-xl md:text-4xl font-headline font-black text-white leading-none tabular-nums truncate">{val}</p>
             )}
-            <p className="text-[6px] md:text-[9px] font-black uppercase tracking-widest text-slate-400 md:mt-1 truncate">{label}</p>
+            <p className="text-[7px] md:text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 md:mt-1 truncate">{label}</p>
          </div>
          {isLive && (
-            <div className="absolute top-2 right-2 flex items-center gap-1.5">
-               <span className="text-[6px] font-black text-emerald-500 hidden md:inline uppercase tracking-tighter">LIVE</span>
-               <div className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
+            <div className="absolute top-4 right-4 flex items-center gap-2">
+               <span className="text-[7px] font-black text-emerald-400 hidden md:inline uppercase tracking-widest">LIVE SYNC</span>
+               <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
             </div>
          )}
       </div>

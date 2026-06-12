@@ -2,6 +2,12 @@
 {
   "placeholderImages": [
     {
+      "id": "hero-students",
+      "description": "Happy Punjabi students with tablets and laptops",
+      "imageUrl": "https://picsum.photos/seed/punjab-students-elite/1200/800",
+      "imageHint": "punjabi students"
+    },
+    {
       "id": "hero-police",
       "description": "Punjab Police Strategic Asset HD",
       "imageUrl": "https://picsum.photos/seed/punjab-police-hd/1920/1280",
