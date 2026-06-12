@@ -1,4 +1,3 @@
-
 import type {Metadata, Viewport} from 'next';
 import './globals.css';
 import { Inter } from "next/font/google";
@@ -19,9 +18,9 @@ export const metadata: Metadata = {
   authors: [{ name: 'Arsh Grewal', url: 'https://cracklix.com' }],
   icons: {
     icon: [
-      { url: 'https://i.ibb.co/3mGRcBnR/icon-192x192-2.png', sizes: '192x192', type: 'image/png' },
+      { url: 'https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png', sizes: '192x192', type: 'image/png' },
     ],
-    apple: 'https://i.ibb.co/3mGRcBnR/icon-192x192-2.png',
+    apple: 'https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png',
   },
   appleWebApp: {
     capable: true,

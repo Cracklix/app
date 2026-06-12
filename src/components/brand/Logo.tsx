@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -14,14 +13,14 @@ interface LogoProps {
 
 /**
  * @fileOverview Official Cracklix Logo Component.
- * UPDATED: Fixed permanent image-based logo as per user request.
+ * UPDATED: Fixed permanent image-based logo with user-provided high-fidelity asset.
  * MATCHES: Stylized 3D icon and mixed-case "Cracklix" typography.
  */
-export function LogoIcon({ className = "", isDark = false }: { className?: string, isDark?: boolean }) {
+export function LogoIcon({ className = "" }: { className?: string }) {
   return (
     <div className={cn("relative shrink-0 overflow-hidden", className)}>
       <img 
-        src="https://i.ibb.co/3mGRcBnR/icon-192x192-2.png" 
+        src="https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png" 
         alt="Cracklix Emblem" 
         className="w-full h-full object-contain"
         referrerPolicy="no-referrer"
@@ -35,7 +34,7 @@ export default function Logo({ className = "", variant = 'light', showTagline = 
 
   return (
     <Link href={href} className={cn("flex items-center gap-3 md:gap-4 group pointer-events-auto select-none shrink-0", className)}>
-      <LogoIcon isDark={isDark} className="w-10 h-10 md:w-14 md:h-14" />
+      <LogoIcon className="w-10 h-10 md:w-14 md:h-14" />
 
       {!iconOnly && (
         <div className="flex flex-col items-start justify-center leading-none">
