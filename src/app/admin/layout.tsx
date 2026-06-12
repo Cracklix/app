@@ -44,8 +44,8 @@ import BackButton from "@/components/navigation/BackButton";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Institutional Sidebar Restoration v132.0.
- * UPDATED: Increased header height significantly to match the new larger logo scale.
+ * @fileOverview Institutional Sidebar Restoration v133.0.
+ * UPDATED: Increased header height and removed gaps to fit the ultra-large logo scale.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -124,7 +124,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </SidebarGroup>
 
           <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 py-4 text-[10px) font-black uppercase tracking-widest text-white/20 text-left">Users & Revenue</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Users & Revenue</SidebarGroupLabel>
             <SidebarMenu>
               <AdminNavItem icon={<Users className="text-blue-400" />} label="STUDENT LIST" href="/admin/users" active={pathname === "/admin/users"} onClick={onLinkClick} />
               <AdminNavItem icon={<DollarSign className="text-emerald-400" />} label="REVENUE HUB" href="/admin/payments" active={pathname === "/admin/payments"} onClick={onLinkClick} />
@@ -178,8 +178,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </Sidebar>
         
         <SidebarInset className="flex flex-col bg-white min-w-0 max-w-full relative">
-          <header className="h-24 md:h-32 border-b border-slate-200 flex items-center px-4 md:px-6 justify-between bg-white sticky top-0 z-[100] shrink-0">
-            <div className="flex items-center gap-2 overflow-hidden">
+          <header className="h-32 md:h-52 border-b border-slate-200 flex items-center px-4 md:px-6 justify-between bg-white sticky top-0 z-[100] shrink-0">
+            <div className="flex items-center gap-0 overflow-hidden">
               <div className="lg:hidden">
                  <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                     <SheetTrigger asChild>

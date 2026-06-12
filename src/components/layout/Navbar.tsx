@@ -26,8 +26,8 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v22.0.
- * UPDATED: Increased vertical padding and height to accommodate a larger logo scale.
+ * @fileOverview Institutional Navbar v23.0.
+ * UPDATED: Increased height to md:h-52 and removed gaps to fit the new massive logo scale.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -113,13 +113,13 @@ export default function Navbar() {
         </div>
       )}
 
-      <nav className="w-full bg-[#0B1528] border-b border-white/5 py-4 md:py-8 shadow-xl backdrop-blur-md bg-opacity-95">
+      <nav className="w-full bg-[#0B1528] border-b border-white/5 h-28 md:h-52 flex items-center shadow-xl backdrop-blur-md bg-opacity-95">
         <div className="container mx-auto max-w-full flex items-center justify-between px-3 md:px-6">
-          <div className="flex items-center gap-2 md:gap-4">
-            <div className="flex items-center gap-1 md:gap-2">
+          <div className="flex items-center gap-0">
+            <div className="flex items-center gap-0">
                <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
                  <SheetTrigger asChild>
-                   <button className="text-white p-2.5 hover:bg-white/5 rounded-2xl transition-all active:scale-90 cursor-pointer border border-white/10 focus:outline-none shrink-0">
+                   <button className="text-white p-2.5 hover:bg-white/5 rounded-2xl transition-all active:scale-90 cursor-pointer border border-white/10 focus:outline-none shrink-0 z-10">
                      <Menu className="h-6 w-6" />
                    </button>
                  </SheetTrigger>
@@ -131,7 +131,7 @@ export default function Navbar() {
                <Logo variant="light" className="origin-left" />
             </div>
 
-            <div className="hidden xl:flex items-center gap-10 text-[12px] font-black uppercase tracking-[0.2em] text-[#7A8B9E]">
+            <div className="hidden xl:flex items-center gap-10 text-[12px] font-black uppercase tracking-[0.2em] text-[#7A8B9E] ml-10">
               <Link href="/my-exams" className={cn("transition-colors flex items-center gap-2 hover:text-white pointer-events-auto", pathname === '/my-exams' ? 'text-white' : '')}>
                 <Target className="h-4 w-4 text-primary" /> My Exams
               </Link>
