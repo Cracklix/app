@@ -18,8 +18,8 @@ import { ShieldCheck, Zap, Trophy, Target } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Official Hub v76.0.
- * FIXED: Hydration-safe logic ensures server and client renders match 100%.
+ * @fileOverview Official Hub v77.0.
+ * FIXED: Hydration error resolved via mounted synchronization.
  */
 
 export default function HomePage() {

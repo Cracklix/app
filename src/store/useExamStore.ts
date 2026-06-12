@@ -9,8 +9,8 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
 /**
- * @fileOverview Elite CBT Global Store v37.0 (Production Hardened).
- * FIXED: Resolved re-take glitch by forcing a hard reset of progress and answers when re-initializing a session.
+ * @fileOverview Elite CBT Global Store v38.0 (Production Hardened).
+ * FIXED: Resolved re-take blank screen glitch by forcing a hard reset of local maps on session re-initialization.
  */
 
 interface ExamStore extends AttemptState {
@@ -70,7 +70,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const isTimedOut = savedState?.endTime && now >= savedState.endTime;
     const isStale = isCompleted || isTimedOut;
 
-    // Reset progress completely if this is a stale/completed session (FIX FOR RE-TAKE GLITCH)
+    // Reset progress completely if this is a stale/completed session (FIX FOR BLANK SCREEN/GLITCH)
     const actualStartTime = isStale ? now : (savedState?.startTime || now);
     const finalEndTime = isStale ? (now + (duration * 60 * 1000)) : (savedState?.endTime || (now + (duration * 60 * 1000)));
     const timeLeft = Math.max(0, Math.floor((finalEndTime - now) / 1000));
@@ -106,7 +106,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       setDoc(attemptRef, {
         userId, mockId, startTime: actualStartTime, endTime: finalEndTime,
         status: 'IN_PROGRESS', updatedAt: serverTimestamp(),
-        // Clear old answers if re-taking
+        // Force clear old answers if re-taking
         answers: isStale ? {} : (savedState?.answers || {}),
         status_map: isStale ? {} : (savedState?.status || {})
       }, { merge: true }).catch((err) => {
