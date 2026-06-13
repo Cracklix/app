@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -10,8 +9,8 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Final Screenshot-Matched Footer Hub v14.0.
- * UPDATED: Reduced phone number size and refined support label tracking for better balance.
+ * @fileOverview Final Screenshot-Matched Footer Hub v15.0.
+ * UPDATED: Significantly increased logo scale to h-24 for massive brand presence.
  */
 export default function Footer() {
   const db = useFirestore();
@@ -34,8 +33,8 @@ export default function Footer() {
           {/* 1. BRAND HUB (LEFT) */}
           <div className="lg:col-span-4 space-y-8">
             <div className="space-y-6">
-               <div className="h-16 flex items-center">
-                  <Logo imgClassName="h-full" />
+               <div className="h-24 flex items-center">
+                  <Logo imgClassName="h-24" />
                </div>
                <p className="text-slate-400 text-lg font-medium max-w-xs leading-relaxed">
                   {content.description}
