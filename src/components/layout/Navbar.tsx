@@ -21,8 +21,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Definitive Header Restoration v114.0.
- * UPDATED: Reduced the size of the Pass Active status hub for a tighter UI.
+ * @fileOverview Definitive Header Restoration v115.0.
+ * UPDATED: Transformed Pass Status into a compact square shape as requested.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -37,14 +37,14 @@ export default function Navbar() {
   }, []);
 
   const passStatus = useMemo(() => {
-    if (!profile?.pass) return { active: false, label: "FREE PASS", expiry: "N/A" };
+    if (!profile?.pass) return { active: false, label: "FREE", expiry: "N/A" };
     const active = profile.pass.active;
     const expiryDate = new Date(profile.pass.expiryDate);
     const isExpired = expiryDate < new Date();
     
     return {
       active: active && !isExpired,
-      label: isExpired ? "PASS EXPIRED" : "PASS ACTIVE",
+      label: isExpired ? "EXPIRED" : "PASS",
       expiry: expiryDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
     };
   }, [profile]);
@@ -61,7 +61,7 @@ export default function Navbar() {
       <nav className="w-full h-16 md:h-20 flex items-center bg-[#0B1528] border-b border-white/5 px-4 md:px-8 shadow-2xl overflow-hidden">
         <div className="container mx-auto max-w-7xl flex items-center justify-between h-full gap-2">
           
-          {/* 1. LEFT SECTION: MENU & LOGO (IMMEDIATE PROXIMITY) */}
+          {/* 1. LEFT SECTION: MENU & LOGO */}
           <div className="flex items-center gap-2 shrink-0">
             <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
               <SheetTrigger asChild>
@@ -77,27 +77,22 @@ export default function Navbar() {
             <Logo className="!gap-0" />
           </div>
 
-          {/* 2. SPACER / FLEX GROW */}
+          {/* 2. SPACER */}
           <div className="flex-1" />
 
           {/* 3. RIGHT SECTION: PASS HUB, SEARCH, USER */}
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
              
-             {/* COMPACT PASS ACTIVE BADGE */}
+             {/* SQUARE PASS ACTIVE HUB */}
              {mounted && user && (
-                <div className="h-9 md:h-11 px-2.5 md:px-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center gap-2 md:gap-2.5 shadow-xl">
-                   <Gem className="h-3.5 w-3.5 md:h-5 md:w-5 text-emerald-400 fill-current opacity-80" />
-                   <div className="flex flex-col items-start leading-none text-left">
-                      <span className={cn(
-                        "text-[6px] md:text-[9.5px] font-black uppercase tracking-widest",
+                <div className="h-10 w-10 md:h-12 md:w-12 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex flex-col items-center justify-center shadow-xl shrink-0 group hover:bg-emerald-500/20 transition-all">
+                   <Gem className="h-4 w-4 md:h-5 md:w-5 text-emerald-400 fill-current opacity-80" />
+                   <span className={cn(
+                        "text-[5px] md:text-[7px] font-black uppercase tracking-tighter mt-0.5",
                         passStatus.active ? "text-emerald-400" : "text-rose-400"
                       )}>
                          {passStatus.label}
-                      </span>
-                      <span className="text-[5px] md:text-[7.5px] font-black text-slate-500 uppercase tracking-widest mt-0.5 md:mt-1">
-                         EXP: {passStatus.expiry}
-                      </span>
-                   </div>
+                   </span>
                 </div>
              )}
 
