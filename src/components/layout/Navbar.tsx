@@ -22,8 +22,8 @@ import MobileSidebar from "./MobileSidebar";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview FINAL Screenshot Replica Header v80.0.
- * MATCHED: Exact node sequence and high-fidelity tactical boxes.
+ * @fileOverview FINAL Screenshot Replica Header v95.0.
+ * MATCHED: Exact node sequence, color palette, and high-fidelity tactical boxes from user reference.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -66,24 +66,26 @@ export default function Navbar() {
 
   return (
     <div className="sticky top-0 z-[1000] w-full pointer-events-auto">
+      {/* 1. TOP ANNOUNCEMENT BAR (MATCHED) */}
       {announcement?.showAnnouncement && (
-        <div className="bg-primary text-white py-1 flex items-center overflow-hidden relative shadow-2xl h-8 border-b border-white/5">
-          <div className="flex items-center gap-2 animate-marquee whitespace-nowrap min-w-full">
-            <Zap className="h-3 w-3 shrink-0 ml-4 fill-current" />
-            <p className="text-[9px] font-black uppercase tracking-[0.3em]">{announcement.announcement}</p>
+        <div className="bg-[#F97316] text-white py-2 flex items-center overflow-hidden relative shadow-lg h-9">
+          <div className="flex items-center gap-3 animate-marquee whitespace-nowrap min-w-full">
+            <Zap className="h-3.5 w-3.5 shrink-0 ml-4 fill-current" />
+            <p className="text-[10px] font-black uppercase tracking-[0.3em]">{announcement.announcement}</p>
             <span className="mx-40 md:mx-80" />
-            <Zap className="h-3 w-3 shrink-0 fill-current" />
-            <p className="text-[9px] font-black uppercase tracking-[0.3em]">{announcement.announcement}</p>
+            <Zap className="h-3.5 w-3.5 shrink-0 fill-current" />
+            <p className="text-[10px] font-black uppercase tracking-[0.3em]">{announcement.announcement}</p>
             <span className="mx-40 md:mx-80" />
           </div>
         </div>
       )}
 
-      <nav className="w-full bg-[#0B1528] border-b border-white/5 h-20 md:h-28 flex items-center shadow-2xl">
-        <div className="container mx-auto max-w-full flex items-center justify-between px-4 md:px-10 overflow-x-auto no-scrollbar">
+      {/* 2. MAIN NAVIGATION HUB (NAVY BACKGROUND) */}
+      <nav className="w-full bg-[#0B1528] border-b border-white/5 h-20 md:h-28 flex items-center shadow-2xl overflow-x-auto no-scrollbar">
+        <div className="container mx-auto max-w-full flex items-center gap-6 md:gap-10 px-4 md:px-10">
           
-          {/* 1. MENU & LOGO */}
-          <div className="flex items-center gap-4 md:gap-8 shrink-0">
+          {/* MENU & LOGO NODE */}
+          <div className="flex items-center gap-4 md:gap-6 shrink-0">
             <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
               <SheetTrigger asChild>
                 <button className="bg-white/5 text-white p-2.5 rounded-xl border border-white/10 hover:bg-white/10 transition-all cursor-pointer">
@@ -98,80 +100,76 @@ export default function Navbar() {
             <Logo className="scale-100" />
           </div>
 
-          {/* 2. FUNCTIONAL LINK HUB (SCREENSHOT MATCH) */}
-          <div className="flex items-center gap-6 md:gap-10 mx-6 md:mx-12 shrink-0">
+          {/* FUNCTIONAL LINK STRIP (SCREENSHOT MATCHED) */}
+          <div className="flex items-center gap-6 md:gap-8 shrink-0">
              
              {/* MY EXAMS */}
              <Link href="/my-exams" className="flex items-center gap-3 group">
-                <Target className="h-5 w-5 text-primary" />
+                <Target className="h-5 w-5 md:h-6 md:w-6 text-[#F97316] shrink-0" />
                 <div className="flex flex-col text-left">
-                   <span className="text-[10px] md:text-[13px] font-black text-white/50 leading-none uppercase">MY</span>
-                   <span className="text-[10px] md:text-[13px] font-black text-white group-hover:text-primary transition-colors uppercase mt-1 leading-none">EXAMS</span>
+                   <span className="text-[10px] md:text-[12px] font-black text-white/50 leading-none uppercase">MY</span>
+                   <span className="text-[11px] md:text-[14px] font-black text-white group-hover:text-[#F97316] transition-colors uppercase mt-1 leading-none">EXAMS</span>
                 </div>
              </Link>
 
              {/* PRACTICE TESTS */}
              <Link href="/mocks" className="flex items-center gap-3 group">
                 <div className="flex flex-col text-left">
-                   <span className="text-[10px] md:text-[13px] font-black text-white/50 leading-none uppercase">PRACTICE</span>
-                   <span className="text-[10px] md:text-[13px] font-black text-white group-hover:text-primary transition-colors uppercase mt-1 leading-none">TESTS</span>
+                   <span className="text-[10px] md:text-[12px] font-black text-white/50 leading-none uppercase">PRACTICE</span>
+                   <span className="text-[11px] md:text-[14px] font-black text-white group-hover:text-[#F97316] transition-colors uppercase mt-1 leading-none">TESTS</span>
                 </div>
              </Link>
 
-             {/* GET PASS (DARK BOX) */}
-             <Link href="/pass" className="flex items-center gap-3 h-12 md:h-14 px-5 md:px-8 bg-white/5 border border-primary/20 rounded-xl hover:bg-white/10 transition-all shadow-xl group">
-                <Gem className="h-4 w-4 md:h-5 md:w-5 text-primary" />
-                <div className="flex flex-col text-left">
-                   <span className="text-[10px] md:text-[13px] font-black text-primary uppercase leading-none">GET</span>
-                   <span className="text-[10px] md:text-[13px] font-black text-primary uppercase mt-1 leading-none">PASS</span>
-                </div>
+             {/* GET PASS BUTTON (ORANGE BORDER) */}
+             <Link href="/pass" className="flex items-center gap-3 h-12 md:h-16 px-5 md:px-8 bg-white/5 border border-[#F97316]/40 rounded-xl hover:bg-[#F97316]/5 transition-all shadow-xl group">
+                <Gem className="h-5 w-5 text-[#F97316] fill-current" />
+                <span className="text-[11px] md:text-[14px] font-black text-[#F97316] uppercase tracking-wider">GET PASS</span>
              </Link>
 
              {/* CURRENT AFFAIRS */}
              <Link href="/current-affairs" className="flex items-center gap-3 group">
-                <Newspaper className="h-5 w-5 text-primary" />
+                <Newspaper className="h-5 w-5 md:h-6 md:w-6 text-[#F97316] shrink-0" />
                 <div className="flex flex-col text-left">
-                   <span className="text-[10px] md:text-[13px] font-black text-white/50 leading-none uppercase">CURRENT</span>
-                   <span className="text-[10px] md:text-[13px] font-black text-white group-hover:text-primary transition-colors uppercase mt-1 leading-none">AFFAIRS</span>
+                   <span className="text-[10px] md:text-[12px] font-black text-[#F97316] leading-none uppercase">CURRENT</span>
+                   <span className="text-[11px] md:text-[14px] font-black text-[#F97316] group-hover:text-white transition-colors uppercase mt-1 leading-none">AFFAIRS</span>
                 </div>
              </Link>
+
+             {/* INSTALL APP (EMERALD BORDER) */}
+             <button 
+                onClick={() => (window as any).deferredPrompt?.prompt()}
+                className="flex items-center gap-3 h-12 md:h-16 px-5 md:px-8 bg-white/5 border border-[#10B981]/40 rounded-xl hover:bg-[#10B981]/5 transition-all shadow-xl group"
+             >
+                <Download className="h-5 w-5 text-[#10B981]" />
+                <span className="text-[11px] md:text-[14px] font-black text-[#10B981] uppercase tracking-wider">INSTALL APP</span>
+             </button>
+
+             {/* PASS ACTIVE STATUS (EMERALD HUB) */}
+             {mounted && user && (
+                <div className="flex items-center gap-4 h-12 md:h-16 px-5 md:px-8 bg-white/5 border border-[#10B981]/40 rounded-xl shrink-0 shadow-lg">
+                   <Gem className="h-6 w-6 md:h-8 md:w-8 text-[#10B981] shrink-0 fill-current opacity-60" />
+                   <div className="flex flex-col items-start justify-center">
+                      <span className={cn(
+                        "text-[10px] md:text-[13px] font-black uppercase tracking-widest leading-none",
+                        passStatus.active ? "text-[#10B981]" : "text-rose-500"
+                      )}>
+                         {passStatus.label}
+                      </span>
+                      <span className="text-[7px] md:text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-2 leading-none">
+                         EXP: {passStatus.expiry}
+                      </span>
+                   </div>
+                </div>
+             )}
           </div>
 
-          {/* 3. RIGHT ACTION HUB */}
-          <div className="flex items-center gap-4 md:gap-8 shrink-0 ml-auto">
-            
-            {/* INSTALL APP (EMERALD BOX) */}
-            <button 
-              onClick={() => (window as any).deferredPrompt?.prompt()}
-              className="hidden lg:flex items-center gap-3 h-12 md:h-14 px-6 rounded-xl border border-[#10B981]/20 bg-[#10B981]/5 text-[#10B981] group hover:bg-[#10B981] hover:text-white transition-all shadow-md"
-            >
-               <Download className="h-5 w-5" />
-               <span className="text-[10px] md:text-[12px] font-black uppercase tracking-widest">INSTALL APP</span>
-            </button>
-
-            {/* PASS ACTIVE STATUS (SCREENSHOT MATCH) */}
-            {mounted && user && (
-               <div className="flex items-center gap-4 h-12 md:h-14 px-5 md:px-7 rounded-xl border border-[#10B981]/40 bg-[#10B981]/5 shrink-0 shadow-lg">
-                  <Gem className="h-5 w-5 md:h-6 md:w-6 text-[#10B981] shrink-0 fill-current opacity-80" />
-                  <div className="flex flex-col items-start justify-center">
-                     <span className={cn(
-                       "text-[10px] md:text-[13px] font-black uppercase tracking-tight leading-none",
-                       passStatus.active ? "text-[#10B981]" : "text-rose-500"
-                     )}>
-                        {passStatus.label}
-                     </span>
-                     <span className="text-[7px] md:text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1.5 leading-none">
-                        EXP: {passStatus.expiry}
-                     </span>
-                  </div>
-               </div>
-            )}
-
+          {/* SEARCH & PROFILE HUB (FAR RIGHT) */}
+          <div className="flex items-center gap-4 md:gap-6 ml-auto shrink-0 pr-4 md:pr-0">
             <Link 
                href="/search" 
                className="bg-white/5 text-slate-400 hover:text-white p-3 rounded-xl border border-white/10 transition-all hover:bg-white/10"
             >
-              <Search className="h-5 w-5 md:h-6 md:w-6" />
+              <Search className="h-6 w-6" />
             </Link>
 
             <div className="relative shrink-0">

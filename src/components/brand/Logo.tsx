@@ -4,8 +4,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Master Logo Hub v5.0.
- * MATCHED: Re-integrated "Cracklix" and tagline via full asset node to match screenshot.
+ * @fileOverview Official Master Logo Hub v6.0.
+ * MATCHED: Re-integrated the full brand asset which includes text and tagline for a pixel-perfect screenshot match.
  */
 export function LogoIcon({ className = "" }: { className?: string }) {
   return (
@@ -13,7 +13,7 @@ export function LogoIcon({ className = "" }: { className?: string }) {
       <img 
         src="https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png" 
         alt="Cracklix Logo" 
-        className="h-10 md:h-16 w-auto object-contain"
+        className="h-10 md:h-12 w-auto object-contain"
         referrerPolicy="no-referrer"
       />
     </div>
