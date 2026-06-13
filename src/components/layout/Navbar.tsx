@@ -20,11 +20,10 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import MobileSidebar from "./MobileSidebar";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Definitive Header v70.0 (Hardened).
- * MATCHED: Exact sequence and high-fidelity emerald Pass Hub.
+ * @fileOverview FINAL Screenshot Replica Header v80.0.
+ * MATCHED: Exact node sequence and high-fidelity tactical boxes.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -80,15 +79,15 @@ export default function Navbar() {
         </div>
       )}
 
-      <nav className="w-full bg-[#0B1528] border-b border-white/5 h-28 md:h-32 flex items-center shadow-2xl">
+      <nav className="w-full bg-[#0B1528] border-b border-white/5 h-20 md:h-28 flex items-center shadow-2xl">
         <div className="container mx-auto max-w-full flex items-center justify-between px-4 md:px-10 overflow-x-auto no-scrollbar">
           
           {/* 1. MENU & LOGO */}
-          <div className="flex items-center gap-6 md:gap-12 shrink-0">
+          <div className="flex items-center gap-4 md:gap-8 shrink-0">
             <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
               <SheetTrigger asChild>
-                <button className="bg-white/5 text-white p-3 rounded-xl border border-white/10 hover:bg-white/10 transition-all cursor-pointer">
-                  <Menu className="h-7 w-7" />
+                <button className="bg-white/5 text-white p-2.5 rounded-xl border border-white/10 hover:bg-white/10 transition-all cursor-pointer">
+                  <Menu className="h-6 w-6" />
                 </button>
               </SheetTrigger>
               <SheetContent side="left" className="p-0 border-none w-[300px] bg-[#0F172A] z-[2001]">
@@ -99,83 +98,89 @@ export default function Navbar() {
             <Logo className="scale-100" />
           </div>
 
-          {/* 2. NAV LINKS HUB */}
-          <div className="flex items-center gap-8 md:gap-14 mx-6 md:mx-16 shrink-0">
+          {/* 2. FUNCTIONAL LINK HUB (SCREENSHOT MATCH) */}
+          <div className="flex items-center gap-6 md:gap-10 mx-6 md:mx-12 shrink-0">
+             
+             {/* MY EXAMS */}
              <Link href="/my-exams" className="flex items-center gap-3 group">
-                <Target className="h-6 w-6 text-primary" />
+                <Target className="h-5 w-5 text-primary" />
                 <div className="flex flex-col text-left">
-                   <span className="text-[12px] md:text-[15px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-tight leading-none">MY</span>
-                   <span className="text-[12px] md:text-[15px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-tight mt-1 leading-none">EXAMS</span>
+                   <span className="text-[10px] md:text-[13px] font-black text-white/50 leading-none uppercase">MY</span>
+                   <span className="text-[10px] md:text-[13px] font-black text-white group-hover:text-primary transition-colors uppercase mt-1 leading-none">EXAMS</span>
                 </div>
              </Link>
 
+             {/* PRACTICE TESTS */}
              <Link href="/mocks" className="flex items-center gap-3 group">
                 <div className="flex flex-col text-left">
-                   <span className="text-[12px] md:text-[15px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-tight leading-none">PRACTICE</span>
-                   <span className="text-[12px] md:text-[15px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-tight mt-1 leading-none">TESTS</span>
+                   <span className="text-[10px] md:text-[13px] font-black text-white/50 leading-none uppercase">PRACTICE</span>
+                   <span className="text-[10px] md:text-[13px] font-black text-white group-hover:text-primary transition-colors uppercase mt-1 leading-none">TESTS</span>
                 </div>
              </Link>
 
-             <Button asChild className="h-12 md:h-16 px-6 md:px-12 bg-white/5 border border-white/10 hover:bg-white/10 rounded-2xl transition-all shadow-xl gap-4">
-                <Link href="/pass">
-                   <Gem className="h-6 w-6 text-primary" />
-                   <span className="text-[11px] md:text-[14px] font-black text-primary uppercase leading-none tracking-widest">GET PASS</span>
-                </Link>
-             </Button>
-
-             <Link href="/current-affairs" className="flex items-center gap-3 group">
-                <Newspaper className="h-6 w-6 text-primary" />
+             {/* GET PASS (DARK BOX) */}
+             <Link href="/pass" className="flex items-center gap-3 h-12 md:h-14 px-5 md:px-8 bg-white/5 border border-primary/20 rounded-xl hover:bg-white/10 transition-all shadow-xl group">
+                <Gem className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                 <div className="flex flex-col text-left">
-                   <span className="text-[12px] md:text-[15px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-tight leading-none">CURRENT</span>
-                   <span className="text-[12px] md:text-[15px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-tight mt-1 leading-none">AFFAIRS</span>
+                   <span className="text-[10px] md:text-[13px] font-black text-primary uppercase leading-none">GET</span>
+                   <span className="text-[10px] md:text-[13px] font-black text-primary uppercase mt-1 leading-none">PASS</span>
+                </div>
+             </Link>
+
+             {/* CURRENT AFFAIRS */}
+             <Link href="/current-affairs" className="flex items-center gap-3 group">
+                <Newspaper className="h-5 w-5 text-primary" />
+                <div className="flex flex-col text-left">
+                   <span className="text-[10px] md:text-[13px] font-black text-white/50 leading-none uppercase">CURRENT</span>
+                   <span className="text-[10px] md:text-[13px] font-black text-white group-hover:text-primary transition-colors uppercase mt-1 leading-none">AFFAIRS</span>
                 </div>
              </Link>
           </div>
 
           {/* 3. RIGHT ACTION HUB */}
-          <div className="flex items-center gap-4 md:gap-10 shrink-0 ml-auto">
+          <div className="flex items-center gap-4 md:gap-8 shrink-0 ml-auto">
             
+            {/* INSTALL APP (EMERALD BOX) */}
             <button 
               onClick={() => (window as any).deferredPrompt?.prompt()}
-              className="hidden xl:flex items-center gap-3 h-12 md:h-16 px-8 rounded-2xl border border-[#10B981]/20 bg-[#10B981]/5 text-[#10B981] group hover:bg-[#10B981] hover:text-white transition-all shadow-md"
+              className="hidden lg:flex items-center gap-3 h-12 md:h-14 px-6 rounded-xl border border-[#10B981]/20 bg-[#10B981]/5 text-[#10B981] group hover:bg-[#10B981] hover:text-white transition-all shadow-md"
             >
                <Download className="h-5 w-5" />
-               <span className="text-[11px] md:text-[14px] font-black uppercase tracking-widest">INSTALL APP</span>
+               <span className="text-[10px] md:text-[12px] font-black uppercase tracking-widest">INSTALL APP</span>
             </button>
 
+            {/* PASS ACTIVE STATUS (SCREENSHOT MATCH) */}
             {mounted && user && (
-               <div className="flex items-center gap-4 h-12 md:h-16 px-6 md:px-10 rounded-2xl border border-[#10B981]/40 bg-[#10B981]/5 shrink-0 shadow-lg">
-                  <Gem className="h-6 w-6 md:h-8 md:w-8 text-[#10B981] shrink-0" />
+               <div className="flex items-center gap-4 h-12 md:h-14 px-5 md:px-7 rounded-xl border border-[#10B981]/40 bg-[#10B981]/5 shrink-0 shadow-lg">
+                  <Gem className="h-5 w-5 md:h-6 md:w-6 text-[#10B981] shrink-0 fill-current opacity-80" />
                   <div className="flex flex-col items-start justify-center">
                      <span className={cn(
-                       "text-[11px] md:text-[15px] font-black uppercase tracking-tight leading-none",
+                       "text-[10px] md:text-[13px] font-black uppercase tracking-tight leading-none",
                        passStatus.active ? "text-[#10B981]" : "text-rose-500"
                      )}>
                         {passStatus.label}
                      </span>
-                     <span className="text-[8px] md:text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-1.5">
-                        VALID TILL: {passStatus.expiry}
+                     <span className="text-[7px] md:text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1.5 leading-none">
+                        EXP: {passStatus.expiry}
                      </span>
                   </div>
                </div>
             )}
 
-            <div className="h-10 w-px bg-white/10 hidden lg:block" />
-
             <Link 
                href="/search" 
-               className="bg-white/5 text-slate-400 hover:text-white p-4 rounded-2xl border border-white/10 transition-all hover:bg-white/10"
+               className="bg-white/5 text-slate-400 hover:text-white p-3 rounded-xl border border-white/10 transition-all hover:bg-white/10"
             >
-              <Search className="h-6 w-6" />
+              <Search className="h-5 w-5 md:h-6 md:w-6" />
             </Link>
 
             <div className="relative shrink-0">
               {!mounted || loading ? (
-                <div className="h-12 w-12 md:h-16 md:w-16 rounded-2xl bg-white/5 animate-pulse" />
+                <div className="h-10 w-10 md:h-14 md:w-14 rounded-full bg-white/5 animate-pulse" />
               ) : user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="h-12 w-12 md:h-16 md:w-16 rounded-full overflow-hidden border-2 border-white/20 hover:border-primary transition-all bg-[#0F172A] shadow-2xl focus:outline-none">
+                    <button className="h-10 w-10 md:h-14 md:w-14 rounded-full overflow-hidden border-2 border-white/20 hover:border-primary transition-all bg-[#0F172A] shadow-2xl focus:outline-none">
                       <StudentAvatar profile={profile} className="h-full w-full border-none" />
                     </button>
                   </DropdownMenuTrigger>
@@ -211,7 +216,7 @@ export default function Navbar() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button asChild className="bg-primary hover:bg-orange-600 text-white font-black px-6 md:px-10 h-12 md:h-16 uppercase text-[10px] md:text-[13px] tracking-widest shadow-xl border-none transition-all active:scale-95">
+                <Button asChild className="bg-primary hover:bg-orange-600 text-white font-black px-6 md:px-10 h-11 md:h-14 uppercase text-[10px] md:text-[12px] tracking-widest shadow-xl border-none transition-all active:scale-95">
                   <Link href="/login">Login Hub</Link>
                 </Button>
               )}
