@@ -18,9 +18,10 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview FINAL CALIBRATED HERO v209.0.
- * FIXED: Rounded corners unified across all boxes to match screenshot.
- * FIXED: Background shading concentrated on text side only.
+ * @fileOverview FINAL CALIBRATED HERO v210.0.
+ * FIXED: Reduced mobile box size to prevent clipping.
+ * FIXED: Shading restricted to text-side only.
+ * FIXED: Unified rounded corners across all elements.
  */
 
 export default function Hero() {
@@ -65,11 +66,12 @@ export default function Hero() {
           className="w-full h-full object-cover object-right"
           referrerPolicy="no-referrer"
         />
-        {/* Tighter gradient concentrated on the left content side */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19] via-[#050B19]/80 to-transparent z-[10]" />
         
-        {/* TARGETED ARTIFACT MASK */}
-        <div className="absolute top-[15%] left-[20%] w-[150px] h-[150px] bg-[#050B19] blur-[80px] z-[11] opacity-80 rounded-full pointer-events-none" />
+        {/* Tighter shading focused ONLY on text side */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19] via-[#050B19]/70 to-transparent z-[10]" />
+        
+        {/* TARGETED STAR ARTIFACT MASK */}
+        <div className="absolute top-[10%] left-[40%] w-[120px] h-[120px] bg-[#050B19] blur-[100px] z-[11] opacity-90 rounded-full pointer-events-none" />
 
         {/* PUNJAB MAP WATERMARK */}
         <div className="absolute inset-0 z-[12] pointer-events-none opacity-[0.03]">
@@ -91,7 +93,7 @@ export default function Hero() {
                <span className="text-[7px] md:text-[10px] font-bold text-white tracking-widest uppercase">#1 Punjab exam preparation platform</span>
             </motion.div>
 
-            {/* HEADINGS */}
+            {/* HEADINGS - STRICT SENTENCE CASE */}
             <motion.div
                initial={{ opacity: 0, y: 10 }}
                animate={{ opacity: 1, y: 0 }}
@@ -106,7 +108,7 @@ export default function Hero() {
                </h1>
             </motion.div>
 
-            {/* DESCRIPTION */}
+            {/* DESCRIPTION - DOUBLE LINE */}
             <motion.p
                initial={{ opacity: 0, y: 10 }}
                animate={{ opacity: 1, y: 0 }}
@@ -138,10 +140,10 @@ export default function Hero() {
          </div>
       </div>
 
-      {/* 3. INTEGRATED BOTTOM DATA BAR */}
+      {/* 3. INTEGRATED BOTTOM DATA BAR - HIGH DENSITY */}
       <div className="absolute bottom-6 md:bottom-20 left-0 right-0 z-[40]">
          <div className="container mx-auto px-4 md:px-12 max-w-7xl overflow-hidden">
-            <div className="flex flex-row md:grid md:grid-cols-4 gap-2 md:gap-4 overflow-x-auto no-scrollbar pb-1 pe-6 md:pe-0">
+            <div className="flex flex-row md:grid md:grid-cols-4 gap-2 md:gap-4 overflow-x-auto no-scrollbar pb-1 pe-12 md:pe-0">
                {liveStats.map((stat, idx) => (
                   <motion.div
                      key={stat.id}
@@ -150,7 +152,7 @@ export default function Hero() {
                      transition={{ delay: 0.4 + (idx * 0.1) }}
                      className="shrink-0 flex-1 md:flex-none"
                   >
-                     <Card className="bg-[#0B1528]/80 backdrop-blur-2xl border border-white/10 p-1.5 md:p-4 rounded-xl md:rounded-[2rem] text-left flex items-center gap-2 md:gap-4 group hover:bg-[#0B1528] transition-all duration-300 shadow-2xl overflow-hidden h-9 md:h-20 w-full min-w-[130px] md:min-w-none">
+                     <Card className="bg-[#0B1528]/80 backdrop-blur-2xl border border-white/10 p-1.5 md:p-4 rounded-2xl md:rounded-[2rem] text-left flex items-center gap-2 md:gap-4 group hover:bg-[#0B1528] transition-all duration-300 shadow-2xl overflow-hidden h-9 md:h-20 w-full min-w-[110px] md:min-w-none">
                         <div className="shrink-0 h-5 w-5 md:h-12 md:w-12 rounded-lg md:rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center transition-transform group-hover:scale-105 shadow-inner">
                            {stat.icon}
                         </div>
