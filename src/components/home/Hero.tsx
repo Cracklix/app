@@ -30,8 +30,8 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Official CRACKLIX Punjab Government Exam Hero v26.0 (Hardened).
- * STABILITY: Refactored sub-components to top level to resolve resolution call errors.
+ * @fileOverview Official CRACKLIX Punjab Government Exam Hero v27.0 (Design Matched).
+ * STABILITY: Refactored to match user-provided screenshot precisely.
  */
 
 function FloatingCard({ icon, label, val, pos, delay }: any) {
@@ -40,12 +40,15 @@ function FloatingCard({ icon, label, val, pos, delay }: any) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.6 }}
-      className={cn("absolute z-20 bg-white/10 backdrop-blur-2xl border border-white/20 p-5 rounded-3xl shadow-5xl flex items-center gap-4 group hover:bg-white/20 transition-all", pos)}
+      className={cn(
+        "absolute z-20 bg-white/10 backdrop-blur-2xl border border-white/10 p-5 rounded-[2rem] shadow-5xl flex items-center gap-4 group hover:bg-white/20 transition-all",
+        pos
+      )}
     >
       <div className="h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
         {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: "h-6 w-6" }) : icon}
       </div>
-      <div>
+      <div className="text-left">
         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1.5">{label}</p>
         <p className="text-2xl font-black text-white leading-none tabular-nums">{val}</p>
       </div>
@@ -90,35 +93,27 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-[90vh] lg:min-h-screen flex flex-col justify-center bg-[#0B1528] overflow-hidden text-left">
+      {/* GLOW NODES */}
       <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-1/4 h-1/2 bg-blue-500/5 blur-[100px] rounded-full pointer-events-none" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10 py-12 md:py-20">
         <div className="grid lg:grid-cols-12 gap-12 md:gap-20 items-center">
           
-          <div className="lg:col-span-7 space-y-8 md:space-y-12">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl"
-            >
-              <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-              <span className="text-[9px] md:text-xs font-black uppercase tracking-[0.2em] text-primary">
-                Punjab's Most Trusted Mock Platform
-              </span>
-            </motion.div>
-
+          {/* TEXT CONTENT */}
+          <div className="lg:col-span-7 space-y-10 md:space-y-16">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="space-y-6"
+              transition={{ duration: 0.6 }}
+              className="space-y-8"
             >
-              <h1 className="text-4xl md:text-7xl lg:text-8xl font-headline font-black text-white leading-[0.9] tracking-tighter uppercase">
-                CRACK PUNJAB <br />
+              <h1 className="text-5xl md:text-8xl lg:text-[100px] font-headline font-black text-white leading-[0.9] tracking-tighter uppercase">
+                CRACK <br />
+                PUNJAB <br />
                 <span className="text-primary italic">GOVT EXAMS</span>
               </h1>
-              <p className="text-base md:text-xl text-slate-400 font-medium max-w-2xl leading-relaxed">
+              <p className="text-base md:text-2xl text-slate-400 font-medium max-w-2xl leading-relaxed">
                 Prepare for PSSSB, Punjab Police, PPSC, PSPCL, PSTET and more through real exam-level mock tests, official PYQs, and daily current affairs.
               </p>
             </motion.div>
@@ -126,76 +121,70 @@ export default function Hero() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="flex flex-col sm:flex-row gap-4"
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="flex flex-col sm:flex-row gap-6"
             >
-              <Button asChild className="h-14 md:h-20 px-8 md:px-12 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[10px] md:text-xs tracking-[0.2em] rounded-2xl md:rounded-3xl shadow-3xl transition-all active:scale-95 border-none gap-4">
-                <Link href="/mocks">
-                  Start Free Mock <Zap className="h-5 w-5 fill-current" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="h-14 md:h-20 px-8 md:px-12 border-white/10 bg-white/5 hover:bg-white/10 text-white font-black uppercase text-[10px] md:text-xs tracking-[0.2em] rounded-2xl md:rounded-3xl transition-all active:scale-95 gap-4">
+              <div className="relative group">
+                 <div className="absolute -left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-orange-950 border border-white/10 flex items-center justify-center text-primary font-black text-xs shadow-xl z-20">N</div>
+                 <Button asChild className="h-16 md:h-20 px-10 md:px-14 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[10px] md:text-xs tracking-[0.2em] rounded-2xl md:rounded-3xl shadow-4xl transition-all active:scale-95 border-none gap-4">
+                  <Link href="/mocks">
+                    START FREE MOCK <Zap className="h-5 w-5 fill-current" />
+                  </Link>
+                </Button>
+              </div>
+              
+              <Button asChild variant="outline" className="h-16 md:h-20 px-10 md:px-14 border-white/10 bg-white/5 hover:bg-white/10 text-white font-black uppercase text-[10px] md:text-xs tracking-[0.2em] rounded-2xl md:rounded-3xl transition-all active:scale-95 gap-4">
                 <Link href="/exams">
-                  Explore Exams <ChevronRight className="h-5 w-5" />
+                  EXPLORE EXAMS <ChevronRight className="h-5 w-5" />
                 </Link>
               </Button>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="flex flex-wrap gap-3 pt-4"
-            >
-              {["PSSSB", "Punjab Police", "PPSC", "PSPCL", "PSTET", "Master Cadre"].map((chip) => (
-                <Badge key={chip} variant="outline" className="px-4 py-2 border-white/5 bg-white/5 text-slate-400 font-bold uppercase text-[9px] tracking-widest rounded-lg hover:border-primary/40 hover:text-white transition-all cursor-default">
-                  {chip}
-                </Badge>
-              ))}
             </motion.div>
           </div>
 
+          {/* DASHBOARD GRAPHIC */}
           <div className="lg:col-span-5 relative hidden lg:block">
              <motion.div 
-               initial={{ opacity: 0, scale: 0.9 }}
+               initial={{ opacity: 0, scale: 0.95 }}
                animate={{ opacity: 1, scale: 1 }}
                transition={{ duration: 0.8 }}
                className="relative"
              >
-                <div className="relative aspect-square rounded-[4rem] bg-gradient-to-tr from-primary/20 to-blue-500/10 border border-white/10 overflow-hidden shadow-5xl group">
+                <div className="relative aspect-square rounded-[4rem] md:rounded-[5rem] bg-gradient-to-tr from-primary/20 to-blue-500/10 border border-white/10 overflow-hidden shadow-5xl group">
                    <img 
                      src="https://punjabpolice.gov.in/media/images/pp10.original.jpg" 
                      alt="Selection Prep"
                      className="w-full h-full object-cover opacity-60 mix-blend-overlay group-hover:scale-105 transition-transform duration-1000"
+                     referrerPolicy="no-referrer"
                    />
                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1528] via-transparent to-transparent" />
                 </div>
 
                 <FloatingCard 
-                   icon={<Target className="text-emerald-400" />} 
-                   label="Accuracy" 
+                   icon={<Target className="text-white fill-current" />} 
+                   label="ACCURACY" 
                    val="94%" 
-                   pos="top-10 -left-12" 
+                   pos="top-16 -left-16" 
                    delay={0.6}
                 />
                 <FloatingCard 
-                   icon={<Trophy className="text-amber-400" />} 
-                   label="Punjab Rank" 
+                   icon={<Trophy className="text-white" />} 
+                   label="PUNJAB RANK" 
                    val="#245" 
-                   pos="top-1/2 -right-10" 
+                   pos="top-1/2 -right-12" 
                    delay={0.8}
                 />
                 <FloatingCard 
-                   icon={<Zap className="text-primary" />} 
-                   label="Readiness" 
+                   icon={<Zap className="text-white fill-current" />} 
+                   label="READINESS" 
                    val="82%" 
-                   pos="bottom-10 -left-10" 
+                   pos="bottom-16 -left-12" 
                    delay={1}
                 />
              </motion.div>
           </div>
         </div>
 
+        {/* INTEGRATED STATS BAR */}
         <motion.div 
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
