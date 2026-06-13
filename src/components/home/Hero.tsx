@@ -1,4 +1,3 @@
-
 'use client';
 
 import { motion } from "framer-motion";
@@ -8,14 +7,17 @@ import {
   ShieldCheck,
   Zap,
   ArrowRight,
-  Users,
-  FileStack,
-  Globe,
-  Star,
-  Search,
   Target,
   TrendingUp,
-  Award
+  Award,
+  Lock,
+  Play,
+  CheckCircle2,
+  Sparkles,
+  Search,
+  Globe,
+  FileStack,
+  ChevronRight
 } from "lucide-react";
 import { useUser, useFirestore, useDoc } from "@/firebase";
 import { useState, useEffect, useMemo } from "react";
@@ -26,9 +28,9 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Institutional Hero Hub v160.0.
- * RE-LOCKED: Background imagery updated to institutional preparation photo.
- * IMAGE: https://i.ibb.co/gZCGMQNJ/IMG-20260612-WA0010.jpg
+ * @fileOverview Elite Institutional Hero Hub v170.0.
+ * DESIGN: Better than Testbook/Adda247 using a "Command Center" visual language.
+ * FOCUS: Trust, Readiness, and selection-driven CTAs.
  */
 export default function Hero() {
   const router = useRouter();
@@ -56,14 +58,14 @@ export default function Hero() {
   const heroImageUrl = "https://i.ibb.co/gZCGMQNJ/IMG-20260612-WA0010.jpg";
 
   return (
-    <section className="relative pt-12 pb-24 md:pt-24 md:pb-40 bg-[#0B1528] overflow-hidden text-left">
-      {/* 1. INSTITUTIONAL BACKGROUND NODE */}
+    <section className="relative pt-12 pb-20 md:pt-24 md:pb-32 bg-[#0B1528] overflow-hidden text-left">
+      {/* 1. INSTITUTIONAL ATMOSPHERE */}
       <div className="absolute inset-0 z-0">
          <Image 
             src={heroImageUrl}
             alt="Punjab Exam Hub"
             fill
-            className="object-cover opacity-40 grayscale-[0.2]"
+            className="object-cover opacity-30 grayscale-[0.5]"
             priority
          />
          <div className="absolute inset-0 bg-gradient-to-r from-[#0B1528] via-[#0B1528]/95 to-transparent" />
@@ -80,114 +82,118 @@ export default function Hero() {
               animate={{ opacity: 1, x: 0 }}
               className="space-y-6 md:space-y-8"
             >
-              <div className="space-y-2">
-                 <p className="text-primary font-black uppercase text-[10px] md:text-xs tracking-[0.4em] leading-none mb-4">
-                    PREPARE FOR
-                 </p>
-                 <div className="flex flex-wrap items-center gap-2 md:gap-4 text-white/60 font-black text-[9px] md:text-[11px] uppercase tracking-widest">
-                    <span className="text-primary">PSSSB</span>
-                    <div className="h-1 w-1 rounded-full bg-white/20" />
-                    <span className="text-primary">POLICE</span>
-                    <div className="h-1 w-1 rounded-full bg-white/20" />
-                    <span className="text-primary">PPSC</span>
-                    <div className="h-1 w-1 rounded-full bg-white/20" />
-                    <span className="text-primary">PSPCL</span>
-                    <div className="h-1 w-1 rounded-full bg-white/20" />
-                    <span className="text-primary">TEACHING</span>
-                 </div>
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl mb-4">
+                 <Sparkles className="h-3.5 w-3.5 text-primary animate-pulse" />
+                 <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-primary">🏆 Punjab&apos;s Smartest Preparation Hub</span>
               </div>
 
               <div className="space-y-4 md:space-y-6">
-                 <h1 className="text-4xl md:text-8xl font-headline font-black leading-[0.85] tracking-tighter text-white uppercase">
-                    Selection Hub <br />
-                    <span className="text-primary">For Punjab</span>
+                 <h1 className="text-4xl md:text-7xl font-headline font-black leading-[0.9] tracking-tighter text-white uppercase">
+                    Your Selection <br />
+                    <span className="text-primary italic">Starts Here.</span>
                  </h1>
-                 <p className="text-slate-400 text-sm md:text-xl font-medium max-w-2xl leading-relaxed antialiased">
-                    Practice with the most accurate mock tests. Get detailed AI rationalizations, previous year papers, and real-time state rankings.
+                 <p className="text-slate-400 text-base md:text-xl font-medium max-w-2xl leading-relaxed antialiased">
+                    Master Punjab Government Exams with high-fidelity mock tests, verified previous year papers, and real-time performance analytics.
                  </p>
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                 <FeatureTag icon={<Zap />} label="500+ Mocks" />
-                 <FeatureTag icon={<FileStack />} label="Official PYQs" />
-                 <FeatureTag icon={<Globe />} label="Bilingual Hub" />
+              {/* TACTICAL EXAM CHIPS */}
+              <div className="flex flex-wrap gap-2.5">
+                 {['PSSSB', 'POLICE', 'PPSC', 'PSPCL', 'TEACHING'].map((board) => (
+                    <div key={board} className="px-4 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-300 font-black text-[10px] tracking-widest hover:border-primary/50 transition-all cursor-default">
+                       {board}
+                    </div>
+                 ))}
               </div>
             </motion.div>
 
+            {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
               <Button 
                 onClick={() => handleAction('/mocks')}
-                className="w-full sm:w-auto h-16 md:h-20 px-12 bg-primary hover:bg-orange-600 text-white rounded-[1.5rem] md:rounded-[2.5rem] font-black uppercase text-[12px] md:text-[14px] tracking-[0.2em] shadow-3xl shadow-primary/20 border-none transition-all active:scale-95 gap-4"
+                className="w-full sm:w-auto h-16 md:h-20 px-12 bg-primary hover:bg-orange-600 text-white rounded-[1.5rem] md:rounded-[2rem] font-black uppercase text-[12px] md:text-[14px] tracking-[0.2em] shadow-3xl shadow-primary/20 border-none transition-all active:scale-95 gap-4"
               >
-                Start Free Mock <ArrowRight className="h-5 w-5" />
+                Start Free Mock <Zap className="h-5 w-5 fill-current" />
               </Button>
               <Button 
-                onClick={() => handleAction('/exams')}
-                className="w-full sm:w-auto h-16 md:h-20 px-12 rounded-[1.5rem] md:rounded-[2.5rem] bg-white text-[#0B1528] hover:bg-slate-100 font-black uppercase text-[12px] md:text-[14px] tracking-[0.2em] transition-all active:scale-95 gap-4 border-none shadow-xl"
+                onClick={() => handleAction('/pass')}
+                className="w-full sm:w-auto h-16 md:h-20 px-12 rounded-[1.5rem] md:rounded-[2.5rem] bg-white/5 text-white hover:bg-white/10 font-black uppercase text-[12px] md:text-[14px] tracking-[0.2em] transition-all active:scale-95 gap-4 border border-white/10 backdrop-blur-xl"
               >
-                Explore Hubs <ArrowRight className="h-5 w-5" />
+                <Gem className="h-5 w-5 text-primary" /> Unlock Premium
               </Button>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 pt-4">
-               <span className="text-[10px] font-black uppercase text-primary tracking-widest">Trending:</span>
-               {['Patwari Hub', 'Police SI', 'Master Cadre', 'High Court'].map((t) => (
-                  <Link key={t} href={`/search?q=${t}`}>
-                    <Badge variant="outline" className="border-white/10 bg-white/5 text-slate-400 hover:text-white hover:border-white/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all cursor-pointer shadow-sm">
-                       {t}
-                    </Badge>
-                  </Link>
-               ))}
+            {/* MOST ATTEMPTED THIS WEEK */}
+            <div className="pt-8 border-t border-white/5 space-y-4">
+               <div className="flex items-center gap-3">
+                  <TrendingUp className="h-4 w-4 text-emerald-500" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">MOST ATTEMPTED THIS WEEK</span>
+               </div>
+               <div className="flex flex-wrap gap-4">
+                  {['Patwari Full Mock 1', 'Police SI 2025 Prep', 'Master Cadre Maths'].map((exam) => (
+                     <Link key={exam} href="/mocks" className="text-[11px] font-bold text-slate-300 hover:text-primary transition-all flex items-center gap-2 group">
+                        {exam} <ChevronRight className="h-3 w-3 text-slate-600 group-hover:translate-x-1 transition-transform" />
+                     </Link>
+                  ))}
+               </div>
             </div>
           </div>
 
-          {/* RIGHT: DASHBOARD PREVIEW */}
-          <div className="lg:col-span-5 relative hidden md:block">
+          {/* RIGHT: DATA VISUALIZATION DASHBOARD */}
+          <div className="lg:col-span-5 relative">
              <motion.div 
                initial={{ opacity: 0, scale: 0.95 }}
                animate={{ opacity: 1, scale: 1 }}
                className="relative"
              >
-                <div className="absolute -inset-1 bg-primary/20 rounded-[3.5rem] blur-3xl opacity-50" />
+                {/* Dashboard Aura */}
+                <div className="absolute -inset-2 bg-gradient-to-br from-primary/20 to-blue-500/10 rounded-[4rem] blur-3xl opacity-50" />
                 
-                <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[3rem] p-8 space-y-8 shadow-5xl">
-                   <div className="flex items-center justify-between">
-                      <p className="text-[10px] font-black uppercase text-primary tracking-widest">STUDENT DASHBOARD</p>
-                      <Badge className="bg-emerald-500/20 text-emerald-400 border-none">LIVE HUB</Badge>
+                <div className="relative bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[3.5rem] p-10 md:p-12 space-y-10 shadow-5xl overflow-hidden">
+                   <div className="absolute top-0 right-0 p-8 opacity-5"><Target className="h-64 w-64" /></div>
+                   
+                   <div className="flex items-center justify-between relative z-10">
+                      <div className="space-y-1">
+                         <p className="text-[10px] font-black uppercase text-primary tracking-widest leading-none">SELECTION PREVIEW</p>
+                         <h3 className="text-xl font-headline font-black text-white uppercase">Your Readiness</h3>
+                      </div>
+                      <Badge className="bg-emerald-500/20 text-emerald-400 border-none px-4 py-1 font-black">LIVE AUDIT</Badge>
                    </div>
                    
-                   <div className="flex items-center gap-8">
-                      <div className="relative h-24 w-24 md:h-32 md:w-32 flex items-center justify-center">
+                   {/* READINESS GAUGE */}
+                   <div className="flex items-center gap-10 relative z-10">
+                      <div className="relative h-32 w-32 md:h-40 md:w-40 flex items-center justify-center">
                          <svg className="h-full w-full transform -rotate-90">
-                            <circle cx="50%" cy="50%" r="45%" className="stroke-white/10 fill-none" strokeWidth="8" />
-                            <circle cx="50%" cy="50%" r="45%" className="stroke-primary fill-none" strokeWidth="8" strokeDasharray="283" strokeDashoffset="50" strokeLinecap="round" />
+                            <circle cx="50%" cy="50%" r="45%" className="stroke-white/5 fill-none" strokeWidth="10" />
+                            <circle cx="50%" cy="50%" r="45%" className="stroke-primary fill-none transition-all duration-1000" strokeWidth="10" strokeDasharray="283" strokeDashoffset="50" strokeLinecap="round" />
                          </svg>
                          <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-2xl font-black text-white">82%</span>
-                            <span className="text-[8px] font-bold text-slate-400">READY</span>
+                            <span className="text-4xl md:text-5xl font-headline font-black text-white tracking-tighter">82%</span>
+                            <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-1">READINESS</span>
                          </div>
                       </div>
-                      <div className="space-y-4">
-                         <StatPreview label="READINESS SCORE" val="82%" icon={<TrendingUp className="text-primary" />} />
-                         <StatPreview label="AVG ACCURACY" val="94%" icon={<Target className="text-emerald-400" />} />
-                         <StatPreview label="ALL PUNJAB RANK" val="#12" icon={<Award className="text-amber-400" />} />
+                      <div className="space-y-6 flex-1">
+                         <DashboardMetric label="AVG ACCURACY" val="94%" icon={<Target className="text-emerald-400" />} />
+                         <DashboardMetric label="PUNJAB RANK" val="#12" icon={<Award className="text-amber-400" />} />
+                         <DashboardMetric label="DAILY STREAK" val="8 Days" icon={<Zap className="text-primary" />} />
                       </div>
                    </div>
 
-                   <div className="pt-6 border-t border-white/10">
-                      <div className="flex items-center justify-between">
+                   {/* VERIFIED STATUS */}
+                   <div className="pt-8 border-t border-white/10 relative z-10">
+                      <div className="flex items-center justify-between bg-white/5 p-5 rounded-[2rem] border border-white/5">
                          <div className="flex items-center gap-4">
-                            <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shadow-lg">
+                            <div className="h-11 w-11 rounded-2xl bg-primary flex items-center justify-center shadow-xl">
                                <ShieldCheck className="h-6 w-6 text-white" />
                             </div>
-                            <div>
-                               <p className="text-[11px] font-black text-white uppercase">VERIFIED STATUS</p>
-                               <p className="text-[9px] text-slate-400 font-medium">Registry Audited 1m ago</p>
+                            <div className="text-left">
+                               <p className="text-[11px] font-black text-white uppercase tracking-tight">Institutional Access</p>
+                               <p className="text-[9px] text-slate-500 font-medium uppercase">Verified Registry Node</p>
                             </div>
                          </div>
                          <div className="text-right">
-                            <p className="text-xl font-black text-primary tabular-nums">{stats?.totalUsers?.toLocaleString() || '15,000'}</p>
-                            <p className="text-[8px] font-black text-slate-500 uppercase">ASPIRANTS</p>
+                            <p className="text-2xl font-black text-primary tabular-nums">{stats?.totalUsers?.toLocaleString() || '15,000'}</p>
+                            <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">STUDENTS</p>
                          </div>
                       </div>
                    </div>
@@ -196,75 +202,42 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* BOTTOM STATS STRIP */}
-        <div className="mt-20 md:mt-32 bg-[#0F172A]/80 backdrop-blur-xl rounded-[2rem] md:rounded-[3.5rem] border border-white/5 shadow-5xl overflow-hidden p-6 md:p-12 relative">
-           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 relative z-10">
-              <LegacyStatNode 
-                label="Questions" 
-                val={`${stats?.totalQuestions?.toLocaleString() || '50,000'}+`} 
-                icon={<Zap />} 
-                color="bg-blue-600" 
-              />
-              <LegacyStatNode 
-                label="Mock Tests" 
-                val={`${stats?.totalMocks || '500'}+`} 
-                icon={<Star />} 
-                color="bg-emerald-600" 
-              />
-              <LegacyStatNode 
-                label="State Rank" 
-                val="94%" 
-                icon={<Trophy />} 
-                color="bg-orange-600" 
-              />
-              <LegacyStatNode 
-                label="Accuracy" 
-                val={`${stats?.averageAccuracy || '94'}%`} 
-                icon={<ShieldCheck />} 
-                color="bg-purple-600" 
-              />
-           </div>
+        {/* PREMIUM FEATURES PREVIEW STRIP */}
+        <div className="mt-16 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+           <FeatureNode icon={<CheckCircle2 />} label="Official Exam Patterns" />
+           <FeatureNode icon={<Zap />} label="AI Step-by-Step Logic" />
+           <FeatureNode icon={<Globe />} label="Full Bilingual Support" />
+           <FeatureNode icon={<Award />} label="Real-Time State Merit" />
         </div>
       </div>
     </section>
   );
 }
 
-function FeatureTag({ icon, label }: any) {
+function DashboardMetric({ label, val, icon }: any) {
    return (
-      <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-slate-300 transition-all hover:border-primary/40">
-         {icon && Object.assign({}, icon, { props: { className: "h-3.5 w-3.5 text-primary" } })}
-         <span className="text-[9px] font-black uppercase tracking-widest">{label}</span>
-      </div>
-   )
-}
-
-function LegacyStatNode({ label, val, icon, color }: any) {
-   return (
-      <div className="flex items-center gap-4 md:gap-8 text-left group">
-         <div className={cn("h-12 w-12 md:h-16 md:w-16 rounded-2xl flex items-center justify-center shrink-0 shadow-inner transition-transform group-hover:scale-110", color)}>
-            {icon && Object.assign({}, icon, { props: { className: "h-6 w-6 md:h-8 md:w-8 text-white" } })}
+      <div className="flex items-center gap-4 group">
+         <div className="h-8 w-8 rounded-xl bg-white/5 flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-white/10 transition-all shadow-inner">
+            {React.cloneElement(icon, { className: "h-4 w-4" })}
          </div>
-         <div>
-            <p className="text-xl md:text-3xl font-headline font-black text-white tabular-nums leading-none tracking-tight">{val}</p>
-            <p className="text-[9px] md:text-[10px] font-black uppercase text-slate-500 tracking-widest mt-2">{label}</p>
+         <div className="text-left">
+            <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">{label}</p>
+            <p className="text-base font-black text-white leading-none tracking-tight">{val}</p>
          </div>
       </div>
    )
 }
 
-function StatPreview({ label, val, icon }: any) {
+function FeatureNode({ icon, label }: any) {
    return (
-      <div className="flex items-center gap-3">
-         <div className="h-6 w-6 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-            {React.cloneElement(icon, { className: "h-3 w-3" })}
+      <div className="flex items-center gap-4 px-6 py-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all cursor-default group">
+         <div className="text-primary group-hover:scale-110 transition-transform">
+            {React.cloneElement(icon, { className: "h-5 w-5" })}
          </div>
-         <div>
-            <p className="text-[7px] font-black text-slate-500 uppercase tracking-widest leading-none">{label}</p>
-            <p className="text-[12px] font-black text-white leading-tight mt-0.5">{val}</p>
-         </div>
+         <span className="text-[10px] md:text-xs font-black uppercase tracking-tight text-slate-400 group-hover:text-white transition-colors">{label}</span>
       </div>
    )
 }
+
 import React from "react"
-import { Trophy } from "lucide-react";
+import { Gem } from "lucide-react";
