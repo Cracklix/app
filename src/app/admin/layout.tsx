@@ -1,3 +1,4 @@
+
 'use client';
 
 import { SidebarProvider, Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
@@ -11,7 +12,7 @@ import {
   User, 
   FileStack,
   Newspaper,
-  Megaphone,
+  Megaphone, 
   SearchCode,
   Landmark,
   GraduationCap,
@@ -42,8 +43,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Admin Layout v164.0.
- * UPDATED: Increased sidebar logo size to h-32 and optimized database group spacing.
+ * @fileOverview Institutional Admin Layout v165.0.
+ * UPDATED: Removed all top spacing from sidebar logo and further tightened hub verticality.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -92,14 +93,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
        {/* WHOLE SIDEBAR SCROLL AREA */}
        <div className="flex-1 custom-scrollbar overflow-y-auto overflow-x-hidden pb-10">
           
-          {/* SIDEBAR LOGO: INCREASED SIZE HUB */}
-          <div className="px-4 pt-6 pb-2 flex justify-center shrink-0">
-             <div className="h-32 flex items-center justify-center transition-all duration-500">
+          {/* SIDEBAR LOGO: REMOVED ALL TOP PADDING */}
+          <div className="px-4 pt-0 pb-0 flex justify-center shrink-0">
+             <div className="h-32 flex items-start justify-center transition-all duration-500">
                <Logo href="/admin" />
              </div>
           </div>
 
-          <SidebarGroup className="pt-0">
+          <SidebarGroup className="pt-0 -mt-4">
             <SidebarGroupLabel className="px-6 pt-0 pb-3 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Main Database</SidebarGroupLabel>
             <SidebarMenu className="gap-2">
               <AdminNavItem icon={<LayoutDashboard />} label="DASHBOARD" href="/admin" active={pathname === "/admin"} />
