@@ -11,7 +11,9 @@ import {
   Users,
   Sparkles,
   Layers,
-  BookOpen
+  BookOpen,
+  Search,
+  Newspaper
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
