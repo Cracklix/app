@@ -39,8 +39,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Institutional Admin Layout v173.0.
- * FIXED: Renamed 'auth' variable to 'authInstance' to prevent shadowing the useAuth hook.
+ * @fileOverview Hardened Institutional Admin Layout v174.0.
+ * UPDATED: Increased sidebar logo size to h-40 for massive brand presence.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -89,8 +89,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
        <div className="flex-1 custom-scrollbar overflow-y-auto overflow-x-hidden pb-10">
           
           <div className="px-4 pt-4 pb-2 flex justify-center shrink-0">
-             <div className="h-20 flex items-center justify-center">
-               <Logo href="/admin" imgClassName="h-16" />
+             <div className="h-44 flex items-center justify-center">
+               <Logo href="/admin" imgClassName="h-40" />
              </div>
           </div>
 
