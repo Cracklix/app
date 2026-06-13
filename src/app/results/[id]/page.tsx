@@ -1,7 +1,6 @@
-
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, Suspense } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
@@ -31,12 +30,20 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import StudentAvatar from "@/components/brand/StudentAvatar"
 
 /**
- * @fileOverview Test Results Hub v28.0 (Stability Hardened).
+ * @fileOverview Test Results Hub v28.1 (Stability Hardened).
  * UPDATED: Optimized ID fetching logic to handle both Session IDs and Mock IDs correctly.
- * UPDATED: Displaying student's real names with email fallback for state merit lists.
+ * FIXED: Added null safety for sessionData property accessors.
  */
 
 export default function ResultPage() {
+  return (
+    <Suspense fallback={<div className="h-screen flex items-center justify-center bg-white"><Loader2 className="h-10 w-10 text-primary animate-spin" /></div>}>
+      <ResultContent />
+    </Suspense>
+  )
+}
+
+function ResultContent() {
   const params = useParams()
   const router = useRouter()
   const resultId = params.id as string
@@ -57,14 +64,12 @@ export default function ResultPage() {
       setLoadingContent(true);
       
       try {
-        // First try fetching by document ID (Session ID)
         const docRef = doc(db, "results", resultId);
         const docSnap = await getDoc(docRef);
         
         if (docSnap.exists()) {
            setSessionData(docSnap.data());
         } else {
-           // Fallback: search by mockId for this user
            const q = query(collection(db, "results"), where("userId", "==", user.uid), where("mockId", "==", resultId), limit(1));
            const snap = await getDocs(q);
            if (!snap.empty) {
@@ -73,8 +78,6 @@ export default function ResultPage() {
         }
       } catch (e) {
         console.error("Result Fetch Error:", e);
-      } finally {
-        // Content loading stays true until questions are fetched in the next effect
       }
     }
     fetchResult();
@@ -91,7 +94,6 @@ export default function ResultPage() {
 
   const meritList = useMemo(() => {
      if (!rawGlobalResults) return [];
-     // Get unique users best score
      const uniqueMap = new Map();
      [...rawGlobalResults].sort((a, b) => (b.score || 0) - (a.score || 0)).forEach(r => {
         if (!uniqueMap.has(r.userId) || uniqueMap.get(r.userId).score < r.score) {
@@ -115,9 +117,7 @@ export default function ResultPage() {
   // 3. FETCH QUESTIONS AND MOCK DATA
   useEffect(() => {
     async function loadQuestions() {
-      if (!db || !sessionData) {
-        return;
-      }
+      if (!db || !sessionData) return;
       const mockId = sessionData.mockId;
       try {
         const mockSnap = await getDoc(doc(db, "mocks", mockId))
@@ -171,17 +171,17 @@ export default function ResultPage() {
                  <Trophy className="h-5 w-5" />
               </div>
               <div className="min-w-0 truncate">
-                 <h1 className="text-sm md:text-lg font-black text-white uppercase tracking-tight truncate">{sessionData.mockTitle}</h1>
-                 <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{new Date(sessionData.timestamp).toLocaleDateString()}</p>
+                 <h1 className="text-sm md:text-lg font-black text-white uppercase tracking-tight truncate">{sessionData.mockTitle || "Exam Result"}</h1>
+                 <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{sessionData.timestamp ? new Date(sessionData.timestamp).toLocaleDateString() : 'N/A'}</p>
               </div>
            </div>
 
            <div className="flex items-center gap-6 md:gap-10 shrink-0">
-              <ResultPill label="SCORE" val={sessionData.score.toFixed(1)} color={sessionData.score < 0 ? "text-rose-400" : "text-primary"} />
+              <ResultPill label="SCORE" val={(sessionData.score || 0).toFixed(1)} color={(sessionData.score || 0) < 0 ? "text-rose-400" : "text-primary"} />
               <div className="w-px h-8 bg-white/10" />
               <ResultPill label="RANK" val={`#${merit.rank}`} color="text-white" />
               <div className="w-px h-8 bg-white/10" />
-              <ResultPill label="ACCURACY" val={`${sessionData.accuracy}%`} color="text-emerald-400" />
+              <ResultPill label="ACCURACY" val={`${sessionData.accuracy || 0}%`} color="text-emerald-400" />
               <div className="w-px h-8 bg-white/10 hidden sm:block" />
               <ResultPill label="LEVEL" val={`${merit.percentile}%`} color="text-blue-400" className="hidden sm:flex" />
            </div>
@@ -202,8 +202,8 @@ export default function ResultPage() {
               
               <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
                  <FilterBtn active={activeReviewFilter === 'ALL'} onClick={() => setActiveReviewFilter('ALL')} label="ALL" count={questions.length} icon={<BarChart3 className="h-3 w-3" />} activeColor="bg-slate-900 border-slate-900" />
-                 <FilterBtn active={activeReviewFilter === 'CORRECT'} onClick={() => setActiveReviewFilter('CORRECT')} label="CORRECT" count={sessionData.correctCount} icon={<CheckCircle2 className="h-3 w-3" />} activeColor="bg-emerald-600 border-emerald-600" />
-                 <FilterBtn active={activeReviewFilter === 'WRONG'} onClick={() => setActiveReviewFilter('WRONG')} label="WRONG" count={sessionData.wrongCount} icon={<XCircle className="h-3 w-3" />} activeColor="bg-rose-600 border-rose-600" />
+                 <FilterBtn active={activeReviewFilter === 'CORRECT'} onClick={() => setActiveReviewFilter('CORRECT')} label="CORRECT" count={sessionData.correctCount || 0} icon={<CheckCircle2 className="h-3 w-3" />} activeColor="bg-emerald-600 border-emerald-600" />
+                 <FilterBtn active={activeReviewFilter === 'WRONG'} onClick={() => setActiveReviewFilter('WRONG')} label="WRONG" count={sessionData.wrongCount || 0} icon={<XCircle className="h-3 w-3" />} activeColor="bg-rose-600 border-rose-600" />
               </div>
            </div>
 
@@ -219,7 +219,7 @@ export default function ResultPage() {
                           <div className="flex items-center justify-between mb-4">
                              <div className="flex items-center gap-4">
                                 <span className={cn("h-10 w-10 rounded-lg flex items-center justify-center font-black text-lg shadow-inner", isCorrect ? "bg-emerald-50 text-emerald-600" : isSkipped ? "bg-slate-50 text-slate-400" : "bg-rose-50 text-rose-600")}>{q.index + 1}</span>
-                                <Badge variant="outline" className="border-slate-100 text-slate-400 uppercase text-[8px] font-black">{q.subjectId}</Badge>
+                                <Badge variant="outline" className="border-slate-100 text-slate-400 uppercase text-[8px] font-black">{q.subjectId || "GK"}</Badge>
                              </div>
                           </div>
                           <QuestionRenderer question={q} language={mockData?.languageMode || 'ENGLISH_PUNJABI'} showSolution={true} selectedAnswer={ans} className="p-0 border-none shadow-none" />
@@ -242,8 +242,8 @@ export default function ResultPage() {
                               <p className="font-bold text-[#0F172A] text-xs uppercase truncate max-w-[200px]">{name}</p>
                            </div>
                            <div className="flex gap-4 items-center">
-                              <span className="text-[10px] font-black text-primary">{r.score.toFixed(1)} Pts</span>
-                              <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[7px]">{r.accuracy}%</Badge>
+                              <span className="text-[10px] font-black text-primary">{(r.score || 0).toFixed(1)} Pts</span>
+                              <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[7px]">{r.accuracy || 0}%</Badge>
                            </div>
                         </div>
                        );

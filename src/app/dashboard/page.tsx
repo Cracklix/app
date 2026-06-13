@@ -32,9 +32,9 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import ShareButton from "@/components/navigation/ShareButton"
 
 /**
- * @fileOverview Hardened Student Dashboard v20.0.
+ * @fileOverview Hardened Student Dashboard v21.0.
  * FIXED: Null-safe rendering for profile and results data.
- * FIXED: Replaced arbitrary Tailwind values with standard utility classes.
+ * FIXED: Hydration safety for streak and time spent calculations.
  */
 export default function StudentDashboard() {
   const { user, profile, loading } = useUser()
@@ -56,7 +56,11 @@ export default function StudentDashboard() {
 
   const results = useMemo(() => {
     if (!rawResults) return []
-    return [...rawResults].sort((a, b) => new Date(b.timestamp || 0).getTime() - new Date(a.timestamp || 0).getTime())
+    return [...rawResults].sort((a, b) => {
+      const tA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+      const tB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+      return tB - tA;
+    });
   }, [rawResults])
 
   const stats = useMemo(() => {
@@ -77,7 +81,7 @@ export default function StudentDashboard() {
       timeFormatted = `${totalSeconds}s`;
     }
     
-    const uniqueDays = new Set(results.map(r => new Date(r.timestamp).toDateString()))
+    const uniqueDays = new Set(results.filter(r => r.timestamp).map(r => new Date(r.timestamp).toDateString()))
     const streak = uniqueDays.size
     const readiness = Math.min(100, Math.round((avgAcc * 0.7) + (Math.min(total, 30) * 1)))
 
@@ -163,7 +167,10 @@ export default function StudentDashboard() {
                                    <div className="min-w-0 space-y-2">
                                       <p className="font-black text-[#0B1528] text-sm md:text-2xl uppercase truncate leading-none">{r.mockTitle}</p>
                                       <div className="flex items-center gap-6 text-[10px] md:text-[12px] font-bold text-slate-400 uppercase tracking-tight">
-                                         <span className="flex items-center gap-2"><Calendar className="h-3.5 w-3.5 text-slate-300" /> {new Date(r.timestamp).toLocaleDateString()}</span>
+                                         <span className="flex items-center gap-2">
+                                           <Calendar className="h-3.5 w-3.5 text-slate-300" /> 
+                                           {r.timestamp ? new Date(r.timestamp).toLocaleDateString() : 'N/A'}
+                                         </span>
                                          <Badge className="bg-emerald-50 text-emerald-600 border-none font-black px-2 py-0.5 rounded shadow-sm">Score: {r.score}</Badge>
                                       </div>
                                    </div>

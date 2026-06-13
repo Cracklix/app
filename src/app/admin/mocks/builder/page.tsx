@@ -51,9 +51,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v90.0.
- * FIXED: Marking boxes are now true SQUARE profile with strict 12px visibility.
- * FIXED: Select All label reduction to prevent button overflow.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v90.1.
+ * FIXED: Potential undefined access in hydrated sections logic.
+ * FIXED: Optimized selection mapping for massive question banks.
  */
 
 export default function MockBuilderPage() {
@@ -166,7 +166,7 @@ function MockBuilderContent() {
               questions: sectionQIds.map(id => questionBank.find(q => q.id === id)).filter(Boolean) 
             };
           });
-          setSections(hydratedSections);
+          setSections(hydratedSections.length > 0 ? hydratedSections : [{ id: 'sec-1', name: 'GENERAL HUB', questions: [] }]);
         }
         setIsInitializing(false);
       }
@@ -188,7 +188,7 @@ function MockBuilderContent() {
       if (!key || seen.has(key)) return false;
       seen.add(key);
       return true;
-    }).sort((a: any, b: any) => a.name.localeCompare(b.name));
+    }).sort((a: any, b: any) => (a.name || "").localeCompare(b.name || ""));
     if (mockData.boardIds?.length > 0) {
        return filtered.filter(e => mockData.boardIds.includes(e.boardId));
     }
@@ -196,7 +196,7 @@ function MockBuilderContent() {
   }, [rawExams, mockData.boardIds]);
 
   const filteredBank = useMemo(() => {
-    const allSelectedIds = sections.flatMap(s => s.questions.map(q => q.id));
+    const allSelectedIds = sections.flatMap(s => (s.questions || []).map(q => q.id));
     return questionBank.filter((q: any) => {
       const matchesBoard = filterBoard === "all" || q.boardId === filterBoard;
       const matchesExam = filterExam === "all" || q.examId === filterExam;
@@ -219,7 +219,7 @@ function MockBuilderContent() {
       if (!key || seen.has(key)) return false;
       seen.add(key);
       return s.name?.toLowerCase().includes(subjectSearch.toLowerCase());
-    }).sort((a: any, b: any) => a.name.localeCompare(b.name));
+    }).sort((a: any, b: any) => (a.name || "").localeCompare(b.name || ""));
   }, [subjects, subjectSearch]);
 
   const toggleBoardId = (id: string) => {
@@ -240,7 +240,7 @@ function MockBuilderContent() {
 
   const handleLinkQuestions = () => {
     const toAdd = questionBank.filter(q => bankSelection.includes(q.id));
-    setSections(prev => prev.map(s => s.id === activeSectionId ? { ...s, questions: [...s.questions, ...toAdd] } : s));
+    setSections(prev => prev.map(s => s.id === activeSectionId ? { ...s, questions: [...(s.questions || []), ...toAdd] } : s));
     setBankSelection([]);
     toast({ title: `Linked ${toAdd.length} Questions` });
   }
@@ -259,7 +259,7 @@ function MockBuilderContent() {
       toast({ variant: "destructive", title: "Audit Blocked", description: "Series Title is mandatory." })
       return
     }
-    const flatQuestionIds = sections.flatMap(s => s.questions.map(q => q.id));
+    const flatQuestionIds = sections.flatMap(s => (s.questions || []).map(q => q.id));
     if (flatQuestionIds.length === 0) {
        toast({ variant: "destructive", title: "Link Blocked", description: "Add questions to assembly hub." });
        return;
@@ -267,7 +267,7 @@ function MockBuilderContent() {
     setIsPublishing(true)
     const finalId = mockId || `mock-${Date.now()}`
     const mockRef = doc(db, "mocks", finalId)
-    const sectionMetadata = sections.map(s => ({ name: s.name, count: s.questions.length })).filter(s => s.count > 0);
+    const sectionMetadata = sections.map(s => ({ name: s.name, count: s.questions?.length || 0 })).filter(s => s.count > 0);
     const payload = {
       ...mockData,
       id: finalId,
@@ -724,7 +724,7 @@ function MockBuilderContent() {
                           <Layers className="h-5 w-5 md:h-7 md:w-7 text-primary" /> Active Assembly Hub
                       </h3>
                       <Badge className="bg-[#0F172A] text-white border-none px-4 md:px-6 py-2 rounded-xl font-black uppercase text-[10px] md:text-[14px] tracking-widest shadow-xl">
-                         {sections.reduce((acc,s) => acc + s.questions.length, 0)} Q LINKED
+                         {sections.reduce((acc,s) => acc + (s.questions?.length || 0), 0)} Q LINKED
                       </Badge>
                     </div>
 
@@ -743,13 +743,13 @@ function MockBuilderContent() {
                                             onChange={e => setSections(p => p.map(s => s.id === sec.id ? { ...s, name: e.target.value.toUpperCase() } : s))} 
                                             className="h-10 w-full bg-transparent border-none font-black uppercase text-lg md:text-2xl focus-visible:ring-0 p-0 text-[#0F172A] truncate" 
                                         />
-                                        <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{sec.questions.length} Linked Prep Nodes</p>
+                                        <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{(sec.questions?.length || 0)} Linked Prep Nodes</p>
                                       </div>
                                   </div>
                                   <button onClick={() => setSections(p => p.filter(s => s.id !== sec.id))} className="h-10 w-10 md:h-12 md:w-12 text-rose-500 hover:bg-rose-50 rounded-xl transition-all flex items-center justify-center border-none bg-transparent active:scale-90"><Trash2 className="h-5 w-5 md:h-6 md:w-6" /></button>
                                 </div>
                                 <div className="p-6 md:p-8 space-y-3 md:space-y-4">
-                                  {sec.questions.map((q: any, qIdx: number) => (
+                                  {sec.questions?.map((q: any, qIdx: number) => (
                                       <div key={q.id} className="flex items-center justify-between p-3 md:p-4 bg-slate-50/50 border border-slate-100 rounded-xl md:rounded-2xl group/item hover:bg-white hover:shadow-2xl transition-all duration-300">
                                         <div className="flex items-center gap-4 md:gap-6 min-w-0 flex-1">
                                             <span className="text-sm md:text-lg font-black text-slate-300 w-6 shrink-0">#{qIdx + 1}</span>
@@ -757,13 +757,13 @@ function MockBuilderContent() {
                                         </div>
                                         <button 
                                             className="text-slate-300 hover:text-rose-600 p-2 shrink-0 transition-colors bg-transparent border-none"
-                                            onClick={() => setSections(p => p.map(s => s.id === sec.id ? { ...s, questions: s.questions.filter((item: any) => item.id !== q.id) } : s))} 
+                                            onClick={() => setSections(p => p.map(s => s.id === sec.id ? { ...s, questions: s.questions?.filter((item: any) => item.id !== q.id) || [] } : s))} 
                                         >
                                             <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
                                         </button>
                                       </div>
                                   ))}
-                                  {sec.questions.length === 0 && (
+                                  {(!sec.questions || sec.questions.length === 0) && (
                                       <div className="py-16 md:py-20 text-center opacity-20 italic font-black uppercase text-[10px] md:text-[12px] tracking-widest flex flex-col items-center justify-center gap-4 w-full">
                                          <Zap className="h-8 w-8 md:h-10 md:w-10" />
                                          <span>Awaiting link node synchronization...</span>

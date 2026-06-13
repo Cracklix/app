@@ -1,12 +1,12 @@
-
 "use client"
 
 import React, { useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Users, Zap, BarChart3, ShieldCheck, Target, CreditCard, Activity, Database, Lock, Layers, Unlock } from "lucide-react"
+import { Users, Zap, BarChart3, ShieldCheck, Target, CreditCard, Activity, Lock, Unlock } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, limit } from "firebase/firestore"
+import { collection } from "firebase/firestore"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const chartData = [
   { day: "Mon", users: 420 }, { day: "Tue", users: 580 }, { day: "Wed", users: 890 }, { day: "Thu", users: 760 },
@@ -14,8 +14,9 @@ const chartData = [
 ]
 
 /**
- * @fileOverview Final Administrative Control Center v3.3.
+ * @fileOverview Final Administrative Control Center v3.4.
  * UPDATED: Integrated Real-Time calculation for unique preparation nodes.
+ * FIXED: Added null safety for charts and metrics.
  */
 
 export default function AdminAnalytics() {
@@ -27,10 +28,10 @@ export default function AdminAnalytics() {
   const questionsQuery = useMemo(() => (db ? collection(db, "questions") : null), [db]);
   const mocksQuery = useMemo(() => (db ? collection(db, "mocks") : null), [db]);
 
-  const { data: users } = useCollection<any>(usersQuery)
-  const { data: results } = useCollection<any>(resultsQuery)
-  const { data: questions } = useCollection<any>(questionsQuery)
-  const { data: mocks } = useCollection<any>(mocksQuery)
+  const { data: users, loading: usersLoading } = useCollection<any>(usersQuery)
+  const { data: results, loading: resultsLoading } = useCollection<any>(resultsQuery)
+  const { data: questions, loading: qLoading } = useCollection<any>(questionsQuery)
+  const { data: mocks, loading: mLoading } = useCollection<any>(mocksQuery)
 
   const stats = useMemo(() => {
      if (!questions) return { used: 0, unused: 0, locked: 0, total: 0 };
@@ -68,17 +69,17 @@ export default function AdminAnalytics() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-         <MetricCard label="Total Free Mocks" value={mockStats.free} trend="Public" icon={<Unlock className="text-emerald-500" />} />
-         <MetricCard label="Total Premium Mocks" value={mockStats.premium} trend="Locked" icon={<Lock className="text-amber-500" />} />
-         <MetricCard label="Active Aspirants" value={users?.length || "0"} trend="+24%" icon={<Users className="text-blue-400" />} />
-         <MetricCard label="Pro Pass Holders" value={proUsers.length} trend="+12%" icon={<CreditCard className="text-emerald-400" />} />
+         <MetricCard label="Total Free Mocks" value={mLoading ? "..." : mockStats.free} trend="Public" icon={<Unlock className="text-emerald-500" />} />
+         <MetricCard label="Total Premium Mocks" value={mLoading ? "..." : mockStats.premium} trend="Locked" icon={<Lock className="text-amber-500" />} />
+         <MetricCard label="Active Aspirants" value={usersLoading ? "..." : (users?.length || "0")} trend="+24%" icon={<Users className="text-blue-400" />} />
+         <MetricCard label="Pro Pass Holders" value={usersLoading ? "..." : proUsers.length} trend="+12%" icon={<CreditCard className="text-emerald-400" />} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-         <MetricChip label="Total MCQs" value={questions?.length || 0} icon={<Zap className="text-primary" />} />
-         <MetricChip label="Audit Attempts" value={results?.length || "0"} icon={<Activity className="text-blue-500" />} />
+         <MetricChip label="Total MCQs" value={qLoading ? "..." : (questions?.length || 0)} icon={<Zap className="text-primary" />} />
+         <MetricChip label="Audit Attempts" value={resultsLoading ? "..." : (results?.length || "0")} icon={<Activity className="text-blue-500" />} />
          <MetricChip label="Avg Accuracy" value={`${avgAccuracy}%`} icon={<Target className="text-rose-400" />} />
-         <MetricChip label="Locked Nodes" value={stats.locked} icon={<Lock className="text-slate-400" />} />
+         <MetricChip label="Locked Nodes" value={qLoading ? "..." : stats.locked} icon={<Lock className="text-slate-400" />} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -114,9 +115,9 @@ export default function AdminAnalytics() {
             <div className="absolute top-0 right-0 p-8 opacity-5 rotate-12"><ShieldCheck className="h-64 w-64" /></div>
             <div className="space-y-2 relative z-10 text-left"><p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Content Lifecycle</p><h3 className="font-headline font-black text-3xl uppercase leading-none">Usage Audit</h3></div>
             <div className="space-y-8 relative z-10">
-               <UsageProgress label="Verified Unique Assets" value={Math.round((stats.unused / (stats.total || 1)) * 100)} />
-               <UsageProgress label="Market Active (Used)" value={Math.round((stats.used / (stats.total || 1)) * 100)} />
-               <UsageProgress label="Banned Assets" value={Math.round((stats.locked / (stats.total || 1)) * 100)} />
+               <UsageProgress label="Verified Unique Assets" value={qLoading ? 0 : Math.round((stats.unused / (stats.total || 1)) * 100)} />
+               <UsageProgress label="Market Active (Used)" value={qLoading ? 0 : Math.round((stats.used / (stats.total || 1)) * 100)} />
+               <UsageProgress label="Banned Assets" value={qLoading ? 0 : Math.round((stats.locked / (stats.total || 1)) * 100)} />
             </div>
             <div className="pt-10 border-t border-white/5 relative z-10">
                <div className="flex items-center gap-4 text-emerald-500"><Activity className="h-6 w-6" /><span className="text-[10px] font-black uppercase tracking-[0.2em]">Live Registry Audit Online</span></div>
