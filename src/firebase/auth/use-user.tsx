@@ -8,8 +8,9 @@ import { useAuth, useFirestore } from '../provider';
 import { UserProfile } from '@/types';
 
 /**
- * @fileOverview Optimized Auth & Profile Hook.
- * PERFORMANCE: Separated Auth detection from Profile sync for immediate UI responsiveness.
+ * @fileOverview Hardened Auth & Profile Hook v3.0.
+ * FIXED: Aggressive loading state management to prevent redirect loops on mobile.
+ * Loading remains true until Auth state is resolved AND profile is fetched (if user exists).
  */
 export function useUser() {
   const auth = useAuth();
@@ -17,18 +18,21 @@ export function useUser() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authResolved, setAuthResolved] = useState(false);
   
-  const authCheckedRef = useRef(false);
+  const initialCheckDone = useRef(false);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
-      authCheckedRef.current = true;
+      setAuthResolved(true);
       
+      // If no user, we can stop loading immediately
       if (!firebaseUser) {
         setProfile(null);
         setLoading(false);
       }
+      initialCheckDone.current = true;
     });
 
     return () => unsubscribeAuth();
@@ -36,6 +40,9 @@ export function useUser() {
 
   useEffect(() => {
     if (!user || !db) return;
+
+    // If we have a user but no profile yet, we are still loading
+    setLoading(true);
 
     const unsubscribeProfile = onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
       if (docSnap.exists()) {
@@ -52,9 +59,13 @@ export function useUser() {
     return () => unsubscribeProfile();
   }, [user, db]);
 
+  // Combined loading state: True if auth hasn't even started checking, 
+  // or if it's checking, or if user is found but profile is still pending.
+  const isActuallyLoading = !authResolved || (user && loading);
+
   return { 
     user, 
     profile, 
-    loading: !authCheckedRef.current || (user ? loading : false) 
+    loading: isActuallyLoading 
   };
 }

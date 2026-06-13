@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, Suspense, useEffect, useTransition } from "react"
@@ -8,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Label } from "@/components/ui/label"
 import Logo from "@/components/brand/Logo"
 import { ShieldCheck, Mail, Lock, ChevronLeft, User, Phone, AlertCircle, RefreshCw, Eye, EyeOff, Loader2 } from "lucide-react"
-import { useAuth, useFirestore } from "@/firebase"
+import { useAuth, useFirestore, useUser } from "@/firebase"
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
@@ -25,8 +26,8 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 
 /**
- * @fileOverview Optimized Login Hub v9.0 (Micro Scale).
- * UPDATED: Aggressively reduced mobile typography and spacing to match requested scale.
+ * @fileOverview Optimized Login Hub v10.0 (Micro Scale).
+ * FIXED: Added automatic redirect for already-authenticated users to prevent mobile loops.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -54,6 +55,7 @@ function LoginContent() {
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   
+  const { user, loading: authLoading } = useUser()
   const router = useRouter()
   const searchParams = useSearchParams()
   const auth = useAuth()
@@ -62,9 +64,17 @@ function LoginContent() {
 
   const returnUrl = searchParams.get("returnUrl") || "/"
 
+  // PREVENT LOGIN LOOP: If user is already logged in, redirect them away
+  useEffect(() => {
+    if (!authLoading && user) {
+       router.replace(returnUrl);
+    }
+  }, [user, authLoading, router, returnUrl]);
+
   useEffect(() => {
     router.prefetch('/');
     router.prefetch('/admin');
+    router.prefetch('/dashboard');
   }, [router]);
 
   const handleEmailAuth = async (e: React.FormEvent) => {
@@ -189,6 +199,14 @@ function LoginContent() {
     }
   };
 
+  // Show nothing or a small loader if already authenticated to prevent content flash
+  if (!authLoading && user) return (
+     <div className="h-screen bg-[#020817] flex flex-col items-center justify-center space-y-4">
+        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-500">Redirecting to Dashboard...</p>
+     </div>
+  );
+
   const isActuallyLoading = loading || isPending;
 
   return (
@@ -200,7 +218,7 @@ function LoginContent() {
            <Logo variant="light" imgClassName="h-full scale-100" />
         </div>
         
-        {searchParams.has("returnUrl") && (
+        {searchParams.has("returnUrl") && !user && (
            <div className="bg-primary/10 border border-primary/20 p-3 rounded-xl mb-4 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
               <AlertCircle className="h-4 w-4 text-primary shrink-0" />
               <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-primary leading-tight">Please login to attempt this test.</p>
@@ -280,7 +298,7 @@ function LoginContent() {
               
               <Button type="submit" className="w-full h-12 md:h-14 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] text-[12px] md:text-[14px] rounded-xl shadow-xl border-none transition-all active:scale-95" disabled={isActuallyLoading}>
                 {isActuallyLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                {isActuallyLoading ? "Redirecting..." : (mode === 'login' ? "Login" : "Sign Up")}
+                {isActuallyLoading ? "Processing..." : (mode === 'login' ? "Login" : "Sign Up")}
               </Button>
             </form>
             
