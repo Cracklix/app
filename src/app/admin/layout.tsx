@@ -1,4 +1,3 @@
-
 'use client';
 
 import { SidebarProvider, Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
@@ -43,8 +42,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Admin Layout v166.0.
- * UPDATED: Fixed vertical spacing between section labels and menu items for a high-density UI.
+ * @fileOverview Institutional Admin Layout v167.0.
+ * UPDATED: Strictly equalized vertical spacing between Logo, Group Headers, and Menu Items.
+ * FIXED: Removed all overlapping margins to ensure a clean, rhythmic scroll.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -93,16 +93,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
        {/* WHOLE SIDEBAR SCROLL AREA */}
        <div className="flex-1 custom-scrollbar overflow-y-auto overflow-x-hidden pb-10">
           
-          {/* SIDEBAR LOGO */}
-          <div className="px-4 pt-0 pb-0 flex justify-center shrink-0">
+          {/* SIDEBAR LOGO: Zero top spacing, rhythmic bottom spacing */}
+          <div className="px-4 pt-0 pb-2 flex justify-center shrink-0">
              <div className="h-32 flex items-start justify-center transition-all duration-500">
                <Logo href="/admin" />
              </div>
           </div>
 
-          <SidebarGroup className="pt-0 -mt-6">
-            <SidebarGroupLabel className="px-6 pt-0 pb-0 h-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Main Database</SidebarGroupLabel>
-            <SidebarMenu className="gap-1 mt-1">
+          <SidebarGroup className="pt-0">
+            <SidebarGroupLabel className="px-6 py-0 h-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Main Database</SidebarGroupLabel>
+            <SidebarMenu className="gap-2 mt-2">
               <AdminNavItem icon={<LayoutDashboard />} label="DASHBOARD" href="/admin" active={pathname === "/admin"} />
               <AdminNavItem icon={<Layers />} label="CATEGORIES" href="/admin/categories" active={pathname === "/admin/categories"} />
               <AdminNavItem icon={<Landmark className="text-amber-400" />} label="HUBS (BOARDS)" href="/admin/exams" active={pathname === "/admin/exams"} />
@@ -113,9 +113,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </SidebarMenu>
           </SidebarGroup>
 
-          <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 pt-0 pb-0 h-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Content Hub</SidebarGroupLabel>
-            <SidebarMenu className="gap-1 mt-1">
+          <SidebarGroup className="mt-6">
+            <SidebarGroupLabel className="px-6 py-0 h-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Content Hub</SidebarGroupLabel>
+            <SidebarMenu className="gap-2 mt-2">
               <AdminNavItem icon={<Wand2 className="text-emerald-400" />} label="BRAND MAGIC" href="/admin/brand-magic" active={pathname === "/admin/brand-magic"} />
               <AdminNavItem icon={<LayoutGrid className="text-orange-500" />} label="MOCK BUILDER" href="/admin/mocks/builder" active={pathname === "/admin/mocks/builder"} />
               <AdminNavItem icon={<Zap className="text-primary" />} label="MOCK MANAGER" href="/admin/mocks" active={pathname === "/admin/mocks"} />
@@ -127,9 +127,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </SidebarMenu>
           </SidebarGroup>
 
-          <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 pt-0 pb-0 h-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Users & Revenue</SidebarGroupLabel>
-            <SidebarMenu className="gap-1 mt-1">
+          <SidebarGroup className="mt-6">
+            <SidebarGroupLabel className="px-6 py-0 h-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Users & Revenue</SidebarGroupLabel>
+            <SidebarMenu className="gap-2 mt-2">
               <AdminNavItem icon={<Users className="text-blue-400" />} label="STUDENT LIST" href="/admin/users" active={pathname === "/admin/users"} />
               <AdminNavItem icon={<DollarSign className="text-emerald-400" />} label="REVENUE HUB" href="/admin/payments" active={pathname === "/admin"} />
               <AdminNavItem icon={<ShieldCheck className="text-primary" />} label="MANUAL VERIFY" href="/admin/payments/verify" active={pathname === "/admin/payments/verify"} />
@@ -137,9 +137,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </SidebarMenu>
           </SidebarGroup>
 
-          <SidebarGroup className="mt-4">
-            <SidebarGroupLabel className="px-6 pt-0 pb-0 h-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">System Health</SidebarGroupLabel>
-            <SidebarMenu className="gap-1 mt-1">
+          <SidebarGroup className="mt-6">
+            <SidebarGroupLabel className="px-6 py-0 h-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">System Health</SidebarGroupLabel>
+            <SidebarMenu className="gap-2 mt-2">
               <AdminNavItem icon={<History className="text-slate-400" />} label="ACTIVITY LOGS" href="/admin/audit-logs" active={pathname === "/admin/audit-logs"} />
               <AdminNavItem icon={<ShieldAlert className="text-rose-500" />} label="ERROR CHECK" href="/admin/qa" active={pathname === "/admin/qa"} />
               <AdminNavItem icon={<HeartPulse className="text-rose-500" />} label="PLATFORM STATUS" href="/admin/health" active={pathname === "/admin/health"} />
