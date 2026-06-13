@@ -5,15 +5,10 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Landmark, 
-  GraduationCap, 
-  Zap, 
-  Wallet, 
-  Globe, 
-  ArrowRight,
-  ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  ArrowRight
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -22,8 +17,8 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Institutional Category Entry Nodes v5.3 (Hydration Hardened).
- * FIXED: Wrapped Firestore derivations in a mount guard to prevent SSR/CSR mismatch.
+ * @fileOverview Institutional Category Entry Nodes v5.4 (Hydration Hardened).
+ * FIXED: Ensured content is perfectly stable during hydration to prevent tree shifts.
  */
 
 const CATEGORY_META = [
@@ -82,7 +77,7 @@ export default function FeaturedCategories() {
 
   const categoriesWithCounts = useMemo(() => {
     return CATEGORY_META.map(cat => {
-      // Only derive counts if mounted to keep server and client matching initially
+      // FORCE 0 on server and first client pass to match skeleton state
       const count = mounted && exams ? exams.filter((e: any) => e.categoryId === cat.id).length : 0;
       return {
         ...cat,
@@ -132,7 +127,7 @@ export default function FeaturedCategories() {
                    </div>
 
                    <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
-                      {loading || !mounted ? (
+                      {!mounted || loading ? (
                         <Skeleton className="h-3 w-20 bg-slate-100" />
                       ) : (
                         <span className="text-[10px] font-black text-[#0F172A] uppercase tracking-widest">{cat.countLabel}</span>

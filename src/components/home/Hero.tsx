@@ -22,30 +22,18 @@ import {
   Scale,
   FileText,
   GraduationCap,
-  X,
-  Newspaper,
-  LayoutGrid,
-  Star,
-  BarChart3,
   Flame,
-  Globe,
-  TrendingUp,
-  Smartphone,
-  Lock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
-import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Institutional Punjab Government Exam Hero v23.0 (Hydration Fixed).
- * UPDATED: Integrated mounted guard for live stats to prevent hydration mismatch.
+ * @fileOverview Institutional Punjab Government Exam Hero v24.0 (Hydration Hardened).
+ * FIXED: Ensured displayStats is perfectly consistent between server and first client pass.
  */
 
 export default function Hero() {
@@ -60,7 +48,7 @@ export default function Hero() {
 
   // LIVE STATS LISTENER
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
-  const { data: stats, loading } = useDoc<any>(statsRef);
+  const { data: stats } = useDoc<any>(statsRef);
 
   const displayStats = useMemo(() => {
     const format = (num: number) => {
@@ -68,7 +56,7 @@ export default function Hero() {
       return num >= 1000 ? `${(num / 1000).toFixed(1)}k+` : num.toString();
     };
 
-    // Use placeholder values if not mounted or loading to ensure SSR matches initial hydration
+    // FORCE PLACEHOLDERS on server and first client pass
     const s = mounted ? stats : null;
 
     return {

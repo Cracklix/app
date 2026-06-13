@@ -15,8 +15,6 @@ import {
   Star,
   FileText,
   Newspaper,
-  Layers,
-  SearchCode
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -24,9 +22,10 @@ import { useCollection, useFirestore } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
 
 /**
- * @fileOverview Final Institutional Popular Exams Hub v22.0 (Hydration Guarded).
+ * @fileOverview Final Institutional Popular Exams Hub v23.0 (Hydration Hardened).
  * MATCHED: High-density board list with breakdown links for each prep node.
  */
 
@@ -53,6 +52,7 @@ export default function PopularExams() {
   const { data: boards, loading } = useCollection<any>(boardsQuery);
 
   const filteredBoards = useMemo(() => {
+    // Return empty during SSR and first client pass to match skeleton layout
     if (!boards || !mounted) return [];
     // Prioritize popular ones for homepage mapping
     const targetAbbrevs = ['PSSSB', 'POLICE', 'PPSC', 'PSPCL', 'PSTET', 'CTET', 'ETT', 'MASTER CADRE'];
@@ -77,7 +77,7 @@ export default function PopularExams() {
          </div>
 
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            {loading || !mounted ? (
+            {!mounted || loading ? (
                Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[2.5rem]" />)
             ) : filteredBoards.map((board, idx) => (
               <motion.div 
