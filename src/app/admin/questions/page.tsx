@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo, useState, useEffect, useCallback, Suspense } from "react"
@@ -7,7 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Search, Edit, Trash2, Database, Loader2, RefreshCw, Filter, CheckCircle2, AlertTriangle, X, Lock, Unlock, Zap, History, LayoutGrid, GraduationCap, Layers, Landmark } from "lucide-react"
+import { Plus, Search, Edit, Trash2, Database, Loader2, RefreshCw, Filter, CheckCircle2, Lock, Unlock, Landmark, GraduationCap } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useCollection, useFirestore } from "@/firebase"
@@ -19,8 +18,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Paginated Question Bank Hub v32.0.
- * FIXED: Resolved infinite loop by removing lastDoc from fetchQuestions dependency array.
+ * @fileOverview Paginated Question Bank Hub v33.0.
+ * HARDENED: Fixed infinite loop and shadowed variables.
  */
 
 type QuestionFilterType = 'ALL' | 'UNUSED' | 'USED' | 'LOCKED' | 'DUPLICATE' | 'REPEATED';
@@ -34,7 +33,7 @@ export default function QuestionBank() {
 }
 
 function QuestionBankContent() {
-  const db = useFirestore()
+  const dbInstance = useFirestore()
   const { toast } = useToast()
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -53,15 +52,14 @@ function QuestionBankContent() {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [isBulkProcessing, setIsBulkProcessing] = useState(false)
 
-  // LIVE REGISTRY LISTENERS
-  const { data: boards } = useCollection<any>(useMemo(() => (db ? query(collection(db, "boards"), orderBy("displayOrder", "asc")) : null), [db]));
-  const { data: subjects } = useCollection<any>(useMemo(() => (db ? query(collection(db, "subjects"), orderBy("name", "asc")) : null), [db]));
-  const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]));
+  const { data: boards } = useCollection<any>(useMemo(() => (dbInstance ? query(collection(dbInstance, "boards"), orderBy("displayOrder", "asc")) : null), [dbInstance]));
+  const { data: subjects } = useCollection<any>(useMemo(() => (dbInstance ? query(collection(dbInstance, "subjects"), orderBy("name", "asc")) : null), [dbInstance]));
+  const { data: exams } = useCollection<any>(useMemo(() => (dbInstance ? collection(dbInstance, "exams") : null), [dbInstance]));
 
   const activeBoard = useMemo(() => boards?.find((b: any) => b.id === boardParam), [boards, boardParam]);
 
   const fetchQuestions = useCallback(async (nextCursor: any = null) => {
-    if (!db) return
+    if (!dbInstance) return
     setLoading(true)
     
     try {
@@ -73,10 +71,9 @@ function QuestionBankContent() {
       if (activeTab === 'UNUSED') constraints.push(where("status", "==", "UNUSED"));
       if (boardParam !== "all") constraints.push(where("boardId", "==", boardParam))
       
-      // Use the cursor passed as parameter instead of relying on external state in dependencies
       if (nextCursor) constraints.push(startAfter(nextCursor))
 
-      const q = query(collection(db, "questions"), ...constraints)
+      const q = query(collection(dbInstance, "questions"), ...constraints)
       const snap = await getDocs(q)
       const newQs = snap.docs.map(d => ({ ...d.data(), id: d.id }))
       
@@ -94,11 +91,9 @@ function QuestionBankContent() {
     } finally {
       setLoading(false)
     }
-  }, [db, boardParam, activeTab, toast])
+  }, [dbInstance, boardParam, activeTab, toast])
 
   useEffect(() => {
-    setLastDoc(null)
-    setHasMore(true)
     fetchQuestions(null)
   }, [boardParam, activeTab, fetchQuestions]);
 
@@ -115,12 +110,12 @@ function QuestionBankContent() {
   }, [questions, searchTerm, subjectFilter, difficultyFilter])
 
   const handleBulkStatusChange = (newStatus: string) => {
-    if (!db || selectedIds.length === 0) return;
+    if (!dbInstance || selectedIds.length === 0) return;
     setIsBulkProcessing(true);
-    const batch = writeBatch(db);
+    const batch = writeBatch(dbInstance);
     
     selectedIds.forEach(id => {
-      batch.update(doc(db, "questions", id), { status: newStatus, updatedAt: serverTimestamp() });
+      batch.update(doc(dbInstance, "questions", id), { status: newStatus, updatedAt: serverTimestamp() });
     });
 
     batch.commit().then(() => {
@@ -131,7 +126,7 @@ function QuestionBankContent() {
   }
 
   return (
-    <div className="space-y-6 text-[#0F172A] text-left relative pb-32 px-4 md:px-0">
+    <div className="space-y-6 text-[#0F172A] text-left relative pb-32">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="text-left">
           <div className="flex items-center gap-3 mb-1.5"><Database className="h-5 w-5 text-primary" /><span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">{activeBoard ? `${activeBoard.abbreviation} Authority Bank` : "Global Bank Hub"}</span></div>
@@ -189,7 +184,7 @@ function QuestionBankContent() {
                     <TableCell className="text-right px-8">
                       <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100 transition-all">
                         <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-white hover:text-primary shadow-sm" asChild><Link href={`/admin/questions/add?id=${q.id}`}><Edit className="h-4 w-4" /></Link></Button>
-                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-rose-50 hover:text-rose-600 shadow-sm" onClick={() => { if(confirm("Purge asset?")) { deleteDoc(doc(db!, "questions", q.id)); setQuestions(prev => prev.filter(p => p.id !== q.id)); } }}><Trash2 className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-rose-50 hover:text-rose-600 shadow-sm" onClick={() => { if(confirm("Purge asset?")) { deleteDoc(doc(dbInstance, "questions", q.id)); setQuestions(prev => prev.filter(p => p.id !== q.id)); } }}><Trash2 className="h-4 w-4" /></Button>
                       </div>
                     </TableCell>
                   </TableRow>

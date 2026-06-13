@@ -5,14 +5,25 @@ import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { firebaseConfig } from './config';
 
 /**
- * @fileOverview Hardened Firebase Initialization Node.
- * Enforces explicit named exports to prevent Webpack resolution errors and "Preview shutdown" events.
+ * @fileOverview Hardened Firebase Initialization Node v2.0.
+ * Enforces a singleton pattern to prevent multiple app initialization errors.
  */
+
+let app: FirebaseApp;
+let firestore: Firestore;
+let auth: Auth;
+let storage: FirebaseStorage;
+
 export function initializeFirebase(): { app: FirebaseApp; firestore: Firestore; auth: Auth; storage: FirebaseStorage } {
-  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-  const firestore = getFirestore(app);
-  const auth = getAuth(app);
-  const storage = getStorage(app);
+  if (getApps().length === 0) {
+    app = initializeApp(firebaseConfig);
+  } else {
+    app = getApp();
+  }
+
+  firestore = getFirestore(app);
+  auth = getAuth(app);
+  storage = getStorage(app);
 
   return { app, firestore, auth, storage };
 }

@@ -5,13 +5,9 @@ import {
   LayoutDashboard, 
   LogOut, 
   ShieldCheck, 
-  Menu, 
-  HeartPulse, 
-  Settings, 
   User, 
   FileStack,
-  Newspaper,
-  Megaphone, 
+  Newspaper, 
   SearchCode,
   Landmark,
   GraduationCap,
@@ -28,9 +24,10 @@ import {
   Gem,
   History,
   ShieldAlert,
-  ClipboardCheck,
   LayoutGrid,
-  Wand2
+  Wand2,
+  HeartPulse,
+  Settings
 } from "lucide-react"
 import Link from "next/link"
 import Logo from "@/components/brand/Logo"
@@ -42,15 +39,15 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Admin Layout v172.0.
- * RESTORED: Scaled logo back to h-16 for a balanced sidebar view.
+ * @fileOverview Hardened Institutional Admin Layout v173.0.
+ * FIXED: Renamed 'auth' variable to 'authInstance' to prevent shadowing the useAuth hook.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useUser()
-  const auth = useAuth()
+  const authInstance = useAuth()
   const router = useRouter()
   const pathname = usePathname()
   const [mounted, setMounted] = useState(false);
@@ -74,7 +71,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [user, profile, loading, router, isAdmin, mounted, pathname])
 
   const handleLogout = async () => {
-    await signOut(auth)
+    await signOut(authInstance)
     router.push('/login')
   }
 
@@ -92,7 +89,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
        <div className="flex-1 custom-scrollbar overflow-y-auto overflow-x-hidden pb-10">
           
           <div className="px-4 pt-4 pb-2 flex justify-center shrink-0">
-             <div className="h-20 flex items-center justify-center transition-all duration-500">
+             <div className="h-20 flex items-center justify-center">
                <Logo href="/admin" imgClassName="h-16" />
              </div>
           </div>
@@ -128,7 +125,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <SidebarGroupLabel className="px-6 py-0 h-6 text-[10px] font-black uppercase tracking-widest text-white/20 text-left">Users & Revenue</SidebarGroupLabel>
             <SidebarMenu className="gap-2 mt-2">
               <AdminNavItem icon={<Users className="text-blue-400" />} label="STUDENT LIST" href="/admin/users" active={pathname === "/admin/users"} />
-              <AdminNavItem icon={<DollarSign className="text-emerald-400" />} label="REVENUE HUB" href="/admin/payments" active={pathname === "/admin"} />
+              <AdminNavItem icon={<DollarSign className="text-emerald-400" />} label="REVENUE HUB" href="/admin/payments" active={pathname === "/admin/payments"} />
               <AdminNavItem icon={<ShieldCheck className="text-primary" />} label="MANUAL VERIFY" href="/admin/payments/verify" active={pathname === "/admin/payments/verify"} />
               <AdminNavItem icon={<Gem className="text-amber-400" />} label="PASS MANAGER" href="/admin/passes" active={pathname === "/admin/passes"} />
             </SidebarMenu>
