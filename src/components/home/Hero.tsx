@@ -17,7 +17,7 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Final Calibrated Hero v252.0.
+ * @fileOverview Final Calibrated Hero v253.0.
  * RESTORED: Golden Temple background image with optimized visibility and layering.
  */
 
@@ -56,7 +56,7 @@ export default function Hero() {
       <div className="absolute inset-0 z-0 overflow-hidden bg-[#050B19]">
         <motion.img 
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.6 }}
+          animate={{ opacity: 0.7 }}
           transition={{ duration: 1.2 }}
           src="https://images.unsplash.com/photo-1594913366159-1832ffef8171?q=80&w=1920&auto=format&fit=crop" 
           alt="Golden Temple Punjab" 
@@ -65,8 +65,8 @@ export default function Hero() {
           data-ai-hint="golden temple"
         />
         {/* Layered gradients for depth and text legibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#050B19]/20 via-[#050B19]/70 to-[#050B19] z-[1]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19]/80 via-transparent to-transparent z-[1] hidden md:block" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050B19]/30 via-[#050B19]/80 to-[#050B19] z-[1]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19]/60 via-transparent to-transparent z-[1] hidden md:block" />
       </div>
 
       <div className="container mx-auto px-4 md:px-8 lg:px-12 max-w-7xl relative z-[30] pt-12 md:pt-20">

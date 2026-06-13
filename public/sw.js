@@ -1,7 +1,8 @@
 /**
- * @fileOverview Minimalist Service Worker for PWA Compliance.
- * Mandatory for browser-level "Install App" prompt activation.
+ * @fileOverview Production Service Worker for PWA Offline Node.
  */
+const CACHE_NAME = 'cracklix-cache-v1';
+
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
@@ -11,6 +12,6 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Standard pass-through fetch handler to satisfy Chrome installability criteria
-  event.respondWith(fetch(event.request));
+  // Pass-through handler required for Chrome installability criteria
+  event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
 });
