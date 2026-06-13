@@ -42,8 +42,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Admin Layout v163.0.
- * UPDATED: Optimized sidebar spacing for "Main Database" and sub-hubs.
+ * @fileOverview Institutional Admin Layout v164.0.
+ * UPDATED: Increased sidebar logo size to h-32 and optimized database group spacing.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -92,9 +92,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
        {/* WHOLE SIDEBAR SCROLL AREA */}
        <div className="flex-1 custom-scrollbar overflow-y-auto overflow-x-hidden pb-10">
           
-          {/* SIDEBAR LOGO: COMPACT CONTAINER */}
-          <div className="px-4 pt-4 pb-2 flex justify-center shrink-0">
-             <div className="h-24 flex items-center justify-center transition-all duration-500">
+          {/* SIDEBAR LOGO: INCREASED SIZE HUB */}
+          <div className="px-4 pt-6 pb-2 flex justify-center shrink-0">
+             <div className="h-32 flex items-center justify-center transition-all duration-500">
                <Logo href="/admin" />
              </div>
           </div>
