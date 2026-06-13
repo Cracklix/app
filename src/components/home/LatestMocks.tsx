@@ -19,8 +19,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Screenshot Matched Latest Mocks v32.5.
- * FIXED: Explicitly imported Card components to fix ReferenceError.
+ * @fileOverview Official Latest Mock Hub v33.0.
+ * FIXED: Ensured all Card components are correctly imported to resolve ReferenceError.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -93,10 +93,10 @@ export default function LatestMocks() {
                      )}
                   </div>
 
-                  <div className="flex-1 space-y-4">
-                     <h3 className="font-black text-sm md:text-base text-[#0F172A] leading-tight uppercase line-clamp-2 min-h-[40px] group-hover:text-primary transition-colors">
+                  <CardHeader className="p-0 flex-1 space-y-4">
+                     <CardTitle className="font-black text-sm md:text-base text-[#0F172A] leading-tight uppercase line-clamp-2 min-h-[40px] group-hover:text-primary transition-colors">
                         {mock.title}
-                     </h3>
+                     </CardTitle>
 
                      <div className="flex items-center justify-center gap-3 text-[9px] font-bold text-slate-400 uppercase tracking-tight">
                         <span className="flex items-center gap-1.5"><BookOpen className="h-3 w-3 text-slate-300" /> {mock.totalQuestions} Qs</span>
@@ -112,9 +112,9 @@ export default function LatestMocks() {
                      )}>
                         {isPremium ? '🔒 PREMIUM' : difficulty}
                      </Badge>
-                  </div>
+                  </CardHeader>
 
-                  <div className="mt-8 pt-4">
+                  <CardContent className="p-0 mt-8 pt-4">
                      {locked ? (
                        <Button asChild className="w-full h-11 bg-orange-500 hover:bg-orange-600 text-white font-black text-[9px] uppercase tracking-widest rounded-xl transition-all shadow-sm active:scale-95 border-none">
                           <Link href="/pass">Unlock Test</Link>
@@ -124,7 +124,7 @@ export default function LatestMocks() {
                           <Link href={`/mocks/${mock.id}`}>Attempt Now</Link>
                        </Button>
                      )}
-                  </div>
+                  </CardContent>
                 </Card>
               </motion.div>
             )

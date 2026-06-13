@@ -19,9 +19,9 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Definitive Full Background Hero v85.0.
- * FIXED: Background image container optimized to show the FULL image without heavy cropping.
- * FIXED: Heading character clipping resolved via specific right-padding guards.
+ * @fileOverview Definitive Full Background Hero v90.0.
+ * FIXED: Background image set to full 1024x576 aspect ratio (no cropping).
+ * FIXED: Header clipping resolved via pr-14 buffer for italic characters.
  */
 
 export default function Hero() {
@@ -52,87 +52,89 @@ export default function Hero() {
   if (!mounted) return null;
 
   return (
-    <section className="relative min-h-[550px] md:min-h-[75vh] lg:min-h-[85vh] flex flex-col justify-center overflow-hidden text-left pt-20 pb-16">
-      {/* FULL BACKGROUND IMAGE ENGINE - ASPECT RATIO OPTIMIZED */}
-      <div className="absolute inset-0 z-0 bg-[#020817]">
-         <img 
-           src="https://i.ibb.co/LXgcLVVq/Gemini-Generated-Image-n1so6on1so6on1so.png" 
-           alt="Full Night Temple Background" 
-           className="w-full h-full object-cover object-top opacity-90 transition-opacity duration-1000"
-           loading="eager"
-         />
-         {/* Optimized gradient for full image details */}
-         <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-[#020817]/40 to-transparent" />
-         <div className="absolute inset-0 bg-black/5" />
-      </div>
-
+    <section className="relative w-full bg-[#020817] pt-20 pb-16 overflow-hidden">
+      {/* 1024x576 FULL RATIO CONTAINER */}
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="max-w-4xl space-y-10 md:space-y-12">
+        <div className="grid lg:grid-cols-12 gap-12 items-center">
           
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl"
-          >
-            <Star className="h-4 w-4 text-orange-500 fill-current" />
-            <span className="text-[10px] md:text-xs font-black text-white uppercase tracking-widest">
-              Punjab's #1 Exam Preparation Hub
-            </span>
-          </motion.div>
+          <div className="lg:col-span-7 space-y-10 md:space-y-12 text-left">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl"
+            >
+              <Star className="h-4 w-4 text-orange-500 fill-current" />
+              <span className="text-[10px] md:text-xs font-black text-white uppercase tracking-widest">
+                Punjab's #1 Exam Preparation Hub
+              </span>
+            </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="space-y-6"
-          >
-            {/* PR-12 buffer fixed character clipping on 'S' */}
-            <h1 className="text-5xl md:text-8xl font-black text-white leading-[0.9] tracking-tighter uppercase pr-12">
-              Prepare Smarter. <br />
-              <span className="text-primary italic pr-12">GOVT EXAMS.</span>
-            </h1>
-            <p className="text-base md:text-2xl text-slate-300 font-medium max-w-2xl leading-relaxed pr-10">
-              Complete Preparation for PSSSB, Punjab Police & PPSC. High-Fidelity Mocks and Step-by-Step Logic Solutions.
-            </p>
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="space-y-6"
+            >
+              <h1 className="text-4xl md:text-8xl font-black text-white leading-[0.9] tracking-tighter uppercase">
+                <span className="block pr-14">Prepare Smarter.</span>
+                <span className="text-primary italic pr-14">GOVT EXAMS.</span>
+              </h1>
+              <p className="text-base md:text-2xl text-slate-300 font-medium max-w-2xl leading-relaxed pr-10">
+                Complete Preparation for PSSSB, Punjab Police & PPSC. High-Fidelity Mocks and Step-by-Step Logic Solutions.
+              </p>
+            </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-4 pt-6"
-          >
-            <Button asChild className="h-16 md:h-20 px-10 md:px-14 bg-primary hover:bg-orange-600 text-white font-black uppercase text-xs md:text-sm tracking-[0.2em] rounded-2xl shadow-4xl gap-4 border-none transition-all active:scale-95">
-              <Link href="/mocks">
-                Start Free Mock <Zap className="h-5 w-5 md:h-6 md:w-6 fill-current" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="h-16 md:h-20 px-10 md:px-14 border-white/20 bg-white/5 hover:bg-white/10 text-white font-black uppercase text-xs md:text-sm tracking-[0.2em] rounded-2xl transition-all backdrop-blur-md">
-              <Link href="/exams">
-                Explore Hubs
-              </Link>
-            </Button>
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="flex flex-col sm:flex-row gap-4 pt-6"
+            >
+              <Button asChild className="h-16 md:h-20 px-10 md:px-14 bg-primary hover:bg-orange-600 text-white font-black uppercase text-xs md:text-sm tracking-[0.2em] rounded-2xl shadow-4xl gap-4 border-none transition-all active:scale-95">
+                <Link href="/mocks">
+                  Start Free Mock <Zap className="h-5 w-5 md:h-6 md:w-6 fill-current" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="h-16 md:h-20 px-10 md:px-14 border-white/20 bg-white/5 hover:bg-white/10 text-white font-black uppercase text-xs md:text-sm tracking-[0.2em] rounded-2xl transition-all backdrop-blur-md">
+                <Link href="/exams">
+                  Explore Hubs
+                </Link>
+              </Button>
+            </motion.div>
 
-          {/* GLASSMORPHISM STATS HUB */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="pt-16 grid grid-cols-2 lg:grid-cols-4 gap-4"
-          >
-            {displayStats.map((s, i) => (
-              <Card key={i} className="border-none bg-white/[0.03] backdrop-blur-2xl rounded-[1.5rem] p-6 flex items-center gap-4 border border-white/10 shadow-2xl group hover:bg-white/[0.06] transition-all">
-                <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-                  {s.icon}
-                </div>
-                <div className="text-left space-y-0.5 min-w-0">
-                  <p className="text-xl md:text-2xl font-black text-white leading-none tracking-tighter truncate">{s.val}</p>
-                  <p className="text-[9px] font-bold uppercase text-slate-400 tracking-widest truncate">{s.label}</p>
-                </div>
-              </Card>
-            ))}
-          </motion.div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12">
+               {displayStats.map((s, i) => (
+                  <div key={i} className="text-left">
+                     <p className="text-xl md:text-3xl font-black text-white tracking-tighter">{s.val}</p>
+                     <p className="text-[8px] md:text-[9px] font-black uppercase text-slate-500 tracking-widest mt-1">{s.label}</p>
+                  </div>
+               ))}
+            </div>
+          </div>
+
+          <div className="lg:col-span-5 relative group">
+             {/* 1024x576 ASPECT WRAPPER */}
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.95 }}
+               animate={{ opacity: 1, scale: 1 }}
+               transition={{ delay: 0.3 }}
+               className="relative aspect-[1024/576] rounded-[2.5rem] overflow-hidden border-[6px] border-white/10 shadow-5xl group-hover:border-primary/20 transition-all duration-700"
+             >
+                <img 
+                  src="https://i.ibb.co/LXgcLVVq/Gemini-Generated-Image-n1so6on1so6on1so.png" 
+                  alt="Official Hub Background" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#020817]/60 via-transparent to-transparent" />
+                
+                {/* Visual Glow Points */}
+                <div className="absolute top-4 right-4 h-3 w-3 rounded-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)] animate-pulse" />
+                <div className="absolute top-10 right-4 h-1.5 w-8 rounded-full bg-white/10" />
+             </motion.div>
+             
+             {/* Decorative Background Elements */}
+             <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/5 blur-[100px] rounded-full pointer-events-none" />
+          </div>
         </div>
       </div>
     </section>
