@@ -22,9 +22,9 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Final Viewport-Calibrated Hero v12.0.
- * FIXED: Mobile height reduced to 230px per user request.
- * FIXED: Content scaling tuned for ultra-compact mobile banner.
+ * @fileOverview Final Viewport-Calibrated Hero v13.0.
+ * FIXED: Background image visibility on mobile by using a more reliable asset and tuning overlays.
+ * FIXED: Mobile height preserved at 230px.
  */
 
 export default function Hero() {
@@ -58,16 +58,19 @@ export default function Hero() {
   return (
     <section className="relative w-full bg-[#020817] overflow-hidden flex flex-col items-center">
       {/* 1. BACKGROUND LAYER - Compact 230px Fit */}
-      <div className="w-full relative min-h-[230px] md:min-h-0 md:aspect-[21/9]">
-        <img 
-          src="https://i.ibb.co/LXgcLVVq/Gemini-Generated-Image-n1so6on1so6on1so.png" 
+      <div className="w-full relative min-h-[230px] md:min-h-0 md:aspect-[21/9] bg-[#020817]">
+        <motion.img 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          src="https://images.unsplash.com/photo-1596404351662-386f63456770?q=80&w=2070&auto=format&fit=crop" 
           alt="Golden Temple Night" 
-          className="absolute inset-0 w-full h-full object-cover object-center"
+          className="absolute inset-0 w-full h-full object-cover object-[center_30%]"
           referrerPolicy="no-referrer"
         />
         
-        {/* PAIRED OVERLAYS */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-[#020817]/60 to-transparent z-10" />
+        {/* PAIRED OVERLAYS - Balanced for mobile visibility */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-[#020817]/40 md:via-[#020817]/60 to-transparent z-10" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#020817] via-transparent to-transparent z-10" />
         
         {/* TEXT CONTENT HUB */}
@@ -92,7 +95,7 @@ export default function Hero() {
                     transition={{ delay: 0.1 }}
                     className="space-y-1.5 md:space-y-4"
                  >
-                    <h1 className="text-sm sm:text-4xl md:text-6xl font-black text-white leading-[1.1] tracking-tighter uppercase break-words">
+                    <h1 className="text-sm sm:text-4xl md:text-6xl font-black text-white leading-[1.1] tracking-tighter uppercase break-words drop-shadow-2xl">
                        Prepare Smarter.<br/>
                        <span className="text-primary italic">Score Higher.</span>
                     </h1>
