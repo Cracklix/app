@@ -29,8 +29,8 @@ import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Hardened Production Sidebar Hub v52.0.
- * UPDATED: Integrated large Logo component at the top of the sidebar.
+ * @fileOverview Hardened Production Sidebar Center v53.0.
+ * UPDATED: Replaced Hub with contextually correct terms.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -76,13 +76,13 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   };
 
   const menuItems = [
-    { label: "Home Hub", href: "/", icon: Home },
+    { label: "Home Page", href: "/", icon: Home },
     { label: "My Registry", href: "/my-exams", icon: Target },
     { label: "Exam List", href: "/exams", icon: Landmark },
-    { label: "Practice Mocks", href: "/mocks", icon: Zap },
+    { label: "Practice Bank", href: "/mocks", icon: Zap },
     { label: "Study Updates", href: "/current-affairs", icon: Newspaper },
     { label: "Study Notes", href: "/notes", icon: FileText },
-    { label: "Leaderboard", href: "/leaderboard", icon: ShieldCheck },
+    { label: "Punjab Merit", href: "/leaderboard", icon: ShieldCheck },
   ];
 
   return (
@@ -186,7 +186,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
         
         <button 
           onClick={handleLogout}
-          className="flex items-center gap-5 px-6 h-[56px] text-rose-500 hover:bg-rose-500/5 transition-all w-full text-left active:scale-95"
+          className="flex items-center gap-5 px-6 h-[56px] text-rose-500 hover:bg-rose-50/5 transition-all w-full text-left active:scale-95"
         >
           <LogOut className="h-5 w-5 shrink-0" />
           <span className="text-[12px] font-black uppercase tracking-tight">LOG OUT SESSION</span>

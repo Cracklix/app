@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useState, useEffect } from "react"
@@ -36,8 +35,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 /**
- * @fileOverview Official Current Affairs Hub v12.1 (Hardened).
- * GATED: Access restricted to authenticated students only.
+ * @fileOverview Official Current Affairs Center v13.0 (Hardened).
+ * TEXT: Replaced Hub with Center.
  */
 
 const HUB_TYPES = [
@@ -48,7 +47,7 @@ const HUB_TYPES = [
   { id: "PDF", label: "PDF Notes", icon: <FileText className="h-5 w-5" /> }
 ]
 
-export default function FreeContentHub() {
+export default function CurrentAffairsCenter() {
   const db = useFirestore()
   const { user, loading: authLoading } = useUser()
   const router = useRouter()
@@ -120,12 +119,12 @@ export default function FreeContentHub() {
             <div className="space-y-8 relative z-10 max-w-3xl">
               <div className="flex items-center gap-3">
                  <Badge className="bg-primary text-white border-none px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-[0.2em] shadow-xl">
-                    STUDY HUB
+                    STUDY CENTER
                  </Badge>
               </div>
               <h1 className="text-4xl md:text-8xl font-headline font-black tracking-tighter uppercase leading-[0.85]">
                 PUNJAB <br/>
-                <span className="text-primary">STUDY HUB</span>
+                <span className="text-primary">STUDY CENTER</span>
               </h1>
               <p className="text-slate-400 font-medium text-base md:text-xl max-w-2xl leading-relaxed">
                 Daily, Weekly, and Monthly exam updates verified for all upcoming Punjab recruitment exams.
@@ -171,7 +170,7 @@ export default function FreeContentHub() {
                                   <div className="flex-1 space-y-3 w-full">
                                      <div className="flex items-center justify-between">
                                         <Badge className="bg-slate-100 text-slate-400 border-none px-3 py-1 font-black uppercase text-[8px] tracking-widest">
-                                           {item.type} HUB
+                                           {item.type} CENTER
                                         </Badge>
                                         <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
                                            <Calendar className="h-3 w-3 text-primary" /> {item.month} {item.year}
@@ -203,7 +202,7 @@ export default function FreeContentHub() {
                    ) : (
                       <div className="py-24 text-center border-2 border-dashed border-slate-100 rounded-[3rem] opacity-20">
                          <Sparkles className="h-12 w-12 mx-auto mb-4" />
-                         <p className="font-headline font-black text-xl uppercase tracking-widest">Hub Empty</p>
+                         <p className="font-headline font-black text-xl uppercase tracking-widest">Repository Empty</p>
                       </div>
                    )}
                 </div>

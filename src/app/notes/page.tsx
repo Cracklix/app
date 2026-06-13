@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useState } from "react"
@@ -6,7 +5,7 @@ import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { FileText, Download, Search, BookOpen, Clock, ShieldCheck, Zap, Layers, GraduationCap, FileArchive, Info, Lock } from "lucide-react"
+import { FileText, Download, Search, BookOpen, Clock, ShieldCheck, Zap, Layers, GraduationCap, FileArchive, Info, Lock } from "lucide-center"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -17,8 +16,8 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Download Hub v2.1.
- * HARDENED: Secure Pass Gating for premium PDF nodes.
+ * @fileOverview Institutional Download Center v2.2.
+ * TEXT: Replaced Hub with Center.
  */
 
 export default function NotesLibrary() {
@@ -79,7 +78,7 @@ export default function NotesLibrary() {
                     <Info className="h-4 w-4" /> Exam Syllabus
                   </TabsTrigger>
                   <TabsTrigger value="archives" className="rounded-xl px-6 md:px-8 font-black uppercase text-[10px] gap-2 h-full shrink-0 data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
-                    <FileArchive className="h-4 w-4" /> E-Book Hub
+                    <FileArchive className="h-4 w-4" /> E-Book Center
                   </TabsTrigger>
                </TabsList>
              </div>
@@ -126,7 +125,7 @@ function NotesGrid({ data, loading, profile }: any) {
    );
 
    if (!data || data.length === 0) return (
-      <div className="h-80 flex flex-col items-center justify-center text-slate-300 bg-white rounded-[4rem] border-2 border-dashed border-slate-100">
+      <div className="h-80 flex flex-col items-center justify-center text-slate-300 bg-white rounded-[4rem] border-2 border-dashed border-slate-100 shadow-inner">
          <FileArchive className="h-16 w-16 mb-6 opacity-10" />
          <p className="font-headline font-black text-xl uppercase">Repository Empty</p>
          <p className="text-sm font-bold opacity-50 mt-1 uppercase tracking-widest">Awaiting official content push.</p>

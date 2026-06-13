@@ -29,8 +29,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Command Center v40.0.
- * UPDATED: Optimized live stats sync to support Hero status bar.
+ * @fileOverview Institutional Command Center v41.0.
+ * TEXT: Replaced Hub with Center.
  */
 
 export default function AdminDashboard() {
@@ -92,7 +92,7 @@ export default function AdminDashboard() {
            totalQuestions: qSnap.size,
            totalMocks: mSnap.size,
            totalUsers: uSnap.size,
-           totalBoards: eSnap.size, // Using total registered exams for "Exams Covered"
+           totalBoards: eSnap.size, 
            averageAccuracy: avgAcc,
            updatedAt: serverTimestamp()
         }, { merge: true });
@@ -133,9 +133,9 @@ export default function AdminDashboard() {
                  <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                  <span className="text-[8px] md:text-[9px] font-black uppercase text-emerald-600 tracking-widest">System Online</span>
               </div>
-              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 truncate">Registry Command Hub</span>
+              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 truncate">Registry Command Center</span>
            </div>
-          <h1 className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-tight truncate">Admin Center</h1>
+          <h1 className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-tight truncate max-w-[280px] sm:max-w-none">Admin Center</h1>
           <p className="text-slate-500 mt-1 md:text-2xl text-sm font-medium">Monitoring Preparation Nodes & Financial Distribution.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
@@ -178,7 +178,7 @@ export default function AdminDashboard() {
          <Card className="lg:col-span-8 border-none shadow-3xl bg-white rounded-3xl overflow-hidden text-left border border-slate-100">
             <CardHeader className="p-8 border-b border-slate-50 bg-slate-50/30">
                <CardTitle className="text-2xl font-headline font-black uppercase text-[#0F172A]">Audit Stream</CardTitle>
-               <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Live operational activity across the hub.</CardDescription>
+               <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Live operational activity across the registry.</CardDescription>
             </CardHeader>
             <CardContent className="p-8 space-y-10">
                <div className="space-y-6">
@@ -270,7 +270,7 @@ function QuickLink({ label, href, highlight }: { label: string, href: string, hi
       <Link href={href} className="group">
          <div className={cn(
            "flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all",
-           highlight && "border-rose-500/30 bg-rose-500/5"
+           highlight && "border-rose-500/30 bg-rose-50/5"
          )}>
             <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
             <ChevronRight className={cn("h-4 w-4 transition-transform group-hover:translate-x-1", highlight ? "text-rose-500" : "text-primary")} />

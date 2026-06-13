@@ -41,6 +41,7 @@ import { cn } from "@/lib/utils"
 /**
  * @fileOverview Hardened Mobile-First Admin Layout v186.0.
  * UPDATED: Increased Logo size to h-24 and enabled unified sidebar scrolling.
+ * TEXT: Replaced Hub with Center/Registry.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -78,7 +79,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!mounted || loading) return (
     <div className="h-screen w-full bg-[#0F172A] flex flex-col items-center justify-center space-y-6">
        <ShieldCheck className="h-12 w-12 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500">Securing Registry Hub...</p>
+       <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500">Securing Registry Center...</p>
     </div>
   )
   
@@ -93,13 +94,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           <SidebarGroup className="pt-0">
-            <SidebarGroupLabel className="px-6 py-0 h-6 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left">MANAGEMENT HUB</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-6 py-0 h-6 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left">MANAGEMENT CENTER</SidebarGroupLabel>
             <SidebarMenu className="gap-1 mt-4">
               <AdminNavItem icon={<LayoutDashboard />} label="DASHBOARD" href="/admin" active={pathname === "/admin"} />
               <AdminNavItem icon={<Layers />} label="CATEGORIES" href="/admin/categories" active={pathname === "/admin/categories"} />
-              <AdminNavItem icon={<Landmark />} label="BOARDS HUB" href="/admin/exams" active={pathname === "/admin/exams"} />
+              <AdminNavItem icon={<Landmark />} label="BOARDS CENTER" href="/admin/exams" active={pathname === "/admin/exams"} />
               <AdminNavItem icon={<GraduationCap />} label="EXAM REGISTRY" href="/admin/exam-registry" active={pathname === "/admin/exam-registry"} />
-              <AdminNavItem icon={<SearchCode />} label="SUBJECT HUB" href="/admin/subjects" active={pathname === "/admin/subjects"} />
+              <AdminNavItem icon={<SearchCode />} label="SUBJECT REGISTRY" href="/admin/subjects" active={pathname === "/admin/subjects"} />
               <AdminNavItem icon={<Box />} label="MCQ BANK" href="/admin/questions" active={pathname === "/admin/questions"} />
               <AdminNavItem icon={<Rocket className="text-primary" />} label="BULK INGEST" href="/admin/bulk-import" active={pathname === "/admin/bulk-import"} />
             </SidebarMenu>
@@ -114,7 +115,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <AdminNavItem icon={<Newspaper />} label="CURR. AFFAIRS" href="/admin/current-affairs" active={pathname === "/admin/current-affairs"} />
               <AdminNavItem icon={<FileText />} label="STUDY NOTES" href="/admin/notes" active={pathname === "/admin/notes"} />
               <AdminNavItem icon={<FileStack />} label="PYQ ARCHIVE" href="/admin/pyqs" active={pathname === "/admin/pyqs"} />
-              <AdminNavItem icon={<Sparkles />} label="FREE HUB CMS" href="/admin/free-content" active={pathname === "/admin/free-content"} />
+              <AdminNavItem icon={<Sparkles />} label="FREE CENTER CMS" href="/admin/free-content" active={pathname === "/admin/free-content"} />
             </SidebarMenu>
           </SidebarGroup>
 
@@ -122,7 +123,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <SidebarGroupLabel className="px-6 py-0 h-6 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left">GOVERNANCE</SidebarGroupLabel>
             <SidebarMenu className="gap-1 mt-4">
               <AdminNavItem icon={<Users />} label="STUDENT LIST" href="/admin/users" active={pathname === "/admin/users"} />
-              <AdminNavItem icon={<DollarSign />} label="REVENUE HUB" href="/admin/payments" active={pathname === "/admin/payments"} />
+              <AdminNavItem icon={<DollarSign />} label="REVENUE CENTER" href="/admin/payments" active={pathname === "/admin/payments"} />
               <AdminNavItem icon={<ShieldCheck />} label="VERIFY UPI" href="/admin/payments/verify" active={pathname === "/admin/payments/verify"} />
               <AdminNavItem icon={<Gem />} label="PASS MANAGER" href="/admin/passes" active={pathname === "/admin/passes"} />
               <AdminNavItem icon={<History />} label="AUDIT LOGS" href="/admin/audit-logs" active={pathname === "/admin/audit-logs"} />
@@ -159,7 +160,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <SidebarTrigger className="text-[#0F172A] hover:bg-slate-50 cursor-pointer h-10 w-10 rounded-xl" />
               <div className="h-6 w-px bg-slate-100 mx-2 hidden sm:block" />
               <div className="flex flex-col text-left">
-                 <span className="text-[10px] md:text-[11px] font-black uppercase text-primary tracking-widest leading-none">ADMIN HUB</span>
+                 <span className="text-[10px] md:text-[11px] font-black uppercase text-primary tracking-widest leading-none">ADMIN CENTER</span>
                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 hidden xs:block">REGISTRY AUDIT ACTIVE</span>
               </div>
             </div>

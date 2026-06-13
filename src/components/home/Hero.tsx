@@ -18,9 +18,8 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Final Calibrated Hero v235.0.
- * MATCHED: Reduced text sizes and blue shading overlay on the left.
- * FIXED: Background image remains clear on the right (Golden Temple visibility).
+ * @fileOverview Final Calibrated Hero v236.0.
+ * TEXT: Replaced Hub with Center.
  */
 
 export default function Hero() {
@@ -61,7 +60,7 @@ export default function Hero() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5 }}
           src="https://i.ibb.co/fYJttX5d/Gemini-Generated-Image-n1so6on1so6on1so.png" 
-          alt="Official Punjab Prep Hub" 
+          alt="Official Punjab Prep Center" 
           className="w-full h-full object-cover object-right md:object-center"
           referrerPolicy="no-referrer"
         />
@@ -104,7 +103,7 @@ export default function Hero() {
                className="text-xs md:text-base lg:text-lg text-slate-300 font-medium max-w-2xl leading-relaxed antialiased"
             >
                Punjab Government Exams di Complete Preparation <br className="hidden sm:block" />
-               ik hi Hub te, Latest Official Patterns de Naal.
+               ik hi Center te, Latest Official Patterns de Naal.
             </motion.p>
 
             <motion.div
