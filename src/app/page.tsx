@@ -10,9 +10,9 @@ import Footer from "@/components/layout/Footer";
 import PopularExams from "@/components/home/PopularExams";
 
 /**
- * @fileOverview Official Home Hub v167.0.
+ * @fileOverview Official Home Hub v168.0.
  * PERFORMANCE: Strict server component root with high-fidelity client sub-modules.
- * UPDATED: Reordered sections - Category Hub now precedes Popular Exams.
+ * UPDATED: Reordered sections - Continue Learning is now positioned below Popular Exams.
  */
 
 export default function HomePage() {
@@ -22,17 +22,17 @@ export default function HomePage() {
       
       <Hero />
 
-      {/* Primary Discovery Hub */}
+      {/* 1. Primary Discovery Hub */}
       <FeaturedCategories />
 
-      {/* Authority Hubs */}
+      {/* 2. Authority Hubs */}
       <PopularExams />
 
-      {/* Content Pulse */}
-      <LatestMocks />
-
-      {/* User Activity Hub (Hides if no data) */}
+      {/* 3. User Activity Hub (Personalized) */}
       <ContinueLearning />
+
+      {/* 4. Content Pulse (Global Latest) */}
+      <LatestMocks />
 
       <AppPreview />
       <MeetFounder />
