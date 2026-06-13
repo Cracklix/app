@@ -1,41 +1,28 @@
-
 {
   "placeholderImages": [
     {
-      "id": "hero-students",
-      "description": "Happy Punjabi students with tablets and laptops",
-      "imageUrl": "https://picsum.photos/seed/punjab-students-elite/1200/800",
-      "imageHint": "students studying"
-    },
-    {
-      "id": "hero-police",
-      "description": "Official Punjab Police Slider Image",
-      "imageUrl": "https://grppunjab.org/wp-content/uploads/2025/09/PP10_slider.jpg",
+      "id": "hero-police-premium",
+      "description": "Premium Punjab Police Selection Hub Hero",
+      "imageUrl": "https://punjabpolice.gov.in/media/images/pp10.original.jpg",
       "imageHint": "punjab police"
-    },
-    {
-      "id": "hero-academy",
-      "description": "Punjab Govt Exams Academy Students",
-      "imageUrl": "https://picsum.photos/seed/academy-students/1200/800",
-      "imageHint": "classroom students"
     },
     {
       "id": "promo-psssb",
       "description": "PSSSB Official Institutional Promotion",
-      "imageUrl": "https://picsum.photos/seed/sssb-hub/1920/1080",
-      "imageHint": "office building"
+      "imageUrl": "https://sssb.punjab.gov.in/wp-content/uploads/2025/08/sssb-1.jpg",
+      "imageHint": "psssb official"
     },
     {
       "id": "hero-army",
       "description": "Indian Army Preparation Node",
-      "imageUrl": "https://picsum.photos/seed/army-prep/1920/1080",
+      "imageUrl": "https://joinindianarmy.nic.in/writereaddata/Portal/Images/Banner/Banner1.jpg",
       "imageHint": "indian army"
     },
     {
       "id": "hero-punjab",
       "description": "Punjab Heritage Hero",
       "imageUrl": "https://picsum.photos/seed/punjab-hero/1200/800",
-      "imageHint": "university students"
+      "imageHint": "punjab heritage"
     },
     {
       "id": "map-punjab",

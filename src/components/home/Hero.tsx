@@ -35,15 +35,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import placeholderImages from "@/app/lib/placeholder-images.json";
 
 /**
- * @fileOverview Official CRACKLIX Command Center v5.0.
+ * @fileOverview Official CRACKLIX Command Center v6.0.
  * REPLACED: Entire Hero UI with high-converting Punjab Govt Exam Hub.
  * DESIGN: Premium SaaS layout with glassmorphism and institutional trust nodes.
  */
 
 export default function Hero() {
   const router = useRouter();
+  const heroImage = placeholderImages.placeholderImages.find(img => img.id === 'hero-police-premium')?.imageUrl || "https://punjabpolice.gov.in/media/images/pp10.original.jpg";
 
   return (
     <div className="flex flex-col w-full overflow-hidden bg-white">
@@ -123,11 +125,12 @@ export default function Hero() {
             <div className="lg:col-span-5 relative hidden md:block">
                <div className="relative aspect-[4/5] rounded-[3.5rem] overflow-hidden border-8 border-white/5 shadow-5xl group bg-[#0B1528]">
                   <Image 
-                    src="https://i.ibb.co/gZCGMQNJ/IMG-20260612-WA0010.jpg" 
+                    src={heroImage} 
                     fill 
                     alt="Punjab Selection Hub" 
                     className="object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-1000"
                     priority
+                    data-ai-hint="punjab police"
                   />
                   <div className="absolute inset-0 bg-[#0B1528]/70 mix-blend-multiply" />
                   
@@ -199,11 +202,9 @@ export default function Hero() {
       {/* 3. WHY CHOOSE CRACKLIX: PREMIUM FEATURES */}
       <section className="py-20 md:py-32 bg-slate-50/50">
          <div className="container mx-auto px-4 max-w-7xl text-left">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-16">
-               <div className="space-y-2">
-                  <Badge className="bg-[#0B1528] text-white border-none px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest">WHY CRACKLIX?</Badge>
-                  <h2 className="text-3xl md:text-5xl font-headline font-black text-[#0B1528] uppercase tracking-tight leading-none">The Elite <span className="text-primary">Registry</span></h2>
-               </div>
+            <div className="text-center mb-16 space-y-4">
+               <Badge className="bg-[#0B1528] text-white border-none px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest">WHY CRACKLIX?</Badge>
+               <h2 className="text-3xl md:text-5xl font-headline font-black text-[#0B1528] uppercase tracking-tight leading-none">The Elite <span className="text-primary">Registry</span></h2>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">

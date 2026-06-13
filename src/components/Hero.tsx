@@ -1,9 +1,8 @@
-
 /**
- * @fileOverview Redundant component node.
- * This file is UNUSED. The active homepage hero is located at src/components/home/Hero.tsx.
- * Neutralized to prevent module resolution conflicts during build.
+ * @fileOverview Unused root Hero component. 
+ * The active Hero is located at src/components/home/Hero.tsx.
+ * This file is neutralized to prevent module resolution confusion.
  */
-export default function RedundantHero() {
+export default function UnusedHero() {
   return null;
 }
