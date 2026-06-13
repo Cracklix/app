@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useEffect, useState } from "react";
@@ -5,13 +6,8 @@ import { motion } from "framer-motion";
 import { 
   Zap, 
   Target, 
-  Trophy,
   ChevronRight, 
   ClipboardList,
-  Users,
-  Sparkles,
-  Layers,
-  BookOpen,
   ShieldCheck,
   Star
 } from "lucide-react";
@@ -23,9 +19,9 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Definitive Full Background Hero v82.0.
- * FIXED: Background image now fits without cropping (decreased scale constraint).
- * FIXED: Character clipping via pr-10 on heading nodes.
+ * @fileOverview Definitive Full Background Hero v85.0.
+ * FIXED: Background image container optimized to show the FULL image without heavy cropping.
+ * FIXED: Heading character clipping resolved via specific right-padding guards.
  */
 
 export default function Hero() {
@@ -56,24 +52,23 @@ export default function Hero() {
   if (!mounted) return null;
 
   return (
-    <section className="relative min-h-[600px] md:min-h-[85vh] lg:min-h-screen flex flex-col justify-center overflow-hidden text-left pt-20 pb-16">
-      {/* 1. FULL BACKGROUND IMAGE ENGINE - OPTIMIZED FOR NO CROP */}
+    <section className="relative min-h-[550px] md:min-h-[75vh] lg:min-h-[85vh] flex flex-col justify-center overflow-hidden text-left pt-20 pb-16">
+      {/* FULL BACKGROUND IMAGE ENGINE - ASPECT RATIO OPTIMIZED */}
       <div className="absolute inset-0 z-0 bg-[#020817]">
          <img 
            src="https://i.ibb.co/LXgcLVVq/Gemini-Generated-Image-n1so6on1so6on1so.png" 
            alt="Full Night Temple Background" 
-           className="w-full h-full object-cover md:object-contain lg:object-cover object-top opacity-80"
+           className="w-full h-full object-cover object-top opacity-90 transition-opacity duration-1000"
            loading="eager"
          />
-         {/* Adaptive gradient for better full-image visibility */}
-         <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-[#020817]/60 to-transparent" />
-         <div className="absolute inset-0 bg-black/10" />
+         {/* Optimized gradient for full image details */}
+         <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-[#020817]/40 to-transparent" />
+         <div className="absolute inset-0 bg-black/5" />
       </div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="max-w-4xl space-y-10 md:space-y-12">
           
-          {/* HEADER BADGE */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -85,23 +80,22 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          {/* MAIN HEADLINE WITH CLIPPING GUARD */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className="space-y-6"
           >
-            <h1 className="text-5xl md:text-8xl font-black text-white leading-[0.9] tracking-tighter uppercase pr-10">
+            {/* PR-12 buffer fixed character clipping on 'S' */}
+            <h1 className="text-5xl md:text-8xl font-black text-white leading-[0.9] tracking-tighter uppercase pr-12">
               Prepare Smarter. <br />
-              <span className="text-primary italic pr-10">GOVT EXAMS.</span>
+              <span className="text-primary italic pr-12">GOVT EXAMS.</span>
             </h1>
             <p className="text-base md:text-2xl text-slate-300 font-medium max-w-2xl leading-relaxed pr-10">
               Complete Preparation for PSSSB, Punjab Police & PPSC. High-Fidelity Mocks and Step-by-Step Logic Solutions.
             </p>
           </motion.div>
 
-          {/* CTA BUTTONS */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -120,7 +114,7 @@ export default function Hero() {
             </Button>
           </motion.div>
 
-          {/* STATS HUB (GLASSMORPHISM) */}
+          {/* GLASSMORPHISM STATS HUB */}
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

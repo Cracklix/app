@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from "react"
@@ -18,9 +19,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Screenshot Matched Latest Mocks v32.1.
- * FIXED: Explicitly imported Card and sub-components.
- * FIXED: Handled logo mapping with database priority.
+ * @fileOverview Screenshot Matched Latest Mocks v32.5.
+ * FIXED: Explicitly imported Card components to fix ReferenceError.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];

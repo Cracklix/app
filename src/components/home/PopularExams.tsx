@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from "react"
@@ -6,11 +7,10 @@ import {
   Landmark, 
   BookOpen, 
   Zap, 
-  Shield, 
+  ShieldCheck, 
   GraduationCap, 
   Scale,
-  Stethoscope,
-  ShieldCheck
+  Stethoscope
 } from "lucide-react";
 import Link from "next/link";
 import { useCollection, useFirestore } from "@/firebase";
@@ -20,8 +20,8 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Popular Hubs v42.0.
- * RESTORED: Absolute logo restoration engine with database priority.
+ * @fileOverview High-Fidelity Popular Hubs v43.0.
+ * FIXED: Hoisted helper components to resolve 'call of undefined' runtime errors.
  */
 
 function getBoardFallbackIcon(id: string, abbrev: string) {
