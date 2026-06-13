@@ -1,18 +1,16 @@
 'use client';
 
+import React from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { 
   ShieldCheck, 
   Zap, 
   Target, 
-  TrendingUp, 
   Award, 
   CheckCircle2, 
   Sparkles, 
   ChevronRight, 
-  Gem, 
   Clock, 
   FileStack, 
   BookOpen, 
@@ -21,9 +19,15 @@ import {
   Newspaper,
   Check,
   X,
-  ClipboardList
+  ClipboardList,
+  Users,
+  TrendingUp,
+  Gem,
+  Smartphone,
+  Landmark,
+  Scale
 } from "lucide-react";
-import React from "react";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
@@ -31,8 +35,9 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Converting Institutional Hero Hub v252.0.
- * FIXED: Added missing Card component imports to resolve runtime ReferenceError.
+ * @fileOverview High-Converting Institutional Hero Hub v3.0.
+ * UPDATED: Strictly follows user content requirements for Punjab Government Exams.
+ * DESIGN: Premium SaaS/Command Center aesthetic.
  */
 
 export default function Hero() {
@@ -40,16 +45,16 @@ export default function Hero() {
 
   return (
     <div className="flex flex-col w-full overflow-hidden bg-white">
-      {/* 1. MAIN HERO SECTION */}
+      {/* 1. MAIN HERO HUB */}
       <section className="relative pt-10 pb-20 md:pt-20 md:pb-32 bg-[#0B1528] overflow-hidden text-left">
-        {/* BACKGROUND GRADIENTS */}
+        {/* Background Gradients */}
         <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-1/4 h-full bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
             
-            {/* LEFT HUB: MESSAGING & CTAs */}
+            {/* LEFT HUB: BRANDING & CTAs */}
             <div className="lg:col-span-7 space-y-8">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
@@ -61,14 +66,14 @@ export default function Hero() {
                 </Badge>
 
                 <h1 className="text-4xl md:text-7xl font-headline font-black leading-[0.95] tracking-tighter text-white uppercase">
-                  Crack <span className="text-primary">Punjab Government Exams</span> Before the Real Exam
+                  Crack <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">Punjab Government Exams</span> Before the Real Exam
                 </h1>
 
                 <p className="text-slate-400 text-sm md:text-xl font-medium max-w-2xl leading-relaxed antialiased">
                   Prepare for PSSSB, Punjab Police, PPSC, PSPCL, PSTET, CTET, ETT, Master Cadre, High Court and other Punjab Government recruitment exams with exam-level mock tests, PYQs, current affairs and detailed solutions.
                 </p>
 
-                {/* TRUST CHECKLIST */}
+                {/* TRUST CHIPS CHECKLIST */}
                 <div className="flex flex-wrap gap-x-6 gap-y-3 pt-2">
                   <TrustChip text="Full-Length Mocks" />
                   <TrustChip text="PYQs" />
@@ -79,7 +84,7 @@ export default function Hero() {
                 </div>
               </motion.div>
 
-              {/* PRIMARY ACTIONS */}
+              {/* ACTION COMMANDS */}
               <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
                 <Button 
                   onClick={() => router.push('/mocks')}
@@ -95,9 +100,9 @@ export default function Hero() {
                 </Button>
               </div>
 
-              {/* EXAM RECRUITMENT NODES */}
+              {/* RECRUITMENT REGISTRY CHIPS */}
               <div className="pt-8 border-t border-white/5 space-y-4">
-                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">OFFICIAL REGISTRY COVERED</p>
+                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">POPULAR EXAMS</p>
                  <div className="flex flex-wrap gap-2">
                     <ExamChip icon="🏛" label="PSSSB" />
                     <ExamChip icon="👮" label="Punjab Police" />
@@ -111,20 +116,19 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* RIGHT HUB: DASHBOARD PREVIEW */}
+            {/* RIGHT HUB: DASHBOARD VISUAL */}
             <div className="lg:col-span-5 relative hidden md:block">
                <div className="relative aspect-[4/5] rounded-[3.5rem] overflow-hidden border-8 border-white/5 shadow-5xl group bg-[#0B1528]">
                   <Image 
-                    src="https://punjabpolice.gov.in/media/images/pp10.original.jpg" 
+                    src="https://i.ibb.co/gZCGMQNJ/IMG-20260612-WA0010.jpg" 
                     fill 
-                    alt="Punjab Police Preparation" 
-                    className="object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100"
+                    alt="Punjab Police Authority" 
+                    className="object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-1000"
                     priority
                   />
-                  <div className="absolute inset-0 bg-[#0B1528]/40 mix-blend-multiply" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B1528] via-transparent to-transparent opacity-80" />
+                  <div className="absolute inset-0 bg-[#0B1528]/60 mix-blend-multiply" />
                   
-                  {/* FLOATING GLASS CARDS */}
+                  {/* FLOATING PERFORMANCE CARDS */}
                   <motion.div 
                     initial={{ x: 30, opacity: 0 }} 
                     animate={{ x: 0, opacity: 1 }} 
@@ -164,7 +168,7 @@ export default function Hero() {
                               <Zap className="h-6 w-6 fill-current" />
                            </div>
                            <div className="text-left">
-                              <p className="text-[10px] font-black uppercase text-white/60 tracking-widest">Selection Status</p>
+                              <p className="text-[10px] font-black uppercase text-white/60 tracking-widest">Selection Forecast</p>
                               <p className="text-xl font-black text-white uppercase">Readiness Score</p>
                            </div>
                         </div>
@@ -177,25 +181,25 @@ export default function Hero() {
         </div>
       </section>
 
-      {/* 2. PLATFORM STATS STRIP */}
+      {/* 2. LIVE PLATFORM STATS STRIP */}
       <section className="py-10 bg-white border-b border-slate-100">
          <div className="container mx-auto px-4 max-w-7xl">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center md:text-left">
                <PlatformStat val="50,000+" label="Questions" icon={<Layers className="text-primary" />} />
                <PlatformStat val="500+" label="Mock Tests" icon={<Zap className="text-blue-500" />} />
-               <PlatformStat val="15,000+" label="Aspirants" icon={<UsersIcon className="text-emerald-500" />} />
+               <PlatformStat val="15,000+" label="Aspirants" icon={<Users className="text-emerald-500" />} />
                <PlatformStat val="94%" label="Accuracy" icon={<Target className="text-rose-500" />} />
             </div>
          </div>
       </section>
 
-      {/* 3. WHY CHOOSE CRACKLIX */}
+      {/* 3. WHY CHOOSE CRACKLIX: FEATURES HUB */}
       <section className="py-20 md:py-32 bg-slate-50/50">
          <div className="container mx-auto px-4 max-w-7xl text-left">
             <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-16">
                <div className="space-y-2">
-                  <Badge className="bg-[#0B1528] text-white border-none px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest">INSTITUTIONAL PRECISION</Badge>
-                  <h2 className="text-3xl md:text-5xl font-headline font-black text-[#0B1528] uppercase tracking-tight leading-none">Why Choose <span className="text-primary">Cracklix?</span></h2>
+                  <Badge className="bg-[#0B1528] text-white border-none px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest">WHY CRACKLIX?</Badge>
+                  <h2 className="text-3xl md:text-5xl font-headline font-black text-[#0B1528] uppercase tracking-tight leading-none">Designed for <span className="text-primary">Success</span></h2>
                </div>
             </div>
 
@@ -205,12 +209,12 @@ export default function Hero() {
                <FeatureCard icon={<Newspaper />} title="Daily Current Affairs" desc="Bilingual news updates and quizzes tailored for upcoming state recruitments." />
                <FeatureCard icon={<FileStack />} title="Previous Year Papers" desc="Access authentic PYQs with detailed logic rationalizations for all major boards." />
                <FeatureCard icon={<BarChart3 />} title="Detailed Analytics" desc="Identify weak nodes instantly with our high-fidelity performance audit engine." />
-               <FeatureCard icon={<Award />} title="Rank & Performance" desc="Compare your scores with 15,000+ real aspirants on the state-level merit list." />
+               <FeatureCard icon={<Award />} title="Rank & Performance Tracking" desc="Compare your scores with real aspirants on the state-level merit list." />
             </div>
          </div>
       </section>
 
-      {/* 4. FREE VS PREMIUM */}
+      {/* 4. FREE VS PREMIUM: COMPARISON NODE */}
       <section className="py-20 md:py-32 bg-white">
          <div className="container mx-auto px-4 max-w-5xl text-left">
             <div className="text-center mb-16 space-y-4">
@@ -220,37 +224,36 @@ export default function Hero() {
 
             <Card className="border-none shadow-5xl rounded-[3rem] overflow-hidden bg-[#0B1528] text-white">
                <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-white/5">
-                  {/* FREE TIER */}
+                  {/* FREE HUB */}
                   <div className="p-10 md:p-16 space-y-10 bg-white/5 opacity-60">
                      <div className="space-y-2">
-                        <h3 className="text-2xl font-black uppercase">Basic Node</h3>
-                        <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest">Entry Level Access</p>
+                        <h3 className="text-2xl font-black uppercase">Basic Access</h3>
+                        <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest">FREE FOREVER</p>
                      </div>
                      <ul className="space-y-6">
                         <TierItem text="Limited Mocks" icon={<Check className="text-emerald-500" />} />
                         <TierItem text="Basic Results" icon={<Check className="text-emerald-500" />} />
                         <TierItem text="Full Mock Series" icon={<X className="text-rose-500" />} strike />
-                        <TierItem text="Subject & Sectional Tests" icon={<X className="text-rose-500" />} strike />
                         <TierItem text="AI Logic Solutions" icon={<X className="text-rose-500" />} strike />
+                        <TierItem text="Rank Tracking" icon={<X className="text-rose-500" />} strike />
                      </ul>
                   </div>
 
-                  {/* PREMIUM TIER */}
+                  {/* PREMIUM HUB */}
                   <div className="p-10 md:p-16 space-y-10 relative">
                      <div className="absolute top-10 right-10">
                         <Gem className="h-10 w-10 text-primary animate-pulse" />
                      </div>
                      <div className="space-y-2">
                         <h3 className="text-2xl font-black uppercase text-primary">Elite Pass</h3>
-                        <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Institutional Access</p>
+                        <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">FULL INSTITUTIONAL ACCESS</p>
                      </div>
                      <ul className="space-y-6">
-                        <TierItem text="Full Mock Series (500+)" icon={<Check className="text-primary" />} />
+                        <TierItem text="Full Mock Series" icon={<Check className="text-primary" />} />
                         <TierItem text="Subject & Sectional Tests" icon={<Check className="text-primary" />} />
-                        <TierItem text="Chapter-Wise Practice" icon={<Check className="text-primary" />} />
                         <TierItem text="Official PYQ Archive" icon={<Check className="text-primary" />} />
                         <TierItem text="Detailed Analytics & Rank" icon={<Check className="text-primary" />} />
-                        <TierItem text="Daily Current Affairs" icon={<Check className="text-primary" />} />
+                        <TierItem text="AI Rationalization Hub" icon={<Check className="text-primary" />} />
                      </ul>
                      <Button 
                        onClick={() => router.push('/pass')}
@@ -333,15 +336,4 @@ function TierItem({ text, icon, strike = false }: { text: string, icon: React.Re
          <span className={cn(strike && "line-through text-slate-600")}>{text}</span>
       </li>
    );
-}
-
-function UsersIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  );
 }
