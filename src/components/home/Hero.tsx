@@ -8,8 +8,7 @@ import {
   ClipboardList,
   ShieldCheck,
   Star,
-  Users,
-  BarChart3
+  Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -19,10 +18,10 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview FINAL ABSOLUTE FIDELITY HERO v160.0.
- * MATCHED: Screenshot layout with Sentence case text as requested.
- * FIXED: Resolved overlap by scaling down typography and boxes.
- * HEIGHT: Calibrated to 260px on mobile to fit all elements cleanly.
+ * @fileOverview FINAL HIGH-FIDELITY HERO v165.0 (Top Aligned).
+ * FIXED: Shifted content higher to resolve overlap with stats bar.
+ * FIXED: Enforced strict Sentence Case for all text ("Prepare smarter. Score higher.").
+ * HEIGHT: Calibrated to 260px on mobile for high-density breathing room.
  */
 
 export default function Hero() {
@@ -54,7 +53,7 @@ export default function Hero() {
   if (!mounted) return null;
 
   return (
-    <section className="relative w-full bg-[#050B19] overflow-hidden h-[260px] md:h-[550px] flex flex-col justify-center text-left border-b border-white/5">
+    <section className="relative w-full bg-[#050B19] overflow-hidden h-[260px] md:h-[550px] flex flex-col justify-start text-left border-b border-white/5">
       
       {/* 1. BACKGROUND ENGINE */}
       <div className="absolute inset-0 z-0">
@@ -73,13 +72,13 @@ export default function Hero() {
         
         {/* PUNJAB MAP WATERMARK */}
         <div className="absolute inset-0 z-[11] pointer-events-none opacity-[0.04]">
-           <div className="absolute top-[40%] left-[25%] -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-[url('https://upload.wikimedia.org/wikipedia/commons/e/ea/Outline_Map_of_Punjab_India.svg')] bg-contain bg-no-repeat grayscale invert" />
+           <div className="absolute top-[35%] left-[25%] -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-[url('https://upload.wikimedia.org/wikipedia/commons/e/ea/Outline_Map_of_Punjab_India.svg')] bg-contain bg-no-repeat grayscale invert" />
         </div>
       </div>
 
-      {/* 2. MAIN CONTENT HUB */}
-      <div className="container mx-auto px-4 md:px-12 max-w-7xl relative z-20">
-         <div className="max-w-2xl space-y-1 md:space-y-4 -mt-12 md:mt-0">
+      {/* 2. MAIN CONTENT HUB - Shifted up with justify-start and padding */}
+      <div className="container mx-auto px-4 md:px-12 max-w-7xl relative z-20 pt-10 md:pt-24">
+         <div className="max-w-2xl space-y-1.5 md:space-y-4">
             
             {/* TOP PILL BADGE */}
             <motion.div
@@ -91,7 +90,7 @@ export default function Hero() {
                <span className="text-[7px] md:text-[10px] font-black text-white tracking-widest uppercase">#1 Punjab exam preparation platform</span>
             </motion.div>
 
-            {/* HEADINGS - SENTENCE CASE (MANDATORY) */}
+            {/* HEADINGS - SENTENCE CASE ONLY */}
             <motion.div
                initial={{ opacity: 0, y: 20 }}
                animate={{ opacity: 1, y: 0 }}
@@ -121,14 +120,14 @@ export default function Hero() {
                initial={{ opacity: 0, y: 15 }}
                animate={{ opacity: 1, y: 0 }}
                transition={{ delay: 0.3 }}
-               className="flex flex-row gap-2 md:gap-4 pt-2 md:pt-4"
+               className="flex flex-row gap-2 md:gap-4 pt-2 md:pt-6"
             >
-               <Button asChild className="h-8 md:h-14 px-4 md:px-8 bg-[#F97316] hover:bg-orange-600 text-white font-black text-[8px] md:text-xs tracking-tight rounded-lg md:rounded-xl shadow-2xl transition-all active:scale-95 border-none">
+               <Button asChild className="h-9 md:h-14 px-4 md:px-8 bg-[#F97316] hover:bg-orange-600 text-white font-black text-[9px] md:text-xs tracking-tight rounded-lg md:rounded-xl shadow-2xl transition-all active:scale-95 border-none">
                   <Link href="/mocks" className="flex items-center">
                      Start free mock <ArrowRight className="h-3 w-3 md:h-4 md:w-4 ml-1.5 md:ml-2" />
                   </Link>
                </Button>
-               <Button asChild variant="outline" className="h-8 md:h-14 px-4 md:px-8 border-white/20 bg-white/5 text-white font-black text-[8px] md:text-xs tracking-tight rounded-lg md:rounded-xl transition-all backdrop-blur-md hover:bg-white/10">
+               <Button asChild variant="outline" className="h-9 md:h-14 px-4 md:px-8 border-white/20 bg-white/5 text-white font-black text-[9px] md:text-xs tracking-tight rounded-lg md:rounded-xl transition-all backdrop-blur-md hover:bg-white/10">
                   <Link href="/exams">
                      Explore exams
                   </Link>
@@ -167,3 +166,4 @@ export default function Hero() {
     </section>
   );
 }
+
