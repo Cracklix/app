@@ -4,8 +4,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Master Logo Hub v11.0.
- * UPDATED: Increased logo size and removed tagline as per specific request.
+ * @fileOverview Official Master Logo Hub v12.0.
+ * UPDATED: Increased logo size significantly as per request.
  */
 export function LogoIcon({ className = "" }: { className?: string }) {
   return (
@@ -13,7 +13,7 @@ export function LogoIcon({ className = "" }: { className?: string }) {
       <img 
         src="https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png" 
         alt="Cracklix Logo" 
-        className="h-16 md:h-24 w-auto object-contain"
+        className="h-28 md:h-36 w-auto object-contain"
         referrerPolicy="no-referrer"
       />
     </div>
