@@ -21,8 +21,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Definitive Header Restoration v121.0.
- * UPDATED: Added expiry date to Pass hub and scaled down right-side icons.
+ * @fileOverview Definitive Header Restoration v125.0.
+ * UPDATED: Pass status hub transformed to Rectangle shape with explicit "PASS ACTIVE" labels.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -37,14 +37,14 @@ export default function Navbar() {
   }, []);
 
   const passStatus = useMemo(() => {
-    if (!profile?.pass) return { active: false, label: "FREE", expiry: "N/A" };
+    if (!profile?.pass) return { active: false, label: "NO PASS", expiry: "N/A" };
     const active = profile.pass.active;
     const expiryDate = new Date(profile.pass.expiryDate);
     const isExpired = expiryDate < new Date();
     
     return {
       active: active && !isExpired,
-      label: isExpired ? "EXPIRED" : "PASS",
+      label: isExpired ? "EXPIRED" : "PASS ACTIVE",
       expiry: expiryDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
     };
   }, [profile]);
@@ -77,7 +77,7 @@ export default function Navbar() {
             <Logo className="!gap-0" />
           </div>
 
-          {/* 2. CENTER SECTION: THE 5 NAVIGATION BLOCKS (SCREENSHOT MATCHED) */}
+          {/* 2. CENTER SECTION: THE 5 NAVIGATION BLOCKS */}
           <div className="hidden lg:flex flex-1 items-center justify-center gap-6 xl:gap-10">
             
             {/* Block 1: My Exams */}
@@ -131,24 +131,32 @@ export default function Navbar() {
 
           </div>
 
-          {/* 3. RIGHT SECTION: PASS HUB, SEARCH, USER */}
+          {/* 3. RIGHT SECTION: RECTANGLE PASS HUB, SEARCH, USER */}
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
              
-             {/* SQUARE PASS ACTIVE HUB */}
+             {/* RECTANGLE PASS ACTIVE HUB */}
              {mounted && user && (
-                <div className="h-10 w-10 md:h-12 md:w-12 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex flex-col items-center justify-center shadow-xl shrink-0 group hover:bg-emerald-500/20 transition-all">
-                   <Gem className="h-3.5 w-3.5 md:h-4 md:w-4 text-emerald-400 fill-current opacity-80" />
-                   <span className={cn(
-                        "text-[5px] md:text-[7px] font-black uppercase tracking-tighter mt-0.5",
-                        passStatus.active ? "text-emerald-400" : "text-rose-400"
-                      )}>
-                         {passStatus.label}
-                   </span>
-                   {passStatus.active && (
-                     <span className="text-[4px] md:text-[6px] text-emerald-400/60 font-bold uppercase tracking-widest leading-none mt-0.5 whitespace-nowrap">
-                        {passStatus.expiry}
-                     </span>
-                   )}
+                <div className={cn(
+                   "h-10 md:h-11 px-3 md:px-5 rounded-xl flex items-center gap-3 shadow-xl shrink-0 group border transition-all",
+                   passStatus.active ? "bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20" : "bg-rose-500/10 border-rose-500/30 hover:bg-rose-500/20"
+                )}>
+                   <Gem className={cn(
+                      "h-4 w-4 fill-current",
+                      passStatus.active ? "text-emerald-400" : "text-rose-400"
+                   )} />
+                   <div className="flex flex-col text-left leading-none gap-0.5">
+                      <span className={cn(
+                           "text-[7px] md:text-[9px] font-black uppercase tracking-widest",
+                           passStatus.active ? "text-emerald-400" : "text-rose-400"
+                         )}>
+                            {passStatus.label}
+                      </span>
+                      {passStatus.active && (
+                        <span className="text-[6px] md:text-[7px] text-slate-500 font-bold uppercase tracking-wider">
+                           EXP: {passStatus.expiry}
+                        </span>
+                      )}
+                   </div>
                 </div>
              )}
 
