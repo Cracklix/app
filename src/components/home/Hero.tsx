@@ -17,8 +17,8 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Final Calibrated Hero v251.0.
- * RESTORED: Golden Temple background image with optimized positioning.
+ * @fileOverview Final Calibrated Hero v252.0.
+ * RESTORED: Golden Temple background image with optimized visibility and layering.
  */
 
 export default function Hero() {
@@ -52,20 +52,21 @@ export default function Hero() {
   return (
     <section className="relative w-full bg-[#050B19] overflow-hidden min-h-[500px] md:min-h-[550px] lg:h-[650px] flex flex-col justify-start text-left border-b border-white/5 pb-8 md:pb-12">
       
-      {/* RESTORED GOLDEN TEMPLE BACKGROUND */}
-      <div className="absolute top-[-40px] left-0 right-0 h-[calc(100%+40px)] z-0 overflow-hidden bg-[#050B19]">
+      {/* RESTORED & OPTIMIZED GOLDEN TEMPLE BACKGROUND */}
+      <div className="absolute inset-0 z-0 overflow-hidden bg-[#050B19]">
         <motion.img 
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.5 }}
-          src="https://images.unsplash.com/photo-1594913366159-1832ffef8171?auto=format&fit=crop&q=80&w=1920" 
+          animate={{ opacity: 0.6 }}
+          transition={{ duration: 1.2 }}
+          src="https://images.unsplash.com/photo-1594913366159-1832ffef8171?q=80&w=1920&auto=format&fit=crop" 
           alt="Golden Temple Punjab" 
-          className="w-full h-full object-cover object-[center_30%] opacity-40 scale-105"
+          className="w-full h-full object-cover object-[center_35%] scale-105"
           referrerPolicy="no-referrer"
           data-ai-hint="golden temple"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#050B19]/40 via-[#050B19]/80 to-[#050B19] z-[10]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19] via-transparent to-transparent z-[10] hidden md:block" />
+        {/* Layered gradients for depth and text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050B19]/20 via-[#050B19]/70 to-[#050B19] z-[1]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19]/80 via-transparent to-transparent z-[1] hidden md:block" />
       </div>
 
       <div className="container mx-auto px-4 md:px-8 lg:px-12 max-w-7xl relative z-[30] pt-12 md:pt-20">
