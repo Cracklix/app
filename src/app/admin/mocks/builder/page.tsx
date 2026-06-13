@@ -51,10 +51,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v88.0.
- * FIXED: POS/NEG data now in square boxes with 12px font for maximum visibility.
- * FIXED: Ultra-compact Question Cards for maximum density.
- * FIXED: Select All button overflow resolved.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v89.0.
+ * FIXED: Minimalist selection circles in Question Bank.
+ * FIXED: POS/NEG data in square boxes with 12px font.
  */
 
 export default function MockBuilderPage() {
@@ -685,11 +684,12 @@ function MockBuilderContent() {
                             isSelected && "ring-2 ring-primary/20 bg-primary/5 shadow-inner"
                           )}
                         >
+                           {/* MINIMALIST SELECTION CIRCLE */}
                            <div className={cn(
-                              "h-7 w-7 md:h-8 md:w-8 rounded-full border-[1.5px] flex items-center justify-center shrink-0 transition-all duration-300",
+                              "h-5 w-5 md:h-6 md:w-6 rounded-full border-[1.5px] flex items-center justify-center shrink-0 transition-all duration-300",
                               isSelected ? "border-[#F97316] bg-[#F97316] shadow-md" : "border-slate-200 bg-white"
                            )}>
-                              {isSelected && <Check className="h-3 w-3 md:h-4 md:w-4 text-white stroke-[4px]" />}
+                              {isSelected && <Check className="h-2.5 w-2.5 md:h-3 md:w-3 text-white stroke-[4px]" />}
                            </div>
                            
                            <div className="flex-1 min-w-0 space-y-1.5 text-left">
