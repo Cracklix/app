@@ -25,7 +25,9 @@ import {
   Gem,
   Smartphone,
   Landmark,
-  Scale
+  Scale,
+  FileText,
+  GraduationCap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,9 +37,9 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Converting Institutional Hero Hub v3.0.
- * UPDATED: Strictly follows user content requirements for Punjab Government Exams.
- * DESIGN: Premium SaaS/Command Center aesthetic.
+ * @fileOverview Official CRACKLIX Command Center v5.0.
+ * REPLACED: Entire Hero UI with high-converting Punjab Govt Exam Hub.
+ * DESIGN: Premium SaaS layout with glassmorphism and institutional trust nodes.
  */
 
 export default function Hero() {
@@ -45,7 +47,8 @@ export default function Hero() {
 
   return (
     <div className="flex flex-col w-full overflow-hidden bg-white">
-      {/* 1. MAIN HERO HUB */}
+      
+      {/* 1. SELECTION COMMAND CENTER (MAIN HERO) */}
       <section className="relative pt-10 pb-20 md:pt-20 md:pb-32 bg-[#0B1528] overflow-hidden text-left">
         {/* Background Gradients */}
         <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
@@ -100,18 +103,18 @@ export default function Hero() {
                 </Button>
               </div>
 
-              {/* RECRUITMENT REGISTRY CHIPS */}
+              {/* POPULAR EXAMS CHIPS */}
               <div className="pt-8 border-t border-white/5 space-y-4">
-                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">POPULAR EXAMS</p>
+                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">RECRUITMENT REGISTRY</p>
                  <div className="flex flex-wrap gap-2">
-                    <ExamChip icon="🏛" label="PSSSB" />
-                    <ExamChip icon="👮" label="Punjab Police" />
-                    <ExamChip icon="⚖" label="PPSC" />
-                    <ExamChip icon="⚡" label="PSPCL" />
-                    <ExamChip icon="📚" label="PSTET" />
-                    <ExamChip icon="📝" label="CTET" />
-                    <ExamChip icon="🎓" label="ETT" />
-                    <ExamChip icon="👨‍🏫" label="Master Cadre" />
+                    <ExamChip icon={<Landmark className="h-4 w-4" />} label="PSSSB" />
+                    <ExamChip icon={<ShieldCheck className="h-4 w-4" />} label="Punjab Police" />
+                    <ExamChip icon={<Scale className="h-4 w-4" />} label="PPSC" />
+                    <ExamChip icon={<Zap className="h-4 w-4" />} label="PSPCL" />
+                    <ExamChip icon={<BookOpen className="h-4 w-4" />} label="PSTET" />
+                    <ExamChip icon={<FileText className="h-4 w-4" />} label="CTET" />
+                    <ExamChip icon={<GraduationCap className="h-4 w-4" />} label="ETT" />
+                    <ExamChip icon={<Users className="h-4 w-4" />} label="Master Cadre" />
                  </div>
               </div>
             </div>
@@ -122,13 +125,13 @@ export default function Hero() {
                   <Image 
                     src="https://i.ibb.co/gZCGMQNJ/IMG-20260612-WA0010.jpg" 
                     fill 
-                    alt="Punjab Police Authority" 
+                    alt="Punjab Selection Hub" 
                     className="object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-1000"
                     priority
                   />
-                  <div className="absolute inset-0 bg-[#0B1528]/60 mix-blend-multiply" />
+                  <div className="absolute inset-0 bg-[#0B1528]/70 mix-blend-multiply" />
                   
-                  {/* FLOATING PERFORMANCE CARDS */}
+                  {/* FLOATING GLASS PERFORMANCE CARDS */}
                   <motion.div 
                     initial={{ x: 30, opacity: 0 }} 
                     animate={{ x: 0, opacity: 1 }} 
@@ -182,7 +185,7 @@ export default function Hero() {
       </section>
 
       {/* 2. LIVE PLATFORM STATS STRIP */}
-      <section className="py-10 bg-white border-b border-slate-100">
+      <section className="py-12 md:py-20 bg-white border-b border-slate-100">
          <div className="container mx-auto px-4 max-w-7xl">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center md:text-left">
                <PlatformStat val="50,000+" label="Questions" icon={<Layers className="text-primary" />} />
@@ -193,13 +196,13 @@ export default function Hero() {
          </div>
       </section>
 
-      {/* 3. WHY CHOOSE CRACKLIX: FEATURES HUB */}
+      {/* 3. WHY CHOOSE CRACKLIX: PREMIUM FEATURES */}
       <section className="py-20 md:py-32 bg-slate-50/50">
          <div className="container mx-auto px-4 max-w-7xl text-left">
             <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-16">
                <div className="space-y-2">
                   <Badge className="bg-[#0B1528] text-white border-none px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest">WHY CRACKLIX?</Badge>
-                  <h2 className="text-3xl md:text-5xl font-headline font-black text-[#0B1528] uppercase tracking-tight leading-none">Designed for <span className="text-primary">Success</span></h2>
+                  <h2 className="text-3xl md:text-5xl font-headline font-black text-[#0B1528] uppercase tracking-tight leading-none">The Elite <span className="text-primary">Registry</span></h2>
                </div>
             </div>
 
@@ -281,7 +284,7 @@ function TrustChip({ text }: { text: string }) {
   );
 }
 
-function ExamChip({ icon, label }: { icon: string, label: string }) {
+function ExamChip({ icon, label }: { icon: React.ReactNode, label: string }) {
    return (
       <div className="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 font-black text-[10px] tracking-widest hover:border-primary/50 transition-all cursor-default flex items-center gap-2 group hover:text-white">
          <span className="group-hover:scale-125 transition-transform">{icon}</span> {label}
