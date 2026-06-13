@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from "react";
-import { Share2, CheckCircle2, Loader2, Link as LinkIcon } from "lucide-react";
+import { Share2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
@@ -16,8 +16,8 @@ interface ShareButtonProps {
 }
 
 /**
- * @fileOverview Reliable Share Action Node.
- * Optimized: Uses Native Share with Clipboard fallback and dynamic Admin metadata.
+ * @fileOverview Reliable Share Action Node v3.0.
+ * HARDENED: Added permission guard for Clipboard API to prevent runtime exceptions.
  */
 export default function ShareButton({ 
   className = "", 
@@ -44,19 +44,22 @@ export default function ShareButton({
     };
 
     try {
-      // 1. Try Native Share (Mobile)
       if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
         await navigator.share(shareData);
-      } else {
-        // 2. Fallback to Clipboard (Desktop/Unsupported)
-        await navigator.clipboard.writeText(shareData.url);
-        toast({
-          title: "Link Copied!",
-          description: "Cracklix link saved to your clipboard.",
-        });
+      } else if (navigator.clipboard) {
+        // Permission-Safe Clipboard execution
+        try {
+          await navigator.clipboard.writeText(shareData.url);
+          toast({
+            title: "Link Copied!",
+            description: "Cracklix link saved to your clipboard.",
+          });
+        } catch (clipErr) {
+          console.warn("[CLIPBOARD_BLOCKED]:", clipErr);
+        }
       }
     } catch (err) {
-      // Handle potential share errors silently (user cancel)
+      // Handle user cancellation silently
     }
   };
 
@@ -83,7 +86,7 @@ export default function ShareButton({
       ) : (
         <Share2 className={cn("h-4 w-4", isDark ? "text-primary" : "")} />
       )}
-      {showLabel && <span>Share CRACKLIX</span>}
+      {showLabel && <span>Share Cracklix</span>}
     </Button>
   );
 }

@@ -8,8 +8,7 @@ import {
   Zap, 
   ShieldCheck, 
   GraduationCap, 
-  Scale,
-  Stethoscope
+  Activity
 } from "lucide-react";
 import Link from "next/link";
 import { useCollection, useFirestore } from "@/firebase";
@@ -19,8 +18,8 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Popular Hubs v47.0.
- * FIXED: TypeError call of undefined by hoisting all helper logic.
+ * @fileOverview High-Fidelity Popular Hubs v50.0 (TypeError Fix).
+ * FIXED: Canonical icons to prevent "call of undefined" bundled errors.
  */
 
 function getBoardFallbackIcon(id: string, abbrev: string) {
@@ -29,10 +28,8 @@ function getBoardFallbackIcon(id: string, abbrev: string) {
   if (key.includes('police')) return <ShieldCheck className="h-full w-full text-blue-800" />;
   if (key.includes('ppsc')) return <Landmark className="h-full w-full text-emerald-700" />;
   if (key.includes('teaching')) return <GraduationCap className="h-full w-full text-orange-500" />;
-  if (key.includes('court')) return <Scale className="h-full w-full text-slate-600" />;
   if (key.includes('pspcl')) return <Zap className="h-full w-full text-blue-500" />;
-  if (key.includes('bfuhs')) return <Stethoscope className="h-full w-full text-emerald-600" />;
-  return <Landmark className="h-full w-full text-slate-300" />;
+  return <Activity className="h-full w-full text-slate-300" />;
 }
 
 export default function PopularExams() {
