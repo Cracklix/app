@@ -16,8 +16,8 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Institutional Category Entry Nodes v6.0 (Self-Contained).
- * UPDATED: Added standalone container and section padding for reordering flexibility.
+ * @fileOverview Institutional Category Entry Nodes v6.1 (Simplified).
+ * UPDATED: Replaced 'HUBS LIVE' with 'EXAMS LIVE'.
  */
 
 const CATEGORY_META = [

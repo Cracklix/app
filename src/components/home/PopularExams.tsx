@@ -18,8 +18,9 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Popular Hubs v50.0 (TypeError Fix).
- * FIXED: Canonical icons to prevent "call of undefined" bundled errors.
+ * @fileOverview High-Fidelity Popular Hubs v51.0 (Text Fix).
+ * FIXED: Replaced 'Hubs' with 'Exams' for simplicity.
+ * FIXED: Removed truncate to allow board names to wrap fully.
  */
 
 function getBoardFallbackIcon(id: string, abbrev: string) {
@@ -96,16 +97,20 @@ export default function PopularExams() {
                                 </div>
                               )}
                            </div>
-                           <div className="min-w-0">
+                           <div className="min-w-0 flex-1">
                               <h3 className="text-xl md:text-2xl font-black text-[#0F172A] uppercase leading-none group-hover:text-primary transition-colors">{board.abbreviation}</h3>
-                              <p className="text-[10px] font-bold text-slate-400 mt-2 truncate uppercase tracking-widest">{board.name}</p>
+                              {/* FIXED: Removed truncate, used line-clamp-2 to show full text */}
+                              <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest line-clamp-2 min-h-[30px]">
+                                {board.name}
+                              </p>
                            </div>
                         </div>
 
                         <div className="mt-10 pt-6 border-t border-slate-50 grid grid-cols-2 gap-4">
                            <div className="flex items-center gap-2.5">
                               <BookOpen className="h-4 w-4 text-blue-500" />
-                              <span className="text-[10px] font-black text-slate-600 uppercase tracking-tight">{examCount} Hubs</span>
+                              {/* SIMPLIFIED: Replaced Hubs with Exams */}
+                              <span className="text-[10px] font-black text-slate-600 uppercase tracking-tight">{examCount} Exams</span>
                            </div>
                            <div className="flex items-center gap-2.5">
                               <Zap className="h-4 w-4 text-orange-500" />

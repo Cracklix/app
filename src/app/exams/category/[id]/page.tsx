@@ -15,8 +15,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Explorer v8.2.
- * UPDATED: Optimized button text and height for high-density UI.
+ * @fileOverview Institutional Category Explorer v8.3.
+ * UPDATED: Replaced HUB terminology with simplified EXAMS.
  */
 
 const CATEGORY_META: Record<string, any> = {
@@ -32,7 +32,7 @@ export default function CategoryHubsPage() {
   const router = useRouter();
   const db = useFirestore();
   const catId = params.id as string;
-  const meta = CATEGORY_META[catId] || { title: "Exam Hubs", icon: <Landmark className="h-full w-full" /> };
+  const meta = CATEGORY_META[catId] || { title: "Exam List", icon: <Landmark className="h-full w-full" /> };
 
   const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db]);
   const examsQuery = useMemo(() => (db ? collection(db, "exams") : null), [db]);
@@ -58,7 +58,7 @@ export default function CategoryHubsPage() {
       <Navbar />
       
       <section className="bg-white border-b border-slate-100 py-8 md:py-16 text-left">
-         <div className="container mx-auto px-4 max-w-7xl">
+         <div className="container mx-auto px-4 max-7xl">
             <div className="flex items-center gap-6 mb-8">
                <button onClick={() => router.back()} className="h-10 w-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-black transition-all">
                   <ChevronLeft className="h-5 w-5" />
@@ -73,7 +73,7 @@ export default function CategoryHubsPage() {
                </div>
             </div>
             <h1 className="text-4xl md:text-7xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-none">
-               {meta.title} <br/> <span className="text-primary">HUBS</span>
+               {meta.title} <br/> <span className="text-primary">EXAMS</span>
             </h1>
          </div>
       </section>
@@ -109,21 +109,21 @@ export default function CategoryHubsPage() {
                                    </div>
                                 )}
                              </div>
-                             <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-slate-100 text-slate-400">OFFICIAL HUB</Badge>
+                             <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-slate-100 text-slate-400">OFFICIAL CENTER</Badge>
                           </div>
                           
                           <div className="space-y-2 flex-1">
-                             <h3 className="text-2xl font-black text-[#0F172A] uppercase tracking-tight leading-none group-hover:text-primary transition-colors">{hub.abbreviation} Hub</h3>
-                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate">{hub.name}</p>
+                             <h3 className="text-2xl font-black text-[#0F172A] uppercase tracking-tight leading-none group-hover:text-primary transition-colors">{hub.abbreviation} CENTER</h3>
+                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest line-clamp-2 min-h-[25px]">{hub.name}</p>
                           </div>
 
                           <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
                              <div className="space-y-0.5">
                                 <p className="text-[11px] font-black text-[#0F172A] uppercase leading-none">{examCount}</p>
-                                <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">VERTICALS LIVE</p>
+                                <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">EXAMS LISTED</p>
                              </div>
-                             <Button variant="ghost" className="h-9 px-4 rounded-xl bg-slate-900 text-white flex items-center gap-2 font-black uppercase text-[8px] tracking-widest group-hover:bg-primary transition-all border-none">
-                                OPEN <ChevronRight className="h-3 w-3" />
+                             <Button variant="ghost" className="h-10 px-6 rounded-xl bg-slate-900 text-white flex items-center gap-2 font-black uppercase text-[8px] tracking-widest group-hover:bg-primary transition-all border-none">
+                                VIEW <ChevronRight className="h-4 w-4" />
                              </Button>
                           </div>
                        </Card>
@@ -134,7 +134,7 @@ export default function CategoryHubsPage() {
          ) : (
             <div className="py-40 text-center opacity-20 flex flex-col items-center">
                <Info className="h-20 w-20 mb-6" />
-               <p className="font-headline font-black text-2xl uppercase tracking-widest">Awaiting Hub Deployment</p>
+               <p className="font-headline font-black text-2xl uppercase tracking-widest">Awaiting Exams Deployment</p>
             </div>
          )}
       </main>

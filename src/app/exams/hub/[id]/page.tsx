@@ -15,8 +15,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Hub Explorer v8.0.
- * RECOVERED: Restored hierarchical branding ensures Police and PSPCL exams inherit official logos from parent Hubs.
+ * @fileOverview Institutional Hub Explorer v8.1.
+ * UPDATED: Simplified language from HUB to EXAMS and fixed text clipping.
  */
 
 export default function HubExamsPage() {
@@ -88,7 +88,8 @@ export default function HubExamsPage() {
                </div>
                <div className="space-y-3 text-center md:text-left">
                   <div className="flex items-center justify-center md:justify-start gap-4">
-                     <Badge className="bg-primary text-white border-none font-black px-4 py-1 rounded-xl text-[10px] tracking-widest shadow-lg">{hub?.abbreviation} HUB</Badge>
+                     {/* SIMPLIFIED: Replaced HUB with EXAMS */}
+                     <Badge className="bg-primary text-white border-none font-black px-4 py-1 rounded-xl text-[10px] tracking-widest shadow-lg">{hub?.abbreviation} EXAMS</Badge>
                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Official verticals</span>
                   </div>
                   <h1 className="text-4xl md:text-7xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-none">{hub?.name}</h1>
@@ -132,8 +133,9 @@ export default function HubExamsPage() {
                                   </div>
                                 )}
                              </div>
+                             {/* SIMPLIFIED: Hub to Vertical */}
                              <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-slate-100 text-slate-400">
-                                {hub?.abbreviation} VERTICAL
+                                {hub?.abbreviation} EXAM LIST
                              </Badge>
                           </div>
 
@@ -151,7 +153,7 @@ export default function HubExamsPage() {
 
                           <div className="mt-10">
                              <Button variant="ghost" className="w-full h-16 rounded-2xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest gap-2 group-hover:bg-primary transition-all border-none">
-                                OPEN EXAM HUB <ChevronRight className="h-4 w-4" />
+                                OPEN EXAM CENTER <ChevronRight className="h-4 w-4" />
                              </Button>
                           </div>
                        </Card>
