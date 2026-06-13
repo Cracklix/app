@@ -23,9 +23,10 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Final High-Fidelity "Command Center" Hero v40.0.
+ * @fileOverview Final High-Fidelity "Command Center" Hero v45.0.
  * DESIGN: Zero text on the URL image as requested. 
- * STYLE: Advanced 3D-effect designed image wrapper with glow nodes.
+ * STYLE: Advanced 3D-effect designed image wrapper with cinematic frame.
+ * STABILITY: Aligned hydration fallback to prevent "call" and mismatch errors.
  */
 
 export default function Hero() {
@@ -55,7 +56,7 @@ export default function Hero() {
     ];
   }, [stats]);
 
-  // Initial SSR / Hydration state - Must match server exactly
+  // Initial SSR / Hydration state - Must match server exactly to prevent "call" error
   if (!mounted) {
     return (
       <section className="relative min-h-[90vh] bg-[#070D19] flex flex-col justify-center items-center w-full">
@@ -133,7 +134,7 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* 2. RIGHT VISUAL HUB (CLEAN DESIGNED IMAGE) */}
+          {/* 2. RIGHT VISUAL HUB (CLEAN DESIGNED IMAGE - ZERO TEXT) */}
           <div className="lg:col-span-5 relative justify-self-center w-full max-w-[480px]">
              <motion.div 
                initial={{ opacity: 0, scale: 0.9 }}

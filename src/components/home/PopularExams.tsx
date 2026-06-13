@@ -15,6 +15,7 @@ import {
   Star,
   FileText,
   Newspaper,
+  Info
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -26,8 +27,9 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Institutional Popular Exams Hub v27.0 (Hardened).
- * PERFORMANCE: Hoisted helper components and functions to the top to prevent runtime errors.
+ * @fileOverview Institutional Popular Exams Hub v28.0 (Hardened).
+ * PERFORMANCE: Hoisted helper components to the top to prevent "call" errors during bundling.
+ * STABILITY: Robust hydration guards.
  */
 
 function PrepNode({ label, icon, href }: { label: string, icon: React.ReactNode, href: string }) {
@@ -65,12 +67,29 @@ export default function PopularExams() {
 
   const boardsQuery = useMemo(() => (db ? query(collection(db, "boards"), orderBy("displayOrder", "asc")) : null), [db]);
   const { data: boards, loading } = useCollection<any>(boardsQuery);
+  const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]));
 
   const filteredBoards = useMemo(() => {
     if (!boards || !mounted) return [];
     const targetAbbrevs = ['PSSSB', 'POLICE', 'PPSC', 'PSPCL', 'PSTET', 'CTET', 'ETT', 'MASTER CADRE'];
     return boards.filter((b: any) => targetAbbrevs.includes(b.abbreviation?.toUpperCase()));
   }, [boards, mounted]);
+
+  const statsMap = useMemo(() => {
+    if (!mocks || !mounted) return {};
+    const map: Record<string, number> = {};
+    mocks.forEach(m => {
+       const bid = m.boardId || m.boardIds?.[0];
+       if (bid) map[bid] = (map[bid] || 0) + 1;
+    });
+    return map;
+  }, [mocks, mounted]);
+
+  if (!mounted) return (
+     <section className="py-12 bg-white flex items-center justify-center">
+        <Skeleton className="h-80 w-full max-w-7xl rounded-[3.5rem]" />
+     </section>
+  );
 
   return (
     <section className="py-12 md:py-24 bg-slate-50/50">
@@ -90,9 +109,9 @@ export default function PopularExams() {
          </div>
 
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            {!mounted || loading ? (
+            {loading ? (
                Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[2.5rem]" />)
-            ) : filteredBoards.map((board, idx) => (
+            ) : filteredBoards.length > 0 ? filteredBoards.map((board, idx) => (
               <motion.div 
                  key={board.id}
                  initial={{ opacity: 0, y: 20 }}
@@ -131,7 +150,12 @@ export default function PopularExams() {
                     </div>
                  </Card>
               </motion.div>
-            ))}
+            )) : (
+              <div className="col-span-full py-20 text-center opacity-20 flex flex-col items-center">
+                 <Info className="h-12 w-12 mb-4" />
+                 <p className="font-black uppercase tracking-widest text-xs">No Hub Found in Registry</p>
+              </div>
+            )}
          </div>
       </div>
     </section>
