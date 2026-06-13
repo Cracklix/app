@@ -28,9 +28,9 @@ import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Hardened High-Density Mobile Sidebar v65.0.
+ * @fileOverview Hardened High-Density Mobile Sidebar v66.0.
  * UPDATED: Zero vertical spacing between logo, labels and items for a strictly continuous flow.
- * UPDATED: Increased Logo scale to h-48.
+ * UPDATED: Massive Logo scale increased to h-56 with aggressive negative margins.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -70,9 +70,9 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex flex-col h-full bg-[#0B1528] text-white overflow-y-auto no-scrollbar font-body select-none text-left">
       
-      {/* BRAND LOGO - ABSOLUTE TIGHT */}
-      <div className="px-6 flex justify-start shrink-0 overflow-visible mt-0 mb-[-12px]">
-         <Logo imgClassName="h-48 origin-left" />
+      {/* BRAND LOGO - ABSOLUTE TIGHT MASSIVE */}
+      <div className="px-6 flex justify-start shrink-0 overflow-visible mt-0 mb-[-15px] -mt-2">
+         <Logo imgClassName="h-56 origin-left" />
       </div>
 
       {/* IDENTITY HEADER - COMPACT */}

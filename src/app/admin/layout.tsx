@@ -37,12 +37,11 @@ import { useEffect, useState } from "react"
 import { signOut } from "firebase/auth"
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils"
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 
 /**
- * @fileOverview Hardened High-Density Admin Layout v197.0.
+ * @fileOverview Final Hardened High-Density Admin Layout v198.0.
  * UPDATED: Absolute zero vertical spacing between logo and labels.
- * UPDATED: Increased Logo scale to h-40.
+ * UPDATED: Massive Logo scale set to h-48 with negative margins.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -90,8 +89,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex flex-col h-full bg-[#0F172A] pointer-events-auto select-none overflow-y-auto no-scrollbar">
        <div className="flex-1 flex flex-col">
           
-          <div className="px-6 flex justify-start shrink-0 overflow-visible mt-0 mb-[-10px]">
-             <Logo href="/admin" imgClassName="h-40 origin-left" />
+          <div className="px-6 flex justify-start shrink-0 overflow-visible mt-0 mb-[-15px] -mt-4">
+             <Logo href="/admin" imgClassName="h-48 origin-left" />
           </div>
 
           <SidebarGroup className="p-0 m-0 border-none space-y-0">
