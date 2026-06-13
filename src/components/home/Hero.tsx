@@ -22,9 +22,10 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Final Viewport-Calibrated Hero v15.0 (Micro UI).
- * FIXED: Mobile height exactly 200px.
- * FIXED: Further reduced typography and icon scale for high-density mobile layout.
+ * @fileOverview Final High-Fidelity Hero v16.0 (Vibrant & Compact).
+ * FIXED: Replaced dark night image with daylight view to eliminate "black" look.
+ * FIXED: Reduced gradient densities for maximum background visibility.
+ * SCALE: Strictly 200px height on mobile as requested.
  */
 
 export default function Hero() {
@@ -56,22 +57,22 @@ export default function Hero() {
   if (!mounted) return null;
 
   return (
-    <section className="relative w-full bg-[#020817] overflow-hidden flex flex-col items-center">
+    <section className="relative w-full bg-slate-900 overflow-hidden flex flex-col items-center">
       {/* 1. BACKGROUND LAYER - Compact 200px Fit */}
-      <div className="w-full relative min-h-[200px] md:min-h-0 md:aspect-[21/9] bg-[#020817]">
+      <div className="w-full relative min-h-[200px] md:min-h-0 md:aspect-[21/9] bg-slate-900">
         <motion.img 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          src="https://images.unsplash.com/photo-1596404351662-386f63456770?q=80&w=2070&auto=format&fit=crop" 
-          alt="Golden Temple Night" 
-          className="absolute inset-0 w-full h-full object-cover object-[center_25%]"
+          transition={{ duration: 1.2 }}
+          src="https://images.unsplash.com/photo-1514222134-b57cbb8ce073?q=80&w=2000&auto=format&fit=crop" 
+          alt="Golden Temple Daylight" 
+          className="absolute inset-0 w-full h-full object-cover object-[center_35%]"
           referrerPolicy="no-referrer"
         />
         
-        {/* PAIRED OVERLAYS - Balanced for mobile visibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-[#020817]/30 md:via-[#020817]/60 to-transparent z-10" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#020817] via-transparent to-transparent z-10" />
+        {/* LIGHTER OVERLAYS - Balanced for daylight image visibility */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 md:via-black/50 to-transparent z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
         
         {/* TEXT CONTENT HUB */}
         <div className="absolute inset-0 z-20 flex items-center">
@@ -81,7 +82,7 @@ export default function Hero() {
                  <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="inline-flex items-center gap-1 md:gap-3 py-0.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl px-2 md:px-3"
+                    className="inline-flex items-center gap-1 md:gap-3 py-0.5 rounded-full bg-black/20 border border-white/10 backdrop-blur-md px-2 md:px-3"
                  >
                     <Star className="h-1.5 w-1.5 md:h-3 md:w-3 text-orange-500 fill-current" />
                     <span className="text-[6px] md:text-xs font-black text-white uppercase tracking-widest">
@@ -99,7 +100,7 @@ export default function Hero() {
                        Prepare Smarter.<br/>
                        <span className="text-primary italic">Score Higher.</span>
                     </h1>
-                    <p className="text-[7px] md:text-lg text-slate-200 font-medium max-w-xs md:max-w-lg leading-tight drop-shadow-lg opacity-90 truncate-mobile">
+                    <p className="text-[7px] md:text-lg text-slate-100 font-bold max-w-xs md:max-w-lg leading-tight drop-shadow-lg opacity-100 truncate-mobile">
                        Official Recruitment Exam Preparation.
                     </p>
                  </motion.div>
