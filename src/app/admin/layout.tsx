@@ -40,8 +40,8 @@ import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 
 /**
- * @fileOverview Hardened High-Density Admin Layout v195.0.
- * UPDATED: Absolute removal of all vertical margins and paddings for a strictly continuous sidebar.
+ * @fileOverview Hardened High-Density Admin Layout v196.0.
+ * UPDATED: Absolute zero vertical spacing between logo and labels.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -86,15 +86,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user || !isAdmin) return null
 
   const SideNavContent = () => (
-    <div className="flex flex-col h-full bg-[#0F172A] pointer-events-auto select-none overflow-y-auto no-scrollbar -mt-6">
-       <div className="flex-1">
+    <div className="flex flex-col h-full bg-[#0F172A] pointer-events-auto select-none overflow-y-auto no-scrollbar">
+       <div className="flex-1 flex flex-col">
           
-          <div className="px-6 py-0 -mb-6 flex justify-start shrink-0 overflow-visible">
-             <Logo href="/admin" imgClassName="h-36 origin-left" />
+          <div className="px-6 flex justify-start shrink-0 overflow-visible mt-0 mb-0">
+             <Logo href="/admin" imgClassName="h-28 origin-left" />
           </div>
 
-          <SidebarGroup className="p-0 m-0 border-none">
-            <SidebarGroupLabel className="px-6 py-0 h-6 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left mt-0 mb-0">MANAGEMENT CENTER</SidebarGroupLabel>
+          <SidebarGroup className="p-0 m-0 border-none space-y-0">
+            <SidebarGroupLabel className="px-6 h-fit py-0 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left mt-0 mb-1">MANAGEMENT CENTER</SidebarGroupLabel>
             <SidebarMenu className="gap-0 mt-0 p-0">
               <AdminNavItem icon={<LayoutDashboard />} label="DASHBOARD" href="/admin" active={pathname === "/admin"} />
               <AdminNavItem icon={<Layers />} label="CATEGORIES" href="/admin/categories" active={pathname === "/admin/categories"} />
@@ -106,8 +106,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </SidebarMenu>
           </SidebarGroup>
 
-          <SidebarGroup className="p-0 m-0 border-none mt-2">
-            <SidebarGroupLabel className="px-6 py-0 h-6 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left mt-0 mb-0">CONTENT PULSE</SidebarGroupLabel>
+          <SidebarGroup className="p-0 m-0 border-none mt-2 space-y-0">
+            <SidebarGroupLabel className="px-6 h-fit py-0 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left mt-0 mb-1">CONTENT PULSE</SidebarGroupLabel>
             <SidebarMenu className="gap-0 mt-0 p-0">
               <AdminNavItem icon={<Wand2 />} label="BRAND MAGIC" href="/admin/brand-magic" active={pathname === "/admin/brand-magic"} />
               <AdminNavItem icon={<LayoutGrid />} label="MOCK BUILDER" href="/admin/mocks/builder" active={pathname === "/admin/mocks/builder"} />
@@ -119,8 +119,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </SidebarMenu>
           </SidebarGroup>
 
-          <SidebarGroup className="p-0 m-0 border-none mt-2">
-            <SidebarGroupLabel className="px-6 py-0 h-6 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left mt-0 mb-0">GOVERNANCE</SidebarGroupLabel>
+          <SidebarGroup className="p-0 m-0 border-none mt-2 space-y-0">
+            <SidebarGroupLabel className="px-6 h-fit py-0 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left mt-0 mb-1">GOVERNANCE</SidebarGroupLabel>
             <SidebarMenu className="gap-0 mt-0 p-0">
               <AdminNavItem icon={<Users />} label="STUDENT LIST" href="/admin/users" active={pathname === "/admin/users"} />
               <AdminNavItem icon={<DollarSign />} label="REVENUE CENTER" href="/admin/payments" active={pathname === "/admin/payments"} />

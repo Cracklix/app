@@ -28,7 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Hardened High-Density Mobile Sidebar v63.0.
+ * @fileOverview Hardened High-Density Mobile Sidebar v64.0.
  * UPDATED: Zero vertical spacing between logo, labels and items for a strictly continuous flow.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
@@ -41,7 +41,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    setMounted(true);
+    mounted && setMounted(true);
     if (typeof window !== 'undefined' && (window as any).deferredPrompt) {
       setHasPrompt(true);
     }
@@ -69,13 +69,13 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex flex-col h-full bg-[#0B1528] text-white overflow-y-auto no-scrollbar font-body select-none text-left">
       
-      {/* BRAND LOGO - TIGHTENED */}
-      <div className="px-6 py-0 -mb-8 flex justify-start shrink-0 overflow-visible">
-         <Logo imgClassName="h-48 origin-left" />
+      {/* BRAND LOGO - ABSOLUTE TIGHT */}
+      <div className="px-6 flex justify-start shrink-0 overflow-visible mt-0 mb-0">
+         <Logo imgClassName="h-32 origin-left" />
       </div>
 
       {/* IDENTITY HEADER - COMPACT */}
-      <div className="px-6 py-0 flex flex-col gap-0 relative overflow-hidden shrink-0">
+      <div className="px-6 flex flex-col gap-0 relative overflow-hidden shrink-0 mt-0 pt-0">
         <Shield className="absolute top-0 right-4 h-40 w-40 text-white/[0.03] pointer-events-none" />
         
         <div className="relative z-10 flex items-center gap-3 py-1">
@@ -115,7 +115,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
         </button>
       </div>
 
-      <div className="px-6 py-0 mb-0">
+      <div className="px-6 mb-1">
          <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">MANAGEMENT CENTER</p>
       </div>
 
