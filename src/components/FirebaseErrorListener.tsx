@@ -1,13 +1,11 @@
-
 'use client';
 
 import { useEffect } from 'react';
 import { errorEmitter } from '@/firebase/error-emitter';
 
 /**
- * @fileOverview A component that listens for FirestorePermissionError events 
- * and throws them as uncaught exceptions to trigger the Next.js error overlay.
- * UPDATED: Hardened to prevent [object Event] crashes by checking error type.
+ * @fileOverview Hardened Error Bridge.
+ * Ensures Firestore permission errors trigger a clean Next.js error boundary without [object Event] crashes.
  */
 export function FirebaseErrorListener() {
   useEffect(() => {
@@ -15,7 +13,6 @@ export function FirebaseErrorListener() {
       // 1. Audit Error Identity - Strictly only throw Error objects
       if (error instanceof Error) {
         // Use setTimeout to ensure the throw happens outside the event emitter call stack
-        // This prevents the [object Event] wrapping in some environments.
         setTimeout(() => {
           throw error;
         }, 0);

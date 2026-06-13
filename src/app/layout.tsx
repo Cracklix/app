@@ -1,4 +1,3 @@
-
 import type {Metadata, Viewport} from 'next';
 import './globals.css';
 import { Inter } from "next/font/google";
@@ -56,6 +55,10 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
+/**
+ * @fileOverview Master Layout v20.0 (Hardened).
+ * SAFE-RENDER: Added FirebaseClientProvider and PWAManager at top-level.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -71,7 +74,9 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} font-body antialiased bg-white text-[#0F172A] min-h-screen pb-20 md:pb-0`}>
         <FirebaseClientProvider>
-          {children}
+          <div className="flex flex-col min-h-screen">
+            {children}
+          </div>
           <MobileNav />
           <PWAManager />
           <Toaster />

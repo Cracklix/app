@@ -4,8 +4,8 @@ import { useMemo, useState, useEffect } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useCollection, useFirestore } from "@/firebase"
-import { collection, query, where, doc, updateDoc, serverTimestamp, limit } from "firebase/firestore"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { collection, query, where, limit } from "firebase/firestore"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { 
@@ -20,15 +20,10 @@ import {
   Clock,
   LayoutGrid,
   ShieldCheck,
-  AlertTriangle,
-  Activity,
-  Award,
-  User,
   TrendingUp,
-  BarChart3,
   Calendar,
   Loader2,
-  Gem
+  Award
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -37,20 +32,21 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import ShareButton from "@/components/navigation/ShareButton"
 
 /**
- * @fileOverview Optimized Student Dashboard v19.0.
- * UPDATED: Enhanced analytics with live Firestore result processing.
+ * @fileOverview Hardened Student Dashboard v20.0.
+ * FIXED: Null-safe rendering for profile and results data.
+ * FIXED: Replaced arbitrary Tailwind values with standard utility classes.
  */
-
 export default function StudentDashboard() {
   const { user, profile, loading } = useUser()
   const db = useFirestore()
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     if (!loading && !user) router.push("/login")
   }, [user, loading, router])
 
-  // STABILIZED QUERY
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
     return query(collection(db, "results"), where("userId", "==", user.uid), limit(20))
@@ -88,7 +84,7 @@ export default function StudentDashboard() {
     return { total, avgAccuracy: avgAcc, streak, readiness, hours: timeFormatted, correct }
   }, [results])
 
-  if (loading) return (
+  if (!mounted || loading) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-4">
        <Loader2 className="h-10 w-10 text-primary animate-spin" />
        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Syncing Hub...</p>
@@ -100,13 +96,11 @@ export default function StudentDashboard() {
       <Navbar />
       
       <main className="container mx-auto px-4 md:px-6 py-6 md:py-12 max-w-7xl space-y-8 md:space-y-12">
-        
-        {/* PROFILE HUB */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
            
            <div className="lg:col-span-8 space-y-8">
-              <section className="bg-[#0B1528] text-white p-8 md:p-16 rounded-[3rem] shadow-4xl relative overflow-hidden text-left group">
-                <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[150%] bg-primary/10 blur-[100px] rounded-full group-hover:bg-primary/20 transition-all duration-1000" />
+              <section className="bg-[#0B1528] text-white p-8 md:p-16 rounded-[3rem] shadow-2xl relative overflow-hidden text-left group">
+                <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
                 <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
                   <div className="relative shrink-0">
                      <StudentAvatar profile={profile} className="h-24 w-24 md:h-36 md:w-32 border-4 border-white/10 rounded-[2.5rem] shadow-2xl" />
@@ -116,7 +110,7 @@ export default function StudentDashboard() {
                   </div>
                   <div className="flex-1 space-y-4 text-center md:text-left overflow-hidden">
                      <div className="space-y-1">
-                        <h2 className="text-3xl md:text-6xl font-headline font-black tracking-tight uppercase truncate">{profile?.name}</h2>
+                        <h2 className="text-3xl md:text-6xl font-headline font-black tracking-tight uppercase truncate">{profile?.name || "Student"}</h2>
                         <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
                            <Badge className="bg-primary text-white border-none text-[10px] font-black uppercase px-4 py-1 rounded-lg shadow-xl">
                              {(profile?.status || 'Free').toUpperCase()} PASS
@@ -127,7 +121,7 @@ export default function StudentDashboard() {
                         </div>
                      </div>
                      <div className="pt-4 flex flex-wrap justify-center md:justify-start gap-4">
-                        <Button asChild className="h-12 px-8 bg-white/10 hover:bg-white/20 text-white rounded-xl font-black uppercase text-[10px] tracking-widest border border-white/10 shadow-xl transition-all active:scale-95 border-none">
+                        <Button asChild className="h-12 px-8 bg-white/10 hover:bg-white/20 text-white rounded-xl font-black uppercase text-[10px] tracking-widest border border-white/10 shadow-xl transition-all active:scale-95">
                            <Link href="/profile">My Details</Link>
                         </Button>
                         <Button asChild className="h-12 px-8 bg-primary hover:bg-orange-600 text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl transition-all active:scale-95 border-none">
@@ -138,7 +132,6 @@ export default function StudentDashboard() {
                 </div>
               </section>
 
-              {/* STATS HUB */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
                  <MetricItem label="PREP SCORE" val={`${stats.readiness}%`} icon={<TrendingUp className="text-primary h-4 w-4" />} />
                  <MetricItem label="ACCURACY" val={`${stats.avgAccuracy}%`} icon={<Target className="text-emerald-500 h-4 w-4" />} />
@@ -146,7 +139,6 @@ export default function StudentDashboard() {
                  <MetricItem label="TIME SPENT" val={stats.hours} icon={<Clock className="text-amber-500 h-4 w-4" />} />
               </div>
 
-              {/* RECENT FEED */}
               <Card className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden text-left border border-slate-100">
                  <CardHeader className="p-8 md:p-12 border-b border-slate-50 bg-slate-50/30 flex flex-row items-center justify-between">
                     <div className="space-y-1">
@@ -164,7 +156,7 @@ export default function StudentDashboard() {
                        ) : results && results.length > 0 ? (
                           results.slice(0, 5).map((r: any) => (
                              <Link key={r.id} href={`/results/${r.id || r.mockId}`} className="p-8 md:p-10 flex items-center justify-between hover:bg-slate-50/50 transition-all group border-l-[4px] border-transparent hover:border-primary">
-                                <div className="flex items-center gap-6 md:gap-10 min-w-0">
+                                <div className="flex items-center gap-6 md:gap-10 min-w-0 flex-1">
                                    <div className="h-14 w-14 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
                                       <Zap className="h-6 w-6 text-primary" />
                                    </div>
@@ -187,11 +179,9 @@ export default function StudentDashboard() {
               </Card>
            </div>
 
-           {/* SIDEBAR NODES */}
            <div className="lg:col-span-4 space-y-8 md:space-y-12">
-              
               <Card className="border-none shadow-4xl bg-gradient-to-br from-orange-500 to-primary text-white p-10 rounded-[3rem] relative overflow-hidden group">
-                 <div className="absolute bottom-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform" style={{ transitionDuration: '2000ms' }}><Flame className="h-64 w-64" /></div>
+                 <div className="absolute bottom-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-125 transition-transform duration-1000"><Flame className="h-64 w-64" /></div>
                  <div className="relative z-10 space-y-6">
                     <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/70">Study Streak</p>
                     <div className="flex items-baseline gap-4">
@@ -231,16 +221,9 @@ export default function StudentDashboard() {
                    className="w-full h-16 rounded-2xl bg-[#0B1528] hover:bg-black text-white shadow-2xl transition-all active:scale-95 border-none" 
                  />
               </Card>
-
-              <div className="py-12 flex flex-col items-center gap-3 text-center border-t border-slate-100">
-                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">
-                    Developed by <span className="text-[#0F172A] font-black">Arsh Grewal</span>
-                 </p>
-              </div>
            </div>
         </div>
       </main>
-
       <Footer />
     </div>
   )

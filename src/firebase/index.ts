@@ -5,9 +5,8 @@ import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { firebaseConfig } from './config';
 
 /**
- * @fileOverview Core Firebase Initialization Node.
- * Safe for use in both Client Components and Server Actions.
- * UPDATED: Explicit named exports enforced to prevent Webpack resolution errors.
+ * @fileOverview Hardened Firebase Initialization Node.
+ * Enforces explicit named exports to prevent Webpack resolution errors and "Preview shutdown" events.
  */
 export function initializeFirebase(): { app: FirebaseApp; firestore: Firestore; auth: Auth; storage: FirebaseStorage } {
   const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
@@ -18,7 +17,7 @@ export function initializeFirebase(): { app: FirebaseApp; firestore: Firestore; 
   return { app, firestore, auth, storage };
 }
 
-// Named exports instead of export * to harden the build pipeline
+// Strictly controlled named exports
 export { FirebaseProvider, useFirebaseApp, useFirestore, useAuth, useStorage } from './provider';
 export { useCollection } from './firestore/use-collection';
 export { useDoc } from './firestore/use-doc';

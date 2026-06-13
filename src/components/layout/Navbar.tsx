@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from "next/link";
-import { Menu, Search, User, Gem, LogOut, Target, Newspaper, Download, Zap, Home, ShieldCheck, Settings, Award } from "lucide-react";
+import { Menu, Search, User, Gem, LogOut, Newspaper, Download, Zap, Home, ShieldCheck, Award } from "lucide-react";
 import Logo from "@/components/brand/Logo";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -23,10 +23,9 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Final Performance-Hardened Header v141.0.
- * RESTORED: Profile Hub circular button and explicit screenshot-matched dropdown.
- * REMOVED: Admin Panel button moved from main strip to profile dropdown.
- * FIXED: Hydration guard for all dynamic nodes.
+ * @fileOverview Final Performance-Hardened Header v142.0.
+ * FIXED: Hydration guard wrapped around all dynamic Radix components to prevent ID mismatches.
+ * SAFE-RENDER: Profile data accessed via optional chaining to prevent blank screen crashes.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -66,14 +65,26 @@ export default function Navbar() {
   };
 
   const handleInstallClick = () => {
-    const prompt = (window as any).deferredPrompt;
-    if (prompt) {
-      prompt.prompt();
+    if (typeof window !== 'undefined') {
+      const prompt = (window as any).deferredPrompt;
+      if (prompt) prompt.prompt();
     }
   };
 
-  // Base height specs: Desktop 82px, Mobile 72px
   const headerHeight = "h-[72px] lg:h-[82px]";
+
+  // Prevent any dynamic rendering until client-side hydration is confirmed
+  if (!mounted) {
+    return (
+      <nav className={cn("w-full flex items-center bg-[#0B1528] px-4 lg:px-8", headerHeight)}>
+        <div className="container mx-auto flex justify-between">
+          <div className="w-10 h-10 bg-white/5 rounded-xl animate-pulse" />
+          <div className="h-8 w-32 bg-white/5 rounded-xl animate-pulse" />
+          <div className="w-10 h-10 bg-white/5 rounded-full animate-pulse" />
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <div className="sticky top-0 z-[1000] w-full pointer-events-auto font-body text-left">
@@ -83,33 +94,26 @@ export default function Navbar() {
       )}>
         <div className="container mx-auto max-w-[1536px] flex items-center justify-between h-full gap-2">
           
-          {/* 1. LEFT SECTION: MENU & LOGO */}
           <div className="flex items-center gap-2 shrink-0">
-            {mounted ? (
-              <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-                <SheetTrigger asChild>
-                  <button className="w-10 h-10 md:w-12 md:h-12 bg-white/5 text-white rounded-[14px] border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center cursor-pointer active:scale-90 outline-none">
-                    <Menu className="h-5 w-5 md:h-6 md:w-6" />
-                  </button>
-                </SheetTrigger>
-                <SheetContent side="left" className="p-0 border-none w-[300px] bg-[#0F172A] z-[2001]">
-                  <SheetHeader className="sr-only"><SheetTitle>Menu</SheetTitle></SheetHeader>
-                  <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
-                </SheetContent>
-              </Sheet>
-            ) : (
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-white/5 rounded-[14px] border border-white/10" />
-            )}
+            <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+              <SheetTrigger asChild>
+                <button className="w-10 h-10 md:w-12 md:h-12 bg-white/5 text-white rounded-[14px] border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center cursor-pointer active:scale-90 outline-none">
+                  <Menu className="h-5 w-5 md:h-6 md:w-6" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 border-none w-[300px] bg-[#0F172A] z-[2001]">
+                <SheetHeader className="sr-only"><SheetTitle>Menu</SheetTitle></SheetHeader>
+                <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
+              </SheetContent>
+            </Sheet>
             <Logo className="!gap-0 active:scale-95 transition-transform" />
           </div>
 
-          {/* 2. CENTER SECTION: NAVIGATION BLOCKS */}
           <div className="hidden lg:flex flex-1 items-center justify-center gap-4 xl:gap-8">
             <NavLink icon={<Home />} label1="HOME" label2="PAGE" href="/" active={pathname === "/"} />
             <NavLink icon={<Zap />} label1="PRACTICE" label2="TESTS" href="/mocks" active={pathname.startsWith("/mocks")} />
             <NavLink icon={<Newspaper />} label1="CURRENT" label2="AFFAIRS" href="/current-affairs" active={pathname === "/current-affairs"} />
 
-            {/* GET PASS CTA */}
             <Link href="/pass" className="transition-all active:scale-95 group">
               <div className={cn(
                 "w-[170px] h-[52px] rounded-[18px] border flex items-center justify-center gap-3 transition-all",
@@ -122,7 +126,6 @@ export default function Navbar() {
               </div>
             </Link>
 
-            {/* INSTALL APP NODE */}
             <div onClick={handleInstallClick} className="cursor-pointer transition-all active:scale-95 group">
                <div className="flex items-center gap-3 opacity-80 hover:opacity-100 group-hover:translate-y-[-1px] transition-all">
                   <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all">
@@ -136,10 +139,8 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* 3. RIGHT SECTION: PASS HUB, SEARCH, USER */}
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
-             
-             {mounted && user && (
+             {user && (
                 <div 
                   onClick={() => router.push('/pass')}
                   className={cn(
@@ -159,7 +160,6 @@ export default function Navbar() {
                 </div>
              )}
 
-             {/* SEARCH TRIGGER */}
              <Link href="/search" className={cn(
                "w-[40px] h-[40px] rounded-xl border border-white/10 transition-all flex items-center justify-center shadow-lg active:scale-90 shrink-0",
                pathname === "/search" ? "bg-white/10 text-white border-white/30" : "bg-white/5 text-slate-400 hover:text-white"
@@ -167,66 +167,61 @@ export default function Navbar() {
                 <Search className="h-[18px] w-[20px]" />
              </Link>
 
-             {/* USER PROFILE HUB (White Circle Container) */}
-             {mounted ? (
-                <div className="relative">
-                  {user ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button className="w-[42px] h-[44px] rounded-full overflow-hidden border-[3px] border-white/10 hover:border-primary transition-all bg-white shadow-2xl focus:outline-none flex items-center justify-center active:scale-90 cursor-pointer shrink-0">
-                          <StudentAvatar profile={profile} className="h-full w-full border-none" iconClassName="text-[#0B1528]" />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-72 bg-[#0F172A] border-white/10 text-white rounded-[2rem] p-3 shadow-5xl z-[2001] animate-in slide-in-from-top-2 duration-300" align="end">
-                        <div className="px-5 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">STUDENT AREA</div>
-                        
-                        <DropdownMenuItem asChild className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5 focus:text-white group">
-                          <Link href="/profile" className="w-full flex items-center gap-5">
-                            <User className="h-5 w-5 text-blue-400 group-hover:scale-110 transition-transform" />
-                            <span className="font-bold text-[15px] tracking-tight uppercase">MY PROFILE</span>
-                          </Link>
-                        </DropdownMenuItem>
+             <div className="relative">
+               {user ? (
+                 <DropdownMenu>
+                   <DropdownMenuTrigger asChild>
+                     <button className="w-[42px] h-[44px] rounded-full overflow-hidden border-[3px] border-white/10 hover:border-primary transition-all bg-white shadow-2xl focus:outline-none flex items-center justify-center active:scale-90 cursor-pointer shrink-0">
+                       <StudentAvatar profile={profile} className="h-full w-full border-none" iconClassName="text-[#0B1528]" />
+                     </button>
+                   </DropdownMenuTrigger>
+                   <DropdownMenuContent className="w-72 bg-[#0F172A] border-white/10 text-white rounded-[2rem] p-3 shadow-5xl z-[2001] animate-in slide-in-from-top-2 duration-300" align="end">
+                     <div className="px-5 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">STUDENT AREA</div>
+                     
+                     <DropdownMenuItem asChild className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5 focus:text-white group">
+                       <Link href="/profile" className="w-full flex items-center gap-5">
+                         <User className="h-5 w-5 text-blue-400 group-hover:scale-110 transition-transform" />
+                         <span className="font-bold text-[15px] tracking-tight uppercase">MY PROFILE</span>
+                       </Link>
+                     </DropdownMenuItem>
 
-                        <DropdownMenuItem asChild className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5 focus:text-white group">
-                          <Link href="/my-exams" className="w-full flex items-center gap-5">
-                            <Award className="h-5 w-5 text-emerald-400 group-hover:scale-110 transition-transform" />
-                            <span className="font-bold text-[15px] tracking-tight uppercase">MY RESULTS</span>
-                          </Link>
-                        </DropdownMenuItem>
+                     <DropdownMenuItem asChild className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5 focus:text-white group">
+                       <Link href="/my-exams" className="w-full flex items-center gap-5">
+                         <Award className="h-5 w-5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                         <span className="font-bold text-[15px] tracking-tight uppercase">MY RESULTS</span>
+                       </Link>
+                     </DropdownMenuItem>
 
-                        <DropdownMenuItem asChild className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5 focus:text-white group">
-                          <Link href="/pass" className="w-full flex items-center gap-5">
-                            <Gem className="h-5 w-5 text-orange-400 group-hover:scale-110 transition-transform" />
-                            <span className="font-bold text-[15px] tracking-tight uppercase">ELITE PASS</span>
-                          </Link>
-                        </DropdownMenuItem>
+                     <DropdownMenuItem asChild className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5 focus:text-white group">
+                       <Link href="/pass" className="w-full flex items-center gap-5">
+                         <Gem className="h-5 w-5 text-orange-400 group-hover:scale-110 transition-transform" />
+                         <span className="font-bold text-[15px] tracking-tight uppercase">ELITE PASS</span>
+                       </Link>
+                     </DropdownMenuItem>
 
-                        {isAdmin && (
-                          <DropdownMenuItem asChild className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all bg-white/5 focus:bg-white/10 group mt-1">
-                            <Link href="/admin" className="w-full flex items-center gap-5">
-                              <ShieldCheck className="h-5 w-5 text-rose-500 group-hover:scale-110 transition-transform" />
-                              <span className="font-bold text-[15px] tracking-tight uppercase text-white">ADMIN PANEL</span>
-                            </Link>
-                          </DropdownMenuItem>
-                        )}
+                     {isAdmin && (
+                       <DropdownMenuItem asChild className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all bg-white/5 focus:bg-white/10 group mt-1">
+                         <Link href="/admin" className="w-full flex items-center gap-5">
+                           <ShieldCheck className="h-5 w-5 text-rose-500 group-hover:scale-110 transition-transform" />
+                           <span className="font-bold text-[15px] tracking-tight uppercase text-white">ADMIN PANEL</span>
+                         </Link>
+                       </DropdownMenuItem>
+                     )}
 
-                        <DropdownMenuSeparator className="bg-white/5 my-3" />
+                     <DropdownMenuSeparator className="bg-white/5 my-3" />
 
-                        <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all focus:bg-rose-500/10 group">
-                          <LogOut className="h-5 w-5 shrink-0 text-rose-500 group-hover:translate-x-1 transition-transform" />
-                          <span className="font-bold text-[15px] tracking-tight uppercase text-rose-500">LOGOUT</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  ) : (
-                    <Button asChild className="bg-primary hover:bg-orange-600 text-white font-black px-6 h-10 uppercase text-[11px] tracking-widest shadow-xl border-none transition-all active:scale-95">
-                      <Link href="/login">Login Hub</Link>
-                    </Button>
-                  )}
-                </div>
-             ) : (
-                <div className="w-[42px] h-[44px] rounded-full bg-white/5 animate-pulse" />
-             )}
+                     <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all focus:bg-rose-500/10 group">
+                       <LogOut className="h-5 w-5 shrink-0 text-rose-500 group-hover:translate-x-1 transition-transform" />
+                       <span className="font-bold text-[15px] tracking-tight uppercase text-rose-500">LOGOUT</span>
+                     </DropdownMenuItem>
+                   </DropdownMenuContent>
+                 </DropdownMenu>
+               ) : (
+                 <Button asChild className="bg-primary hover:bg-orange-600 text-white font-black px-6 h-10 uppercase text-[11px] tracking-widest shadow-xl border-none transition-all active:scale-95">
+                   <Link href="/login">Login Hub</Link>
+                 </Button>
+               )}
+             </div>
           </div>
         </div>
       </nav>
