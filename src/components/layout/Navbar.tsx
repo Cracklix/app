@@ -23,8 +23,8 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Final Performance-Hardened Header v148.0.
- * UPDATED: Restored logo size (h-14) and removed background box.
+ * @fileOverview Final Performance-Hardened Header v149.0.
+ * UPDATED: Increased logo size for a premium, high-visibility look.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -104,7 +104,8 @@ export default function Navbar() {
                 <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
               </SheetContent>
             </Sheet>
-            <div className="h-14 flex items-center shrink-0">
+            {/* INCREASED LOGO SIZE (h-20) WITHOUT BACKGROUND BOX */}
+            <div className="h-20 flex items-center shrink-0">
                <Logo className="h-full !gap-0 active:scale-95 transition-transform" />
             </div>
           </div>
