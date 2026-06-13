@@ -18,9 +18,11 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview FINAL CALIBRATED HERO v194.0 (Double Line Description).
- * FIXED: Formatted Punjabi description into two lines.
- * FIXED: Maintained Sentence case, 260px mobile height, and box width constraints.
+ * @fileOverview FINAL CALIBRATED HERO v198.0.
+ * FIXED: Stat boxes in a single line (row) on mobile.
+ * FIXED: Reduced box sizes for micro-UI density.
+ * FIXED: Masked background star artifact using a targeted overlay.
+ * FIXED: Maintained Sentence case and double-line description.
  */
 
 export default function Hero() {
@@ -42,10 +44,10 @@ export default function Hero() {
     };
 
     return [
-      { id: 'q', icon: <BookOpen className="text-blue-400 h-2.5 w-2.5 md:h-5 md:w-5" />, val: formatNumber(stats?.totalQuestions, "439+"), label: "Total practice questions" },
-      { id: 'm', icon: <ClipboardList className="text-orange-400 h-2.5 w-2.5 md:h-5 md:w-5" />, val: formatNumber(stats?.totalMocks, "8+"), label: "Total mock tests" },
-      { id: 'e', icon: <ShieldCheck className="text-blue-500 h-2.5 w-2.5 md:h-5 md:w-5" />, val: formatNumber(stats?.totalBoards, "92+"), label: "Total exams covered" },
-      { id: 'u', icon: <Users className="text-emerald-400 h-2.5 w-2.5 md:h-5 md:w-5" />, val: formatNumber(stats?.totalUsers, "5+"), label: "Registered students" }
+      { id: 'q', icon: <BookOpen className="text-blue-400 h-2 w-2 md:h-5 md:w-5" />, val: formatNumber(stats?.totalQuestions, "439+"), label: "Total practice questions" },
+      { id: 'm', icon: <ClipboardList className="text-orange-400 h-2 w-2 md:h-5 md:w-5" />, val: formatNumber(stats?.totalMocks, "8+"), label: "Total mock tests" },
+      { id: 'e', icon: <ShieldCheck className="text-blue-500 h-2 w-2 md:h-5 md:w-5" />, val: formatNumber(stats?.totalBoards, "92+"), label: "Total exams covered" },
+      { id: 'u', icon: <Users className="text-emerald-400 h-2 w-2 md:h-5 md:w-5" />, val: formatNumber(stats?.totalUsers, "5+"), label: "Registered students" }
     ];
   }, [stats]);
 
@@ -65,17 +67,20 @@ export default function Hero() {
           className="w-full h-full object-cover object-right"
           referrerPolicy="no-referrer"
         />
-        {/* Deepened mask to cover the sparkle artifact on the left/center water */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19] via-[#050B19]/95 to-transparent z-[10]" />
+        {/* Deep navy mask for high-fidelity readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19] via-[#050B19]/90 to-transparent z-[10]" />
         
+        {/* TARGETED ARTIFACT MASK (Covers the star sparkle on left-middle) */}
+        <div className="absolute top-[40%] left-[20%] w-[150px] h-[100px] bg-[#050B19] blur-[40px] z-[11] opacity-90 rounded-full pointer-events-none" />
+
         {/* PUNJAB MAP WATERMARK */}
-        <div className="absolute inset-0 z-[11] pointer-events-none opacity-[0.04]">
-           <div className="absolute top-[25%] left-[25%] -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] md:w-[600px] md:h-[600px] bg-[url('https://upload.wikimedia.org/wikipedia/commons/e/ea/Outline_Map_of_Punjab_India.svg')] bg-contain bg-no-repeat grayscale invert" />
+        <div className="absolute inset-0 z-[12] pointer-events-none opacity-[0.03]">
+           <div className="absolute top-[25%] left-[25%] -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] md:w-[600px] md:h-[600px] bg-[url('https://upload.wikimedia.org/wikipedia/commons/e/ea/Outline_Map_of_Punjab_India.svg')] bg-contain bg-no-repeat grayscale invert" />
         </div>
       </div>
 
       {/* 2. CALIBRATED CONTENT HUB */}
-      <div className="container mx-auto px-4 md:px-12 max-w-7xl relative z-20 pt-10 md:pt-14">
+      <div className="container mx-auto px-4 md:px-12 max-w-7xl relative z-20 pt-8 md:pt-14">
          <div className="max-w-2xl space-y-1 md:space-y-4">
             
             {/* TOP PILL BADGE */}
@@ -135,23 +140,24 @@ export default function Hero() {
          </div>
       </div>
 
-      {/* 3. INTEGRATED BOTTOM DATA BAR */}
+      {/* 3. INTEGRATED BOTTOM DATA BAR - SINGLE LINE ON MOBILE */}
       <div className="absolute bottom-1 md:bottom-8 left-0 right-0 z-30">
-         <div className="container mx-auto px-4 md:px-12 max-w-7xl">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-1 md:gap-4">
+         <div className="container mx-auto px-4 md:px-12 max-w-7xl overflow-hidden">
+            <div className="flex flex-row md:grid md:grid-cols-4 gap-1.5 md:gap-4 overflow-x-auto no-scrollbar pb-1">
                {liveStats.map((stat, idx) => (
                   <motion.div
                      key={stat.id}
                      initial={{ opacity: 0, y: 5 }}
                      animate={{ opacity: 1, y: 0 }}
                      transition={{ delay: 0.4 + (idx * 0.1) }}
+                     className="shrink-0 flex-1 md:flex-none"
                   >
-                     <Card className="bg-[#0B1528]/60 backdrop-blur-2xl border border-white/10 p-1 md:p-4 rounded-md md:rounded-2xl text-left flex items-center gap-1.5 md:gap-4 group hover:bg-[#0B1528]/80 transition-all duration-300 shadow-2xl overflow-hidden h-8 md:h-20 w-full max-w-[145px] md:max-w-none">
-                        <div className="shrink-0 h-5 w-5 md:h-12 md:w-12 rounded md:rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-transform group-hover:scale-105 shadow-inner">
+                     <Card className="bg-[#0B1528]/60 backdrop-blur-2xl border border-white/10 p-1 md:p-4 rounded-md md:rounded-2xl text-left flex items-center gap-1.5 md:gap-4 group hover:bg-[#0B1528]/80 transition-all duration-300 shadow-2xl overflow-hidden h-7 md:h-20 w-full min-w-[110px] md:min-w-none">
+                        <div className="shrink-0 h-4 w-4 md:h-12 md:w-12 rounded md:rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-transform group-hover:scale-105 shadow-inner">
                            {stat.icon}
                         </div>
                         <div className="min-w-0 flex flex-col justify-center leading-none">
-                           <p className="text-[10px] md:text-2xl font-headline font-black text-white tabular-nums leading-none mb-0.5">{stat.val}</p>
+                           <p className="text-[8px] md:text-2xl font-headline font-black text-white tabular-nums leading-none mb-0.5">{stat.val}</p>
                            <p className="text-[5px] md:text-[9px] font-bold text-slate-500 tracking-wider truncate">
                               {stat.label}
                            </p>
