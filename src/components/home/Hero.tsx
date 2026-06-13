@@ -19,9 +19,10 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview FINAL ABSOLUTE FIDELITY HERO v150.0.
- * MATCHED: Screenshot layout with Sentence case text.
- * FIXED: Reduced overall scale by 30%, zero overlap, horizontal stats.
+ * @fileOverview FINAL ABSOLUTE FIDELITY HERO v160.0.
+ * MATCHED: Screenshot layout with Sentence case text as requested.
+ * FIXED: Resolved overlap by scaling down typography and boxes.
+ * HEIGHT: Calibrated to 260px on mobile to fit all elements cleanly.
  */
 
 export default function Hero() {
@@ -53,7 +54,7 @@ export default function Hero() {
   if (!mounted) return null;
 
   return (
-    <section className="relative w-full bg-[#050B19] overflow-hidden h-[230px] md:h-[550px] flex flex-col justify-center text-left border-b border-white/5">
+    <section className="relative w-full bg-[#050B19] overflow-hidden h-[260px] md:h-[550px] flex flex-col justify-center text-left border-b border-white/5">
       
       {/* 1. BACKGROUND ENGINE */}
       <div className="absolute inset-0 z-0">
@@ -68,17 +69,17 @@ export default function Hero() {
         />
         
         {/* SHADING OVERLAY */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19] via-[#050B19]/80 to-transparent z-[10]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19] via-[#050B19]/85 to-transparent z-[10]" />
         
         {/* PUNJAB MAP WATERMARK */}
-        <div className="absolute inset-0 z-[11] pointer-events-none opacity-[0.05]">
+        <div className="absolute inset-0 z-[11] pointer-events-none opacity-[0.04]">
            <div className="absolute top-[40%] left-[25%] -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-[url('https://upload.wikimedia.org/wikipedia/commons/e/ea/Outline_Map_of_Punjab_India.svg')] bg-contain bg-no-repeat grayscale invert" />
         </div>
       </div>
 
       {/* 2. MAIN CONTENT HUB */}
       <div className="container mx-auto px-4 md:px-12 max-w-7xl relative z-20">
-         <div className="max-w-2xl space-y-1 md:space-y-4 -mt-8 md:mt-0">
+         <div className="max-w-2xl space-y-1 md:space-y-4 -mt-12 md:mt-0">
             
             {/* TOP PILL BADGE */}
             <motion.div
@@ -90,7 +91,7 @@ export default function Hero() {
                <span className="text-[7px] md:text-[10px] font-black text-white tracking-widest uppercase">#1 Punjab exam preparation platform</span>
             </motion.div>
 
-            {/* HEADINGS - SENTENCE CASE ONLY */}
+            {/* HEADINGS - SENTENCE CASE (MANDATORY) */}
             <motion.div
                initial={{ opacity: 0, y: 20 }}
                animate={{ opacity: 1, y: 0 }}
@@ -105,7 +106,7 @@ export default function Hero() {
                </h1>
             </motion.div>
 
-            {/* DESCRIPTION */}
+            {/* DESCRIPTION - SENTENCE CASE */}
             <motion.p
                initial={{ opacity: 0, y: 20 }}
                animate={{ opacity: 1, y: 0 }}
