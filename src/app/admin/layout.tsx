@@ -39,8 +39,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Mobile-First Admin Layout v188.0.
- * UPDATED: Removed all excessive spacing to create a high-density compact sidebar.
+ * @fileOverview Hardened Mobile-First Admin Layout v189.0.
+ * UPDATED: Zero-margin high-density sidebar for institutional precision.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -86,15 +86,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const SideNavContent = () => (
     <div className="flex flex-col h-full bg-[#0F172A] pointer-events-auto select-none overflow-y-auto custom-scrollbar pt-safe">
-       <div className="flex-1 pb-10">
+       <div className="flex-1 pb-4">
           
-          <div className="px-6 pt-4 pb-2 flex justify-start shrink-0 overflow-visible">
+          <div className="px-6 py-2 flex justify-start shrink-0 overflow-visible">
              <Logo href="/admin" imgClassName="h-32 origin-left" />
           </div>
 
-          <SidebarGroup className="pt-0 pb-0">
-            <SidebarGroupLabel className="px-6 py-0 h-6 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left">MANAGEMENT CENTER</SidebarGroupLabel>
-            <SidebarMenu className="gap-0.5 mt-1">
+          <SidebarGroup className="p-0">
+            <SidebarGroupLabel className="px-6 py-0 h-4 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left mt-2">MANAGEMENT CENTER</SidebarGroupLabel>
+            <SidebarMenu className="gap-0.5 mt-0.5">
               <AdminNavItem icon={<LayoutDashboard />} label="DASHBOARD" href="/admin" active={pathname === "/admin"} />
               <AdminNavItem icon={<Layers />} label="CATEGORIES" href="/admin/categories" active={pathname === "/admin/categories"} />
               <AdminNavItem icon={<Landmark />} label="BOARDS CENTER" href="/admin/exams" active={pathname === "/admin/exams"} />
@@ -105,9 +105,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </SidebarMenu>
           </SidebarGroup>
 
-          <SidebarGroup className="pt-2 pb-0">
-            <SidebarGroupLabel className="px-6 py-0 h-6 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left">CONTENT PULSE</SidebarGroupLabel>
-            <SidebarMenu className="gap-0.5 mt-1">
+          <SidebarGroup className="p-0">
+            <SidebarGroupLabel className="px-6 py-0 h-4 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left mt-2">CONTENT PULSE</SidebarGroupLabel>
+            <SidebarMenu className="gap-0.5 mt-0.5">
               <AdminNavItem icon={<Wand2 />} label="BRAND MAGIC" href="/admin/brand-magic" active={pathname === "/admin/brand-magic"} />
               <AdminNavItem icon={<LayoutGrid />} label="MOCK BUILDER" href="/admin/mocks/builder" active={pathname === "/admin/mocks/builder"} />
               <AdminNavItem icon={<Zap />} label="MOCK MANAGER" href="/admin/mocks" active={pathname === "/admin/mocks"} />
@@ -118,9 +118,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </SidebarMenu>
           </SidebarGroup>
 
-          <SidebarGroup className="pt-2 pb-0">
-            <SidebarGroupLabel className="px-6 py-0 h-6 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left">GOVERNANCE</SidebarGroupLabel>
-            <SidebarMenu className="gap-0.5 mt-1">
+          <SidebarGroup className="p-0">
+            <SidebarGroupLabel className="px-6 py-0 h-4 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500 text-left mt-2">GOVERNANCE</SidebarGroupLabel>
+            <SidebarMenu className="gap-0.5 mt-0.5">
               <AdminNavItem icon={<Users />} label="STUDENT LIST" href="/admin/users" active={pathname === "/admin/users"} />
               <AdminNavItem icon={<DollarSign />} label="REVENUE CENTER" href="/admin/payments" active={pathname === "/admin/payments"} />
               <AdminNavItem icon={<ShieldCheck />} label="VERIFY UPI" href="/admin/payments/verify" active={pathname === "/admin/payments/verify"} />

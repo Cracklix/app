@@ -29,8 +29,8 @@ import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Hardened Production Sidebar Center v55.0.
- * UPDATED: Removed excessive vertical gaps for a tight, high-density layout.
+ * @fileOverview Hardened Production Sidebar Center v56.0.
+ * UPDATED: Zero vertical spacing for a high-density institutional menu.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -89,31 +89,31 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
     <div className="flex flex-col h-full bg-[#0B1528] text-white overflow-y-auto no-scrollbar font-body select-none text-left">
       
       {/* BRAND LOGO */}
-      <div className="px-6 pt-4 pb-0 flex justify-start shrink-0 overflow-visible pt-safe">
+      <div className="px-6 pt-2 pb-0 flex justify-start shrink-0 overflow-visible pt-safe">
          <Logo imgClassName="h-36 origin-left" />
       </div>
 
       {/* IDENTITY HEADER */}
-      <div className="px-6 pt-4 pb-4 flex flex-col gap-4 relative overflow-hidden shrink-0">
+      <div className="px-6 pt-2 pb-2 flex flex-col gap-2 relative overflow-hidden shrink-0">
         <Shield className="absolute top-10 right-4 h-40 w-40 text-white/[0.03] pointer-events-none" />
         
         <div className="relative z-10 flex items-center gap-3">
            <div className="relative shrink-0">
-              <div className="h-12 w-12 rounded-xl border-[2px] border-white/20 flex items-center justify-center bg-[#1E293B] shadow-2xl overflow-hidden">
-                 <User className="h-6 w-6 text-slate-400" />
+              <div className="h-10 w-10 rounded-lg border-[2px] border-white/20 flex items-center justify-center bg-[#1E293B] shadow-2xl overflow-hidden">
+                 <User className="h-5 w-5 text-slate-400" />
               </div>
-              <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 bg-[#10B981] rounded-md border-[2px] border-[#0B1528] flex items-center justify-center text-white">
-                 <ShieldCheck className="h-2 w-2" />
+              <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-[#10B981] rounded-md border-[2px] border-[#0B1528] flex items-center justify-center text-white">
+                 <ShieldCheck className="h-1.5 w-1.5" />
               </div>
            </div>
 
-           <div className="space-y-0.5 text-left min-w-0">
-              <h2 className="text-[15px] font-black text-white leading-none uppercase tracking-tight truncate">
+           <div className="space-y-0 text-left min-w-0">
+              <h2 className="text-[13px] font-black text-white leading-none uppercase tracking-tight truncate">
                  {profile?.name || "ASPIRANT"}
               </h2>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 mt-0.5">
                  <Badge className={cn(
-                    "border-none px-2 py-0.5 rounded text-[7px] font-black uppercase tracking-widest",
+                    "border-none px-2 py-0.5 rounded text-[6px] font-black uppercase tracking-widest",
                     profile?.pass?.active ? "bg-emerald-50 text-white" : "bg-white/10 text-slate-400"
                  )}>
                     {profile?.pass?.active ? (profile.pass.plan || 'ELITE') : 'FREE NODE'}
@@ -124,13 +124,13 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
 
         <button 
            onClick={() => { router.push('/profile'); onClose(); }}
-           className="w-full h-10 rounded-xl border border-white/10 bg-white/[0.03] flex items-center justify-between px-4 group active:scale-95 transition-all relative z-10"
+           className="w-full h-8 rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-between px-3 group active:scale-95 transition-all relative z-10"
         >
-           <div className="flex items-center gap-3">
-              <User className="h-3.5 w-3.5 text-[#F97316]" />
-              <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-200">PROFILE SETTINGS</span>
+           <div className="flex items-center gap-2">
+              <User className="h-3 w-3 text-[#F97316]" />
+              <span className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-200">PROFILE SETTINGS</span>
            </div>
-           <ChevronRight className="h-3.5 w-3.5 text-slate-600" />
+           <ChevronRight className="h-3 w-3 text-slate-600" />
         </button>
       </div>
 
@@ -138,29 +138,29 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
       <div 
          onClick={handleInstallClick}
          className={cn(
-           "flex items-center justify-between px-6 py-2 border-y border-white/5 cursor-pointer transition-all shrink-0",
+           "flex items-center justify-between px-6 py-1.5 border-y border-white/5 cursor-pointer transition-all shrink-0",
            hasPrompt ? "bg-primary/10 active:bg-primary/20" : "bg-black/20 opacity-50"
          )}
       >
          <div className="flex items-center gap-3">
             <div className={cn(
-              "h-8 w-8 rounded-lg flex items-center justify-center shadow-lg transition-colors",
+              "h-7 w-7 rounded-lg flex items-center justify-center shadow-lg transition-colors",
               hasPrompt ? "bg-primary text-white" : "bg-white/5 text-slate-500"
             )}>
-               <Download className="h-3.5 w-3.5" />
+               <Download className="h-3 w-3" />
             </div>
             <div className="text-left leading-tight">
-               <span className="text-[10px] uppercase tracking-tight font-black text-white block">INSTALL HUB</span>
+               <span className="text-[9px] uppercase tracking-tight font-black text-white block">INSTALL HUB</span>
                <p className={cn("text-[6px] font-black uppercase tracking-widest", hasPrompt ? "text-primary" : "text-slate-500")}>
                  {hasPrompt ? "CLICK TO ADD" : "FASTER ACCESS ACTIVE"}
                </p>
             </div>
          </div>
-         {hasPrompt && <Badge className="bg-primary text-white border-none animate-pulse h-5 text-[7px]">GET</Badge>}
+         {hasPrompt && <Badge className="bg-primary text-white border-none animate-pulse h-4 text-[6px]">GET</Badge>}
       </div>
 
       {/* NAV MENU */}
-      <div className="flex flex-col py-1">
+      <div className="flex flex-col py-0.5">
         {menuItems.map((item) => {
           const isActive = mounted && pathname === item.href;
           const Icon = item.icon;
@@ -170,7 +170,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
               href={item.href}
               onClick={onClose}
               className={cn(
-                "flex items-center gap-4 px-6 h-[48px] transition-all border-l-[3px]",
+                "flex items-center gap-4 px-6 h-[44px] transition-all border-l-[3px]",
                 isActive ? "bg-white/[0.05] border-primary text-white" : "hover:bg-white/[0.02] border-transparent text-slate-400"
               )}
             >
@@ -184,7 +184,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
 
         <button 
           onClick={handleLogout}
-          className="flex items-center gap-4 px-6 h-[48px] text-rose-500 hover:bg-rose-50/5 transition-all w-full text-left active:scale-95"
+          className="flex items-center gap-4 px-6 h-[44px] text-rose-500 hover:bg-rose-50/5 transition-all w-full text-left active:scale-95"
         >
           <LogOut className="h-4 w-4 shrink-0" />
           <span className="text-[11px] font-black uppercase tracking-tight">LOG OUT SESSION</span>
@@ -192,7 +192,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* VERSION INFO */}
-      <div className="mt-auto px-6 py-6 flex flex-col items-center gap-1 bg-black/30 border-t border-white/5 pb-safe">
+      <div className="mt-auto px-6 py-4 flex flex-col items-center gap-1 bg-black/30 border-t border-white/5 pb-safe">
          <p className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">CRACKLIX PWA v2.0</p>
          <p className="text-[7px] font-bold text-slate-600 uppercase tracking-widest leading-none text-center">OFFICIAL REGISTRY NODE</p>
       </div>
