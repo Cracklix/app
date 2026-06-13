@@ -22,9 +22,9 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Final Screenshot-Matched Hero v10.0 (Ultra Compact Mobile).
- * CALIBRATED: Reduced mobile height to 380px and tuned font scaling for 100% visibility.
- * FIXED: Aggressive scaling for small devices to prevent text clipping.
+ * @fileOverview Final Viewport-Calibrated Hero v11.0.
+ * FIXED: Resolved right-side clipping by using cinematic aspect ratios and centered object fitting.
+ * COMPACT: Reduced mobile height to 300px for 100% frame visibility.
  */
 
 export default function Hero() {
@@ -57,62 +57,62 @@ export default function Hero() {
 
   return (
     <section className="relative w-full bg-[#020817] overflow-hidden flex flex-col items-center">
-      {/* 1. BACKGROUND LAYER - Optimized for Full View on Mobile */}
-      <div className="w-full relative min-h-[380px] md:min-h-0 md:aspect-[1024/576]">
+      {/* 1. BACKGROUND LAYER - Cinematic Fit */}
+      <div className="w-full relative min-h-[300px] md:min-h-0 md:aspect-[21/9]">
         <img 
           src="https://i.ibb.co/LXgcLVVq/Gemini-Generated-Image-n1so6on1so6on1so.png" 
           alt="Golden Temple Night" 
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover object-center"
           referrerPolicy="no-referrer"
         />
         
         {/* PAIRED OVERLAYS */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-[#020817]/40 to-transparent z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-[#020817]/60 to-transparent z-10" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#020817] via-transparent to-transparent z-10" />
         
         {/* TEXT CONTENT HUB */}
         <div className="absolute inset-0 z-20 flex items-center">
            <div className="container mx-auto px-4 md:px-12 max-w-7xl">
-              <div className="max-w-3xl space-y-4 md:space-y-8 text-left">
+              <div className="max-w-[90vw] md:max-w-2xl space-y-4 md:space-y-6 text-left">
                  
                  <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     className="inline-flex items-center gap-2 px-2 md:px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl"
                  >
-                    <Star className="h-2.5 w-2.5 md:h-3 md:w-3 text-orange-500 fill-current" />
+                    <Star className="h-2 w-2 md:h-3 md:w-3 text-orange-500 fill-current" />
                     <span className="text-[7px] md:text-xs font-black text-white uppercase tracking-widest">
                        #1 Punjab Exam Prep
                     </span>
                  </motion.div>
 
                  <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="space-y-2 md:space-y-6"
+                    className="space-y-2 md:space-y-4"
                  >
-                    <h1 className="text-lg sm:text-4xl md:text-6xl font-black text-white leading-[1.1] tracking-tighter uppercase">
+                    <h1 className="text-base sm:text-4xl md:text-6xl font-black text-white leading-[1.1] tracking-tighter uppercase break-words">
                        Prepare Smarter.<br/>
                        <span className="text-primary italic">Score Higher.</span>
                     </h1>
-                    <p className="text-[10px] md:text-xl text-slate-200 font-medium max-w-xl leading-relaxed drop-shadow-lg">
+                    <p className="text-[10px] md:text-lg text-slate-200 font-medium max-w-lg leading-relaxed drop-shadow-lg opacity-90">
                        Punjab Government Exams di Complete Preparation ik hi Platform te.
                     </p>
                  </motion.div>
 
                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="flex flex-row md:flex-row gap-2 md:gap-4"
+                    className="flex flex-row gap-2 md:gap-4"
                  >
-                    <Button asChild className="h-10 md:h-16 px-4 md:px-10 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[8px] md:text-xs tracking-[0.1em] rounded-lg md:rounded-2xl shadow-4xl gap-1 md:gap-2 transition-all active:scale-95 border-none">
+                    <Button asChild className="h-9 md:h-16 px-4 md:px-10 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[8px] md:text-xs tracking-[0.1em] rounded-lg md:rounded-2xl shadow-4xl gap-1 md:gap-2 transition-all active:scale-95 border-none">
                        <Link href="/mocks">
                           Free Mock <ArrowRight className="h-3 w-3 md:h-4 md:w-4" />
                        </Link>
                     </Button>
-                    <Button asChild variant="outline" className="h-10 md:h-16 px-4 md:px-10 border-white/40 bg-white/5 hover:bg-white/10 text-white font-black uppercase text-[8px] md:text-xs tracking-[0.1em] rounded-lg md:rounded-2xl transition-all backdrop-blur-md">
+                    <Button asChild variant="outline" className="h-9 md:h-16 px-4 md:px-10 border-white/40 bg-white/5 hover:bg-white/10 text-white font-black uppercase text-[8px] md:text-xs tracking-[0.1em] rounded-lg md:rounded-2xl transition-all backdrop-blur-md">
                        <Link href="/exams">
                           Explore Hub
                        </Link>
@@ -124,7 +124,7 @@ export default function Hero() {
       </div>
 
       {/* 2. BOTTOM STATS BAR HUB */}
-      <div className="w-full bg-[#020817] pt-0 pb-12 md:pb-16 -mt-6 md:-mt-24 relative z-30">
+      <div className="w-full bg-[#020817] pt-0 pb-12 md:pb-16 -mt-4 md:-mt-20 relative z-30">
          <div className="container mx-auto px-4 md:px-12 max-w-7xl">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6">
                <HeroStatCard 
