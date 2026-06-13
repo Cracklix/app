@@ -51,9 +51,10 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview FINAL HIGH-FIDELITY Mock Architect v87.0.
- * FIXED: Reduced Question Card sizes for better density.
- * FIXED: Fixed Select All button text overflow.
+ * @fileOverview FINAL HIGH-FIDELITY Mock Architect v88.0.
+ * FIXED: POS/NEG data now in square boxes with 12px font for maximum visibility.
+ * FIXED: Ultra-compact Question Cards for maximum density.
+ * FIXED: Select All button overflow resolved.
  */
 
 export default function MockBuilderPage() {
@@ -473,35 +474,35 @@ function MockBuilderContent() {
                  </div>
               </div>
 
-              {/* REFINED MARKING HUB: POS/NEG CAPSULES */}
+              {/* REFINED MARKING HUB: SQUARE BOX POS/NEG */}
               <div className="grid grid-cols-2 gap-4 pt-4">
-                 <div className="bg-[#F0FDF4] p-4 md:p-6 rounded-[2.5rem] md:rounded-[4rem] border-2 border-[#DCFCE7] text-center space-y-4 flex flex-col items-center justify-start h-[240px] md:h-[320px] shadow-inner group transition-all hover:border-[#10B981]/30">
-                    <div className="pt-4">
-                       <p className="text-[14px] md:text-[18px] font-black text-[#10B981] uppercase tracking-widest leading-none">POS</p>
-                       <p className="text-[14px] md:text-[18px] font-black text-[#10B981] uppercase tracking-widest leading-none mt-1">(+)</p>
+                 <div className="bg-[#F0FDF4] p-4 md:p-6 rounded-[3rem] border border-[#DCFCE7] text-center flex flex-col items-center justify-start h-[180px] md:h-[220px] shadow-inner group transition-all hover:border-[#10B981]/30">
+                    <div className="pt-2">
+                       <p className="text-[10px] md:text-[12px] font-black text-[#10B981] uppercase tracking-widest leading-none">POS</p>
+                       <p className="text-[10px] md:text-[12px] font-black text-[#10B981] uppercase tracking-widest leading-none mt-1">(+)</p>
                     </div>
-                    <div className="flex-1 flex items-center justify-center w-full">
+                    <div className="mt-auto mb-4 w-full flex justify-center">
                        <Input 
                           type="number" 
                           step="0.1"
                           value={isNaN(mockData.positiveMarks) ? "" : mockData.positiveMarks} 
                           onChange={e => setMockData({...mockData, positiveMarks: parseFloat(e.target.value) || 0})}
-                          className="h-20 w-full bg-transparent border-none text-center font-black text-4xl md:text-6xl text-[#10B981] p-0 focus-visible:ring-0 tabular-nums" 
+                          className="w-14 h-12 md:w-16 md:h-14 bg-white border-2 border-[#DCFCE7] rounded-xl text-center font-black text-[12px] p-0 focus-visible:ring-primary shadow-sm" 
                        />
                     </div>
                  </div>
-                 <div className="bg-[#FEF2F2] p-4 md:p-6 rounded-[2.5rem] md:rounded-[4rem] border-2 border-[#FEE2E2] text-center space-y-4 flex flex-col items-center justify-start h-[240px] md:h-[320px] shadow-inner group transition-all hover:border-[#F43F5E]/30">
-                    <div className="pt-4">
-                       <p className="text-[14px] md:text-[18px] font-black text-[#F43F5E] uppercase tracking-widest leading-none">NEG</p>
-                       <p className="text-[14px] md:text-[18px] font-black text-[#F43F5E] uppercase tracking-widest leading-none mt-1">(-)</p>
+                 <div className="bg-[#FEF2F2] p-4 md:p-6 rounded-[3rem] border border-[#FEE2E2] text-center flex flex-col items-center justify-start h-[180px] md:h-[220px] shadow-inner group transition-all hover:border-[#F43F5E]/30">
+                    <div className="pt-2">
+                       <p className="text-[10px] md:text-[12px] font-black text-[#F43F5E] uppercase tracking-widest leading-none">NEG</p>
+                       <p className="text-[10px] md:text-[12px] font-black text-[#F43F5E] uppercase tracking-widest leading-none mt-1">(-)</p>
                     </div>
-                    <div className="flex-1 flex items-center justify-center w-full">
+                    <div className="mt-auto mb-4 w-full flex justify-center">
                        <Input 
                           type="number" 
                           step="0.01"
                           value={isNaN(mockData.negativeMarks) ? "" : mockData.negativeMarks} 
                           onChange={e => setMockData({...mockData, negativeMarks: parseFloat(e.target.value) || 0})}
-                          className="h-20 w-full bg-transparent border-none text-center font-black text-4xl md:text-6xl text-[#F43F5E] p-0 focus-visible:ring-0 tabular-nums" 
+                          className="w-14 h-12 md:w-16 md:h-14 bg-white border-2 border-[#FEE2E2] rounded-xl text-center font-black text-[12px] p-0 focus-visible:ring-primary shadow-sm" 
                        />
                     </div>
                  </div>
@@ -649,7 +650,7 @@ function MockBuilderContent() {
                               <Button 
                                  onClick={handleSelectAllInBank} 
                                  variant="outline"
-                                 className="h-16 w-full border-white/10 bg-white/5 hover:bg-white/10 text-white font-black uppercase text-[10px] tracking-widest rounded-xl shadow-xl active:scale-95 px-2"
+                                 className="h-16 w-full border-white/10 bg-white/5 hover:bg-white/10 text-white font-black uppercase text-[9px] tracking-tight rounded-xl shadow-xl active:scale-95 px-1"
                               >
                                  SELECT ALL
                               </Button>
@@ -667,10 +668,10 @@ function MockBuilderContent() {
                     </div>
                   </div>
 
-                  {/* QUESTION LIST HUB */}
-                  <div className="space-y-4 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                  {/* QUESTION LIST HUB: HIGH DENSITY CARDS */}
+                  <div className="space-y-3 animate-in fade-in slide-in-from-bottom-6 duration-700">
                     {bankLoading ? (
-                      Array.from({length: 4}).map((_, i) => <Skeleton key={i} className="h-40 w-full rounded-[1.5rem] bg-slate-50" />)
+                      Array.from({length: 4}).map((_, i) => <Skeleton key={i} className="h-24 w-full rounded-[1rem] bg-slate-50" />)
                     ) : visibleBank.map((q) => {
                       const isSelected = bankSelection.includes(q.id);
                       const board = boards?.find(b => b.id === q.boardId);
@@ -680,24 +681,24 @@ function MockBuilderContent() {
                           key={q.id} 
                           onClick={() => setBankSelection(prev => isSelected ? prev.filter(id => id !== q.id) : [...prev, q.id])}
                           className={cn(
-                            "border-none shadow-lg rounded-[1.5rem] bg-white p-4 md:p-6 flex items-center gap-4 md:gap-6 cursor-pointer transition-all duration-500 hover:translate-y-[-4px] border border-slate-100 group overflow-hidden relative",
-                            isSelected && "ring-2 ring-primary/20 bg-primary/5"
+                            "border-none shadow-sm rounded-[1rem] bg-white py-3 px-4 md:px-6 flex items-center gap-4 cursor-pointer transition-all duration-300 hover:shadow-md border border-slate-100 group overflow-hidden relative",
+                            isSelected && "ring-2 ring-primary/20 bg-primary/5 shadow-inner"
                           )}
                         >
                            <div className={cn(
-                              "h-8 w-8 md:h-10 md:w-10 rounded-full border-[2px] flex items-center justify-center shrink-0 transition-all duration-500",
-                              isSelected ? "border-[#F97316] bg-[#F97316] shadow-xl" : "border-slate-200 bg-white"
+                              "h-7 w-7 md:h-8 md:w-8 rounded-full border-[1.5px] flex items-center justify-center shrink-0 transition-all duration-300",
+                              isSelected ? "border-[#F97316] bg-[#F97316] shadow-md" : "border-slate-200 bg-white"
                            )}>
-                              {isSelected && <Check className="h-4 w-4 md:h-5 md:w-5 text-white stroke-[4px]" />}
+                              {isSelected && <Check className="h-3 w-3 md:h-4 md:w-4 text-white stroke-[4px]" />}
                            </div>
                            
-                           <div className="flex-1 min-w-0 space-y-3 text-left">
-                              <div className="flex flex-wrap items-center gap-2">
-                                 <Badge className="bg-[#0B1528] text-white border-none font-black text-[8px] px-2 py-0.5 rounded shadow-md uppercase">{board?.abbreviation || 'PSSSB'}</Badge>
-                                 <Badge variant="outline" className="text-slate-400 border-slate-200 text-[8px] font-black uppercase px-2 py-0.5 rounded bg-slate-50">{sub?.name || 'ICT'}</Badge>
-                                 {q.status === 'USED' && <Badge className="bg-emerald-50 text-emerald-600 border-none text-[8px] font-black uppercase px-2 py-0.5">USED</Badge>}
+                           <div className="flex-1 min-w-0 space-y-1.5 text-left">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                 <Badge className="bg-[#0B1528] text-white border-none font-black text-[7px] px-1.5 py-0.5 rounded shadow-sm uppercase">{board?.abbreviation || 'PSSSB'}</Badge>
+                                 <Badge variant="outline" className="text-slate-400 border-slate-100 text-[7px] font-black uppercase px-1.5 py-0.5 rounded bg-slate-50">{sub?.name || 'GK'}</Badge>
+                                 {q.status === 'USED' && <Badge className="bg-emerald-50 text-emerald-600 border-none text-[7px] font-black uppercase px-1.5 py-0.5">USED</Badge>}
                               </div>
-                              <p className="font-bold text-sm md:text-base text-[#0F172A] leading-tight antialiased break-words tracking-tight group-hover:text-primary transition-colors">
+                              <p className="font-bold text-xs md:text-sm text-[#0F172A] leading-tight antialiased truncate group-hover:text-primary transition-colors">
                                 {q.englishQuestion}
                               </p>
                            </div>
@@ -705,10 +706,10 @@ function MockBuilderContent() {
                       )
                     })}
                     {filteredBank.length > displayLimit && (
-                      <div className="flex justify-center pt-6">
+                      <div className="flex justify-center pt-4">
                         <Button 
                           onClick={() => setDisplayLimit(prev => prev + 100)}
-                          className="h-12 px-10 rounded-xl bg-white border-2 border-slate-100 text-[#0F172A] font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 shadow-md"
+                          className="h-10 px-8 rounded-xl bg-white border border-slate-200 text-[#0F172A] font-black uppercase tracking-widest text-[9px] hover:bg-slate-50 shadow-sm"
                         >
                           Load More ({filteredBank.length - displayLimit} Remaining)
                         </Button>
