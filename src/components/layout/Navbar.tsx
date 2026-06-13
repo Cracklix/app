@@ -23,8 +23,8 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Final Performance-Hardened Header v142.0.
- * FIXED: Hydration guard wrapped around all dynamic Radix components to prevent ID mismatches.
+ * @fileOverview Final Performance-Hardened Header v145.0.
+ * FIXED: Added explicit height constraints on Logo usage to prevent vertical navbar expansion.
  * SAFE-RENDER: Profile data accessed via optional chaining to prevent blank screen crashes.
  */
 export default function Navbar() {
@@ -94,7 +94,7 @@ export default function Navbar() {
       )}>
         <div className="container mx-auto max-w-[1536px] flex items-center justify-between h-full gap-2">
           
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 h-full">
             <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
               <SheetTrigger asChild>
                 <button className="w-10 h-10 md:w-12 md:h-12 bg-white/5 text-white rounded-[14px] border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center cursor-pointer active:scale-90 outline-none">
@@ -106,15 +106,15 @@ export default function Navbar() {
                 <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
               </SheetContent>
             </Sheet>
-            <Logo className="!gap-0 active:scale-95 transition-transform" />
+            <Logo className="h-10 md:h-12 !gap-0 active:scale-95 transition-transform" />
           </div>
 
-          <div className="hidden lg:flex flex-1 items-center justify-center gap-4 xl:gap-8">
+          <div className="hidden lg:flex flex-1 items-center justify-center gap-4 xl:gap-8 h-full">
             <NavLink icon={<Home />} label1="HOME" label2="PAGE" href="/" active={pathname === "/"} />
             <NavLink icon={<Zap />} label1="PRACTICE" label2="TESTS" href="/mocks" active={pathname.startsWith("/mocks")} />
             <NavLink icon={<Newspaper />} label1="CURRENT" label2="AFFAIRS" href="/current-affairs" active={pathname === "/current-affairs"} />
 
-            <Link href="/pass" className="transition-all active:scale-95 group">
+            <Link href="/pass" className="transition-all active:scale-95 group h-full flex items-center">
               <div className={cn(
                 "w-[170px] h-[52px] rounded-[18px] border flex items-center justify-center gap-3 transition-all",
                 pathname === "/pass" 
@@ -126,7 +126,7 @@ export default function Navbar() {
               </div>
             </Link>
 
-            <div onClick={handleInstallClick} className="cursor-pointer transition-all active:scale-95 group">
+            <div onClick={handleInstallClick} className="cursor-pointer transition-all active:scale-95 group h-full flex items-center">
                <div className="flex items-center gap-3 opacity-80 hover:opacity-100 group-hover:translate-y-[-1px] transition-all">
                   <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all">
                      <Download className="h-4 w-4" />
@@ -139,7 +139,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-4 shrink-0">
+          <div className="flex items-center gap-2 md:gap-4 shrink-0 h-full">
              {user && (
                 <div 
                   onClick={() => router.push('/pass')}
@@ -232,7 +232,7 @@ export default function Navbar() {
 function NavLink({ icon, label1, label2, href, active }: { icon: React.ReactNode, label1: string, label2: string, href: string, active: boolean }) {
   return (
     <Link href={href} className={cn(
-      "flex items-center gap-3 group transition-all active:scale-95 hover:translate-y-[-1px]",
+      "flex items-center gap-3 group transition-all active:scale-95 hover:translate-y-[-1px] h-full",
       active ? "opacity-100" : "opacity-70 hover:opacity-100"
     )}>
       <div className={cn(

@@ -42,8 +42,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Institutional Admin Layout v141.0.
- * UPDATED: Logo sizing refined for "Small and Full Visibility" to prevent clipping seen in audit.
+ * @fileOverview Institutional Admin Layout v145.0.
+ * FIXED: Enforced strict h-16 header to prevent logo-induced layout breaking.
+ * UPDATED: Optimized logo containers for "Small & Visible" branding.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -89,8 +90,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const SideNavContent = () => (
     <div className="flex flex-col h-full bg-[#0F172A] pointer-events-auto select-none">
-       <div className="p-8 flex justify-center">
-          <div className="bg-[#0B1528] w-full h-32 md:h-40 rounded-[2.5rem] shadow-2xl flex items-center justify-center py-6 px-6 border border-white/5 group hover:bg-[#081121] transition-all duration-500 overflow-hidden">
+       <div className="p-6 flex justify-center">
+          <div className="bg-[#0B1528] w-full h-24 md:h-28 rounded-[2rem] shadow-2xl flex items-center justify-center py-6 px-6 border border-white/5 group hover:bg-[#081121] transition-all duration-500 overflow-hidden">
             <Logo href="/admin" imgClassName="scale-100" />
           </div>
        </div>
@@ -166,12 +167,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </Sidebar>
         
         <SidebarInset className="flex flex-col bg-white min-w-0 max-w-full relative">
-          <header className="h-16 md:h-20 border-b border-slate-100 flex items-center px-4 md:px-8 justify-between bg-white sticky top-0 z-[100] shrink-0">
+          <header className="h-16 border-b border-slate-100 flex items-center px-4 md:px-8 justify-between bg-white sticky top-0 z-[100] shrink-0 overflow-hidden">
             <div className="flex items-center gap-4 overflow-hidden">
               <SidebarTrigger className="text-[#0F172A] hover:bg-slate-50 cursor-pointer" />
               
               <div className="flex items-center gap-4">
-                 <div className="bg-[#0B1528] h-10 md:h-12 px-6 rounded-2xl shadow-xl flex items-center justify-center border border-white/5 overflow-hidden">
+                 <div className="bg-[#0B1528] h-10 md:h-11 px-4 rounded-xl shadow-xl flex items-center justify-center border border-white/5 overflow-hidden">
                     <Logo variant="light" imgClassName="py-1.5 md:py-2" href="/admin" />
                  </div>
                  
