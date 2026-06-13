@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { Menu, Search, User, Gem } from "lucide-react";
+import { Menu, Search, User, Gem, LogOut } from "lucide-react";
 import Logo from "@/components/brand/Logo";
 import { useState, useMemo, useEffect } from "react";
 import { useUser, useAuth } from "@/firebase";
@@ -20,9 +20,9 @@ import MobileSidebar from "./MobileSidebar";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Definitive Header Restoration v110.0.
- * MATCHED: Exact visual nodes from the user screenshot: 
- * [Menu] -> [Logo] -> [Pass Hub] -> [Search] -> [User]
+ * @fileOverview Definitive Header Restoration v112.0.
+ * FIXED: LogOut ReferenceError resolved by adding icon import.
+ * MATCHED: Exact visual nodes: [Menu] -> [Logo] -> [Pass Hub] -> [Search] -> [User]
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -87,7 +87,7 @@ export default function Navbar() {
              {mounted && user && (
                 <div className="h-12 md:h-14 px-4 md:px-6 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-center gap-3 shadow-xl">
                    <Gem className="h-5 w-5 md:h-6 md:w-6 text-emerald-400 fill-current opacity-80" />
-                   <div className="flex flex-col items-start leading-none">
+                   <div className="flex flex-col items-start leading-none text-left">
                       <span className={cn(
                         "text-[9px] md:text-[11px] font-black uppercase tracking-widest",
                         passStatus.active ? "text-emerald-400" : "text-rose-400"
@@ -118,7 +118,7 @@ export default function Navbar() {
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-72 bg-[#0F172A] border-white/10 text-white rounded-[2.5rem] p-3 shadow-5xl z-[2001]" align="end">
-                      <div className="px-5 py-6 flex items-center gap-4">
+                      <div className="px-5 py-6 flex items-center gap-4 text-left">
                          <StudentAvatar profile={profile} className="h-12 w-12" />
                          <div className="min-w-0">
                             <p className="text-[12px] font-black uppercase tracking-tight truncate leading-none mb-1.5">{profile?.name || "Aspirant"}</p>
