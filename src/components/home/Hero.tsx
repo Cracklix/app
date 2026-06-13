@@ -1,3 +1,4 @@
+
 'use client';
 
 import { motion } from "framer-motion";
@@ -11,7 +12,10 @@ import {
   FileStack,
   Globe,
   Star,
-  Search
+  Search,
+  Target,
+  TrendingUp,
+  Award
 } from "lucide-react";
 import { useUser, useFirestore, useDoc } from "@/firebase";
 import { useState, useEffect, useMemo } from "react";
@@ -22,9 +26,9 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview FINAL PERMANENT HERO v155.0 (Strict Design Reference Match).
- * FEATURES: Institutional Image Hub, Floating Verified Badge, and Integrated Stats.
- * IMAGE: Locked to https://i.ibb.co/gZCGMQNJ/IMG-20260612-WA0010.jpg
+ * @fileOverview Institutional Hero Hub v160.0.
+ * RE-LOCKED: Background imagery updated to institutional preparation photo.
+ * IMAGE: https://i.ibb.co/gZCGMQNJ/IMG-20260612-WA0010.jpg
  */
 export default function Hero() {
   const router = useRouter();
@@ -52,9 +56,19 @@ export default function Hero() {
   const heroImageUrl = "https://i.ibb.co/gZCGMQNJ/IMG-20260612-WA0010.jpg";
 
   return (
-    <section className="relative pt-12 pb-16 md:pt-24 md:pb-36 bg-[#0B1528] overflow-hidden text-left">
-      {/* Background Subtle Gradient */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+    <section className="relative pt-12 pb-24 md:pt-24 md:pb-40 bg-[#0B1528] overflow-hidden text-left">
+      {/* 1. INSTITUTIONAL BACKGROUND NODE */}
+      <div className="absolute inset-0 z-0">
+         <Image 
+            src={heroImageUrl}
+            alt="Punjab Exam Hub"
+            fill
+            className="object-cover opacity-40 grayscale-[0.2]"
+            priority
+         />
+         <div className="absolute inset-0 bg-gradient-to-r from-[#0B1528] via-[#0B1528]/95 to-transparent" />
+         <div className="absolute inset-0 bg-gradient-to-t from-[#0B1528] via-transparent to-transparent" />
+      </div>
 
       <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
@@ -66,12 +80,11 @@ export default function Hero() {
               animate={{ opacity: 1, x: 0 }}
               className="space-y-6 md:space-y-8"
             >
-              {/* Board Registry Header */}
               <div className="space-y-2">
                  <p className="text-primary font-black uppercase text-[10px] md:text-xs tracking-[0.4em] leading-none mb-4">
                     PREPARE FOR
                  </p>
-                 <div className="flex flex-wrap items-center gap-2 md:gap-4 text-white/40 font-black text-[9px] md:text-[11px] uppercase tracking-widest">
+                 <div className="flex flex-wrap items-center gap-2 md:gap-4 text-white/60 font-black text-[9px] md:text-[11px] uppercase tracking-widest">
                     <span className="text-primary">PSSSB</span>
                     <div className="h-1 w-1 rounded-full bg-white/20" />
                     <span className="text-primary">POLICE</span>
@@ -80,30 +93,27 @@ export default function Hero() {
                     <div className="h-1 w-1 rounded-full bg-white/20" />
                     <span className="text-primary">PSPCL</span>
                     <div className="h-1 w-1 rounded-full bg-white/20" />
-                    <span className="text-primary">EXCISE</span>
+                    <span className="text-primary">TEACHING</span>
                  </div>
               </div>
 
-              {/* Master Headline */}
               <div className="space-y-4 md:space-y-6">
-                 <h1 className="text-4xl md:text-7xl font-headline font-black leading-[0.95] tracking-tight text-white uppercase">
-                    Master Punjab <br />
-                    <span className="text-primary">Government Exams</span>
+                 <h1 className="text-4xl md:text-8xl font-headline font-black leading-[0.85] tracking-tighter text-white uppercase">
+                    Selection Hub <br />
+                    <span className="text-primary">For Punjab</span>
                  </h1>
                  <p className="text-slate-400 text-sm md:text-xl font-medium max-w-2xl leading-relaxed antialiased">
-                    Punjab's smartest preparation platform. Unlock high-fidelity mocks, PYQs, current affairs and detailed AI logic rationalizations.
+                    Practice with the most accurate mock tests. Get detailed AI rationalizations, previous year papers, and real-time state rankings.
                  </p>
               </div>
 
-              {/* Functional Feature Tags */}
               <div className="flex flex-wrap gap-3">
                  <FeatureTag icon={<Zap />} label="500+ Mocks" />
-                 <FeatureTag icon={<FileStack />} label="Verified PYQs" />
+                 <FeatureTag icon={<FileStack />} label="Official PYQs" />
                  <FeatureTag icon={<Globe />} label="Bilingual Hub" />
               </div>
             </motion.div>
 
-            {/* Tactical Action Nodes */}
             <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
               <Button 
                 onClick={() => handleAction('/mocks')}
@@ -119,10 +129,9 @@ export default function Hero() {
               </Button>
             </div>
 
-            {/* Hot Exams Quick Links */}
             <div className="flex flex-wrap items-center gap-4 pt-4">
                <span className="text-[10px] font-black uppercase text-primary tracking-widest">Trending:</span>
-               {['PSSSB Patwari', 'Police SI', 'Excise Hub', 'PSTET'].map((t) => (
+               {['Patwari Hub', 'Police SI', 'Master Cadre', 'High Court'].map((t) => (
                   <Link key={t} href={`/search?q=${t}`}>
                     <Badge variant="outline" className="border-white/10 bg-white/5 text-slate-400 hover:text-white hover:border-white/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all cursor-pointer shadow-sm">
                        {t}
@@ -132,51 +141,53 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* RIGHT: INSTITUTIONAL IMAGE HUB */}
-          <div className="lg:col-span-5 relative">
+          {/* RIGHT: DASHBOARD PREVIEW */}
+          <div className="lg:col-span-5 relative hidden md:block">
              <motion.div 
                initial={{ opacity: 0, scale: 0.95 }}
                animate={{ opacity: 1, scale: 1 }}
                className="relative"
              >
-                {/* Visual Glow */}
-                <div className="absolute -inset-1 bg-primary/20 to-blue-500/20 rounded-[3.5rem] blur-2xl opacity-50" />
+                <div className="absolute -inset-1 bg-primary/20 rounded-[3.5rem] blur-3xl opacity-50" />
                 
-                {/* Main Rounded Image Hub */}
-                <div className="relative aspect-[4/5] rounded-[3.5rem] md:rounded-[4.5rem] overflow-hidden border-[6px] border-white/5 shadow-5xl bg-[#1A2333]">
-                   <Image 
-                      src={heroImageUrl}
-                      alt="Punjab Exam Preparation"
-                      fill
-                      className="object-cover"
-                      priority
-                      data-ai-hint="punjab police"
-                   />
+                <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[3rem] p-8 space-y-8 shadow-5xl">
+                   <div className="flex items-center justify-between">
+                      <p className="text-[10px] font-black uppercase text-primary tracking-widest">STUDENT DASHBOARD</p>
+                      <Badge className="bg-emerald-500/20 text-emerald-400 border-none">LIVE HUB</Badge>
+                   </div>
                    
-                   {/* 1. FLOATING VERIFIED CONTENT BADGE */}
-                   <div className="absolute bottom-8 left-8 z-20">
-                      <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-6 flex items-center gap-4 shadow-2xl">
-                         <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-primary flex items-center justify-center text-white shadow-xl shadow-primary/20">
-                            <ShieldCheck className="h-6 w-6" />
+                   <div className="flex items-center gap-8">
+                      <div className="relative h-24 w-24 md:h-32 md:w-32 flex items-center justify-center">
+                         <svg className="h-full w-full transform -rotate-90">
+                            <circle cx="50%" cy="50%" r="45%" className="stroke-white/10 fill-none" strokeWidth="8" />
+                            <circle cx="50%" cy="50%" r="45%" className="stroke-primary fill-none" strokeWidth="8" strokeDasharray="283" strokeDashoffset="50" strokeLinecap="round" />
+                         </svg>
+                         <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className="text-2xl font-black text-white">82%</span>
+                            <span className="text-[8px] font-bold text-slate-400">READY</span>
                          </div>
-                         <div className="text-left">
-                            <p className="text-[8px] md:text-[10px] font-black uppercase text-slate-400 tracking-widest leading-none">OFFICIAL HUB</p>
-                            <h3 className="text-sm md:text-xl font-black text-white uppercase mt-1 leading-none">VERIFIED CONTENT</h3>
-                         </div>
+                      </div>
+                      <div className="space-y-4">
+                         <StatPreview label="READINESS SCORE" val="82%" icon={<TrendingUp className="text-primary" />} />
+                         <StatPreview label="AVG ACCURACY" val="94%" icon={<Target className="text-emerald-400" />} />
+                         <StatPreview label="ALL PUNJAB RANK" val="#12" icon={<Award className="text-amber-400" />} />
                       </div>
                    </div>
 
-                   {/* 2. FLOATING LIVE STUDENTS NODE */}
-                   <div className="absolute bottom-[-10px] right-[-10px] z-30">
-                      <div className="bg-white rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-5xl flex flex-col items-center gap-2 border border-slate-100">
-                         <div className="h-10 w-10 bg-orange-50 rounded-xl flex items-center justify-center text-primary shadow-inner">
-                            <Users className="h-5 w-5" />
+                   <div className="pt-6 border-t border-white/10">
+                      <div className="flex items-center justify-between">
+                         <div className="flex items-center gap-4">
+                            <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shadow-lg">
+                               <ShieldCheck className="h-6 w-6 text-white" />
+                            </div>
+                            <div>
+                               <p className="text-[11px] font-black text-white uppercase">VERIFIED STATUS</p>
+                               <p className="text-[9px] text-slate-400 font-medium">Registry Audited 1m ago</p>
+                            </div>
                          </div>
-                         <div className="text-center">
-                            <p className="text-xl md:text-3xl font-headline font-black text-[#0F172A] leading-none tabular-nums">
-                               {stats?.totalUsers?.toLocaleString() || '15,000'}+
-                            </p>
-                            <p className="text-[8px] md:text-[9px] font-black uppercase text-slate-400 tracking-widest mt-1">LIVE STUDENTS</p>
+                         <div className="text-right">
+                            <p className="text-xl font-black text-primary tabular-nums">{stats?.totalUsers?.toLocaleString() || '15,000'}</p>
+                            <p className="text-[8px] font-black text-slate-500 uppercase">ASPIRANTS</p>
                          </div>
                       </div>
                    </div>
@@ -186,8 +197,7 @@ export default function Hero() {
         </div>
 
         {/* BOTTOM STATS STRIP */}
-        <div className="mt-20 md:mt-32 bg-[#0F172A] rounded-[2rem] md:rounded-[3.5rem] border border-white/5 shadow-5xl overflow-hidden p-6 md:p-12 relative">
-           <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12"><Star className="h-64 w-64 text-primary" /></div>
+        <div className="mt-20 md:mt-32 bg-[#0F172A]/80 backdrop-blur-xl rounded-[2rem] md:rounded-[3.5rem] border border-white/5 shadow-5xl overflow-hidden p-6 md:p-12 relative">
            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 relative z-10">
               <LegacyStatNode 
                 label="Questions" 
@@ -242,3 +252,19 @@ function LegacyStatNode({ label, val, icon, color }: any) {
       </div>
    )
 }
+
+function StatPreview({ label, val, icon }: any) {
+   return (
+      <div className="flex items-center gap-3">
+         <div className="h-6 w-6 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+            {React.cloneElement(icon, { className: "h-3 w-3" })}
+         </div>
+         <div>
+            <p className="text-[7px] font-black text-slate-500 uppercase tracking-widest leading-none">{label}</p>
+            <p className="text-[12px] font-black text-white leading-tight mt-0.5">{val}</p>
+         </div>
+      </div>
+   )
+}
+import React from "react"
+import { Trophy } from "lucide-react";

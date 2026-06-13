@@ -2,11 +2,11 @@
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Optimized Institutional PWA Manifest v18.0.
- * Optimized for Google Play Store (TWA) with maskable icons and high-fidelity branding.
+ * @fileOverview Optimized Institutional PWA Manifest v19.0.
+ * FIXED: Updated icon source to high-quality transparent node to resolve mobile masking issues.
  */
 export default function manifest(): MetadataRoute.Manifest {
-  const squareIcon = 'https://i.ibb.co/VW2MK9ww/file-00000000deec7206abdeca16860cdec1.png';
+  const brandIcon = 'https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png';
 
   return {
     name: 'CRACKLIX | Punjab Exam Hub',
@@ -20,13 +20,13 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: 'portrait',
     icons: [
       {
-        src: squareIcon,
+        src: brandIcon,
         sizes: '192x192',
         type: 'image/png',
         purpose: 'maskable',
       },
       {
-        src: squareIcon,
+        src: brandIcon,
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any',
