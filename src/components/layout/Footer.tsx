@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -9,8 +10,9 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Final Screenshot-Matched Footer Hub v18.0.
- * UPDATED: Reduced logo scale to h-44 for better visual balance.
+ * @fileOverview Final Screenshot-Matched Footer Hub v19.0.
+ * MATCHED: 4-column layout exactly as per user image.
+ * MAINTAINED: Logo height h-44.
  */
 export default function Footer() {
   const db = useFirestore();
@@ -25,10 +27,10 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#050B19] text-white pt-20 pb-12 border-t border-white/5 font-body text-left">
+    <footer className="bg-[#08152D] text-white pt-20 pb-12 border-t border-white/5 font-body text-left">
       <div className="container mx-auto px-6 max-w-7xl">
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16 mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 md:gap-16 mb-24">
           
           {/* 1. BRAND HUB (LEFT) */}
           <div className="lg:col-span-4 space-y-10">
@@ -52,15 +54,15 @@ export default function Footer() {
                </div>
             </div>
 
-            <Button className="h-14 px-8 bg-white/5 hover:bg-white/10 text-white rounded-xl border border-white/10 font-black uppercase text-[10px] tracking-widest gap-3 shadow-xl mt-4">
+            <Button className="h-14 px-8 bg-[#111A35] hover:bg-slate-800 text-white rounded-xl border border-white/5 font-black uppercase text-[10px] tracking-widest gap-3 shadow-2xl mt-4">
                <Share2 className="h-4 w-4 text-primary" /> SHARE CRACKLIX
             </Button>
           </div>
 
           {/* 2. EXAM VERTICALS */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="lg:col-span-3 space-y-8 pt-4 md:pt-12">
             <h4 className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">EXAM VERTICALS</h4>
-            <ul className="space-y-4 text-slate-300 font-bold text-[13px] uppercase tracking-tight">
+            <ul className="space-y-5 text-white font-bold text-[15px] uppercase tracking-tight">
               <li><Link href="/exams" className="hover:text-primary transition-colors">PSSSB Boards</Link></li>
               <li><Link href="/exams" className="hover:text-primary transition-colors">PPSC Gazetted</Link></li>
               <li><Link href="/exams" className="hover:text-primary transition-colors">Punjab Police</Link></li>
@@ -69,9 +71,9 @@ export default function Footer() {
           </div>
 
           {/* 3. RESOURCES */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="lg:col-span-3 space-y-8 pt-4 md:pt-12">
             <h4 className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">RESOURCES</h4>
-            <ul className="space-y-4 text-slate-300 font-bold text-[13px] uppercase tracking-tight">
+            <ul className="space-y-5 text-white font-bold text-[15px] uppercase tracking-tight">
               <li><Link href="/mocks" className="hover:text-primary transition-colors">Free Mock Tests</Link></li>
               <li><Link href="/pyqs" className="hover:text-primary transition-colors">Previous Year Papers</Link></li>
               <li><Link href="/notes" className="hover:text-primary transition-colors">Study Notes</Link></li>
@@ -80,26 +82,23 @@ export default function Footer() {
           </div>
 
           {/* 4. CONNECT HUB (RIGHT) */}
-          <div className="lg:col-span-2 space-y-10">
+          <div className="lg:col-span-2 space-y-10 pt-4 md:pt-12">
             <h4 className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">CONNECT</h4>
             <div className="space-y-8">
                <a 
                  href={content.tg} 
                  target="_blank" 
-                 className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary transition-all shadow-xl"
+                 className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary transition-all shadow-2xl"
                >
-                 <Send className="h-5 w-5 fill-current text-white" />
+                 <Send className="h-6 w-6 fill-current text-white" />
                </a>
                
-               <div className="space-y-3">
-                  <p className="text-xl md:text-2xl font-headline font-black text-primary leading-none uppercase tracking-tight">
+               <div className="space-y-2">
+                  <p className="text-3xl md:text-4xl font-headline font-black text-primary leading-tight uppercase tracking-tight">
                     {content.phone.split(' ')[0]} {content.phone.split(' ')[1]}<br/>
                     {content.phone.split(' ')[2]}
                   </p>
-                  <div className="space-y-1">
-                    <p className="text-[7px] font-black text-slate-500 uppercase tracking-[0.2em]">OFFICIAL SUPPORT</p>
-                    <p className="text-[7px] font-black text-slate-500 uppercase tracking-[0.2em]">CHANNEL</p>
-                  </div>
+                  <p className="text-[7px] font-black text-slate-500 uppercase tracking-[0.3em]">OFFICIAL SUPPORT CHANNEL</p>
                </div>
             </div>
           </div>
