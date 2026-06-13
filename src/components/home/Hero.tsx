@@ -18,11 +18,11 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview FINAL CALIBRATED HERO v205.0.
+ * @fileOverview FINAL CALIBRATED HERO v206.0.
+ * FIXED: Shifted bottom stats bar higher (thoda uper).
  * FIXED: Targeted masking to cover the Gemini star artifact.
  * FIXED: Content layer hierarchy (z-index) to appear on top of all fixes.
  * FIXED: Horizontal stat row on mobile with micro-UI density.
- * MANDATORY: Sentence case and double-line description formatting.
  */
 
 export default function Hero() {
@@ -81,7 +81,7 @@ export default function Hero() {
       </div>
 
       {/* 2. CALIBRATED CONTENT HUB - FORCE ON TOP */}
-      <div className="container mx-auto px-4 md:px-12 max-w-7xl relative z-[30] pt-8 md:pt-14">
+      <div className="container mx-auto px-4 md:px-12 max-w-7xl relative z-[30] pt-10 md:pt-14">
          <div className="max-w-2xl space-y-1 md:space-y-4">
             
             {/* TOP PILL BADGE */}
@@ -142,7 +142,8 @@ export default function Hero() {
       </div>
 
       {/* 3. INTEGRATED BOTTOM DATA BAR - FORCE ON TOP */}
-      <div className="absolute bottom-1 md:bottom-8 left-0 right-0 z-[40]">
+      {/* SHIFTED HIGHER: bottom-4 on mobile and bottom-14 on desktop */}
+      <div className="absolute bottom-4 md:bottom-14 left-0 right-0 z-[40]">
          <div className="container mx-auto px-4 md:px-12 max-w-7xl overflow-hidden">
             <div className="flex flex-row md:grid md:grid-cols-4 gap-1.5 md:gap-4 overflow-x-auto no-scrollbar pb-1">
                {liveStats.map((stat, idx) => (
