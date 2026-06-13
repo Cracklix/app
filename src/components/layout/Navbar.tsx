@@ -24,8 +24,8 @@ import { useToast } from "@/hooks/use-toast";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Professional Header v185.0 (Ultra-Compact).
- * UPDATED: Reduced header height and removed redundant Safe Area padding for a tighter fit.
+ * @fileOverview Professional Header v186.0.
+ * FIXED: Logo height set to exactly 40px (h-10) for student side.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
