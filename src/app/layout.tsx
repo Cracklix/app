@@ -56,7 +56,7 @@ export const viewport: Viewport = {
 };
 
 /**
- * @fileOverview Master Layout v24.0 (PWA Persistent).
+ * @fileOverview Master Layout v25.0 (PWA Persistent).
  * UPDATED: Refined native script for more robust PWA event persistence and installability.
  */
 export default function RootLayout({
@@ -75,15 +75,12 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              window.deferredPrompt = window.deferredPrompt || null;
+              window.deferredPrompt = null;
               window.addEventListener('beforeinstallprompt', (e) => {
-                // Prevent Chrome 67 and earlier from automatically showing the prompt
                 e.preventDefault();
-                // Stash the event so it can be triggered later.
                 window.deferredPrompt = e;
-                // Update UI notify that the PWA is installable
                 window.dispatchEvent(new CustomEvent('pwa-installable'));
-                console.log('[PWA] Installation prompt captured and stored.');
+                console.log('[PWA] Installation prompt captured.');
               });
               window.addEventListener('appinstalled', (e) => {
                 console.log('[PWA] App successfully installed.');

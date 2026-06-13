@@ -1,21 +1,22 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Smartphone, CheckCircle2, Map as MapIcon, Globe, ShieldCheck, Download, Zap } from "lucide-react";
+import { Smartphone, CheckCircle2, Map as MapIcon, Globe, ShieldCheck, Download, Zap, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Apple, Play } from "lucide-react";
 import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { useToast } from "@/hooks/use-toast";
 
 /**
- * @fileOverview Final Regional Hub Section v8.1.
- * UPDATED: Promoted 'Download App' (PWA) installation method for students.
+ * @fileOverview Final Regional Hub Section v9.0 (Hardened Install).
+ * UPDATED: Activated PWA installation trigger for Android/Chrome users.
  */
 
 export default function AppPreview() {
   const db = useFirestore();
+  const { toast } = useToast();
   const [canInstall, setCanInstall] = useState(false);
   const punjabMap = "https://www.mapsofindia.com/maps/punjab/punjab-map.jpg";
   const indiaMap = "https://www.mapsofindia.com/images2/india-map.jpg";
@@ -23,18 +24,35 @@ export default function AppPreview() {
   const { data: settings } = useDoc<any>(useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]));
 
   useEffect(() => {
+    // Check if prompt is already available
     if (typeof window !== 'undefined' && (window as any).deferredPrompt) {
-       setCanInstall(true);
+      setCanInstall(true);
     }
+    
+    // Listen for future availability
     const handleInstallable = () => setCanInstall(true);
     window.addEventListener('pwa-installable', handleInstallable);
     return () => window.removeEventListener('pwa-installable', handleInstallable);
   }, []);
 
   const handleInstallClick = async () => {
+    if (typeof window === 'undefined') return;
+    
     const prompt = (window as any).deferredPrompt;
     if (prompt) {
       prompt.prompt();
+      const { outcome } = await prompt.userChoice;
+      if (outcome === 'accepted') {
+        (window as any).deferredPrompt = null;
+        setCanInstall(false);
+        toast({ title: "Installation Started", description: "Cracklix is being added to your home screen." });
+      }
+    } else {
+      // Fallback for iOS or non-Chrome users
+      toast({ 
+        title: "Installation Guide", 
+        description: "Tap the 'Share' button in your browser and select 'Add to Home Screen' for faster access.",
+      });
     }
   };
 
@@ -75,10 +93,12 @@ export default function AppPreview() {
                 className="w-full sm:w-auto h-16 md:h-20 px-10 bg-[#0F172A] hover:bg-black text-white rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center gap-4 shadow-3xl transition-all active:scale-95 border-none"
               >
                 <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-primary flex items-center justify-center shadow-xl">
-                   <Download className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                   {canInstall ? <Download className="h-5 w-5 md:h-6 md:w-6 text-white" /> : <Zap className="h-5 w-5 md:h-6 md:w-6 text-white" />}
                 </div>
                 <div className="text-left">
-                  <p className="text-[10px] md:text-[11px] uppercase font-black tracking-widest text-primary leading-none">DOWNLOAD NOW</p>
+                  <p className="text-[10px] md:text-[11px] uppercase font-black tracking-widest text-primary leading-none">
+                    {canInstall ? "AVAILABLE NOW" : "PWA ENABLED"}
+                  </p>
                   <p className="text-lg md:text-xl font-black uppercase text-white mt-1 leading-none tracking-tight">INSTALL APP</p>
                 </div>
               </Button>
@@ -92,6 +112,12 @@ export default function AppPreview() {
                  </a>
               </div>
             </div>
+            {!canInstall && (
+               <div className="flex items-center gap-2 text-slate-400">
+                  <Info className="h-3 w-3" />
+                  <p className="text-[9px] font-bold uppercase tracking-widest">App is installable via browser menu on iOS/Safari</p>
+               </div>
+            )}
           </motion.div>
 
           <div className="space-y-12 md:space-y-16 mt-12 lg:mt-0">

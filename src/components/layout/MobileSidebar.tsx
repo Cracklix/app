@@ -28,9 +28,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Hardened Production Sidebar Hub v50.0.
- * UPDATED: Precise PWA ergonomics with safe-area support.
- * FIXED: Optimized scroll containment for small devices (320px).
+ * @fileOverview Hardened Production Sidebar Hub v51.0.
+ * UPDATED: Precise PWA ergonomics and robust installation trigger.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -58,18 +57,20 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   };
 
   const handleInstallClick = async () => {
-    if (typeof window !== 'undefined') {
-      const prompt = (window as any).deferredPrompt;
-      if (prompt) {
-        prompt.prompt();
-        const { outcome } = await prompt.userChoice;
-        if (outcome === 'accepted') {
-          (window as any).deferredPrompt = null;
-          setHasPrompt(false);
-          onClose();
-          toast({ title: "Welcome!", description: "Adding app to your home screen." });
-        }
+    if (typeof window === 'undefined') return;
+    
+    const prompt = (window as any).deferredPrompt;
+    if (prompt) {
+      prompt.prompt();
+      const { outcome } = await prompt.userChoice;
+      if (outcome === 'accepted') {
+        (window as any).deferredPrompt = null;
+        setHasPrompt(false);
+        onClose();
+        toast({ title: "Welcome!", description: "Adding app to your home screen." });
       }
+    } else {
+      toast({ title: "How to Install", description: "On iPhone, tap 'Share' then 'Add to Home Screen'. On Android, check your browser menu." });
     }
   };
 
@@ -145,7 +146,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
             <div className="text-left leading-tight">
                <span className="text-[11px] uppercase tracking-tight font-black text-white block mb-0.5">INSTALL CRACKLIX</span>
                <p className={cn("text-[7px] font-black uppercase tracking-widest", hasPrompt ? "text-primary" : "text-slate-500")}>
-                 {hasPrompt ? "FASTER ACCESS ACTIVE" : "ALREADY INSTALLED"}
+                 {hasPrompt ? "CLICK TO ADD APP" : "FASTER ACCESS ENABLED"}
                </p>
             </div>
          </div>
