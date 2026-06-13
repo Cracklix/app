@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { Menu, Search, Zap, LogOut, ShieldCheck, Download, User } from "lucide-react";
+import { Menu, Search, Zap, LogOut, ShieldCheck, Download, User, Target, Newspaper, Gem, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
 import { useState, useMemo, useEffect } from "react";
@@ -23,8 +23,9 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview High-Fidelity Restored Navbar v55.0.
- * MATCHED: Layout exactly to user screenshot (Menu | Logo | Pass Hub | Search | Profile).
+ * @fileOverview FINAL Screenshot Replica Navbar v60.0.
+ * MATCHED: Exact sequence and styling from user screenshot.
+ * Sequence: [Menu] -> [Logo] -> [My Exams] -> [Practice Tests] -> [Get Pass] -> [Current Affairs] -> [Install App] -> [Pass Active Hub] -> [Search] -> [User]
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -53,15 +54,15 @@ export default function Navbar() {
   }, [db]);
 
   const passStatus = useMemo(() => {
-    if (!profile?.pass) return null;
+    if (!profile?.pass) return { active: false, label: "FREE PASS", expiry: "N/A" };
     const active = profile.pass.active;
-    const expiry = new Date(profile.pass.expiryDate);
-    const isExpired = expiry < new Date();
+    const expiryDate = new Date(profile.pass.expiryDate);
+    const isExpired = expiryDate < new Date();
     
     return {
       active: active && !isExpired,
       label: isExpired ? "PASS EXPIRED" : "PASS ACTIVE",
-      expiry: expiry.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+      expiry: expiryDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
     };
   }, [profile]);
 
@@ -75,23 +76,23 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-[1000] w-full pointer-events-auto">
       {announcement?.showAnnouncement && (
-        <div className="bg-primary text-white py-1 flex items-center overflow-hidden relative shadow-2xl h-8">
+        <div className="bg-primary text-white py-1 flex items-center overflow-hidden relative shadow-2xl h-8 border-b border-white/5">
           <div className="flex items-center gap-2 animate-marquee whitespace-nowrap min-w-full">
             <Zap className="h-3 w-3 shrink-0 ml-4 fill-current" />
-            <p className="text-[10px] font-black uppercase tracking-[0.3em]">{announcement.announcement}</p>
+            <p className="text-[9px] font-black uppercase tracking-[0.3em]">{announcement.announcement}</p>
             <span className="mx-40 md:mx-80" />
             <Zap className="h-3 w-3 shrink-0 fill-current" />
-            <p className="text-[10px] font-black uppercase tracking-[0.3em]">{announcement.announcement}</p>
+            <p className="text-[9px] font-black uppercase tracking-[0.3em]">{announcement.announcement}</p>
             <span className="mx-40 md:mx-80" />
           </div>
         </div>
       )}
 
-      <nav className="w-full bg-[#0B1528] border-b border-white/5 h-20 md:h-24 flex items-center shadow-2xl backdrop-blur-md">
-        <div className="container mx-auto max-w-full flex items-center justify-between px-4 md:px-10">
+      <nav className="w-full bg-[#0B1528] border-b border-white/5 h-20 md:h-24 flex items-center shadow-2xl">
+        <div className="container mx-auto max-w-full flex items-center justify-between px-4 md:px-8 overflow-x-auto no-scrollbar">
           
-          {/* LEFT: MENU & LOGO */}
-          <div className="flex items-center gap-4 md:gap-8">
+          {/* 1. MENU & LOGO */}
+          <div className="flex items-center gap-4 md:gap-8 shrink-0">
             <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
               <SheetTrigger asChild>
                 <button className="bg-white/5 text-white p-2.5 md:p-3 rounded-xl border border-white/10 hover:bg-white/10 transition-all cursor-pointer">
@@ -106,39 +107,81 @@ export default function Navbar() {
             <Logo variant="light" className="scale-90 md:scale-100" />
           </div>
 
-          {/* RIGHT: ACTION NODES */}
-          <div className="flex items-center gap-3 md:gap-6">
+          {/* 2. NAV LINKS HUB (MIDDLE) */}
+          <div className="flex items-center gap-6 md:gap-10 mx-6 md:mx-12 shrink-0">
+             {/* MY EXAMS */}
+             <Link href="/my-exams" className="flex items-center gap-3 group">
+                <div className="h-4 w-4 md:h-5 md:w-5 flex items-center justify-center border-2 border-primary/40 rounded-full group-hover:border-primary transition-all">
+                   <Target className="h-2.5 w-2.5 md:h-3 md:w-3 text-primary" />
+                </div>
+                <div className="flex flex-col text-left">
+                   <span className="text-[10px] md:text-[13px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-tight leading-none">My</span>
+                   <span className="text-[10px] md:text-[13px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-tight mt-0.5 leading-none">Exams</span>
+                </div>
+             </Link>
+
+             {/* PRACTICE TESTS */}
+             <Link href="/mocks" className="flex items-center gap-3 group">
+                <div className="flex flex-col text-left">
+                   <span className="text-[10px] md:text-[13px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-tight leading-none">Practice</span>
+                   <span className="text-[10px] md:text-[13px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-tight mt-0.5 leading-none">Tests</span>
+                </div>
+             </Link>
+
+             {/* GET PASS BUTTON (MATCHED TO SCREENSHOT) */}
+             <Button asChild className="hidden sm:flex h-12 md:h-14 px-5 md:px-8 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl transition-all shadow-xl gap-3">
+                <Link href="/pass">
+                   <Gem className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+                   <div className="flex flex-col text-left">
+                      <span className="text-[10px] md:text-[12px] font-black text-primary uppercase leading-none">GET</span>
+                      <span className="text-[10px] md:text-[12px] font-black text-primary uppercase mt-0.5 leading-none">PASS</span>
+                   </div>
+                </Link>
+             </Button>
+
+             {/* CURRENT AFFAIRS */}
+             <Link href="/current-affairs" className="flex items-center gap-3 group">
+                <Newspaper className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+                <div className="flex flex-col text-left">
+                   <span className="text-[10px] md:text-[13px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-tight leading-none">Current</span>
+                   <span className="text-[10px] md:text-[13px] font-black text-white group-hover:text-primary transition-colors uppercase tracking-tight mt-0.5 leading-none">Affairs</span>
+                </div>
+             </Link>
+          </div>
+
+          {/* 3. RIGHT ACTION NODES */}
+          <div className="flex items-center gap-3 md:gap-5 shrink-0 ml-auto">
             
-            {/* 1. PASS STATUS NODE (SCREENSHOT MATCH) */}
-            {mounted && user && passStatus && (
-               <div className="flex items-center gap-6">
-                  <div className="flex flex-col items-end gap-1">
-                     <Badge className={cn(
-                       "border-none px-4 py-1 rounded-full font-black uppercase text-[8px] md:text-[9px] tracking-widest shadow-lg text-white",
-                       passStatus.active ? "bg-[#10B981]" : "bg-rose-600"
+            {/* INSTALL APP HUB */}
+            {mounted && canInstall && (
+              <button 
+                onClick={() => (window as any).deferredPrompt?.prompt()}
+                className="hidden lg:flex items-center gap-3 h-12 md:h-14 px-5 rounded-xl border border-[#10B981]/20 bg-[#10B981]/5 text-[#10B981] group hover:bg-[#10B981] hover:text-white transition-all shadow-md"
+              >
+                 <Download className="h-4 w-4" />
+                 <span className="text-[10px] md:text-[11px] font-black uppercase tracking-tight">Install App</span>
+              </button>
+            )}
+
+            {/* PASS STATUS NODE (REPLICA) */}
+            {mounted && user && (
+               <div className="flex items-center gap-3 h-12 md:h-14 px-4 md:px-6 rounded-xl border border-[#10B981]/40 bg-[#10B981]/5 shrink-0 min-w-[130px]">
+                  <Gem className="h-4 w-4 md:h-5 md:w-5 text-[#10B981] shrink-0" />
+                  <div className="flex flex-col items-start justify-center">
+                     <span className={cn(
+                       "text-[10px] md:text-[12px] font-black uppercase tracking-tight leading-none",
+                       passStatus.active ? "text-[#10B981]" : "text-rose-500"
                      )}>
                         {passStatus.label}
-                     </Badge>
-                     <p className="text-[7px] md:text-[8px] font-black text-slate-500 uppercase tracking-[0.2em] leading-none">
-                        VALID TILL {passStatus.expiry}
-                     </p>
+                     </span>
+                     <span className="text-[7px] md:text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+                        EXP: {passStatus.expiry}
+                     </span>
                   </div>
-                  <div className="h-10 w-px bg-white/10 hidden md:block" />
                </div>
             )}
 
-            {/* 2. INSTALL APP HUB */}
-            {mounted && canInstall && (
-              <Button 
-                onClick={() => (window as any).deferredPrompt?.prompt()}
-                variant="ghost" 
-                className="hidden lg:flex h-12 px-6 rounded-xl border border-[#10B981]/20 bg-[#10B981]/5 text-[#10B981] font-black uppercase text-[10px] tracking-widest gap-2 hover:bg-[#10B981] hover:text-white transition-all shadow-md"
-              >
-                 <Download className="h-4 w-4" /> Install App
-              </Button>
-            )}
-
-            {/* 3. SEARCH NODE */}
+            {/* SEARCH NODE */}
             <Link 
                href="/search" 
                className="bg-white/5 text-slate-400 hover:text-white p-2.5 md:p-3 rounded-xl border border-white/10 transition-all hover:bg-white/10"
@@ -146,14 +189,14 @@ export default function Navbar() {
               <Search className="h-5 w-5 md:h-6 md:w-6" />
             </Link>
 
-            {/* 4. USER PROFILE HUB */}
+            {/* PROFILE HUB */}
             <div className="relative shrink-0">
               {!mounted || loading ? (
                 <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-white/5 animate-pulse" />
               ) : user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="h-10 w-10 md:h-12 md:w-12 rounded-full overflow-hidden border-2 border-primary/20 hover:border-primary transition-all bg-[#0F172A] shadow-2xl focus:outline-none">
+                    <button className="h-10 w-10 md:h-12 md:w-12 rounded-full overflow-hidden border-2 border-white/20 hover:border-primary transition-all bg-[#0F172A] shadow-2xl focus:outline-none">
                       <StudentAvatar profile={profile} className="h-full w-full border-none" />
                     </button>
                   </DropdownMenuTrigger>
@@ -170,21 +213,21 @@ export default function Navbar() {
                     <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5">
                       <Link href="/profile" className="w-full flex items-center gap-3">
                         <User className="h-4 w-4 text-primary" />
-                        <span className="font-bold text-[13px] tracking-tight uppercase">My Profile</span>
+                        <span className="font-bold text-[13px] tracking-tight uppercase">My Profile Hub</span>
                       </Link>
                     </DropdownMenuItem>
                     {isAdmin && (
                       <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5">
                         <Link href="/admin" className="w-full flex items-center gap-3 text-primary">
                           <Zap className="h-4 w-4 fill-current" />
-                          <span className="font-bold text-[13px] tracking-tight uppercase">Admin Panel</span>
+                          <span className="font-bold text-[13px] tracking-tight uppercase">Master Admin</span>
                         </Link>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator className="bg-white/5" />
                     <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-3 px-4 py-4 cursor-pointer rounded-xl transition-all focus:bg-rose-500/10 focus:text-rose-500 text-rose-500/80">
                       <LogOut className="h-4 w-4 shrink-0" />
-                      <span className="font-bold text-[13px] tracking-tight uppercase">Logout</span>
+                      <span className="font-bold text-[13px] tracking-tight uppercase">Logout Registry</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
