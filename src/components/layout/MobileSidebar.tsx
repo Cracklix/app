@@ -28,9 +28,9 @@ import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Hardened High-Density Mobile Sidebar v68.0.
- * UPDATED: Reduced logo size and moved profile section higher.
- * UPDATED: Fixed badge visibility with high-contrast colors.
+ * @fileOverview Hardened High-Density Mobile Sidebar v69.0.
+ * UPDATED: Logo and Profile moved higher via aggressive negative margins.
+ * UPDATED: Fixed badge visibility and reduced section gaps.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -78,10 +78,10 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-[#0B1528] text-white overflow-y-auto no-scrollbar font-body select-none text-left">
+    <div className="flex flex-col h-full bg-[#0B1528] text-white overflow-y-auto no-scrollbar font-body select-none text-left pt-0">
       
-      {/* 1. LOGO NODE - REDUCED SIZE & TIGHTER MARGIN */}
-      <div className="px-6 flex justify-start shrink-0 overflow-visible mt-0 mb-[-25px] -mt-4">
+      {/* 1. LOGO NODE - AGGRESSIVE UPLIFT */}
+      <div className="px-6 flex justify-start shrink-0 overflow-visible -mt-12 mb-[-50px]">
          <Logo imgClassName="h-44 origin-left" />
       </div>
 
@@ -115,7 +115,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
         </button>
       </div>
 
-      <div className="px-6 mb-0"><p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">MANAGEMENT CENTER</p></div>
+      <div className="px-6 mb-0 mt-1"><p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">MANAGEMENT CENTER</p></div>
 
       <div className="flex flex-col py-0">
         {canInstall && (

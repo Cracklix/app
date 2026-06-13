@@ -39,9 +39,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Final Hardened High-Density Admin Layout v198.0.
- * UPDATED: Absolute zero vertical spacing between logo and labels.
- * UPDATED: Massive Logo scale set to h-48 with negative margins.
+ * @fileOverview Final Hardened High-Density Admin Layout v199.0.
+ * UPDATED: Logo and navigation shifted higher via aggressive negative margins.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -86,10 +85,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user || !isAdmin) return null
 
   const SideNavContent = () => (
-    <div className="flex flex-col h-full bg-[#0F172A] pointer-events-auto select-none overflow-y-auto no-scrollbar">
+    <div className="flex flex-col h-full bg-[#0F172A] pointer-events-auto select-none overflow-y-auto no-scrollbar pt-0">
        <div className="flex-1 flex flex-col">
           
-          <div className="px-6 flex justify-start shrink-0 overflow-visible mt-0 mb-[-15px] -mt-4">
+          <div className="px-6 flex justify-start shrink-0 overflow-visible -mt-10 mb-[-45px]">
              <Logo href="/admin" imgClassName="h-48 origin-left" />
           </div>
 
