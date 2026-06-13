@@ -23,14 +23,14 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Final Performance-Hardened Header v155.0.
- * UPDATED: Re-scaled navbar and logo to massive proportions (h-44 / h-40).
+ * @fileOverview Professional Header v156.0.
+ * RESTORED: Scaled back to standard proportions (h-20) for optimal usability.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user, profile, loading } = useUser();
-  const auth = auth();
+  const auth = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -70,8 +70,7 @@ export default function Navbar() {
     }
   };
 
-  // Increased height to accommodate the massive logo
-  const headerHeight = "h-32 md:h-44";
+  const headerHeight = "h-20";
 
   if (!mounted) {
     return (
@@ -106,9 +105,8 @@ export default function Navbar() {
               </SheetContent>
             </Sheet>
             
-            {/* Massive logo size container (h-40) */}
-            <div className="h-32 md:h-40 flex items-center shrink-0">
-               <Logo className="h-full !gap-0 active:scale-95 transition-transform" />
+            <div className="h-14 flex items-center shrink-0">
+               <Logo imgClassName="h-14" className="active:scale-95 transition-transform" />
             </div>
           </div>
 
@@ -119,24 +117,24 @@ export default function Navbar() {
 
             <Link href="/pass" className="transition-all active:scale-95 group h-full flex items-center">
               <div className={cn(
-                "w-[170px] h-[52px] rounded-[18px] border flex items-center justify-center gap-3 transition-all",
+                "w-[150px] h-[44px] rounded-[14px] border flex items-center justify-center gap-3 transition-all",
                 pathname === "/pass" 
-                  ? "bg-[#F97316]/20 border-[#F97316] shadow-[0_0_20px_rgba(249,115,22,0.15)]" 
-                  : "bg-[#F97316]/10 border-[#F97316]/30 hover:bg-[#F97316]/20 hover:border-[#F97316]"
+                  ? "bg-[#F97316]/20 border-[#F97316]" 
+                  : "bg-[#F97316]/10 border-[#F97316]/30 hover:bg-[#F97316]/20"
               )}>
-                <Gem className={cn("h-4 w-4 transition-all", pathname === "/pass" ? "text-white fill-[#F97316]" : "text-[#F97316]")} />
-                <span className="text-[12px] font-black uppercase tracking-[0.15em] text-white">GET PASS</span>
+                <Gem className={cn("h-3.5 w-3.5", pathname === "/pass" ? "text-white fill-[#F97316]" : "text-[#F97316]")} />
+                <span className="text-[11px] font-black uppercase tracking-widest text-white">GET PASS</span>
               </div>
             </Link>
 
             <div onClick={handleInstallClick} className="cursor-pointer transition-all active:scale-95 group h-full flex items-center">
-               <div className="flex items-center gap-3 opacity-80 hover:opacity-100 group-hover:translate-y-[-1px] transition-all">
-                  <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+               <div className="flex items-center gap-3 opacity-80 hover:opacity-100 transition-all">
+                  <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30 text-emerald-400">
                      <Download className="h-4 w-4" />
                   </div>
                   <div className="flex flex-col leading-tight text-left">
-                     <span className="text-[12px] font-black uppercase tracking-widest text-white">INSTALL</span>
-                     <span className="text-[12px] font-black uppercase tracking-widest text-white">APP</span>
+                     <span className="text-[10px] font-black text-white">INSTALL</span>
+                     <span className="text-[10px] font-black text-white">APP</span>
                   </div>
                </div>
             </div>
@@ -147,16 +145,16 @@ export default function Navbar() {
                 <div 
                   onClick={() => router.push('/pass')}
                   className={cn(
-                    "hidden sm:flex h-[52px] w-[160px] rounded-xl items-center justify-center gap-3 shadow-xl shrink-0 group border transition-all cursor-pointer active:scale-95",
-                    passStatus.active ? "bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20" : "bg-rose-500/10 border-rose-500/30 hover:bg-rose-500/20"
+                    "hidden sm:flex h-[44px] w-[140px] rounded-xl items-center justify-center gap-3 shadow-xl shrink-0 group border transition-all cursor-pointer active:scale-95",
+                    passStatus.active ? "bg-emerald-500/10 border-emerald-500/30" : "bg-rose-500/10 border-rose-500/30"
                   )}
                 >
-                   <Gem className={cn("h-5 w-5 fill-current", passStatus.active ? "text-emerald-400" : "text-rose-400")} />
+                   <Gem className={cn("h-4 w-4 fill-current", passStatus.active ? "text-emerald-400" : "text-rose-400")} />
                    <div className="flex flex-col text-left leading-none gap-0.5">
-                      <span className={cn("text-[9px] font-black uppercase tracking-widest", passStatus.active ? "text-emerald-400" : "text-rose-400")}>
+                      <span className={cn("text-[8px] font-black uppercase", passStatus.active ? "text-emerald-400" : "text-rose-400")}>
                         {passStatus.label}
                       </span>
-                      <span className="text-[7px] text-slate-500 font-bold uppercase tracking-wider">
+                      <span className="text-[7px] text-slate-500 font-bold uppercase">
                          {passStatus.active ? `EXP: ${passStatus.expiry}` : "UNLOCK NOW"}
                       </span>
                    </div>
@@ -167,54 +165,42 @@ export default function Navbar() {
                "w-[40px] h-[40px] rounded-xl border border-white/10 transition-all flex items-center justify-center shadow-lg active:scale-90 shrink-0",
                pathname === "/search" ? "bg-white/10 text-white border-white/30" : "bg-white/5 text-slate-400 hover:text-white"
              )}>
-                <Search className="h-[18px] w-[20px]" />
+                <Search className="h-[18px] w-[18px]" />
              </Link>
 
              <div className="relative">
                {user ? (
                  <DropdownMenu>
                    <DropdownMenuTrigger asChild>
-                     <button className="w-[42px] h-[44px] rounded-full overflow-hidden border-[3px] border-white/10 hover:border-primary transition-all bg-white shadow-2xl focus:outline-none flex items-center justify-center active:scale-90 cursor-pointer shrink-0">
+                     <button className="w-[42px] h-[42px] rounded-full overflow-hidden border-[3px] border-white/10 hover:border-primary transition-all bg-white shadow-2xl focus:outline-none flex items-center justify-center active:scale-90 cursor-pointer shrink-0">
                        <StudentAvatar profile={profile} className="h-full w-full border-none" iconClassName="text-[#0B1528]" />
                      </button>
                    </DropdownMenuTrigger>
-                   <DropdownMenuContent className="w-72 bg-[#0F172A] border-white/10 text-white rounded-[2rem] p-3 shadow-5xl z-[2001] animate-in slide-in-from-top-2 duration-300" align="end">
+                   <DropdownMenuContent className="w-72 bg-[#0F172A] border-white/10 text-white rounded-[2rem] p-3 shadow-5xl z-[2001]" align="end">
                      <div className="px-5 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">STUDENT AREA</div>
-                     
                      <DropdownMenuItem asChild className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5 focus:text-white group">
                        <Link href="/profile" className="w-full flex items-center gap-5">
-                         <User className="h-5 w-5 text-blue-400 group-hover:scale-110 transition-transform" />
+                         <User className="h-5 w-5 text-blue-400" />
                          <span className="font-bold text-[15px] tracking-tight uppercase">MY PROFILE</span>
                        </Link>
                      </DropdownMenuItem>
-
                      <DropdownMenuItem asChild className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5 focus:text-white group">
                        <Link href="/my-exams" className="w-full flex items-center gap-5">
-                         <Award className="h-5 w-5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                         <Award className="h-5 w-5 text-emerald-400" />
                          <span className="font-bold text-[15px] tracking-tight uppercase">MY RESULTS</span>
                        </Link>
                      </DropdownMenuItem>
-
-                     <DropdownMenuItem asChild className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5 focus:text-white group">
-                       <Link href="/pass" className="w-full flex items-center gap-5">
-                         <Gem className="h-5 w-5 text-orange-400 group-hover:scale-110 transition-transform" />
-                         <span className="font-bold text-[15px] tracking-tight uppercase">ELITE PASS</span>
-                       </Link>
-                     </DropdownMenuItem>
-
                      {isAdmin && (
                        <DropdownMenuItem asChild className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all bg-white/5 focus:bg-white/10 group mt-1">
                          <Link href="/admin" className="w-full flex items-center gap-5">
-                           <ShieldCheck className="h-5 w-5 text-rose-500 group-hover:scale-110 transition-transform" />
+                           <ShieldCheck className="h-5 w-5 text-rose-500" />
                            <span className="font-bold text-[15px] tracking-tight uppercase text-white">ADMIN PANEL</span>
                          </Link>
                        </DropdownMenuItem>
                      )}
-
                      <DropdownMenuSeparator className="bg-white/5 my-3" />
-
                      <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-5 px-5 py-4 cursor-pointer rounded-xl transition-all focus:bg-rose-500/10 group">
-                       <LogOut className="h-5 w-5 shrink-0 text-rose-500 group-hover:translate-x-1 transition-transform" />
+                       <LogOut className="h-5 w-5 shrink-0 text-rose-500" />
                        <span className="font-bold text-[15px] tracking-tight uppercase text-rose-500">LOGOUT</span>
                      </DropdownMenuItem>
                    </DropdownMenuContent>
@@ -235,18 +221,18 @@ export default function Navbar() {
 function NavLink({ icon, label1, label2, href, active }: { icon: React.ReactNode, label1: string, label2: string, href: string, active: boolean }) {
   return (
     <Link href={href} className={cn(
-      "flex items-center gap-3 group transition-all active:scale-95 hover:translate-y-[-1px] h-full",
+      "flex items-center gap-3 group transition-all active:scale-95 h-full",
       active ? "opacity-100" : "opacity-70 hover:opacity-100"
     )}>
       <div className={cn(
         "h-8 w-8 rounded-lg flex items-center justify-center shadow-sm transition-all",
-        active ? "bg-[#F97316] text-white shadow-[#F97316]/20" : "bg-white/5 text-slate-400 group-hover:text-[#F97316]"
+        active ? "bg-[#F97316] text-white" : "bg-white/5 text-slate-400 group-hover:text-[#F97316]"
       )}>
         {React.cloneElement(icon as React.ReactElement, { className: "h-4 w-4" })}
       </div>
       <div className="flex flex-col text-left leading-tight">
-        <span className={cn("text-[12px] font-black uppercase tracking-[0.15em]", active ? "text-[#F97316]" : "text-white")}>{label1}</span>
-        <span className={cn("text-[12px] font-black uppercase tracking-[0.15em]", active ? "text-[#F97316]" : "text-white")}>{label2}</span>
+        <span className={cn("text-[11px] font-black uppercase tracking-widest", active ? "text-[#F97316]" : "text-white")}>{label1}</span>
+        <span className={cn("text-[11px] font-black uppercase tracking-widest", active ? "text-[#F97316]" : "text-white")}>{label2}</span>
       </div>
     </Link>
   )

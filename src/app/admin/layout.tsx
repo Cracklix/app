@@ -42,8 +42,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Admin Layout v171.0.
- * UPDATED: Increased logo sizes in sidebar and header for bold branding.
+ * @fileOverview Institutional Admin Layout v172.0.
+ * RESTORED: Scaled logo back to h-16 for a balanced sidebar view.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -91,10 +91,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex flex-col h-full bg-[#0F172A] pointer-events-auto select-none">
        <div className="flex-1 custom-scrollbar overflow-y-auto overflow-x-hidden pb-10">
           
-          {/* SIDEBAR LOGO: Increased to h-40 for massive visibility */}
-          <div className="px-4 pt-0 pb-2 flex justify-center shrink-0">
-             <div className="h-40 flex items-start justify-center transition-all duration-500">
-               <Logo href="/admin" imgClassName="h-40" />
+          <div className="px-4 pt-4 pb-2 flex justify-center shrink-0">
+             <div className="h-20 flex items-center justify-center transition-all duration-500">
+               <Logo href="/admin" imgClassName="h-16" />
              </div>
           </div>
 
@@ -174,7 +173,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               
               <div className="flex items-center gap-4">
                  <div className="bg-[#0B1528] rounded-xl px-4 h-16 flex items-center justify-center overflow-hidden shadow-sm">
-                    <Logo variant="dark" href="/admin" imgClassName="h-16" />
+                    <Logo variant="dark" href="/admin" imgClassName="h-12" />
                  </div>
                  
                  <div className="h-10 w-[1.5px] bg-slate-200 mx-1 md:block" />
