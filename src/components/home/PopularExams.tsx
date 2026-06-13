@@ -26,17 +26,18 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Institutional Popular Exams Hub v30.0 (Stability Hardened).
- * PERFORMANCE: Hoisted all helper components and logic to resolve 'call of undefined' runtime errors.
+ * @fileOverview Institutional Popular Exams Hub v32.0.
+ * STABILITY: Hoisted all helper logic to the top to resolve runtime ReferenceErrors.
+ * FIXED: Ensured helper components are defined before the main component initialization.
  */
 
 function PrepNode({ label, icon, href }: { label: string, icon: React.ReactNode, href: string }) {
    return (
-      <Link href={href} className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg hover:bg-primary/5 transition-all group/node">
+      <Link href={href} className="flex items-center gap-2 px-3 py-2.5 bg-slate-50 rounded-xl hover:bg-primary/5 transition-all group/node border border-slate-100/50">
          <span className="text-slate-300 group-hover/node:text-primary shrink-0">
-            {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: "h-3 w-3" }) : icon}
+            {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: "h-3.5 w-3.5" }) : icon}
          </span>
-         <span className="text-[8px] font-black text-slate-500 uppercase tracking-tighter truncate group-hover/node:text-[#0F172A]">{label}</span>
+         <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter truncate group-hover/node:text-[#0F172A]">{label}</span>
       </Link>
    )
 }
@@ -68,6 +69,7 @@ export default function PopularExams() {
 
   const filteredBoards = useMemo(() => {
     if (!boards || !mounted) return [];
+    // Target high-impact Punjab recruitment boards
     const targetAbbrevs = ['PSSSB', 'POLICE', 'PPSC', 'PSPCL', 'PSTET', 'CTET', 'ETT', 'MASTER CADRE'];
     return boards.filter((b: any) => targetAbbrevs.includes(b.abbreviation?.toUpperCase()));
   }, [boards, mounted]);
@@ -81,25 +83,25 @@ export default function PopularExams() {
   }
 
   return (
-    <section className="py-12 md:py-24 bg-slate-50/50">
+    <section className="py-12 md:py-24 bg-slate-50/50 border-y border-slate-100/50">
       <div className="container mx-auto px-4 max-w-7xl">
-         <div className="text-left mb-12 md:mb-16 space-y-4">
+         <div className="text-left mb-12 md:mb-20 space-y-4">
             <div className="flex items-center gap-4">
-               <div className="h-10 w-10 bg-orange-50 rounded-xl flex items-center justify-center text-primary shadow-inner">
-                  <Star className="h-5 w-5 fill-current" />
+               <div className="h-10 w-10 md:h-12 md:w-12 bg-orange-50 rounded-2xl flex items-center justify-center text-primary shadow-inner">
+                  <Star className="h-5 w-5 md:h-6 md:w-6 fill-current" />
                </div>
                <h2 className="text-2xl md:text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-none">
                   Popular Hubs
                </h2>
             </div>
-            <p className="text-slate-500 font-medium text-sm md:text-lg max-w-2xl">
+            <p className="text-slate-500 font-medium text-sm md:text-xl max-w-2xl">
                Browse official recruitment hubs and select your target vertical to start high-fidelity mock practice.
             </p>
          </div>
 
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
             {loading ? (
-               Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[3.5rem]" />)
+               Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[400px] w-full rounded-[3.5rem]" />)
             ) : filteredBoards.length > 0 ? filteredBoards.map((board, idx) => (
               <motion.div 
                  key={board.id}
@@ -108,41 +110,41 @@ export default function PopularExams() {
                  transition={{ delay: idx * 0.05 }}
                  viewport={{ once: true }}
               >
-                 <Card className="border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100 p-8 text-left">
-                    <div className="flex justify-between items-start mb-8">
-                       <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-300 group-hover:text-primary transition-all duration-500 shrink-0 shadow-inner relative overflow-hidden">
+                 <Card className="border-none shadow-xl hover:shadow-5xl hover:translate-y-[-8px] transition-all duration-700 rounded-[3rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100 p-8 md:p-10 text-left">
+                    <div className="flex justify-between items-start mb-10">
+                       <div className="h-16 w-16 md:h-20 md:w-20 rounded-[1.8rem] bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-300 group-hover:text-primary transition-all duration-500 shrink-0 shadow-inner relative overflow-hidden">
                           {board.iconUrl ? (
                              <img src={board.iconUrl} className="h-full w-full object-contain p-4" alt="Hub Logo" referrerPolicy="no-referrer" />
                           ) : getBoardIcon(board.id, board.abbreviation)}
                        </div>
-                       <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-slate-100 text-slate-400">OFFICIAL HUB</Badge>
+                       <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-slate-100 text-slate-400 px-3 py-1 rounded-lg">OFFICIAL HUB</Badge>
                     </div>
                     
-                    <div className="space-y-2 flex-1">
-                       <h3 className="text-2xl font-black text-[#0F172A] uppercase tracking-tight leading-none group-hover:text-primary transition-colors">{board.abbreviation} Hub</h3>
-                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate">{board.name}</p>
+                    <div className="space-y-3 flex-1">
+                       <h3 className="text-2xl md:text-3xl font-black text-[#0F172A] uppercase tracking-tight leading-none group-hover:text-primary transition-colors">{board.abbreviation} Hub</h3>
+                       <p className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest truncate">{board.name}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 mt-8">
+                    <div className="grid grid-cols-2 gap-2.5 mt-10">
                        <PrepNode label="Full Mocks" icon={<Zap />} href={`/exams/hub/${board.id}`} />
                        <PrepNode label="Subject" icon={<BookOpen />} href={`/exams/hub/${board.id}`} />
                        <PrepNode label="PYQs" icon={<FileText />} href={`/exams/hub/${board.id}`} />
                        <PrepNode label="Updates" icon={<Newspaper />} href={`/current-affairs`} />
                     </div>
 
-                    <div className="mt-8 pt-6 border-t border-slate-50">
-                       <Button asChild className="w-full h-12 rounded-xl bg-slate-900 text-white hover:bg-primary transition-all font-black uppercase text-[9px] tracking-widest gap-2 border-none">
+                    <div className="mt-10 pt-8 border-t border-slate-50">
+                       <Button asChild className="w-full h-14 md:h-16 rounded-2xl bg-slate-900 text-white hover:bg-primary transition-all font-black uppercase text-[10px] tracking-[0.2em] gap-3 border-none shadow-xl">
                           <Link href={`/exams/hub/${board.id}`}>
-                             Explore Hub <ChevronRight className="h-3 w-3" />
+                             Explore Hub <ChevronRight className="h-4 w-4" />
                           </Link>
                        </Button>
                     </div>
                  </Card>
               </motion.div>
             )) : (
-              <div className="col-span-full py-20 text-center opacity-20 flex flex-col items-center">
-                 <Info className="h-12 w-12 mb-4" />
-                 <p className="font-black uppercase tracking-widest text-xs">No Hub Found in Registry</p>
+              <div className="col-span-full py-24 text-center opacity-20 flex flex-col items-center">
+                 <Info className="h-16 w-16 mb-6" />
+                 <p className="font-headline font-black text-2xl uppercase tracking-widest">No Hub Found in Registry</p>
               </div>
             )}
          </div>
@@ -150,3 +152,4 @@ export default function PopularExams() {
     </section>
   );
 }
+
