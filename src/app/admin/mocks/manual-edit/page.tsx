@@ -230,7 +230,7 @@ function ManualEditContent() {
                                     <div className="h-7 w-7 rounded-full bg-[#0F172A] text-white flex items-center justify-center font-black text-xs">{opt}</div>
                                     <Label className="text-[10px] font-black uppercase text-slate-500">English Text</Label>
                                  </div>
-                                 <button onClick={() => setEditingQuestion({...editingQuestion, correctAnswer: opt})} className={cn("h-6 w-6 rounded-full border-2 transition-all flex items-center justify-center", editingQuestion?.correctAnswer === opt ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-200 hover:border-primary")}>
+                                 <button onClick={() => setEditingQuestion({...editingQuestion, correctAnswer: opt})} className={cn("h-6 w-6 rounded-full border-2 transition-all flex items-center justify-center", editingQuestion?.correctAnswer === opt ? "bg-emerald-50 border-emerald-500 text-white" : "border-slate-200 hover:border-primary")}>
                                     {editingQuestion?.correctAnswer === opt && <CheckCircle2 className="h-4 w-4" />}
                                  </button>
                               </div>
@@ -261,7 +261,7 @@ function ManualEditContent() {
                            <Label className="text-[10px] font-black uppercase text-slate-500">{activeLangTab === 'punjabi' ? 'Punjabi Logic' : 'Hindi Logic'}</Label>
                            <Textarea 
                               value={activeLangTab === 'punjabi' ? (editingQuestion?.punjabiExplanation || "") : (editingQuestion?.hindiExplanation || "")} 
-                              onChange={e => setEditingQuestion({...editingQuestion, [activeLangTab === 'punjabi' ? `punjabiExplanation' : `hindiExplanation`]: e.target.value})} 
+                              onChange={e => setEditingQuestion({...editingQuestion, [activeLangTab === 'punjabi' ? 'punjabiExplanation' : 'hindiExplanation']: e.target.value})} 
                               className="h-32 rounded-2xl bg-slate-900 text-blue-400 font-medium p-6 shadow-2xl" 
                            />
                         </div>
