@@ -20,8 +20,8 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Final "Same to Same" Master Hero v70.0.
- * MATCHED: Exact alignment, typography (Title Case), and colors.
+ * @fileOverview Final "Same to Same" Master Hero v72.0.
+ * MATCHED: Exact alignment, horizontal stat cards, and button icons.
  * MOBILE: Strictly set to 230px height.
  * FEATURES: Punjab map watermark, Blue cinematic shading, Glassy integrated cards.
  */
@@ -85,7 +85,7 @@ export default function Hero() {
       <div className="container mx-auto px-4 md:px-12 max-w-7xl relative z-20">
          <div className="max-w-full md:max-w-4xl space-y-3 md:space-y-10 text-left">
             
-            {/* PIXEL-PERFECT HEADINGS - Title Case matches reference exactly */}
+            {/* PIXEL-PERFECT HEADINGS - Title Case */}
             <motion.div
                initial={{ opacity: 0, y: 15 }}
                animate={{ opacity: 1, y: 0 }}
@@ -106,7 +106,7 @@ export default function Hero() {
                Punjab Government Exams di Complete Preparation ik hi Platform te.
             </motion.p>
 
-            {/* TACTICAL BUTTONS (MOBILE SCALED) */}
+            {/* TACTICAL BUTTONS (MATCHED TO SCREENSHOT) */}
             <motion.div
                initial={{ opacity: 0, y: 10 }}
                animate={{ opacity: 1, y: 0 }}
@@ -115,19 +115,19 @@ export default function Hero() {
             >
                <Button asChild className="h-8 md:h-16 px-4 md:px-14 bg-[#F97316] hover:bg-orange-600 text-white font-black uppercase text-[8px] md:text-[14px] tracking-[0.1em] md:tracking-[0.2em] rounded-lg md:rounded-2xl shadow-3xl transition-all active:scale-95 border-none">
                   <Link href="/mocks" className="flex items-center">
-                     FREE MOCK <ArrowRight className="h-2.5 w-2.5 md:h-5 md:w-5 ml-1" />
+                     Start Free Mock <ArrowRight className="h-2.5 w-2.5 md:h-5 md:w-5 ml-2" />
                   </Link>
                </Button>
-               <Button asChild variant="outline" className="h-8 md:h-16 px-4 md:px-14 border-white/30 bg-white/5 hover:bg-white/10 text-white font-black uppercase text-[8px] md:text-[14px] tracking-[0.1em] md:tracking-[0.2em] rounded-lg md:rounded-2xl transition-all backdrop-blur-xl border-[1.5px] md:border-[2px]">
+               <Button asChild variant="outline" className="h-8 md:h-16 px-4 md:px-14 border-white/30 bg-white/0 hover:bg-white/10 text-white font-black uppercase text-[8px] md:text-[14px] tracking-[0.1em] md:tracking-[0.2em] rounded-lg md:rounded-2xl transition-all backdrop-blur-xl border-[1.5px] md:border-[2px]">
                   <Link href="/exams">
-                     EXAM HUB
+                     Explore Exams
                   </Link>
                </Button>
             </motion.div>
          </div>
       </div>
 
-      {/* 3. INTEGRATED BOTTOM STATS HUB (GLASSY OVERLAY) */}
+      {/* 3. INTEGRATED BOTTOM STATS HUB (GLASSY OVERLAY - HORIZONTAL) */}
       <div className="absolute bottom-4 md:bottom-12 left-0 right-0 z-30">
          <div className="container mx-auto px-4 md:px-12 max-w-7xl">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6">
@@ -149,7 +149,7 @@ export default function Hero() {
                <HeroStatCard 
                  icon={<BarChart3 className="text-emerald-400 h-3.5 w-3.5 md:h-8 md:w-8" />} 
                  val={liveStats.analytics} 
-                 label="Analytics Hub" 
+                 label="Analytics" 
                />
             </div>
          </div>
@@ -160,13 +160,13 @@ export default function Hero() {
 
 function HeroStatCard({ icon, val, label }: { icon: React.ReactNode, val: string, label: string }) {
   return (
-    <Card className="bg-black/30 backdrop-blur-3xl border border-white/10 p-2.5 md:p-10 rounded-xl md:rounded-[3rem] text-left flex items-center gap-2 md:gap-8 group hover:bg-black/50 transition-all duration-500 shadow-5xl overflow-hidden">
+    <Card className="bg-black/30 backdrop-blur-3xl border border-white/10 p-2.5 md:p-8 rounded-xl md:rounded-[2.5rem] text-left flex items-center gap-2 md:gap-6 group hover:bg-black/50 transition-all duration-500 shadow-5xl overflow-hidden">
        <div className="shrink-0 transition-transform group-hover:scale-110">
           {icon}
        </div>
        <div className="min-w-0 flex flex-col justify-center">
-          <p className="text-xs md:text-[48px] font-black text-white leading-none tracking-tight tabular-nums">{val}</p>
-          <p className="text-[6px] md:text-[11px] font-black text-slate-500 tracking-[0.1em] mt-1 md:mt-4 truncate uppercase leading-none">{label}</p>
+          <p className="text-xs md:text-[36px] font-black text-white leading-none tracking-tight tabular-nums">{val}</p>
+          <p className="text-[6px] md:text-[11px] font-black text-slate-500 tracking-[0.1em] mt-1 md:mt-2 truncate uppercase leading-none">{label}</p>
        </div>
     </Card>
   )
