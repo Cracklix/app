@@ -1,9 +1,9 @@
-
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Optimized Institutional PWA Manifest v19.0.
- * FIXED: Updated icon source to high-quality transparent node to resolve mobile masking issues.
+ * @fileOverview Optimized Institutional PWA Manifest v20.0 (Hardened).
+ * UPDATED: Fixed icon shrinking and masking issues by setting purpose to "any maskable".
+ * UPDATED: Synchronized background and theme colors with brand identity.
  */
 export default function manifest(): MetadataRoute.Manifest {
   const brandIcon = 'https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png';
@@ -23,13 +23,13 @@ export default function manifest(): MetadataRoute.Manifest {
         src: brandIcon,
         sizes: '192x192',
         type: 'image/png',
-        purpose: 'maskable',
+        purpose: 'any maskable',
       },
       {
         src: brandIcon,
         sizes: '512x512',
         type: 'image/png',
-        purpose: 'any',
+        purpose: 'any maskable',
       },
     ],
     shortcuts: [

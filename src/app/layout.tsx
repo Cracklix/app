@@ -56,8 +56,9 @@ export const viewport: Viewport = {
 };
 
 /**
- * @fileOverview Master Layout v20.0 (Hardened).
+ * @fileOverview Master Layout v21.0 (Hardened).
  * SAFE-RENDER: Added FirebaseClientProvider and PWAManager at top-level.
+ * UPDATED: Fixed theme color synchronization for PWA branding.
  */
 export default function RootLayout({
   children,
