@@ -24,6 +24,15 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 24 95% 53%;
     --radius: 0.75rem;
+
+    /* Global Geometry Node */
+    --header-height: 80px;
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --header-height: 145px;
+    }
   }
 }
 

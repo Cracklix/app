@@ -39,8 +39,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Institutional Admin Layout v176.0.
- * UPDATED: Set logo to h-40 and removed all unnecessary vertical padding for a tight fit.
+ * @fileOverview Hardened Institutional Admin Layout v177.0.
+ * UPDATED: Synchronized header height with the global --header-height variable (145px desktop).
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -163,7 +163,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </Sidebar>
         
         <SidebarInset className="flex flex-col bg-white min-w-0 max-w-full relative">
-          <header className="h-20 border-b border-slate-100 flex items-center px-4 md:px-8 justify-between bg-white sticky top-0 z-10 shrink-0">
+          <header className="h-[var(--header-height)] border-b border-slate-100 flex items-center px-4 md:px-8 justify-between bg-white sticky top-0 z-10 shrink-0">
             <div className="flex items-center gap-4 overflow-hidden">
               <SidebarTrigger className="text-[#0F172A] hover:bg-slate-50 cursor-pointer" />
               
