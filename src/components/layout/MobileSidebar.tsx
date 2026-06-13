@@ -28,9 +28,9 @@ import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Hardened High-Density Mobile Sidebar v67.0.
- * UPDATED: Zero vertical spacing between logo, labels and items.
- * UPDATED: Added PWA Install trigger to the menu if available.
+ * @fileOverview Hardened High-Density Mobile Sidebar v68.0.
+ * UPDATED: Reduced logo size and moved profile section higher.
+ * UPDATED: Fixed badge visibility with high-contrast colors.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -80,10 +80,12 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex flex-col h-full bg-[#0B1528] text-white overflow-y-auto no-scrollbar font-body select-none text-left">
       
-      <div className="px-6 flex justify-start shrink-0 overflow-visible mt-0 mb-[-15px] -mt-2">
-         <Logo imgClassName="h-56 origin-left" />
+      {/* 1. LOGO NODE - REDUCED SIZE & TIGHTER MARGIN */}
+      <div className="px-6 flex justify-start shrink-0 overflow-visible mt-0 mb-[-25px] -mt-4">
+         <Logo imgClassName="h-44 origin-left" />
       </div>
 
+      {/* 2. USER PROFILE HUB - MOVED HIGHER */}
       <div className="px-6 flex flex-col gap-0 relative overflow-hidden shrink-0 mt-0 pt-0">
         <Shield className="absolute top-0 right-4 h-40 w-40 text-white/[0.03] pointer-events-none" />
         <div className="relative z-10 flex items-center gap-3 py-1">
@@ -97,14 +99,17 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
            </div>
            <div className="space-y-0 text-left min-w-0">
               <h2 className="text-[13px] font-black text-white leading-none uppercase tracking-tight truncate">{profile?.name || "ASPIRANT"}</h2>
-              <div className="flex items-center gap-2 mt-0.5">
-                 <Badge className={cn("border-none px-2 py-0.5 rounded text-[6px] font-black uppercase tracking-widest", profile?.pass?.active ? "bg-emerald-50 text-white" : "bg-white/10 text-slate-400")}>
+              <div className="flex items-center gap-2 mt-1">
+                 <Badge className={cn(
+                    "border-none px-2 py-0.5 rounded text-[7px] font-black uppercase tracking-widest shadow-sm", 
+                    profile?.pass?.active ? "bg-[#10B981] text-white" : "bg-white/10 text-slate-400"
+                 )}>
                     {profile?.pass?.active ? (profile.pass.plan || 'ELITE') : 'FREE NODE'}
                  </Badge>
               </div>
            </div>
         </div>
-        <button onClick={() => { router.push('/profile'); onClose(); }} className="w-full h-8 rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-between px-3 group active:scale-95 transition-all relative z-10 mb-2">
+        <button onClick={() => { router.push('/profile'); onClose(); }} className="w-full h-8 rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-between px-3 group active:scale-95 transition-all relative z-10 mb-2 mt-1">
            <div className="flex items-center gap-2"><User className="h-3 w-3 text-[#F97316]" /><span className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-200">PROFILE SETTINGS</span></div>
            <ChevronRight className="h-3 w-3 text-slate-600" />
         </button>
