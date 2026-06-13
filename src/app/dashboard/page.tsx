@@ -37,8 +37,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import ShareButton from "@/components/navigation/ShareButton"
 
 /**
- * @fileOverview Optimized Student Dashboard v18.1.
- * UPDATED: Granular time formatting to prevent "0m" display for short test sessions.
+ * @fileOverview Optimized Student Dashboard v19.0.
+ * UPDATED: Enhanced analytics with live Firestore result processing.
  */
 
 export default function StudentDashboard() {
@@ -53,7 +53,7 @@ export default function StudentDashboard() {
   // STABILIZED QUERY
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
-    return query(collection(db, "results"), where("userId", "==", user.uid), limit(15))
+    return query(collection(db, "results"), where("userId", "==", user.uid), limit(20))
   }, [db, user])
 
   const { data: rawResults, loading: resultsLoading } = useCollection<any>(resultsQuery)
@@ -64,13 +64,14 @@ export default function StudentDashboard() {
   }, [rawResults])
 
   const stats = useMemo(() => {
-    if (!results || results.length === 0) return { total: 0, avgAccuracy: 0, streak: 0, readiness: 0, hours: "0h" }
+    if (!results || results.length === 0) return { total: 0, avgAccuracy: 0, streak: 0, readiness: 0, hours: "0h", correct: 0 }
     
     const total = results.length
-    const avgAcc = Math.round(results.reduce((acc: number, r: any) => acc + (r.accuracy || 0), 0) / total)
-    const totalSeconds = results.reduce((acc: number, r: any) => acc + (r.timeTaken || 0), 0)
+    const correct = results.reduce((acc: number, r: any) => acc + (r.correctCount || r.score || 0), 0)
+    const attempted = results.reduce((acc: number, r: any) => acc + (r.attemptedCount || r.totalQuestions || 0), 0)
+    const avgAcc = attempted > 0 ? Math.round((correct / attempted) * 100) : 0
     
-    // GRANULAR TIME FORMATTING
+    const totalSeconds = results.reduce((acc: number, r: any) => acc + (r.timeTaken || 0), 0)
     let timeFormatted = "0s";
     if (totalSeconds >= 3600) {
       timeFormatted = `${(totalSeconds / 3600).toFixed(1)}h`;
@@ -84,7 +85,7 @@ export default function StudentDashboard() {
     const streak = uniqueDays.size
     const readiness = Math.min(100, Math.round((avgAcc * 0.7) + (Math.min(total, 30) * 1)))
 
-    return { total, avgAccuracy: avgAcc, streak, readiness, hours: timeFormatted }
+    return { total, avgAccuracy: avgAcc, streak, readiness, hours: timeFormatted, correct }
   }, [results])
 
   if (loading) return (
@@ -162,7 +163,7 @@ export default function StudentDashboard() {
                           Array.from({ length: 3 }).map((_, i) => <div key={i} className="p-8 w-full bg-slate-50 animate-pulse" />)
                        ) : results && results.length > 0 ? (
                           results.slice(0, 5).map((r: any) => (
-                             <Link key={r.id} href={`/results/${r.mockId}`} className="p-8 md:p-10 flex items-center justify-between hover:bg-slate-50/50 transition-all group border-l-[4px] border-transparent hover:border-primary">
+                             <Link key={r.id} href={`/results/${r.id || r.mockId}`} className="p-8 md:p-10 flex items-center justify-between hover:bg-slate-50/50 transition-all group border-l-[4px] border-transparent hover:border-primary">
                                 <div className="flex items-center gap-6 md:gap-10 min-w-0">
                                    <div className="h-14 w-14 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
                                       <Zap className="h-6 w-6 text-primary" />

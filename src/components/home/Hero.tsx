@@ -37,29 +37,48 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useDoc, useFirestore } from "@/firebase";
+import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Institutional Punjab Government Exam Hero v20.0.
- * RECONSTRUCTED: Clean-slate implementation with premium SaaS design.
+ * @fileOverview Institutional Punjab Government Exam Hero v22.0.
+ * UPDATED: Optimized stats display and institutional checklist.
  */
 
 export default function Hero() {
   const router = useRouter();
+  const db = useFirestore();
   const heroImage = "https://punjabpolice.gov.in/media/images/pp10.original.jpg";
+
+  // LIVE STATS LISTENER
+  const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
+  const { data: stats } = useDoc<any>(statsRef);
+
+  const displayStats = useMemo(() => {
+    const format = (num: number) => {
+      if (!num) return "0";
+      return num >= 1000 ? `${(num / 1000).toFixed(1)}k+` : num.toString();
+    };
+
+    return {
+      questions: format(stats?.totalQuestions || 50000),
+      mocks: format(stats?.totalMocks || 500),
+      aspirants: format(stats?.totalUsers || 15000),
+      accuracy: `${stats?.averageAccuracy || 94}%`
+    };
+  }, [stats]);
 
   return (
     <div className="flex flex-col w-full bg-white font-body">
       
       {/* 1. SELECTION HUB (MAIN HERO) */}
       <section className="relative min-h-[90vh] flex items-center pt-12 pb-20 md:pt-0 md:pb-0 bg-[#0B1528] overflow-hidden text-left">
-        {/* Background Visual Nodes */}
         <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/10 blur-[120px] rounded-full pointer-events-none opacity-50" />
         <div className="absolute bottom-0 left-0 w-1/4 h-full bg-blue-500/10 blur-[120px] rounded-full pointer-events-none opacity-50" />
         
         <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center min-h-[80vh]">
             
-            {/* LEFT COLUMN: BRANDING & CTAs */}
             <div className="lg:col-span-7 space-y-8 md:space-y-10">
               <motion.div 
                 initial={{ opacity: 0, y: 30 }}
@@ -78,10 +97,9 @@ export default function Hero() {
                 </h1>
 
                 <p className="text-slate-400 text-base md:text-xl font-medium max-w-2xl leading-relaxed antialiased border-l-4 border-primary/30 pl-6">
-                  Prepare for PSSSB, Punjab Police, PPSC, PSPCL, PSTET, CTET, ETT, Master Cadre, High Court and other Punjab Government Exams through real exam-level mock tests, PYQs, current affairs and detailed solutions.
+                  Prepare for PSSSB, Punjab Police, PPSC, PSPCL, PSTET, CTET, ETT, Master Cadre, High Court and other Punjab Government recruitment exams with exam-level mock tests, PYQs, current affairs and detailed solutions.
                 </p>
 
-                {/* TRUST CHIPS */}
                 <div className="flex flex-wrap gap-x-8 gap-y-4 pt-2">
                   <TrustChip text="Full-Length Mocks" />
                   <TrustChip text="PYQs" />
@@ -92,7 +110,6 @@ export default function Hero() {
                 </div>
               </motion.div>
 
-              {/* ACTION BUTTONS */}
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -113,14 +130,13 @@ export default function Hero() {
                 </Button>
               </motion.div>
 
-              {/* EXAM REGISTRY CHIPS */}
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
                 className="pt-10 border-t border-white/5 space-y-5"
               >
-                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Recruitment Registry</p>
+                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Official Recruitment Hubs</p>
                  <div className="flex flex-wrap gap-3">
                     <ExamChip icon={<Landmark className="h-3.5 w-3.5" />} label="PSSSB" />
                     <ExamChip icon={<ShieldCheck className="h-3.5 w-3.5" />} label="Punjab Police" />
@@ -134,7 +150,6 @@ export default function Hero() {
               </motion.div>
             </div>
 
-            {/* RIGHT COLUMN: VISUAL DASHBOARD */}
             <div className="lg:col-span-5 relative hidden lg:block h-full min-h-[600px]">
                <motion.div 
                  initial={{ opacity: 0, scale: 0.95 }}
@@ -151,7 +166,6 @@ export default function Hero() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0B1528] via-[#0B1528]/40 to-transparent" />
                   
-                  {/* FLOATING PERFORMANCE CARDS */}
                   <motion.div 
                     animate={{ y: [0, -15, 0] }} 
                     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -202,94 +216,17 @@ export default function Hero() {
         </div>
       </section>
 
-      {/* 2. PLATFORM STATS STRIP */}
+      {/* 2. PLATFORM STATS STRIP (LIVE) */}
       <section className="py-12 md:py-20 bg-white border-b border-slate-100 relative z-20 -mt-10 md:-mt-16 container mx-auto max-w-6xl px-4">
          <div className="bg-white shadow-5xl rounded-[3rem] p-8 md:p-14 border border-slate-50">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-12 text-center">
-               <PlatformStat val="50,000+" label="Questions" icon={<Layers className="text-primary h-6 w-6" />} />
-               <PlatformStat val="500+" label="Mock Tests" icon={<Zap className="text-blue-500 h-6 w-6" />} />
-               <PlatformStat val="15,000+" label="Aspirants" icon={<Users className="text-emerald-500 h-6 w-6" />} />
-               <PlatformStat val="94%" label="Accuracy" icon={<Target className="text-rose-500 h-6 w-6" />} />
+               <PlatformStat val={displayStats.questions} label="Questions" icon={<Layers className="text-primary h-6 w-6" />} />
+               <PlatformStat val={displayStats.mocks} label="Mock Tests" icon={<Zap className="text-blue-500 h-6 w-6" />} />
+               <PlatformStat val={displayStats.aspirants} label="Aspirants" icon={<Users className="text-emerald-500 h-6 w-6" />} />
+               <PlatformStat val={displayStats.accuracy} label="Accuracy" icon={<Target className="text-rose-500 h-6 w-6" />} />
             </div>
          </div>
       </section>
-
-      {/* 3. WHY CHOOSE CRACKLIX */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4 max-w-7xl text-left">
-           <div className="flex items-center gap-4 mb-16">
-              <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-inner">
-                 <Sparkles className="h-5 w-5" />
-              </div>
-              <h2 className="text-xl md:text-3xl font-headline font-black text-[#0F172A] uppercase tracking-tight">Why Choose Cracklix?</h2>
-           </div>
-           
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              <FeatureCard icon={<Target className="text-orange-500" />} title="Real Exam Pattern" desc="Mocks designed exactly as per the latest cabinet notifications." bgColor="bg-orange-50" />
-              <FeatureCard icon={<Landmark className="text-blue-500" />} title="Punjab Focused Content" desc="Dedicated coverage for state GK, history and Gurmukhi nodes." bgColor="bg-blue-50" />
-              <FeatureCard icon={<Newspaper className="text-emerald-500" />} title="Daily Current Affairs" desc="Verified bilingual updates matching official exam relevancy." bgColor="bg-emerald-50" />
-              <FeatureCard icon={<FileText className="text-amber-500" />} title="Previous Year Papers" desc="Direct access to authentic recruitment papers from PSSSB & PPSC." bgColor="bg-amber-50" />
-              <FeatureCard icon={<BarChart3 className="text-rose-500" />} title="Detailed Analytics" desc="Pinpoint your weak nodes with step-by-step logic solutions." bgColor="bg-rose-50" />
-              <FeatureCard icon={<Award className="text-indigo-500" />} title="Rank & Performance" desc="See your state-level merit rank among thousands of aspirants." bgColor="bg-indigo-50" />
-           </div>
-        </div>
-      </section>
-
-      {/* 4. FREE VS PREMIUM COMPARISON */}
-      <section className="py-24 md:py-32 bg-slate-50/50 border-t border-slate-100">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] uppercase">Choose Your Prep Path</h2>
-            <p className="text-slate-500 font-medium">Free basic access vs institutional grade preparation.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* FREE PATH */}
-            <Card className="border-none shadow-xl rounded-[3rem] bg-white p-8 md:p-12 border border-slate-100 flex flex-col">
-              <div className="space-y-6 flex-1">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-black text-[#0F172A] uppercase">FREE</h3>
-                  <Badge variant="outline" className="border-slate-200 text-slate-400 font-black uppercase text-[10px]">Basic Access</Badge>
-                </div>
-                <ul className="space-y-4 text-left">
-                  <ComparisonItem text="Limited Practice Mocks" active={true} />
-                  <ComparisonItem text="Basic Performance Results" active={true} />
-                  <ComparisonItem text="Subject-Wise Mastery" active={false} />
-                  <ComparisonItem text="Complete PYQ Hub" active={false} />
-                  <ComparisonItem text="AI Rationale Tutors" active={false} />
-                </ul>
-              </div>
-              <Button asChild variant="outline" className="w-full mt-10 h-16 rounded-2xl font-black uppercase text-[10px] tracking-widest border-slate-200">
-                <Link href="/mocks">Try Free Now</Link>
-              </Button>
-            </Card>
-
-            {/* PREMIUM PATH */}
-            <Card className="border-none shadow-4xl rounded-[3rem] bg-[#0F172A] text-white p-8 md:p-12 relative overflow-hidden flex flex-col scale-105 z-10 border-4 border-primary/20">
-              <div className="absolute top-0 right-0 p-8 opacity-5"><Zap className="h-40 w-40" /></div>
-              <div className="space-y-6 flex-1 relative z-10">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-black text-primary uppercase">PREMIUM</h3>
-                  <Badge className="bg-primary text-white border-none font-black uppercase text-[10px]">Elite Hub</Badge>
-                </div>
-                <ul className="space-y-4 text-left">
-                  <ComparisonItem text="Full Mock Test Series" active={true} premium />
-                  <ComparisonItem text="All Subject-Wise Tests" active={true} premium />
-                  <ComparisonItem text="All Sectional & Chapter Tests" active={true} premium />
-                  <ComparisonItem text="Official PYQ Repository" active={true} premium />
-                  <ComparisonItem text="Daily Current Affairs Hub" active={true} premium />
-                  <ComparisonItem text="AI Step-by-Step Solutions" active={true} premium />
-                  <ComparisonItem text="All Punjab Rank Tracking" active={true} premium />
-                </ul>
-              </div>
-              <Button asChild className="w-full mt-10 h-16 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-3xl shadow-primary/20 border-none transition-all active:scale-95">
-                <Link href="/pass">Unlock Premium Pass</Link>
-              </Button>
-            </Card>
-          </div>
-        </div>
-      </section>
-
     </div>
   );
 }
@@ -315,7 +252,7 @@ function ExamChip({ icon, label }: { icon: React.ReactNode, label: string }) {
 
 function GlassMetric({ icon, label, val }: any) {
    return (
-      <div className="bg-white/10 backdrop-blur-2xl border border-white/20 p-6 md:p-8 rounded-[2.5rem] shadow-5xl flex items-center gap-5 min-w-[200px] hover:bg-white/15 transition-all cursor-default">
+      <div className="bg-white/10 backdrop-blur-2xl border border-white/20 p-6 md:p-8 rounded-[2.5rem] shadow-5xl flex items-center gap-5 min-w-[200px] hover:bg-white/15 transition-all cursor-default text-left">
          <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl bg-white/10 flex items-center justify-center shadow-inner border border-white/10">
             {React.cloneElement(icon, { className: "h-6 w-6 md:h-7 md:w-7" })}
          </div>
@@ -339,37 +276,4 @@ function PlatformStat({ val, label, icon }: any) {
          </div>
       </div>
    );
-}
-
-function FeatureCard({ icon, title, desc, bgColor }: any) {
-   return (
-      <Card className="border-none shadow-xl rounded-[2.5rem] p-8 md:p-10 group hover:translate-y-[-4px] transition-all bg-slate-50/50 border border-slate-100 h-full flex flex-col text-left">
-         <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-inner group-hover:scale-110 transition-transform", bgColor)}>
-           {React.cloneElement(icon, { className: "h-7 w-7" })}
-         </div>
-         <h3 className="text-xl font-black mb-2 uppercase text-[#0F172A] group-hover:text-primary transition-colors">
-           {title}
-         </h3>
-         <p className="text-slate-500 text-sm font-medium leading-relaxed">
-           {desc}
-         </p>
-      </Card>
-   );
-}
-
-function ComparisonItem({ text, active, premium }: { text: string, active: boolean, premium?: boolean }) {
-  return (
-    <li className={cn(
-      "flex items-center gap-4 text-xs font-bold uppercase tracking-tight",
-      active ? (premium ? "text-slate-300" : "text-slate-600") : "text-slate-500 line-through opacity-40"
-    )}>
-       <div className={cn(
-         "h-5 w-5 rounded-full flex items-center justify-center shrink-0",
-         active ? (premium ? "bg-primary text-white" : "bg-emerald-50 text-emerald-500") : "bg-slate-100 text-slate-300"
-       )}>
-          {active ? <Check className="h-3 w-3 stroke-[3px]" /> : <X className="h-3 w-3" />}
-       </div>
-       {text}
-    </li>
-  );
 }
