@@ -19,8 +19,8 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Popular Hubs v46.0.
- * FIXED: Hoisted logic to resolve runtime factory errors and matched screenshots.
+ * @fileOverview High-Fidelity Popular Hubs v47.0.
+ * FIXED: TypeError call of undefined by hoisting all helper logic.
  */
 
 function getBoardFallbackIcon(id: string, abbrev: string) {

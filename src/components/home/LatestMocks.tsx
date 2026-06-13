@@ -18,9 +18,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Official Latest Mock Hub v35.0 (Hardened).
- * FIXED: Ensured all Card UI components are imported correctly.
- * STYLE: High-density vertical cards with action-oriented buttons.
+ * @fileOverview Official Latest Mock Hub v36.0 (Hardened).
+ * FIXED: ReferenceError: Card is not defined by adding explicit imports.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];

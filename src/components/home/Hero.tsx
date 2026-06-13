@@ -22,10 +22,9 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Final Screenshot-Matched Hero v2.0.
- * MATCHED: "Prepare Smarter. Score Higher." headline and night-temple background.
- * MATCHED: 4-Column bottom stats bar with glassmorphism design.
- * FIXED: Typography character clipping and precise color mapping.
+ * @fileOverview Final Screenshot-Matched Hero v3.0.
+ * UPDATED: Decreased headline font size for professional balance.
+ * MATCHED: Full 1024x576 background image visibility.
  */
 
 export default function Hero() {
@@ -43,8 +42,8 @@ export default function Hero() {
 
   return (
     <section className="relative w-full bg-[#020817] overflow-hidden flex flex-col items-center">
-      {/* 1. FULL ASPECT BACKGROUND LAYER */}
-      <div className="w-full relative aspect-[1024/576] min-h-[600px] md:min-h-0">
+      {/* 1. FULL ASPECT BACKGROUND LAYER - No Cropping */}
+      <div className="w-full relative aspect-[1024/576] min-h-[400px] md:min-h-0">
         <img 
           src="https://i.ibb.co/LXgcLVVq/Gemini-Generated-Image-n1so6on1so6on1so.png" 
           alt="Golden Temple Night" 
@@ -56,7 +55,7 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-[#020817]/40 to-transparent z-10" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#020817] via-transparent to-transparent z-10" />
         
-        {/* PUNJAB MAP TEXTURE OVERLAY (OPTIONAL STYLING) */}
+        {/* PUNJAB MAP TEXTURE OVERLAY */}
         <div className="absolute top-0 left-0 w-1/2 h-full opacity-10 pointer-events-none z-10 overflow-hidden">
            <img 
               src="https://www.mapsofindia.com/maps/punjab/punjab-map.jpg" 
@@ -82,18 +81,18 @@ export default function Hero() {
                     </span>
                  </motion.div>
 
-                 {/* Precise Typography Node */}
+                 {/* Refined Typography Node (Smaller Size) */}
                  <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
                     className="space-y-4 md:space-y-6"
                  >
-                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-white leading-[0.95] tracking-tighter uppercase pr-10">
+                    <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white leading-[1] tracking-tighter uppercase pr-10">
                        Prepare Smarter.<br/>
-                       <span className="text-primary italic pr-14">Score Higher.</span>
+                       <span className="text-primary italic pr-10">Score Higher.</span>
                     </h1>
-                    <p className="text-sm md:text-2xl text-slate-200 font-medium max-w-xl leading-relaxed pr-6 drop-shadow-lg">
+                    <p className="text-sm md:text-xl text-slate-200 font-medium max-w-xl leading-relaxed pr-6 drop-shadow-lg">
                        Punjab Government Exams di Complete Preparation ik hi Platform te.
                     </p>
                  </motion.div>
@@ -121,7 +120,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* 3. BOTTOM STATS BAR HUB (SCREENSHOT MATCHED GLASSMORPHISM) */}
+      {/* 3. BOTTOM STATS BAR HUB (Glassmorphism) */}
       <div className="w-full bg-[#020817] pt-0 pb-12 md:pb-16 -mt-10 md:-mt-24 relative z-30">
          <div className="container mx-auto px-4 md:px-12 max-w-7xl">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
