@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -9,9 +10,10 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Final Screenshot-Matched Footer Hub v11.0.
- * MATCHED: Left-aligned brand info with "No. 1 Study Hub" tagline.
- * MATCHED: 3-column link grid with signature Telegram icon and Large Orange Phone.
+ * @fileOverview Final Screenshot-Matched Footer Hub v12.0.
+ * MATCHED: 4-column top row with Brand, Verticals, Resources, and Connect.
+ * MATCHED: Telegram icon box and reduced size Orange Phone Number.
+ * UPDATED: Decreased mobile number font size as per user request.
  */
 export default function Footer() {
   const db = useFirestore();
@@ -21,7 +23,7 @@ export default function Footer() {
   const content = {
     description: settings?.footerText || "Punjab's most advanced government exam portal.",
     phone: settings?.supportPhone || "+91 98881 88602",
-    address: settings?.address || "HQs: Shergarh, Bathinda, Punjab",
+    address: settings?.address || "Shergarh, Bathinda, Punjab",
     tg: settings?.telegramUrl || "https://t.me/cracklixapp"
   };
 
@@ -29,25 +31,23 @@ export default function Footer() {
     <footer className="bg-[#050B19] text-white pt-20 pb-12 border-t border-white/5 font-body text-left">
       <div className="container mx-auto px-6 max-w-7xl">
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16 mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16 mb-24">
           
           {/* 1. BRAND HUB (LEFT) */}
-          <div className="lg:col-span-5 space-y-8">
-            <div className="space-y-4">
-               <div className="h-12 flex items-center">
+          <div className="lg:col-span-4 space-y-8">
+            <div className="space-y-6">
+               <div className="h-10 flex items-center">
                   <Logo imgClassName="h-full" />
                </div>
-               <p className="text-primary font-black uppercase text-[10px] tracking-[0.4em] ml-1">Punjab's No. 1 Study Hub</p>
+               <p className="text-slate-400 text-lg font-medium max-w-xs leading-relaxed">
+                  {content.description}
+               </p>
             </div>
-            
-            <p className="text-slate-400 text-lg md:text-xl font-medium max-w-sm leading-relaxed">
-               {content.description}
-            </p>
 
             <div className="space-y-4">
                <div className="flex items-center gap-3 text-slate-500">
                   <MapPin className="h-4 w-4 text-primary" />
-                  <span className="text-[11px] font-black uppercase tracking-widest">{content.address}</span>
+                  <span className="text-[11px] font-black uppercase tracking-widest">HQs: {content.address}</span>
                </div>
                <div className="flex items-center gap-3 text-slate-500">
                   <ShieldCheck className="h-4 w-4 text-primary" />
@@ -55,72 +55,64 @@ export default function Footer() {
                </div>
             </div>
 
-            <Button className="h-14 px-10 bg-white/5 hover:bg-white/10 text-white rounded-xl border border-white/10 font-black uppercase text-[10px] tracking-widest gap-3 shadow-xl mt-4">
+            <Button className="h-14 px-8 bg-white/5 hover:bg-white/10 text-white rounded-xl border border-white/10 font-black uppercase text-[10px] tracking-widest gap-3 shadow-xl mt-4">
                <Share2 className="h-4 w-4 text-primary" /> SHARE CRACKLIX
             </Button>
           </div>
 
-          {/* 2. LINK NODES (RIGHT) */}
-          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-6">
-            
-            <div className="space-y-6">
-              <h4 className="font-black text-[11px] uppercase tracking-[0.3em] text-slate-500">EXAM VERTICALS</h4>
-              <ul className="space-y-4 text-slate-300 font-bold text-[13px] uppercase tracking-tight">
-                <li><Link href="/exams" className="hover:text-primary transition-colors">PSSSB Boards</Link></li>
-                <li><Link href="/exams" className="hover:text-primary transition-colors">PPSC Gazetted</Link></li>
-                <li><Link href="/exams" className="hover:text-primary transition-colors">Punjab Police</Link></li>
-                <li><Link href="/exams" className="hover:text-primary transition-colors">Teaching Cadre</Link></li>
-              </ul>
-            </div>
+          {/* 2. EXAM VERTICALS */}
+          <div className="lg:col-span-3 space-y-6">
+            <h4 className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">EXAM VERTICALS</h4>
+            <ul className="space-y-4 text-slate-300 font-bold text-[13px] uppercase tracking-tight">
+              <li><Link href="/exams" className="hover:text-primary transition-colors">PSSSB Boards</Link></li>
+              <li><Link href="/exams" className="hover:text-primary transition-colors">PPSC Gazetted</Link></li>
+              <li><Link href="/exams" className="hover:text-primary transition-colors">Punjab Police</Link></li>
+              <li><Link href="/exams" className="hover:text-primary transition-colors">Teaching Cadre</Link></li>
+            </ul>
+          </div>
 
-            <div className="space-y-6">
-              <h4 className="font-black text-[11px] uppercase tracking-[0.3em] text-slate-500">RESOURCES</h4>
-              <ul className="space-y-4 text-slate-300 font-bold text-[13px] uppercase tracking-tight">
-                <li><Link href="/mocks" className="hover:text-primary transition-colors">Free Mock Tests</Link></li>
-                <li><Link href="/pyqs" className="hover:text-primary transition-colors">Previous Year Papers</Link></li>
-                <li><Link href="/notes" className="hover:text-primary transition-colors">Study Notes</Link></li>
-                <li><Link href="/about" className="hover:text-primary transition-colors">Origin Story</Link></li>
-              </ul>
-            </div>
+          {/* 3. RESOURCES */}
+          <div className="lg:col-span-3 space-y-6">
+            <h4 className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">RESOURCES</h4>
+            <ul className="space-y-4 text-slate-300 font-bold text-[13px] uppercase tracking-tight">
+              <li><Link href="/mocks" className="hover:text-primary transition-colors">Free Mock Tests</Link></li>
+              <li><Link href="/pyqs" className="hover:text-primary transition-colors">Previous Year Papers</Link></li>
+              <li><Link href="/notes" className="hover:text-primary transition-colors">Study Notes</Link></li>
+              <li><Link href="/about" className="hover:text-primary transition-colors">Origin Story</Link></li>
+            </ul>
+          </div>
 
-            <div className="space-y-8">
-              <h4 className="font-black text-[11px] uppercase tracking-[0.3em] text-slate-500">CONNECT</h4>
-              <div className="space-y-8">
-                 <a 
-                   href={content.tg} 
-                   target="_blank" 
-                   className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary transition-all shadow-xl"
-                 >
-                   <Send className="h-5 w-5 fill-current" />
-                 </a>
-                 
-                 <div className="space-y-2">
-                    <p className="text-3xl md:text-4xl font-headline font-black text-primary leading-[1.1] uppercase tracking-tight">
-                      {content.phone.split(' ')[0]} {content.phone.split(' ')[1]}<br/>
-                      {content.phone.split(' ')[2]}
-                    </p>
-                    <p className="text-[8px] font-black text-slate-500 uppercase tracking-[0.3em]">Official Support Channel</p>
-                 </div>
-              </div>
+          {/* 4. CONNECT HUB (RIGHT) */}
+          <div className="lg:col-span-2 space-y-10">
+            <h4 className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">CONNECT</h4>
+            <div className="space-y-10">
+               <a 
+                 href={content.tg} 
+                 target="_blank" 
+                 className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary transition-all shadow-xl"
+               >
+                 <Send className="h-5 w-5 fill-current text-white" />
+               </a>
+               
+               <div className="space-y-2">
+                  <p className="text-2xl md:text-3xl font-headline font-black text-primary leading-tight uppercase tracking-tight">
+                    {content.phone.split(' ')[0]} {content.phone.split(' ')[1]}<br/>
+                    {content.phone.split(' ')[2]}
+                  </p>
+                  <p className="text-[8px] font-black text-slate-500 uppercase tracking-[0.3em]">Official Support Channel</p>
+               </div>
             </div>
           </div>
         </div>
 
-        {/* 3. BOTTOM AUDIT BAR */}
-        <div className="pt-20 border-t border-white/5 space-y-6 text-center">
-           <p className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-slate-500">
+        {/* BOTTOM AUDIT BAR */}
+        <div className="pt-16 border-t border-white/5 space-y-6 text-center">
+           <p className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 opacity-60">
              © LATEST PATTERN CRACKLIX | ALL RIGHTS RESERVED.
            </p>
-           <p className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-primary italic">
-             FOUNDER & LEAD DEVELOPER: ARSH GREWAL
+           <p className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-slate-400">
+             FOUNDER & LEAD DEVELOPER: <span className="text-primary">ARSH GREWAL</span>
            </p>
-           
-           <div className="pt-10 flex justify-center">
-              <div className="flex items-center gap-3 px-6 py-2 rounded-full border border-white/5 bg-white/[0.02]">
-                 <ShieldCheck className="h-3 w-3 text-slate-500" />
-                 <span className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-500">Registry Secure Punjab</span>
-              </div>
-           </div>
         </div>
       </div>
     </footer>
