@@ -18,8 +18,9 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Final Calibrated Hero v236.0.
- * TEXT: Replaced Hub with Center.
+ * @fileOverview Final Calibrated Hero v237.0.
+ * UPDATED: Background image set to object-contain for zero cropping.
+ * UPDATED: Reduced container height for a tighter layout.
  */
 
 export default function Hero() {
@@ -51,22 +52,22 @@ export default function Hero() {
   if (!mounted) return null;
 
   return (
-    <section className="relative w-full bg-[#050B19] overflow-hidden min-h-[500px] md:min-h-[550px] lg:h-[620px] flex flex-col justify-start text-left border-b border-white/5 pb-8 md:pb-12">
+    <section className="relative w-full bg-[#050B19] overflow-hidden min-h-[480px] md:min-h-[500px] lg:h-[600px] flex flex-col justify-start text-left border-b border-white/5 pb-8 md:pb-12">
       
-      {/* 1. BACKGROUND ENGINE - 200px Mobile Calibration */}
-      <div className="absolute top-0 left-0 right-0 h-[200px] md:h-[500px] lg:h-[580px] z-0 overflow-hidden">
+      {/* 1. BACKGROUND ENGINE - ZERO CROP CALIBRATION */}
+      <div className="absolute top-0 left-0 right-0 h-[180px] md:h-[420px] lg:h-[500px] z-0 overflow-hidden bg-[#050B19]">
         <motion.img 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5 }}
           src="https://i.ibb.co/fYJttX5d/Gemini-Generated-Image-n1so6on1so6on1so.png" 
           alt="Official Punjab Prep Center" 
-          className="w-full h-full object-cover object-right md:object-center"
+          className="w-full h-full object-contain object-top md:object-right"
           referrerPolicy="no-referrer"
         />
-        {/* Shading Layer: Targeted left-side blue shading to pop the text without affecting the right-side temple */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050B19]/30 to-[#050B19] z-[10]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19] via-[#050B19]/90 to-transparent z-[10]" />
+        {/* Gradients to blend the contained image edges */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050B19]/20 to-[#050B19] z-[10]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19] via-[#050B19]/80 to-transparent z-[10] hidden md:block" />
       </div>
 
       {/* 2. CONTENT HUB - Reduced Text Sizes */}
