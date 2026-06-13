@@ -23,8 +23,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview High-Fidelity Sidebar Visual Adjustment v25.0.
- * MATCHED: User screenshot layout (Header -> Download Node -> High-Density Menu).
+ * @fileOverview High-Fidelity Sidebar Visual Adjustment v26.0.
+ * MATCHED: User screenshot layout (Prominent Name -> Status Badge -> Emerald Download Node).
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -85,17 +85,17 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex flex-col h-full bg-[#0F172A] text-white overflow-y-auto no-scrollbar font-body select-none">
       
-      {/* 1. PROFILE HEADER HUB */}
-      <div className="bg-[#0B1528] px-6 pt-16 pb-10 flex flex-col items-center gap-4 relative overflow-hidden">
+      {/* 1. PROFILE HEADER HUB - RESTORED & ADJUSTED */}
+      <div className="bg-[#0B1528] px-6 pt-20 pb-12 flex flex-col items-center gap-4 relative overflow-hidden shrink-0">
         <div className="absolute top-0 right-0 p-8 opacity-5"><ShieldCheck className="h-40 w-40" /></div>
         
-        <div className="flex flex-col items-center gap-3 relative z-10">
-           <h2 className="text-2xl font-black text-white leading-tight uppercase tracking-tight">
+        <div className="flex flex-col items-center gap-4 relative z-10 text-center">
+           <h2 className="text-3xl font-black text-white leading-none uppercase tracking-tighter">
               {profile?.name || "Student"}
            </h2>
            {passStatus && (
               <Badge className={cn(
-                "border-none px-4 py-1 rounded-md font-black uppercase text-[10px] tracking-widest shadow-xl",
+                "border-none px-4 py-1 rounded-md font-black uppercase text-[10px] tracking-widest shadow-2xl",
                 passStatus.active ? "bg-emerald-500 text-white" : "bg-rose-600 text-white"
               )}>
                  {passStatus.label}
@@ -104,29 +104,29 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      {/* 2. DOWNLOAD APP NODE (EMERALD TINT) */}
-      {mounted && canInstall && (
+      {/* 2. DOWNLOAD APP NODE (EMERALD BAR - SCREENSHOT MATCHED) */}
+      {mounted && (
          <div 
             onClick={handleInstallClick}
-            className="flex items-center justify-between px-6 py-4 bg-[#10B981]/10 border-y border-white/5 cursor-pointer active:bg-[#10B981]/20 transition-all"
+            className="flex items-center justify-between px-6 py-5 bg-[#0D242F] border-y border-white/5 cursor-pointer active:bg-[#11313d] transition-all shrink-0"
          >
-            <div className="flex items-center gap-4">
-               <div className="h-12 w-12 rounded-2xl bg-[#10B981] text-white flex items-center justify-center shadow-lg">
-                  <Download className="h-6 w-6" />
+            <div className="flex items-center gap-5">
+               <div className="h-14 w-14 rounded-2xl bg-[#10B981] text-white flex items-center justify-center shadow-lg shadow-emerald-500/10">
+                  <Download className="h-7 w-7" />
                </div>
                <div className="text-left">
-                  <span className="text-[14px] uppercase tracking-tight font-black text-white block">Download App</span>
-                  <p className="text-[8px] font-bold text-[#10B981] uppercase tracking-widest leading-none mt-1">Get Official Notifications</p>
+                  <span className="text-[15px] uppercase tracking-tight font-black text-white block">Download App</span>
+                  <p className="text-[9px] font-black text-[#10B981] uppercase tracking-[0.05em] leading-none mt-1.5">Get Official Notifications</p>
                </div>
             </div>
-            <button className="bg-[#10B981] text-white px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-tighter shadow-md">
+            <button className="bg-[#10B981] text-white px-4 py-2 rounded-full font-black text-[10px] uppercase tracking-tighter shadow-xl">
                INSTALL
             </button>
          </div>
       )}
 
       {/* 3. MENU ENGINE */}
-      <div className="flex flex-col py-2">
+      <div className="flex flex-col py-3">
         {menuItems.map((item) => {
           const isActive = mounted && pathname === item.href;
           const Icon = item.icon;
@@ -138,17 +138,17 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
               onClick={onClose}
               className={cn(
                 "flex items-center justify-between px-6 h-[72px] transition-all border-l-[6px]",
-                isActive ? "bg-white/5 border-[#F97316]" : "hover:bg-white/5 border-transparent"
+                isActive ? "bg-white/[0.03] border-[#F97316]" : "hover:bg-white/[0.02] border-transparent"
               )}
             >
               <div className="flex items-center gap-6">
                  <Icon className={cn(
                    "h-6 w-6 shrink-0 transition-all",
-                   isActive ? "text-[#F97316]" : "text-slate-500"
+                   isActive ? "text-[#F97316]" : "text-[#475569]"
                  )} />
                  <span className={cn(
                    "text-[15px] uppercase tracking-tight font-black",
-                   isActive ? "text-white" : "text-slate-400"
+                   isActive ? "text-white" : "text-[#64748B]"
                  )}>
                    {item.label}
                  </span>
@@ -179,7 +179,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
          <p className="text-[10px] font-black text-[#F97316] uppercase tracking-widest text-center">
             Developed by Arsh Grewal
          </p>
-         <p className="text-[8px] font-bold text-slate-600 uppercase tracking-widest leading-none">© Latest Pattern Hub</p>
+         <p className="text-[8px] font-bold text-[#334155] uppercase tracking-widest leading-none">© Latest Pattern Hub</p>
       </div>
     </div>
   );
