@@ -22,9 +22,9 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Final Screenshot-Matched Hero v7.0.
- * UPDATED: Live Data Integration & High-Visibility Icons with optimized backgrounds.
- * MATCHED: 1:1 styling with provided screenshot for bottom stats bar.
+ * @fileOverview Final Screenshot-Matched Hero v8.0 (PWA Full Interface Optimized).
+ * MATCHED: Adjusted mobile height to fills the viewport more effectively (min-h-[600px]).
+ * FIXED: Prevented landscape clipping on portrait mobile devices.
  */
 
 export default function Hero() {
@@ -57,12 +57,12 @@ export default function Hero() {
 
   return (
     <section className="relative w-full bg-[#020817] overflow-hidden flex flex-col items-center">
-      {/* 1. FULL ASPECT BACKGROUND LAYER */}
-      <div className="w-full relative aspect-[1024/576] min-h-[400px] md:min-h-0">
+      {/* 1. FULL ASPECT BACKGROUND LAYER - Optimized for Full Interface on Mobile */}
+      <div className="w-full relative min-h-[600px] md:min-h-0 md:aspect-[1024/576]">
         <img 
           src="https://i.ibb.co/LXgcLVVq/Gemini-Generated-Image-n1so6on1so6on1so.png" 
           alt="Golden Temple Night" 
-          className="absolute inset-0 w-full h-full object-cover md:object-fill"
+          className="absolute inset-0 w-full h-full object-cover"
           referrerPolicy="no-referrer"
         />
         
@@ -73,7 +73,7 @@ export default function Hero() {
         {/* TEXT CONTENT HUB */}
         <div className="absolute inset-0 z-20 flex items-center">
            <div className="container mx-auto px-4 md:px-12 max-w-7xl">
-              <div className="max-w-3xl space-y-6 md:space-y-8 text-left">
+              <div className="max-w-3xl space-y-6 md:space-y-8 text-left pt-[20px] md:pt-0">
                  
                  <motion.div
                     initial={{ opacity: 0, x: -20 }}

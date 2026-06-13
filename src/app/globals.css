@@ -25,13 +25,13 @@
     --ring: 24 95% 53%;
     --radius: 0.75rem;
 
-    /* Global Geometry Node */
+    /* Global Geometry Node - Fixed for h-40 logo */
     --header-height: 80px;
   }
 
   @media (min-width: 1024px) {
     :root {
-      --header-height: 145px;
+      --header-height: 160px;
     }
   }
 }

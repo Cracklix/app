@@ -24,8 +24,8 @@ import { useToast } from "@/hooks/use-toast";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Professional Header v172.0 (Persistent PWA).
- * UPDATED: Improved "Install App" responsiveness with re-trigger support.
+ * @fileOverview Professional Header v173.0 (PWA Optimized).
+ * UPDATED: Added pt-[env(safe-area-inset-top)] for non-cut PWA experience on mobile.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -40,12 +40,10 @@ export default function Navbar() {
   useEffect(() => {
     setMounted(true);
     
-    // Initial check
     if (typeof window !== 'undefined' && (window as any).deferredPrompt) {
       setHasPrompt(true);
     }
 
-    // Listen for new prompts
     const handleInstallable = () => setHasPrompt(true);
     window.addEventListener('pwa-installable', handleInstallable);
     return () => window.removeEventListener('pwa-installable', handleInstallable);
@@ -96,11 +94,11 @@ export default function Navbar() {
     }
   };
 
-  const headerHeight = "h-[var(--header-height)]";
+  const headerHeightClass = "h-[var(--header-height)]";
 
   if (!mounted) {
     return (
-      <nav className={cn("w-full flex items-center bg-[#0B1528] px-4 lg:px-8", headerHeight)}>
+      <nav className={cn("w-full flex items-center bg-[#0B1528] px-4 lg:px-8", headerHeightClass)}>
         <div className="container mx-auto flex justify-between">
           <div className="w-10 h-10 bg-white/5 rounded-xl animate-pulse" />
           <div className="h-8 w-32 bg-white/5 rounded-xl animate-pulse" />
@@ -114,7 +112,8 @@ export default function Navbar() {
     <div className="sticky top-0 z-[1000] w-full pointer-events-auto font-body text-left">
       <nav className={cn(
         "w-full flex items-center bg-[#0B1528] border-b border-white/5 px-4 lg:px-8 shadow-2xl overflow-hidden backdrop-blur-xl",
-        headerHeight
+        "pt-[env(safe-area-inset-top)]",
+        headerHeightClass
       )}>
         <div className="container mx-auto max-w-[1536px] flex items-center justify-between h-full gap-2">
           
@@ -131,8 +130,8 @@ export default function Navbar() {
               </SheetContent>
             </Sheet>
             
-            <div className={cn(headerHeight, "flex items-center shrink-0")}>
-               <Logo imgClassName="h-full" className="active:scale-95 transition-transform" />
+            <div className="flex items-center shrink-0 h-full">
+               <Logo imgClassName="h-40" className="active:scale-95 transition-transform" />
             </div>
           </div>
 
