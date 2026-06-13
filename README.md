@@ -1,5 +1,5 @@
 
-# Cracklix | Punjab Exam Authority Hub
+# Cracklix | Punjab's Mock Test Platform
 
 Punjab's most advanced government exam preparation platform. Designed for aspirants, built with institutional integrity.
 

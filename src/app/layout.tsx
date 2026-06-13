@@ -15,7 +15,7 @@ const inter = Inter({
 const brandIcon = 'https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png';
 
 export const metadata: Metadata = {
-  title: 'Cracklix | Punjab Exam Hub',
+  title: "Cracklix | Punjab's Mock Test Platform",
   description: "Punjab's most trusted government exam preparation platform. PSSSB, PPSC, Punjab Police, and more.",
   manifest: '/manifest.webmanifest',
   authors: [{ name: 'Arsh Grewal', url: 'https://cracklix.com' }],
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'CRACKLIX',
+    title: 'Cracklix',
   },
   formatDetection: {
     telephone: false,
@@ -38,8 +38,8 @@ export const metadata: Metadata = {
   other: {
     'mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-capable': 'yes',
-    'application-name': 'CRACKLIX',
-    'apple-mobile-web-app-title': 'CRACKLIX',
+    'application-name': 'Cracklix',
+    'apple-mobile-web-app-title': 'Cracklix',
     'theme-color': '#0B1528',
     'msapplication-navbutton-color': '#0B1528',
     'apple-mobile-web-app-status-bar-style': 'black-translucent',

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -41,7 +42,7 @@ export default function AdminSettings() {
     adSenseEnabled: false,
     adSenseClientCode: "",
     shareUrl: "https://cracklix.com",
-    shareTitle: "CRACKLIX | Punjab Exam Hub",
+    shareTitle: "Cracklix | Punjab's Mock Test Platform",
     shareDescription: "Practice Mock Tests and Prepare for Punjab Government Exams.",
     freeTrialEnabled: true,
     freeTrialDays: 7
