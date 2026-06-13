@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useState, useEffect } from "react"
@@ -75,16 +74,6 @@ export default function PopularExams() {
     return boards.filter((b: any) => targetAbbrevs.includes(b.abbreviation?.toUpperCase()));
   }, [boards, mounted]);
 
-  const statsMap = useMemo(() => {
-    if (!mocks || !mounted) return {};
-    const map: Record<string, number> = {};
-    mocks.forEach(m => {
-       const bid = m.boardId || m.boardIds?.[0];
-       if (bid) map[bid] = (map[bid] || 0) + 1;
-    });
-    return map;
-  }, [mocks, mounted]);
-
   if (!mounted) return (
      <section className="py-12 bg-white flex items-center justify-center">
         <Skeleton className="h-80 w-full max-w-7xl rounded-[3.5rem]" />
@@ -110,7 +99,7 @@ export default function PopularExams() {
 
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {loading ? (
-               Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[2.5rem]" />)
+               Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[3.5rem]" />)
             ) : filteredBoards.length > 0 ? filteredBoards.map((board, idx) => (
               <motion.div 
                  key={board.id}
