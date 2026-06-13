@@ -23,8 +23,8 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Professional Header v168.1.
- * UPDATED: Logo size increased to h-40 while header height remains h-44.
+ * @fileOverview Professional Header v169.0 (Compact Hardened).
+ * UPDATED: Reduced header container height to h-40 while maintaining logo prominence.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -70,7 +70,8 @@ export default function Navbar() {
     }
   };
 
-  const headerHeight = "h-44";
+  // TIGHTENED HEADER HEIGHT
+  const headerHeight = "h-40";
 
   if (!mounted) {
     return (
@@ -105,7 +106,7 @@ export default function Navbar() {
               </SheetContent>
             </Sheet>
             
-            <div className="h-44 flex items-center shrink-0">
+            <div className={cn(headerHeight, "flex items-center shrink-0")}>
                <Logo imgClassName="h-40" className="active:scale-95 transition-transform" />
             </div>
           </div>
