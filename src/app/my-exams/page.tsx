@@ -5,7 +5,7 @@ import { useMemo, useEffect, useState } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useCollection, useFirestore } from "@/firebase"
-import { collection, query, where, doc, updateDoc, limit, orderBy } from "firebase/firestore"
+import { collection, query, where, doc, updateDoc, limit, arrayRemove, serverTimestamp } from "firebase/firestore"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { 
@@ -22,7 +22,9 @@ import {
   GraduationCap,
   Bell,
   Activity,
-  Award
+  Award,
+  Trash2,
+  RefreshCw
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,17 +32,20 @@ import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { useToast } from "@/hooks/use-toast"
 
 /**
- * @file Overview My Exams Dashboard.
- * PERFORMANCE: Moved sorting client-side to bypass Firestore composite index requirements.
+ * @file Overview My Exams Dashboard v2.0.
+ * UPDATED: Added direct Unpin (Delete) functionality for pinned exams.
  */
 
 export default function MyExamsPage() {
   const { user, profile, loading: userLoading } = useUser()
   const db = useFirestore()
   const router = useRouter()
+  const { toast } = useToast()
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
+  const [unpinningId, setUnpinningId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!userLoading && !user) {
@@ -50,8 +55,6 @@ export default function MyExamsPage() {
 
   const examsQuery = useMemo(() => (db ? collection(db, "exams") : null), [db])
   const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db])
-  
-  // Simplified query: No orderBy combined with where to prevent index errors
   const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true), limit(100)) : null), [db])
   
   const { data: allExams } = useCollection<any>(examsQuery)
@@ -79,6 +82,24 @@ export default function MyExamsPage() {
     if (!allExams || !profile?.pinnedExams) return []
     return allExams.filter((e: any) => profile.pinnedExams?.includes(e.id))
   }, [allExams, profile])
+
+  const handleUnpin = async (examId: string) => {
+    if (!db || !user || unpinningId) return;
+    setUnpinningId(examId);
+    
+    try {
+      const userRef = doc(db, "users", user.uid);
+      await updateDoc(userRef, {
+        pinnedExams: arrayRemove(examId),
+        updatedAt: serverTimestamp()
+      });
+      toast({ title: "Exam Removed", description: "Cleared from your interests." });
+    } catch (e) {
+      toast({ variant: "destructive", title: "Action Failed" });
+    } finally {
+      setUnpinningId(null);
+    }
+  };
 
   if (userLoading) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-6">
@@ -124,35 +145,53 @@ export default function MyExamsPage() {
                  const logoUrl = board?.iconUrl || exam.iconUrl;
                  const isImgFailed = failedImages[exam.id];
                  const isArmy = exam.boardId?.toLowerCase() === 'army' || exam.id?.toLowerCase().includes('army');
+                 const isUnpinning = unpinningId === exam.id;
                  
                  // Find new mocks for this pinned hub using client-side sorted list
                  const hasNewMocks = recentMocks?.some(m => m.examId === exam.id && (Date.now() - (m.createdAt?.seconds * 1000 || 0)) < 86400000 * 7);
 
                  return (
-                  <Link key={exam.id} href={`/exams/${exam.id}`}>
-                      <Card className="border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2.5rem] bg-white p-8 text-left group relative overflow-hidden h-full flex flex-col border border-slate-100 hover:border-primary/20">
-                        {hasNewMocks && (
-                           <div className="absolute top-8 left-8 z-20">
-                              <Badge className="bg-rose-500 text-white border-none animate-pulse text-[8px] font-black uppercase px-2 py-0.5 rounded-full shadow-lg shadow-rose-500/20">NEW MOCKS</Badge>
-                           </div>
-                        )}
-                        <div className="flex justify-between items-start mb-8">
-                           <div className="h-16 w-16 rounded-2xl bg-white flex items-center justify-center shrink-0 border border-slate-100 shadow-inner group-hover:scale-105 transition-transform overflow-hidden">
-                              {logoUrl && !isImgFailed ? (
-                                <img src={logoUrl} className={cn("w-full h-full object-contain p-2", isArmy ? "scale-150" : "")} referrerPolicy="no-referrer" alt="Logo" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
-                              ) : (
-                                <GraduationCap className="h-8 w-8 text-slate-200" />
-                              )}
-                           </div>
-                           <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black uppercase px-3 py-1 rounded-lg">EXAM HUB</Badge>
-                        </div>
-                        <h4 className="font-black text-xl text-[#0F172A] uppercase leading-tight flex-1 mb-2">{exam.name}</h4>
-                        <div className="flex items-center justify-between pt-6 border-t border-slate-50 mt-6">
-                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{board?.abbreviation || 'GOVT'} Board</p>
-                           <ChevronRight className="h-5 w-5 text-slate-200 group-hover:text-primary transition-all group-hover:translate-x-1" />
-                        </div>
-                      </Card>
-                  </Link>
+                  <div key={exam.id} className="relative group">
+                      <Link href={`/exams/${exam.id}`}>
+                        <Card className="border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2.5rem] bg-white p-8 text-left h-full flex flex-col border border-slate-100 hover:border-primary/20">
+                          {hasNewMocks && (
+                             <div className="absolute top-8 left-8 z-20">
+                                <Badge className="bg-rose-500 text-white border-none animate-pulse text-[8px] font-black uppercase px-2 py-0.5 rounded-full shadow-lg shadow-rose-500/20">NEW MOCKS</Badge>
+                             </div>
+                          )}
+                          
+                          <div className="flex justify-between items-start mb-8">
+                             <div className="h-16 w-16 rounded-2xl bg-white flex items-center justify-center shrink-0 border border-slate-100 shadow-inner group-hover:scale-105 transition-transform overflow-hidden">
+                                {logoUrl && !isImgFailed ? (
+                                  <img src={logoUrl} className={cn("w-full h-full object-contain p-2", isArmy ? "scale-150" : "")} referrerPolicy="no-referrer" alt="Logo" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
+                                ) : (
+                                  <GraduationCap className="h-8 w-8 text-slate-200" />
+                                )}
+                             </div>
+                             <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black uppercase px-3 py-1 rounded-lg">EXAM HUB</Badge>
+                          </div>
+                          
+                          <h4 className="font-black text-xl text-[#0F172A] uppercase leading-tight flex-1 mb-2 pr-10">{exam.name}</h4>
+                          
+                          <div className="flex items-center justify-between pt-6 border-t border-slate-50 mt-6">
+                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{board?.abbreviation || 'GOVT'} Board</p>
+                             <ChevronRight className="h-5 w-5 text-slate-200 group-hover:text-primary transition-all group-hover:translate-x-1" />
+                          </div>
+                        </Card>
+                      </Link>
+
+                      {/* UNPIN BUTTON */}
+                      <button 
+                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleUnpin(exam.id); }}
+                         className={cn(
+                            "absolute top-8 right-8 z-30 h-10 w-10 rounded-xl bg-rose-50 text-rose-500 md:opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center hover:bg-rose-100 shadow-sm border border-rose-100",
+                            isUnpinning && "opacity-100 bg-white"
+                         )}
+                         title="Remove from Interests"
+                      >
+                         {isUnpinning ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Trash2 className="h-5 w-5" />}
+                      </button>
+                  </div>
                  )
               }) : (
                  <Card className="col-span-full border-2 border-dashed border-slate-200 bg-white/50 py-24 rounded-[3.5rem] flex flex-col items-center justify-center text-center space-y-6">
@@ -217,7 +256,7 @@ export default function MyExamsPage() {
               <p className="text-base md:text-2xl text-slate-400 font-medium leading-relaxed antialiased">
                  Get full access to all practice tests and real-time exam updates. Improve your logic and score higher today.
               </p>
-              <div className="flex flex-col sm:row items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-center gap-4">
                  <Button asChild className="w-full sm:w-auto bg-primary hover:bg-orange-600 text-white font-black uppercase text-[11px] tracking-[0.2em] h-16 px-12 rounded-2xl shadow-5xl transition-all active:scale-95 border-none">
                     <Link href="/mocks">Browse All Tests <Zap className="ml-3 h-4 w-4 fill-current" /></Link>
                  </Button>
