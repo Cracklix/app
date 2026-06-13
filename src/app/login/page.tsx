@@ -26,8 +26,8 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 
 /**
- * @fileOverview Optimized Login Hub v8.0.
- * UPDATED: Hardened Google Sign-In with robust error handling and account selection forcing.
+ * @fileOverview Optimized Login Hub v8.1.
+ * UPDATED: Reduced logo container height for mobile to prevent clipping.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -117,7 +117,6 @@ function LoginContent() {
     
     try {
       const provider = new GoogleAuthProvider()
-      // Force account selection to prevent sticky sessions
       provider.setCustomParameters({ prompt: 'select_account' })
       
       const result = await signInWithPopup(auth, provider)
@@ -161,7 +160,7 @@ function LoginContent() {
       } else if (error.code === 'auth/popup-closed-by-user') {
         errorMessage = "Sign-in cancelled.";
       } else if (error.code === 'auth/cancelled-popup-request') {
-        return; // Silent return for overlapping clicks
+        return;
       }
 
       toast({ variant: "destructive", title: "Login Failed", description: errorMessage })
@@ -197,7 +196,11 @@ function LoginContent() {
     <div className="min-h-screen bg-[#020817] flex flex-col items-center justify-center p-6 relative overflow-hidden text-white">
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full" />
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="z-10 w-full max-w-md">
-        <div className="flex flex-col items-center mb-10"><Logo variant="light" className="scale-110" /></div>
+        
+        {/* REFINED LOGO CONTAINER */}
+        <div className="flex flex-col items-center mb-8 h-32 md:h-44 w-full">
+           <Logo variant="light" imgClassName="h-full scale-100" />
+        </div>
         
         {searchParams.has("returnUrl") && (
            <div className="bg-primary/10 border border-primary/20 p-4 rounded-xl mb-6 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
