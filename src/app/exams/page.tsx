@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useEffect } from "react"
@@ -16,8 +15,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Master Registry Landing v3.4 (Hardened).
- * GATED: Access restricted to authenticated students only.
+ * @fileOverview Institutional Exam List Landing v4.0.
+ * UPDATED: Renamed from 'Master Registry' to 'Exam List' for simplicity.
  */
 
 const CATEGORY_ICONS: Record<string, any> = {
@@ -54,7 +53,7 @@ export default function ExamsEntryPage() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body">
+    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       
       <main className="container mx-auto px-4 md:px-6 py-12 md:py-24 max-w-7xl">
@@ -66,7 +65,7 @@ export default function ExamsEntryPage() {
              <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-slate-500">Official Exam Registry Latest Pattern</span>
           </div>
           <h1 className="text-4xl md:text-8xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-[0.85]">
-            Master <br/> <span className="text-primary">Registry</span>
+            Exam <br/> <span className="text-primary">List</span>
           </h1>
           <p className="text-slate-500 font-medium text-lg md:text-2xl max-w-3xl leading-relaxed">
             Select a recruitment vertical to browse official hubs and vertical exam preparation.
@@ -88,7 +87,7 @@ export default function ExamsEntryPage() {
                                  {CATEGORY_ICONS[cat.id] || <ShieldCheck className="h-10 w-10" />}
                               </div>
                               <Badge className="bg-[#0F172A] text-white border-none text-[8px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-xl shadow-lg">
-                                 {hubCount} HUBS LIVE
+                                 {hubCount} EXAMS LIVE
                               </Badge>
                            </div>
                            

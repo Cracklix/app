@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from "next/link";
-import { Menu, Search, User, Gem, LogOut, Target, Newspaper, Download, Zap, RefreshCw, ShieldCheck } from "lucide-react";
+import { Menu, Search, User, Gem, LogOut, Target, Newspaper, Download, Zap, Home, ShieldCheck } from "lucide-react";
 import Logo from "@/components/brand/Logo";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -21,10 +21,9 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Final Performance-Hardened Header v135.0.
- * RESTORED: Precise sequence [Menu] [Logo] [Nav Strip] [Pass Hub] [Search] [User].
- * UPDATED: Replaced legacy blocks with INSTALL APP and ACTIVE PASS nodes.
- * FIXED: Hydration Mismatch via mounted state guards.
+ * @fileOverview Final Performance-Hardened Header v136.0.
+ * UPDATED: Replaced 'MY EXAMS' with 'HOME PAGE' block.
+ * UPDATED: Added click-feel scaling and active state indicators.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -69,7 +68,7 @@ export default function Navbar() {
   const headerHeight = "h-[72px] lg:h-[82px]";
 
   return (
-    <div className="sticky top-0 z-[1000] w-full pointer-events-auto font-body">
+    <div className="sticky top-0 z-[1000] w-full pointer-events-auto font-body text-left">
       <nav className={cn(
         "w-full flex items-center bg-[#0B1528] border-b border-white/5 px-4 lg:px-8 shadow-2xl overflow-hidden backdrop-blur-xl",
         headerHeight
@@ -98,7 +97,7 @@ export default function Navbar() {
 
           {/* 2. CENTER SECTION: NAVIGATION BLOCKS */}
           <div className="hidden lg:flex flex-1 items-center justify-center gap-4 xl:gap-8">
-            <NavLink icon={<Target />} label1="MY" label2="EXAMS" href="/my-exams" active={pathname === "/my-exams"} />
+            <NavLink icon={<Home />} label1="HOME" label2="PAGE" href="/" active={pathname === "/"} />
             <NavLink icon={<Zap />} label1="PRACTICE" label2="TESTS" href="/mocks" active={pathname.startsWith("/mocks")} />
             <NavLink icon={<Newspaper />} label1="CURRENT" label2="AFFAIRS" href="/current-affairs" active={pathname === "/current-affairs"} />
             

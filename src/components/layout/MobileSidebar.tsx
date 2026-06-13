@@ -24,8 +24,9 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * @fileOverview Final Screenshot Replica Sidebar v41.0.
- * UPDATED: Compact mode enabled. Reduced font sizes and icon dimensions for higher density.
+ * @fileOverview Final Screenshot Replica Sidebar v42.0.
+ * UPDATED: Renamed 'OFFICIAL LIST' to 'EXAM LIST' as requested.
+ * UPDATED: Compact mode enabled for higher visual density.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -56,7 +57,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
 
   const menuItems = [
     { label: "HOME PAGE", href: "/", icon: Home },
-    { label: "OFFICIAL LIST", href: "/exams", icon: Target },
+    { label: "EXAM LIST", href: "/exams", icon: Target },
     { label: "ELITE PASS", href: "/pass", icon: Gem, hasPro: true },
     { label: "PRACTICE TESTS", href: "/mocks", icon: Zap },
     { label: "UPDATES HUB", href: "/current-affairs", icon: Newspaper },

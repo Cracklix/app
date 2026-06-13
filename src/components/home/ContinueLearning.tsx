@@ -5,14 +5,15 @@ import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, where, limit } from 'firebase/firestore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Zap, History, Trophy, ArrowRight } from 'lucide-react';
+import { Zap, History, Trophy, ArrowRight, Target } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview High-Fidelity "Continue Learning" Hub v7.3.
- * UPDATED: Added standalone container and section spacing for independent reordering.
+ * @fileOverview High-Fidelity "My Exams" Hub v8.0.
+ * UPDATED: Renamed section header from 'CONTINUE LEARNING' to 'MY EXAMS' as requested.
+ * UPDATED: Positioned as a prominent homepage block for returning students.
  */
 
 export default function ContinueLearning() {
@@ -38,7 +39,7 @@ export default function ContinueLearning() {
   if (loading) {
     return (
       <section className="py-12 md:py-16 bg-white">
-        <div className="container mx-auto px-4 max-w-7xl space-y-6 md:space-y-10">
+        <div className="container mx-auto px-4 max-w-7xl space-y-6 md:space-y-10 text-left">
           <div className="h-10 w-48 bg-slate-100 animate-pulse rounded-lg" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
             <Skeleton className="h-48 w-full rounded-[2rem] bg-slate-100" />
@@ -55,12 +56,12 @@ export default function ContinueLearning() {
 
   return (
     <section className="py-12 md:py-16 bg-white animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      <div className="container mx-auto px-4 max-w-7xl space-y-6 md:space-y-10">
+      <div className="container mx-auto px-4 max-w-7xl space-y-6 md:space-y-10 text-left">
         <div className="flex items-center gap-3 px-1">
            <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-orange-50 flex items-center justify-center text-primary shadow-sm shrink-0">
-              <History className="h-4 w-4 md:h-5 md:w-5" />
+              <Target className="h-4 w-4 md:h-5 md:w-5" />
            </div>
-           <h2 className="text-xl md:text-3xl font-headline font-black text-[#0F172A] uppercase tracking-tight">CONTINUE LEARNING</h2>
+           <h2 className="text-xl md:text-3xl font-headline font-black text-[#0F172A] uppercase tracking-tight">MY EXAMS</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">

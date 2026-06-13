@@ -10,9 +10,9 @@ import Footer from "@/components/layout/Footer";
 import PopularExams from "@/components/home/PopularExams";
 
 /**
- * @fileOverview Official Home Hub v168.0.
+ * @fileOverview Official Home Hub v169.0.
  * PERFORMANCE: Strict server component root with high-fidelity client sub-modules.
- * UPDATED: Reordered sections - Continue Learning is now positioned below Popular Exams.
+ * UPDATED: Promoted 'My Exams' (ContinueLearning) to position 3 for high prominence.
  */
 
 export default function HomePage() {
@@ -25,11 +25,11 @@ export default function HomePage() {
       {/* 1. Primary Discovery Hub */}
       <FeaturedCategories />
 
-      {/* 2. Authority Hubs */}
-      <PopularExams />
-
-      {/* 3. User Activity Hub (Personalized) */}
+      {/* 2. Personalized User Hub (MY EXAMS) */}
       <ContinueLearning />
+
+      {/* 3. Authority Hubs (EXAM LIST) */}
+      <PopularExams />
 
       {/* 4. Content Pulse (Global Latest) */}
       <LatestMocks />
