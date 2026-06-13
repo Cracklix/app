@@ -10,10 +10,8 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Final Screenshot-Matched Footer Hub v12.0.
- * MATCHED: 4-column top row with Brand, Verticals, Resources, and Connect.
- * MATCHED: Telegram icon box and reduced size Orange Phone Number.
- * UPDATED: Decreased mobile number font size as per user request.
+ * @fileOverview Final Screenshot-Matched Footer Hub v13.0.
+ * UPDATED: Increased logo container size to h-16 for better brand prominence.
  */
 export default function Footer() {
   const db = useFirestore();
@@ -36,7 +34,7 @@ export default function Footer() {
           {/* 1. BRAND HUB (LEFT) */}
           <div className="lg:col-span-4 space-y-8">
             <div className="space-y-6">
-               <div className="h-10 flex items-center">
+               <div className="h-16 flex items-center">
                   <Logo imgClassName="h-full" />
                </div>
                <p className="text-slate-400 text-lg font-medium max-w-xs leading-relaxed">

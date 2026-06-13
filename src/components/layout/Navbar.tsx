@@ -23,8 +23,8 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Professional Header v158.0 (Text Overflow Fix).
- * FIXED: Pass buttons use min-widths and small fonts to accommodate long plan names.
+ * @fileOverview Professional Header v159.0.
+ * UPDATED: Increased logo scaling to h-16 for better visibility.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -105,8 +105,8 @@ export default function Navbar() {
               </SheetContent>
             </Sheet>
             
-            <div className="h-14 flex items-center shrink-0">
-               <Logo imgClassName="h-14" className="active:scale-95 transition-transform" />
+            <div className="h-16 flex items-center shrink-0">
+               <Logo imgClassName="h-16" className="active:scale-95 transition-transform" />
             </div>
           </div>
 
