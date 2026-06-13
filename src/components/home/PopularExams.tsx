@@ -1,53 +1,45 @@
 'use client';
 
 import React, { useMemo, useState, useEffect } from "react"
-import { motion } from "framer-motion";
 import { 
   ChevronRight, 
   Landmark, 
   BookOpen, 
   Zap, 
   Shield, 
-  ShieldCheck, 
   GraduationCap, 
   Scale,
-  Star,
-  FileText,
-  Newspaper,
-  Info,
   Stethoscope,
-  ArrowRight
+  ShieldCheck
 } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { useCollection, useFirestore } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Screenshot Matched Popular Hubs v41.0.
- * FIXED: Verified all component and icon imports.
+ * @fileOverview High-Fidelity Popular Hubs v42.0.
+ * RESTORED: Absolute logo restoration engine with database priority.
  */
 
-function getBoardIcon(id: string, abbrev: string) {
+function getBoardFallbackIcon(id: string, abbrev: string) {
   const key = (abbrev || id || "").toLowerCase();
-  if (key.includes('psssb')) return <img src="https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg" className="h-full w-full object-contain" />;
-  if (key.includes('police')) return <img src="https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png" className="h-full w-full object-contain" />;
-  if (key.includes('ppsc')) return <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR8W5eTBPdzztA7cziqnMmtWk9InL1yflUD_xb4vAsLw&s=10" className="h-full w-full object-contain" />;
+  if (key.includes('psssb')) return <Landmark className="h-full w-full text-amber-600" />;
+  if (key.includes('police')) return <ShieldCheck className="h-full w-full text-blue-800" />;
+  if (key.includes('ppsc')) return <Landmark className="h-full w-full text-emerald-700" />;
   if (key.includes('teaching')) return <GraduationCap className="h-full w-full text-orange-500" />;
   if (key.includes('court')) return <Scale className="h-full w-full text-slate-600" />;
   if (key.includes('pspcl')) return <Zap className="h-full w-full text-blue-500" />;
   if (key.includes('bfuhs')) return <Stethoscope className="h-full w-full text-emerald-600" />;
-  if (key.includes('banking')) return <Landmark className="h-full w-full text-[#0B1F3A]" />;
   return <Landmark className="h-full w-full text-slate-300" />;
 }
 
 export default function PopularExams() {
   const db = useFirestore();
   const [mounted, setMounted] = useState(false);
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     setMounted(true);
@@ -86,12 +78,27 @@ export default function PopularExams() {
                const examCount = allExams?.filter(e => e.boardId === board.id || e.boardId === board.abbreviation).length || 0;
                const mockCount = mocks?.filter(m => (m.boardIds && m.boardIds.includes(board.id)) || m.boardId === board.id).length || 0;
                
+               const logoUrl = board.iconUrl;
+               const hasImage = logoUrl && !failedImages[board.id];
+
                return (
                   <Link key={board.id} href={`/exams/hub/${board.id}`}>
                      <Card className="border border-slate-100 shadow-sm hover:shadow-4xl transition-all duration-500 rounded-[2.5rem] bg-white group p-8 text-left h-full flex flex-col">
                         <div className="flex items-center gap-6">
-                           <div className="h-16 w-16 md:h-20 md:w-20 rounded-[1.5rem] bg-slate-50 flex items-center justify-center p-4 shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-                              {getBoardIcon(board.id, board.abbreviation)}
+                           <div className="h-16 w-16 md:h-20 md:w-20 rounded-[1.5rem] bg-slate-50 flex items-center justify-center p-3 shrink-0 shadow-inner group-hover:scale-105 transition-transform overflow-hidden relative">
+                              {hasImage ? (
+                                <img 
+                                  src={logoUrl} 
+                                  className="h-full w-full object-contain" 
+                                  alt={board.abbreviation}
+                                  referrerPolicy="no-referrer"
+                                  onError={() => setFailedImages(prev => ({ ...prev, [board.id]: true }))}
+                                />
+                              ) : (
+                                <div className="p-2 w-full h-full opacity-40">
+                                  {getBoardFallbackIcon(board.id, board.abbreviation)}
+                                </div>
+                              )}
                            </div>
                            <div className="min-w-0">
                               <h3 className="text-xl md:text-2xl font-black text-[#0F172A] uppercase leading-none group-hover:text-primary transition-colors">{board.abbreviation}</h3>

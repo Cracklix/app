@@ -10,7 +10,7 @@ import Footer from "@/components/layout/Footer";
 import PopularExams from "@/components/home/PopularExams";
 
 /**
- * @fileOverview Official Home Hub v165.0.
+ * @fileOverview Official Home Hub v166.0.
  * PERFORMANCE: Strict server component root with high-fidelity client sub-modules.
  */
 
