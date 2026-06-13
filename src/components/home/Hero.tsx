@@ -23,19 +23,20 @@ import {
   GraduationCap,
   X,
   Newspaper,
-  LayoutGrid
+  LayoutGrid,
+  Star,
+  BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 /**
- * @fileOverview Official CRACKLIX Punjab Government Exam Hero v15.0.
- * Replaces entire content with a premium, selection-driven Command Center.
- * Theme: Navy Blue (#0B1528) + Cracklix Orange (Primary).
+ * @fileOverview Official CRACKLIX Punjab Government Exam Hero v16.0.
+ * VERIFICATION MODE: Heading replaced with "CRACKLIX TEST 999".
  */
 
 export default function Hero() {
@@ -70,7 +71,7 @@ export default function Hero() {
                 </div>
 
                 <h1 className="text-4xl md:text-8xl font-headline font-black leading-[0.9] tracking-tighter text-white uppercase">
-                  Crack <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">Punjab Government Exams</span> Before The Real Exam
+                  CRACKLIX TEST 999
                 </h1>
 
                 <p className="text-slate-400 text-base md:text-2xl font-medium max-w-2xl leading-relaxed antialiased border-l-4 border-primary/30 pl-6">
@@ -369,5 +370,3 @@ function ComparisonItem({ text, active, premium }: { text: string, active: boole
     </li>
   );
 }
-
-import { BarChart3 } from "lucide-react";
