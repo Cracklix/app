@@ -10,8 +10,8 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Final Screenshot-Matched Footer Hub v13.0.
- * UPDATED: Increased logo container size to h-16 for better brand prominence.
+ * @fileOverview Final Screenshot-Matched Footer Hub v14.0.
+ * UPDATED: Reduced phone number size and refined support label tracking for better balance.
  */
 export default function Footer() {
   const db = useFirestore();
@@ -83,7 +83,7 @@ export default function Footer() {
           {/* 4. CONNECT HUB (RIGHT) */}
           <div className="lg:col-span-2 space-y-10">
             <h4 className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">CONNECT</h4>
-            <div className="space-y-10">
+            <div className="space-y-8">
                <a 
                  href={content.tg} 
                  target="_blank" 
@@ -92,12 +92,15 @@ export default function Footer() {
                  <Send className="h-5 w-5 fill-current text-white" />
                </a>
                
-               <div className="space-y-2">
-                  <p className="text-2xl md:text-3xl font-headline font-black text-primary leading-tight uppercase tracking-tight">
+               <div className="space-y-3">
+                  <p className="text-xl md:text-2xl font-headline font-black text-primary leading-none uppercase tracking-tight">
                     {content.phone.split(' ')[0]} {content.phone.split(' ')[1]}<br/>
                     {content.phone.split(' ')[2]}
                   </p>
-                  <p className="text-[8px] font-black text-slate-500 uppercase tracking-[0.3em]">Official Support Channel</p>
+                  <div className="space-y-1">
+                    <p className="text-[7px] font-black text-slate-500 uppercase tracking-[0.2em]">OFFICIAL SUPPORT</p>
+                    <p className="text-[7px] font-black text-slate-500 uppercase tracking-[0.2em]">CHANNEL</p>
+                  </div>
                </div>
             </div>
           </div>
