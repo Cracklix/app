@@ -29,9 +29,9 @@ import { doc } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Refined Founder's Story Hub v11.0.
- * UPDATED: Reduced all text sizes for a more professional, balanced layout.
- * ADJUSTED: Compacted timeline nodes to match high-fidelity screenshot feedback.
+ * @fileOverview Refined Founder's Story Hub v12.0.
+ * FIXED: Timeline pattern alignment where headings and text were separating.
+ * UPDATED: Reduced text sizes across the page for an elite institutional feel.
  */
 
 export default function AboutPage() {
@@ -89,7 +89,7 @@ export default function AboutPage() {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="text-3xl md:text-6xl font-headline font-black leading-[1] tracking-tighter uppercase"
+                    className="text-3xl md:text-6xl font-headline font-black leading-[1.1] tracking-tighter uppercase"
                  >
                     From a Student&apos;s Dream <br/>
                     <span className="text-primary italic">To a Nation of Learners</span>
@@ -99,7 +99,7 @@ export default function AboutPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="text-base md:text-xl text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed"
+                    className="text-sm md:text-lg text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed"
                  >
                     The journey of one student&apos;s vision to empower thousands of students across Punjab.
                  </motion.p>
@@ -141,13 +141,13 @@ export default function AboutPage() {
                     className="lg:col-span-7 space-y-8 text-left"
                  >
                     <div className="space-y-4">
-                       <h2 className="text-2xl md:text-4xl font-headline font-black uppercase tracking-tight leading-none">
+                       <h2 className="text-2xl md:text-3xl font-headline font-black uppercase tracking-tight leading-none">
                           The <span className="text-primary">Journey</span> Began with a Challenge.
                        </h2>
-                       <div className="h-1.5 w-16 bg-primary rounded-full" />
+                       <div className="h-1 w-16 bg-primary rounded-full" />
                     </div>
 
-                    <div className="space-y-6 text-slate-300 text-sm md:text-lg font-medium leading-relaxed antialiased">
+                    <div className="space-y-6 text-slate-300 text-[13px] md:text-base font-medium leading-relaxed antialiased">
                        <p>
                           Every meaningful journey begins with a challenge, and <span className="text-white font-bold">Cracklix</span> is no exception.
                        </p>
@@ -185,15 +185,15 @@ export default function AboutPage() {
            </div>
         </section>
 
-        {/* 3. INTERACTIVE HISTORY (COMPACTED) */}
+        {/* 3. INTERACTIVE HISTORY (RECONSTRUCTED PATTERN) */}
         <section className="py-20 md:py-32 bg-white/[0.01]">
-           <div className="container mx-auto px-4 max-w-6xl">
-              <div className="text-center space-y-3 mb-16 md:mb-24">
-                 <h2 className="text-2xl md:text-4xl font-headline font-black uppercase tracking-[0.2em] leading-none">The <span className="text-primary">Evolution</span></h2>
+           <div className="container mx-auto px-4 max-w-5xl">
+              <div className="text-center space-y-3 mb-16 md:mb-32">
+                 <h2 className="text-2xl md:text-3xl font-headline font-black uppercase tracking-[0.2em] leading-none">The <span className="text-primary">Evolution</span></h2>
                  <p className="text-slate-500 font-bold uppercase text-[9px] md:text-[10px] tracking-[0.5em]">Timeline of Excellence</p>
               </div>
 
-              <div className="space-y-16 md:space-y-24">
+              <div className="space-y-16 md:space-y-32">
                  <TimelineItem 
                     icon={<Zap />} 
                     title="Student Struggle" 
@@ -236,11 +236,11 @@ export default function AboutPage() {
                  className="space-y-10"
               >
                  <Quote className="h-10 w-10 md:h-16 md:w-16 text-primary opacity-20 mx-auto" />
-                 <h3 className="text-2xl md:text-5xl font-headline font-black text-white italic leading-tight max-w-4xl mx-auto tracking-tight">
+                 <h3 className="text-xl md:text-4xl font-headline font-black text-white italic leading-tight max-w-4xl mx-auto tracking-tight">
                     &quot;Great achievements begin with a single decision — the decision to keep moving forward despite every obstacle.&quot;
                  </h3>
                  <div className="space-y-1">
-                    <p className="text-lg md:text-xl font-black uppercase text-primary tracking-widest">Arshdeep Singh Grewal</p>
+                    <p className="text-base md:text-lg font-black uppercase text-primary tracking-widest">Arshdeep Singh Grewal</p>
                     <p className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.4em]">Founder of Cracklix</p>
                  </div>
               </motion.div>
@@ -254,12 +254,12 @@ export default function AboutPage() {
                  <ValueCard 
                     title="Our Mission" 
                     desc="To provide students with accessible, reliable, and innovative educational resources that enable smarter preparation and greater confidence." 
-                    icon={<Zap className="h-6 w-6 text-primary" />}
+                    icon={<Zap className="h-5 w-5 text-primary" />}
                  />
                  <ValueCard 
                     title="Our Vision" 
                     desc="To build one of India's most trusted educational areas, empowering learners to achieve their goals through technology solutions." 
-                    icon={<Target className="h-6 w-6 text-blue-500" />}
+                    icon={<Target className="h-5 w-5 text-blue-500" />}
                  />
               </div>
            </div>
@@ -273,8 +273,8 @@ export default function AboutPage() {
                     <Trophy className="h-48 w-48 text-white" />
                  </div>
                  <div className="relative z-10 space-y-6">
-                    <h2 className="text-3xl md:text-6xl font-headline font-black uppercase text-white tracking-tight leading-none">Ready to start <br/> your journey?</h2>
-                    <p className="text-white/80 text-base md:text-lg font-medium max-w-lg mx-auto leading-relaxed">Join the Cracklix hub today and experience high-quality preparation.</p>
+                    <h2 className="text-3xl md:text-5xl font-headline font-black uppercase text-white tracking-tight leading-none">Ready to start <br/> your journey?</h2>
+                    <p className="text-white/80 text-sm md:text-base font-medium max-w-lg mx-auto leading-relaxed">Join the Cracklix hub today and experience high-quality preparation.</p>
                     <Button asChild className="h-14 md:h-16 px-10 md:px-14 bg-white text-[#0B1528] hover:bg-slate-100 font-black uppercase text-[10px] md:text-[11px] tracking-[0.2em] rounded-xl md:rounded-2xl shadow-3xl gap-3 transition-all active:scale-95 border-none">
                        <Link href="/login">Join the Cracklix Journey <ChevronRight className="h-5 w-5" /></Link>
                     </Button>
@@ -299,7 +299,7 @@ function ImpactNode({ label, val, icon, loading }: any) {
             {loading ? (
                <Skeleton className="h-6 w-12 bg-white/10" />
             ) : (
-               <p className="text-lg md:text-xl font-headline font-black text-white leading-none tabular-nums truncate">{val}</p>
+               <p className="text-base md:text-xl font-headline font-black text-white leading-none tabular-nums truncate">{val}</p>
             )}
             <p className="text-[8px] font-black uppercase text-slate-500 tracking-widest mt-1.5 truncate">{label}</p>
          </div>
@@ -311,12 +311,12 @@ function ValueCard({ icon, title, desc }: any) {
   return (
     <Card className="bg-white/5 border-white/10 backdrop-blur-xl p-8 md:p-12 rounded-[2.5rem] shadow-4xl text-left space-y-6 group hover:border-primary/20 transition-all duration-500 h-full flex flex-col relative overflow-hidden">
        <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform">{icon}</div>
-       <div className="h-12 w-12 rounded-[1rem] bg-white/5 border border-white/10 flex items-center justify-center shadow-inner group-hover:bg-primary/5 transition-colors">
+       <div className="h-10 w-10 rounded-[1rem] bg-white/5 border border-white/10 flex items-center justify-center shadow-inner group-hover:bg-primary/5 transition-colors">
           {icon}
        </div>
        <div className="space-y-3 flex-1">
-          <h3 className="text-2xl md:text-3xl font-headline font-black text-white uppercase tracking-tight group-hover:text-primary transition-colors">{title}</h3>
-          <p className="text-sm md:text-base text-slate-400 font-medium leading-relaxed">{desc}</p>
+          <h3 className="text-xl md:text-2xl font-headline font-black text-white uppercase tracking-tight group-hover:text-primary transition-colors">{title}</h3>
+          <p className="text-[13px] md:text-base text-slate-400 font-medium leading-relaxed">{desc}</p>
        </div>
     </Card>
   )
@@ -329,22 +329,35 @@ function TimelineItem({ icon, title, desc, right = false }: any) {
          whileInView={{ opacity: 1, x: 0 }}
          viewport={{ once: true }}
          className={cn(
-            "flex flex-col md:flex-row items-center gap-6 md:gap-12 text-center md:text-left",
-            right && "md:flex-row-reverse md:text-right"
+            "flex flex-col md:flex-row items-center gap-8 md:gap-0 relative",
+            right && "md:flex-row-reverse"
          )}
       >
-         <div className="md:w-1/2 flex justify-center md:justify-end">
+         {/* 1. CONTENT BLOCK */}
+         <div className={cn(
+            "md:w-1/2 space-y-2",
+            right ? "md:pl-16 md:text-left" : "md:pr-16 md:text-right"
+         )}>
+            <h4 className="text-lg md:text-2xl font-headline font-black text-white uppercase tracking-tight leading-tight">{title}</h4>
+            <p className="text-slate-400 text-[11px] md:text-sm font-medium leading-relaxed max-w-sm mx-auto md:mx-0 lg:max-w-md">
+               {desc}
+            </p>
+         </div>
+
+         {/* 2. CENTER ICON NODE */}
+         <div className="flex justify-center relative md:w-0 items-center">
             <div className={cn(
-               "h-16 w-16 md:h-20 md:w-20 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center text-primary shadow-2xl backdrop-blur-xl group hover:border-primary transition-all shrink-0",
-               right ? "md:order-last md:ml-8" : "md:order-first md:mr-8"
+               "h-14 w-14 md:h-20 md:w-20 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center text-primary shadow-2xl backdrop-blur-xl z-10 shrink-0 group hover:border-primary transition-all",
+               right ? "md:-translate-x-1/2" : "md:translate-x-1/2"
             )}>
                {React.cloneElement(icon, { className: "h-6 w-6 md:h-8 md:w-8 fill-current" })}
             </div>
+            {/* Visual connector line for continuity */}
+            <div className="absolute top-full w-px h-16 md:h-32 bg-gradient-to-b from-white/20 to-transparent -z-0 hidden md:block" />
          </div>
-         <div className="md:w-1/2 space-y-2">
-            <h4 className="text-lg md:text-2xl font-headline font-black text-white uppercase tracking-tight leading-tight">{title}</h4>
-            <p className="text-slate-400 text-xs md:text-sm font-medium leading-relaxed max-w-sm mx-auto md:mx-0">{desc}</p>
-         </div>
+
+         {/* 3. BALANCE HALF (EMPTY) */}
+         <div className="md:w-1/2 hidden md:block" />
       </motion.div>
    )
 }
