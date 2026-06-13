@@ -21,8 +21,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Definitive Header Restoration v120.0.
- * UPDATED: Integrated 5 functional navigation blocks exactly as per screenshot.
+ * @fileOverview Definitive Header Restoration v121.0.
+ * UPDATED: Added expiry date to Pass hub and scaled down right-side icons.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -137,29 +137,34 @@ export default function Navbar() {
              {/* SQUARE PASS ACTIVE HUB */}
              {mounted && user && (
                 <div className="h-10 w-10 md:h-12 md:w-12 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex flex-col items-center justify-center shadow-xl shrink-0 group hover:bg-emerald-500/20 transition-all">
-                   <Gem className="h-4 w-4 md:h-5 md:w-5 text-emerald-400 fill-current opacity-80" />
+                   <Gem className="h-3.5 w-3.5 md:h-4 md:w-4 text-emerald-400 fill-current opacity-80" />
                    <span className={cn(
                         "text-[5px] md:text-[7px] font-black uppercase tracking-tighter mt-0.5",
                         passStatus.active ? "text-emerald-400" : "text-rose-400"
                       )}>
                          {passStatus.label}
                    </span>
+                   {passStatus.active && (
+                     <span className="text-[4px] md:text-[6px] text-emerald-400/60 font-bold uppercase tracking-widest leading-none mt-0.5 whitespace-nowrap">
+                        {passStatus.expiry}
+                     </span>
+                   )}
                 </div>
              )}
 
-             {/* SEARCH BUTTON */}
-             <Link href="/search" className="w-10 h-10 md:h-12 md:w-12 bg-white/5 text-slate-400 hover:text-white rounded-xl border border-white/10 transition-all flex items-center justify-center shadow-lg">
-                <Search className="h-5 w-5" />
+             {/* SEARCH BUTTON (SCALED DOWN) */}
+             <Link href="/search" className="w-9 h-9 md:h-10 md:w-10 bg-white/5 text-slate-400 hover:text-white rounded-xl border border-white/10 transition-all flex items-center justify-center shadow-lg">
+                <Search className="h-4 w-4" />
              </Link>
 
-             {/* USER PROFILE */}
+             {/* USER PROFILE (SCALED DOWN) */}
              <div className="relative">
                 {!mounted || loading ? (
-                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-white/5 animate-pulse" />
+                  <div className="h-9 w-9 md:h-10 md:w-10 rounded-full bg-white/5 animate-pulse" />
                 ) : user ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="h-10 w-10 md:h-12 md:w-12 rounded-full overflow-hidden border-[3px] border-white/10 hover:border-primary transition-all bg-white shadow-2xl focus:outline-none flex items-center justify-center">
+                      <button className="h-9 w-9 md:h-10 md:w-10 rounded-full overflow-hidden border-[3px] border-white/10 hover:border-primary transition-all bg-white shadow-2xl focus:outline-none flex items-center justify-center">
                         <StudentAvatar profile={profile} className="h-full w-full border-none" iconClassName="text-[#0B1528]" />
                       </button>
                     </DropdownMenuTrigger>
@@ -195,7 +200,7 @@ export default function Navbar() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 ) : (
-                  <Button asChild className="bg-primary hover:bg-orange-600 text-white font-black px-6 h-11 uppercase text-[12px] tracking-widest shadow-xl border-none transition-all active:scale-95">
+                  <Button asChild className="bg-primary hover:bg-orange-600 text-white font-black px-5 h-9 md:h-10 uppercase text-[11px] tracking-widest shadow-xl border-none transition-all active:scale-95">
                     <Link href="/login">Login Hub</Link>
                   </Button>
                 )}
