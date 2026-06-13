@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { Menu, Search, Zap, CreditCard, LogOut, ShieldCheck, Megaphone, Target, LayoutGrid, Award, Gem, User, Sparkles, Newspaper, AlertCircle, Clock, FileStack, Download } from "lucide-react";
+import { Menu, Search, Zap, CreditCard, LogOut, ShieldCheck, Megaphone, Target, LayoutGrid, Award, Gem, User, Sparkles, Newspaper, AlertCircle, Clock, FileStack, Download, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
 import { useState, useMemo, useEffect } from "react";
@@ -22,13 +22,14 @@ import { doc } from "firebase/firestore";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import MobileSidebar from "./MobileSidebar";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v46.0 (Restored).
- * RESTORED: Full header functionality and optimized logo scaling.
- * FIXED: Increased height for premium aesthetic.
+ * @fileOverview Institutional Navbar v48.0 (Hardened).
+ * RESTORED: Pass status indicator and premium logo proportions.
+ * FIXED: Pass expiry visualization in the main header.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -73,6 +74,20 @@ export default function Navbar() {
     }
   };
 
+  const passStatus = useMemo(() => {
+    if (!profile?.pass) return null;
+    const active = profile.pass.active;
+    const expiry = new Date(profile.pass.expiryDate);
+    const isExpired = expiry < new Date();
+    
+    return {
+      active: active && !isExpired,
+      isExpired,
+      label: isExpired ? "PASS EXPIRED" : "PASS ACTIVE",
+      expiry: expiry.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+    };
+  }, [profile]);
+
   const isFounder = user?.email && SUPER_ADMIN_WHITELIST.includes(user.email.toLowerCase());
   const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || isFounder;
 
@@ -95,7 +110,7 @@ export default function Navbar() {
         </div>
       )}
 
-      <nav className="w-full bg-[#0B1528] border-b border-white/5 h-16 md:h-28 flex items-center shadow-xl backdrop-blur-md bg-opacity-95">
+      <nav className="w-full bg-[#0B1528] border-b border-white/5 h-20 md:h-32 flex items-center shadow-xl backdrop-blur-md bg-opacity-95">
         <div className="container mx-auto max-w-full flex items-center justify-between px-3 md:px-8">
           <div className="flex items-center gap-2 md:gap-10 overflow-hidden">
             <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
@@ -113,6 +128,21 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-2 md:gap-8 shrink-0">
+            {/* DESKTOP PASS STATUS */}
+            {mounted && user && passStatus && (
+               <div className="hidden lg:flex flex-col items-end gap-1 px-4 border-l border-white/10 h-10 justify-center">
+                  <Badge className={cn(
+                    "border-none px-3 py-1 rounded-md font-black uppercase text-[8px] tracking-[0.2em] shadow-lg w-fit text-white",
+                    passStatus.active ? "bg-emerald-500" : "bg-rose-600"
+                  )}>
+                     {passStatus.label}
+                  </Badge>
+                  <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest leading-none">
+                     {passStatus.active ? `Valid till ${passStatus.expiry}` : "Action Required"}
+                  </p>
+               </div>
+            )}
+
             {mounted && canInstall && (
               <Button 
                 onClick={handleInstallApp}
@@ -138,13 +168,37 @@ export default function Navbar() {
                       <StudentAvatar profile={profile} className="h-full w-full border-none" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-64 bg-[#0F172A] border-white/10 text-white rounded-[2rem] p-2 shadow-5xl z-[2001]" align="end">
+                  <DropdownMenuContent className="w-72 bg-[#0F172A] border-white/10 text-white rounded-[2rem] p-2 shadow-5xl z-[2001]" align="end">
+                    <div className="px-4 py-3 flex items-center gap-3">
+                       <StudentAvatar profile={profile} className="h-10 w-10" />
+                       <div className="min-w-0">
+                          <p className="text-[11px] font-black uppercase tracking-tight truncate leading-none mb-1">{profile?.name || "Aspirant"}</p>
+                          <p className="text-[8px] font-bold text-slate-500 truncate">{user.email}</p>
+                       </div>
+                    </div>
+                    <DropdownMenuSeparator className="bg-white/5" />
+                    
+                    {passStatus && (
+                      <div className="px-4 py-3 bg-white/5 mx-2 rounded-xl mb-2 mt-1 space-y-1">
+                         <div className="flex items-center justify-between">
+                            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Pass Status</span>
+                            <Badge className={cn("text-[7px] font-black uppercase border-none", passStatus.active ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400")}>
+                               {passStatus.label}
+                            </Badge>
+                         </div>
+                         <p className="text-[9px] font-bold text-white flex items-center gap-2">
+                            <Calendar className="h-3 w-3 text-primary" /> Expiry: {passStatus.expiry}
+                         </p>
+                      </div>
+                    )}
+
                     <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5">
                       <Link href="/profile" className="w-full flex items-center gap-3">
                         <User className="h-5 w-5 text-blue-400" />
                         <span className="font-bold text-[13px] tracking-tight uppercase">My Profile</span>
                       </Link>
                     </DropdownMenuItem>
+                    
                     {isAdmin && (
                       <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5 bg-rose-500/10 mt-1">
                         <Link href="/admin" className="w-full flex items-center gap-3">
@@ -153,6 +207,14 @@ export default function Navbar() {
                         </Link>
                       </DropdownMenuItem>
                     )}
+
+                    <DropdownMenuItem asChild className="flex items-center gap-3 px-4 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5 mt-1">
+                      <Link href="/pass" className="w-full flex items-center gap-3">
+                        <Gem className="h-5 w-5 text-primary" />
+                        <span className="font-bold text-[13px] tracking-tight uppercase">Upgrade Hub</span>
+                      </Link>
+                    </DropdownMenuItem>
+
                     <DropdownMenuSeparator className="bg-white/5 my-2" />
                     <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-3 px-4 py-4 cursor-pointer rounded-xl transition-all focus:bg-white/5 focus:text-rose-500 text-rose-500/80">
                       <LogOut className="h-5 w-5 shrink-0" />
