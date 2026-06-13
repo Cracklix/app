@@ -18,9 +18,9 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview FINAL CALIBRATED HERO v208.0.
- * FIXED: Reduced background shading to make Golden Temple clearly visible.
- * FIXED: Shifted bottom stats bar for better visual balance.
+ * @fileOverview FINAL CALIBRATED HERO v209.0.
+ * FIXED: Rounded corners unified across all boxes to match screenshot.
+ * FIXED: Background shading concentrated on text side only.
  */
 
 export default function Hero() {
@@ -42,10 +42,10 @@ export default function Hero() {
     };
 
     return [
-      { id: 'q', icon: <BookOpen className="text-blue-400 h-2 w-2 md:h-5 md:w-5" />, val: formatNumber(stats?.totalQuestions, "439+"), label: "Total practice questions" },
-      { id: 'm', icon: <ClipboardList className="text-orange-400 h-2 w-2 md:h-5 md:w-5" />, val: formatNumber(stats?.totalMocks, "8+"), label: "Total mock tests" },
-      { id: 'e', icon: <ShieldCheck className="text-blue-500 h-2 w-2 md:h-5 md:w-5" />, val: formatNumber(stats?.totalBoards, "92+"), label: "Total exams covered" },
-      { id: 'u', icon: <Users className="text-emerald-400 h-2 w-2 md:h-5 md:w-5" />, val: formatNumber(stats?.totalUsers, "5+"), label: "Registered students" }
+      { id: 'q', icon: <BookOpen className="text-blue-400 h-2.5 w-2.5 md:h-5 md:w-5" />, val: formatNumber(stats?.totalQuestions, "439+"), label: "Total practice questions" },
+      { id: 'm', icon: <ClipboardList className="text-orange-400 h-2.5 w-2.5 md:h-5 md:w-5" />, val: formatNumber(stats?.totalMocks, "8+"), label: "Total mock tests" },
+      { id: 'e', icon: <ShieldCheck className="text-blue-500 h-2.5 w-2.5 md:h-5 md:w-5" />, val: formatNumber(stats?.totalBoards, "92+"), label: "Total exams covered" },
+      { id: 'u', icon: <Users className="text-emerald-400 h-2.5 w-2.5 md:h-5 md:w-5" />, val: formatNumber(stats?.totalUsers, "5+"), label: "Registered students" }
     ];
   }, [stats]);
 
@@ -65,12 +65,11 @@ export default function Hero() {
           className="w-full h-full object-cover object-right"
           referrerPolicy="no-referrer"
         />
-        {/* Lighter navy mask to keep Golden Temple visible on the right */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19] via-[#050B19]/40 to-transparent z-[10]" />
+        {/* Tighter gradient concentrated on the left content side */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19] via-[#050B19]/80 to-transparent z-[10]" />
         
-        {/* TARGETED ARTIFACT MASK - Subtler star removal */}
-        <div className="absolute top-[20%] right-[30%] w-[100px] h-[100px] bg-[#050B19] blur-[60px] z-[11] opacity-70 rounded-full pointer-events-none" />
-        <div className="absolute top-[40%] left-[20%] w-[120px] h-[80px] bg-[#050B19] blur-[50px] z-[11] opacity-60 rounded-full pointer-events-none" />
+        {/* TARGETED ARTIFACT MASK */}
+        <div className="absolute top-[15%] left-[20%] w-[150px] h-[150px] bg-[#050B19] blur-[80px] z-[11] opacity-80 rounded-full pointer-events-none" />
 
         {/* PUNJAB MAP WATERMARK */}
         <div className="absolute inset-0 z-[12] pointer-events-none opacity-[0.03]">
@@ -79,17 +78,17 @@ export default function Hero() {
       </div>
 
       {/* 2. CONTENT HUB */}
-      <div className="container mx-auto px-4 md:px-12 max-w-7xl relative z-[30] pt-10 md:pt-14">
-         <div className="max-w-2xl space-y-1 md:space-y-4">
+      <div className="container mx-auto px-4 md:px-12 max-w-7xl relative z-[30] pt-8 md:pt-14">
+         <div className="max-w-2xl space-y-1.5 md:space-y-4">
             
             {/* TOP PILL BADGE */}
             <motion.div
                initial={{ opacity: 0, y: 5 }}
                animate={{ opacity: 1, y: 0 }}
-               className="inline-flex items-center gap-1 px-2 py-0.5 md:px-4 md:py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-0.5 md:mb-1"
+               className="inline-flex items-center gap-1.5 px-3 py-1 md:px-4 md:py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-1 md:mb-1.5"
             >
-               <Star className="h-2 w-2 md:h-3.5 md:w-3.5 text-[#F97316] fill-current" />
-               <span className="text-[6px] md:text-[10px] font-bold text-white tracking-widest uppercase">#1 Punjab exam preparation platform</span>
+               <Star className="h-2.5 w-2.5 md:h-3.5 md:w-3.5 text-[#F97316] fill-current" />
+               <span className="text-[7px] md:text-[10px] font-bold text-white tracking-widest uppercase">#1 Punjab exam preparation platform</span>
             </motion.div>
 
             {/* HEADINGS */}
@@ -99,10 +98,10 @@ export default function Hero() {
                transition={{ delay: 0.1 }}
                className="space-y-0"
             >
-               <h1 className="text-[16px] md:text-5xl lg:text-6xl font-headline font-black text-white leading-tight tracking-tight">
+               <h1 className="text-[18px] md:text-5xl lg:text-6xl font-headline font-black text-white leading-tight tracking-tight uppercase">
                   Prepare smarter.
                </h1>
-               <h1 className="text-[16px] md:text-5xl lg:text-6xl font-headline font-black text-[#F97316] leading-tight tracking-tight">
+               <h1 className="text-[18px] md:text-5xl lg:text-6xl font-headline font-black text-[#F97316] leading-tight tracking-tight uppercase">
                   Score higher.
                </h1>
             </motion.div>
@@ -112,7 +111,7 @@ export default function Hero() {
                initial={{ opacity: 0, y: 10 }}
                animate={{ opacity: 1, y: 0 }}
                transition={{ delay: 0.2 }}
-               className="text-[9px] md:text-lg text-slate-300 font-medium max-w-lg leading-snug antialiased"
+               className="text-[9.5px] md:text-lg text-slate-300 font-medium max-w-lg leading-snug antialiased"
             >
                Punjab Government Exams di Complete <br />
                Preparation ik hi Platform te.
@@ -123,14 +122,14 @@ export default function Hero() {
                initial={{ opacity: 0, y: 10 }}
                animate={{ opacity: 1, y: 0 }}
                transition={{ delay: 0.3 }}
-               className="flex flex-row gap-1.5 md:gap-4 pt-1.5 md:pt-6"
+               className="flex flex-row gap-2 md:gap-4 pt-2 md:pt-6"
             >
-               <Button asChild className="h-7 md:h-14 px-3 md:px-8 bg-[#F97316] hover:bg-orange-600 text-white font-black text-[8px] md:text-xs tracking-tight rounded-md md:rounded-xl shadow-2xl transition-all border-none">
+               <Button asChild className="h-8 md:h-14 px-4 md:px-8 bg-[#F97316] hover:bg-orange-600 text-white font-black text-[9px] md:text-xs tracking-tight rounded-lg md:rounded-2xl shadow-2xl transition-all border-none">
                   <Link href="/mocks" className="flex items-center">
-                     Start free mock <ArrowRight className="h-2.5 w-2.5 md:h-4 md:w-4 ml-1 md:ml-2" />
+                     Start free mock <ArrowRight className="h-3 w-3 md:h-4 md:w-4 ml-1.5 md:ml-2" />
                   </Link>
                </Button>
-               <Button asChild variant="outline" className="h-7 md:h-14 px-3 md:px-8 border-white/20 bg-white/5 text-white font-black text-[8px] md:text-xs tracking-tight rounded-md md:rounded-xl transition-all backdrop-blur-md hover:bg-white/10">
+               <Button asChild variant="outline" className="h-8 md:h-14 px-4 md:px-8 border-white/20 bg-white/5 text-white font-black text-[9px] md:text-xs tracking-tight rounded-lg md:rounded-2xl transition-all backdrop-blur-md hover:bg-white/10">
                   <Link href="/exams">
                      Explore exams
                   </Link>
@@ -142,7 +141,7 @@ export default function Hero() {
       {/* 3. INTEGRATED BOTTOM DATA BAR */}
       <div className="absolute bottom-6 md:bottom-20 left-0 right-0 z-[40]">
          <div className="container mx-auto px-4 md:px-12 max-w-7xl overflow-hidden">
-            <div className="flex flex-row md:grid md:grid-cols-4 gap-1.5 md:gap-4 overflow-x-auto no-scrollbar pb-1 pe-6 md:pe-0">
+            <div className="flex flex-row md:grid md:grid-cols-4 gap-2 md:gap-4 overflow-x-auto no-scrollbar pb-1 pe-6 md:pe-0">
                {liveStats.map((stat, idx) => (
                   <motion.div
                      key={stat.id}
@@ -151,13 +150,13 @@ export default function Hero() {
                      transition={{ delay: 0.4 + (idx * 0.1) }}
                      className="shrink-0 flex-1 md:flex-none"
                   >
-                     <Card className="bg-[#0B1528]/60 backdrop-blur-2xl border border-white/10 p-1 md:p-4 rounded-md md:rounded-2xl text-left flex items-center gap-1.5 md:gap-4 group hover:bg-[#0B1528]/80 transition-all duration-300 shadow-2xl overflow-hidden h-7 md:h-20 w-full min-w-[110px] md:min-w-none">
-                        <div className="shrink-0 h-4 w-4 md:h-12 md:w-12 rounded md:rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-transform group-hover:scale-105 shadow-inner">
+                     <Card className="bg-[#0B1528]/80 backdrop-blur-2xl border border-white/10 p-1.5 md:p-4 rounded-xl md:rounded-[2rem] text-left flex items-center gap-2 md:gap-4 group hover:bg-[#0B1528] transition-all duration-300 shadow-2xl overflow-hidden h-9 md:h-20 w-full min-w-[130px] md:min-w-none">
+                        <div className="shrink-0 h-5 w-5 md:h-12 md:w-12 rounded-lg md:rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center transition-transform group-hover:scale-105 shadow-inner">
                            {stat.icon}
                         </div>
-                        <div className="min-w-0 flex flex-col justify-center leading-none">
-                           <p className="text-[8px] md:text-2xl font-headline font-black text-white tabular-nums leading-none mb-0.5">{stat.val}</p>
-                           <p className="text-[5px] md:text-[9px] font-bold text-slate-500 tracking-wider truncate">
+                        <div className="min-w-0 flex flex-col justify-center leading-tight">
+                           <p className="text-[10px] md:text-2xl font-headline font-black text-white tabular-nums leading-none mb-0.5">{stat.val}</p>
+                           <p className="text-[6px] md:text-[10px] font-bold text-slate-500 tracking-wider truncate">
                               {stat.label}
                            </p>
                         </div>
