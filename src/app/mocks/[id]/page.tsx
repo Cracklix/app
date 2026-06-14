@@ -29,8 +29,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Individual Mock Gateway v25.0 (Ultra-Compact).
- * UPDATED: Drastically reduced typography and padding for mobile visibility.
+ * @fileOverview Individual Mock Gateway v26.0 (Micro-Scale).
+ * UPDATED: Shrunken typography and padding for absolute minimum screen coverage on mobile.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -134,12 +134,12 @@ export default function MockOverviewPage() {
     <div className="min-h-screen bg-white flex flex-col font-body">
       <Navbar />
       <main className="flex-1 text-left">
-        <section className="bg-slate-50 border-b border-slate-100 py-4 md:py-8 lg:py-10">
+        <section className="bg-slate-50 border-b border-slate-100 py-3 md:py-8 lg:py-10">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div className="flex items-start gap-4 flex-1">
                 <Button variant="ghost" onClick={() => router.back()} className="rounded-full h-8 w-8 md:h-10 md:w-10 border border-slate-200 bg-white p-0 shadow-sm shrink-0"><ChevronLeft className="h-4 w-4" /></Button>
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
                       <Badge className={cn(
                         "border-none text-[6px] md:text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest shadow-md", 
@@ -148,7 +148,7 @@ export default function MockOverviewPage() {
                         {isPremium ? '🔒 PREMIUM' : 'FREE'}
                       </Badge>
                   </div>
-                  <h1 className="text-lg md:text-3xl lg:text-4xl font-headline font-black text-[#0F172A] uppercase leading-[1.1] tracking-tight max-w-2xl">{mock.title}</h1>
+                  <h1 className="text-base md:text-3xl lg:text-4xl font-headline font-black text-[#0F172A] uppercase leading-[1.1] tracking-tight max-w-2xl">{mock.title}</h1>
                   <div className="flex items-center gap-4 pt-1 text-slate-500 font-bold text-[8px] md:text-sm uppercase tracking-widest">
                       <span className="flex items-center gap-1.5"><Clock className="h-3 w-3 text-primary" /> {mock.duration}m</span>
                       <span className="flex items-center gap-1.5"><BookOpen className="h-3 w-3 text-primary" /> {mock.totalQuestions} Qs</span>
@@ -177,12 +177,12 @@ export default function MockOverviewPage() {
           </div>
         </section>
 
-        <section className="py-6 md:py-10 bg-white">
+        <section className="py-4 md:py-10 bg-white">
            <div className="container mx-auto px-4 max-w-6xl">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
-                 <FeatureNode icon={<ShieldCheck className="text-emerald-500 h-4 w-4" />} title="Official Hub" desc="Official Patterns" />
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-6">
+                 <FeatureNode icon={<ShieldCheck className="text-emerald-500 h-4 w-4" />} title="Official" desc="Official Patterns" />
                  <FeatureNode icon={<Zap className="text-primary h-4 w-4" />} title="Solutions" desc="Logic Explained" />
-                 <FeatureNode icon={<Target className="text-blue-500 h-4 w-4" />} title="Rankings" desc="State Merit" />
+                 <FeatureNode icon={<Target className="text-blue-500 h-4 w-4" title="Rankings" desc="State Merit" className="col-span-2 md:col-span-1" />} />
               </div>
            </div>
         </section>
@@ -192,11 +192,11 @@ export default function MockOverviewPage() {
   )
 }
 
-function FeatureNode({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
+function FeatureNode({ icon, title, desc, className }: { icon: React.ReactNode, title: string, desc: string, className?: string }) {
   return (
-    <div className="p-3 md:p-5 rounded-xl bg-slate-50 border border-slate-100 space-y-1 text-center group hover:bg-white hover:shadow-lg transition-all">
-      <div className="h-7 w-7 md:h-9 md:w-9 bg-white rounded-lg flex items-center justify-center mx-auto shadow-sm group-hover:scale-110 transition-transform">{icon}</div>
-      <h3 className="text-[10px] md:text-xs font-black text-[#0F172A] uppercase tracking-tight">{title}</h3>
+    <div className={cn("p-2.5 md:p-5 rounded-lg md:rounded-xl bg-slate-50 border border-slate-100 space-y-1 text-center group hover:bg-white hover:shadow-lg transition-all", className)}>
+      <div className="h-6 w-6 md:h-9 md:w-9 bg-white rounded-lg flex items-center justify-center mx-auto shadow-sm group-hover:scale-110 transition-transform">{React.cloneElement(icon as React.ReactElement, { className: "h-3 w-3 md:h-4 md:w-4" })}</div>
+      <h3 className="text-[9px] md:text-xs font-black text-[#0F172A] uppercase tracking-tight">{title}</h3>
       <p className="text-slate-400 font-bold uppercase text-[6px] md:text-[8px] tracking-widest">{desc}</p>
     </div>
   );
