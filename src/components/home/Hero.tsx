@@ -8,19 +8,19 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Final Screenshot-Matched Hero Hub v50.0.
- * UPDATED: Exact replica of metrics (439+, 8+, 92+, 5+), headings, and buttons from the image.
+ * @fileOverview Final Screenshot-Matched Hero Hub v52.0.
+ * UPDATED: Shrunken mobile background height to 200px as per user request.
  */
 
 export default function Hero() {
   const templeImg = "https://i.ibb.co/LXgcLVVq/Gemini-Generated-Image-n1so6on1so6on1so.png";
 
   return (
-    <section className="relative w-full min-h-[800px] lg:min-h-[900px] bg-[#0B1528] flex flex-col justify-center overflow-hidden font-body">
+    <section className="relative w-full min-h-[800px] lg:min-h-[900px] bg-[#0B1528] flex flex-col justify-center overflow-hidden font-body text-left">
       
       {/* 1. BACKGROUND LAYERS */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 right-0 w-full lg:w-[75%] h-full">
+        <div className="absolute top-0 right-0 w-full lg:w-[75%] h-[200px] lg:h-full">
            <img 
               src={templeImg} 
               alt="Golden Temple" 
