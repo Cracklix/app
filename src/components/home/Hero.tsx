@@ -9,9 +9,9 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened Screenshot-Matched Hero Hub v86.0.
- * UPDATED: Background width set to 50% with object-contain for "Full Visibility" of the Golden Temple on the right.
- * FIXED: Institutional text anchored to the left with high-contrast buttons and metrics.
+ * @fileOverview Hardened Screenshot-Matched Hero Hub v87.0.
+ * UPDATED: Background image aligned to the TOP RIGHT (object-right-top) to sit flush with the header.
+ * FIXED: Maintained object-contain for "Full Visibility" of the Golden Temple.
  */
 
 export default function Hero() {
@@ -20,12 +20,12 @@ export default function Hero() {
   return (
     <section className="relative w-full min-h-[600px] lg:min-h-[750px] bg-[#0B0F19] flex flex-col justify-start overflow-hidden font-body text-left">
       
-      {/* 1. BACKGROUND LAYERS - FULL VISIBILITY RIGHT SIDE */}
-      <div className="absolute top-0 right-0 w-full lg:w-[50%] h-[300px] lg:h-full z-0 pointer-events-none">
+      {/* 1. BACKGROUND LAYERS - FULL VISIBILITY RIGHT SIDE, ALIGNED TO TOP */}
+      <div className="absolute top-0 right-0 w-full lg:w-[50%] h-[350px] lg:h-full z-0 pointer-events-none">
         <img 
           src={templeImg} 
           alt="Golden Temple" 
-          className="w-full h-full object-contain lg:object-right-bottom object-center"
+          className="w-full h-full object-contain lg:object-right-top object-center"
           referrerPolicy="no-referrer"
         />
         {/* Cinematic Gradient: Fades from solid navy on the left to transparent on the right */}
