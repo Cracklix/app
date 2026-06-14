@@ -2,11 +2,11 @@
 
 import { useExamStore } from '@/store/useExamStore';
 import { cn } from '@/lib/utils';
-import { useMemo; } from 'react';
+import { useMemo } from 'react';
 
 /**
  * @fileOverview Refined Subject Switching Hub (Absolute Minimum).
- * UPDATED: Reduced height to h-9 and font sizes to text-[7px].
+ * UPDATED: Fixed syntax error in import and maintained reduced height.
  */
 export default function SubjectTabs() {
   const questions = useExamStore(s => s.questions);
