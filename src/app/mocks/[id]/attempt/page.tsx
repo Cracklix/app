@@ -26,8 +26,8 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened CBT Engine v50.0 (Ultra-Compact).
- * UPDATED: Implemented micro-scale modals and maximized vertical viewing area.
+ * @fileOverview Hardened CBT Engine v51.0 (Micro-Scale).
+ * UPDATED: Reduced palette width to 160px for maximum density.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -237,7 +237,7 @@ export default function MockAttemptPage() {
       </main>
 
       <Sheet open={isPaletteOpen} onOpenChange={setIsPaletteOpen}>
-        <SheetContent side="right" className="p-0 border-none w-[200px] md:w-[350px] h-full shadow-5xl z-[1200]">
+        <SheetContent side="right" className="p-0 border-none w-[160px] md:w-[320px] h-full shadow-5xl z-[1200]">
           <SheetHeader className="sr-only">
              <SheetTitle>Navigation Palette</SheetTitle>
              <SheetDescription>View and navigate through all questions in the current mock test.</SheetDescription>
@@ -292,4 +292,3 @@ export default function MockAttemptPage() {
     </div>
   );
 }
-
