@@ -9,8 +9,9 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened Screenshot-Matched Hero Hub v94.0.
- * RESTORED: Vertical positioning and spacing to the "abhi thik hai" state.
+ * @fileOverview Hardened Screenshot-Matched Hero Hub v95.0.
+ * UPDATED: Background expanded downwards and temple anchored firmly to the right.
+ * FIXED: Strictly preserved text and metric box locations.
  */
 
 export default function Hero() {
@@ -19,12 +20,12 @@ export default function Hero() {
   return (
     <section className="relative w-full min-h-[600px] lg:min-h-[850px] bg-[#0B0F19] flex flex-col justify-start overflow-hidden font-body text-left">
       
-      {/* 1. BACKGROUND LAYERS - RIGHT ALIGNED, TOP ANCHORED */}
-      <div className="absolute top-0 right-0 w-full lg:w-[65%] h-[350px] lg:h-full z-0 pointer-events-none">
+      {/* 1. BACKGROUND LAYERS - RIGHT ALIGNED, EXPANDED DOWNWARDS */}
+      <div className="absolute top-0 right-0 w-full lg:w-[70%] h-[450px] lg:h-full z-0 pointer-events-none">
         <img 
           src={templeImg} 
           alt="Golden Temple" 
-          className="w-full h-full object-contain lg:object-right-top object-center"
+          className="w-full h-full object-contain lg:object-right object-center"
           referrerPolicy="no-referrer"
         />
         {/* Cinematic Gradient: Fades from solid navy on the left to transparent on the right */}
@@ -33,7 +34,7 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19] via-transparent to-transparent lg:hidden" />
       </div>
 
-      {/* 2. MAIN CONTENT HUB - LEFT ANCHORED */}
+      {/* 2. MAIN CONTENT HUB - LEFT ANCHORED (LOCATION PRESERVED) */}
       <div className="container mx-auto px-6 relative z-10 max-w-7xl pt-12 md:pt-32">
         <div className="max-w-3xl space-y-6 md:space-y-8 text-left">
           
@@ -107,7 +108,7 @@ export default function Hero() {
            </motion.div>
         </div>
 
-        {/* METRICS REGISTRY */}
+        {/* METRICS REGISTRY - LOCATION PRESERVED */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
