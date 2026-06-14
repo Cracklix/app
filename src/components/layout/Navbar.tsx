@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from "next/link";
-import { Menu, Search, User, Gem, LogOut, Newspaper, Zap, Home, Download } from "lucide-react";
-import Logo from "@/components/brand/Logo";
+import { Search, User, LogOut, Menu, X } from "lucide-react";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { usePathname, useRouter } from "next/navigation";
@@ -22,10 +21,6 @@ import { Button } from "@/components/ui/button";
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
-/**
- * @fileOverview Final Screenshot-Matched Navbar v264.0.
- * UPDATED: Restored INSTALL APP and LOGIN button styles from the reference image.
- */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -47,124 +42,97 @@ export default function Navbar() {
     }
   };
 
-  const isAdmin = useMemo(() => {
-    if (!user) return false;
-    const email = user.email?.toLowerCase();
-    const isFounder = email && SUPER_ADMIN_WHITELIST.includes(email);
-    return profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || isFounder;
-  }, [user, profile]);
+  const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || (user?.email && SUPER_ADMIN_WHITELIST.includes(user.email.toLowerCase()));
 
-  if (!mounted) return <div className="w-full h-16 md:h-20 bg-[#0B1528]" />;
+  if (!mounted) return null;
 
   return (
-    <div className="sticky top-0 z-[1000] w-full pointer-events-auto font-body text-left">
-      <nav className="w-full flex items-center bg-[#0B1528] border-b border-white/5 h-16 md:h-20 px-4 md:px-8 shadow-2xl">
-        <div className="container mx-auto max-w-[1536px] flex items-center justify-between h-full gap-4">
+    <div className="w-full sticky top-0 z-[1000] font-body">
+      {/* 1. ANNOUNCEMENT TICKER */}
+      <div className="w-full bg-gradient-to-r from-orange-600 to-amber-600 py-2 px-4 text-center text-[10px] md:text-xs font-black uppercase tracking-wider text-white shadow-md">
+          🔥 Live Now: PSSSB Patwari, Clerk, & PSTET 2026 Free Mega Mock Drills! <Link href="/exams" className="underline ml-2">Select Your Exam ↓</Link>
+      </div>
+
+      {/* 2. NAVIGATION BAR */}
+      <nav className="w-full border-b border-white/5 bg-[#0A0E1A]/95 backdrop-blur-md h-16 md:h-20 px-4 md:px-8 shadow-2xl flex items-center">
+        <div className="container mx-auto max-w-7xl flex items-center justify-between h-full gap-4">
           
-          <div className="flex items-center gap-4 lg:gap-8 shrink-0">
+          {/* Brand Identity */}
+          <div className="flex items-center gap-3 lg:gap-4 shrink-0">
             <button 
               onClick={() => setIsSidebarOpen(true)} 
-              className="w-9 h-9 bg-white/5 text-white rounded-lg border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center cursor-pointer"
+              className="lg:hidden w-8 h-8 bg-white/5 text-white rounded-lg border border-white/10 flex items-center justify-center"
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-4 w-4" />
             </button>
-            
-            <div className="pt-0.5">
-              <Logo imgClassName="h-8 md:h-9 origin-left" />
-            </div>
-          </div>
-
-          <div className="hidden lg:flex items-center gap-4 xl:gap-6 h-full">
-            <NavLink icon={<Home className="h-4 w-4" />} label="HOME PAGE" href="/" active={pathname === "/"} />
-            <NavLink icon={<Zap className="h-4 w-4" />} label="PRACTICE TESTS" href="/mocks" active={pathname.startsWith("/mocks")} />
-            <NavLink icon={<Newspaper className="h-4 w-4" />} label="CURRENT AFFAIRS" href="/current-affairs" active={pathname === "/current-affairs"} />
-
-            <Link href="/pass" className="transition-all active:scale-95 h-full flex items-center">
-              <div className={cn(
-                "px-4 h-9 rounded-lg border flex items-center justify-center gap-2 transition-all",
-                "bg-white/5 border-white/10 hover:bg-white/10 text-white"
-              )}>
-                <Gem className="h-3.5 w-3.5 text-[#F97316]" />
-                <span className="text-[9px] font-black uppercase tracking-widest whitespace-nowrap">GET PASS</span>
+            <Link href="/" className="flex items-center gap-3">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
+                <span className="text-base md:text-xl font-black text-white italic">C</span>
               </div>
+              <span className="text-lg md:text-2xl font-black tracking-tight text-white">Cracklix<span className="text-orange-500">.</span></span>
             </Link>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-4 shrink-0">
-             {/* RESTORED INSTALL APP BUTTON */}
-             <Button asChild className="hidden sm:flex bg-[#F97316] hover:bg-orange-600 text-white font-black px-6 h-10 rounded-lg uppercase text-[10px] tracking-widest shadow-2xl border-none gap-2">
-                <Link href="/download">
-                   <Download className="h-3.5 w-3.5" /> INSTALL APP
-                </Link>
-             </Button>
+          {/* Quick Access Badges (Desktop Only) */}
+          <div className="hidden lg:flex items-center gap-2">
+            <Badge variant="outline" className="px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px] font-black uppercase">✓ PSSSB</Badge>
+            <Badge variant="outline" className="px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 border-blue-500/20 text-[10px] font-black uppercase">✓ PPSC</Badge>
+            <Badge variant="outline" className="px-3 py-1.5 rounded-lg bg-purple-500/10 text-purple-400 border-purple-500/20 text-[10px] font-black uppercase">✓ TEACHING CADRE</Badge>
+          </div>
 
-             <Link href="/search" className="w-10 h-10 rounded-lg border border-white/10 transition-all flex items-center justify-center bg-white/5 text-slate-400 hover:text-white">
-                <Search className="h-4.5 w-4.5" />
+          {/* Authentication Portal Gateway */}
+          <div className="flex items-center gap-3">
+             <Link href="/search" className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-all">
+                <Search className="h-4 w-4" />
              </Link>
 
-             <div className="relative">
-               {user ? (
-                 <DropdownMenu>
-                   <DropdownMenuTrigger asChild>
-                     <button className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/10 hover:border-primary transition-all bg-white shadow-2xl flex items-center justify-center cursor-pointer">
-                       <StudentAvatar profile={profile} className="h-full w-full border-none" iconClassName="text-[#0B1528]" />
-                     </button>
-                   </DropdownMenuTrigger>
-                   <DropdownMenuContent className="w-64 bg-[#0F172A] border-white/10 text-white rounded-2xl p-2 shadow-5xl z-[2001] mt-2" align="end">
-                     <DropdownMenuItem asChild className="px-4 py-3.5 cursor-pointer rounded-xl focus:bg-white/5 group">
-                       <Link href="/profile" className="w-full flex items-center gap-4">
-                         <User className="h-5 w-5 text-blue-400" />
-                         <span className="font-bold text-[14px] tracking-tight uppercase">MY PROFILE</span>
+             {user ? (
+               <DropdownMenu>
+                 <DropdownMenuTrigger asChild>
+                   <button className="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-white/10 overflow-hidden shadow-xl cursor-pointer bg-white">
+                      <StudentAvatar profile={profile} className="h-full w-full border-none" />
+                   </button>
+                 </DropdownMenuTrigger>
+                 <DropdownMenuContent align="end" className="w-64 bg-[#0F172A] border-white/10 text-white rounded-2xl p-2 shadow-5xl z-[2001] mt-2">
+                    <DropdownMenuItem asChild className="px-4 py-3 cursor-pointer rounded-xl focus:bg-white/5">
+                       <Link href="/profile" className="flex items-center gap-4">
+                          <User className="h-5 w-5 text-blue-400" />
+                          <span className="font-bold text-sm uppercase">My Profile</span>
                        </Link>
-                     </DropdownMenuItem>
-                     {isAdmin && (
-                       <DropdownMenuItem asChild className="px-4 py-3.5 cursor-pointer rounded-xl focus:bg-white/10 group mt-1 border border-white/5">
-                         <Link href="/admin" className="w-full flex items-center gap-4">
-                           <User className="h-5 w-5 text-rose-500" />
-                           <span className="font-bold text-[14px] tracking-tight uppercase text-white">ADMIN HUB</span>
-                         </Link>
-                       </DropdownMenuItem>
-                     )}
-                     <DropdownMenuSeparator className="bg-white/5 my-2" />
-                     <DropdownMenuItem onClick={handleLogout} className="px-4 py-3.5 cursor-pointer rounded-xl focus:bg-rose-50/10 text-rose-500">
+                    </DropdownMenuItem>
+                    {isAdmin && (
+                      <DropdownMenuItem asChild className="px-4 py-3 cursor-pointer rounded-xl focus:bg-white/10 mt-1 border border-white/5">
+                        <Link href="/admin" className="flex items-center gap-4 text-white">
+                          <User className="h-5 w-5 text-rose-500" />
+                          <span className="font-bold text-sm uppercase">Admin Hub</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator className="bg-white/5 my-2" />
+                    <DropdownMenuItem onClick={handleLogout} className="px-4 py-3 cursor-pointer rounded-xl focus:bg-rose-50/10 text-rose-500">
                        <LogOut className="h-5 w-5 shrink-0" />
-                       <span className="font-bold text-[14px] tracking-tight uppercase">LOG OUT</span>
-                     </DropdownMenuItem>
-                   </DropdownMenuContent>
-                 </DropdownMenu>
-               ) : (
-                 <Button asChild className="bg-[#F97316] hover:bg-orange-600 text-white font-black px-6 h-10 rounded-lg uppercase text-[10px] tracking-widest shadow-2xl border-none">
-                   <Link href="/login">LOGIN</Link>
-                 </Button>
-               )}
-             </div>
+                       <span className="font-bold text-sm uppercase">Log Out</span>
+                    </DropdownMenuItem>
+                 </DropdownMenuContent>
+               </DropdownMenu>
+             ) : (
+               <Button asChild className="px-4 md:px-6 h-10 md:h-12 bg-[#111827] hover:bg-[#1f2937] text-white font-black text-[10px] md:text-xs rounded-xl border border-white/10 transition-all uppercase tracking-widest shadow-xl">
+                 <Link href="/login">Student Login</Link>
+               </Button>
+             )}
           </div>
         </div>
       </nav>
 
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetContent side="left" className="p-0 border-none w-[300px] bg-[#0F172A] z-[2001]">
+        <SheetContent side="left" className="p-0 border-none w-[300px] bg-[#0A0E1A] z-[2001]">
           <SheetHeader className="sr-only">
              <SheetTitle>Navigation Sidebar</SheetTitle>
-             <SheetDescription>Access all preparation resources.</SheetDescription>
+             <SheetDescription>Access preparation resources.</SheetDescription>
           </SheetHeader>
           <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
         </SheetContent>
       </Sheet>
     </div>
   );
-}
-
-function NavLink({ icon, label, href, active }: { icon: React.ReactNode, label: string, href: string, active: boolean }) {
-  return (
-    <Link href={href} className={cn(
-      "flex items-center gap-2.5 transition-all h-10 px-4 rounded-lg",
-      active ? "bg-[#F97316] text-white shadow-xl shadow-orange-500/20" : "text-slate-400 hover:text-white"
-    )}>
-      <span className={cn("shrink-0", active ? "text-white" : "text-slate-500")}>
-        {icon}
-      </span>
-      <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{label}</span>
-    </Link>
-  )
 }
