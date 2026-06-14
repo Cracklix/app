@@ -9,7 +9,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Absolute Screenshot-Matched Hero Hub v71.0.
+ * @fileOverview Absolute Screenshot-Matched Hero Hub v72.0.
+ * UPDATED: Moved background container to top-0 to align with header.
  * FIXED: Added missing Card import to resolve ReferenceError.
  * DATA: 439+ Questions, 8+ Mocks, 92+ Exams, 5+ Aspirants.
  */
@@ -22,11 +23,11 @@ export default function Hero() {
       
       {/* 1. BACKGROUND LAYERS */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute bottom-0 right-0 w-full lg:w-[60%] h-[70%] lg:h-[80%] pointer-events-none">
+        <div className="absolute top-0 right-0 w-full lg:w-[60%] h-full pointer-events-none">
            <img 
               src={templeImg} 
               alt="Golden Temple" 
-              className="w-full h-full object-cover object-bottom opacity-80"
+              className="w-full h-full object-cover object-right-bottom opacity-80"
               referrerPolicy="no-referrer"
            />
            <div className="absolute inset-0 bg-gradient-to-r from-[#0B0F19] via-[#0B0F19]/80 to-transparent lg:block hidden" />
