@@ -8,8 +8,9 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Refined Unified Hero Node v24.0.
- * MATCHED: Text moved down, compact box size, and full sky-blue shading mix.
+ * @fileOverview Refined Scaling Hero Node v25.0.
+ * MATCHED: Background is fully visible (aspect-ratio driven), scales with window size.
+ * SHADING: Sky-blue shading and map locked to the left side.
  */
 
 export default function Hero() {
@@ -23,15 +24,15 @@ export default function Hero() {
   const punjabMap = "https://www.mapsofindia.com/maps/punjab/punjab-map.jpg";
 
   if (!mounted) {
-    return <section className="w-full h-[500px] bg-[#020817]" />;
+    return <section className="w-full aspect-video bg-[#020817]" />;
   }
 
   return (
-    <section className="relative w-full overflow-hidden flex flex-col bg-[#020817] min-h-[600px] md:min-h-[800px]">
+    <section className="relative w-full overflow-hidden flex flex-col bg-[#020817]">
       
-      {/* 1. UNIFIED BACKGROUND STACK */}
-      <div className="absolute inset-0 z-0">
-         {/* BASE LAYER: GOLDEN TEMPLE */}
+      {/* 1. RESPONSIVE BACKGROUND HUB - PROPORTIONAL SCALING */}
+      <div className="relative w-full aspect-[16/9] md:aspect-[21/9] lg:aspect-[25/9] overflow-hidden">
+         {/* BASE LAYER: GOLDEN TEMPLE (FULL VISIBILITY) */}
          <img 
             src={goldenTempleImg} 
             alt="Golden Temple" 
@@ -39,68 +40,66 @@ export default function Hero() {
             referrerPolicy="no-referrer"
          />
 
-         {/* SHADING LAYER: FULL SKY BLUE MIX (LEFT) */}
-         <div className="absolute left-0 top-0 h-full w-full md:w-[75%] bg-gradient-to-r from-sky-200/95 via-sky-100/80 to-transparent z-10" />
+         {/* SHADING LAYER: SKY BLUE MIX (LOCKED LEFT) */}
+         <div className="absolute left-0 top-0 h-full w-full md:w-[65%] bg-gradient-to-r from-sky-200/95 via-sky-100/70 to-transparent z-10" />
 
-         {/* TEXTURE LAYER: PUNJAB MAP (MIXED IN SHADING) */}
-         <div className="absolute left-0 top-0 h-full w-full md:w-[45%] z-20 pointer-events-none opacity-[0.1] mix-blend-multiply">
+         {/* TEXTURE LAYER: PUNJAB MAP (LOCKED LEFT) */}
+         <div className="absolute left-0 top-0 h-full w-full md:w-[40%] z-20 pointer-events-none opacity-[0.08] mix-blend-multiply">
             <img 
                src={punjabMap} 
                className="w-full h-full object-contain object-left" 
                alt="Punjab Map watermark"
             />
          </div>
+
+         {/* 2. CONTENT HUB - POSITIONED TOP-LEFT OVER SHADING */}
+         <div className="absolute inset-0 z-30 container mx-auto px-4 md:px-12 lg:px-16 max-w-7xl flex flex-col justify-start">
+            <motion.div 
+               initial={{ opacity: 0, x: -20 }}
+               animate={{ opacity: 1, x: 0 }}
+               className="pt-6 md:pt-12 lg:pt-20 max-w-lg text-left space-y-4 md:space-y-6"
+            >
+               {/* BRAND BADGE */}
+               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/40 backdrop-blur-md border border-white/20 shadow-sm w-fit">
+                  <Star className="h-2.5 w-2.5 md:h-3 md:w-3 text-[#F97316] fill-current" />
+                  <span className="text-[7px] md:text-[9px] font-black text-[#0F172A] uppercase tracking-widest">#1 Punjab Exam Platform</span>
+               </div>
+
+               {/* HEADLINES (Scaling Text) */}
+               <div className="space-y-0.5 md:space-y-1">
+                  <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-headline font-black text-[#0F172A] leading-none tracking-tighter uppercase">
+                     PREPARE SMARTER.
+                  </h1>
+                  <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-headline font-black text-[#F97316] leading-none tracking-tighter uppercase">
+                     SCORE HIGHER.
+                  </h1>
+               </div>
+
+               <p className="text-[#0F172A] font-bold uppercase text-[7px] md:text-[10px] tracking-[0.15em] max-w-[200px] md:max-w-xs leading-relaxed antialiased opacity-90">
+                  Official CBT engine verified by <br className="hidden md:block" />
+                  Arsh Grewal Management.
+               </p>
+
+               {/* ACTION BUTTONS (Compact Scaling) */}
+               <div className="flex flex-wrap gap-2 md:gap-4 pt-1">
+                  <Button asChild className="h-8 md:h-12 px-4 md:px-8 bg-[#F97316] hover:bg-orange-600 text-white font-black uppercase text-[8px] md:text-[10px] tracking-widest rounded-lg md:rounded-xl shadow-xl border-none transition-all active:scale-95">
+                     <Link href="/mocks">Start Free Mock <ArrowRight className="h-3 w-3 ml-1" /></Link>
+                  </Button>
+                  <Button asChild variant="outline" className="h-8 md:h-12 px-4 md:px-8 border-[#0F172A]/20 bg-white/30 backdrop-blur-md text-[#0F172A] hover:bg-white/50 font-black uppercase text-[8px] md:text-[10px] tracking-widest rounded-lg md:rounded-xl shadow-lg transition-all active:scale-95">
+                     <Link href="/exams">Explore Hub</Link>
+                  </Button>
+               </div>
+            </motion.div>
+         </div>
       </div>
 
-      {/* 2. CONTENT HUB - COMPACT & POSITIONED */}
-      <div className="container mx-auto px-4 md:px-12 lg:px-16 max-w-7xl relative z-30 flex flex-col justify-between flex-1">
-         
-         {/* TOP-LEFT COMPACT BOX (Moved Down slightly) */}
-         <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="pt-20 md:pt-32 max-w-lg text-left space-y-6 md:space-y-8"
-         >
-            {/* BRAND BADGE */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/40 backdrop-blur-md border border-white/20 shadow-sm w-fit">
-               <Star className="h-3 w-3 text-[#F97316] fill-current" />
-               <span className="text-[8px] md:text-[10px] font-black text-[#0F172A] uppercase tracking-widest">#1 Punjab Exam Preparation</span>
-            </div>
-
-            {/* HEADLINES (Reduced Size) */}
-            <div className="space-y-1 md:space-y-2">
-               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-headline font-black text-[#0F172A] leading-none tracking-tighter uppercase">
-                  PREPARE SMARTER.
-               </h1>
-               <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-headline font-black text-[#F97316] leading-none tracking-tighter uppercase">
-                  SCORE HIGHER.
-               </h1>
-            </div>
-
-            <p className="text-[#0F172A] font-bold uppercase text-[9px] md:text-xs tracking-[0.2em] max-w-xs leading-relaxed antialiased opacity-90">
-               Official CBT engine verified by <br className="hidden md:block" />
-               Arsh Grewal Management.
-            </p>
-
-            {/* ACTION BUTTONS (Compact) */}
-            <div className="flex flex-wrap gap-3 md:gap-4 pt-2">
-               <Button asChild className="h-10 md:h-14 px-6 md:px-10 bg-[#F97316] hover:bg-orange-600 text-white font-black uppercase text-[9px] md:text-[10px] tracking-widest rounded-xl shadow-xl border-none transition-all active:scale-95">
-                  <Link href="/mocks">Start Free Mock <ArrowRight className="h-4 w-4 ml-1" /></Link>
-               </Button>
-               <Button asChild variant="outline" className="h-10 md:h-14 px-6 md:px-10 border-[#0F172A]/20 bg-white/30 backdrop-blur-md text-[#0F172A] hover:bg-white/50 font-black uppercase text-[9px] md:text-[10px] tracking-widest rounded-xl shadow-lg transition-all active:scale-95">
-                  <Link href="/exams">Explore Hub</Link>
-               </Button>
-            </div>
-         </motion.div>
-
-         {/* BOTTOM STATS HUB (Floating Over Mixed Background) */}
-         <div className="pb-12 md:pb-20">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-               <StatCard icon={<BookOpen />} label="QUESTIONS" val="50k+" color="text-blue-600" />
-               <StatCard icon={<ClipboardList />} label="MOCK TESTS" val="500+" color="text-[#F97316]" />
-               <StatCard icon={<ShieldCheck />} label="ASPIRANTS" val="15k+" color="text-emerald-600" />
-               <StatCard icon={<BarChart3 />} label="ACCURACY" val="94%" color="text-indigo-600" />
-            </div>
+      {/* 3. BOTTOM STATS HUB - FLOATING OVER DARK SECTION TRANSITION */}
+      <div className="container mx-auto px-4 md:px-12 lg:px-16 max-w-7xl -mt-8 md:-mt-12 relative z-40 pb-12">
+         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+            <StatCard icon={<BookOpen />} label="QUESTIONS" val="50k+" color="text-blue-600" />
+            <StatCard icon={<ClipboardList />} label="MOCK TESTS" val="500+" color="text-[#F97316]" />
+            <StatCard icon={<ShieldCheck />} label="ASPIRANTS" val="15k+" color="text-emerald-600" />
+            <StatCard icon={<BarChart3 />} label="ACCURACY" val="94%" color="text-indigo-600" />
          </div>
       </div>
     </section>
@@ -109,13 +108,13 @@ export default function Hero() {
 
 function StatCard({ icon, label, val, color }: any) {
    return (
-      <div className="p-4 md:p-6 bg-white/20 backdrop-blur-sm border border-white/20 rounded-[1.2rem] md:rounded-[2rem] space-y-2 shadow-inner group hover:bg-white/40 transition-all text-left">
-         <div className={cn("h-7 w-7 md:h-10 md:w-10 rounded-lg bg-white/80 flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm", color)}>
-            {React.cloneElement(icon, { className: "h-3.5 w-3.5 md:h-5 md:w-5" })}
+      <div className="p-3 md:p-6 bg-white shadow-2xl border border-slate-100 rounded-[1rem] md:rounded-[2rem] space-y-1.5 md:space-y-2 group hover:bg-slate-50 transition-all text-left">
+         <div className={cn("h-6 w-6 md:h-10 md:w-10 rounded-lg bg-slate-50 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner", color)}>
+            {React.cloneElement(icon, { className: "h-3 w-3 md:h-5 md:w-5" })}
          </div>
          <div className="space-y-0.5">
-            <p className="text-lg md:text-3xl font-headline font-black text-[#0F172A] leading-none tracking-tighter">{val}</p>
-            <p className="text-[6.5px] md:text-[9px] font-black text-[#0F172A]/60 uppercase tracking-widest">{label}</p>
+            <p className="text-base md:text-3xl font-headline font-black text-[#0F172A] leading-none tracking-tighter">{val}</p>
+            <p className="text-[6px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest">{label}</p>
          </div>
       </div>
    )
