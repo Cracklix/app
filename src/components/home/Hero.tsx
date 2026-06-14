@@ -8,9 +8,9 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Final Screenshot-Matched Hero Hub v57.0.
- * UPDATED: Reduced headline sizes by half as requested.
- * UPDATED: Increased top padding for better vertical alignment matching user screenshot.
+ * @fileOverview Final Screenshot-Matched Hero Hub v58.0.
+ * UPDATED: Moved background image to the very top (immediately below header) on desktop.
+ * UPDATED: Adjusted object positioning to ensure visual integrity.
  */
 
 export default function Hero() {
@@ -21,11 +21,11 @@ export default function Hero() {
       
       {/* 1. BACKGROUND LAYERS - PRECISE POSITIONING */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 right-0 w-full lg:w-[70%] h-[200px] lg:h-[80%] lg:top-[15%] pointer-events-none">
+        <div className="absolute top-0 right-0 w-full lg:w-[70%] h-[200px] lg:h-full lg:top-0 pointer-events-none">
            <img 
               src={templeImg} 
               alt="Golden Temple" 
-              className="w-full h-full object-cover object-bottom lg:object-right-bottom opacity-80"
+              className="w-full h-full object-cover object-bottom lg:object-right-top opacity-80"
               referrerPolicy="no-referrer"
            />
            {/* Cinematic Overlays */}
