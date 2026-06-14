@@ -9,8 +9,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened Screenshot-Matched Hero Hub v93.0.
- * UPDATED: Slightly reduced top padding to move text upward for better framing.
+ * @fileOverview Hardened Screenshot-Matched Hero Hub v94.0.
+ * RESTORED: Vertical positioning and spacing to the "abhi thik hai" state.
  */
 
 export default function Hero() {
@@ -19,7 +19,7 @@ export default function Hero() {
   return (
     <section className="relative w-full min-h-[600px] lg:min-h-[850px] bg-[#0B0F19] flex flex-col justify-start overflow-hidden font-body text-left">
       
-      {/* 1. BACKGROUND LAYERS - EXPANDED RIGHT SIDE, ALIGNED TO TOP */}
+      {/* 1. BACKGROUND LAYERS - RIGHT ALIGNED, TOP ANCHORED */}
       <div className="absolute top-0 right-0 w-full lg:w-[65%] h-[350px] lg:h-full z-0 pointer-events-none">
         <img 
           src={templeImg} 
@@ -33,8 +33,8 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19] via-transparent to-transparent lg:hidden" />
       </div>
 
-      {/* 2. MAIN CONTENT HUB - LEFT ANCHORED, REPOSITIONED SLIGHTLY UP */}
-      <div className="container mx-auto px-6 relative z-10 max-w-7xl pt-14 md:pt-24 lg:pt-28">
+      {/* 2. MAIN CONTENT HUB - LEFT ANCHORED */}
+      <div className="container mx-auto px-6 relative z-10 max-w-7xl pt-12 md:pt-32">
         <div className="max-w-3xl space-y-6 md:space-y-8 text-left">
           
            {/* BRAND BADGE */}
@@ -107,12 +107,12 @@ export default function Hero() {
            </motion.div>
         </div>
 
-        {/* METRICS REGISTRY - ADJUSTED GAPS AND END ALIGNMENT */}
+        {/* METRICS REGISTRY */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 lg:gap-10 mt-16 md:mt-20 md:translate-x-20 lg:translate-x-40 max-w-6xl"
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 lg:gap-10 mt-12 md:mt-16 md:translate-x-20 lg:translate-x-40 max-w-6xl"
         >
            <MetricCard 
              icon={<BookOpen className="text-blue-500 h-5 w-5" />} 
