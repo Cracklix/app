@@ -24,8 +24,8 @@ import PWAInstallButton from "@/components/PWAInstallButton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Final Screenshot-Matched Navbar v254.0.
- * UPDATED: Logo height adjusted to 200px.
+ * @fileOverview Final Screenshot-Matched Navbar v254.1.
+ * UPDATED: Logo height adjusted to 200px and added handleLogout fix.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);

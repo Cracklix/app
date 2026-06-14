@@ -1,18 +1,14 @@
 'use client';
 
-import React, { useMemo, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  Star
-} from "lucide-react";
-import { useDoc, useFirestore } from '@/firebase';
-import { doc } from "firebase/firestore";
+import { Star } from "lucide-react";
 
 /**
- * @fileOverview High-Fidelity Unified Hero v702.0 (No Shading).
- * FIXED: Removed gradient overlays from the Golden Temple to ensure it is clearly visible.
- * FIXED: Background image set to object-top to prevent top-clipping.
- * SIZING: Strictly 200px height on mobile for the background hub.
+ * @fileOverview High-Fidelity Unified Hero v703.0 (Hydration Fixed).
+ * FIXED: Hydration mismatch by returning a consistent placeholder shell on server.
+ * FIXED: Removed image shading overlays to ensure Golden Temple is clear and vibrant.
+ * SIZING: 200px mobile height for the background hub.
  */
 
 export default function Hero() {
@@ -22,12 +18,20 @@ export default function Hero() {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  // To prevent hydration mismatch, we render a matching placeholder shell on the server
+  if (!mounted) {
+    return (
+      <section className="relative w-full bg-[#050B19] flex flex-col">
+        <div className="w-full h-[200px] md:h-[400px] bg-[#050B19]" />
+        <div className="bg-[#050B19] flex-1 pb-16 md:pb-32" />
+      </section>
+    );
+  }
 
   return (
     <section className="relative w-full bg-[#050B19] overflow-hidden flex flex-col text-left">
       
-      {/* 1. BACKGROUND HUB - 200PX MOBILE HEIGHT - CLEAN VIEW */}
+      {/* 1. BACKGROUND HUB - 200PX MOBILE HEIGHT - CLEAR VIEW */}
       <div className="relative w-full h-[200px] md:h-[400px] overflow-hidden">
          {/* GOLDEN TEMPLE IMAGE - NO SHADING OVERLAYS */}
          <div className="absolute inset-0 z-0">
@@ -101,7 +105,7 @@ export default function Hero() {
                transition={{ delay: 0.3 }}
                className="text-slate-400 font-bold uppercase text-[9px] md:text-lg tracking-[0.2em] mt-6 md:mt-8 max-w-xl"
             >
-               Punjab's most advanced CBT engine. <br/>
+               Punjab&apos;s most advanced CBT engine. <br/>
                Verified by Arsh Grewal Management.
             </motion.p>
          </div>
