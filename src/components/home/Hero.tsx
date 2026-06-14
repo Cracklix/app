@@ -8,10 +8,10 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened Unified Hero v8.0.
- * DESIGN: Shading and Map node anchored to the left.
- * VISIBILITY: Golden Temple clearly visible on the right (no shading).
- * SIZING: 200px mobile height for the image hub.
+ * @fileOverview Hardened Unified Hero v10.0 (Visual Fix).
+ * SHADING: Sky Blue gradient mixed with the background on the left side.
+ * MAP: Enhanced visibility of the Punjab map watermark on the left.
+ * TEMPLE: Clearly visible on the right, object-top focus, 200px mobile height.
  */
 
 export default function Hero() {
@@ -32,7 +32,7 @@ export default function Hero() {
     <section className="relative w-full bg-[#050B19] overflow-hidden flex flex-col text-left">
       
       {/* 1. TOP IMAGE HUB - 200PX HEIGHT ON MOBILE */}
-      <div className="relative w-full h-[200px] md:h-[450px] overflow-hidden">
+      <div className="relative w-full h-[200px] md:h-[500px] overflow-hidden">
          <div className="absolute inset-0 z-0">
             <img 
               src={goldenTempleImg} 
@@ -40,16 +40,17 @@ export default function Hero() {
               className="w-full h-full object-cover object-top"
               referrerPolicy="no-referrer"
             />
-            {/* LEFT SHADING: Fades from solid dark on left to transparent on right */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#050B19] via-[#050B19]/80 to-transparent z-10" />
+            {/* SKY BLUE SHADING MIXED ON LEFT */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0C4A6E] via-[#0C4A6E]/40 to-transparent z-10" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050B19] via-transparent to-transparent z-15" />
          </div>
 
-         {/* LEFT-SIDE GEOGRAPHICAL NODE (Map inside the shaded area) */}
-         <div className="absolute inset-y-0 left-0 w-full md:w-1/2 z-20 pointer-events-none overflow-hidden opacity-[0.05] mix-blend-overlay">
+         {/* VISIBLE PUNJAB MAP NODE ON LEFT */}
+         <div className="absolute inset-y-0 left-0 w-full md:w-1/2 z-20 pointer-events-none overflow-hidden opacity-20">
             <img 
               src={punjabMap} 
-              className="h-full w-auto object-cover grayscale invert" 
-              alt="Punjab Map Node"
+              className="h-full w-auto object-cover grayscale invert contrast-125" 
+              alt="Punjab Map"
             />
          </div>
 
@@ -63,13 +64,13 @@ export default function Hero() {
       </div>
 
       {/* 2. CONTENT HUB - SOLID DARK BACK */}
-      <div className="bg-[#050B19] relative z-30 pb-16 md:pb-32">
+      <div className="bg-[#050B19] relative z-30 pb-16 md:pb-32 -mt-1">
          <div className="container mx-auto px-4 md:px-16 max-w-7xl">
             <div className="pt-6 md:pt-12 space-y-2 md:space-y-4">
                <motion.h1 
                   initial={{ opacity: 0, x: -15 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="text-[28px] sm:text-5xl md:text-7xl lg:text-[80px] font-headline font-black text-white leading-none tracking-tighter uppercase"
+                  className="text-[28px] sm:text-5xl md:text-7xl lg:text-[85px] font-headline font-black text-white leading-none tracking-tighter uppercase"
                >
                   PREPARE SMARTER.
                </motion.h1>
@@ -77,7 +78,7 @@ export default function Hero() {
                   initial={{ opacity: 0, x: -15 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="text-[28px] sm:text-5xl md:text-7xl lg:text-[80px] font-headline font-black text-primary leading-none tracking-tighter uppercase"
+                  className="text-[28px] sm:text-5xl md:text-7xl lg:text-[85px] font-headline font-black text-primary leading-none tracking-tighter uppercase"
                >
                   SCORE HIGHER.
                </motion.h1>
@@ -89,7 +90,7 @@ export default function Hero() {
                transition={{ delay: 0.2 }}
                className="text-slate-400 font-bold uppercase text-[9px] md:text-lg tracking-[0.2em] mt-8 md:mt-10 max-w-xl leading-relaxed"
             >
-               Punjab&apos;s most advanced CBT engine. <br className="hidden md:block" />
+               Punjab's most advanced CBT engine. <br className="hidden md:block" />
                Verified by Arsh Grewal Management.
             </motion.p>
 
