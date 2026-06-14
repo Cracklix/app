@@ -8,9 +8,10 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened Institutional Hero v15.0.
- * UPDATED: Removed solid blue background; text box sits over Map (Left) and Temple (Right).
- * SIZING: Focused 200px asset height for mobile.
+ * @fileOverview High-Fidelity Hero Node v18.0.
+ * REFINED: Punjab Map on Left with Sky-Blue shading.
+ * REFINED: Golden Temple on Right (Unshaded).
+ * REFINED: Box text restored over the shaded map area.
  */
 
 export default function Hero() {
@@ -30,20 +31,20 @@ export default function Hero() {
   return (
     <section className="relative w-full overflow-hidden flex flex-col bg-white">
       
-      {/* 1. UNIFIED BACKGROUND HUB - NO SOLID BLUE */}
-      <div className="absolute top-0 left-0 right-0 h-[200px] md:h-[450px] z-0 flex pointer-events-none">
-         {/* LEFT SIDE: PUNJAB MAP NODE */}
-         <div className="relative w-full md:w-1/2 h-full overflow-hidden bg-slate-50">
+      {/* 1. BACKGROUND HUB - DUAL ASSET NODE */}
+      <div className="absolute top-0 left-0 right-0 h-[200px] md:h-[450px] z-0 flex overflow-hidden">
+         {/* LEFT HALF: PUNJAB MAP NODE WITH SKY-BLUE SHADING */}
+         <div className="relative w-full md:w-1/2 h-full bg-sky-50">
             <img 
               src={punjabMap} 
-              className="w-full h-full object-cover opacity-30 contrast-125 saturate-150 mix-blend-multiply" 
+              className="w-full h-full object-cover opacity-20 contrast-125 saturate-150 mix-blend-multiply" 
               alt="Punjab Map"
             />
-            {/* SKY BLUE SHADING FOR TEXT CONTRAST */}
-            <div className="absolute inset-0 bg-gradient-to-r from-sky-100/40 via-transparent to-transparent" />
+            {/* SKY BLUE GRADIENT OVERLAY */}
+            <div className="absolute inset-0 bg-gradient-to-r from-sky-200/60 via-sky-100/40 to-transparent" />
          </div>
          
-         {/* RIGHT SIDE: GOLDEN TEMPLE NODE - CLEAR VISIBILITY */}
+         {/* RIGHT HALF: GOLDEN TEMPLE NODE - CLEAR & UNSHADED */}
          <div className="relative w-full md:w-1/2 h-full">
             <img 
               src={goldenTempleImg} 
@@ -54,7 +55,7 @@ export default function Hero() {
          </div>
       </div>
 
-      {/* 2. CONTENT HUB - BOX TEXT OVER BACKGROUND */}
+      {/* 2. CONTENT HUB - BOX TEXT OVER SHADED MAP */}
       <div className="container mx-auto px-4 md:px-16 max-w-7xl relative z-10 pt-10 md:pt-16 flex-1 flex flex-col">
          <motion.div 
             initial={{ opacity: 0, x: -20 }}
@@ -69,10 +70,10 @@ export default function Hero() {
 
             {/* HEADLINES */}
             <div className="space-y-1.5 md:space-y-3">
-               <h1 className="text-[22px] sm:text-3xl md:text-5xl lg:text-6xl font-headline font-black text-white leading-none tracking-tighter uppercase">
+               <h1 className="text-[20px] sm:text-3xl md:text-5xl lg:text-6xl font-headline font-black text-white leading-none tracking-tighter uppercase">
                   PREPARE SMARTER.
                </h1>
-               <h1 className="text-[22px] sm:text-3xl md:text-5xl lg:text-6xl font-headline font-black text-primary leading-none tracking-tighter uppercase">
+               <h1 className="text-[20px] sm:text-3xl md:text-5xl lg:text-6xl font-headline font-black text-primary leading-none tracking-tighter uppercase">
                   SCORE HIGHER.
                </h1>
             </div>
@@ -84,10 +85,10 @@ export default function Hero() {
 
             {/* ACTION BUTTONS */}
             <div className="flex flex-wrap gap-3 pt-2">
-               <Button asChild className="h-11 md:h-16 px-6 md:px-10 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[9px] md:text-xs tracking-widest rounded-xl md:rounded-2xl shadow-3xl border-none transition-all active:scale-95">
+               <Button asChild className="h-10 md:h-16 px-6 md:px-10 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[9px] md:text-xs tracking-widest rounded-xl md:rounded-2xl shadow-3xl border-none transition-all active:scale-95">
                   <Link href="/mocks">Start Free Mock <ArrowRight className="h-3.5 w-3.5 ml-1" /></Link>
                </Button>
-               <Button asChild variant="outline" className="h-11 md:h-16 px-6 md:px-10 border-white/20 bg-white/5 text-white hover:bg-white/10 font-black uppercase text-[9px] md:text-xs tracking-widest rounded-xl md:rounded-2xl shadow-xl transition-all active:scale-95">
+               <Button asChild variant="outline" className="h-10 md:h-16 px-6 md:px-10 border-white/20 bg-white/5 text-white hover:bg-white/10 font-black uppercase text-[9px] md:text-xs tracking-widest rounded-xl md:rounded-2xl shadow-xl transition-all active:scale-95">
                   <Link href="/exams">Explore Exams</Link>
                </Button>
             </div>
