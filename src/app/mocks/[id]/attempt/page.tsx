@@ -26,8 +26,8 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened CBT Engine v49.0 (Ultra-Compact).
- * UPDATED: Reduced palette width and maximized vertical real estate.
+ * @fileOverview Hardened CBT Engine v50.0 (Ultra-Compact).
+ * UPDATED: Implemented micro-scale modals and maximized vertical viewing area.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -237,7 +237,7 @@ export default function MockAttemptPage() {
       </main>
 
       <Sheet open={isPaletteOpen} onOpenChange={setIsPaletteOpen}>
-        <SheetContent side="right" className="p-0 border-none w-[220px] md:w-[350px] h-full shadow-5xl z-[1200]">
+        <SheetContent side="right" className="p-0 border-none w-[200px] md:w-[350px] h-full shadow-5xl z-[1200]">
           <SheetHeader className="sr-only">
              <SheetTitle>Navigation Palette</SheetTitle>
              <SheetDescription>View and navigate through all questions in the current mock test.</SheetDescription>
@@ -248,20 +248,20 @@ export default function MockAttemptPage() {
 
       {/* MINIMIZED EXIT MODAL */}
       <Dialog open={showExitModal} onOpenChange={setShowExitModal}>
-        <DialogContent className="max-w-[300px] rounded-[1.5rem] p-5 md:p-8 bg-white text-center shadow-5xl border-none z-[1300]">
-          <div className="space-y-4">
+        <DialogContent className="max-w-[240px] rounded-[1.2rem] p-4 md:p-6 bg-white text-center shadow-5xl border-none z-[1300]">
+          <div className="space-y-3">
             <DialogHeader className="sr-only">
                <DialogTitle>Save & Exit?</DialogTitle>
                <DialogDescription>Your current attempt state is safely cached in the cloud.</DialogDescription>
             </DialogHeader>
-            <div className="h-10 w-10 bg-blue-50 rounded-lg flex items-center justify-center mx-auto text-blue-500">
-              <LogOut className="h-5 w-5" />
+            <div className="h-8 w-8 bg-blue-50 rounded-lg flex items-center justify-center mx-auto text-blue-500 shadow-sm">
+              <LogOut className="h-4 w-4" />
             </div>
-            <h2 className="text-lg font-headline font-black uppercase text-[#0F172A]">Save & Exit?</h2>
-            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none">Attempt state cached in registry.</p>
-            <div className="flex gap-2 pt-2">
-              <Button variant="ghost" onClick={() => setShowExitModal(false)} className="flex-1 h-9 font-black uppercase text-[8px] tracking-widest">Stay</Button>
-              <Button onClick={() => { setPaused(false); setShowExitModal(false); router.replace('/dashboard'); }} className="flex-1 h-9 bg-primary text-white rounded-lg font-black uppercase text-[8px] border-none">Exit</Button>
+            <h2 className="text-sm font-headline font-black uppercase text-[#0F172A] leading-tight">Save & Exit?</h2>
+            <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest leading-none">Progress cached in registry.</p>
+            <div className="flex gap-2 pt-1">
+              <Button variant="ghost" onClick={() => setShowExitModal(false)} className="flex-1 h-8 font-black uppercase text-[7px] tracking-widest">Stay</Button>
+              <Button onClick={() => { setPaused(false); setShowExitModal(false); router.replace('/dashboard'); }} className="flex-1 h-8 bg-primary text-white rounded-lg font-black uppercase text-[7px] border-none shadow-lg">Exit</Button>
             </div>
           </div>
         </DialogContent>
@@ -269,22 +269,22 @@ export default function MockAttemptPage() {
 
       {/* MINIMIZED SUBMIT MODAL */}
       <Dialog open={showSubmitModal} onOpenChange={showSubmitModal && !isSubmittingFinal ? setShowSubmitModal : undefined}>
-        <DialogContent className="max-w-[300px] rounded-[1.5rem] p-5 md:p-8 bg-[#0F172A] text-white text-center border-none shadow-5xl z-[1300]">
-          <div className="space-y-4">
+        <DialogContent className="max-w-[240px] rounded-[1.2rem] p-4 md:p-6 bg-[#0B1528] text-white text-center border-none shadow-5xl z-[1300]">
+          <div className="space-y-3">
             <DialogHeader className="sr-only">
                <DialogTitle>Final Submission</DialogTitle>
                <DialogDescription>Finish and score your test to commit it to the state merit list.</DialogDescription>
             </DialogHeader>
-            <div className="h-10 w-10 bg-primary/20 rounded-lg flex items-center justify-center mx-auto text-primary">
-              <ShieldCheck className="h-5 w-5" />
+            <div className="h-8 w-8 bg-primary/20 rounded-lg flex items-center justify-center mx-auto text-primary shadow-lg shadow-primary/10">
+              <ShieldCheck className="h-4 w-4" />
             </div>
-            <h2 className="text-lg font-headline font-black uppercase text-white tracking-tight leading-none">Submit Test</h2>
-            <p className="text-slate-400 text-[8px] font-medium px-1 leading-relaxed uppercase">Scores will be committed to merit list.</p>
-            <div className="flex flex-col gap-2 pt-2">
-              <Button onClick={handleSubmitFinal} disabled={isSubmittingFinal} className="w-full h-10 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[8px] tracking-widest rounded-lg border-none">
-                {isSubmittingFinal ? <Loader2 className="h-3 w-3 animate-spin" /> : "Finish & Score"}
+            <h2 className="text-sm font-headline font-black uppercase text-white tracking-tight leading-none">Final Submission</h2>
+            <p className="text-slate-400 text-[7px] font-medium px-1 leading-relaxed uppercase">Scores will be committed to the state merit list after submission.</p>
+            <div className="flex flex-col gap-1.5 pt-1">
+              <Button onClick={handleSubmitFinal} disabled={isSubmittingFinal} className="w-full h-8 bg-[#F97316] hover:bg-orange-600 text-white font-black uppercase text-[7px] tracking-widest rounded-lg border-none shadow-xl">
+                {isSubmittingFinal ? <Loader2 className="h-3 w-3 animate-spin" /> : "Finish & Score Test"}
               </Button>
-              <button onClick={() => setShowSubmitModal(false)} disabled={isSubmittingFinal} className="h-6 text-slate-500 font-bold uppercase text-[7px] tracking-widest hover:text-white transition-colors cursor-pointer">Back</button>
+              <button onClick={() => setShowSubmitModal(false)} disabled={isSubmittingFinal} className="h-4 text-slate-500 font-bold uppercase text-[6px] tracking-widest hover:text-white transition-colors cursor-pointer">Back to Questions</button>
             </div>
           </div>
         </DialogContent>
@@ -292,3 +292,4 @@ export default function MockAttemptPage() {
     </div>
   );
 }
+

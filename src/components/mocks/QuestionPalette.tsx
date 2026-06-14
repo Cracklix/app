@@ -17,8 +17,8 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Institutional CBT Palette Hub v28.0 (Absolute Minimum).
- * UPDATED: Ultra-shrunk components for maximum mobile density.
+ * @fileOverview Institutional CBT Palette Hub v30.0 (Absolute Minimum).
+ * UPDATED: Ultra-shrunk micro-scale components for maximum mobile density.
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const questions = useExamStore(s => s.questions);
@@ -58,10 +58,10 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
   return (
     <div className="flex flex-col h-full bg-white text-left font-body select-none pointer-events-auto overflow-hidden">
       <ScrollArea className="h-full">
-        <div className="p-2 md:p-6 pt-12 md:pt-16 space-y-3 md:space-y-6 pb-32">
+        <div className="p-1.5 md:p-4 pt-10 md:pt-12 space-y-2 md:space-y-4 pb-32">
            
-           {/* 1. STATUS LEGEND HUB - ABSOLUTE MINIMUM */}
-           <div className="grid grid-cols-2 gap-1 md:gap-3">
+           {/* 1. STATUS LEGEND HUB - MICRO SCALE */}
+           <div className="grid grid-cols-2 gap-1 md:gap-2">
               <SummaryCard count={stats.answered} label="ANSWERED" color="bg-[#1E5EFF]" />
               <SummaryCard count={stats.notAnswered} label="NOT ANS" color="bg-[#94A3B8]" />
               <SummaryCard count={stats.marked} label="MARKED" color="bg-[#F43F5E]" />
@@ -72,13 +72,13 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
            <div className="h-px w-full bg-slate-50" />
 
            {/* 2. SECTIONAL GRIDS */}
-           <div className="space-y-4 md:space-y-8">
+           <div className="space-y-3 md:space-y-6">
               {sections.map((section, sIdx) => (
-                <div key={sIdx} className="space-y-2 md:space-y-4">
-                   <h4 className="text-[7px] md:text-xs font-[900] uppercase text-slate-400 tracking-wider truncate pl-1">
+                <div key={sIdx} className="space-y-1.5 md:space-y-3">
+                   <h4 className="text-[6px] md:text-[10px] font-[900] uppercase text-slate-400 tracking-wider truncate pl-1">
                       {section.name}
                    </h4>
-                   <div className="grid grid-cols-5 gap-1 md:gap-2">
+                   <div className="grid grid-cols-5 gap-1 md:gap-1.5">
                       {section.questions.map((q) => (
                          <QuestionNode 
                            key={q.globalIdx} 
@@ -95,13 +95,13 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
            </div>
 
            {/* 3. SUBMIT NODE - COMPACT */}
-           <div className="pt-2">
+           <div className="pt-1">
               <Button 
                 onClick={(e) => {
                    e.preventDefault();
                    onSubmit();
                 }}
-                className="w-full h-9 md:h-12 bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase tracking-tight text-[8px] md:text-[10px] rounded-lg shadow-md border-none transition-all active:scale-95"
+                className="w-full h-8 md:h-10 bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase tracking-tight text-[7px] md:text-[9px] rounded-lg shadow-md border-none transition-all active:scale-95"
               >
                  SUBMIT TEST
               </Button>
@@ -115,14 +115,14 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
 function SummaryCard({ count, label, color, textColor = "text-white", colSpan = 1, border = "border-transparent" }: any) {
   return (
     <div className={cn(
-      "flex items-center gap-1 p-1 md:p-3 rounded-md md:rounded-lg bg-white border border-slate-50 shadow-sm",
+      "flex items-center gap-1 p-1 md:p-2 rounded-md bg-white border border-slate-50 shadow-sm",
       colSpan > 1 && "col-span-2"
     )}>
-       <div className={cn("h-5 w-5 md:h-8 md:w-8 rounded-full flex items-center justify-center text-[8px] md:text-sm font-black shrink-0 border-[1px] border-white shadow-sm", color, textColor, border)}>
+       <div className={cn("h-4 w-4 md:h-6 md:w-6 rounded-full flex items-center justify-center text-[7px] md:text-xs font-black shrink-0 border-[1px] border-white shadow-sm", color, textColor, border)}>
           {count}
        </div>
        <div className="min-w-0">
-          <span className="text-[5px] md:text-[8px] font-black uppercase text-slate-400 tracking-tighter block leading-none truncate">{label}</span>
+          <span className="text-[4px] md:text-[7px] font-black uppercase text-slate-400 tracking-tighter block leading-none truncate">{label}</span>
        </div>
     </div>
   )
@@ -145,7 +145,7 @@ function QuestionNode({ index, isActive, status, isVisited, onClick }: any) {
     <button
       onClick={onClick}
       className={cn(
-        "relative aspect-square rounded-sm md:rounded-md flex items-center justify-center font-black text-[9px] md:text-base transition-all border shrink-0 active:scale-90 w-full cursor-pointer",
+        "relative aspect-square rounded-sm md:rounded-md flex items-center justify-center font-black text-[8px] md:text-sm transition-all border shrink-0 active:scale-90 w-full cursor-pointer",
         colorClass
       )}
     >
@@ -153,3 +153,4 @@ function QuestionNode({ index, isActive, status, isVisited, onClick }: any) {
     </button>
   );
 }
+

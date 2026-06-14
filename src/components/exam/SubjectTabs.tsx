@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 
 /**
- * @fileOverview Refined Subject Switching Hub (Absolute Minimum).
- * UPDATED: Fixed syntax error in import and maintained reduced height.
+ * @fileOverview Refined Subject Switching Hub v2.1 (Absolute Minimum).
+ * UPDATED: Shrunken height to h-8 on mobile with micro-labels.
  */
 export default function SubjectTabs() {
   const questions = useExamStore(s => s.questions);
@@ -43,7 +43,7 @@ export default function SubjectTabs() {
   const activeSectionId = questions[currentIdx]?.sectionId || 'General';
 
   return (
-    <nav className="bg-white border-b border-slate-100 h-9 md:h-11 flex items-center px-1 overflow-x-auto no-scrollbar gap-1 shrink-0 sticky top-0 z-40">
+    <nav className="bg-white border-b border-slate-100 h-8 md:h-11 flex items-center px-1 overflow-x-auto no-scrollbar gap-0.5 shrink-0 sticky top-0 z-40">
       {sections.map((s) => {
         const isActive = activeSectionId === s.id;
         return (
@@ -51,13 +51,13 @@ export default function SubjectTabs() {
             key={s.id}
             onClick={() => setCurrentIdx(s.startIdx)}
             className={cn(
-              "h-6 md:h-8 flex items-center justify-center px-2 rounded border transition-all whitespace-nowrap min-w-[90px] md:min-w-[120px]",
+              "h-6 md:h-8 flex items-center justify-center px-1.5 rounded border transition-all whitespace-nowrap min-w-[70px] md:min-w-[120px]",
               isActive 
-                ? "border-primary text-primary bg-orange-50/20" 
+                ? "border-[#F97316] text-[#F97316] bg-orange-50/20 shadow-sm" 
                 : "border-slate-50 text-slate-400 bg-white hover:bg-slate-50"
             )}
           >
-            <span className="text-[7px] md:text-[8px] font-black uppercase tracking-tighter truncate">
+            <span className="text-[6px] md:text-[8px] font-black uppercase tracking-tighter truncate">
                {s.name}
             </span>
           </button>
@@ -66,3 +66,4 @@ export default function SubjectTabs() {
     </nav>
   );
 }
+

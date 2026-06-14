@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { useFirestore } from '@/firebase';
 
 /**
- * @file Overview High-Fidelity Tactical Action Bar (Absolute Minimum).
- * UPDATED: Slimmer height and font sizes for maximum mobile real estate.
+ * @file Overview High-Fidelity Tactical Action Bar v2.0 (Absolute Minimum).
+ * UPDATED: Shrunken height to h-9 on mobile with micro-text labels.
  */
 export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const currentIdx = useExamStore(s => s.currentIdx);
@@ -18,11 +18,11 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const db = useFirestore();
   
   return (
-    <div className="w-full grid grid-cols-3 gap-1.5 md:gap-4 pt-3 pb-5 bg-white/80 backdrop-blur-sm sticky bottom-0 z-40">
+    <div className="w-full grid grid-cols-3 gap-1 md:gap-4 pt-2 pb-4 bg-white/80 backdrop-blur-sm sticky bottom-0 z-40">
       <Button 
         variant="outline" 
         onClick={() => markForReview(currentIdx, db)}
-        className="h-10 md:h-12 rounded-md font-black uppercase text-[7px] md:text-[9px] tracking-tighter border-slate-200 text-[#334155] bg-white active:scale-95"
+        className="h-9 md:h-12 rounded-md font-black uppercase text-[6px] md:text-[9px] tracking-tighter border-slate-200 text-[#334155] bg-white active:scale-95 shadow-sm"
       >
         Mark Node
       </Button>
@@ -30,17 +30,18 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
       <Button 
         variant="outline" 
         onClick={() => clearAnswer(currentIdx, db)}
-        className="h-10 md:h-12 rounded-md font-black uppercase text-[7px] md:text-[9px] tracking-tighter border-slate-200 text-[#334155] bg-white active:scale-95"
+        className="h-9 md:h-12 rounded-md font-black uppercase text-[6px] md:text-[9px] tracking-tighter border-slate-200 text-[#334155] bg-white active:scale-95 shadow-sm"
       >
         Clear
       </Button>
 
       <Button 
         onClick={() => saveAndNext(db)}
-        className="h-10 md:h-12 bg-[#F97316] hover:bg-orange-600 text-white rounded-md font-black uppercase text-[7px] md:text-[9px] tracking-tighter shadow-md border-none active:scale-95"
+        className="h-9 md:h-12 bg-[#F97316] hover:bg-orange-600 text-white rounded-md font-black uppercase text-[6px] md:text-[9px] tracking-tighter shadow-xl border-none active:scale-95"
       >
         Save & Next
       </Button>
     </div>
   );
 }
+
