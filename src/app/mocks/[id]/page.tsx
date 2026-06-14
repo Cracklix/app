@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo, useEffect, useState } from "react"
@@ -29,9 +30,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Individual Mock Gateway v23.0 (Premium Restore).
- * RESTORED: Unlock button for premium preparation nodes is now a permanent fixture.
- * BRANDING: Unlock button set to Cracklix Orange (bg-orange-500).
+ * @fileOverview Individual Mock Gateway v24.0 (Compact UI).
+ * UPDATED: Reduced font sizes and container heights for maximum mobile visibility.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -135,55 +135,55 @@ export default function MockOverviewPage() {
     <div className="min-h-screen bg-white flex flex-col font-body">
       <Navbar />
       <main className="flex-1 text-left">
-        <section className="bg-slate-50 border-b border-slate-100 py-8 md:py-24">
+        <section className="bg-slate-50 border-b border-slate-100 py-6 md:py-12 lg:py-16">
           <div className="container mx-auto px-4 max-w-6xl">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div className="flex items-start gap-4 flex-1">
-                <Button variant="ghost" onClick={() => router.back()} className="rounded-full h-12 w-12 border border-slate-200 bg-white p-0 shadow-sm"><ChevronLeft className="h-6 w-6" /></Button>
-                <div className="space-y-5">
-                  <div className="flex flex-wrap items-center gap-3">
+                <Button variant="ghost" onClick={() => router.back()} className="rounded-full h-10 w-10 border border-slate-200 bg-white p-0 shadow-sm shrink-0"><ChevronLeft className="h-5 w-5" /></Button>
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-center gap-2">
                       <Badge className={cn(
-                        "border-none text-[8px] md:text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-lg", 
-                        isPremium ? "bg-amber-100 text-amber-600 shadow-amber-500/10" : "bg-emerald-50 text-emerald-600 shadow-emerald-500/10"
+                        "border-none text-[7px] md:text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-md", 
+                        isPremium ? "bg-amber-100 text-amber-600" : "bg-emerald-50 text-emerald-600"
                       )}>
                         {isPremium ? '🔒 PREMIUM TEST' : 'FREE TEST'}
                       </Badge>
                       {mock.attemptLimit > 0 && (
-                        <Badge variant="outline" className="text-[10px] font-black uppercase border-slate-200 text-slate-400 px-3 py-1 rounded-full">
-                           Limit: {mock.attemptLimit} Attempts
+                        <Badge variant="outline" className="text-[7px] font-black uppercase border-slate-200 text-slate-400 px-2 py-0.5 rounded-full">
+                           Limit: {mock.attemptLimit}
                         </Badge>
                       )}
                   </div>
-                  <h1 className="text-3xl md:text-6xl font-headline font-black text-[#0F172A] uppercase leading-[0.95] tracking-tighter max-w-2xl">{mock.title}</h1>
-                  <div className="flex items-center gap-8 pt-4 text-slate-500 font-bold text-xs md:text-lg uppercase tracking-widest">
-                      <span className="flex items-center gap-2.5"><Clock className="h-5 w-5 text-primary" /> {mock.duration} Mins</span>
-                      <span className="flex items-center gap-2.5"><BookOpen className="h-5 w-5 text-primary" /> {mock.totalQuestions} Qs</span>
+                  <h1 className="text-xl md:text-4xl lg:text-5xl font-headline font-black text-[#0F172A] uppercase leading-[1] tracking-tight max-w-2xl">{mock.title}</h1>
+                  <div className="flex items-center gap-6 pt-2 text-slate-500 font-bold text-[9px] md:text-sm uppercase tracking-widest">
+                      <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> {mock.duration} Mins</span>
+                      <span className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-primary" /> {mock.totalQuestions} Qs</span>
                       {!isLocked && mock.attemptLimit > 0 && (
-                        <span className="flex items-center gap-2.5"><Target className="h-5 w-5 text-emerald-500" /> {attemptsLeft} Left</span>
+                        <span className="flex items-center gap-2"><Target className="h-4 w-4 text-emerald-500" /> {attemptsLeft} Left</span>
                       )}
                   </div>
                 </div>
               </div>
-              <div className="w-full md:w-auto pt-6 md:pt-0">
+              <div className="w-full md:w-auto pt-4 md:pt-0">
                  {isLocked ? (
-                    <Button onClick={() => router.push('/pass')} className="w-full h-16 md:h-20 px-12 md:px-16 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] text-[11px] md:text-sm rounded-[1.5rem] md:rounded-[2.5rem] shadow-4xl gap-4 border-none transition-all active:scale-95 flex items-center justify-center">
-                      <Lock className="h-5 w-5 md:h-7 md:w-7" /> UNLOCK TEST
+                    <Button onClick={() => router.push('/pass')} className="w-full h-12 md:h-14 px-8 md:px-12 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase tracking-widest text-[9px] md:text-[10px] rounded-xl shadow-xl gap-3 border-none transition-all active:scale-95 flex items-center justify-center">
+                      <Lock className="h-4 w-4" /> UNLOCK TEST
                     </Button>
                  ) : isLimitReached ? (
-                    <div className="flex flex-col gap-4">
-                       <div className="bg-rose-50 border-2 border-rose-100 p-8 rounded-[2rem] flex items-center gap-6 text-left shadow-2xl">
-                          <AlertCircle className="h-10 w-10 text-rose-600" />
-                          <div><p className="text-xs font-black uppercase text-rose-700 tracking-widest mb-1">Limit Reached</p><p className="text-lg font-bold text-rose-500 uppercase leading-none">Max attempts reviewed.</p></div>
+                    <div className="flex flex-col gap-2">
+                       <div className="bg-rose-50 border border-rose-100 p-4 md:p-6 rounded-xl flex items-center gap-4 text-left shadow-lg">
+                          <AlertCircle className="h-6 w-6 text-rose-600" />
+                          <div><p className="text-[8px] font-black uppercase text-rose-700 tracking-widest leading-none mb-1">Limit Reached</p><p className="text-xs font-bold text-rose-500 uppercase leading-none">Max attempts reviewed.</p></div>
                        </div>
-                       <Button asChild variant="outline" className="h-14 rounded-2xl border-slate-200 font-black uppercase text-[10px] tracking-widest gap-2">
-                          <Link href={`/results/${mockId}`}><Target className="h-4 w-4" /> View Last Result</Link>
+                       <Button asChild variant="outline" className="h-10 rounded-xl border-slate-200 font-black uppercase text-[8px] tracking-widest gap-2">
+                          <Link href={`/results/${mockId}`}><Target className="h-3 w-3" /> View Last Result</Link>
                        </Button>
                     </div>
                  ) : (
-                    <Button asChild className="w-full h-16 md:h-20 px-12 md:px-20 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.2em] text-[11px] md:text-sm rounded-[1.5rem] md:rounded-[2.5rem] shadow-4xl border-none transition-all active:scale-95">
-                      <Link href={`/mocks/${mockId}/instructions`} className="flex items-center justify-center gap-4">
-                        {isResumable ? <RefreshCw className="h-6 w-6" /> : <Play className="h-6 w-6 fill-current" />} 
-                        {isResumable ? 'RESUME TEST' : 'START TEST'} <ArrowRight className="h-5 w-5" />
+                    <Button asChild className="w-full h-12 md:h-16 px-10 md:px-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.2em] text-[9px] md:text-[11px] rounded-xl shadow-2xl border-none transition-all active:scale-95">
+                      <Link href={`/mocks/${mockId}/instructions`} className="flex items-center justify-center gap-3">
+                        {isResumable ? <RefreshCw className="h-4 w-4" /> : <Play className="h-4 w-4 fill-current text-primary" />} 
+                        {isResumable ? 'RESUME TEST' : 'START TEST'} <ArrowRight className="h-4 w-4" />
                       </Link>
                     </Button>
                  )}
@@ -192,12 +192,12 @@ export default function MockOverviewPage() {
           </div>
         </section>
 
-        <section className="py-12 md:py-20 bg-white">
+        <section className="py-10 md:py-16 bg-white">
            <div className="container mx-auto px-4 max-w-6xl">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
-                 <FeatureNode icon={<ShieldCheck className="text-emerald-500 h-5 w-5" />} title="Official Hub" desc="Official board patterns" />
-                 <FeatureNode icon={<Zap className="text-primary h-5 w-5" />} title="Logic Solutions" desc="Step-by-step explanations" />
-                 <FeatureNode icon={<Target className="text-blue-500 h-5 w-5" />} title="State Rankings" desc="See where you stand" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+                 <FeatureNode icon={<ShieldCheck className="text-emerald-500 h-4 w-4" />} title="Official Hub" desc="Official board patterns" />
+                 <FeatureNode icon={<Zap className="text-primary h-4 w-4" />} title="Logic Solutions" desc="Step-by-step explanations" />
+                 <FeatureNode icon={<Target className="text-blue-500 h-4 w-4" />} title="State Rankings" desc="See where you stand" />
               </div>
            </div>
         </section>
@@ -209,10 +209,10 @@ export default function MockOverviewPage() {
 
 function FeatureNode({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
   return (
-    <div className="p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] bg-slate-50 border border-slate-100 space-y-3 text-center group hover:bg-white hover:shadow-xl transition-all">
-      <div className="h-10 w-10 md:h-12 md:w-12 bg-white rounded-xl flex items-center justify-center mx-auto shadow-sm group-hover:scale-110 transition-transform">{icon}</div>
-      <h3 className="text-sm md:text-lg font-black text-[#0F172A] uppercase tracking-tight">{title}</h3>
-      <p className="text-slate-400 font-bold uppercase text-[7px] md:text-[9px] tracking-widest">{desc}</p>
+    <div className="p-4 md:p-6 rounded-xl bg-slate-50 border border-slate-100 space-y-2 text-center group hover:bg-white hover:shadow-lg transition-all">
+      <div className="h-8 w-8 md:h-10 md:w-10 bg-white rounded-lg flex items-center justify-center mx-auto shadow-sm group-hover:scale-110 transition-transform">{icon}</div>
+      <h3 className="text-[11px] md:text-sm font-black text-[#0F172A] uppercase tracking-tight">{title}</h3>
+      <p className="text-slate-400 font-bold uppercase text-[7px] md:text-[8px] tracking-widest">{desc}</p>
     </div>
   );
 }
