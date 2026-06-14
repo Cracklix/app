@@ -11,8 +11,8 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Official Live Hero Hub v120.0 (Background Removed).
- * UPDATED: Integrated live Firestore stats for institutional trust and functional portal routing.
+ * @fileOverview Official Live Hero Hub v121.0.
+ * UPDATED: Integrated official board logos for PSSSB, PPSC, PSPCL, and Teaching sectors.
  */
 
 export default function Hero() {
@@ -93,7 +93,7 @@ export default function Hero() {
              <div className="absolute -inset-4 bg-orange-500/5 blur-3xl rounded-full pointer-events-none"></div>
 
              <ExamPortalCard 
-               emoji="📝" 
+               logoUrl="https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg"
                tag="PSSSB" 
                title="Patwari & Clerk" 
                desc="Full syllabus mock tests, sectionals, and daily current Punjab GK trackers."
@@ -101,7 +101,7 @@ export default function Hero() {
                href="/exams/category/punjab-govt"
              />
              <ExamPortalCard 
-               emoji="🏛" 
+               logoUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR8W5eTBPdzztA7cziqnMmtWk9InL1yflUD_xb4vAsLw&s=10"
                tag="PPSC" 
                title="PCS & Analysts" 
                desc="High-level reasoning, aptitude structures, and administrative pattern mocks."
@@ -109,7 +109,7 @@ export default function Hero() {
                href="/exams/category/punjab-govt"
              />
              <ExamPortalCard 
-               emoji="⚡" 
+               logoUrl="https://www.pspcl.in/images/logo.png"
                tag="PSPCL" 
                title="JE & ALM Matrix" 
                desc="Technical theory question banks and customized department level papers."
@@ -117,7 +117,7 @@ export default function Hero() {
                href="/exams/category/punjab-technical"
              />
              <ExamPortalCard 
-               emoji="🎓" 
+               logoUrl="https://static.pseb.ac.in/newweb/images/pseb-logo.png"
                tag="TEACHING" 
                title="PSTET & Cadres" 
                desc="Master Cadre, Lecturer, ETT, and CTET complete child pedagogy modules."
@@ -141,7 +141,7 @@ export default function Hero() {
   );
 }
 
-function ExamPortalCard({ emoji, tag, title, desc, color, href }: any) {
+function ExamPortalCard({ logoUrl, tag, title, desc, color, href }: any) {
   const colorStyles: any = {
     orange: "text-orange-400 bg-orange-500/10 border-orange-500/20",
     blue: "text-blue-400 bg-blue-500/10 border-blue-500/20",
@@ -156,8 +156,8 @@ function ExamPortalCard({ emoji, tag, title, desc, color, href }: any) {
     >
        <div className="space-y-4">
           <div className="flex items-center justify-between">
-             <div className={cn("p-2.5 rounded-xl text-xl shadow-inner", colorStyles[color])}>
-                {emoji}
+             <div className={cn("p-2 rounded-xl shadow-inner w-12 h-12 flex items-center justify-center overflow-hidden bg-white", colorStyles[color])}>
+                <img src={logoUrl} alt={tag} className="w-full h-full object-contain p-1" />
              </div>
              <Badge className={cn("border-none text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded shadow-sm", colorStyles[color])}>
                 {tag}
