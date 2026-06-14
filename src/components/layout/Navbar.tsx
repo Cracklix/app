@@ -24,8 +24,8 @@ import PWAInstallButton from "@/components/PWAInstallButton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Final Screenshot-Matched Navbar v254.1.
- * UPDATED: Logo height adjusted to 200px and added handleLogout fix.
+ * @fileOverview Final Screenshot-Matched Navbar v254.2.
+ * UPDATED: Logo height shrunken to h-10/h-12 for a compact, professional look.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -75,7 +75,7 @@ export default function Navbar() {
               <Menu className="h-6 w-6" />
             </button>
             
-            <Logo imgClassName="h-[160px] md:h-[200px] origin-left" />
+            <Logo imgClassName="h-10 md:h-12 origin-left" />
           </div>
 
           <div className="hidden lg:flex flex-1 items-center justify-center gap-8 xl:gap-12 h-full">
