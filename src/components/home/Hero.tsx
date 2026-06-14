@@ -9,8 +9,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened Screenshot-Matched Hero Hub v85.0.
- * UPDATED: Background width set to 55% for "Full Visibility" of the Golden Temple on the right.
+ * @fileOverview Hardened Screenshot-Matched Hero Hub v86.0.
+ * UPDATED: Background width set to 50% with object-contain for "Full Visibility" of the Golden Temple on the right.
  * FIXED: Institutional text anchored to the left with high-contrast buttons and metrics.
  */
 
@@ -21,15 +21,15 @@ export default function Hero() {
     <section className="relative w-full min-h-[600px] lg:min-h-[750px] bg-[#0B0F19] flex flex-col justify-start overflow-hidden font-body text-left">
       
       {/* 1. BACKGROUND LAYERS - FULL VISIBILITY RIGHT SIDE */}
-      <div className="absolute top-0 right-0 w-full lg:w-[55%] h-[200px] lg:h-full z-0 pointer-events-none">
+      <div className="absolute top-0 right-0 w-full lg:w-[50%] h-[300px] lg:h-full z-0 pointer-events-none">
         <img 
           src={templeImg} 
           alt="Golden Temple" 
-          className="w-full h-full object-cover object-right-bottom"
+          className="w-full h-full object-contain lg:object-right-bottom object-center"
           referrerPolicy="no-referrer"
         />
         {/* Cinematic Gradient: Fades from solid navy on the left to transparent on the right */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0F19] via-[#0B0F19]/20 to-transparent lg:block hidden" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0F19] via-[#0B0F19]/40 to-transparent lg:block hidden" />
         {/* Mobile Gradient: Fades bottom to top */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19] via-transparent to-transparent lg:hidden" />
       </div>
@@ -48,7 +48,7 @@ export default function Hero() {
                 <Star className="h-2.5 w-2.5 text-[#F97316] fill-current" />
               </div>
               <span className="text-[9px] md:text-[10px] font-black text-white uppercase tracking-widest">
-                 #1 PUNJAB PREP PLATFORM
+                 ★ #1 PUNJAB PREP PLATFORM
               </span>
            </motion.div>
 
@@ -59,10 +59,10 @@ export default function Hero() {
              transition={{ delay: 0.1 }}
              className="space-y-1"
            >
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-headline font-black text-white leading-none tracking-tighter uppercase">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-headline font-black text-white leading-[0.9] tracking-tighter uppercase">
                  PREPARE SMARTER.
               </h1>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-headline font-black text-[#F97316] leading-none tracking-tighter uppercase">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-headline font-black text-[#F97316] leading-[0.9] tracking-tighter uppercase">
                  SCORE HIGHER.
               </h1>
            </motion.div>
