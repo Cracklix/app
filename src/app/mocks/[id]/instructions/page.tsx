@@ -16,9 +16,8 @@ import { LanguageDisplayMode } from "@/types";
 import Link from "next/link";
 
 /**
- * @fileOverview Hardened Instructions Hub v9.0 (Micro-Scale).
- * FIXED: Added missing React import for cloneElement.
- * UPDATED: Absolute minimum typography and padding for mobile visibility.
+ * @fileOverview Hardened Instructions Hub v10.0 (Ultra-Compact Micro-Scale).
+ * UPDATED: Shrunken typography and padding to absolute minimum for mobile "pura visible" experience.
  */
 export default function InstructionsPage() {
   const params = useParams();
@@ -90,31 +89,31 @@ export default function InstructionsPage() {
   return (
     <div className="min-h-screen bg-slate-50/50 font-body select-none">
       <Navbar />
-      <main className="container mx-auto px-2 md:px-6 py-4 md:py-8 max-w-5xl text-left">
-        <div className="space-y-4 md:space-y-8">
-           <div className="flex flex-col items-start gap-2">
-              <div className="flex items-center gap-2">
-                 <ShieldCheck className="h-4 w-4 text-[#F97316]" />
-                 <Badge className="bg-orange-50 text-[#F97316] border-none px-2 py-0.5 rounded-full font-black uppercase text-[7px] md:text-[9px] tracking-widest shadow-sm">Official Engine</Badge>
+      <main className="container mx-auto px-2 md:px-6 py-2 md:py-6 max-w-5xl text-left">
+        <div className="space-y-2 md:space-y-6">
+           <div className="flex flex-col items-start gap-1">
+              <div className="flex items-center gap-1.5">
+                 <ShieldCheck className="h-3 w-3 text-[#F97316]" />
+                 <Badge className="bg-orange-50 text-[#F97316] border-none px-1.5 py-0 rounded-full font-black uppercase text-[6px] md:text-[8px] tracking-widest shadow-sm">Official Engine</Badge>
               </div>
-              <h1 className="text-base md:text-4xl font-headline font-black text-[#0F172A] uppercase leading-[1.1] tracking-tighter">{mock.title}</h1>
+              <h1 className="text-[14px] md:text-3xl lg:text-4xl font-headline font-black text-[#0F172A] uppercase leading-tight tracking-tight">{mock.title}</h1>
            </div>
 
-           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-4">
               <StatPlate icon={<Clock />} label="DURATION" val={`${mock.duration}m`} />
               <StatPlate icon={<BookOpen />} label="QUESTIONS" val={mock.totalQuestions} />
               <StatPlate icon={<Zap />} label="MARKS" val={mock.totalQuestions * (mock.positiveMarks || 1)} />
               <StatPlate icon={<ShieldCheck />} label="PENALTY" val={`-${mock.negativeMarks || 0.25}`} />
            </div>
 
-           <Card className="border-none shadow-2xl rounded-xl md:rounded-[2.5rem] bg-white overflow-hidden">
-              <CardHeader className="p-3 md:p-8 bg-slate-50/50 border-b border-slate-100">
-                 <CardTitle className="text-sm md:text-xl font-headline font-black uppercase text-[#0F172A] flex items-center gap-3">
-                    <Info className="h-4 w-4 text-[#F97316]" /> Instructions Hub
+           <Card className="border-none shadow-xl rounded-lg md:rounded-[2rem] bg-white overflow-hidden">
+              <CardHeader className="p-2 md:p-6 bg-slate-50/50 border-b border-slate-100">
+                 <CardTitle className="text-[10px] md:text-lg font-headline font-black uppercase text-[#0F172A] flex items-center gap-2">
+                    <Info className="h-3 w-3 text-[#F97316]" /> Instructions Hub
                  </CardTitle>
               </CardHeader>
-              <CardContent className="p-3 md:p-8 space-y-4 md:space-y-8">
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 md:gap-y-4">
+              <CardContent className="p-2 md:p-6 space-y-3 md:space-y-6">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1.5 md:gap-y-3">
                     <Instruction text="Questions carry equal weightage." />
                     <Instruction text="Negative marking for incorrect audit choices." />
                     <Instruction text="Auto-submit when timer hits zero." />
@@ -124,12 +123,12 @@ export default function InstructionsPage() {
                  </div>
 
                  {availableLangs.length > 1 && (
-                    <div className="pt-4 md:pt-8 border-t border-slate-100 flex flex-col items-center gap-4">
-                       <div className="flex items-center gap-2">
-                          <Globe className="h-3 w-3 text-slate-400" />
-                          <p className="text-[9px] md:text-[11px] font-black text-[#0F172A] uppercase tracking-widest">Select Language</p>
+                    <div className="pt-2 md:pt-6 border-t border-slate-100 flex flex-col items-center gap-2 md:gap-4">
+                       <div className="flex items-center gap-1.5">
+                          <Globe className="h-2.5 w-2.5 text-slate-400" />
+                          <p className="text-[7px] md:text-[10px] font-black text-[#0F172A] uppercase tracking-widest">Select Language</p>
                        </div>
-                       <div className="flex flex-wrap justify-center gap-2">
+                       <div className="flex flex-wrap justify-center gap-1.5">
                           {availableLangs.includes('ENGLISH') && <LangBtn label="English" val="ENGLISH" active={prefLang === 'ENGLISH'} onClick={setPrefLang} />}
                           {availableLangs.includes('PUNJABI') && <LangBtn label="ਪੰਜਾਬੀ" val="PUNJABI" active={prefLang === 'PUNJABI'} onClick={setPrefLang} />}
                           {availableLangs.includes('HINDI') && <LangBtn label="हिन्दी" val="HINDI" active={prefLang === 'HINDI'} onClick={setPrefLang} />}
@@ -139,18 +138,18 @@ export default function InstructionsPage() {
                     </div>
                  )}
 
-                 <div className="bg-emerald-50 border border-emerald-100 p-3 md:p-6 rounded-lg md:rounded-2xl flex items-start gap-3">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                    <p className="text-[8px] md:text-xs font-bold text-emerald-800 leading-tight uppercase">
+                 <div className="bg-emerald-50 border border-emerald-100 p-2 md:p-4 rounded-md md:rounded-xl flex items-start gap-2">
+                    <CheckCircle2 className="h-2.5 w-2.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <p className="text-[6px] md:text-[10px] font-bold text-emerald-800 leading-tight uppercase">
                        I agree to all guidelines. Tab switching is strictly prohibited.
                     </p>
                  </div>
 
                  <Button 
                     onClick={handleStart}
-                    className="w-full h-11 md:h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-widest text-[9px] md:text-[11px] rounded-lg md:rounded-xl shadow-xl group transition-all"
+                    className="w-full h-9 md:h-14 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-widest text-[8px] md:text-[10px] rounded-md md:rounded-xl shadow-lg group transition-all"
                  >
-                    Agree & Continue <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    Agree & Continue <ChevronRight className="ml-1.5 h-3 w-3 group-hover:translate-x-1 transition-transform" />
                  </Button>
               </CardContent>
            </Card>
@@ -163,21 +162,23 @@ export default function InstructionsPage() {
 
 function StatPlate({ icon, label, val }: any) {
   return (
-    <div className="p-2.5 md:p-6 bg-white rounded-lg md:rounded-2xl border border-slate-100 shadow-md text-center space-y-0.5 group hover:border-[#F97316]/30 transition-all">
-       <div className="h-6 w-6 md:h-10 md:w-10 bg-slate-50 rounded-lg flex items-center justify-center mx-auto text-[#F97316] mb-1 shadow-inner">{React.cloneElement(icon, { className: "h-3 w-3 md:h-5 md:w-5" })}</div>
-       <p className="text-[6px] md:text-[9px] font-black text-slate-400 uppercase tracking-tighter">{label}</p>
-       <p className="text-[10px] md:text-xl font-black text-[#0F172A] uppercase leading-none">{val}</p>
+    <div className="p-1.5 md:p-5 bg-white rounded-md md:rounded-xl border border-slate-100 shadow-sm text-center space-y-0.5 group hover:border-[#F97316]/30 transition-all">
+       <div className="h-5 w-5 md:h-9 md:w-9 bg-slate-50 rounded-md flex items-center justify-center mx-auto text-[#F97316] mb-0.5 shadow-inner">
+          {React.cloneElement(icon, { className: "h-2.5 w-2.5 md:h-4 md:w-4" })}
+       </div>
+       <p className="text-[5px] md:text-[8px] font-black text-slate-400 uppercase tracking-tighter">{label}</p>
+       <p className="text-[11px] md:text-lg font-black text-[#0F172A] uppercase leading-none">{val}</p>
     </div>
   )
 }
 
 function Instruction({ text }: { text: string }) {
   return (
-    <div className="flex items-start gap-2 group">
-       <div className="h-3.5 w-3.5 rounded-full bg-slate-100 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-[#F97316] transition-colors">
-          <CheckCircle2 className="h-2.5 w-2.5 text-slate-400 group-hover:text-white" />
+    <div className="flex items-start gap-1.5 group">
+       <div className="h-3 w-3 rounded-full bg-slate-100 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-[#F97316] transition-colors">
+          <CheckCircle2 className="h-2 w-2 text-slate-400 group-hover:text-white" />
        </div>
-       <p className="text-slate-600 font-bold uppercase text-[7px] md:text-[9px] leading-snug tracking-tighter">{text}</p>
+       <p className="text-slate-600 font-bold uppercase text-[6px] md:text-[8px] leading-snug tracking-tighter">{text}</p>
     </div>
   )
 }
@@ -187,7 +188,7 @@ function LangBtn({ label, val, active, onClick }: any) {
     <button 
       onClick={() => onClick(val)}
       className={cn(
-        "px-2.5 py-1.5 rounded-md border font-black uppercase text-[7px] md:text-[8px] tracking-widest transition-all shadow-sm active:scale-95",
+        "px-2 py-1 rounded border font-black uppercase text-[6px] md:text-[7px] tracking-widest transition-all shadow-sm active:scale-95",
         active ? "border-[#F97316] bg-orange-50 text-[#F97316] shadow-md" : "border-slate-100 text-slate-400 hover:border-slate-300"
       )}
     >
