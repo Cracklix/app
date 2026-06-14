@@ -17,8 +17,9 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Institutional CBT Palette Hub v40.0 (Ultra-Compact Micro).
- * UPDATED: Absolute minimum sizing for question nodes and summary blocks.
+ * @fileOverview Institutional CBT Palette Hub v41.0 (Full Labels & Consistent Sizing).
+ * UPDATED: Full descriptive labels for status summary.
+ * UPDATED: Consistent number sizing for all question nodes.
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const questions = useExamStore(s => s.questions);
@@ -60,13 +61,13 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
       <ScrollArea className="h-full">
         <div className="p-1 md:p-2 pt-10 md:pt-12 space-y-1.5 md:space-y-3 pb-32">
            
-           {/* 1. STATUS LEGEND HUB - MICRO SCALE */}
+           {/* 1. STATUS LEGEND HUB - FULL LABELS */}
            <div className="grid grid-cols-2 gap-0.5 md:gap-1.5">
-              <SummaryCard count={stats.answered} label="ANS" color="bg-[#1E5EFF]" />
-              <SummaryCard count={stats.notAnswered} label="N-ANS" color="bg-[#94A3B8]" />
-              <SummaryCard count={stats.marked} label="MRK" color="bg-[#F43F5E]" />
-              <SummaryCard count={stats.notVisited} label="N-VIS" color="bg-white" textColor="text-[#94A3B8]" border="border-slate-100" />
-              <SummaryCard count={stats.ansMarked} label="ANS+MRK" color="bg-[#6366F1]" colSpan={2} />
+              <SummaryCard count={stats.answered} label="ANSWERED" color="bg-[#1E5EFF]" />
+              <SummaryCard count={stats.notAnswered} label="NOT ANSWERED" color="bg-[#94A3B8]" />
+              <SummaryCard count={stats.marked} label="MARKED" color="bg-[#F43F5E]" />
+              <SummaryCard count={stats.notVisited} label="NOT VISITED" color="bg-white" textColor="text-[#94A3B8]" border="border-slate-100" />
+              <SummaryCard count={stats.ansMarked} label="ANS & MARKED" color="bg-[#6366F1]" colSpan={2} />
            </div>
 
            <div className="h-px w-full bg-slate-50" />
@@ -122,7 +123,7 @@ function SummaryCard({ count, label, color, textColor = "text-white", colSpan = 
           {count}
        </div>
        <div className="min-w-0">
-          <span className="text-[4px] md:text-[6px] font-black uppercase text-slate-400 tracking-tighter block leading-none truncate">{label}</span>
+          <span className="text-[4px] md:text-[5px] font-black uppercase text-slate-400 tracking-tighter block leading-none truncate">{label}</span>
        </div>
     </div>
   )
@@ -145,7 +146,7 @@ function QuestionNode({ index, isActive, status, isVisited, onClick }: any) {
     <button
       onClick={onClick}
       className={cn(
-        "relative aspect-square rounded-sm flex items-center justify-center font-black text-[8px] md:text-xs transition-all border shrink-0 active:scale-90 w-full cursor-pointer",
+        "relative aspect-square rounded-sm flex items-center justify-center font-black text-[8px] md:text-[9px] transition-all border shrink-0 active:scale-90 w-full cursor-pointer",
         colorClass
       )}
     >
