@@ -9,7 +9,8 @@ import { cn } from "@/lib/utils";
 
 /**
  * @fileOverview Final Hardened Scaling Hero Node v30.0.
- * UPDATED: Ultra-compact text container and high-lifted stats grid for full background integration.
+ * UPDATED: Removed dark box background; headlines float directly over sky-blue shading.
+ * UPDATED: High-lifted stats grid for full background integration.
  */
 
 export default function Hero() {
@@ -40,10 +41,10 @@ export default function Hero() {
          />
 
          {/* SHADING LAYER: SKY BLUE MIX (LOCKED LEFT) */}
-         <div className="absolute left-0 top-0 h-full w-full md:w-[50%] bg-gradient-to-r from-sky-100/90 via-sky-50/60 to-transparent z-10" />
+         <div className="absolute left-0 top-0 h-full w-full md:w-[60%] bg-gradient-to-r from-sky-200/90 via-sky-100/60 to-transparent z-10" />
 
          {/* TEXTURE LAYER: PUNJAB MAP (LOCKED LEFT) */}
-         <div className="absolute left-0 top-0 h-full w-full md:w-[30%] z-20 pointer-events-none opacity-[0.06] mix-blend-multiply">
+         <div className="absolute left-0 top-0 h-full w-full md:w-[40%] z-20 pointer-events-none opacity-[0.1] mix-blend-multiply">
             <img 
                src={punjabMap} 
                className="w-full h-full object-contain object-left" 
@@ -56,35 +57,35 @@ export default function Hero() {
             <motion.div 
                initial={{ opacity: 0, x: -20 }}
                animate={{ opacity: 1, x: 0 }}
-               className="pt-4 md:pt-10 lg:pt-16 max-w-[180px] sm:max-w-xs md:max-w-sm text-left space-y-3 md:space-y-5"
+               className="pt-6 md:pt-14 lg:pt-20 max-w-[200px] sm:max-w-xs md:max-w-sm text-left space-y-3 md:space-y-5"
             >
                {/* BRAND BADGE */}
-               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/40 backdrop-blur-md border border-white/20 shadow-sm w-fit">
+               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/60 backdrop-blur-md border border-white/20 shadow-sm w-fit">
                   <Star className="h-2 md:h-2.5 w-2 md:w-2.5 text-[#F97316] fill-current" />
                   <span className="text-[6px] md:text-[8px] font-black text-[#0F172A] uppercase tracking-widest whitespace-nowrap">#1 Punjab Exam Hub</span>
                </div>
 
-               {/* HEADLINES (Tightened Scaling) */}
-               <div className="space-y-0 md:space-y-0.5">
-                  <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-headline font-black text-[#0F172A] leading-tight tracking-tighter uppercase">
-                     PREPARE SMARTER.
+               {/* HEADLINES (Floating Style) */}
+               <div className="space-y-0.5 md:space-y-1">
+                  <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-6xl font-headline font-black text-[#0F172A] leading-[1.1] tracking-tighter uppercase drop-shadow-sm">
+                     PREPARE <br/> SMARTER.
                   </h1>
-                  <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-headline font-black text-[#F97316] leading-tight tracking-tighter uppercase">
-                     SCORE HIGHER.
+                  <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-6xl font-headline font-black text-[#F97316] leading-[1.1] tracking-tighter uppercase drop-shadow-md">
+                     SCORE <br/> HIGHER.
                   </h1>
                </div>
 
-               <p className="text-[#0F172A] font-black uppercase text-[6px] md:text-[9px] tracking-[0.1em] max-w-[150px] leading-tight antialiased opacity-90">
+               <p className="text-[#0F172A]/80 font-black uppercase text-[7px] md:text-[10px] tracking-[0.1em] max-w-[150px] md:max-w-[200px] leading-tight antialiased">
                   Official CBT engine verified by <br/>
                   Arsh Grewal Management.
                </p>
 
                {/* ACTION BUTTONS (Compact Styling) */}
-               <div className="flex flex-wrap gap-1.5 md:gap-3 pt-1">
-                  <Button asChild className="h-7 md:h-10 px-3 md:px-5 bg-[#F97316] hover:bg-orange-600 text-white font-black uppercase text-[7px] md:text-[8px] tracking-widest rounded-md md:rounded-xl shadow-lg border-none transition-all active:scale-95">
-                     <Link href="/mocks">Start Mock <ArrowRight className="h-2.5 w-2.5 ml-1" /></Link>
+               <div className="flex flex-wrap gap-1.5 md:gap-3 pt-2">
+                  <Button asChild className="h-8 md:h-12 px-4 md:px-7 bg-[#F97316] hover:bg-orange-600 text-white font-black uppercase text-[8px] md:text-[10px] tracking-widest rounded-lg md:rounded-2xl shadow-xl border-none transition-all active:scale-95">
+                     <Link href="/mocks">Start Mock <ArrowRight className="h-3 w-3 ml-1.5" /></Link>
                   </Button>
-                  <Button asChild variant="outline" className="h-7 md:h-10 px-3 md:px-5 border-[#0F172A]/10 bg-white/20 backdrop-blur-sm text-[#0F172A] hover:bg-white/40 font-black uppercase text-[7px] md:text-[8px] tracking-widest rounded-md md:rounded-xl shadow-md transition-all active:scale-95">
+                  <Button asChild variant="outline" className="h-8 md:h-12 px-4 md:px-7 border-[#0F172A]/10 bg-white/30 backdrop-blur-md text-[#0F172A] hover:bg-white/50 font-black uppercase text-[8px] md:text-[10px] tracking-widest rounded-lg md:rounded-2xl shadow-md transition-all active:scale-95">
                      <Link href="/exams">Explore Hub</Link>
                   </Button>
                </div>
@@ -93,8 +94,8 @@ export default function Hero() {
       </div>
 
       {/* 3. BOTTOM STATS HUB - HIGH-LIFT OVER BACKGROUND */}
-      <div className="container mx-auto px-4 md:px-12 lg:px-16 max-w-7xl -mt-20 md:-mt-32 lg:-mt-40 relative z-40 pb-10">
-         <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-5">
+      <div className="container mx-auto px-4 md:px-12 lg:px-16 max-w-7xl -mt-16 md:-mt-32 lg:-mt-48 relative z-40 pb-8">
+         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
             <StatCard icon={<BookOpen />} label="QUESTIONS" val="50k+" color="text-blue-600" />
             <StatCard icon={<ClipboardList />} label="MOCK TESTS" val="500+" color="text-[#F97316]" />
             <StatCard icon={<ShieldCheck />} label="ASPIRANTS" val="15k+" color="text-emerald-600" />
@@ -107,13 +108,13 @@ export default function Hero() {
 
 function StatCard({ icon, label, val, color }: any) {
    return (
-      <div className="p-2 md:p-3.5 bg-white/80 backdrop-blur-lg shadow-xl border border-white/30 rounded-[0.6rem] md:rounded-[1.2rem] space-y-0.5 group hover:bg-white transition-all text-left">
-         <div className={cn("h-5 w-5 md:h-8 md:w-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner mb-1.5", color)}>
-            {React.cloneElement(icon, { className: "h-2.5 w-2.5 md:h-4 md:w-4" })}
+      <div className="p-3 md:p-5 bg-white/85 backdrop-blur-xl shadow-2xl border border-white/40 rounded-[0.8rem] md:rounded-[1.5rem] space-y-0.5 group hover:bg-white transition-all text-left">
+         <div className={cn("h-6 w-6 md:h-10 md:w-10 rounded-xl bg-slate-50 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner mb-2 md:mb-3", color)}>
+            {React.cloneElement(icon, { className: "h-3.5 w-3.5 md:h-5 md:w-5" })}
          </div>
          <div className="space-y-0">
-            <p className="text-xs md:text-xl lg:text-2xl font-headline font-black text-[#0F172A] leading-none tracking-tighter">{val}</p>
-            <p className="text-[5px] md:text-[8px] font-black text-slate-500 uppercase tracking-widest">{label}</p>
+            <p className="text-sm md:text-3xl lg:text-4xl font-headline font-black text-[#0F172A] leading-none tracking-tighter">{val}</p>
+            <p className="text-[6px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">{label}</p>
          </div>
       </div>
    )
