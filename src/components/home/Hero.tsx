@@ -8,9 +8,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Refined Scaling Hero Node v26.0.
- * MATCHED: Background is fully visible (aspect-ratio driven), scales with window size.
- * SHADING: Sky-blue shading and map locked to the left side under a compact text box.
+ * @fileOverview Refined Scaling Hero Node v27.0.
+ * UPDATED: Reduced stat box sizes and moved them higher up.
  */
 
 export default function Hero() {
@@ -57,7 +56,7 @@ export default function Hero() {
             <motion.div 
                initial={{ opacity: 0, x: -20 }}
                animate={{ opacity: 1, x: 0 }}
-               className="pt-6 md:pt-12 lg:pt-20 max-w-[260px] sm:max-w-xs md:max-w-sm text-left space-y-4 md:space-y-6"
+               className="pt-6 md:pt-12 lg:pt-20 max-w-[200px] sm:max-w-xs md:max-w-sm text-left space-y-4 md:space-y-6"
             >
                {/* BRAND BADGE */}
                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/40 backdrop-blur-md border border-white/20 shadow-sm w-fit">
@@ -75,7 +74,7 @@ export default function Hero() {
                   </h1>
                </div>
 
-               <p className="text-[#0F172A] font-bold uppercase text-[7px] md:text-[10px] tracking-[0.15em] max-w-[200px] leading-relaxed antialiased opacity-90">
+               <p className="text-[#0F172A] font-bold uppercase text-[7px] md:text-[10px] tracking-[0.15em] max-w-[180px] leading-relaxed antialiased opacity-90">
                   Official CBT engine verified by <br className="hidden md:block" />
                   Arsh Grewal Management.
                </p>
@@ -93,8 +92,8 @@ export default function Hero() {
          </div>
       </div>
 
-      {/* 3. BOTTOM STATS HUB - FLOATING DIRECTLY OVER BACKGROUND */}
-      <div className="container mx-auto px-4 md:px-12 lg:px-16 max-w-7xl -mt-8 md:-mt-12 relative z-40 pb-12">
+      {/* 3. BOTTOM STATS HUB - FLOATING HIGHER OVER BACKGROUND */}
+      <div className="container mx-auto px-4 md:px-12 lg:px-16 max-w-7xl -mt-12 md:-mt-20 relative z-40 pb-12">
          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
             <StatCard icon={<BookOpen />} label="QUESTIONS" val="50k+" color="text-blue-600" />
             <StatCard icon={<ClipboardList />} label="MOCK TESTS" val="500+" color="text-[#F97316]" />
@@ -108,13 +107,13 @@ export default function Hero() {
 
 function StatCard({ icon, label, val, color }: any) {
    return (
-      <div className="p-3 md:p-6 bg-white/90 backdrop-blur-md shadow-2xl border border-white/20 rounded-[1rem] md:rounded-[2rem] space-y-1.5 md:space-y-2 group hover:bg-white transition-all text-left">
-         <div className={cn("h-6 w-6 md:h-10 md:w-10 rounded-lg bg-slate-50 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner", color)}>
-            {React.cloneElement(icon, { className: "h-3 w-3 md:h-5 md:w-5" })}
+      <div className="p-2 md:p-4 bg-white/90 backdrop-blur-md shadow-2xl border border-white/20 rounded-[0.75rem] md:rounded-[1.5rem] space-y-1 group hover:bg-white transition-all text-left">
+         <div className={cn("h-6 w-6 md:h-8 md:w-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner", color)}>
+            {React.cloneElement(icon, { className: "h-3 w-3 md:h-4 md:w-4" })}
          </div>
          <div className="space-y-0.5">
-            <p className="text-base md:text-2xl lg:text-3xl font-headline font-black text-[#0F172A] leading-none tracking-tighter">{val}</p>
-            <p className="text-[6px] md:text-[9px] font-black text-slate-500 uppercase tracking-widest">{label}</p>
+            <p className="text-sm md:text-xl lg:text-2xl font-headline font-black text-[#0F172A] leading-none tracking-tighter">{val}</p>
+            <p className="text-[5px] md:text-[8px] font-black text-slate-500 uppercase tracking-widest">{label}</p>
          </div>
       </div>
    )
