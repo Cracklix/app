@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useFirestore, useUser } from "@/firebase";
+import { useUser, useFirestore } from "@/firebase";
 import { doc, getDoc, updateDoc, serverTimestamp, collection, query, where, documentId, getDocs, setDoc } from "firebase/firestore";
 import { useExamStore } from "@/store/useExamStore";
 import ExamHeader from "@/components/exam/ExamHeader";
@@ -26,9 +26,8 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened CBT Engine v47.0 (Production Verified).
- * STABILITY: Enhanced null guards for answers and section data.
- * UPDATED: Minimized mobile palette width for better ergonomics.
+ * @fileOverview Hardened CBT Engine v48.0 (Minimized Modals).
+ * UPDATED: Ultra-compact submission and exit modals for mobile-first ergonomics.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -195,12 +194,12 @@ export default function MockAttemptPage() {
         <AnimatePresence>
           {isPaused && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[110] bg-[#0B1528]/95 backdrop-blur-xl flex items-center justify-center p-6">
-              <div className="bg-white rounded-[2.5rem] p-10 space-y-8 text-center max-w-xs shadow-5xl border-none">
-                <div className="h-16 w-16 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto text-primary shadow-xl">
-                  <Play className="h-8 w-8 fill-current" />
+              <div className="bg-white rounded-[2rem] p-8 space-y-6 text-center max-w-[280px] shadow-5xl border-none">
+                <div className="h-12 w-12 bg-orange-50 rounded-xl flex items-center justify-center mx-auto text-primary shadow-xl">
+                  <Play className="h-6 w-6 fill-current" />
                 </div>
-                <h2 className="text-xl font-headline font-black text-[#0F172A] uppercase">Test Paused</h2>
-                <Button onClick={() => setPaused(false)} className="w-full h-14 bg-primary text-white rounded-xl font-black uppercase text-[10px]">Resume Now</Button>
+                <h2 className="text-lg font-headline font-black text-[#0F172A] uppercase">Test Paused</h2>
+                <Button onClick={() => setPaused(false)} className="w-full h-12 bg-primary text-white rounded-xl font-black uppercase text-[9px]">Resume Now</Button>
               </div>
             </motion.div>
           )}
@@ -247,43 +246,45 @@ export default function MockAttemptPage() {
         </SheetContent>
       </Sheet>
 
+      {/* MINIMIZED EXIT MODAL */}
       <Dialog open={showExitModal} onOpenChange={setShowExitModal}>
-        <DialogContent className="max-w-[360px] rounded-[2.5rem] p-8 bg-white text-center shadow-5xl border-none z-[1300]">
-          <div className="space-y-8">
+        <DialogContent className="max-w-[320px] rounded-[2rem] p-6 md:p-8 bg-white text-center shadow-5xl border-none z-[1300]">
+          <div className="space-y-6">
             <DialogHeader className="sr-only">
                <DialogTitle>Save & Exit?</DialogTitle>
                <DialogDescription>Your current attempt state is safely cached in the cloud.</DialogDescription>
             </DialogHeader>
-            <div className="h-14 w-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto text-blue-500 shadow-inner">
-              <LogOut className="h-6 w-6" />
+            <div className="h-12 w-12 bg-blue-50 rounded-xl flex items-center justify-center mx-auto text-blue-500 shadow-inner">
+              <LogOut className="h-5 w-5" />
             </div>
-            <h2 className="text-2xl font-headline font-black uppercase text-[#0F172A]">Save & Exit?</h2>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">Your current attempt state is safely cached in the cloud registry node.</p>
-            <div className="flex gap-3 pt-2">
-              <Button variant="ghost" onClick={() => setShowExitModal(false)} className="flex-1 h-12 font-black uppercase text-[10px] tracking-widest">Stay</Button>
-              <Button onClick={() => { setPaused(false); setShowExitModal(false); router.replace('/dashboard'); }} className="flex-1 h-12 bg-primary text-white rounded-xl font-black uppercase text-[10px] shadow-lg border-none">Exit</Button>
+            <h2 className="text-xl font-headline font-black uppercase text-[#0F172A]">Save & Exit?</h2>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">Attempt state is safely cached in the cloud registry node.</p>
+            <div className="flex gap-2 pt-2">
+              <Button variant="ghost" onClick={() => setShowExitModal(false)} className="flex-1 h-11 font-black uppercase text-[9px] tracking-widest">Stay</Button>
+              <Button onClick={() => { setPaused(false); setShowExitModal(false); router.replace('/dashboard'); }} className="flex-1 h-11 bg-primary text-white rounded-xl font-black uppercase text-[9px] shadow-lg border-none">Exit</Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
+      {/* MINIMIZED SUBMIT MODAL */}
       <Dialog open={showSubmitModal} onOpenChange={showSubmitModal && !isSubmittingFinal ? setShowSubmitModal : undefined}>
-        <DialogContent className="max-w-[360px] rounded-[3rem] p-10 bg-[#0F172A] text-white text-center border-none shadow-5xl z-[1300]">
-          <div className="space-y-8">
+        <DialogContent className="max-w-[320px] rounded-[2rem] p-6 md:p-8 bg-[#0F172A] text-white text-center border-none shadow-5xl z-[1300]">
+          <div className="space-y-6">
             <DialogHeader className="sr-only">
                <DialogTitle>Final Submission</DialogTitle>
                <DialogDescription>Finish and score your test to commit it to the state merit list.</DialogDescription>
             </DialogHeader>
-            <div className="h-20 w-20 bg-primary/20 rounded-[2rem] flex items-center justify-center mx-auto text-primary shadow-2xl">
-              <ShieldCheck className="h-10 w-10" />
+            <div className="h-14 w-14 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto text-primary shadow-2xl">
+              <ShieldCheck className="h-7 w-7" />
             </div>
-            <h2 className="text-2xl font-headline font-black uppercase text-white tracking-tight">Final Submission</h2>
-            <p className="text-slate-400 text-xs font-medium px-2 leading-relaxed uppercase">Ensure all sections have been reviewed. Once submitted, your scores will be committed to the state merit list.</p>
-            <div className="flex flex-col gap-3 pt-4">
-              <Button onClick={handleSubmitFinal} disabled={isSubmittingFinal} className="w-full h-14 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-2xl border-none">
+            <h2 className="text-xl font-headline font-black uppercase text-white tracking-tight leading-none">Final Submission</h2>
+            <p className="text-slate-400 text-[10px] font-medium px-1 leading-relaxed uppercase">Scores will be committed to the state merit list after submission.</p>
+            <div className="flex flex-col gap-2 pt-2">
+              <Button onClick={handleSubmitFinal} disabled={isSubmittingFinal} className="w-full h-12 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[9px] tracking-widest rounded-xl shadow-2xl border-none">
                 {isSubmittingFinal ? <Loader2 className="h-4 w-4 animate-spin" /> : "Finish & Score Test"}
               </Button>
-              <button onClick={() => setShowSubmitModal(false)} disabled={isSubmittingFinal} className="h-10 text-slate-500 font-bold uppercase text-[9px] tracking-widest hover:text-white transition-colors cursor-pointer">Back to Questions</button>
+              <button onClick={() => setShowSubmitModal(false)} disabled={isSubmittingFinal} className="h-8 text-slate-500 font-bold uppercase text-[8px] tracking-widest hover:text-white transition-colors cursor-pointer">Back to Questions</button>
             </div>
           </div>
         </DialogContent>
