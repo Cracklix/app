@@ -23,8 +23,8 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Final Screenshot-Matched Navbar v261.0.
- * UPDATED: Exact replica of navigation items, orange active state background, and button styles.
+ * @fileOverview Final Screenshot-Matched Navbar v262.0.
+ * UPDATED: Exact replica of navigation items, orange active state background, and shrunken typography.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -54,59 +54,58 @@ export default function Navbar() {
     return profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || isFounder;
   }, [user, profile]);
 
-  if (!mounted) return <div className="w-full h-20 bg-[#0B1528]" />;
+  if (!mounted) return <div className="w-full h-16 md:h-20 bg-[#0B1528]" />;
 
   return (
     <div className="sticky top-0 z-[1000] w-full pointer-events-auto font-body text-left">
-      <nav className="w-full flex items-center bg-[#0B1528] border-b border-white/5 h-20 lg:h-24 px-4 md:px-8 shadow-2xl">
+      <nav className="w-full flex items-center bg-[#0B1528] border-b border-white/5 h-16 md:h-20 px-4 md:px-8 shadow-2xl">
         <div className="container mx-auto max-w-[1536px] flex items-center justify-between h-full gap-4">
           
           <div className="flex items-center gap-4 lg:gap-8 shrink-0">
             <button 
               onClick={() => setIsSidebarOpen(true)} 
-              className="w-10 h-10 bg-white/5 text-white rounded-lg border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center cursor-pointer"
+              className="w-9 h-9 bg-white/5 text-white rounded-lg border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center cursor-pointer"
             >
-              <Menu className="h-6 w-6" />
+              <Menu className="h-5 w-5" />
             </button>
             
-            {/* Logo positioned slightly lower per user request */}
-            <div className="pt-1">
-              <Logo imgClassName="h-10 md:h-12 origin-left" />
+            <div className="pt-0.5">
+              <Logo imgClassName="h-8 md:h-9 origin-left" />
             </div>
           </div>
 
-          <div className="hidden lg:flex items-center gap-6 xl:gap-8 h-full">
+          <div className="hidden lg:flex items-center gap-4 xl:gap-6 h-full">
             <NavLink icon={<Home className="h-4 w-4" />} label="HOME PAGE" href="/" active={pathname === "/"} />
             <NavLink icon={<Zap className="h-4 w-4" />} label="PRACTICE TESTS" href="/mocks" active={pathname.startsWith("/mocks")} />
             <NavLink icon={<Newspaper className="h-4 w-4" />} label="CURRENT AFFAIRS" href="/current-affairs" active={pathname === "/current-affairs"} />
 
             <Link href="/pass" className="transition-all active:scale-95 h-full flex items-center">
               <div className={cn(
-                "px-5 h-10 rounded-lg border flex items-center justify-center gap-2 transition-all",
+                "px-4 h-9 rounded-lg border flex items-center justify-center gap-2 transition-all",
                 "bg-white/5 border-white/10 hover:bg-white/10 text-white"
               )}>
-                <Gem className="h-4 w-4 text-[#F97316]" />
-                <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">GET PASS</span>
+                <Gem className="h-3.5 w-3.5 text-[#F97316]" />
+                <span className="text-[9px] font-black uppercase tracking-widest whitespace-nowrap">GET PASS</span>
               </div>
             </Link>
           </div>
 
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
-             <Button asChild className="hidden md:flex h-11 px-6 rounded-xl bg-[#F97316] hover:bg-orange-600 text-white font-black uppercase text-[10px] tracking-widest border-none shadow-xl gap-2">
+             <Button asChild className="hidden md:flex h-10 px-5 rounded-lg bg-[#F97316] hover:bg-orange-600 text-white font-black uppercase text-[9px] tracking-widest border-none shadow-xl gap-2">
                <Link href="/pwa-install">
-                 <Download className="h-4 w-4" /> INSTALL APP
+                 <Download className="h-3.5 w-3.5" /> INSTALL APP
                </Link>
              </Button>
 
-             <Link href="/search" className="w-11 h-11 rounded-xl border border-white/10 transition-all flex items-center justify-center bg-white/5 text-slate-400 hover:text-white">
-                <Search className="h-5 w-5" />
+             <Link href="/search" className="w-10 h-10 rounded-lg border border-white/10 transition-all flex items-center justify-center bg-white/5 text-slate-400 hover:text-white">
+                <Search className="h-4.5 w-4.5" />
              </Link>
 
              <div className="relative">
                {user ? (
                  <DropdownMenu>
                    <DropdownMenuTrigger asChild>
-                     <button className="w-11 h-11 rounded-full overflow-hidden border-2 border-white/10 hover:border-primary transition-all bg-white shadow-2xl flex items-center justify-center cursor-pointer">
+                     <button className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/10 hover:border-primary transition-all bg-white shadow-2xl flex items-center justify-center cursor-pointer">
                        <StudentAvatar profile={profile} className="h-full w-full border-none" iconClassName="text-[#0B1528]" />
                      </button>
                    </DropdownMenuTrigger>
@@ -133,7 +132,7 @@ export default function Navbar() {
                    </DropdownMenuContent>
                  </DropdownMenu>
                ) : (
-                 <Button asChild className="bg-[#F97316] hover:bg-orange-600 text-white font-black px-8 h-11 rounded-xl uppercase text-[11px] tracking-widest shadow-2xl border-none">
+                 <Button asChild className="bg-[#F97316] hover:bg-orange-600 text-white font-black px-6 h-10 rounded-lg uppercase text-[10px] tracking-widest shadow-2xl border-none">
                    <Link href="/login">LOGIN</Link>
                  </Button>
                )}
@@ -158,7 +157,7 @@ export default function Navbar() {
 function NavLink({ icon, label, href, active }: { icon: React.ReactNode, label: string, href: string, active: boolean }) {
   return (
     <Link href={href} className={cn(
-      "flex items-center gap-3 transition-all h-11 px-4 rounded-xl",
+      "flex items-center gap-2.5 transition-all h-10 px-4 rounded-lg",
       active ? "bg-[#F97316] text-white shadow-xl shadow-orange-500/20" : "text-slate-400 hover:text-white"
     )}>
       <span className={cn("shrink-0", active ? "text-white" : "text-slate-500")}>
