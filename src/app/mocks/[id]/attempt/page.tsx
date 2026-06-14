@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -29,9 +28,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
 /**
- * @fileOverview Hardened CBT Engine v52.0 (High-Fidelity Finish).
- * FIXED: Non-blocking submission write to prevent UI hangs.
- * FIXED: Proper error emission for submission failures.
+ * @fileOverview Hardened CBT Engine v53.0 (Palette Refinement).
+ * UPDATED: Sidebar width adjusted to 240px for better visibility of enlarged legend.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -170,7 +168,6 @@ export default function MockAttemptPage() {
       updateDoc(attemptRef, { status: 'COMPLETED', updatedAt: serverTimestamp() })
         .catch(() => {});
       
-      // Navigate immediately - Results page will use onSnapshot to wait for data reactivity
       router.replace(`/results/${mockId}`);
     } catch (e) {
       console.error("[CBT_SUBMIT_FAIL]:", e);
@@ -254,7 +251,7 @@ export default function MockAttemptPage() {
       </main>
 
       <Sheet open={isPaletteOpen} onOpenChange={setIsPaletteOpen}>
-        <SheetContent side="right" className="p-0 border-none w-[160px] md:w-[320px] h-full shadow-5xl z-[1200]">
+        <SheetContent side="right" className="p-0 border-none w-[240px] md:w-[320px] h-full shadow-5xl z-[1200]">
           <SheetHeader className="sr-only">
              <SheetTitle>Navigation Palette</SheetTitle>
              <SheetDescription>View and navigate through all questions in the current mock test.</SheetDescription>
@@ -263,7 +260,7 @@ export default function MockAttemptPage() {
         </SheetContent>
       </Sheet>
 
-      {/* MINIMIZED EXIT MODAL */}
+      {/* EXIT MODAL */}
       <Dialog open={showExitModal} onOpenChange={setShowExitModal}>
         <DialogContent className="max-w-[240px] rounded-[1.2rem] p-4 md:p-6 bg-white text-center shadow-5xl border-none z-[1300]">
           <div className="space-y-3">
@@ -284,7 +281,7 @@ export default function MockAttemptPage() {
         </DialogContent>
       </Dialog>
 
-      {/* MINIMIZED SUBMIT MODAL */}
+      {/* SUBMIT MODAL */}
       <Dialog open={showSubmitModal} onOpenChange={showSubmitModal && !isSubmittingFinal ? setShowSubmitModal : undefined}>
         <DialogContent className="max-w-[240px] rounded-[1.2rem] p-4 md:p-6 bg-[#0B1528] text-white text-center border-none shadow-5xl z-[1300]">
           <div className="space-y-3">

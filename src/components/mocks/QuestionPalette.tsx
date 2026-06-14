@@ -17,9 +17,9 @@ interface QuestionPaletteProps {
 }
 
 /**
- * @fileOverview Institutional CBT Palette Hub v41.0 (Full Labels & Consistent Sizing).
- * UPDATED: Full descriptive labels for status summary.
- * UPDATED: Consistent number sizing for all question nodes.
+ * @fileOverview Institutional CBT Palette Hub v42.0.
+ * UPDATED: Increased legend circle size and label text.
+ * UPDATED: Decreased grid box size for a balanced high-density look.
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
   const questions = useExamStore(s => s.questions);
@@ -59,10 +59,10 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
   return (
     <div className="flex flex-col h-full bg-white text-left font-body select-none pointer-events-auto overflow-hidden">
       <ScrollArea className="h-full">
-        <div className="p-1 md:p-2 pt-10 md:pt-12 space-y-1.5 md:space-y-3 pb-32">
+        <div className="p-3 md:p-4 pt-12 md:pt-14 space-y-4 md:space-y-6 pb-32">
            
-           {/* 1. STATUS LEGEND HUB - FULL LABELS */}
-           <div className="grid grid-cols-2 gap-0.5 md:gap-1.5">
+           {/* 1. STATUS LEGEND HUB - INCREASED TEXT & CIRCLES */}
+           <div className="grid grid-cols-2 gap-2">
               <SummaryCard count={stats.answered} label="ANSWERED" color="bg-[#1E5EFF]" />
               <SummaryCard count={stats.notAnswered} label="NOT ANSWERED" color="bg-[#94A3B8]" />
               <SummaryCard count={stats.marked} label="MARKED" color="bg-[#F43F5E]" />
@@ -70,16 +70,16 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
               <SummaryCard count={stats.ansMarked} label="ANS & MARKED" color="bg-[#6366F1]" colSpan={2} />
            </div>
 
-           <div className="h-px w-full bg-slate-50" />
+           <div className="h-px w-full bg-slate-100" />
 
-           {/* 2. SECTIONAL GRIDS */}
-           <div className="space-y-2 md:space-y-4">
+           {/* 2. SECTIONAL GRIDS - COMPACT BOXES */}
+           <div className="space-y-4">
               {sections.map((section, sIdx) => (
-                <div key={sIdx} className="space-y-1 md:space-y-2">
-                   <h4 className="text-[5px] md:text-[8px] font-[900] uppercase text-slate-400 tracking-wider truncate pl-0.5">
+                <div key={sIdx} className="space-y-2">
+                   <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-widest pl-1">
                       {section.name}
                    </h4>
-                   <div className="grid grid-cols-5 gap-0.5 md:gap-1">
+                   <div className="grid grid-cols-5 gap-1.5 md:gap-2">
                       {section.questions.map((q) => (
                          <QuestionNode 
                            key={q.globalIdx} 
@@ -95,14 +95,14 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
               ))}
            </div>
 
-           {/* 3. SUBMIT NODE - COMPACT */}
-           <div className="pt-0.5">
+           {/* 3. SUBMIT NODE */}
+           <div className="pt-4">
               <Button 
                 onClick={(e) => {
                    e.preventDefault();
                    onSubmit();
                 }}
-                className="w-full h-7 md:h-9 bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase tracking-tighter text-[6px] md:text-[8px] rounded-md shadow-sm border-none transition-all active:scale-95"
+                className="w-full h-11 bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase tracking-widest text-[10px] rounded-xl shadow-md border-none transition-all active:scale-95"
               >
                  FINISH TEST
               </Button>
@@ -116,14 +116,14 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
 function SummaryCard({ count, label, color, textColor = "text-white", colSpan = 1, border = "border-transparent" }: any) {
   return (
     <div className={cn(
-      "flex items-center gap-0.5 p-0.5 md:p-1.5 rounded-sm bg-white border border-slate-50",
+      "flex items-center gap-2.5 p-2 rounded-xl bg-white border border-slate-50 shadow-sm",
       colSpan > 1 && "col-span-2"
     )}>
-       <div className={cn("h-3 w-3 md:h-5 md:w-5 rounded-full flex items-center justify-center text-[5px] md:text-xs font-black shrink-0 border-[1px] border-white shadow-sm", color, textColor, border)}>
+       <div className={cn("h-6 w-6 md:h-8 md:w-8 rounded-full flex items-center justify-center text-[10px] md:text-sm font-black shrink-0 border-[2px] border-white shadow-sm", color, textColor, border)}>
           {count}
        </div>
        <div className="min-w-0">
-          <span className="text-[4px] md:text-[5px] font-black uppercase text-slate-400 tracking-tighter block leading-none truncate">{label}</span>
+          <span className="text-[7px] md:text-[8px] font-black uppercase text-slate-500 tracking-tight block leading-none truncate">{label}</span>
        </div>
     </div>
   )
@@ -135,7 +135,7 @@ function QuestionNode({ index, isActive, status, isVisited, onClick }: any) {
   const isAnsMarked = status === 'answered-marked';
   
   const colorClass = isActive 
-    ? "bg-white text-[#F97316] border-[#F97316] border-[1.5px] shadow-sm z-10" 
+    ? "bg-white text-[#F97316] border-[#F97316] border-[2px] shadow-lg z-10 scale-105" 
     : isAnswered ? "bg-[#1E5EFF] text-white border-transparent"
     : isMarked ? "bg-[#F43F5E] text-white border-transparent"
     : isAnsMarked ? "bg-[#6366F1] text-white border-transparent"
@@ -146,7 +146,7 @@ function QuestionNode({ index, isActive, status, isVisited, onClick }: any) {
     <button
       onClick={onClick}
       className={cn(
-        "relative aspect-square rounded-sm flex items-center justify-center font-black text-[8px] md:text-[9px] transition-all border shrink-0 active:scale-90 w-full cursor-pointer",
+        "relative aspect-square rounded-lg flex items-center justify-center font-black text-[9px] transition-all border shrink-0 active:scale-90 w-full cursor-pointer shadow-sm",
         colorClass
       )}
     >
