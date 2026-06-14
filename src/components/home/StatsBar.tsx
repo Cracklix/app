@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Card } from '@/components/ui/card';
@@ -8,11 +8,17 @@ import { BarChart3, Users, Zap, Target } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Wireframe Matched Platform Statistics v2.0.
- * MATCHED: 4-Column High-Density Grid.
+ * @fileOverview Wireframe Matched Platform Statistics v2.1 (Hydration Fix).
+ * FIXED: Added mounted state guard to ensure stable hydration.
  */
 export default function StatsBar() {
   const db = useFirestore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats, loading } = useDoc<any>(statsRef);
 
@@ -31,6 +37,8 @@ export default function StatsBar() {
       { label: "Accuracy", val: `${accuracy}%`, icon: <Target className="text-rose-500" /> }
     ];
   }, [stats]);
+
+  if (!mounted) return null;
 
   return (
     <section className="py-12 md:py-16 bg-white">

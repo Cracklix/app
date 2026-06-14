@@ -1,40 +1,43 @@
-
 import React from "react";
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/home/Hero";
-import ContinueLearning from "@/components/home/ContinueLearning";
 import FeaturedCategories from "@/components/home/FeaturedCategories";
-import PopularExams from "@/components/home/PopularExams";
+import ContinueLearning from "@/components/home/ContinueLearning";
 import LatestMocks from "@/components/home/LatestMocks";
 import AppPreview from "@/components/home/AppPreview";
 import MeetFounder from "@/components/home/MeetFounder";
 import Footer from "@/components/layout/Footer";
+import PopularExams from "@/components/home/PopularExams";
 
 /**
- * @fileOverview Official Home Hub v173.0 (Full Restoration).
- * RESTORED: FeaturedCategories and PopularExams to provide full discovery coverage.
+ * @fileOverview Official Home Hub v170.0.
+ * PERFORMANCE: Strict server component root with high-fidelity client sub-modules.
+ * UPDATED: Promoted 'MY EXAMS' (ContinueLearning) to position 3 for maximum student visibility.
  */
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-[#0A0E1A] font-body pb-safe overflow-x-hidden text-left selection:bg-orange-500/30">
+    <main className="min-h-screen bg-white font-body pb-safe overflow-x-hidden text-left">
       <Navbar />
       
-      {/* PHASE 1: HERO & PORTALS */}
       <Hero />
 
-      {/* PHASE 2: STUDENT CONTEXT */}
+      {/* 1. Primary Discovery Hub */}
+      <FeaturedCategories />
+
+      {/* 2. Personalized Student Hub (MY EXAMS) */}
       <ContinueLearning />
 
-      {/* PHASE 3: DISCOVERY LAYERS */}
-      <div className="bg-white rounded-t-[3rem] md:rounded-t-[5rem] -mt-10 relative z-20 overflow-hidden">
-        <FeaturedCategories />
-        <PopularExams />
-        <LatestMocks />
-        <AppPreview />
-        <MeetFounder />
-        <Footer />
-      </div>
+      {/* 3. Authority Hubs (EXAM LIST) */}
+      <PopularExams />
+
+      {/* 4. Content Pulse (Global Latest) */}
+      <LatestMocks />
+
+      <AppPreview />
+      <MeetFounder />
+      
+      <Footer />
     </main>
   );
 }

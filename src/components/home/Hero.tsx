@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Zap, GraduationCap, Landmark, ShieldCheck, Star, ChevronRight, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,12 +11,18 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Refined Official Hero Hub v126.0 (Logo Calibration).
- * UPDATED: Increased logo container size and scaling for PSPCL and PSTET visibility.
+ * @fileOverview Refined Official Hero Hub v127.0 (Error Fix).
+ * FIXED: Explicit Badge and cn imports verified for runtime stability.
  */
 
 export default function Hero() {
   const db = useFirestore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats } = useDoc<any>(statsRef);
 
@@ -34,6 +40,8 @@ export default function Hero() {
     };
   }, [stats]);
 
+  if (!mounted) return null;
+
   return (
     <section className="relative w-full bg-[#0A0E1A] bg-radial-at-t from-gray-900 via-[#0A0E1A] to-[#0A0E1A] font-body text-left overflow-hidden min-h-[700px] lg:min-h-[850px] flex flex-col justify-center border-b border-white/5">
       
@@ -41,7 +49,7 @@ export default function Hero() {
       <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-20 pt-16 lg:pt-0">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
           
-          {/* LEFT: REFERENCE MATCHED HEADLINES */}
+          {/* LEFT CONTENT */}
           <div className="lg:col-span-6 space-y-8 text-center lg:text-left">
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
@@ -52,7 +60,7 @@ export default function Hero() {
                 <Landmark className="h-5 w-5 md:h-6 md:w-6" />
               </div>
               <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-slate-400">
-                OFFICIAL EXAM LIST
+                OFFICIAL EXAM PORTAL
               </span>
             </motion.div>
 
@@ -92,7 +100,7 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* RIGHT: POLISHED EXAM PORTALS */}
+          {/* RIGHT PORTALS */}
           <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4 relative">
              <div className="absolute -inset-4 bg-orange-500/5 blur-3xl rounded-full pointer-events-none"></div>
 
@@ -133,7 +141,7 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* 2. TRUST REGISTRY STRIP */}
+        {/* TRUST STRIP */}
         <section className="mt-16 md:mt-28 w-full">
            <div className="w-full bg-white/5 border border-white/10 rounded-[2.5rem] p-8 md:p-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-center shadow-4xl backdrop-blur-md">
               <TrustNode val={liveStats.portals} label="Specialized Portals" />

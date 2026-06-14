@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect } from "react"
+import React, { useMemo, useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { BookOpen, Clock, Zap, Lock, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -18,8 +18,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Official Latest Mock Hub v37.0 (Hardened).
- * FIXED: ReferenceError by adding explicit UI component imports.
+ * @fileOverview Official Latest Mock Hub v38.0 (Hardened).
+ * FIXED: Hydration guard added to prevent mismatched initial UI errors.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -27,7 +27,12 @@ const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 export default function LatestMocks() {
   const db = useFirestore()
   const { user, profile } = useUser()
+  const [mounted, setMounted] = useState(false);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true), limit(5)) : null), [db])
   const { data: rawMocks, loading } = useCollection<any>(mocksQuery)
@@ -49,6 +54,8 @@ export default function LatestMocks() {
     }
     return false;
   }, [user, profile]);
+
+  if (!mounted) return null;
 
   return (
     <section className="py-16 md:py-24 bg-white">

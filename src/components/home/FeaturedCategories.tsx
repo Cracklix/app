@@ -16,8 +16,8 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Institutional Category Entry Nodes v6.1 (Simplified).
- * UPDATED: Replaced 'HUBS LIVE' with 'EXAMS LIVE'.
+ * @fileOverview Institutional Category Entry Nodes v6.2 (Hydration Fix).
+ * FIXED: Added mounted state guard to ensure stable hydration across all devices.
  */
 
 const CATEGORY_META = [
@@ -84,6 +84,8 @@ export default function FeaturedCategories() {
     });
   }, [exams, mounted]);
 
+  if (!mounted) return null;
+
   return (
     <section className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4 max-w-7xl space-y-12 text-left">
@@ -126,7 +128,7 @@ export default function FeaturedCategories() {
                      </div>
 
                      <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
-                        {!mounted || loading ? (
+                        {loading ? (
                           <div className="h-3 w-20 bg-slate-100 animate-pulse rounded" />
                         ) : (
                           <span className="text-[10px] font-black text-[#0F172A] uppercase tracking-widest">{cat.countLabel}</span>

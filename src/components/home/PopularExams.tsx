@@ -18,9 +18,8 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Popular Hubs v51.0 (Text Fix).
- * FIXED: Replaced 'Hubs' with 'Exams' for simplicity.
- * FIXED: Removed truncate to allow board names to wrap fully.
+ * @fileOverview High-Fidelity Popular Hubs v52.0 (Hydration Fix).
+ * FIXED: Added mounted state guard to ensure stable hydration.
  */
 
 function getBoardFallbackIcon(id: string, abbrev: string) {
@@ -56,7 +55,7 @@ export default function PopularExams() {
 
   return (
     <section className="py-16 md:py-24 bg-white">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container mx-auto px-4 max-7xl">
          
          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 text-left">
             <div className="space-y-2">
@@ -98,8 +97,7 @@ export default function PopularExams() {
                               )}
                            </div>
                            <div className="min-w-0 flex-1">
-                              <h3 className="text-xl md:text-2xl font-black text-[#0F172A] uppercase leading-none group-hover:text-primary transition-colors">{board.abbreviation}</h3>
-                              {/* FIXED: Removed truncate, used line-clamp-2 to show full text */}
+                              <h3 className="text-xl md:text-2xl font-black text-[#0F172A] uppercase leading-none group-hover:text-primary transition-colors">{board.abbreviation} Hub</h3>
                               <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest line-clamp-2 min-h-[30px]">
                                 {board.name}
                               </p>
@@ -109,7 +107,6 @@ export default function PopularExams() {
                         <div className="mt-10 pt-6 border-t border-slate-50 grid grid-cols-2 gap-4">
                            <div className="flex items-center gap-2.5">
                               <BookOpen className="h-4 w-4 text-blue-500" />
-                              {/* SIMPLIFIED: Replaced Hubs with Exams */}
                               <span className="text-[10px] font-black text-slate-600 uppercase tracking-tight">{examCount} Exams</span>
                            </div>
                            <div className="flex items-center gap-2.5">
