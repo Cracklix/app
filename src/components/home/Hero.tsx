@@ -9,15 +9,15 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened Screenshot-Matched Hero Hub v90.0.
- * UPDATED: Metrics row moved up and shifted right as per user request.
+ * @fileOverview Hardened Screenshot-Matched Hero Hub v91.0.
+ * UPDATED: Moved all content (text + boxes) downward as per user request.
  */
 
 export default function Hero() {
   const templeImg = "https://i.ibb.co/LXgcLVVq/Gemini-Generated-Image-n1so6on1so6on1so.png";
 
   return (
-    <section className="relative w-full min-h-[600px] lg:min-h-[750px] bg-[#0B0F19] flex flex-col justify-start overflow-hidden font-body text-left">
+    <section className="relative w-full min-h-[600px] lg:min-h-[850px] bg-[#0B0F19] flex flex-col justify-start overflow-hidden font-body text-left">
       
       {/* 1. BACKGROUND LAYERS - EXPANDED RIGHT SIDE, ALIGNED TO TOP */}
       <div className="absolute top-0 right-0 w-full lg:w-[65%] h-[350px] lg:h-full z-0 pointer-events-none">
@@ -33,8 +33,8 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19] via-transparent to-transparent lg:hidden" />
       </div>
 
-      {/* 2. MAIN CONTENT HUB - LEFT ANCHORED, MOVED UP */}
-      <div className="container mx-auto px-6 relative z-10 max-w-7xl pt-6 md:pt-12 lg:pt-10">
+      {/* 2. MAIN CONTENT HUB - LEFT ANCHORED, REPOSITIONED LOWER */}
+      <div className="container mx-auto px-6 relative z-10 max-w-7xl pt-20 md:pt-32 lg:pt-40">
         <div className="max-w-3xl space-y-6 md:space-y-8 text-left">
           
            {/* BRAND BADGE */}
@@ -107,12 +107,12 @@ export default function Hero() {
            </motion.div>
         </div>
 
-        {/* METRICS REGISTRY - SHIFTED UP AND TO THE RIGHT */}
+        {/* METRICS REGISTRY - LOWERED AND SHIFTED RIGHT */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10 md:mt-12 md:translate-x-20 lg:translate-x-32 max-w-5xl"
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 md:mt-20 md:translate-x-20 lg:translate-x-32 max-w-5xl"
         >
            <MetricCard 
              icon={<BookOpen className="text-blue-500 h-5 w-5" />} 
