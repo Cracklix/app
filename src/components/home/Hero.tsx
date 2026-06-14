@@ -2,15 +2,15 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Star, ArrowRight, BookOpen, ClipboardList, ShieldCheck, Users, Download } from "lucide-react";
+import { Star, ArrowRight, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Final Screenshot-Matched Hero Hub v55.0.
- * UPDATED: Temple moved down and shrunken to match the exact visual location provided by the user.
- * UPDATED: Absolute 1:1 button and typography synchronization.
+ * @fileOverview Final Screenshot-Matched Hero Hub v56.0.
+ * UPDATED: Shrunken headline text sizes to match the user's "kmm se kmm" request while staying 1:1 with screenshot.
+ * UPDATED: Fine-tuned temple positioning and atmospheric shading.
  */
 
 export default function Hero() {
@@ -19,7 +19,7 @@ export default function Hero() {
   return (
     <section className="relative w-full min-h-[750px] lg:min-h-[850px] bg-[#0B0F19] flex flex-col justify-center overflow-hidden font-body text-left">
       
-      {/* 1. BACKGROUND LAYERS - MOVED DOWN & SHRUNKEN */}
+      {/* 1. BACKGROUND LAYERS - PRECISE POSITIONING */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-0 right-0 w-full lg:w-[70%] h-[200px] lg:h-[80%] lg:top-[10%] pointer-events-none">
            <img 
@@ -52,17 +52,17 @@ export default function Hero() {
               </span>
            </motion.div>
 
-           {/* HEADLINES - EXACT SCALE */}
+           {/* HEADLINES - SHRUNKEN TO MATCH SCREENSHOT PROPORTIONS */}
            <motion.div 
              initial={{ opacity: 0, x: -20 }}
              animate={{ opacity: 1, x: 0 }}
              transition={{ delay: 0.1 }}
              className="space-y-1"
            >
-              <h1 className="text-5xl md:text-8xl lg:text-[100px] font-headline font-black text-white leading-[0.9] tracking-tighter uppercase">
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-white leading-[0.9] tracking-tighter uppercase">
                  PREPARE SMARTER.
               </h1>
-              <h1 className="text-5xl md:text-8xl lg:text-[100px] font-headline font-black text-[#F97316] leading-[0.9] tracking-tighter uppercase">
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-[#F97316] leading-[0.9] tracking-tighter uppercase">
                  SCORE HIGHER.
               </h1>
            </motion.div>
