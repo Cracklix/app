@@ -29,8 +29,8 @@ import Logo from "@/components/brand/Logo";
 import PWAInstallButton from "@/components/PWAInstallButton";
 
 /**
- * @fileOverview Hardened High-Density Mobile Sidebar v72.1.
- * UPDATED: Logo height shrunken to h-16 for a balanced sidebar view.
+ * @fileOverview Hardened High-Density Mobile Sidebar v72.5.
+ * RESTORED: Student profile info, navigation registry, and logout logic.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);

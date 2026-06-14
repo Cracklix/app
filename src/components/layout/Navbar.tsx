@@ -22,6 +22,10 @@ import { Badge } from "@/components/ui/badge";
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
+/**
+ * @fileOverview Official Master Navbar Hub v22.0.
+ * RESTORED: Functional student profile hub, search, andGazette ticker.
+ */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
