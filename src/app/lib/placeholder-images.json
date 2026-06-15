@@ -8,6 +8,12 @@
       "imageHint": "golden temple"
     },
     {
+      "id": "hero-student",
+      "description": "Professional Student Preparation Hero",
+      "imageUrl": "https://picsum.photos/seed/student-hero/800/800",
+      "imageHint": "student studying"
+    },
+    {
       "id": "hero-police-premium",
       "description": "Premium Punjab Police Selection Hub Hero",
       "imageUrl": "https://punjabpolice.gov.in/media/images/pp10.original.jpg",
