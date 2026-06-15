@@ -26,10 +26,11 @@ import Link from "next/link";
 import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
 import Image from "next/image";
+import { LogoIcon } from "@/components/brand/Logo";
 
 /**
- * @fileOverview High-Fidelity Interface Reconstruction v2.0.
- * Strictly matched to user reference image.
+ * @fileOverview High-Fidelity Interface Reconstruction v2.1.
+ * UPDATED: Replaced GraduationCap with official LogoIcon.
  */
 
 export default function Hero() {
@@ -82,9 +83,7 @@ export default function Hero() {
 
             {/* 2. Logo & Branding */}
             <div className="flex items-center gap-3">
-               <div className="h-10 w-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
-                  <GraduationCap className="h-6 w-6" />
-               </div>
+               <LogoIcon imgClassName="h-10 w-10" />
                <span className="text-2xl font-black text-[#0F172A] tracking-tighter uppercase">Cracklix</span>
             </div>
 

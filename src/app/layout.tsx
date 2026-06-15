@@ -11,7 +11,7 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const brandIcon = 'https://i.ibb.co/S76nk4XG/IMG-20260613-215742.jpg';
+const brandIcon = '/logo/cracklix-logo.png';
 
 export const metadata: Metadata = {
   title: "Cracklix | Punjab's Mock Test Platform",
@@ -20,9 +20,9 @@ export const metadata: Metadata = {
   authors: [{ name: 'Arsh Grewal', url: 'https://cracklix.com' }],
   icons: {
     icon: [
-      { url: brandIcon, sizes: '32x32', type: 'image/jpeg' },
-      { url: brandIcon, sizes: '192x192', type: 'image/jpeg' },
-      { url: brandIcon, sizes: '512x512', type: 'image/jpeg' },
+      { url: brandIcon, sizes: '32x32', type: 'image/png' },
+      { url: brandIcon, sizes: '192x192', type: 'image/png' },
+      { url: brandIcon, sizes: '512x512', type: 'image/png' },
     ],
     apple: brandIcon,
   },

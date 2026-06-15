@@ -4,7 +4,7 @@ import { MetadataRoute } from 'next';
  * @fileOverview Production-Grade PWA Manifest v3.0.
  */
 export default function manifest(): MetadataRoute.Manifest {
-  const brandIcon = 'https://i.ibb.co/S76nk4XG/IMG-20260613-215742.jpg';
+  const brandIcon = '/logo/cracklix-logo.png';
 
   return {
     name: 'Cracklix',
@@ -21,25 +21,25 @@ export default function manifest(): MetadataRoute.Manifest {
       {
         src: brandIcon,
         sizes: '192x192',
-        type: 'image/jpeg',
+        type: 'image/png',
         purpose: 'any',
       },
       {
         src: brandIcon,
         sizes: '512x512',
-        type: 'image/jpeg',
+        type: 'image/png',
         purpose: 'any',
       },
       {
         src: brandIcon,
         sizes: '192x192',
-        type: 'image/jpeg',
+        type: 'image/png',
         purpose: 'maskable',
       },
       {
         src: brandIcon,
         sizes: '512x512',
-        type: 'image/jpeg',
+        type: 'image/png',
         purpose: 'maskable',
       },
     ],

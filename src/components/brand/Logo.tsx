@@ -12,17 +12,16 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview Official Master Logo Hub v24.0.
- * UPDATED: Optimized for transparent backgrounds and calibrated scaling.
+ * @fileOverview Official Master Logo Hub v25.0.
+ * UPDATED: Switched to local PNG asset path as requested.
  */
 export function LogoIcon({ className = "", imgClassName = "" }: { className?: string, imgClassName?: string }) {
   return (
     <div className={cn("relative shrink-0 flex items-center justify-center h-full w-auto", className)}>
       <img 
-        src="https://i.ibb.co/5WjGyLhn/1000110132-removebg-preview.png" 
+        src="/logo/cracklix-logo.png" 
         alt="Cracklix Logo" 
         className={cn("w-auto object-contain block select-none pointer-events-none", imgClassName)}
-        referrerPolicy="no-referrer"
       />
     </div>
   );
