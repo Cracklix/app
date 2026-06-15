@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 /**
  * @fileOverview Institutional Bottom Navigation (Screenshot Matched).
- * UPDATED: Implemented the exact icons and top-border active indicator from reference image.
+ * UPDATED: Replaced all orange highlights with primary Blue.
  */
 
 export default function MobileNav() {
@@ -42,7 +42,7 @@ export default function MobileNav() {
                       animate={{ opacity: 1, scaleX: 1 }}
                       exit={{ opacity: 0, scaleX: 0 }}
                       layoutId="active-nav-indicator"
-                      className="absolute top-0 w-10 h-[3px] bg-[#F97316] rounded-full shadow-[0_0_15px_rgba(249,115,22,0.8)]"
+                      className="absolute top-0 w-10 h-[3px] bg-primary rounded-full shadow-[0_0_15px_rgba(37,99,235,0.8)]"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -51,7 +51,7 @@ export default function MobileNav() {
                 <Icon 
                   className={cn(
                     "h-5 w-5 transition-all duration-300",
-                    isActive ? "text-[#F97316] scale-110" : "text-slate-500"
+                    isActive ? "text-primary scale-110" : "text-slate-500"
                   )} 
                 />
                 

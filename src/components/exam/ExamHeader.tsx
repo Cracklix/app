@@ -2,7 +2,7 @@
 
 import { useExamStore } from '@/store/useExamStore';
 import { Button } from '@/components/ui/button';
-import { Pause, Play, Menu, ChevronLeft, Languages } from 'lucide-react';
+import { Pause, Play, ChevronLeft, Languages } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Timer from '@/components/mocks/Timer';
 import {
@@ -23,8 +23,8 @@ const ALL_LANG_MODES: { label: string, value: LanguageDisplayMode }[] = [
 ];
 
 /**
- * @fileOverview Hardened CBT Header v32.0 (Absolute Minimum).
- * UPDATED: Shrunken height to h-9 on mobile to maximize viewport usage.
+ * @fileOverview Hardened CBT Header v33.0 (Absolute Minimum).
+ * UPDATED: Replaced all orange highlights with Primary Blue.
  */
 export default function ExamHeader({ 
   onPaletteToggle, 
@@ -66,7 +66,7 @@ export default function ExamHeader({
            </button>
            
            <div className="flex items-baseline gap-1 bg-white/5 px-1 py-0.5 rounded border border-white/10">
-              <span className="text-[9px] md:text-base font-black text-[#F97316] tabular-nums">
+              <span className="text-[9px] md:text-base font-black text-primary tabular-nums">
                  {currentIdx + 1}
               </span>
               <span className="text-[6px] md:text-[10px] font-bold uppercase text-slate-600">
@@ -90,7 +90,7 @@ export default function ExamHeader({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                    <button className="h-6 w-6 md:h-9 md:w-9 bg-white/5 text-white hover:bg-white/10 border border-white/10 rounded flex items-center justify-center">
-                      <Languages className="h-2.5 w-2.5 text-[#F97316]" />
+                      <Languages className="h-2.5 w-2.5 text-primary" />
                    </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-40 bg-[#0F172A] border-white/10 text-white rounded-lg shadow-2xl p-1 z-[2000]">
@@ -100,7 +100,7 @@ export default function ExamHeader({
                         onSelect={() => setLanguage(mode.value)}
                         className={cn(
                           "text-[8px] font-black uppercase px-3 py-2 rounded cursor-pointer tracking-wider",
-                          language === mode.value ? "bg-[#F97316] text-white" : "hover:bg-white/5 text-slate-400"
+                          language === mode.value ? "bg-primary text-white" : "hover:bg-white/5 text-slate-400"
                         )}
                       >
                          {mode.label}
@@ -114,12 +114,12 @@ export default function ExamHeader({
              onClick={() => setPaused(!isPaused)}
              className="h-6 w-6 md:h-9 md:w-9 bg-white/5 text-white border border-white/10 rounded flex items-center justify-center"
            >
-             {isPaused ? <Play className="h-2.5 w-2.5 fill-current text-[#F97316]" /> : <Pause className="h-2.5 w-2.5 fill-current" />}
+             {isPaused ? <Play className="h-2.5 w-2.5 fill-current text-primary" /> : <Pause className="h-2.5 w-2.5 fill-current" />}
            </button>
            
            <button 
              onClick={onPaletteToggle}
-             className="bg-[#F97316] text-white h-6 px-1.5 md:px-4 rounded font-black uppercase text-[6px] md:text-[9px] tracking-tighter flex items-center justify-center shadow-md active:scale-95 border-none"
+             className="bg-primary text-white h-6 px-1.5 md:px-4 rounded font-black uppercase text-[6px] md:text-[9px] tracking-tighter flex items-center justify-center shadow-md active:scale-95 border-none"
            >
               <span>MAP</span>
            </button>
@@ -128,4 +128,3 @@ export default function ExamHeader({
     </header>
   );
 }
-

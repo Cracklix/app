@@ -16,8 +16,8 @@ import { LanguageDisplayMode } from "@/types";
 import Link from "next/link";
 
 /**
- * @fileOverview Hardened Instructions Hub v10.0 (Ultra-Compact Micro-Scale).
- * UPDATED: Shrunken typography and padding to absolute minimum for mobile "pura visible" experience.
+ * @fileOverview Hardened Instructions Hub v10.1 (Color Update).
+ * UPDATED: Switched all orange nodes to primary Blue.
  */
 export default function InstructionsPage() {
   const params = useParams();
@@ -63,7 +63,7 @@ export default function InstructionsPage() {
 
   if (loading || userLoading) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-6">
-       <Zap className="h-10 w-10 text-[#F97316] animate-pulse" />
+       <Zap className="h-10 w-10 text-primary animate-pulse" />
        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Synchronizing Hub...</p>
     </div>
   );
@@ -93,8 +93,8 @@ export default function InstructionsPage() {
         <div className="space-y-2 md:space-y-6">
            <div className="flex flex-col items-start gap-1">
               <div className="flex items-center gap-1.5">
-                 <ShieldCheck className="h-3 w-3 text-[#F97316]" />
-                 <Badge className="bg-orange-50 text-[#F97316] border-none px-1.5 py-0 rounded-full font-black uppercase text-[6px] md:text-[8px] tracking-widest shadow-sm">Official Engine</Badge>
+                 <ShieldCheck className="h-3 w-3 text-primary" />
+                 <Badge className="bg-blue-50 text-primary border-none px-1.5 py-0 rounded-full font-black uppercase text-[6px] md:text-[8px] tracking-widest shadow-sm">Official Engine</Badge>
               </div>
               <h1 className="text-[14px] md:text-3xl lg:text-4xl font-headline font-black text-[#0F172A] uppercase leading-tight tracking-tight">{mock.title}</h1>
            </div>
@@ -109,7 +109,7 @@ export default function InstructionsPage() {
            <Card className="border-none shadow-xl rounded-lg md:rounded-[2rem] bg-white overflow-hidden">
               <CardHeader className="p-2 md:p-6 bg-slate-50/50 border-b border-slate-100">
                  <CardTitle className="text-[10px] md:text-lg font-headline font-black uppercase text-[#0F172A] flex items-center gap-2">
-                    <Info className="h-3 w-3 text-[#F97316]" /> Instructions Hub
+                    <Info className="h-3 w-3 text-primary" /> Instructions Hub
                  </CardTitle>
               </CardHeader>
               <CardContent className="p-2 md:p-6 space-y-3 md:space-y-6">
@@ -162,8 +162,8 @@ export default function InstructionsPage() {
 
 function StatPlate({ icon, label, val }: any) {
   return (
-    <div className="p-1.5 md:p-5 bg-white rounded-md md:rounded-xl border border-slate-100 shadow-sm text-center space-y-0.5 group hover:border-[#F97316]/30 transition-all">
-       <div className="h-5 w-5 md:h-9 md:w-9 bg-slate-50 rounded-md flex items-center justify-center mx-auto text-[#F97316] mb-0.5 shadow-inner">
+    <div className="p-1.5 md:p-5 bg-white rounded-md md:rounded-xl border border-slate-100 shadow-sm text-center space-y-0.5 group hover:border-primary/30 transition-all">
+       <div className="h-5 w-5 md:h-9 md:w-9 bg-slate-50 rounded-md flex items-center justify-center mx-auto text-primary mb-0.5 shadow-inner">
           {React.cloneElement(icon, { className: "h-2.5 w-2.5 md:h-4 md:w-4" })}
        </div>
        <p className="text-[5px] md:text-[8px] font-black text-slate-400 uppercase tracking-tighter">{label}</p>
@@ -175,7 +175,7 @@ function StatPlate({ icon, label, val }: any) {
 function Instruction({ text }: { text: string }) {
   return (
     <div className="flex items-start gap-1.5 group">
-       <div className="h-3 w-3 rounded-full bg-slate-100 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-[#F97316] transition-colors">
+       <div className="h-3 w-3 rounded-full bg-slate-100 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-primary transition-colors">
           <CheckCircle2 className="h-2 w-2 text-slate-400 group-hover:text-white" />
        </div>
        <p className="text-slate-600 font-bold uppercase text-[6px] md:text-[8px] leading-snug tracking-tighter">{text}</p>
@@ -189,7 +189,7 @@ function LangBtn({ label, val, active, onClick }: any) {
       onClick={() => onClick(val)}
       className={cn(
         "px-2 py-1 rounded border font-black uppercase text-[6px] md:text-[7px] tracking-widest transition-all shadow-sm active:scale-95",
-        active ? "border-[#F97316] bg-orange-50 text-[#F97316] shadow-md" : "border-slate-100 text-slate-400 hover:border-slate-300"
+        active ? "border-primary bg-blue-50 text-primary shadow-md" : "border-slate-100 text-slate-400 hover:border-slate-300"
       )}
     >
        {label}

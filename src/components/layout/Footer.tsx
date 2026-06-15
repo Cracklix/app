@@ -1,16 +1,13 @@
-
 "use client";
 
 import Link from "next/link";
-import { Mail, Phone, MapPin, ShieldCheck, Heart, Send, Share2, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Mail, Phone, MapPin, ShieldCheck, Send } from "lucide-react";
 import ShareButton from "@/components/navigation/ShareButton";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Final Screenshot-Matched Institutional Footer v5.0.
- * UPDATED: Exact replica of the reference image provided by the user.
- * FIXED: Phone number formatting, icon alignment, and uppercase typography.
+ * @fileOverview Final Screenshot-Matched Institutional Footer v5.1.
+ * UPDATED: Replaced all orange icons and text highlights with primary Blue.
  */
 
 export default function Footer() {
@@ -35,11 +32,11 @@ export default function Footer() {
             
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-slate-400">
-                <MapPin className="h-4 w-4 text-[#F97316] shrink-0" />
+                <MapPin className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-[10px] font-black uppercase tracking-[0.2em]">HQS: SHERGARH, BATHINDA, PUNJAB</span>
               </div>
               <div className="flex items-center gap-3 text-slate-400">
-                <ShieldCheck className="h-4 w-4 text-[#F97316] shrink-0" />
+                <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-[10px] font-black uppercase tracking-[0.2em]">INSTITUTIONAL REGISTRY VERIFIED</span>
               </div>
             </div>
@@ -89,7 +86,7 @@ export default function Footer() {
             
             <div className="space-y-1 w-full lg:w-auto">
                <a href="tel:+919888188602" className="block group">
-                  <div className="flex flex-col items-start lg:items-end font-black text-[#F97316] leading-[1.1] tracking-tighter transition-transform group-hover:scale-105 origin-right">
+                  <div className="flex flex-col items-start lg:items-end font-black text-primary leading-[1.1] tracking-tighter transition-transform group-hover:scale-105 origin-right">
                      <span className="text-4xl md:text-5xl">+91</span>
                      <span className="text-4xl md:text-5xl">98881</span>
                      <span className="text-4xl md:text-5xl">88602</span>
@@ -103,7 +100,7 @@ export default function Footer() {
             <div className="w-full lg:w-auto">
                <a href="mailto:cracklixhelp@gmail.com" className="block group">
                   <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all shadow-xl">
-                     <Mail className="h-4 w-4 text-[#F97316]" />
+                     <Mail className="h-4 w-4 text-primary" />
                      <span className="text-[11px] font-black uppercase tracking-widest">cracklixhelp@gmail.com</span>
                   </div>
                </a>
@@ -132,7 +129,7 @@ export default function Footer() {
 
           <div className="text-center pt-4">
              <p className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.5em] text-slate-400">
-                FOUNDER & LEAD DEVELOPER: <span className="text-[#F97316] ml-1">ARSH GREWAL</span>
+                FOUNDER & LEAD DEVELOPER: <span className="text-primary ml-1">ARSH GREWAL</span>
              </p>
           </div>
         </div>
@@ -147,7 +144,7 @@ function FooterLink({ href, children }: { href: string, children: React.ReactNod
     <li>
       <Link 
         href={href} 
-        className="text-[15px] font-black text-white hover:text-[#F97316] transition-all duration-200 uppercase tracking-tight"
+        className="text-[15px] font-black text-white hover:text-primary transition-all duration-200 uppercase tracking-tight"
       >
         {children}
       </Link>

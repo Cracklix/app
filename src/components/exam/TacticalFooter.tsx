@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { useFirestore } from '@/firebase';
 
 /**
- * @file Overview High-Fidelity Tactical Action Bar v2.0 (Absolute Minimum).
- * UPDATED: Shrunken height to h-9 on mobile with micro-text labels.
+ * @file Overview High-Fidelity Tactical Action Bar v2.1 (Absolute Minimum).
+ * UPDATED: Replaced orange button with Primary Blue.
  */
 export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const currentIdx = useExamStore(s => s.currentIdx);
@@ -37,11 +37,10 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
 
       <Button 
         onClick={() => saveAndNext(db)}
-        className="h-9 md:h-12 bg-[#F97316] hover:bg-orange-600 text-white rounded-md font-black uppercase text-[6px] md:text-[9px] tracking-tighter shadow-xl border-none active:scale-95"
+        className="h-9 md:h-12 bg-primary hover:bg-blue-700 text-white rounded-md font-black uppercase text-[6px] md:text-[9px] tracking-tighter shadow-xl border-none active:scale-95"
       >
         Save & Next
       </Button>
     </div>
   );
 }
-
