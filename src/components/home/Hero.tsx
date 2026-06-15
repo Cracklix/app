@@ -2,26 +2,30 @@
 
 import React, { useMemo, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  BookOpen, 
-  ArrowRight,
+import {
   ClipboardList,
   ShieldCheck,
-  Star,
   Users,
-  ChevronRight
+  Zap,
+  ChevronRight,
+  BookOpen,
+  FileText,
+  Target,
+  Award,
+  Star,
+  Landmark
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useDoc, useFirestore } from '@/firebase';
+import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
-import PWAInstallButton from "@/components/PWAInstallButton";
+import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Final Calibrated Hero v241.0.
- * UPDATED: Replaced all orange highlights with Majestic Logo Blue.
+ * @fileOverview Majestic SaaS Hero Section v5.0.
+ * UPDATED: Fully redesigned to match high-fidelity reference screenshot.
+ * STABILITY: Preserves Firebase settings/stats integration.
  */
 
 export default function Hero() {
@@ -32,131 +36,258 @@ export default function Hero() {
     setMounted(true);
   }, []);
 
+  // Preserving live stats functionality
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats } = useDoc<any>(statsRef);
 
   const liveStats = useMemo(() => {
     const formatNumber = (num: number, fallback: string) => {
       if (!num) return fallback;
-      if (num >= 1000) return (num / 1000).toFixed(0) + ',000+';
-      return num.toString() + '+';
+      if (num >= 1000) return (num / 1000).toFixed(0) + 'K+';
+      return num + "+";
     };
 
     return [
-      { id: 'q', icon: <BookOpen className="text-blue-400 h-4 w-4 md:h-5 md:w-5" />, val: formatNumber(stats?.totalQuestions, "439+"), label: "QUESTIONS" },
-      { id: 'm', icon: <ClipboardList className="text-primary h-4 w-4 md:h-5 md:w-5" />, val: formatNumber(stats?.totalMocks, "8+"), label: "MOCKS" },
-      { id: 'e', icon: <ShieldCheck className="text-blue-500 h-4 w-4 md:h-5 md:w-5" />, val: formatNumber(stats?.totalBoards, "92+"), label: "EXAMS" },
-      { id: 'u', icon: <Users className="text-emerald-400 h-4 w-4 md:h-5 md:w-5" />, val: formatNumber(stats?.totalUsers, "5+"), label: "ASPIRANTS" }
+      {
+        id: "q",
+        icon: <Zap className="h-6 w-6 text-blue-600" />,
+        val: formatNumber(stats?.totalQuestions, "50K+"),
+        label: "Questions",
+        subLabel: "High quality practice questions",
+        color: "bg-blue-600"
+      },
+      {
+        id: "m",
+        icon: <ClipboardList className="h-6 w-6 text-indigo-600" />,
+        val: formatNumber(stats?.totalMocks, "500+"),
+        label: "Mock Tests",
+        subLabel: "Topic wise & full length mocks",
+        color: "bg-indigo-600"
+      },
+      {
+        id: "e",
+        icon: <ShieldCheck className="h-6 w-6 text-emerald-600" />,
+        val: formatNumber(stats?.totalBoards, "50+"),
+        label: "Exams",
+        subLabel: "All major Punjab exams",
+        color: "bg-emerald-600"
+      },
+      {
+        id: "u",
+        icon: <Users className="h-6 w-6 text-orange-500" />,
+        val: formatNumber(stats?.totalUsers, "15K+"),
+        label: "Aspirants",
+        subLabel: "Trust Cracklix for preparation",
+        color: "bg-orange-500"
+      }
     ];
   }, [stats]);
 
   if (!mounted) return null;
 
   return (
-    <section className="relative w-full bg-[#050B19] overflow-hidden min-h-[480px] md:min-h-[500px] lg:h-[600px] flex flex-col justify-start text-left border-b border-white/5 pb-8 md:pb-12">
-      
-      {/* BACKGROUND IMAGE - PULLED UP */}
-      <div className="absolute top-[-20px] left-0 right-0 h-[200px] md:h-[440px] lg:h-[520px] z-0 overflow-hidden bg-[#050B19]">
-        <motion.img 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.5 }}
-          src="/images/hero-student.png" 
-          alt="Official Punjab Prep Center" 
-          className="w-full h-full object-contain object-top md:object-right"
-          referrerPolicy="no-referrer"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050B19]/20 to-[#050B19] z-[10]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050B19] via-[#050B19]/80 to-transparent z-[10] hidden md:block" />
+    <section className="relative overflow-hidden bg-[#F8FAFC] py-12 md:py-24 border-b border-slate-100">
+      {/* Background Decor */}
+      <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none">
+         <div className="grid grid-cols-6 gap-8">
+            {Array.from({length: 36}).map((_, i) => (
+               <div key={i} className="h-2 w-2 rounded-full bg-slate-900" />
+            ))}
+         </div>
       </div>
 
-      <div className="container mx-auto px-4 md:px-8 lg:px-12 max-w-7xl relative z-[30] pt-4 md:pt-10">
-         <div className="max-w-3xl space-y-4 md:space-y-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
+          {/* LEFT COLUMN: CONTENT HUB */}
+          <div className="text-left space-y-8 animate-in fade-in slide-in-from-left-4 duration-1000">
             
-            <motion.div
-               initial={{ opacity: 0, y: 5 }}
-               animate={{ opacity: 1, y: 0 }}
-               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-1"
-            >
-               <Star className="h-3 w-3 md:h-3.5 md:w-3.5 text-primary fill-current animate-pulse" />
-               <span className="text-[9px] md:text-[10px] font-black text-white tracking-[0.2em] uppercase">#1 PUNJAB PREP PLATFORM</span>
-            </motion.div>
+            {/* Trust Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm">
+              <Star className="h-4 w-4 text-blue-600 fill-blue-600" />
+              <span className="text-[10px] md:text-xs font-black text-slate-600 uppercase tracking-widest">
+                10,000+ Aspirants Trust Cracklix
+              </span>
+            </div>
 
-            <motion.div
-               initial={{ opacity: 0, y: 10 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ delay: 0.1 }}
-               className="space-y-0.5 md:space-y-1"
-            >
-               <h1 className="text-[24px] xs:text-[32px] sm:text-4xl md:text-5xl font-headline font-black text-white leading-[1.05] tracking-tighter uppercase">
-                  Prepare smarter.
-               </h1>
-               <h1 className="text-[24px] xs:text-[32px] sm:text-4xl md:text-5xl font-headline font-black text-primary leading-[1.05] tracking-tighter uppercase">
-                  Score higher.
-               </h1>
-            </motion.div>
+            {/* Headline */}
+            <h1 className="text-4xl md:text-6xl font-black text-[#0F172A] leading-[1.1] tracking-tight uppercase">
+              Crack Punjab <br />
+              <span className="text-blue-600">Government Exams</span> <br />
+              With Confidence
+            </h1>
 
-            <motion.p
-               initial={{ opacity: 0, y: 10 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ delay: 0.2 }}
-               className="text-xs md:text-base lg:text-lg text-slate-300 font-medium max-w-2xl leading-relaxed antialiased"
-            >
-               Punjab Government Exams di Complete Preparation <br className="hidden sm:block" />
-               ik hi Center te, Latest Official Patterns de Naal.
-            </motion.p>
+            {/* Description */}
+            <p className="text-sm md:text-lg text-slate-500 font-medium leading-relaxed max-w-2xl">
+              Practice bilingual mock tests and prepare for Punjab Government Exams with confidence. 
+              Access exam-focused practice, previous papers and performance tracking in one place.
+            </p>
 
-            <motion.div
-               initial={{ opacity: 0, y: 10 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ delay: 0.3 }}
-               className="flex flex-wrap gap-3 pt-4"
-            >
-               <Button asChild className="h-11 md:h-14 px-6 md:px-10 bg-primary hover:bg-blue-700 text-white font-black text-[10px] md:text-xs tracking-[0.1em] rounded-xl md:rounded-2xl shadow-3xl transition-all border-none uppercase active:scale-95">
-                  <Link href="/mocks" className="flex items-center gap-2">
-                     Free Mock <ArrowRight className="h-4 w-4" />
-                  </Link>
-               </Button>
-               
-               <PWAInstallButton 
-                className="h-11 md:h-14 px-6 md:px-10 bg-white text-[#0B1528] hover:bg-slate-100 font-black text-[10px] md:text-xs tracking-[0.1em] rounded-xl md:rounded-2xl shadow-3xl border-none"
+            {/* Category Pills */}
+            <div className="flex flex-wrap gap-2 md:gap-3">
+              {["PSSSB", "Punjab Police", "PSTET", "PSPCL", "PPSC"].map((item) => (
+                <span
+                  key={item}
+                  className="px-4 py-2 rounded-full bg-white border border-slate-200 text-[10px] md:text-xs font-black uppercase tracking-widest text-slate-600 shadow-sm"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+
+            {/* Horizontal Feature Hub */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+               <FeatureMinicard icon={<ClipboardList className="text-blue-600" />} color="bg-blue-50" title="Mock Tests" sub="Exam-focused mock tests" />
+               <FeatureMinicard icon={<FileText className="text-emerald-600" />} color="bg-emerald-50" title="Previous Papers" sub="Previous year question papers" />
+               <FeatureMinicard icon={<Target className="text-indigo-600" />} color="bg-indigo-50" title="Daily Practice" sub="Practice daily & stay ahead" />
+               <FeatureMinicard icon={<Award className="text-orange-500" />} color="bg-orange-50" title="Punjab Exams" sub="All major Punjab exams" />
+            </div>
+
+            {/* CTA Actions */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
+              <Button
+                asChild
+                className="w-full sm:w-auto h-12 md:h-16 px-10 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest text-xs md:text-sm rounded-2xl shadow-xl shadow-blue-500/20 transition-all active:scale-95 border-none group"
+              >
+                <Link href="/mocks">
+                  Start Free Mock Test
+                  <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+
+              <Button
+                asChild
+                variant="outline"
+                className="w-full sm:w-auto h-12 md:h-16 px-10 rounded-2xl border-slate-200 bg-white font-black uppercase tracking-widest text-xs md:text-sm text-slate-600 hover:bg-slate-50 shadow-sm group"
+              >
+                <Link href="/exams">
+                  Browse Exams
+                  <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+            </div>
+
+          </div>
+
+          {/* RIGHT COLUMN: ILLUSTRATION HUB */}
+          <div className="relative flex justify-center items-center py-10 lg:py-0">
+            {/* Background Glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-100/40 blur-[100px] rounded-full -z-10" />
+            
+            {/* Floating Dotted Curves (SVG Backdrop) */}
+            <div className="absolute inset-0 z-0 opacity-20 pointer-events-none hidden lg:block">
+               <svg viewBox="0 0 500 500" className="w-full h-full stroke-blue-400 stroke-[2px] stroke-dasharray-[4,4] fill-none">
+                  <path d="M50,150 Q150,50 250,250" />
+                  <path d="M450,150 Q350,50 250,250" />
+                  <path d="M50,350 Q150,450 250,250" />
+                  <path d="M450,350 Q350,450 250,250" />
+               </svg>
+            </div>
+
+            <div className="relative">
+               <motion.img
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                src="/images/hero-student.png"
+                alt="Cracklix Student"
+                className="w-full max-w-[320px] sm:max-w-[420px] lg:max-w-[520px] xl:max-w-[620px] mx-auto object-contain drop-shadow-2xl relative z-10"
                />
 
-               <Button asChild variant="outline" className="h-11 md:h-14 px-6 md:px-10 border-white/20 bg-white/5 text-white font-black text-[10px] md:text-xs tracking-[0.1em] rounded-xl md:rounded-2xl transition-all backdrop-blur-md hover:bg-white/10 uppercase active:scale-95">
-                  <Link href="/exams">
-                     Exams
-                  </Link>
-               </Button>
-            </motion.div>
-         </div>
-      </div>
-
-      <div className="mt-6 md:mt-10 z-[40]">
-         <div className="container mx-auto px-4 md:px-8 lg:px-12 max-w-7xl">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 lg:gap-8">
-               {liveStats.map((stat, idx) => (
-                  <motion.div
-                     key={stat.id}
-                     initial={{ opacity: 0, y: 10 }}
-                     animate={{ opacity: 1, y: 0 }}
-                     transition={{ delay: 0.4 + (idx * 0.1) }}
-                  >
-                     <Card className="bg-[#0B1528]/80 backdrop-blur-3xl border border-white/10 p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] text-left flex items-center gap-3 md:gap-4 group hover:bg-[#0B1528] transition-all duration-300 shadow-2xl overflow-hidden h-16 md:h-24 lg:h-28 w-full">
-                        <div className="shrink-0 h-8 w-8 md:h-12 md:w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-transform group-hover:scale-110 shadow-inner">
-                           {stat.icon}
-                        </div>
-                        <div className="min-w-0 flex flex-col justify-center leading-tight">
-                           <p className="text-base md:text-2xl lg:text-3xl font-headline font-black text-white tabular-nums leading-none mb-0.5 md:mb-1">{stat.val}</p>
-                           <p className="text-[7px] md:text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] truncate">
-                              {stat.label}
-                           </p>
-                        </div>
-                     </Card>
-                  </motion.div>
-               ))}
+               {/* Desktop Floating Cards */}
+               <div className="hidden lg:block">
+                  <FloatingBadge 
+                    icon={<ClipboardList className="text-blue-600 h-5 w-5" />} 
+                    label="Mock Tests" 
+                    href="/mocks"
+                    className="top-10 -left-12"
+                  />
+                  <FloatingBadge 
+                    icon={<Target className="text-indigo-600 h-5 w-5" />} 
+                    label="Daily Practice" 
+                    href="/practice"
+                    className="bottom-24 -left-16"
+                  />
+                  <FloatingBadge 
+                    icon={<FileText className="text-emerald-600 h-5 w-5" />} 
+                    label="Previous Papers" 
+                    href="/previous-papers"
+                    className="top-20 -right-16"
+                  />
+                  <FloatingBadge 
+                    icon={<Award className="text-orange-500 h-5 w-5" />} 
+                    label="Punjab Exams" 
+                    href="/exams"
+                    className="bottom-40 -right-20"
+                  />
+               </div>
             </div>
-         </div>
+          </div>
+        </div>
+
+        {/* INSTITUTIONAL STATS REGISTRY */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-16 md:mt-24 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+          {liveStats.map((stat) => (
+            <Card
+              key={stat.id}
+              className="p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] bg-white border border-slate-100 shadow-xl hover:shadow-2xl transition-all duration-300 group text-left flex flex-col sm:flex-row items-center sm:items-start gap-4"
+            >
+              <div className={cn("h-12 w-12 md:h-14 md:w-14 rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform bg-slate-50")}>
+                {stat.icon}
+              </div>
+              <div className="text-center sm:text-left min-w-0">
+                <p className="text-2xl md:text-3xl font-black text-[#0F172A] leading-none tracking-tighter uppercase">
+                  {stat.val}
+                </p>
+                <p className="text-[10px] md:text-sm font-black text-[#0F172A] uppercase tracking-tight mt-1">
+                  {stat.label}
+                </p>
+                <p className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 hidden xs:block">
+                  {stat.subLabel}
+                </p>
+              </div>
+            </Card>
+          ))}
+        </div>
+
       </div>
     </section>
+  );
+}
+
+function FeatureMinicard({ icon, color, title, sub }: { icon: React.ReactNode, color: string, title: string, sub: string }) {
+   return (
+      <div className="flex items-center gap-3 p-3 bg-white rounded-2xl border border-slate-100 shadow-sm group hover:border-blue-600/20 transition-all">
+         <div className={cn("h-8 w-8 rounded-lg flex items-center justify-center shrink-0", color)}>
+            {React.cloneElement(icon as React.ReactElement, { className: "h-4 w-4" })}
+         </div>
+         <div className="min-w-0">
+            <p className="text-[9px] font-black uppercase text-[#0F172A] leading-none">{title}</p>
+            <p className="text-[7px] font-bold text-slate-400 uppercase tracking-tighter mt-1 truncate">{sub}</p>
+         </div>
+      </div>
+   )
+}
+
+function FloatingBadge({ icon, label, href, className }: { icon: React.ReactNode, label: string, href: string, className: string }) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      animate={{ y: [0, -10, 0] }}
+      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      className={cn(
+        "absolute z-20",
+        className
+      )}
+    >
+      <Link href={href}>
+        <div className="bg-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-100 flex items-center gap-3 active:scale-95 transition-all">
+           <div className="h-8 w-8 rounded-xl bg-slate-50 flex items-center justify-center">
+              {icon}
+           </div>
+           <span className="text-[10px] font-black text-[#0F172A] uppercase tracking-widest whitespace-nowrap">{label}</span>
+        </div>
+      </Link>
+    </motion.div>
   );
 }

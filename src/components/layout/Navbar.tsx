@@ -34,9 +34,8 @@ import Logo from "@/components/brand/Logo";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview High-Density Master Navbar Hub v53.0.
- * UPDATED: Optimized for zero scrolling. All buttons visible on one line.
- * FIXED: Logo anchored to left with compact action nodes.
+ * @fileOverview High-Density Master Navbar Hub v54.0.
+ * UPDATED: Optimized for Blue SaaS theme matching Hero redesign.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -110,13 +109,13 @@ export default function Navbar() {
           <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
              
              <div className="hidden sm:block">
-               <Button asChild className="h-9 md:h-11 px-3 md:px-5 bg-slate-900 hover:bg-black text-white font-black uppercase text-[8px] md:text-[9px] tracking-widest rounded-lg md:rounded-xl gap-2 shadow-lg border-none">
-                  <Link href="/pass"><Gem className="h-3.5 w-3.5 text-primary" /> PASS</Link>
+               <Button asChild className="h-9 md:h-11 px-3 md:px-5 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[8px] md:text-[9px] tracking-widest rounded-lg md:rounded-xl gap-2 shadow-lg border-none">
+                  <Link href="/pass"><Gem className="h-3.5 w-3.5 text-blue-500" /> PASS</Link>
                </Button>
              </div>
 
              <div className="hidden md:block">
-               <Button asChild className="h-11 px-5 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[9px] tracking-widest rounded-xl gap-2 shadow-lg border-none">
+               <Button asChild className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-[9px] tracking-widest rounded-xl gap-2 shadow-lg border-none">
                   <Link href="/install"><Download className="h-3.5 w-3.5" /> APP</Link>
                </Button>
              </div>
@@ -128,7 +127,7 @@ export default function Navbar() {
                 </div>
              )}
 
-             <Link href="/search" className="w-9 h-9 md:w-11 md:h-11 rounded-lg md:rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary transition-all">
+             <Link href="/search" className="w-9 h-9 md:w-11 md:h-11 rounded-lg md:rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-blue-600 transition-all">
                 <Search className="h-4.5 w-4.5 md:h-5 md:w-5" />
              </Link>
 
@@ -162,7 +161,7 @@ export default function Navbar() {
                  </DropdownMenuContent>
                </DropdownMenu>
              ) : (
-               <Button asChild className="px-4 md:px-5 h-9 md:h-10 bg-slate-900 hover:bg-black text-white font-black text-[9px] md:text-[10px] rounded-lg md:rounded-xl transition-all uppercase tracking-widest border-none">
+               <Button asChild className="px-4 md:px-5 h-9 md:h-10 bg-[#0F172A] hover:bg-black text-white font-black text-[9px] md:text-[10px] rounded-lg md:rounded-xl transition-all uppercase tracking-widest border-none">
                  <Link href="/login">Login</Link>
                </Button>
              )}
@@ -187,7 +186,7 @@ function NavLink({ href, icon, label, active }: { href: string, icon: React.Reac
   return (
     <Link href={href} className={cn(
       "flex items-center gap-2 px-3 xl:px-4 py-1.5 rounded-lg font-black uppercase text-[9px] tracking-widest transition-all shrink-0",
-      active ? "bg-blue-50 text-primary shadow-sm" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+      active ? "bg-blue-50 text-blue-600 shadow-sm" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"
     )}>
        {icon}
        <span>{label}</span>
