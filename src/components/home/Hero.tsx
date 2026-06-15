@@ -27,10 +27,9 @@ import { cn } from "@/lib/utils";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Majestic Hero Hub v20.0 (Anti-Overlap & Alignment Fix).
- * FIXED: Shifted Daily Practice below laptop level and Previous Papers below plant/book level.
- * FIXED: Hardened button text scaling to prevent overflow.
- * FIXED: Scaled mobile illustration to touch edges.
+ * @fileOverview Majestic Hero Hub v21.0 (Grid Alignment Fix).
+ * FIXED: Aligned Mocks/Exams in a top row and Papers/Practice in a bottom row.
+ * FIXED: Positioned Papers below the GK/GS book and Practice at the laptop edge.
  */
 
 export default function Hero() {
@@ -99,7 +98,7 @@ export default function Hero() {
 
       <div className="max-w-7xl mx-auto px-4 pt-4 md:pt-8 space-y-8">
          
-         {/* MOBILE HEADER - SEQUENCED PER SCREENSHOT */}
+         {/* MOBILE HEADER */}
          <div className="flex items-center justify-between lg:hidden mb-2">
             <Logo imgClassName="h-8" />
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-100 shadow-sm">
@@ -173,21 +172,24 @@ export default function Hero() {
                   alt="Cracklix Student"
                />
                
-               {/* FLOATING NODES - DESKTOP CALIBRATED TO AVOID ASSET OVERLAP */}
-               <FloatingNode icon={<Zap className="text-blue-600 h-5 w-5" />} label="Mock Tests" className="top-[12%] left-[8%]" link="/mocks" />
-               <FloatingNode icon={<Landmark className="text-indigo-600 h-5 w-5" />} label="Punjab Exams" className="top-[18%] right-[15%]" link="/exams" />
-               <FloatingNode icon={<FileStack className="text-emerald-600 h-5 w-5" />} label="Previous Papers" className="bottom-[10%] left-[5%]" link="/pyqs" />
-               <FloatingNode icon={<Target className="text-rose-500 h-5 w-5" />} label="Daily Practice" className="bottom-[15%] right-[12%]" link="/current-affairs" />
+               {/* FLOATING NODES - RECALIBRATED GRID */}
+               {/* TOP ROW: MOCKS & EXAMS */}
+               <FloatingNode icon={<Zap className="text-blue-600 h-5 w-5" />} label="Mock Tests" className="lg:top-[5%] lg:left-[5%]" link="/mocks" />
+               <FloatingNode icon={<Landmark className="text-indigo-600 h-5 w-5" />} label="Punjab Exams" className="lg:top-[5%] lg:right-[5%]" link="/exams" />
+               
+               {/* BOTTOM ROW: PAPERS & PRACTICE */}
+               <FloatingNode icon={<FileStack className="text-emerald-600 h-5 w-5" />} label="Previous Papers" className="lg:bottom-[5%] lg:left-[2%]" link="/pyqs" />
+               <FloatingNode icon={<Target className="text-rose-500 h-5 w-5" />} label="Daily Practice" className="lg:bottom-[5%] lg:right-[2%]" link="/current-affairs" />
             </div>
          </div>
 
-         {/* MOBILE ILLUSTRATION & ACTIONS - EDGE TO EDGE */}
+         {/* MOBILE ILLUSTRATION & ACTIONS */}
          <div className="lg:hidden relative flex flex-col items-center w-full px-0">
             <div className="relative w-full max-w-[480px] aspect-square flex items-center justify-center overflow-visible">
                <div className="absolute inset-0 bg-blue-100/30 rounded-full blur-2xl -z-10" />
                <img src="/images/hero-student.png" className="w-full h-full object-contain relative z-10" alt="Student" />
                
-               {/* COLLISION SAFE POSITIONS FOR MOBILE */}
+               {/* MOBILE POSITIONS */}
                <FloatingNode icon={<FileStack className="text-emerald-600 h-3 w-3" />} label="Papers" className="bottom-[12%] left-[2%]" link="/pyqs" />
                <FloatingNode icon={<Zap className="text-blue-600 h-3 w-3" />} label="Mocks" className="top-[5%] left-[2%]" link="/mocks" />
                <FloatingNode icon={<Landmark className="text-indigo-600 h-3 w-3" />} label="Exams" className="top-[12%] right-[5%]" link="/exams" />
