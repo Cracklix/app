@@ -12,8 +12,8 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview Official Master Logo Hub v21.0 (Restored).
- * FIXED: Explicit logo source and height calibration for institutional navigation.
+ * @fileOverview Official Master Logo Hub v22.0.
+ * UPDATED: Increased base height for high-fidelity visibility as per user request.
  */
 export function LogoIcon({ className = "", imgClassName = "" }: { className?: string, imgClassName?: string }) {
   return (
