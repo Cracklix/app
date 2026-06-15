@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import {
   ClipboardCheck,
   ShieldCheck,
@@ -23,9 +23,10 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Cracklix Majestic Hero v3.0.
- * Reconstructed to match high-fidelity specification with prep nodes and horizontal feature grid.
- * FIXED: Added missing Badge import to resolve ReferenceError.
+ * @fileOverview Official Cracklix Majestic Hero v4.0 (Import Fix).
+ * FIXED: Resolved 'motion/react' module resolution error by reverting to 'framer-motion'.
+ * FIXED: Added missing Badge import.
+ * LAYOUT: Framing the student illustration with uniform floating nodes.
  */
 
 export default function Hero() {
@@ -122,7 +123,6 @@ export default function Hero() {
                ))}
             </div>
 
-            {/* HORIZONTAL MINI FEATURE GRID */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                <HeroMiniCard icon={<Zap className="text-blue-600" />} title="Mock Tests" sub="Exam-focused tests" />
                <HeroMiniCard icon={<FileStack className="text-emerald-500" />} title="Previous Papers" sub="Latest official keys" />
@@ -142,7 +142,7 @@ export default function Hero() {
 
           {/* RIGHT: ILLUSTRATION HUB */}
           <div className="relative flex justify-center lg:pl-12">
-            {/* Prep Nodes (Floating around student) */}
+            {/* Prep Nodes - Framing the student illustration */}
             <FloatingNode icon={<Zap className="text-blue-600 h-5 w-5" />} label="MOCK TESTS" className="top-[18%] -left-10 md:left-0" />
             <FloatingNode icon={<Target className="text-purple-600 h-5 w-5" />} label="DAILY PRACTICE" className="bottom-[2%] -left-10 md:-left-5" />
             <FloatingNode icon={<FileStack className="text-emerald-500 h-5 w-5" />} label="PREVIOUS PAPERS" className="bottom-[2%] -right-10 md:right-0" />
@@ -203,14 +203,14 @@ function FloatingNode({ icon, label, className }: { icon: React.ReactNode, label
       animate={{ y: [0, -10, 0] }}
       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       className={cn(
-        "absolute z-20 bg-white p-4 rounded-2xl shadow-2xl border border-slate-100 flex flex-col items-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-90 min-w-[110px]",
+        "absolute z-20 bg-white p-4 rounded-2xl shadow-2xl border border-slate-100 flex flex-col items-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-90 min-w-[120px] md:min-w-[140px]",
         className
       )}
     >
-       <div className="h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center shrink-0 shadow-inner">
+       <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-slate-50 flex items-center justify-center shrink-0 shadow-inner">
           {icon}
        </div>
-       <span className="text-[9px] font-black text-[#0F172A] tracking-widest uppercase whitespace-nowrap">{label}</span>
+       <span className="text-[9px] md:text-[10px] font-black text-[#0F172A] tracking-widest uppercase whitespace-nowrap">{label}</span>
     </motion.div>
   );
 }
