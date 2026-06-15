@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { GraduationCap } from 'lucide-react';
 
 interface LogoProps {
   className?: string;
@@ -12,24 +11,19 @@ interface LogoProps {
   imgClassName?: string;
 }
 
-export function LogoIcon({ className = "", variant = 'dark', imgClassName = "" }: LogoProps) {
-  return (
-    <div className={cn("flex items-center gap-2", className)}>
-        <div className="bg-primary p-1.5 rounded-lg">
-            <GraduationCap className="h-6 w-6 text-white" />
-        </div>
-        <div className="flex flex-col">
-            <span className={cn("font-black text-2xl tracking-tighter leading-none", variant === 'dark' ? 'text-slate-900' : 'text-white')}>DSSS</span>
-            <span className={cn("text-[7px] font-black tracking-[0.2em] mt-0.5", variant === 'dark' ? 'text-slate-500' : 'text-slate-400')}>LEARN.PRACTICE.SUCCEED</span>
-        </div>
-    </div>
-  );
-}
-
+/**
+ * @fileOverview Official Cracklix Brand Hub.
+ * UPDATED: Replaced DSSS text-identity with official Cracklix logo image.
+ */
 export default function Logo({ className = "", href = "/", variant = 'dark', imgClassName = "" }: LogoProps) {
   return (
     <Link href={href} className={cn("flex items-center group pointer-events-auto select-none shrink-0", className)}>
-      <LogoIcon variant={variant} imgClassName={imgClassName} />
+      <img 
+        src="/logo/cracklix-logo.png" 
+        alt="Cracklix Logo" 
+        className={cn("h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105", imgClassName)}
+        referrerPolicy="no-referrer"
+      />
     </Link>
   );
 }
