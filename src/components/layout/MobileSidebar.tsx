@@ -27,8 +27,8 @@ import Logo from "@/components/brand/Logo";
 import StudentAvatar from "@/components/brand/StudentAvatar";
 
 /**
- * @fileOverview Premium Blue Sidebar Hub v3.0.
- * Reconstructed with high-fidelity branding, user profile cards, and specific sectional navigation.
+ * @fileOverview Premium Blue Sidebar Hub v3.1.
+ * UPDATED: Standardized to Title Case for navigation labels.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -78,12 +78,12 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                  </div>
               </div>
               <div className="min-w-0 flex-1">
-                 <h2 className="text-sm font-bold text-slate-900 truncate uppercase">
+                 <h2 className="text-sm font-bold text-slate-900 truncate">
                     {profile?.name || "Aspirant"}
                  </h2>
                  <div className="flex items-center mt-1">
                     <Badge className="bg-white text-blue-600 border-blue-100 text-[10px] font-semibold px-2 py-0 h-5 rounded-lg shadow-sm">
-                       {profile?.pass?.active ? (profile.pass.plan || 'PREMIUM') : 'FREE PASS'}
+                       {profile?.pass?.active ? (profile.pass.plan || 'Premium') : 'Free Pass'}
                     </Badge>
                  </div>
               </div>
@@ -128,7 +128,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                  )}
                >
                   <Icon className={cn("h-5 w-5 shrink-0", isActive ? "text-white" : "text-slate-400 group-hover:text-blue-600")} />
-                  <span className="text-[15px] font-semibold">{item.label.toUpperCase()}</span>
+                  <span className="text-[15px] font-semibold">{item.label}</span>
                </Link>
              )
            })}
@@ -142,7 +142,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
            className="h-12 w-full flex items-center gap-3 px-4 rounded-2xl bg-red-50 text-red-600 hover:bg-red-100 transition-all font-semibold active:scale-95"
          >
            <LogOut className="h-5 w-5" />
-           <span className="text-[15px]">LOG OUT SESSION</span>
+           <span className="text-[15px]">Log Out Session</span>
          </button>
       </div>
     </div>

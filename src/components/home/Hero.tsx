@@ -23,9 +23,9 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Cracklix Majestic Hero v5.1.
- * UPDATED: Calibrated floating nodes to prevent edge clipping on mobile.
- * DATA: Real-time Firestore binding with themed icons and sub-labels.
+ * @fileOverview Official Cracklix Majestic Hero v6.0.
+ * UPDATED: Removed 'uppercase' from main heading and CTA for a premium Title Case look.
+ * REFINED: Line-height set to 1.05 for tighter, modern typography.
  */
 
 export default function Hero() {
@@ -104,7 +104,7 @@ export default function Hero() {
             </div>
 
             <div className="space-y-6">
-               <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.1] uppercase">
+               <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.05]">
                   Crack Punjab <br />
                   <span className="text-blue-600">Government Exams</span> <br />
                   With Confidence
@@ -141,10 +141,10 @@ export default function Hero() {
 
           {/* RIGHT: ILLUSTRATION HUB */}
           <div className="relative flex justify-center lg:pl-12">
-            <FloatingNode icon={<Zap className="text-blue-600 h-5 w-5" />} label="MOCK TESTS" className="top-[18%] left-0 md:left-4" />
-            <FloatingNode icon={<Target className="text-purple-600 h-5 w-5" />} label="DAILY PRACTICE" className="bottom-[2%] left-0 md:left-0" />
-            <FloatingNode icon={<FileStack className="text-emerald-500 h-5 w-5" />} label="PREVIOUS PAPERS" className="bottom-[2%] right-0 md:right-0" />
-            <FloatingNode icon={<Trophy className="text-orange-500 h-5 w-5" />} label="PUNJAB EXAMS" className="top-[18%] right-0 md:right-4" />
+            <FloatingNode icon={<Zap className="text-blue-600 h-5 w-5" />} label="Mock Tests" className="top-[18%] left-0 md:left-4" />
+            <FloatingNode icon={<Target className="text-purple-600 h-5 w-5" />} label="Daily Practice" className="bottom-[2%] left-0 md:left-0" />
+            <FloatingNode icon={<FileStack className="text-emerald-500 h-5 w-5" />} label="Previous Papers" className="bottom-[2%] right-0 md:right-0" />
+            <FloatingNode icon={<Trophy className="text-orange-500 h-5 w-5" />} label="Punjab Exams" className="top-[18%] right-0 md:right-4" />
 
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-100/50 rounded-full blur-3xl -z-10" />
             
@@ -187,7 +187,7 @@ function HeroMiniCard({ icon, title, sub }: { icon: React.ReactNode, title: stri
           {icon}
        </div>
        <div className="min-w-0">
-          <p className="text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-tight leading-tight mb-1">{title}</p>
+          <p className="text-[11px] md:text-xs font-black text-slate-900 tracking-tight leading-tight mb-1">{title}</p>
           <p className="text-[9px] font-medium text-slate-400 leading-tight">{sub}</p>
        </div>
     </Card>
