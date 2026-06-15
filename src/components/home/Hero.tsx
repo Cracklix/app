@@ -7,13 +7,13 @@ import {
   ArrowRight,
   ClipboardList,
   ShieldCheck,
+  CheckCircle2,
   Star,
   Users,
   FileText,
   Target,
   Landmark,
-  ChevronRight,
-  CheckCircle2
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -21,10 +21,12 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
+import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview High-Fidelity Screenshot-Matched Hero v4.0.
- * UPDATED: Exact positioning of floating cards and horizontal feature nodes.
+ * @fileOverview Final High-Fidelity Hero Center v5.1.
+ * FIXED: Added missing CheckCircle2 import to resolve ReferenceError.
+ * UPDATED: Precise responsive image sizing and majestic grid architecture.
  */
 
 export default function Hero() {
@@ -58,20 +60,12 @@ export default function Hero() {
   return (
     <section className="relative w-full bg-[#F8FAFC] overflow-hidden pt-12 pb-16 md:py-24 border-b border-slate-100">
       
-      {/* Background Ornaments */}
-      <div className="absolute top-10 right-10 opacity-20 pointer-events-none hidden lg:block">
-         <div className="grid grid-cols-5 gap-4">
-            {Array.from({length: 25}).map((_, i) => <div key={i} className="h-1.5 w-1.5 rounded-full bg-slate-300" />)}
-         </div>
-      </div>
-
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
-        <div className="grid lg:grid-cols-12 gap-12 md:gap-20 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
           
           {/* LEFT: CONTENT HUB */}
-          <div className="lg:col-span-7 space-y-8 text-left">
+          <div className="space-y-8 text-left">
             
-            {/* 1. Trust Badge */}
             <motion.div
                initial={{ opacity: 0, x: -20 }}
                animate={{ opacity: 1, x: 0 }}
@@ -83,12 +77,6 @@ export default function Hero() {
                <span className="text-[10px] md:text-xs font-black text-slate-800 tracking-tight">10,000+ Aspirants Trust Cracklix</span>
             </motion.div>
 
-            {/* 2. Brand Identity */}
-            <div className="flex items-center gap-3">
-               <img src="/logo/cracklix-logo.png" alt="Cracklix" className="h-10 md:h-12 w-auto" />
-            </div>
-
-            {/* 3. Main Heading */}
             <motion.div
                initial={{ opacity: 0, y: 20 }}
                animate={{ opacity: 1, y: 0 }}
@@ -101,11 +89,10 @@ export default function Hero() {
                   With Confidence
                </h1>
                <p className="text-base md:text-xl text-slate-500 font-medium max-w-2xl leading-relaxed">
-                  Practice with high-quality mock tests, previous papers and exam-focused preparation for top Punjab exams.
+                  Practice bilingual mock tests and prepare for Punjab Government Exams with confidence. Access exam-focused practice, previous papers and performance tracking in one place.
                </p>
             </motion.div>
 
-            {/* 4. Category Pills */}
             <motion.div 
                initial={{ opacity: 0 }}
                animate={{ opacity: 1 }}
@@ -119,20 +106,18 @@ export default function Hero() {
                ))}
             </motion.div>
 
-            {/* 5. Horizontal Feature Hub */}
             <motion.div
                initial={{ opacity: 0, y: 20 }}
                animate={{ opacity: 1, y: 0 }}
                transition={{ delay: 0.3 }}
                className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4"
             >
-               <FeatureNode icon={<ClipboardList className="text-blue-600" />} color="bg-blue-50" label="Mock Tests" sub="Exam-focused mock tests" />
-               <FeatureNode icon={<FileText className="text-green-600" />} color="bg-green-50" label="Previous Papers" sub="Previous year question papers" />
-               <FeatureNode icon={<Target className="text-purple-600" />} color="bg-purple-50" label="Daily Practice" sub="Practice daily & stay ahead" />
-               <FeatureNode icon={<Landmark className="text-orange-600" />} color="bg-orange-50" label="Punjab Exams" sub="All major Punjab exams at one place" />
+               <FeatureNode icon={<ClipboardList className="text-blue-600" />} color="bg-blue-50" label="Mock Tests" sub="Exam-focused series" />
+               <FeatureNode icon={<FileText className="text-green-600" />} color="bg-green-50" label="Previous Papers" sub="Verified archives" />
+               <FeatureNode icon={<Target className="text-purple-600" />} color="bg-purple-50" label="Daily Practice" sub="Stay ahead daily" />
+               <FeatureNode icon={<Landmark className="text-orange-600" />} color="bg-orange-50" label="Punjab Exams" sub="Official verticals" />
             </motion.div>
 
-            {/* 6. CTA Action Bar */}
             <motion.div
                initial={{ opacity: 0, y: 10 }}
                animate={{ opacity: 1, y: 0 }}
@@ -155,59 +140,55 @@ export default function Hero() {
           </div>
 
           {/* RIGHT: ILLUSTRATION HUB */}
-          <div className="lg:col-span-5 relative flex justify-center items-center mt-12 lg:mt-0">
-             <div className="relative w-full max-w-[560px]">
-                {/* Decorative glow */}
+          <div className="relative flex justify-center items-center mt-12 lg:mt-0">
+             <div className="relative w-full">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-500/5 blur-[120px] rounded-full" />
                 
-                {/* Main Student Visual */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                <motion.img
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
-                  className="relative z-10"
-                >
-                   <img 
-                     src="/images/hero-student.png" 
-                     alt="Cracklix Student" 
-                     className="w-full h-auto drop-shadow-3xl"
-                   />
-                </motion.div>
+                  src="/images/hero-student.png"
+                  alt="Cracklix Student"
+                  className="w-full max-w-[320px] sm:max-w-[420px] lg:max-w-[520px] xl:max-w-[620px] mx-auto object-contain drop-shadow-xl"
+                />
 
-                {/* Floating Clickable Feature Cards - Exact Positioning */}
-                <FloatingActionCard 
-                   icon={<ClipboardList className="text-blue-600 h-5 w-5" />} 
-                   label="Mock Tests" 
-                   className="top-[10%] left-[-5%] md:left-[-10%]" 
-                   delay={0.5} 
-                   href="/mocks"
-                />
-                <FloatingActionCard 
-                   icon={<Target className="text-purple-600 h-5 w-5" />} 
-                   label="Daily Practice" 
-                   className="top-[35%] left-[-15%] md:left-[-20%]" 
-                   delay={0.7} 
-                   href="/current-affairs"
-                />
-                <FloatingActionCard 
-                   icon={<FileText className="text-green-600 h-5 w-5" />} 
-                   label="Previous Papers" 
-                   className="top-[15%] right-[-5%] md:right-[-10%]" 
-                   delay={0.6} 
-                   href="/pyqs"
-                />
-                <FloatingActionCard 
-                   icon={<Landmark className="text-orange-600 h-5 w-5" />} 
-                   label="Punjab Exams" 
-                   className="top-[45%] right-[-10%] md:right-[-15%]" 
-                   delay={0.8} 
-                   href="/exams"
-                />
+                {/* Desktop Floating Action Cards */}
+                <div className="hidden lg:block">
+                  <FloatingActionCard 
+                     icon={<ClipboardList className="text-blue-600 h-5 w-5" />} 
+                     label="Mock Tests" 
+                     className="top-[10%] left-[0%]" 
+                     delay={0.5} 
+                     href="/mocks"
+                  />
+                  <FloatingActionCard 
+                     icon={<Target className="text-purple-600 h-5 w-5" />} 
+                     label="Daily Practice" 
+                     className="bottom-[25%] left-[-5%]" 
+                     delay={0.7} 
+                     href="/current-affairs"
+                  />
+                  <FloatingActionCard 
+                     icon={<FileText className="text-green-600 h-5 w-5" />} 
+                     label="Previous Papers" 
+                     className="top-[15%] right-[0%]" 
+                     delay={0.6} 
+                     href="/pyqs"
+                  />
+                  <FloatingActionCard 
+                     icon={<Landmark className="text-orange-600 h-5 w-5" />} 
+                     label="Punjab Exams" 
+                     className="bottom-[30%] right-[-5%]" 
+                     delay={0.8} 
+                     href="/exams"
+                  />
+                </div>
              </div>
           </div>
         </div>
 
-        {/* BOTTOM: STATS REGISTRY */}
+        {/* STATS REGISTRY */}
         <div className="mt-16 md:mt-28">
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {liveStats.map((stat, idx) => (

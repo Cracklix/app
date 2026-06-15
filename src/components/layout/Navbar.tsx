@@ -11,7 +11,8 @@ import {
   Zap, 
   Newspaper, 
   Gem, 
-  ShieldCheck 
+  ShieldCheck,
+  Download
 } from "lucide-react";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -33,8 +34,9 @@ import Logo from "@/components/brand/Logo";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview High-Density Master Navbar Hub v52.0.
- * UPDATED: Calibrated logo scaling and integrated blue-indigo palette.
+ * @fileOverview High-Density Master Navbar Hub v53.0.
+ * UPDATED: Optimized for zero scrolling. All buttons visible on one line.
+ * FIXED: Logo anchored to left with compact action nodes.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -68,63 +70,72 @@ export default function Navbar() {
 
   return (
     <div className="w-full sticky top-0 z-[1000] font-body">
-      <nav className="w-full border-b border-slate-100 bg-white/80 backdrop-blur-xl h-18 md:h-20 px-3 md:px-6 shadow-sm flex items-center overflow-hidden">
-        <div className="w-full max-w-[1550px] mx-auto flex items-center justify-between h-full gap-2 md:gap-4">
+      <nav className="w-full border-b border-slate-100 bg-white/80 backdrop-blur-xl h-16 md:h-20 px-2 md:px-4 shadow-sm flex items-center overflow-hidden">
+        <div className="w-full max-w-[1600px] mx-auto flex items-center justify-between h-full gap-2">
           
-          <div className="flex items-center gap-3 md:gap-5 shrink-0">
+          {/* LEFT: TRIGGER + LOGO */}
+          <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
             <button 
               onClick={() => setIsSidebarOpen(true)} 
-              className="w-10 h-10 md:w-11 md:h-11 bg-slate-50 text-slate-400 rounded-xl border border-slate-100 flex items-center justify-center cursor-pointer active:scale-90 transition-all hover:bg-slate-100"
+              className="w-9 h-9 md:w-11 md:h-11 bg-slate-50 text-slate-400 rounded-lg md:rounded-xl border border-slate-100 flex items-center justify-center cursor-pointer active:scale-90 transition-all hover:bg-slate-100"
             >
               <Menu className="h-5 w-5" />
             </button>
-            <Logo imgClassName="h-8 md:h-10" />
+            <Logo imgClassName="h-9 md:h-14 lg:h-16" />
           </div>
 
-          <div className="hidden xl:flex items-center gap-2">
+          {/* CENTER: COMPACT NAV */}
+          <div className="hidden lg:flex items-center gap-1.5 xl:gap-3">
              <NavLink 
                href="/" 
-               icon={<Home className="h-4 w-4" />} 
+               icon={<Home className="h-3.5 w-3.5" />} 
                label="Home" 
                active={pathname === '/'} 
              />
              <NavLink 
                href="/mocks" 
-               icon={<Zap className="h-4 w-4" />} 
+               icon={<Zap className="h-3.5 w-3.5" />} 
                label="Practice" 
                active={pathname === '/mocks'} 
              />
              <NavLink 
                href="/current-affairs" 
-               icon={<Newspaper className="h-4 w-4" />} 
+               icon={<Newspaper className="h-3.5 w-3.5" />} 
                label="Updates" 
                active={pathname === '/current-affairs'} 
              />
           </div>
 
-          <div className="flex items-center gap-2 md:gap-4 shrink-0">
+          {/* RIGHT: ACTION NODES */}
+          <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
              
-             <div className="hidden lg:block">
-               <Button asChild className="h-10 md:h-11 px-5 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[9px] md:text-[10px] tracking-widest rounded-xl gap-2 shadow-lg border-none">
-                  <Link href="/pass"><Gem className="h-4 w-4" /> GET PASS</Link>
+             <div className="hidden sm:block">
+               <Button asChild className="h-9 md:h-11 px-3 md:px-5 bg-slate-900 hover:bg-black text-white font-black uppercase text-[8px] md:text-[9px] tracking-widest rounded-lg md:rounded-xl gap-2 shadow-lg border-none">
+                  <Link href="/pass"><Gem className="h-3.5 w-3.5 text-primary" /> PASS</Link>
+               </Button>
+             </div>
+
+             <div className="hidden md:block">
+               <Button asChild className="h-11 px-5 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[9px] tracking-widest rounded-xl gap-2 shadow-lg border-none">
+                  <Link href="/install"><Download className="h-3.5 w-3.5" /> APP</Link>
                </Button>
              </div>
 
              {isActivePass && (
-                <div className="hidden sm:flex items-center gap-2 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-xl">
-                   <div className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
-                   <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">ACTIVE</span>
+                <div className="hidden xs:flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-lg">
+                   <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                   <span className="text-[8px] font-black text-emerald-600 uppercase">ACTIVE</span>
                 </div>
              )}
 
-             <Link href="/search" className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary transition-all">
-                <Search className="h-5 w-5" />
+             <Link href="/search" className="w-9 h-9 md:w-11 md:h-11 rounded-lg md:rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary transition-all">
+                <Search className="h-4.5 w-4.5 md:h-5 md:w-5" />
              </Link>
 
              {user ? (
                <DropdownMenu>
                  <DropdownMenuTrigger asChild>
-                   <button className="w-10 h-10 md:w-11 md:h-11 rounded-full border border-slate-100 overflow-hidden shadow-sm cursor-pointer bg-white active:scale-95 transition-transform flex items-center justify-center">
+                   <button className="w-9 h-9 md:w-11 md:h-11 rounded-full border border-slate-100 overflow-hidden shadow-sm cursor-pointer bg-white active:scale-95 transition-transform flex items-center justify-center">
                       <StudentAvatar profile={profile} className="h-full w-full border-none" />
                    </button>
                  </DropdownMenuTrigger>
@@ -151,7 +162,7 @@ export default function Navbar() {
                  </DropdownMenuContent>
                </DropdownMenu>
              ) : (
-               <Button asChild className="px-5 h-10 bg-slate-900 hover:bg-black text-white font-black text-[9px] md:text-[10px] rounded-xl transition-all uppercase tracking-widest border-none">
+               <Button asChild className="px-4 md:px-5 h-9 md:h-10 bg-slate-900 hover:bg-black text-white font-black text-[9px] md:text-[10px] rounded-lg md:rounded-xl transition-all uppercase tracking-widest border-none">
                  <Link href="/login">Login</Link>
                </Button>
              )}
@@ -175,7 +186,7 @@ export default function Navbar() {
 function NavLink({ href, icon, label, active }: { href: string, icon: React.ReactNode, label: string, active?: boolean }) {
   return (
     <Link href={href} className={cn(
-      "flex items-center gap-2 px-5 py-2 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all",
+      "flex items-center gap-2 px-3 xl:px-4 py-1.5 rounded-lg font-black uppercase text-[9px] tracking-widest transition-all shrink-0",
       active ? "bg-blue-50 text-primary shadow-sm" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"
     )}>
        {icon}
