@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   Gem,
   Newspaper,
-  Download,
   User,
   Shield,
   Landmark,
@@ -23,14 +22,13 @@ import { signOut } from "firebase/auth";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import React, { useState, useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/brand/Logo";
 import PWAInstallButton from "@/components/PWAInstallButton";
 
 /**
- * @fileOverview Hardened High-Density Mobile Sidebar v72.5.
- * RESTORED: Student profile info, navigation registry, and logout logic.
+ * @fileOverview Original Mobile Sidebar (Restored).
+ * RESTORED: Student profile info, navigation registry, and institutional branding.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -51,7 +49,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
 
   const menuItems = [
     { label: "Home Page", href: "/", icon: Home },
-    { label: "My Registry", href: "/my-exams", icon: Target },
+    { label: "My Hub", href: "/my-exams", icon: Target },
     { label: "Exam List", href: "/exams", icon: Landmark },
     { label: "Practice Bank", href: "/mocks", icon: Zap },
     { label: "Study Updates", href: "/current-affairs", icon: Newspaper },
@@ -90,7 +88,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
            </div>
         </div>
         <button onClick={() => { router.push('/profile'); onClose(); }} className="w-full h-8 rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-between px-3 group active:scale-95 transition-all relative z-10 mb-2 mt-2">
-           <div className="flex items-center gap-2"><User className="h-3 w-3 text-[#F97316]" /><span className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-200">PROFILE SETTINGS</span></div>
+           <div className="flex items-center gap-2"><User className="h-3 w-3 text-primary" /><span className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-200">PROFILE SETTINGS</span></div>
            <ChevronRight className="h-3 w-3 text-slate-600" />
         </button>
       </div>
@@ -98,10 +96,10 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
       <div className="px-6 mb-2 mt-4"><p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">MANAGEMENT CENTER</p></div>
 
       <div className="flex flex-col py-0">
-        <div className="px-6 mb-2">
+        <div className="px-6 mb-4">
           <PWAInstallButton 
-            className="w-full h-10 bg-primary/10 text-primary border-l-[3px] border-primary rounded-none justify-start px-4" 
-            variant="ghost" 
+            className="w-full h-10 bg-primary text-white rounded-xl justify-start px-4" 
+            variant="primary" 
           />
         </div>
 
@@ -109,13 +107,13 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
           const isActive = mounted && pathname === item.href;
           const Icon = item.icon;
           return (
-            <Link key={item.label} href={item.href} onClick={onClose} className={cn("flex items-center gap-4 px-6 h-[40px] transition-all border-l-[3px]", isActive ? "bg-white/[0.05] border-primary text-white" : "hover:bg-white/[0.02] border-transparent text-slate-400")}>
+            <Link key={item.label} href={item.href} onClick={onClose} className={cn("flex items-center gap-4 px-6 h-[44px] transition-all border-l-[3px]", isActive ? "bg-white/[0.05] border-primary text-white" : "hover:bg-white/[0.02] border-transparent text-slate-400")}>
                <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-primary" : "text-slate-600")} />
                <span className={cn("text-[11px] font-black uppercase tracking-tight", isActive ? "text-white" : "text-slate-400")}>{item.label}</span>
             </Link>
           )
         })}
-        <button onClick={handleLogout} className="flex items-center gap-4 px-6 h-[40px] text-rose-500 hover:bg-rose-50/5 transition-all w-full text-left active:scale-95">
+        <button onClick={handleLogout} className="flex items-center gap-4 px-6 h-[44px] text-rose-500 hover:bg-rose-50/5 transition-all w-full text-left active:scale-95">
           <LogOut className="h-4 w-4 shrink-0" /><span className="text-[11px] font-black uppercase tracking-tight">LOG OUT SESSION</span>
         </button>
       </div>

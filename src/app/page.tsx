@@ -10,9 +10,8 @@ import Footer from "@/components/layout/Footer";
 import PopularExams from "@/components/home/PopularExams";
 
 /**
- * @fileOverview Official Home Hub v170.0.
+ * @fileOverview Official Home Hub v170.0 (Restored).
  * PERFORMANCE: Strict server component root with high-fidelity client sub-modules.
- * UPDATED: Promoted 'MY EXAMS' (ContinueLearning) to position 3 for maximum student visibility.
  */
 
 export default function HomePage() {

@@ -23,8 +23,8 @@ import { Badge } from "@/components/ui/badge";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Official Master Navbar Hub v23.0 (Hardened).
- * FIXED: Reference errors and hydration stability hardened.
+ * @fileOverview Official Master Navbar Hub (Restored).
+ * Restores the Gazette ticker, search hub, and profile management node.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -76,13 +76,6 @@ export default function Navbar() {
               </div>
               <span className="text-lg md:text-2xl font-black tracking-tight text-white">Cracklix<span className="text-orange-500">.</span></span>
             </Link>
-          </div>
-
-          {/* Quick Access Badges (Desktop Only) */}
-          <div className="hidden lg:flex items-center gap-2">
-            <Badge variant="outline" className="px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px] font-black uppercase">✓ PSSSB</Badge>
-            <Badge variant="outline" className="px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 border-blue-500/20 text-[10px] font-black uppercase">✓ PPSC</Badge>
-            <Badge variant="outline" className="px-3 py-1.5 rounded-lg bg-purple-500/10 text-purple-400 border-purple-500/20 text-[10px] font-black uppercase">✓ TEACHING CADRE</Badge>
           </div>
 
           {/* Authentication Portal Gateway */}
