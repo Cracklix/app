@@ -23,9 +23,9 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Cracklix Majestic Hero v4.5.
- * FIXED: Removed text truncation to ensure labels are fully visible.
- * FIXED: Standardized framing nodes to 18% Top / 2% Bottom alignment.
+ * @fileOverview Official Cracklix Majestic Hero v5.0.
+ * UPDATED: Synchronized bottom stats with high-fidelity screenshot design.
+ * DATA: Real-time Firestore binding with themed icons and sub-labels.
  */
 
 export default function Hero() {
@@ -49,8 +49,8 @@ export default function Hero() {
     return [
       { 
         id: "q", 
-        icon: <Zap className="h-6 w-6 text-blue-600 fill-current" />, 
-        circleBg: "bg-blue-50",
+        icon: <Zap className="h-6 w-6 text-white fill-current" />, 
+        circleBg: "bg-blue-600",
         valColor: "text-blue-600",
         val: formatNumber(stats?.totalQuestions, "50K+"), 
         label: "Questions", 
@@ -58,27 +58,27 @@ export default function Hero() {
       },
       { 
         id: "m", 
-        icon: <ClipboardCheck className="h-6 w-6 text-blue-700" />, 
-        circleBg: "bg-blue-50",
-        valColor: "text-blue-700",
+        icon: <ClipboardCheck className="h-6 w-6 text-white" />, 
+        circleBg: "bg-indigo-600",
+        valColor: "text-indigo-600",
         val: formatNumber(stats?.totalMocks, "500+"), 
         label: "Mock Tests", 
         sub: "Topic wise & full length mocks" 
       },
       { 
         id: "e", 
-        icon: <ShieldCheck className="h-6 w-6 text-blue-600" />, 
-        circleBg: "bg-blue-50",
-        valColor: "text-blue-600",
+        icon: <ShieldCheck className="h-6 w-6 text-white" />, 
+        circleBg: "bg-emerald-600",
+        valColor: "text-emerald-600",
         val: formatNumber(stats?.totalBoards, "50+"), 
         label: "Exams", 
         sub: "All major Punjab exams" 
       },
       { 
         id: "u", 
-        icon: <Users className="h-6 w-6 text-blue-500" />, 
-        circleBg: "bg-blue-50",
-        valColor: "text-blue-500",
+        icon: <Users className="h-6 w-6 text-white" />, 
+        circleBg: "bg-orange-500",
+        valColor: "text-orange-500",
         val: formatNumber(stats?.totalUsers, "15K+"), 
         label: "Aspirants", 
         sub: "Trust Cracklix for preparation" 
@@ -122,7 +122,6 @@ export default function Hero() {
                ))}
             </div>
 
-            {/* MINI FEATURE CARDS - FIXED TRUNCATION */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                <HeroMiniCard icon={<Zap className="text-blue-600" />} title="Mock Tests" sub="Exam-focused tests" />
                <HeroMiniCard icon={<FileStack className="text-emerald-500" />} title="Previous Papers" sub="Latest official keys" />
@@ -142,7 +141,6 @@ export default function Hero() {
 
           {/* RIGHT: ILLUSTRATION HUB */}
           <div className="relative flex justify-center lg:pl-12">
-            {/* Prep Nodes - Framing the student illustration (Fixed Visibility) */}
             <FloatingNode icon={<Zap className="text-blue-600 h-5 w-5" />} label="MOCK TESTS" className="top-[18%] -left-10 md:left-0" />
             <FloatingNode icon={<Target className="text-purple-600 h-5 w-5" />} label="DAILY PRACTICE" className="bottom-[2%] -left-10 md:-left-5" />
             <FloatingNode icon={<FileStack className="text-emerald-500 h-5 w-5" />} label="PREVIOUS PAPERS" className="bottom-[2%] -right-10 md:right-0" />
@@ -161,14 +159,14 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* BOTTOM: STATS REGISTRY */}
+        {/* BOTTOM: STATS REGISTRY - MATCHED TO SCREENSHOT */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-10 border-t border-slate-100">
            {liveStats.map((stat) => (
              <Card key={stat.id} className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-xl flex items-center gap-6 group hover:shadow-2xl hover:translate-y-[-4px] transition-all text-left">
                 <div className={cn("h-16 w-16 rounded-full flex items-center justify-center shrink-0 shadow-lg group-hover:scale-110 transition-transform", stat.circleBg)}>
                   {stat.icon}
                 </div>
-                <div className="space-y-0.5">
+                <div className="space-y-0.5 min-w-0">
                    <p className={cn("text-4xl font-black leading-none tracking-tighter", stat.valColor)}>{stat.val}</p>
                    <p className="text-base font-bold text-slate-900 tracking-tight">{stat.label}</p>
                    <p className="text-[10px] font-medium text-slate-400 leading-tight uppercase tracking-widest">{stat.sub}</p>
