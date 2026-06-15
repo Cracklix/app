@@ -13,7 +13,7 @@ import {
   Target,
   Award,
   Star,
-  Landmark
+  CheckCircle2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -23,9 +23,9 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Majestic SaaS Hero Section v5.0.
- * UPDATED: Fully redesigned to match high-fidelity reference screenshot.
- * STABILITY: Preserves Firebase settings/stats integration.
+ * @fileOverview Majestic SaaS Hero Section v6.0.
+ * UPDATED: Background color matched to student illustration (#F8FAFC).
+ * UPDATED: Precise floating card positioning and mobile-first grid logic.
  */
 
 export default function Hero() {
@@ -36,7 +36,6 @@ export default function Hero() {
     setMounted(true);
   }, []);
 
-  // Preserving live stats functionality
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats } = useDoc<any>(statsRef);
 
@@ -87,15 +86,6 @@ export default function Hero() {
 
   return (
     <section className="relative overflow-hidden bg-[#F8FAFC] py-12 md:py-24 border-b border-slate-100">
-      {/* Background Decor */}
-      <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none">
-         <div className="grid grid-cols-6 gap-8">
-            {Array.from({length: 36}).map((_, i) => (
-               <div key={i} className="h-2 w-2 rounded-full bg-slate-900" />
-            ))}
-         </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
@@ -137,10 +127,10 @@ export default function Hero() {
 
             {/* Horizontal Feature Hub */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-               <FeatureMinicard icon={<ClipboardList className="text-blue-600" />} color="bg-blue-50" title="Mock Tests" sub="Exam-focused mock tests" />
-               <FeatureMinicard icon={<FileText className="text-emerald-600" />} color="bg-emerald-50" title="Previous Papers" sub="Previous year question papers" />
-               <FeatureMinicard icon={<Target className="text-indigo-600" />} color="bg-indigo-50" title="Daily Practice" sub="Practice daily & stay ahead" />
-               <FeatureMinicard icon={<Award className="text-orange-500" />} color="bg-orange-50" title="Punjab Exams" sub="All major Punjab exams" />
+               <FeatureMinicard icon={<ClipboardList className="text-blue-600" />} color="bg-blue-50" title="Mock Tests" sub="Exam-focused tests" />
+               <FeatureMinicard icon={<FileText className="text-emerald-600" />} color="bg-emerald-50" title="Previous Papers" sub="Verified PDF archives" />
+               <FeatureMinicard icon={<Target className="text-indigo-600" />} color="bg-indigo-50" title="Daily Practice" sub="Stay ahead daily" />
+               <FeatureMinicard icon={<Award className="text-orange-500" />} color="bg-orange-50" title="Punjab Exams" sub="All state boards" />
             </div>
 
             {/* CTA Actions */}
@@ -162,7 +152,6 @@ export default function Hero() {
               >
                 <Link href="/exams">
                   Browse Exams
-                  <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
             </div>
@@ -170,57 +159,57 @@ export default function Hero() {
           </div>
 
           {/* RIGHT COLUMN: ILLUSTRATION HUB */}
-          <div className="relative flex justify-center items-center py-10 lg:py-0">
-            {/* Background Glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-100/40 blur-[100px] rounded-full -z-10" />
-            
-            {/* Floating Dotted Curves (SVG Backdrop) */}
-            <div className="absolute inset-0 z-0 opacity-20 pointer-events-none hidden lg:block">
-               <svg viewBox="0 0 500 500" className="w-full h-full stroke-blue-400 stroke-[2px] stroke-dasharray-[4,4] fill-none">
-                  <path d="M50,150 Q150,50 250,250" />
-                  <path d="M450,150 Q350,50 250,250" />
-                  <path d="M50,350 Q150,450 250,250" />
-                  <path d="M450,350 Q350,450 250,250" />
-               </svg>
-            </div>
+          <div className="relative flex flex-col justify-center items-center py-10 lg:py-0">
+            {/* Desktop View: Floating Layout */}
+            <div className="relative w-full max-w-[520px] xl:max-w-[620px] aspect-square flex items-center justify-center">
+              
+              {/* Background Glow */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-100/40 blur-[80px] rounded-full -z-10" />
 
-            <div className="relative">
-               <motion.img
+              <motion.img
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
                 src="/images/hero-student.png"
                 alt="Cracklix Student"
-                className="w-full max-w-[320px] sm:max-w-[420px] lg:max-w-[520px] xl:max-w-[620px] mx-auto object-contain drop-shadow-2xl relative z-10"
-               />
+                className="w-full h-full object-contain drop-shadow-2xl relative z-10"
+              />
 
-               {/* Desktop Floating Cards */}
-               <div className="hidden lg:block">
-                  <FloatingBadge 
-                    icon={<ClipboardList className="text-blue-600 h-5 w-5" />} 
-                    label="Mock Tests" 
-                    href="/mocks"
-                    className="top-10 -left-12"
-                  />
-                  <FloatingBadge 
-                    icon={<Target className="text-indigo-600 h-5 w-5" />} 
-                    label="Daily Practice" 
-                    href="/practice"
-                    className="bottom-24 -left-16"
-                  />
-                  <FloatingBadge 
-                    icon={<FileText className="text-emerald-600 h-5 w-5" />} 
-                    label="Previous Papers" 
-                    href="/previous-papers"
-                    className="top-20 -right-16"
-                  />
-                  <FloatingBadge 
-                    icon={<Award className="text-orange-500 h-5 w-5" />} 
-                    label="Punjab Exams" 
-                    href="/exams"
-                    className="bottom-40 -right-20"
-                  />
-               </div>
+              {/* Floating Cards (Desktop Only) */}
+              <div className="hidden lg:block">
+                <FloatingBadge 
+                  icon={<ClipboardList className="text-blue-600 h-5 w-5" />} 
+                  label="Mock Tests" 
+                  href="/mocks"
+                  className="top-10 -left-12"
+                />
+                <FloatingBadge 
+                  icon={<Target className="text-indigo-600 h-5 w-5" />} 
+                  label="Daily Practice" 
+                  href="/practice"
+                  className="bottom-24 -left-16"
+                />
+                <FloatingBadge 
+                  icon={<FileText className="text-emerald-600 h-5 w-5" />} 
+                  label="Previous Papers" 
+                  href="/pyqs"
+                  className="top-20 -right-16"
+                />
+                <FloatingBadge 
+                  icon={<Award className="text-orange-500 h-5 w-5" />} 
+                  label="Punjab Exams" 
+                  href="/exams"
+                  className="bottom-40 -right-20"
+                />
+              </div>
+            </div>
+
+            {/* Mobile View: Grid Layout for Features */}
+            <div className="grid grid-cols-2 gap-3 mt-10 w-full lg:hidden">
+              <MobileFeatureCard icon={<ClipboardList />} label="Mock Tests" href="/mocks" color="text-blue-600" />
+              <MobileFeatureCard icon={<FileText />} label="Previous Papers" href="/pyqs" color="text-emerald-600" />
+              <MobileFeatureCard icon={<Target />} label="Daily Practice" href="/practice" color="text-indigo-600" />
+              <MobileFeatureCard icon={<Award />} label="Punjab Exams" href="/exams" color="text-orange-500" />
             </div>
           </div>
         </div>
@@ -289,5 +278,18 @@ function FloatingBadge({ icon, label, href, className }: { icon: React.ReactNode
         </div>
       </Link>
     </motion.div>
+  );
+}
+
+function MobileFeatureCard({ icon, label, href, color }: { icon: React.ReactNode, label: string, href: string, color: string }) {
+  return (
+    <Link href={href} className="block w-full">
+      <Card className="p-4 rounded-2xl bg-white border border-slate-100 shadow-sm flex flex-col items-center gap-3 active:scale-95 transition-all">
+        <div className={cn("h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center", color)}>
+          {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5" })}
+        </div>
+        <span className="text-[10px] font-black uppercase text-[#0F172A] text-center">{label}</span>
+      </Card>
+    </Link>
   );
 }
