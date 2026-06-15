@@ -1,36 +1,49 @@
-
 'use client';
 
 import React, { useMemo, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { 
-  Zap, 
+  Star, 
   ArrowRight,
+  BookOpen,
   ClipboardList,
-  ShieldCheck,
-  CheckCircle2,
-  Star,
+  Tv,
+  FileText as FileTextIcon,
   Users,
-  FileText,
-  Target,
+  CheckCheck,
   Trophy,
-  FileStack,
-  ChevronRight,
-  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useDoc, useFirestore } from '@/firebase';
 import { doc } from "firebase/firestore";
-import { Badge } from "@/components/ui/badge";
+import Logo from "@/components/brand/Logo";
 
-/**
- * @fileOverview Majestic High-Fidelity Hero Hub v9.0.
- * FIXED: Resolved right-side clipping of floating cards.
- * UPDATED: Reduced label text size and switched to sentence case for a modern look.
- */
+// Card for the floating features
+const FeatureCard = ({ icon, label, href, className }: { icon: React.ReactNode, label: string, href: string, className?: string }) => (
+  <Link href={href}>
+    <motion.div 
+      className={cn("absolute bg-white rounded-xl md:rounded-2xl shadow-lg px-3 py-2 md:px-4 md:py-3 cursor-pointer flex items-center gap-2 group z-20", className)}
+      whileHover={{ scale: 1.05 }}
+      transition={{ type: "spring", stiffness: 300 }}
+    >
+      <div className="p-1.5 bg-blue-50 rounded-md">
+        {icon}
+      </div>
+      <span className="text-[10px] md:text-sm font-bold text-slate-800 group-hover:text-primary transition-colors whitespace-nowrap">{label}</span>
+    </motion.div>
+  </Link>
+);
+
+// Card for the bottom stats bar
+const StatItem = ({ icon, value, label }: { icon: React.ReactNode, value: string, label: string }) => (
+  <div className="flex flex-col items-center text-center">
+    <div className="mb-2 h-12 w-12 flex items-center justify-center bg-blue-50 rounded-2xl text-primary">{icon}</div>
+    <p className="text-xl md:text-2xl font-black text-slate-900">{value}</p>
+    <p className="text-xs text-slate-500 font-medium">{label}</p>
+  </div>
+);
 
 export default function Hero() {
   const db = useFirestore();
@@ -42,222 +55,139 @@ export default function Hero() {
 
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats } = useDoc<any>(statsRef);
+  
+  const formatStat = (num: number, fallback: string) => {
+      if (!num || !mounted) return fallback;
+      if (num >= 1000) return (num / 1000).toFixed(0) + 'k+';
+      return num.toString();
+  };
+  
+  const trustStat = formatStat(stats?.totalUsers, "10,000+");
+  const practiceQuestionsStat = formatStat(stats?.totalQuestions, "10,000+");
+  const mockTestsStat = formatStat(stats?.totalMocks, "100+");
 
-  const liveStats = useMemo(() => {
-    const formatNumber = (num: number, fallback: string) => {
-      if (!num) return fallback;
-      if (num >= 1000) return (num / 1000).toFixed(0) + 'K+';
-      return num.toString() + '+';
-    };
-
-    return [
-      { id: 'q', icon: <Zap className="text-white h-5 w-5" />, val: formatNumber(stats?.totalQuestions, "50K+"), label: "Questions", sub: "Verified Patterns", color: "bg-blue-600" },
-      { id: 'm', icon: <ClipboardList className="text-white h-5 w-5" />, val: formatNumber(stats?.totalMocks, "500+"), label: "Mock Tests", sub: "Bilingual Hub", color: "bg-purple-600" },
-      { id: 'e', icon: <CheckCircle2 className="text-white h-5 w-5" />, val: formatNumber(stats?.totalBoards, "50+"), label: "Exams", sub: "Punjab Verticals", color: "bg-green-600" },
-      { id: 'u', icon: <Users className="text-white h-5 w-5" />, val: formatNumber(stats?.totalUsers, "15K+"), label: "Aspirants", sub: "Trusted Network", color: "bg-orange-600" }
-    ];
-  }, [stats]);
-
-  if (!mounted) return <div className="min-h-[700px] bg-[#F8FAFC]" />;
+  if (!mounted) {
+    return <section className="w-full bg-background pt-8 pb-12 md:py-24 min-h-[90vh]"></section>;
+  }
 
   return (
-    <section className="relative w-full bg-[#F8FAFC] overflow-hidden pt-12 pb-16 md:py-24 border-b border-slate-100">
-      
-      {/* BACKGROUND DECORATION */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40">
-         <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[60%] bg-blue-100/50 blur-[100px] rounded-full" />
-         <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[50%] bg-indigo-50/50 blur-[100px] rounded-full" />
-      </div>
+    <section className="w-full bg-background pt-8 pb-12 md:py-16 overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+        <div className="flex flex-col items-center text-center">
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-7xl relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Top Bar */}
+          <div className="w-full flex justify-between items-center mb-8 md:mb-12">
+            <Logo variant="dark" />
+            <div className="bg-white rounded-full shadow-md px-3 py-2 flex items-center gap-2">
+              <Star className="h-5 w-5 text-amber-400 fill-current" />
+              <div>
+                <p className="text-sm font-black text-slate-800 leading-none">{trustStat}</p>
+                <p className="text-[9px] text-slate-500 font-medium leading-none">Students Trust Us</p>
+              </div>
+            </div>
+          </div>
+
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 leading-tight"
+          >
+            Your Journey to <br/>
+            <span className="text-primary">Government Job</span> Starts Here!
+          </motion.h1>
+
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mt-4 max-w-xl text-slate-600 text-base md:text-lg"
+          >
+            Best preparation platform for all major Punjab Government Exams.
+          </motion.p>
           
-          {/* LEFT COLUMN: BRANDING & CTA */}
-          <div className="space-y-8 text-left">
-            
-            <motion.div
-               initial={{ opacity: 0, x: -20 }}
-               animate={{ opacity: 1, x: 0 }}
-               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm"
-            >
-               <div className="bg-blue-600 rounded-full p-1 shadow-md">
-                 <Star className="h-3.5 w-3.5 text-white fill-current" />
-               </div>
-               <span className="text-[10px] md:text-xs font-black text-slate-800 tracking-tight uppercase">⭐ 10,000+ Aspirants Trust Cracklix</span>
-            </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-6 flex items-center justify-center gap-3 md:gap-4 text-sm md:text-base text-slate-600 font-semibold"
+          >
+            <span>PSSSB</span><span className="text-slate-300">•</span>
+            <span>PCS</span><span className="text-slate-300">•</span>
+            <span>PSPCL</span><span className="text-slate-300">•</span>
+            <span>CTET</span><span className="text-slate-300">•</span>
+            <span>PSTET</span>
+          </motion.div>
 
-            <motion.div
-               initial={{ opacity: 0, y: 20 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ delay: 0.1 }}
-               className="space-y-4"
-            >
-               <h1 className="text-4xl md:text-[68px] font-black text-[#0F172A] leading-[1.05] tracking-tighter uppercase">
-                  Crack Punjab <br/>
-                  <span className="text-blue-600">Government Exams</span> <br/>
-                  With Confidence
-               </h1>
-               <p className="text-base md:text-xl text-slate-500 font-medium max-w-2xl leading-relaxed">
-                  Practice bilingual mock tests and prepare for Punjab Government Exams with confidence. Access exam-focused practice, previous papers and performance tracking in one place.
-               </p>
-            </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="relative mt-8 md:mt-12 w-full max-w-[450px] mx-auto h-[350px] md:h-[400px]"
+          >
+            <img
+              src="/images/hero-student.png"
+              alt="Student preparing for exams"
+              className="absolute inset-0 w-full h-full object-contain"
+              onError={(e) => { (e.target as HTMLImageElement).src = "https://picsum.photos/seed/student/500/500"; }}
+            />
+            <FeatureCard icon={<Tv className="h-4 w-4 text-primary"/>} label="Live Classes" href="#" className="top-[15%] left-[5%] sm:left-[-10%]" />
+            <FeatureCard icon={<CheckCheck className="h-4 w-4 text-green-500"/>} label="Mock Tests" href="/mocks" className="top-[45%] left-[-5%] sm:left-[-15%]" />
+            <FeatureCard icon={<BookOpen className="h-4 w-4 text-purple-500"/>} label="Study Material" href="/notes" className="top-[15%] right-[5%] sm:right-[-10%]" />
+            <FeatureCard icon={<FileTextIcon className="h-4 w-4 text-orange-500"/>} label="Previous Papers" href="/pyqs" className="top-[45%] right-[-5%] sm:right-[-15%]" />
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="mt-8 space-y-4 w-full max-w-sm mx-auto"
+          >
+            <Button asChild size="lg" className="w-full h-14 rounded-full bg-primary text-base font-bold shadow-lg">
+              <Link href="/mocks">
+                Start Learning <ArrowRight className="ml-2 h-5 w-5"/>
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="w-full h-14 rounded-full border-primary text-primary bg-transparent text-base font-bold">
+              <Link href="/mocks">
+                <ClipboardList className="mr-2 h-5 w-5"/> Take Free Mock Test
+              </Link>
+            </Button>
+          </motion.div>
+          
+          <motion.div 
+             initial={{ opacity: 0, y: 20 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.5, delay: 0.5 }}
+             className="mt-12 md:mt-20 pt-8 border-t border-slate-200 w-full"
+          >
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+              <StatItem icon={<Tv className="h-8 w-8"/>} value="500+" label="Live Classes" />
+              <StatItem icon={<FileTextIcon className="h-8 w-8"/>} value={practiceQuestionsStat} label="Practice Questions" />
+              <StatItem icon={<CheckCheck className="h-8 w-8"/>} value={mockTestsStat} label="Mock Tests" />
+              <StatItem icon={<Trophy className="h-8 w-8"/>} value="Top Faculty" label="Expert Guidance" />
+            </div>
+          </motion.div>
 
-            <motion.div 
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               transition={{ delay: 0.2 }}
-               className="flex flex-wrap gap-2 md:gap-3"
-            >
-               {['PSSSB', 'Punjab Police', 'PSTET', 'PSPCL', 'PPSC'].map((p) => (
-                  <button key={p} className="px-6 py-2.5 bg-white border border-slate-200 rounded-full text-[10px] md:text-xs font-black text-slate-600 shadow-sm uppercase tracking-widest hover:border-blue-600 hover:text-blue-600 transition-all active:scale-95">
-                     {p}
-                  </button>
-               ))}
-            </motion.div>
-
-            <motion.div
-               initial={{ opacity: 0, y: 10 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ delay: 0.3 }}
-               className="flex flex-col sm:flex-row gap-4 pt-4"
-            >
-               <Button asChild className="h-14 md:h-16 px-10 bg-blue-600 hover:bg-blue-700 text-white font-black text-[12px] md:text-sm tracking-widest rounded-2xl shadow-4xl border-none uppercase group">
-                  <Link href="/mocks" className="flex items-center justify-center w-full gap-4">
-                     <span>Start Free Mock Test</span>
-                     <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-               </Button>
-               <Button asChild variant="outline" className="h-14 md:h-16 px-10 border-2 border-slate-200 text-slate-600 hover:border-blue-600 hover:text-blue-600 font-black text-[12px] md:text-sm tracking-widest rounded-2xl uppercase group transition-all bg-white shadow-sm">
-                  <Link href="/exams" className="flex items-center justify-center w-full gap-4">
-                     <span>Browse Exams</span>
-                     <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-               </Button>
-            </motion.div>
-          </div>
-
-          {/* RIGHT COLUMN: RECREATED ILLUSTRATION HUB */}
-          <div className="relative flex justify-center items-center mt-12 lg:mt-0 min-h-[500px]">
-             
-             {/* DOTTED PATH SVG (BACKDROP) */}
-             <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M120 150C180 80 420 80 480 150" stroke="#2563EB" strokeWidth="2" strokeDasharray="6 6" />
-                <path d="M100 350C150 420 450 420 500 350" stroke="#2563EB" strokeWidth="2" strokeDasharray="6 6" />
-                <path d="M150 150C100 200 100 300 150 350" stroke="#2563EB" strokeWidth="2" strokeDasharray="6 6" />
-                <path d="M450 150C500 200 500 300 450 350" stroke="#2563EB" strokeWidth="2" strokeDasharray="6 6" />
-             </svg>
-
-             <div className="relative w-full max-w-[500px]">
-                {/* GLOW EFFECT */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-blue-500/5 blur-[80px] rounded-full" />
-                
-                {/* STUDENT IMAGE */}
-                <motion.img
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8 }}
-                  src="/images/hero-student.png"
-                  alt="Cracklix Student"
-                  className="w-full max-w-[320px] md:max-w-[420px] mx-auto object-contain relative z-10 drop-shadow-2xl"
-                  onError={(e) => {
-                     (e.target as HTMLImageElement).src = "https://picsum.photos/seed/student/800/800";
-                  }}
-                />
-
-                {/* FLOATING ACTION CARDS - RE-CALIBRATED POSITIONING */}
-                <FloatingCard 
-                   icon={<ClipboardList className="text-blue-600 h-4 w-4" />} 
-                   label="Mock tests" 
-                   className="top-[15%] left-[5%] md:left-[-5%]" 
-                   delay={0.5} 
-                   href="/mocks"
-                   iconColor="bg-blue-50"
-                />
-                
-                <FloatingCard 
-                   icon={<Target className="text-purple-600 h-4 w-4" />} 
-                   label="Daily practice" 
-                   className="bottom-[30%] left-[2%] md:left-[-10%]" 
-                   delay={0.7} 
-                   href="/current-affairs"
-                   iconColor="bg-purple-50"
-                />
-                
-                <FloatingCard 
-                   icon={<FileStack className="text-green-600 h-4 w-4" />} 
-                   label="Previous papers" 
-                   className="top-[18%] right-[5%] md:right-[-5%]" 
-                   delay={0.6} 
-                   href="/pyqs"
-                   iconColor="bg-green-50"
-                />
-                
-                <FloatingCard 
-                   icon={<Trophy className="text-orange-600 h-4 w-4" />} 
-                   label="Punjab exams" 
-                   className="bottom-[35%] right-[2%] md:right-[-10%]" 
-                   delay={0.8} 
-                   href="/exams"
-                   iconColor="bg-orange-50"
-                />
-             </div>
-          </div>
-        </div>
-
-        {/* BOTTOM STATS REGISTRY */}
-        <div className="mt-16 md:mt-24">
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {liveStats.map((stat, idx) => (
-                 <motion.div
-                    key={stat.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.1 }}
-                 >
-                    <Card className="bg-white border border-slate-100 p-8 rounded-[2.5rem] text-left flex items-center gap-6 group hover:shadow-2xl transition-all duration-500 shadow-xl shadow-slate-200/40">
-                       <div className={cn("shrink-0 h-16 w-16 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 shadow-lg shadow-slate-200/50", stat.color)}>
-                          {stat.icon}
-                       </div>
-                       <div className="min-w-0">
-                          <p className="text-3xl md:text-4xl font-black text-[#0F172A] tabular-nums leading-none mb-1">{stat.val}</p>
-                          <p className="text-[11px] font-black text-slate-800 uppercase tracking-tight">{stat.label}</p>
-                          <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1 truncate">{stat.sub}</p>
-                       </div>
-                    </Card>
-                 </motion.div>
-              ))}
-           </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="mt-12"
+          >
+            <div className="bg-primary rounded-2xl p-6 flex items-center justify-center gap-4">
+              <div className="flex -space-x-2">
+                <img className="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://picsum.photos/seed/avatar1/100" alt="" data-ai-hint="person"/>
+                <img className="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://picsum.photos/seed/avatar2/100" alt="" data-ai-hint="person"/>
+                <img className="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://picsum.photos/seed/avatar3/100" alt="" data-ai-hint="person"/>
+                <img className="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://picsum.photos/seed/avatar4/100" alt="" data-ai-hint="person"/>
+              </div>
+              <p className="text-white font-bold text-sm md:text-base">Join {trustStat} Successful Aspirants Today!</p>
+            </div>
+          </motion.div>
+          
         </div>
       </div>
     </section>
   );
-}
-
-function FloatingCard({ icon, label, className, delay, href, iconColor }: { icon: React.ReactNode, label: string, className: string, delay: number, href: string, iconColor: string }) {
-   return (
-      <motion.div 
-         initial={{ opacity: 0, scale: 0.8 }}
-         animate={{ 
-            opacity: 1, 
-            scale: 1,
-            y: [0, -10, 0] 
-         }}
-         transition={{ 
-            opacity: { delay, duration: 0.5 },
-            scale: { delay, duration: 0.5 },
-            y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-         }}
-         className={cn("absolute z-[20] hidden sm:block", className)}
-      >
-         <Link href={href}>
-            <div className="bg-white rounded-2xl shadow-[0_10px_40px_-5px_rgba(0,0,0,0.1)] p-2.5 md:p-3.5 flex flex-col items-center gap-1.5 border border-white/50 backdrop-blur-sm group active:scale-95 transition-transform min-w-[110px] md:min-w-[130px]">
-               <div className={cn("h-8 w-8 md:h-10 md:w-10 rounded-xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform", iconColor)}>
-                  {icon}
-               </div>
-               <span className="font-bold text-[9px] md:text-[10px] text-[#0F172A] tracking-tight text-center">{label}</span>
-            </div>
-         </Link>
-      </motion.div>
-   )
 }
