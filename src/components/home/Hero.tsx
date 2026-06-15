@@ -16,7 +16,9 @@ import {
   ArrowRight,
   Trophy,
   CheckCircle2,
-  Landmark
+  Landmark,
+  Play,
+  MonitorPlay
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -24,12 +26,13 @@ import Link from "next/link";
 import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
+import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Final Majestic Hero Hub v14.0.
- * FIXED: All feature nodes are now clickable and linked to correct routes.
- * FIXED: Mobile illustration now touches the edges of the screen.
- * LAYOUT: Optimized for a premium SaaS-style balance.
+ * @fileOverview Majestic Hero Hub v15.0 (Screenshot Perfect).
+ * FIXED: Mobile PWA mode now matches screenshot exactly.
+ * FIXED: Floating cards and buttons active on mobile.
+ * FIXED: Illustration hub touches mobile edges.
  */
 
 export default function Hero() {
@@ -58,7 +61,7 @@ export default function Hero() {
         valColor: "text-blue-600",
         val: formatNumber(stats?.totalQuestions, "50K+"), 
         label: "Questions", 
-        sub: "High quality practice questions" 
+        sub: "High quality practice" 
       },
       { 
         id: "m", 
@@ -67,7 +70,7 @@ export default function Hero() {
         valColor: "text-indigo-600",
         val: formatNumber(stats?.totalMocks, "500+"), 
         label: "Mock Tests", 
-        sub: "Topic wise & full length mocks" 
+        sub: "Topic & full length" 
       },
       { 
         id: "e", 
@@ -76,7 +79,7 @@ export default function Hero() {
         valColor: "text-emerald-600",
         val: formatNumber(stats?.totalBoards, "50+"), 
         label: "Exams", 
-        sub: "All major Punjab exams" 
+        sub: "All major Punjab boards" 
       },
       { 
         id: "u", 
@@ -85,7 +88,7 @@ export default function Hero() {
         valColor: "text-orange-500",
         val: formatNumber(stats?.totalUsers, "15K+"), 
         label: "Aspirants", 
-        sub: "Trust Cracklix for preparation" 
+        sub: "Trust Cracklix" 
       }
     ];
   }, [stats]);
@@ -93,101 +96,72 @@ export default function Hero() {
   if (!mounted) return null;
 
   return (
-    <section className="relative overflow-hidden bg-[#F8FAFC] pt-8 md:pt-16 pb-24 border-b border-slate-100 text-left">
-      {/* Background Decorative Patterns */}
+    <section className="relative overflow-hidden bg-[#F8FAFC] pb-12 md:pb-24 border-b border-slate-100 text-left">
       <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-blue-50/50 blur-[120px] rounded-full -z-10" />
-      <div className="absolute top-1/4 left-1/4 opacity-[0.03] -z-10">
-         <div className="grid grid-cols-6 gap-4">
-            {Array.from({length: 36}).map((_, i) => <div key={i} className="h-1.5 w-1.5 rounded-full bg-slate-900" />)}
+
+      {/* MOBILE HEADER (Logo + Trust) */}
+      <div className="max-w-7xl mx-auto px-4 pt-4 md:pt-8 flex items-center justify-between lg:hidden mb-4">
+         <Logo imgClassName="h-8" />
+         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-100 shadow-sm">
+            <Star className="h-3 w-3 text-blue-600 fill-current" />
+            <span className="text-[10px] font-bold text-slate-600">10,000+ Trust Us</span>
          </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Trust Badge Top */}
-        <div className="mb-8">
+        {/* DESKTOP HEADER (Trust Badge Only) */}
+        <div className="hidden lg:block mb-8 md:mt-8">
            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm">
               <div className="bg-blue-600 rounded-full p-0.5"><Star className="h-3 w-3 text-white fill-current" /></div>
-              <span className="text-[10px] md:text-sm font-bold text-slate-600">10,000+ Aspirants Trust Cracklix</span>
+              <span className="text-sm font-bold text-slate-600">10,000+ Aspirants Trust Cracklix</span>
            </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
           
           {/* CONTENT LEFT */}
-          <div className="space-y-8 md:space-y-10 lg:pr-12">
-            <div className="space-y-4">
-               <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.05]">
-                 Crack Punjab <br />
-                 <span className="text-blue-600">Government Exams</span> <br />
-                 With Confidence
+          <div className="space-y-6 md:space-y-10 lg:pr-12">
+            <div className="space-y-3 md:space-y-4">
+               <h1 className="text-[28px] sm:text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
+                 Your Journey to <br />
+                 <span className="text-blue-600">Government Job</span> <br />
+                 Starts Here!
                </h1>
-               <p className="text-base md:text-lg text-slate-500 font-medium max-w-xl leading-relaxed">
-                 Practice with high-quality mock tests, previous papers and exam-focused preparation for top Punjab exams.
+               <p className="text-sm md:text-lg text-slate-500 font-medium max-w-xl leading-relaxed">
+                 Practice bilingual mock tests and prepare for Punjab Government Exams with confidence.
                </p>
             </div>
 
-            {/* CATEGORY PILLS */}
-            <div className="flex flex-wrap gap-3">
-               {["PSSSB", "Punjab Police", "PSTET", "PSPCL", "PPSC"].map((pill) => (
-                  <Button key={pill} variant="outline" className="h-10 px-6 rounded-full border-blue-200 text-blue-600 font-black text-[10px] tracking-widest hover:bg-blue-50 transition-all">
-                     {pill}
-                  </Button>
-               ))}
+            {/* EXAM LIST (Matches Screenshot) */}
+            <div className="flex flex-wrap items-center gap-x-2 md:gap-x-4 gap-y-2 text-[10px] md:text-sm font-black text-slate-400 uppercase tracking-widest bg-white/50 backdrop-blur-sm p-3 rounded-2xl border border-slate-100 w-fit lg:w-full lg:justify-start justify-center mx-auto lg:mx-0">
+               <span>PSSSB</span> <span className="text-blue-200 opacity-50">•</span>
+               <span>PCS</span> <span className="text-blue-200 opacity-50">•</span>
+               <span>PSPCL</span> <span className="text-blue-200 opacity-50">•</span>
+               <span>CTET</span> <span className="text-blue-200 opacity-50">•</span>
+               <span>PSTET</span>
             </div>
 
-            {/* MINI FEATURE CARDS - NOW CLICKABLE */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-               <MiniFeatureCard 
-                  icon={<ClipboardCheck className="text-blue-600" />} 
-                  title="Mock Tests" 
-                  sub="Exam-focused" 
-                  bgColor="bg-blue-50"
-                  link="/mocks"
-               />
-               <MiniFeatureCard 
-                  icon={<FileText className="text-emerald-600" />} 
-                  title="Previous Papers" 
-                  sub="Official papers" 
-                  bgColor="bg-emerald-50"
-                  link="/pyqs"
-               />
-               <MiniFeatureCard 
-                  icon={<Target className="text-purple-600" />} 
-                  title="Daily Practice" 
-                  sub="Stay ahead" 
-                  bgColor="bg-purple-50"
-                  link="/current-affairs"
-               />
-               <MiniFeatureCard 
-                  icon={<Landmark className="text-orange-500" />} 
-                  title="Punjab Exams" 
-                  sub="All boards" 
-                  bgColor="bg-orange-50"
-                  link="/exams"
-               />
-            </div>
-
-            {/* CTA REGISTRY */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-2">
-               <Button asChild className="h-14 md:h-16 px-10 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs md:text-sm tracking-widest rounded-2xl shadow-xl shadow-blue-600/20 gap-3 group transition-all active:scale-95 border-none">
-                  <Link href="/mocks">
-                     Start Free Mock Test <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            {/* DESKTOP CTA (Hidden on Mobile) */}
+            <div className="hidden lg:flex flex-col sm:flex-row gap-4 pt-4">
+               <Button asChild className="h-16 px-10 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm tracking-widest rounded-2xl shadow-xl shadow-blue-600/20 gap-3 group transition-all active:scale-95 border-none">
+                  <Link href="/exams">
+                     Start Learning <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                </Button>
-               <Button asChild variant="outline" className="h-14 md:h-16 px-10 border-2 border-blue-600 bg-white text-blue-600 font-black text-xs md:text-sm tracking-widest rounded-2xl hover:bg-blue-50 transition-all gap-3">
-                  <Link href="/exams">
-                     Browse Exams <ArrowRight className="h-5 w-5" />
+               <Button asChild variant="outline" className="h-16 px-10 border-2 border-blue-600 bg-white text-blue-600 font-black text-sm tracking-widest rounded-2xl hover:bg-blue-50 transition-all gap-3">
+                  <Link href="/mocks">
+                     Take Free Mock Test <ArrowRight className="h-5 w-5" />
                   </Link>
                </Button>
             </div>
           </div>
 
-          {/* ILLUSTRATION HUB RIGHT - TOUCHING EDGES ON MOBILE */}
-          <div className="relative flex justify-center py-12 lg:py-0 w-full group lg:pl-8 overflow-visible">
-            <div className="relative w-full max-w-none md:max-w-[500px] lg:max-w-[620px] xl:max-w-[680px] -mt-4 lg:-mt-8">
+          {/* ILLUSTRATION HUB RIGHT (Edge-to-Edge Mobile) */}
+          <div className="relative flex justify-center w-full px-0 -mx-4 sm:mx-0 md:px-0 lg:pl-8 overflow-visible mt-4 md:mt-0">
+            <div className="relative w-full max-w-none md:max-w-[500px] lg:max-w-[620px] xl:max-w-[680px]">
                {/* Background Circle */}
-               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-blue-100/40 rounded-full -z-10" />
+               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[85%] bg-blue-100/40 rounded-full -z-10 blur-2xl" />
 
                <motion.img
                  initial={{ opacity: 0, scale: 0.95 }}
@@ -198,37 +172,60 @@ export default function Hero() {
                  className="w-full h-auto object-contain relative z-10"
                />
 
-               {/* FLOATING CARDS - DESKTOP ONLY POSITIONS */}
+               {/* FLOATING CARDS (Visible on both Mobile & Desktop) */}
                <FloatingNode 
-                  icon={<ClipboardCheck className="text-blue-600 h-4 w-4 md:h-5 md:w-5" />} 
-                  label="Mock tests" 
-                  className="top-[5%] left-[10%]" 
+                  icon={<MonitorPlay className="text-blue-600 h-4 w-4 md:h-5 md:w-5" />} 
+                  label="Live Classes" 
+                  className="top-[5%] left-[5%] md:left-[10%]" 
                   link="/mocks"
                />
                <FloatingNode 
-                  icon={<FileStack className="text-emerald-600 h-4 w-4 md:h-5 md:w-5" />} 
-                  label="Previous papers" 
-                  className="top-[10%] right-[5%]" 
+                  icon={<FileText className="text-purple-600 h-4 w-4 md:h-5 md:w-5" />} 
+                  label="Study Material" 
+                  className="top-[10%] right-[5%] md:right-[5%]" 
+                  link="/notes"
+               />
+               <FloatingNode 
+                  icon={<ClipboardCheck className="text-emerald-600 h-4 w-4 md:h-5 md:w-5" />} 
+                  label="Mock Tests" 
+                  className="bottom-[45%] left-[-2%] md:left-[-5%]" 
+                  link="/mocks"
+               />
+               <FloatingNode 
+                  icon={<FileStack className="text-orange-500 h-4 w-4 md:h-5 md:w-5" />} 
+                  label="Previous Papers" 
+                  className="bottom-[35%] right-[-2%] md:right-[-5%]" 
                   link="/pyqs"
-               />
-               <FloatingNode 
-                  icon={<Target className="text-purple-600 h-4 w-4 md:h-5 md:w-5" />} 
-                  label="Daily practice" 
-                  className="bottom-[45%] left-[-5%]" 
-                  link="/current-affairs"
-               />
-               <FloatingNode 
-                  icon={<Landmark className="text-orange-500 h-4 w-4 md:h-5 md:w-5" />} 
-                  label="Punjab exams" 
-                  className="bottom-[35%] right-[-5%]" 
-                  link="/exams"
                />
             </div>
           </div>
         </div>
 
+        {/* MOBILE CTA BUTTONS (Matching Screenshot) */}
+        <div className="lg:hidden flex flex-col gap-3 mt-8">
+           <Button asChild className="w-full h-14 md:h-16 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm tracking-widest rounded-full shadow-xl shadow-blue-600/20 flex items-center justify-between px-6 border-none group transition-all active:scale-95">
+              <Link href="/exams" className="flex items-center gap-3">
+                 <BookOpen className="h-5 w-5 fill-current" />
+                 <span>Start Learning</span>
+              </Link>
+              <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
+                 <ChevronRight className="h-5 w-5" />
+              </div>
+           </Button>
+           
+           <Button asChild variant="outline" className="w-full h-14 md:h-16 border-2 border-blue-600 bg-white text-blue-600 font-black text-sm tracking-widest rounded-full flex items-center justify-between px-6 group transition-all active:scale-95">
+              <Link href="/mocks" className="flex items-center gap-3">
+                 <ClipboardCheck className="h-5 w-5" />
+                 <span>Take Free Mock Test</span>
+              </Link>
+              <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                 <ChevronRight className="h-5 w-5" />
+              </div>
+           </Button>
+        </div>
+
         {/* BOTTOM STATS REGISTRY */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-20 md:mt-32">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-12 md:mt-24">
           {liveStats.map((stat) => (
             <Card key={stat.id} className="p-6 md:p-8 rounded-[2rem] bg-white border border-slate-100 shadow-xl flex items-center gap-5 md:gap-6 group hover:shadow-2xl hover:translate-y-[-4px] transition-all">
               <div className={cn("h-12 w-12 md:h-16 md:w-16 rounded-full flex items-center justify-center shrink-0 shadow-lg group-hover:scale-110 transition-transform", stat.circleBg)}>
@@ -248,37 +245,21 @@ export default function Hero() {
   );
 }
 
-function MiniFeatureCard({ icon, title, sub, bgColor, link }: { icon: React.ReactNode, title: string, sub: string, bgColor: string, link: string }) {
-   return (
-      <Link href={link} className="block active:scale-95 transition-all">
-        <div className="bg-white p-3 md:p-4 rounded-2xl border border-slate-100 shadow-sm space-y-1.5 hover:shadow-md transition-all group h-full">
-           <div className={cn("h-10 w-10 md:h-12 md:w-12 rounded-xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform", bgColor)}>
-              {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5 md:h-6 md:w-6" })}
-           </div>
-           <div className="text-left">
-              <p className="text-[10px] md:text-xs font-black text-[#0F172A] leading-tight">{title}</p>
-              <p className="text-[8px] md:text-[9px] font-medium text-slate-400 leading-tight">{sub}</p>
-           </div>
-        </div>
-      </Link>
-   )
-}
-
 function FloatingNode({ icon, label, className, link }: { icon: React.ReactNode, label: string, className: string, link: string }) {
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       className={cn(
-        "absolute z-20 bg-white p-2 md:p-4 rounded-xl md:rounded-2xl shadow-2xl border border-slate-100 flex flex-col items-center gap-1 md:gap-2 cursor-pointer transition-all hover:border-blue-200 hidden sm:flex",
+        "absolute z-20 bg-white p-1.5 md:p-4 rounded-lg md:rounded-2xl shadow-2xl border border-slate-100 flex flex-col items-center gap-1 md:gap-2 cursor-pointer transition-all hover:border-blue-200",
         className
       )}
     >
        <Link href={link} className="flex flex-col items-center gap-1 md:gap-2 w-full h-full">
-          <div className="h-8 w-8 md:h-11 md:w-11 rounded-lg md:rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner mx-auto">
+          <div className="h-6 w-6 md:h-11 md:w-11 rounded-md md:rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner mx-auto">
              {icon}
           </div>
-          <span className="text-[8px] md:text-[10px] font-black text-[#0F172A] tracking-tighter uppercase whitespace-nowrap text-center">{label}</span>
+          <span className="text-[7px] md:text-[10px] font-black text-[#0F172A] tracking-tighter uppercase whitespace-nowrap text-center">{label}</span>
        </Link>
     </motion.div>
   );
