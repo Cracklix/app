@@ -13,7 +13,9 @@ import {
   FileText,
   Target,
   Landmark,
-  ChevronRight
+  ChevronRight,
+  Trophy,
+  FileStack
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -24,9 +26,8 @@ import { doc } from "firebase/firestore";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Final High-Fidelity Hero Center v5.1.
- * FIXED: Added missing CheckCircle2 import to resolve ReferenceError.
- * UPDATED: Precise responsive image sizing and majestic grid architecture.
+ * @fileOverview Majestic High-Fidelity Hero Hub v6.0.
+ * RECREATED: Exact match to image_0.png with floating cards and dotted paths.
  */
 
 export default function Hero() {
@@ -48,10 +49,10 @@ export default function Hero() {
     };
 
     return [
-      { id: 'q', icon: <Zap className="text-white h-6 w-6" />, val: formatNumber(stats?.totalQuestions, "50K+"), label: "Questions", sub: "High quality practice questions", color: "bg-blue-600" },
-      { id: 'm', icon: <ClipboardList className="text-white h-6 w-6" />, val: formatNumber(stats?.totalMocks, "500+"), label: "Mock Tests", sub: "Topic wise & full length mocks", color: "bg-purple-600" },
-      { id: 'e', icon: <CheckCircle2 className="text-white h-6 w-6" />, val: formatNumber(stats?.totalBoards, "50+"), label: "Exams", sub: "All major Punjab exams", color: "bg-green-600" },
-      { id: 'u', icon: <Users className="text-white h-6 w-6" />, val: formatNumber(stats?.totalUsers, "15K+"), label: "Aspirants", sub: "Trust Cracklix for preparation", color: "bg-orange-600" }
+      { id: 'q', icon: <Zap className="text-white h-6 w-6" />, val: formatNumber(stats?.totalQuestions, "50K+"), label: "Questions", sub: "Verified Patterns", color: "bg-blue-600" },
+      { id: 'm', icon: <ClipboardList className="text-white h-6 w-6" />, val: formatNumber(stats?.totalMocks, "500+"), label: "Mock Tests", sub: "Bilingual Hub", color: "bg-purple-600" },
+      { id: 'e', icon: <CheckCircle2 className="text-white h-6 w-6" />, val: formatNumber(stats?.totalBoards, "50+"), label: "Exams", sub: "Punjab Verticals", color: "bg-green-600" },
+      { id: 'u', icon: <Users className="text-white h-6 w-6" />, val: formatNumber(stats?.totalUsers, "15K+"), label: "Aspirants", sub: "Trusted Network", color: "bg-orange-600" }
     ];
   }, [stats]);
 
@@ -60,10 +61,16 @@ export default function Hero() {
   return (
     <section className="relative w-full bg-[#F8FAFC] overflow-hidden pt-12 pb-16 md:py-24 border-b border-slate-100">
       
+      {/* BACKGROUND DECORATION */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40">
+         <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[60%] bg-blue-100/50 blur-[100px] rounded-full" />
+         <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[50%] bg-indigo-50/50 blur-[100px] rounded-full" />
+      </div>
+
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           
-          {/* LEFT: CONTENT HUB */}
+          {/* LEFT COLUMN: BRANDING & CTA */}
           <div className="space-y-8 text-left">
             
             <motion.div
@@ -74,7 +81,7 @@ export default function Hero() {
                <div className="bg-blue-600 rounded-full p-1 shadow-md">
                  <Star className="h-3.5 w-3.5 text-white fill-current" />
                </div>
-               <span className="text-[10px] md:text-xs font-black text-slate-800 tracking-tight">10,000+ Aspirants Trust Cracklix</span>
+               <span className="text-[10px] md:text-xs font-black text-slate-800 tracking-tight uppercase">⭐ 10,000+ Aspirants Trust Cracklix</span>
             </motion.div>
 
             <motion.div
@@ -107,22 +114,10 @@ export default function Hero() {
             </motion.div>
 
             <motion.div
-               initial={{ opacity: 0, y: 20 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ delay: 0.3 }}
-               className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4"
-            >
-               <FeatureNode icon={<ClipboardList className="text-blue-600" />} color="bg-blue-50" label="Mock Tests" sub="Exam-focused series" />
-               <FeatureNode icon={<FileText className="text-green-600" />} color="bg-green-50" label="Previous Papers" sub="Verified archives" />
-               <FeatureNode icon={<Target className="text-purple-600" />} color="bg-purple-50" label="Daily Practice" sub="Stay ahead daily" />
-               <FeatureNode icon={<Landmark className="text-orange-600" />} color="bg-orange-50" label="Punjab Exams" sub="Official verticals" />
-            </motion.div>
-
-            <motion.div
                initial={{ opacity: 0, y: 10 }}
                animate={{ opacity: 1, y: 0 }}
-               transition={{ delay: 0.4 }}
-               className="flex flex-col sm:flex-row gap-4 pt-8"
+               transition={{ delay: 0.3 }}
+               className="flex flex-col sm:flex-row gap-4 pt-4"
             >
                <Button asChild className="h-14 md:h-16 px-10 bg-blue-600 hover:bg-blue-700 text-white font-black text-[12px] md:text-sm tracking-widest rounded-2xl shadow-4xl border-none uppercase group">
                   <Link href="/mocks" className="flex items-center justify-center w-full gap-4">
@@ -139,57 +134,81 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* RIGHT: ILLUSTRATION HUB */}
-          <div className="relative flex justify-center items-center mt-12 lg:mt-0">
+          {/* RIGHT COLUMN: RECREATED ILLUSTRATION HUB */}
+          <div className="relative flex justify-center items-center mt-12 lg:mt-0 min-h-[500px]">
+             
+             {/* DOTTED PATH SVG (BACKDROP) */}
+             <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M120 150C180 80 420 80 480 150" stroke="#2563EB" strokeWidth="2" strokeDasharray="6 6" />
+                <path d="M100 350C150 420 450 420 500 350" stroke="#2563EB" strokeWidth="2" strokeDasharray="6 6" />
+                <path d="M150 150C100 200 100 300 150 350" stroke="#2563EB" strokeWidth="2" strokeDasharray="6 6" />
+                <path d="M450 150C500 200 500 300 450 350" stroke="#2563EB" strokeWidth="2" strokeDasharray="6 6" />
+             </svg>
+
              <div className="relative w-full">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-500/5 blur-[120px] rounded-full" />
+                {/* GLOW EFFECT */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-blue-500/5 blur-[80px] rounded-full" />
                 
+                {/* STUDENT IMAGE */}
                 <motion.img
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
                   src="/images/hero-student.png"
                   alt="Cracklix Student"
-                  className="w-full max-w-[320px] sm:max-w-[420px] lg:max-w-[520px] xl:max-w-[620px] mx-auto object-contain drop-shadow-xl"
+                  className="w-full max-w-[320px] sm:max-w-[420px] lg:max-w-[520px] xl:max-w-[560px] mx-auto object-contain relative z-10 drop-shadow-2xl"
+                  onError={(e) => {
+                     (e.target as HTMLImageElement).src = "https://picsum.photos/seed/student/800/800";
+                  }}
                 />
 
-                {/* Desktop Floating Action Cards */}
-                <div className="hidden lg:block">
-                  <FloatingActionCard 
-                     icon={<ClipboardList className="text-blue-600 h-5 w-5" />} 
-                     label="Mock Tests" 
-                     className="top-[10%] left-[0%]" 
-                     delay={0.5} 
-                     href="/mocks"
-                  />
-                  <FloatingActionCard 
-                     icon={<Target className="text-purple-600 h-5 w-5" />} 
-                     label="Daily Practice" 
-                     className="bottom-[25%] left-[-5%]" 
-                     delay={0.7} 
-                     href="/current-affairs"
-                  />
-                  <FloatingActionCard 
-                     icon={<FileText className="text-green-600 h-5 w-5" />} 
-                     label="Previous Papers" 
-                     className="top-[15%] right-[0%]" 
-                     delay={0.6} 
-                     href="/pyqs"
-                  />
-                  <FloatingActionCard 
-                     icon={<Landmark className="text-orange-600 h-5 w-5" />} 
-                     label="Punjab Exams" 
-                     className="bottom-[30%] right-[-5%]" 
-                     delay={0.8} 
-                     href="/exams"
-                  />
-                </div>
+                {/* FLOATING ACTION CARDS - PRECISE POSITIONING */}
+                
+                {/* Top Left: Mock Tests */}
+                <FloatingCard 
+                   icon={<ClipboardList className="text-blue-600 h-5 w-5" />} 
+                   label="Mock Tests" 
+                   className="top-[10%] left-[0%] md:left-[-5%]" 
+                   delay={0.5} 
+                   href="/mocks"
+                   iconColor="bg-blue-50"
+                />
+                
+                {/* Middle Left: Daily Practice */}
+                <FloatingCard 
+                   icon={<Target className="text-purple-600 h-5 w-5" />} 
+                   label="Daily Practice" 
+                   className="bottom-[35%] left-[-5%] md:left-[-10%]" 
+                   delay={0.7} 
+                   href="/current-affairs"
+                   iconColor="bg-purple-50"
+                />
+                
+                {/* Top Right: Previous Papers */}
+                <FloatingCard 
+                   icon={<FileStack className="text-green-600 h-5 w-5" />} 
+                   label="Previous Papers" 
+                   className="top-[15%] right-[0%] md:right-[-5%]" 
+                   delay={0.6} 
+                   href="/pyqs"
+                   iconColor="bg-green-50"
+                />
+                
+                {/* Middle Right: Punjab Exams */}
+                <FloatingCard 
+                   icon={<Trophy className="text-orange-600 h-5 w-5" />} 
+                   label="Punjab Exams" 
+                   className="bottom-[30%] right-[-5%] md:right-[-10%]" 
+                   delay={0.8} 
+                   href="/exams"
+                   iconColor="bg-orange-50"
+                />
              </div>
           </div>
         </div>
 
-        {/* STATS REGISTRY */}
-        <div className="mt-16 md:mt-28">
+        {/* BOTTOM STATS REGISTRY */}
+        <div className="mt-16 md:mt-24">
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {liveStats.map((stat, idx) => (
                  <motion.div
@@ -218,34 +237,29 @@ export default function Hero() {
   );
 }
 
-function FeatureNode({ icon, label, sub, color }: { icon: React.ReactNode, label: string, sub: string, color: string }) {
-   return (
-      <div className="p-4 rounded-2xl flex flex-col gap-2.5 border border-slate-100 shadow-sm bg-white hover:shadow-md transition-all group cursor-pointer">
-         <div className={cn("h-11 w-11 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform", color)}>
-            {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5" })}
-         </div>
-         <div className="text-left space-y-0.5">
-            <p className="text-[11px] font-black text-[#0F172A] uppercase leading-tight">{label}</p>
-            <p className="text-[8px] font-bold text-slate-400 uppercase leading-tight line-clamp-1">{sub}</p>
-         </div>
-      </div>
-   )
-}
-
-function FloatingActionCard({ icon, label, className, delay, href }: { icon: React.ReactNode, label: string, className: string, delay: number, href: string }) {
+function FloatingCard({ icon, label, className, delay, href, iconColor }: { icon: React.ReactNode, label: string, className: string, delay: number, href: string, iconColor: string }) {
    return (
       <motion.div 
          initial={{ opacity: 0, scale: 0.8 }}
-         animate={{ opacity: 1, scale: 1 }}
-         transition={{ delay, duration: 1 }}
-         whileHover={{ y: -5, scale: 1.05 }}
-         className={cn("absolute z-20 bg-white rounded-2xl shadow-2xl p-4 flex flex-col items-center gap-2 border border-slate-50 min-w-[130px] active:scale-95 cursor-pointer", className)}
+         animate={{ 
+            opacity: 1, 
+            scale: 1,
+            y: [0, -10, 0] // Gentle floating motion
+         }}
+         transition={{ 
+            opacity: { delay, duration: 0.5 },
+            scale: { delay, duration: 0.5 },
+            y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+         }}
+         className={cn("absolute z-[20] hidden sm:block", className)}
       >
-         <Link href={href} className="flex flex-col items-center gap-2">
-            <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center shadow-inner">
-               {icon}
+         <Link href={href}>
+            <div className="bg-white rounded-2xl shadow-[0_10px_40px_-5px_rgba(0,0,0,0.1)] p-3 md:p-4 flex flex-col items-center gap-2 border border-white/50 backdrop-blur-sm group active:scale-95 transition-transform min-w-[120px] md:min-w-[140px]">
+               <div className={cn("h-10 w-10 md:h-12 md:w-12 rounded-xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform", iconColor)}>
+                  {icon}
+               </div>
+               <span className="font-black text-[9px] md:text-[10px] uppercase text-[#0F172A] tracking-[0.1em] text-center">{label}</span>
             </div>
-            <span className="font-black text-[9px] uppercase text-[#0F172A] tracking-[0.2em] text-center">{label}</span>
          </Link>
       </motion.div>
    )
