@@ -1,22 +1,23 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Smartphone, CheckCircle2, ShieldCheck, MapPin, Landmark } from "lucide-react";
+import { Smartphone, CheckCircle2, ShieldCheck, MapPin, Landmark, Globe, Apple, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Apple, Play } from "lucide-react";
 import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Regional Hub Section v12.0.
- * RESTORED: Detail boxes to focus on map visuals and institutional branding.
+ * @fileOverview Regional Hub Section v13.1 (Map Restoration).
+ * RESTORED: India National Map and Punjab Regional Node side-by-side.
+ * FIXED: Imported 'cn' to resolve ReferenceError in Badge component.
  */
 
 export default function AppPreview() {
   const db = useFirestore();
   const punjabMap = "https://www.mapsofindia.com/maps/punjab/punjab-map.jpg";
+  const indiaMap = "https://www.mapsofindia.com/images2/india-map.jpg";
 
   const { data: settings } = useDoc<any>(useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]));
 
@@ -66,47 +67,41 @@ export default function AppPreview() {
           </motion.div>
 
           <div className="space-y-12 md:space-y-16 mt-12 lg:mt-0">
-             <div className="relative flex justify-center">
+             <div className="relative flex flex-col md:flex-row gap-6 justify-center">
+                
+                {/* 1. INDIA MAP NODE */}
                 <motion.div 
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  className="w-full max-w-[500px] relative"
+                  className="w-full md:w-1/2 relative group"
                 >
-                   {/* DETAIL BOXES FOR REGIONAL FOCUS */}
-                   <div className="absolute top-10 -left-6 z-20 animate-in slide-in-from-left-4 duration-1000">
-                      <div className="bg-white p-4 rounded-2xl shadow-2xl border border-slate-100 flex items-center gap-3">
-                         <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary shadow-inner">
-                            <MapPin className="h-4 w-4" />
-                         </div>
-                         <div className="text-left">
-                            <p className="text-[10px] font-black uppercase text-[#0F172A] leading-none">PUNJAB HUB</p>
-                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1">Registry Active</p>
-                         </div>
-                      </div>
+                   <div className="absolute top-4 left-4 z-20">
+                      <Badge className="bg-[#0F172A] text-white border-none text-[8px] font-black uppercase px-3 py-1 rounded shadow-lg">National Registry</Badge>
                    </div>
-
-                   <div className="absolute bottom-20 -right-6 z-20 animate-in slide-in-from-right-4 duration-1000 delay-300">
-                      <div className="bg-[#0F172A] p-4 rounded-2xl shadow-2xl border border-white/5 flex items-center gap-3 text-white">
-                         <div className="h-8 w-8 bg-white/10 rounded-lg flex items-center justify-center text-primary">
-                            <Landmark className="h-4 w-4" />
-                         </div>
-                         <div className="text-left">
-                            <p className="text-[10px] font-black uppercase text-white leading-none">OFFICIAL CENTER</p>
-                            <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">Verified Nodes</p>
-                         </div>
-                      </div>
-                   </div>
-
-                   <div className="w-full h-auto min-h-[300px] md:min-h-[450px] relative rounded-[3rem] overflow-hidden flex items-center justify-center border-8 border-slate-50 shadow-5xl">
-                      <img 
-                        src={punjabMap} 
-                        className="w-full h-full object-contain grayscale-[0.2] contrast-[1.1] hover:scale-105 transition-transform duration-1000" 
-                        referrerPolicy="no-referrer" 
-                        alt="Punjab Hub Map" 
-                      />
+                   <div className="w-full aspect-[3/4] rounded-[2rem] overflow-hidden border border-slate-100 shadow-2xl relative">
+                      <img src={indiaMap} className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700" alt="India Map" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/40 to-transparent" />
                    </div>
                 </motion.div>
+
+                {/* 2. PUNJAB MAP NODE */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 }}
+                  className="w-full md:w-1/2 relative group"
+                >
+                   <div className="absolute top-4 left-4 z-20">
+                      <Badge className="bg-primary text-white border-none text-[8px] font-black uppercase px-3 py-1 rounded shadow-lg">Punjab Hub</Badge>
+                   </div>
+                   <div className="w-full aspect-[3/4] rounded-[2rem] overflow-hidden border border-slate-100 shadow-2xl relative">
+                      <img src={punjabMap} className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700" alt="Punjab Map" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/40 to-transparent" />
+                   </div>
+                </motion.div>
+
              </div>
              
              <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="flex items-center justify-center gap-4 bg-slate-50/50 py-6 md:py-8 rounded-[2rem] md:rounded-[3rem] border border-slate-100/50">
@@ -132,4 +127,12 @@ function FeatureItem({ text }: { text: string }) {
        {text}
     </li>
   );
+}
+
+function Badge({ children, className }: any) {
+  return (
+    <div className={cn("inline-flex items-center justify-center", className)}>
+      {children}
+    </div>
+  )
 }

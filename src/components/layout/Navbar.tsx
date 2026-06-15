@@ -24,7 +24,7 @@ const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
  * @fileOverview Official Master Navbar Hub (Restored).
- * Restores the Gazette ticker, search hub, and profile management node.
+ * FIXED: Restored official background color for the logo node and verified visibility.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -71,7 +71,7 @@ export default function Navbar() {
               <Menu className="h-4 w-4" />
             </button>
             <Link href="/" className="flex items-center gap-3">
-              <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-orange-50 flex items-center justify-center shadow-lg shadow-orange-500/20">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
                 <span className="text-base md:text-xl font-black text-white italic">C</span>
               </div>
               <span className="text-lg md:text-2xl font-black tracking-tight text-white">Cracklix<span className="text-orange-500">.</span></span>

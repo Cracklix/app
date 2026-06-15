@@ -40,7 +40,7 @@ export default function Hero() {
   const liveStats = useMemo(() => {
     const formatNumber = (num: number, fallback: string) => {
       if (!num) return fallback;
-      if (num >= 1000) return (num / 1000).toFixed(0) + ',000+';
+      if (num >= 1000) return (num / 1000).toFixed(0) + 'k+';
       return num.toString() + '+';
     };
 

@@ -10,7 +10,7 @@ import Footer from "@/components/layout/Footer";
 import PopularExams from "@/components/home/PopularExams";
 
 /**
- * @fileOverview Official Home Hub v170.0 (Restored).
+ * @fileOverview Official Home Hub v171.0 (Restored).
  * PERFORMANCE: Strict server component root with high-fidelity client sub-modules.
  */
 
@@ -33,7 +33,10 @@ export default function HomePage() {
       {/* 4. Content Pulse (Global Latest) */}
       <LatestMocks />
 
+      {/* 5. Geographic & Mobile Hub */}
       <AppPreview />
+
+      {/* 6. Founder Identity */}
       <MeetFounder />
       
       <Footer />
