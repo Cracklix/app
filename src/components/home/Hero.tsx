@@ -3,7 +3,7 @@
 import React, { useMemo, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  ClipboardList,
+  ClipboardCheck,
   ShieldCheck,
   Users,
   Zap,
@@ -17,7 +17,8 @@ import {
   MonitorPlay,
   Trophy,
   CheckCircle2,
-  GraduationCap
+  GraduationCap,
+  Landmark
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -28,8 +29,8 @@ import { cn } from "@/lib/utils";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Final High-Fidelity Hero Hub v10.0.
- * Reconstructed to perfectly match the provided screenshot view.
+ * @fileOverview Final High-Fidelity Hero Hub v11.0.
+ * UPDATED: Precise icons and colors for mini-feature cards matching the screenshot.
  */
 
 export default function Hero() {
@@ -52,7 +53,7 @@ export default function Hero() {
 
     return [
       { id: "q", icon: <Zap className="h-6 w-6 text-blue-600" />, val: formatNumber(stats?.totalQuestions, "50K+"), label: "Questions", sub: "High quality practice questions" },
-      { id: "m", icon: <ClipboardList className="h-6 w-6 text-indigo-600" />, val: formatNumber(stats?.totalMocks, "500+"), label: "Mock Tests", sub: "Topic wise & full length mocks" },
+      { id: "m", icon: <ClipboardCheck className="h-6 w-6 text-indigo-600" />, val: formatNumber(stats?.totalMocks, "500+"), label: "Mock Tests", sub: "Topic wise & full length mocks" },
       { id: "e", icon: <CheckCircle2 className="h-6 w-6 text-emerald-600" />, val: formatNumber(stats?.totalBoards, "50+"), label: "Exams", sub: "All major Punjab exams" },
       { id: "u", icon: <Users className="h-6 w-6 text-orange-500" />, val: formatNumber(stats?.totalUsers, "15K+"), label: "Aspirants", sub: "Trust Cracklix for preparation" }
     ];
@@ -86,7 +87,7 @@ export default function Hero() {
           <div className="space-y-8 md:space-y-10">
             <div className="space-y-4">
                <Logo imgClassName="h-10 md:h-14 mb-2" />
-               <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 leading-[1.05] tracking-tight">
+               <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.05]">
                  Crack Punjab <br />
                  <span className="text-blue-600">Government Exams</span> <br />
                  With Confidence
@@ -99,18 +100,38 @@ export default function Hero() {
             {/* CATEGORY PILLS */}
             <div className="flex flex-wrap gap-3">
                {["PSSSB", "Punjab Police", "PSTET", "PSPCL", "PPSC"].map((pill) => (
-                  <Button key={pill} variant="outline" className="h-10 px-6 rounded-full border-blue-200 text-blue-600 font-black text-[10px] tracking-widest hover:bg-blue-50 transition-all uppercase">
+                  <Button key={pill} variant="outline" className="h-10 px-6 rounded-full border-blue-200 text-blue-600 font-black text-[10px] tracking-widest hover:bg-blue-50 transition-all">
                      {pill}
                   </Button>
                ))}
             </div>
 
-            {/* MINI FEATURE CARDS */}
+            {/* MINI FEATURE CARDS - SCREENSHOT MATCHED */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-               <MiniFeatureCard icon={<ClipboardList className="text-blue-600" />} title="Mock Tests" sub="Exam-focused mock tests" />
-               <MiniFeatureCard icon={<FileText className="text-emerald-600" />} title="Previous Papers" sub="Previous year question papers" />
-               <MiniFeatureCard icon={<Target className="text-purple-600" />} title="Daily Practice" sub="Practice daily & stay ahead" />
-               <MiniFeatureCard icon={<GraduationCap className="text-orange-500" />} title="Punjab Exams" sub="All major Punjab exams at one place" />
+               <MiniFeatureCard 
+                  icon={<ClipboardCheck className="text-blue-600" />} 
+                  title="Mock Tests" 
+                  sub="Exam-focused mock tests" 
+                  bgColor="bg-blue-50"
+               />
+               <MiniFeatureCard 
+                  icon={<FileText className="text-emerald-600" />} 
+                  title="Previous Papers" 
+                  sub="Previous year question papers" 
+                  bgColor="bg-emerald-50"
+               />
+               <MiniFeatureCard 
+                  icon={<Target className="text-purple-600" />} 
+                  title="Daily Practice" 
+                  sub="Practice daily & stay ahead" 
+                  bgColor="bg-purple-50"
+               />
+               <MiniFeatureCard 
+                  icon={<Landmark className="text-orange-500" />} 
+                  title="Punjab Exams" 
+                  sub="All major Punjab exams at one place" 
+                  bgColor="bg-orange-50"
+               />
             </div>
 
             {/* CTA REGISTRY */}
@@ -145,26 +166,26 @@ export default function Hero() {
 
                {/* FLOATING CARDS - DESKTOP ONLY POSITIONS */}
                <FloatingNode 
-                  icon={<ClipboardList className="text-blue-600 h-4 w-4 md:h-5 md:w-5" />} 
-                  label="Mock Tests" 
+                  icon={<ClipboardCheck className="text-blue-600 h-4 w-4 md:h-5 md:w-5" />} 
+                  label="Mock tests" 
                   className="top-[5%] left-[10%]" 
                   link="/mocks"
                />
                <FloatingNode 
                   icon={<FileStack className="text-emerald-600 h-4 w-4 md:h-5 md:w-5" />} 
-                  label="Previous Papers" 
+                  label="Previous papers" 
                   className="top-[10%] right-[5%]" 
                   link="/pyqs"
                />
                <FloatingNode 
                   icon={<Target className="text-purple-600 h-4 w-4 md:h-5 md:w-5" />} 
-                  label="Daily Practice" 
+                  label="Daily practice" 
                   className="bottom-[45%] left-[-5%]" 
                   link="/current-affairs"
                />
                <FloatingNode 
-                  icon={<Trophy className="text-orange-500 h-4 w-4 md:h-5 md:w-5" />} 
-                  label="Punjab Exams" 
+                  icon={<Landmark className="text-orange-500 h-4 w-4 md:h-5 md:w-5" />} 
+                  label="Punjab exams" 
                   className="bottom-[35%] right-[-5%]" 
                   link="/exams"
                />
@@ -193,15 +214,15 @@ export default function Hero() {
   );
 }
 
-function MiniFeatureCard({ icon, title, sub }: { icon: React.ReactNode, title: string, sub: string }) {
+function MiniFeatureCard({ icon, title, sub, bgColor }: { icon: React.ReactNode, title: string, sub: string, bgColor: string }) {
    return (
-      <div className="bg-white p-3 md:p-4 rounded-2xl border border-slate-100 shadow-sm space-y-1.5 hover:shadow-md transition-all">
-         <div className="h-8 w-8 rounded-lg bg-slate-50 flex items-center justify-center shrink-0">
-            {React.cloneElement(icon as React.ReactElement, { className: "h-4 w-4" })}
+      <div className="bg-white p-3 md:p-4 rounded-2xl border border-slate-100 shadow-sm space-y-1.5 hover:shadow-md transition-all group">
+         <div className={cn("h-10 w-10 md:h-12 md:w-12 rounded-xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform", bgColor)}>
+            {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5 md:h-6 md:w-6" })}
          </div>
          <div className="text-left">
-            <p className="text-[10px] font-black text-[#0F172A] uppercase leading-tight">{title}</p>
-            <p className="text-[8px] font-medium text-slate-400 leading-tight">{sub}</p>
+            <p className="text-[10px] md:text-xs font-black text-[#0F172A] leading-tight">{title}</p>
+            <p className="text-[8px] md:text-[9px] font-medium text-slate-400 leading-tight">{sub}</p>
          </div>
       </div>
    )
