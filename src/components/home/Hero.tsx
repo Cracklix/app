@@ -26,8 +26,9 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Final Majestic Hero Hub v13.0.
- * UPDATED: Removed extra logo, increased image scale, and shifted illustration upwards.
+ * @fileOverview Final Majestic Hero Hub v14.0.
+ * FIXED: All feature nodes are now clickable and linked to correct routes.
+ * FIXED: Mobile illustration now touches the edges of the screen.
  * LAYOUT: Optimized for a premium SaaS-style balance.
  */
 
@@ -135,31 +136,35 @@ export default function Hero() {
                ))}
             </div>
 
-            {/* MINI FEATURE CARDS */}
+            {/* MINI FEATURE CARDS - NOW CLICKABLE */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                <MiniFeatureCard 
                   icon={<ClipboardCheck className="text-blue-600" />} 
                   title="Mock Tests" 
                   sub="Exam-focused" 
                   bgColor="bg-blue-50"
+                  link="/mocks"
                />
                <MiniFeatureCard 
                   icon={<FileText className="text-emerald-600" />} 
                   title="Previous Papers" 
                   sub="Official papers" 
                   bgColor="bg-emerald-50"
+                  link="/pyqs"
                />
                <MiniFeatureCard 
                   icon={<Target className="text-purple-600" />} 
                   title="Daily Practice" 
                   sub="Stay ahead" 
                   bgColor="bg-purple-50"
+                  link="/current-affairs"
                />
                <MiniFeatureCard 
                   icon={<Landmark className="text-orange-500" />} 
                   title="Punjab Exams" 
                   sub="All boards" 
                   bgColor="bg-orange-50"
+                  link="/exams"
                />
             </div>
 
@@ -178,9 +183,9 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* ILLUSTRATION HUB RIGHT - SHIFTED UP & SCALED */}
-          <div className="relative flex justify-center py-12 lg:py-0 w-full group lg:pl-8">
-            <div className="relative w-full max-w-[380px] md:max-w-[500px] lg:max-w-[620px] xl:max-w-[680px] -mt-4 lg:-mt-8">
+          {/* ILLUSTRATION HUB RIGHT - TOUCHING EDGES ON MOBILE */}
+          <div className="relative flex justify-center py-12 lg:py-0 w-full group lg:pl-8 overflow-visible">
+            <div className="relative w-full max-w-none md:max-w-[500px] lg:max-w-[620px] xl:max-w-[680px] -mt-4 lg:-mt-8">
                {/* Background Circle */}
                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-blue-100/40 rounded-full -z-10" />
 
@@ -243,17 +248,19 @@ export default function Hero() {
   );
 }
 
-function MiniFeatureCard({ icon, title, sub, bgColor }: { icon: React.ReactNode, title: string, sub: string, bgColor: string }) {
+function MiniFeatureCard({ icon, title, sub, bgColor, link }: { icon: React.ReactNode, title: string, sub: string, bgColor: string, link: string }) {
    return (
-      <div className="bg-white p-3 md:p-4 rounded-2xl border border-slate-100 shadow-sm space-y-1.5 hover:shadow-md transition-all group">
-         <div className={cn("h-10 w-10 md:h-12 md:w-12 rounded-xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform", bgColor)}>
-            {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5 md:h-6 md:w-6" })}
-         </div>
-         <div className="text-left">
-            <p className="text-[10px] md:text-xs font-black text-[#0F172A] leading-tight">{title}</p>
-            <p className="text-[8px] md:text-[9px] font-medium text-slate-400 leading-tight">{sub}</p>
-         </div>
-      </div>
+      <Link href={link} className="block active:scale-95 transition-all">
+        <div className="bg-white p-3 md:p-4 rounded-2xl border border-slate-100 shadow-sm space-y-1.5 hover:shadow-md transition-all group h-full">
+           <div className={cn("h-10 w-10 md:h-12 md:w-12 rounded-xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform", bgColor)}>
+              {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5 md:h-6 md:w-6" })}
+           </div>
+           <div className="text-left">
+              <p className="text-[10px] md:text-xs font-black text-[#0F172A] leading-tight">{title}</p>
+              <p className="text-[8px] md:text-[9px] font-medium text-slate-400 leading-tight">{sub}</p>
+           </div>
+        </div>
+      </Link>
    )
 }
 
@@ -267,11 +274,11 @@ function FloatingNode({ icon, label, className, link }: { icon: React.ReactNode,
         className
       )}
     >
-       <Link href={link} className="flex flex-col items-center gap-1 md:gap-2">
-          <div className="h-8 w-8 md:h-11 md:w-11 rounded-lg md:rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner">
+       <Link href={link} className="flex flex-col items-center gap-1 md:gap-2 w-full h-full">
+          <div className="h-8 w-8 md:h-11 md:w-11 rounded-lg md:rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner mx-auto">
              {icon}
           </div>
-          <span className="text-[8px] md:text-[10px] font-black text-[#0F172A] tracking-tighter uppercase whitespace-nowrap">{label}</span>
+          <span className="text-[8px] md:text-[10px] font-black text-[#0F172A] tracking-tighter uppercase whitespace-nowrap text-center">{label}</span>
        </Link>
     </motion.div>
   );
