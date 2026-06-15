@@ -29,9 +29,9 @@ import { cn } from "@/lib/utils";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Majestic Hero Hub v18.0 (Safety Calibration).
- * FIXED: Shifted floating cards inwards to prevent edge clipping (Daily Practice).
- * FIXED: Reduced node sizing on mobile to prevent overlapping with central student.
+ * @fileOverview Majestic Hero Hub v19.0 (Collision Fix).
+ * FIXED: Shifted floating cards higher and outwards to avoid plant (left) and laptop (right).
+ * FIXED: Hardened button text scaling to prevent overflow in "Take Free Mock Test".
  */
 
 export default function Hero() {
@@ -173,10 +173,10 @@ export default function Hero() {
                   className="w-full max-w-[620px] h-auto object-contain relative z-10"
                   alt="Cracklix Student"
                />
-               <FloatingNode icon={<Zap className="text-blue-600 h-5 w-5" />} label="Mock Tests" className="top-[5%] left-[8%]" link="/mocks" />
-               <FloatingNode icon={<BookOpen className="text-indigo-600 h-5 w-5" />} label="Punjab Exams" className="top-[15%] right-[12%]" link="/exams" />
-               <FloatingNode icon={<FileStack className="text-emerald-600 h-5 w-5" />} label="Previous Papers" className="bottom-[35%] left-[5%]" link="/pyqs" />
-               <FloatingNode icon={<Target className="text-rose-500 h-5 w-5" />} label="Daily Practice" className="bottom-[25%] right-[12%]" link="/current-affairs" />
+               <FloatingNode icon={<Zap className="text-blue-600 h-5 w-5" />} label="Mock Tests" className="top-[5%] left-[5%]" link="/mocks" />
+               <FloatingNode icon={<BookOpen className="text-indigo-600 h-5 w-5" />} label="Punjab Exams" className="top-[10%] right-[5%]" link="/exams" />
+               <FloatingNode icon={<FileStack className="text-emerald-600 h-5 w-5" />} label="Previous Papers" className="bottom-[45%] left-[2%]" link="/pyqs" />
+               <FloatingNode icon={<Target className="text-rose-500 h-5 w-5" />} label="Daily Practice" className="bottom-[48%] right-[2%]" link="/current-affairs" />
             </div>
          </div>
 
@@ -185,22 +185,23 @@ export default function Hero() {
             <div className="relative w-full max-w-[360px] aspect-square flex items-center justify-center">
                <div className="absolute inset-0 bg-blue-100/30 rounded-full blur-2xl -z-10" />
                <img src="/images/hero-student.png" className="w-full h-full object-contain relative z-10" alt="Student" />
-               <FloatingNode icon={<Zap className="text-blue-600 h-3 w-3" />} label="Mocks" className="top-[12%] left-[10%]" link="/mocks" />
-               <FloatingNode icon={<BookOpen className="text-indigo-600 h-3 w-3" />} label="Exams" className="top-[18%] right-[15%]" link="/exams" />
-               <FloatingNode icon={<FileStack className="text-emerald-600 h-3 w-3" />} label="Papers" className="bottom-[42%] left-[8%]" link="/pyqs" />
-               <FloatingNode icon={<Target className="text-rose-500 h-3 w-3" />} label="Practice" className="bottom-[32%] right-[15%]" link="/current-affairs" />
+               {/* COLLISION SAFE POSITIONS FOR MOBILE */}
+               <FloatingNode icon={<FileStack className="text-emerald-600 h-3 w-3" />} label="Papers" className="top-[2%] left-[2%]" link="/pyqs" />
+               <FloatingNode icon={<Zap className="text-blue-600 h-3 w-3" />} label="Mocks" className="bottom-[45%] left-[2%]" link="/mocks" />
+               <FloatingNode icon={<BookOpen className="text-indigo-600 h-3 w-3" />} label="Exams" className="top-[8%] right-[2%]" link="/exams" />
+               <FloatingNode icon={<Target className="text-rose-500 h-3 w-3" />} label="Practice" className="bottom-[48%] right-[2%]" link="/current-affairs" />
             </div>
 
             <div className="w-full px-4 flex flex-col gap-3 mt-4">
                <Button asChild className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm tracking-widest rounded-full shadow-xl shadow-blue-600/20 border-none transition-all active:scale-95">
-                  <Link href="/exams" className="flex items-center justify-between w-full px-6">
+                  <Link href="/exams" className="flex items-center justify-between w-full px-4 md:px-6">
                      <div className="flex items-center gap-3"><BookOpen className="h-5 w-5 fill-current" /> <span>Start Learning</span></div>
                      <ChevronRight className="h-5 w-5" />
                   </Link>
                </Button>
-               <Button asChild variant="outline" className="w-full h-14 border-2 border-blue-600 bg-white text-blue-600 font-black text-sm tracking-widest rounded-full transition-all active:scale-95">
-                  <Link href="/mocks" className="flex items-center justify-between w-full px-6">
-                     <div className="flex items-center gap-3"><ClipboardCheck className="h-5 w-5" /> <span>Take Free Mock Test</span></div>
+               <Button asChild variant="outline" className="w-full h-14 border-2 border-blue-600 bg-white text-blue-600 font-black tracking-widest rounded-full transition-all active:scale-95">
+                  <Link href="/mocks" className="flex items-center justify-between w-full px-4 md:px-6">
+                     <div className="flex items-center gap-3"><ClipboardCheck className="h-5 w-5" /> <span className="text-[13px] md:text-sm whitespace-nowrap">Take Free Mock Test</span></div>
                      <ChevronRight className="h-5 w-5" />
                   </Link>
                </Button>
