@@ -44,14 +44,20 @@
     pointer-events: auto;
     -webkit-text-size-adjust: 100%;
     
+    /* PWA Safe Area Support */
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
   }
   
-  h1 { @apply text-[32px] md:text-6xl lg:text-7xl font-black tracking-tight leading-tight; }
-  h2 { @apply text-2xl md:text-5xl font-black tracking-tight; }
-  h3 { @apply text-xl md:text-3xl font-black tracking-tight; }
+  h1 { @apply text-[28px] sm:text-4xl md:text-6xl lg:text-7xl font-black tracking-tight leading-tight; }
+  h2 { @apply text-xl sm:text-2xl md:text-5xl font-black tracking-tight; }
+  h3 { @apply text-lg sm:text-xl md:text-3xl font-black tracking-tight; }
   p { @apply text-[14px] md:text-lg text-slate-500 font-medium; }
+
+  /* Enforce 16px minimum font size for inputs to prevent iOS zoom */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
 }
 
 .pb-safe {
@@ -93,6 +99,7 @@
   pointer-events: auto !important;
 }
 
-input, textarea, select {
-  font-size: 16px !important; 
+/* Fix for buttons and touch targets */
+button, [role="button"] {
+  @apply touch-manipulation;
 }

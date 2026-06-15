@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, Suspense, useEffect, useTransition } from "react"
@@ -26,8 +25,8 @@ import { getDeviceId, getBrowserInfo } from "@/lib/device"
 import { motion } from "framer-motion"
 
 /**
- * @fileOverview Hardened Login Hub v14.0 (Multi-Device Aware).
- * ENFORCEMENT: Max 2 devices per student account.
+ * @fileOverview Hardened Login Hub v15.0 (PWA Optimized).
+ * FIXED: Padding issues and card width on small mobile devices.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -82,19 +81,15 @@ function LoginContent() {
     const deviceSnap = await getDoc(deviceRef);
     
     if (deviceSnap.exists()) {
-      // Recognized device: update activity
       await setDoc(deviceRef, { lastActive: serverTimestamp() }, { merge: true });
     } else {
-      // New device: check count
       const devicesSnap = await getDocs(collection(db, 'users', userId, 'devices'));
       if (devicesSnap.size >= 2) {
-        // BLOCKED: Sign out and show error
         await signOut(auth);
-        setDeviceError("Device limit exceeded. Your account is already active on 2 other devices. Please remove an existing device from your profile settings on an authorized device.");
+        setDeviceError("Device limit exceeded. Maximum 2 devices allowed. Please remove a device from your profile on an authorized device.");
         setLoading(false);
         return false;
       } else {
-        // Register new device
         await setDoc(deviceRef, {
           id: deviceId,
           browser,
@@ -103,7 +98,6 @@ function LoginContent() {
           firstLogin: serverTimestamp(),
           lastActive: serverTimestamp()
         });
-        // Update user profile count for admin monitoring
         await setDoc(doc(db, 'users', userId), { deviceCount: devicesSnap.size + 1 }, { merge: true });
       }
     }
@@ -116,7 +110,7 @@ function LoginContent() {
     e.preventDefault()
     setDeviceError(null);
     if (mode === 'register' && password !== confirmPassword) {
-      toast({ variant: "destructive", title: "Wait", description: "Passwords must match." })
+      toast({ variant: "destructive", title: "Audit Blocked", description: "Passwords must match." })
       return
     }
 
@@ -148,7 +142,7 @@ function LoginContent() {
         startTransition(() => { router.replace(returnUrl) })
       }
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Auth Error", description: error.message })
+      toast({ variant: "destructive", title: "Sync Failed", description: error.message })
       setLoading(false)
     }
   }
@@ -162,7 +156,7 @@ function LoginContent() {
       provider.setCustomParameters({ prompt: 'select_account' })
       const result = await signInWithPopup(auth, provider)
       const user = result.user
-      if (!user.email) throw new Error("Google account email is mandatory.");
+      if (!user.email) throw new Error("Email mandatory.");
       
       const userRef = doc(db!, 'users', user.uid)
       const userSnap = await getDoc(userRef)
@@ -180,27 +174,27 @@ function LoginContent() {
       
       const authorized = await onAuthSuccess(user.uid);
       if (authorized) {
-        toast({ title: "Welcome", description: `Signed in as ${user.displayName}` })
+        toast({ title: "Registry Synced", description: `Authorized as ${user.displayName}` })
         startTransition(() => { router.replace(returnUrl) })
       }
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Login Failed", description: error.message })
+      toast({ variant: "destructive", title: "Sync Error", description: error.message })
       setLoading(false)
     }
   }
 
   const handleResetPassword = async () => {
     if (!resetEmail) {
-      toast({ variant: "destructive", title: "Wait", description: "Please enter your email." });
+      toast({ variant: "destructive", title: "Wait", description: "Enter email." });
       return;
     }
     setResetLoading(true);
     try {
       await sendPasswordResetEmail(auth, resetEmail);
-      toast({ title: "Reset Link Sent", description: "Check your inbox for instructions." });
+      toast({ title: "Reset Link Sent", description: "Check your inbox." });
       setIsResetDialogOpen(false);
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Failed to Send", description: error.message });
+      toast({ variant: "destructive", title: "Audit Error", description: error.message });
     } finally {
       setResetLoading(false);
     }
@@ -211,49 +205,52 @@ function LoginContent() {
   const isActuallyLoading = loading || isPending;
 
   return (
-    <div className="min-h-screen bg-[#020817] flex flex-col items-center justify-center p-4 md:p-6 relative overflow-hidden text-white">
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full" />
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="z-10 w-full max-w-md">
-        <div className="flex flex-col items-center mb-8 h-12 md:h-16 w-full">
-          <Logo variant="light" imgClassName="h-full" />
+    <div className="min-h-screen bg-[#020817] flex flex-col items-center justify-center p-4 md:p-10 relative overflow-hidden text-white">
+      <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/10 blur-[140px] rounded-full" />
+      
+      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="z-10 w-full max-w-[440px] space-y-8">
+        <div className="flex flex-col items-center h-12 md:h-20 w-full mb-4">
+          <Logo variant="light" imgClassName="h-full w-auto" />
         </div>
 
         {deviceError && (
-          <div className="mb-6 bg-rose-500/10 border border-rose-500/20 p-6 rounded-2xl flex items-start gap-4 animate-in slide-in-from-top-4 duration-500">
-            <Smartphone className="h-6 w-6 text-rose-500 shrink-0" />
+          <div className="bg-rose-500/10 border border-rose-500/20 p-5 md:p-8 rounded-[2rem] flex items-start gap-5 animate-in slide-in-from-top-6 duration-700">
+            <Smartphone className="h-7 w-7 text-rose-500 shrink-0" />
             <div className="space-y-2">
-              <p className="text-sm font-black uppercase text-rose-500 tracking-widest">Security Lock</p>
-              <p className="text-xs text-slate-400 leading-relaxed font-medium">{deviceError}</p>
-              <Button onClick={() => setDeviceError(null)} variant="ghost" className="h-8 px-0 text-white font-bold text-[10px] hover:bg-transparent hover:text-white uppercase tracking-widest">Try Another Account</Button>
+              <p className="text-sm font-black uppercase text-rose-500 tracking-widest">Security Guard</p>
+              <p className="text-[13px] text-slate-400 leading-relaxed font-medium">{deviceError}</p>
+              <Button onClick={() => setDeviceError(null)} variant="ghost" className="h-8 px-0 text-white font-black text-[9px] hover:bg-transparent hover:text-white uppercase tracking-widest">Switch Account</Button>
             </div>
           </div>
         )}
 
-        <Card className="border-white/10 bg-white/[0.03] backdrop-blur-2xl shadow-2xl rounded-[2rem] md:rounded-[2.5rem] overflow-hidden">
-          <div className="h-1 w-full bg-primary" />
-          <CardHeader className="text-center pt-8 md:pt-10">
-            <CardTitle className="text-xl md:text-2xl font-headline font-black uppercase tracking-tight text-white">{mode === 'login' ? "Login" : "Create Account"}</CardTitle>
-            <CardDescription className="text-slate-400 font-bold uppercase text-[8px] md:text-[10px] tracking-widest mt-2">SECURE DEVICE PROTOCOL ACTIVE.</CardDescription>
+        <Card className="border-white/5 bg-white/[0.02] backdrop-blur-3xl shadow-5xl rounded-[2.5rem] md:rounded-[4rem] overflow-hidden border-2">
+          <div className="h-1.5 w-full bg-primary" />
+          <CardHeader className="text-center pt-10 md:pt-14 pb-4 px-8 md:px-16">
+            <CardTitle className="text-2xl md:text-4xl font-headline font-black uppercase tracking-tight text-white">{mode === 'login' ? "Login" : "Sign Up"}</CardTitle>
+            <CardDescription className="text-slate-500 font-bold uppercase text-[9px] md:text-[11px] tracking-[0.3em] mt-3">REGISTRY ACCESS v15.0</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4 md:space-y-6 pb-10 md:pb-12">
-            <form onSubmit={handleEmailAuth} className="space-y-3 md:space-y-4">
+          <CardContent className="space-y-6 md:space-y-10 pb-12 md:pb-20 px-8 md:px-16">
+            <form onSubmit={handleEmailAuth} className="space-y-4 md:space-y-6">
               {mode === 'register' && (
-                <div className="space-y-3 md:space-y-4">
+                <div className="space-y-4">
                   <Input 
                     value={name} 
                     onChange={(e) => setName(e.target.value)} 
                     required 
-                    className="h-10 md:h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-primary text-xs md:text-sm" 
-                    placeholder="Your Full Name" 
+                    className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-primary text-sm md:text-lg font-medium px-6" 
+                    placeholder="Full Identity" 
                   />
-                  <Input 
-                    value={phone} 
-                    onChange={(e) => setPhone(e.target.value)} 
-                    required 
-                    maxLength={10} 
-                    className="h-10 md:h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-primary text-xs md:text-sm" 
-                    placeholder="Mobile Number" 
-                  />
+                  <div className="relative">
+                    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 font-black text-sm md:text-lg">+91</span>
+                    <Input 
+                      value={phone} 
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0,10))} 
+                      required 
+                      className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-primary text-sm md:text-lg font-black pl-16 px-6 tracking-widest" 
+                      placeholder="Mobile Node" 
+                    />
+                  </div>
                 </div>
               )}
               <Input 
@@ -261,27 +258,29 @@ function LoginContent() {
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)} 
                 required 
-                className="h-10 md:h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-primary text-xs md:text-sm" 
+                className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-primary text-sm md:text-lg font-medium px-6" 
                 placeholder="Email Address" 
               />
-              <div className="relative">
-                <Input 
-                  type={showPassword ? "text" : "password"} 
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)} 
-                  required 
-                  className="h-10 md:h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-primary pr-10 text-xs md:text-sm" 
-                  placeholder="Password" 
-                />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">
-                  {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                </button>
-              </div>
-              {mode === 'login' && (
-                <div className="flex justify-end">
-                  <button type="button" onClick={() => setIsResetDialogOpen(true)} className="text-[8px] md:text-[10px] font-black uppercase text-primary hover:text-orange-400 transition-colors tracking-widest">Forgot Password?</button>
+              <div className="space-y-2">
+                <div className="relative">
+                  <Input 
+                    type={showPassword ? "text" : "password"} 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    required 
+                    className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-primary pr-14 px-6 text-sm md:text-lg" 
+                    placeholder="Password" 
+                  />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-600 hover:text-white transition-colors">
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
                 </div>
-              )}
+                {mode === 'login' && (
+                  <div className="flex justify-end pr-2">
+                    <button type="button" onClick={() => setIsResetDialogOpen(true)} className="text-[9px] md:text-[11px] font-black uppercase text-primary hover:text-orange-400 transition-colors tracking-widest">Recover Password?</button>
+                  </div>
+                )}
+              </div>
               {mode === 'register' && (
                 <div className="relative">
                   <Input 
@@ -289,43 +288,49 @@ function LoginContent() {
                     value={confirmPassword} 
                     onChange={(e) => setConfirmPassword(e.target.value)} 
                     required 
-                    className="h-10 md:h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-primary pr-10 text-xs md:text-sm" 
-                    placeholder="Confirm Password" 
+                    className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-primary pr-14 px-6 text-sm md:text-lg" 
+                    placeholder="Verify Password" 
                   />
-                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">
-                    {showConfirmPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-600 hover:text-white transition-colors">
+                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
               )}
-              <Button type="submit" className="w-full h-12 md:h-14 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] text-[12px] md:text-[14px] rounded-xl shadow-xl border-none transition-all active:scale-95" disabled={isActuallyLoading}>{isActuallyLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : (mode === 'login' ? "Login" : "Sign Up")}</Button>
+              <Button type="submit" className="w-full h-14 md:h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.3em] text-[11px] md:text-[14px] rounded-[1.5rem] md:rounded-[2.5rem] shadow-3xl shadow-primary/20 border-none transition-all active:scale-95" disabled={isActuallyLoading}>
+                {isActuallyLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (mode === 'login' ? "ENTER REGISTRY" : "CREATE NODE")}
+              </Button>
             </form>
-            <div className="flex items-center gap-3 py-1"><div className="h-px flex-1 bg-white/10" /><span className="text-[8px] font-black text-slate-500 uppercase">OR</span><div className="h-px flex-1 bg-white/10" /></div>
-            <Button variant="outline" className="w-full h-10 md:h-12 border-white/10 bg-white/5 text-white gap-3 rounded-xl font-bold text-[10px] md:text-xs hover:bg-white/10" onClick={handleGoogleSignIn} disabled={isActuallyLoading}>Continue with Google</Button>
-            <div className="text-center text-[8px] md:text-[10px] font-black uppercase text-slate-500 tracking-widest">{mode === 'login' ? (<p>NEW STUDENT? <button onClick={() => setMode('register')} className="text-primary hover:underline">Register Now</button></p>) : (<p>ALREADY A STUDENT? <button onClick={() => setMode('login')} className="text-primary hover:underline">Login</button></p>)}</div>
+            <div className="flex items-center gap-4 py-2"><div className="h-px flex-1 bg-white/5" /><span className="text-[9px] font-black text-slate-700 uppercase tracking-widest">OR CONNECT</span><div className="h-px flex-1 bg-white/5" /></div>
+            <Button variant="outline" className="w-full h-12 md:h-16 border-white/5 bg-white/[0.03] text-white gap-4 rounded-2xl font-black text-[10px] md:text-xs hover:bg-white/10 tracking-[0.2em] shadow-xl uppercase" onClick={handleGoogleSignIn} disabled={isActuallyLoading}>
+               <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_\"G\"_logo.svg" className="h-4 w-4 md:h-5 md:w-5" alt="G" /> Google Account
+            </Button>
+            <div className="text-center text-[10px] md:text-[12px] font-black uppercase text-slate-600 tracking-widest">
+               {mode === 'login' ? (<p>NEW ASPIRANT? <button onClick={() => setMode('register')} className="text-primary hover:text-white transition-colors">CREATE ACCOUNT</button></p>) : (<p>ALREADY REGISTERED? <button onClick={() => setMode('login')} className="text-primary hover:text-white transition-colors">LOGIN NOW</button></p>)}
+            </div>
           </CardContent>
         </Card>
       </motion.div>
 
       <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
-        <DialogContent className="bg-[#0F172A] text-white border-white/10 rounded-[2rem] max-w-[360px] p-8 shadow-5xl text-left">
-          <DialogHeader className="text-center space-y-3">
-            <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto text-primary shadow-xl"><RefreshCw className={cn("h-7 w-7", resetLoading && "animate-spin")} /></div>
-            <DialogTitle className="text-xl font-headline font-black uppercase tracking-tight">Recover Account</DialogTitle>
-            <DialogDescription className="text-slate-400 text-[8px] md:text-[10px] font-bold uppercase tracking-widest leading-relaxed">ENTER YOUR EMAIL TO RECEIVE A RESET LINK.</DialogDescription>
+        <DialogContent className="bg-[#0F172A] text-white border-white/10 rounded-[3rem] max-w-[400px] p-10 shadow-5xl text-left">
+          <DialogHeader className="text-center space-y-4">
+            <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto text-primary shadow-xl"><RefreshCw className={cn("h-8 w-8", resetLoading && "animate-spin")} /></div>
+            <DialogTitle className="text-2xl font-headline font-black uppercase tracking-tight">Recover Node</DialogTitle>
+            <DialogDescription className="text-slate-500 text-[10px] font-bold uppercase tracking-widest leading-relaxed">ENTER YOUR EMAIL TO RECEIVE A RESET LINK.</DialogDescription>
           </DialogHeader>
-          <div className="py-6 space-y-4">
-            <div className="space-y-1.5 text-left">
-              <Label className="text-[8px] md:text-[10px] font-black uppercase text-slate-500 ml-1">Registered Email</Label>
+          <div className="py-8 space-y-6">
+            <div className="space-y-2 text-left">
+              <Label className="text-[10px] font-black uppercase text-slate-600 ml-1">Registry Email</Label>
               <Input 
                 type="email" 
                 value={resetEmail} 
                 onChange={(e) => setResetEmail(e.target.value)} 
-                placeholder="name@domain.com" 
-                className="h-10 bg-white/5 border-white/10 rounded-xl focus-visible:ring-primary text-white text-xs" 
+                placeholder="aspirant@cracklix.com" 
+                className="h-14 bg-white/5 border-white/10 rounded-xl focus-visible:ring-primary text-white text-base px-6 font-medium" 
               />
             </div>
           </div>
-          <DialogFooter><Button onClick={handleResetPassword} disabled={resetLoading} className="w-full h-12 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-widest text-[10px] rounded-xl shadow-2xl transition-all">{resetLoading ? "Sending..." : "Send Reset Link"}</Button></DialogFooter>
+          <DialogFooter><Button onClick={handleResetPassword} disabled={resetLoading} className="w-full h-16 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-3xl shadow-primary/20 transition-all">{resetLoading ? "TRANSMITTING..." : "SEND RESET LINK"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
