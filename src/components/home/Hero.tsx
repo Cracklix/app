@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import {
   ClipboardCheck,
   ShieldCheck,
@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
@@ -24,6 +25,7 @@ import { cn } from "@/lib/utils";
 /**
  * @fileOverview Official Cracklix Majestic Hero v3.0.
  * Reconstructed to match high-fidelity specification with prep nodes and horizontal feature grid.
+ * FIXED: Added missing Badge import to resolve ReferenceError.
  */
 
 export default function Hero() {
@@ -141,10 +143,10 @@ export default function Hero() {
           {/* RIGHT: ILLUSTRATION HUB */}
           <div className="relative flex justify-center lg:pl-12">
             {/* Prep Nodes (Floating around student) */}
-            <FloatingNode icon={<Zap className="text-blue-600 h-5 w-5" />} label="Mock Tests" className="top-10 -left-10 md:left-0" />
-            <FloatingNode icon={<Target className="text-purple-600 h-5 w-5" />} label="Daily Practice" className="bottom-20 -left-10 md:-left-5" />
-            <FloatingNode icon={<FileStack className="text-emerald-500 h-5 w-5" />} label="Previous Papers" className="top-10 -right-10 md:right-0" />
-            <FloatingNode icon={<Trophy className="text-orange-500 h-5 w-5" />} label="Punjab Exams" className="bottom-20 -right-10 md:-right-5" />
+            <FloatingNode icon={<Zap className="text-blue-600 h-5 w-5" />} label="MOCK TESTS" className="top-[18%] -left-10 md:left-0" />
+            <FloatingNode icon={<Target className="text-purple-600 h-5 w-5" />} label="DAILY PRACTICE" className="bottom-[2%] -left-10 md:-left-5" />
+            <FloatingNode icon={<FileStack className="text-emerald-500 h-5 w-5" />} label="PREVIOUS PAPERS" className="bottom-[2%] -right-10 md:right-0" />
+            <FloatingNode icon={<Trophy className="text-orange-500 h-5 w-5" />} label="PUNJAB EXAMS" className="top-[18%] -right-10 md:right-0" />
 
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-100/50 rounded-full blur-3xl -z-10" />
             
@@ -201,7 +203,7 @@ function FloatingNode({ icon, label, className }: { icon: React.ReactNode, label
       animate={{ y: [0, -10, 0] }}
       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       className={cn(
-        "absolute z-20 bg-white p-4 rounded-2xl shadow-2xl border border-slate-100 flex flex-col items-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95",
+        "absolute z-20 bg-white p-4 rounded-2xl shadow-2xl border border-slate-100 flex flex-col items-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-90 min-w-[110px]",
         className
       )}
     >
