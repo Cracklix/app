@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useEffect, useState } from "react"
@@ -24,7 +23,8 @@ import {
   Activity,
   Award,
   Trash2,
-  RefreshCw
+  RefreshCw,
+  Loader2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -35,12 +35,12 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @file Overview My Exams Dashboard v2.0.
- * UPDATED: Added direct Unpin (Delete) functionality for pinned exams.
+ * @file Overview My Exams Dashboard v2.1.
+ * OPTIMIZED: Skeleton-first loading to prevent PWA synchronizing screen delays.
  */
 
 export default function MyExamsPage() {
-  const { user, profile, loading: userLoading } = useUser()
+  const { user, profile, loading: userLoading, profileLoading } = useUser()
   const db = useFirestore()
   const router = useRouter()
   const { toast } = useToast()
@@ -57,7 +57,7 @@ export default function MyExamsPage() {
   const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db])
   const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true), limit(100)) : null), [db])
   
-  const { data: allExams } = useCollection<any>(examsQuery)
+  const { data: allExams, loading: examsLoading } = useCollection<any>(examsQuery)
   const { data: boards } = useCollection<any>(boardsQuery)
   const { data: rawRecentMocks } = useCollection<any>(mocksQuery)
 
@@ -109,7 +109,7 @@ export default function MyExamsPage() {
   )
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body pb-safe">
+    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body pb-safe text-left">
       <Navbar />
       
       <main className="container mx-auto px-4 py-6 md:py-12 max-w-6xl space-y-12">
@@ -140,14 +140,15 @@ export default function MyExamsPage() {
            </div>
            
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {pinnedExams.length > 0 ? pinnedExams.map((exam) => {
+              {profileLoading || examsLoading ? (
+                Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-48 w-full rounded-[2.5rem]" />)
+              ) : pinnedExams.length > 0 ? pinnedExams.map((exam) => {
                  const board = boards?.find((b: any) => b.id.toLowerCase() === exam.boardId?.toLowerCase() || b.abbreviation?.toLowerCase() === exam.boardId?.toLowerCase());
                  const logoUrl = board?.iconUrl || exam.iconUrl;
                  const isImgFailed = failedImages[exam.id];
                  const isArmy = exam.boardId?.toLowerCase() === 'army' || exam.id?.toLowerCase().includes('army');
                  const isUnpinning = unpinningId === exam.id;
                  
-                 // Find new mocks for this pinned hub using client-side sorted list
                  const hasNewMocks = recentMocks?.some(m => m.examId === exam.id && (Date.now() - (m.createdAt?.seconds * 1000 || 0)) < 86400000 * 7);
 
                  return (
@@ -180,7 +181,6 @@ export default function MyExamsPage() {
                         </Card>
                       </Link>
 
-                      {/* UNPIN BUTTON */}
                       <button 
                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleUnpin(exam.id); }}
                          className={cn(
@@ -217,7 +217,7 @@ export default function MyExamsPage() {
            </h3>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {attemptsLoading ? (
-                 Array.from({ length: 2 }).map((_, i) => <Skeleton className="h-32 w-full rounded-[2.5rem]" />)
+                 Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-[2.5rem]" />)
               ) : recentAttempts.length > 0 ? recentAttempts.map((r: any) => (
                  <Link key={r.id} href={`/results/${r.mockId}`}>
                     <Card className="border-none shadow-xl hover:shadow-4xl transition-all duration-300 rounded-[2.5rem] bg-white p-6 md:p-10 flex items-center justify-between group overflow-hidden relative">
@@ -242,28 +242,6 @@ export default function MyExamsPage() {
                    <p className="font-black uppercase tracking-[0.3em] text-[10px]">No recent test results.</p>
                 </div>
               )}
-           </div>
-        </section>
-
-        {/* CTA */}
-        <section className="bg-gradient-to-br from-[#0B1528] to-[#0F172A] rounded-[4rem] p-10 md:p-20 text-white relative overflow-hidden shadow-5xl text-left border border-white/5">
-           <div className="absolute top-0 right-0 p-16 opacity-10 rotate-12 group-hover:scale-110 transition-transform"><Award className="h-80 w-80" /></div>
-           <div className="relative z-10 space-y-10 max-w-2xl">
-              <div className="space-y-4">
-                 <Badge className="bg-primary text-white border-none px-4 py-1 rounded-full font-black uppercase text-[10px] tracking-widest shadow-2xl shadow-primary/20">ELITE PASS ENABLED</Badge>
-                 <h2 className="text-4xl md:text-7xl font-headline font-black uppercase leading-[0.85] tracking-tighter">Your Future <br/> Success is Waiting.</h2>
-              </div>
-              <p className="text-base md:text-2xl text-slate-400 font-medium leading-relaxed antialiased">
-                 Get full access to all practice tests and real-time exam updates. Improve your logic and score higher today.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                 <Button asChild className="w-full sm:w-auto bg-primary hover:bg-orange-600 text-white font-black uppercase text-[11px] tracking-[0.2em] h-16 px-12 rounded-2xl shadow-5xl transition-all active:scale-95 border-none">
-                    <Link href="/mocks">Browse All Tests <Zap className="ml-3 h-4 w-4 fill-current" /></Link>
-                 </Button>
-                 <Button asChild variant="ghost" className="text-slate-400 hover:text-white uppercase font-black text-[10px] tracking-widest">
-                    <Link href="/pass">Upgrade Account</Link>
-                 </Button>
-              </div>
            </div>
         </section>
       </main>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -9,8 +8,8 @@ import { UserProfile } from '@/types';
 import { getDeviceId } from '@/lib/device';
 
 /**
- * @fileOverview Hardened Auth & Profile Hook v6.0.
- * Eliminates UI flickering by strictly tracking the initial synchronization phase.
+ * @fileOverview Hardened Auth & Profile Hook v7.0.
+ * OPTIMIZED: Granular loading states to prevent full-page blocking.
  */
 export function useUser() {
   const auth = useAuth();
@@ -19,11 +18,10 @@ export function useUser() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [authResolved, setAuthResolved] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
   const [currentDeviceId, setCurrentDeviceId] = useState<string>("");
   
-  // Track if we have performed the initial profile fetch
   const profileLoaded = useRef(false);
-  const [internalLoading, setInternalLoading] = useState(true);
 
   useEffect(() => {
     getDeviceId().then(setCurrentDeviceId);
@@ -36,16 +34,16 @@ export function useUser() {
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
       setAuthResolved(true);
-      
-      // If no user, we are done loading
-      if (!firebaseUser) {
-        setInternalLoading(false);
+      if (firebaseUser) {
+        setProfileLoading(!profileLoaded.current);
+      } else {
+        setProfileLoading(false);
         profileLoaded.current = true;
       }
     }, (err) => {
       console.error("[AUTH_SYNC_FAILURE]:", err);
       setAuthResolved(true);
-      setInternalLoading(false);
+      setProfileLoading(false);
     });
 
     return () => unsubscribeAuth();
@@ -65,41 +63,30 @@ export function useUser() {
         setProfile(null);
       }
       
-      // Mark as loaded after the first successful (or null) snapshot
       profileLoaded.current = true;
-      setInternalLoading(false);
+      setProfileLoading(false);
     }, (err) => {
       console.error("[PROFILE_HUB_FAILURE]:", err);
       profileLoaded.current = true;
-      setInternalLoading(false);
+      setProfileLoading(false);
     });
 
     return () => unsubscribeProfile();
   }, [user, db]);
 
-  // Derive final loading state
-  // Only true during the very first boot of the application
-  const isSyncing = useMemo(() => {
-    if (!authResolved) return true;
-    if (user && !profileLoaded.current) return true;
-    return false;
-  }, [authResolved, user]);
-
   const isDeviceAuthorized = useMemo(() => {
     if (!profile) return true;
     if (!profile.deviceLock?.deviceId) return true;
     if (profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN') return true;
-    
-    // Enforcement Levels: 0: Off, 1: Track, 2: Warning, 3: Block
     if (profile.deviceLock.enforcementLevel < 3) return true;
-
     return profile.deviceLock.deviceId === currentDeviceId;
   }, [profile, currentDeviceId]);
 
   return { 
     user, 
     profile, 
-    loading: isSyncing,
+    loading: !authResolved, // Main loading only tracks the auth handshake
+    profileLoading,         // Profile loading is separate for UI skeletons
     currentDeviceId,
     isDeviceAuthorized
   };
