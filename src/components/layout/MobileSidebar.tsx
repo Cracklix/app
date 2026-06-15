@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState, useEffect } from "react";
 import { 
   Home, 
   Zap, 
@@ -11,28 +12,27 @@ import {
   Gem,
   Newspaper,
   User,
-  Shield,
+  Trophy,
   Landmark,
-  Layers,
-  History
+  BookOpen,
+  Settings
 } from "lucide-react";
 import Link from "next/link";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import React, { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/brand/Logo";
-import PWAInstallButton from "@/components/PWAInstallButton";
+import StudentAvatar from "@/components/brand/StudentAvatar";
 
 /**
- * @fileOverview Original Mobile Sidebar (Restored).
- * RESTORED: Student profile info, navigation registry, and institutional branding.
+ * @fileOverview Premium Blue Sidebar Hub v3.0.
+ * Reconstructed with high-fidelity branding, user profile cards, and specific sectional navigation.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
-  const { profile } = useUser();
+  const { user, profile } = useUser();
   const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -47,80 +47,103 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
     router.push('/');
   };
 
-  const menuItems = [
+  const managementItems = [
     { label: "Home Page", href: "/", icon: Home },
     { label: "My Hub", href: "/my-exams", icon: Target },
     { label: "Exam List", href: "/exams", icon: Landmark },
     { label: "Practice Bank", href: "/mocks", icon: Zap },
     { label: "Study Updates", href: "/current-affairs", icon: Newspaper },
-    { label: "Study Notes", href: "/notes", icon: FileText },
-    { label: "Punjab Merit", href: "/leaderboard", icon: ShieldCheck },
+    { label: "Study Notes", href: "/notes", icon: BookOpen },
+    { label: "Punjab Merit", href: "/leaderboard", icon: Trophy },
   ];
 
+  if (!mounted) return null;
+
   return (
-    <div className="flex flex-col h-full bg-[#0B1528] text-white overflow-y-auto no-scrollbar font-body select-none text-left pt-0">
+    <div className="flex flex-col h-full bg-gradient-to-b from-white to-slate-50 border-r border-slate-200 font-body select-none text-left">
       
-      <div className="px-6 py-8 flex justify-start shrink-0">
-         <Logo imgClassName="h-10 origin-left" />
+      {/* 1. LOGO SECTION */}
+      <div className="h-24 px-6 flex items-center shrink-0">
+         <Logo imgClassName="h-12 w-auto" />
       </div>
 
-      <div className="px-6 flex flex-col gap-0 relative overflow-hidden shrink-0">
-        <Shield className="absolute top-0 right-4 h-40 w-40 text-white/[0.03] pointer-events-none" />
-        <div className="relative z-10 flex items-center gap-3 py-1">
-           <div className="relative shrink-0">
-              <div className="h-10 w-10 rounded-lg border-[2px] border-white/20 flex items-center justify-center bg-[#1E293B] shadow-2xl overflow-hidden">
-                 <User className="h-5 w-5 text-slate-400" />
+      <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar">
+        {/* 2. USER PROFILE CARD */}
+        <div className="px-6 mb-8">
+           <div className="h-[88px] bg-blue-50 border border-blue-100 rounded-[1.5rem] md:rounded-3xl p-4 flex items-center gap-4 group transition-all">
+              <div className="relative shrink-0">
+                 <StudentAvatar profile={profile} className="h-12 w-12 rounded-2xl border-2 border-white shadow-md bg-white" />
+                 <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-emerald-500 rounded-full border-2 border-blue-50 flex items-center justify-center">
+                    <ShieldCheck className="h-2 w-2 text-white" />
+                 </div>
               </div>
-              <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-[#10B981] rounded-md border-[2px] border-[#0B1528] flex items-center justify-center text-white">
-                 <ShieldCheck className="h-1.5 w-1.5" />
-              </div>
-           </div>
-           <div className="space-y-0 text-left min-w-0">
-              <h2 className="text-[13px] font-black text-white leading-none uppercase tracking-tight truncate">{profile?.name || "ASPIRANT"}</h2>
-              <div className="flex items-center gap-2 mt-1">
-                 <Badge className={cn(
-                    "border-none px-2 py-0.5 rounded text-[7px] font-black uppercase tracking-widest shadow-sm", 
-                    profile?.pass?.active ? "bg-[#10B981] text-white" : "bg-white/10 text-slate-400"
-                 )}>
-                    {profile?.pass?.active ? (profile.pass.plan || 'ELITE') : 'FREE NODE'}
-                 </Badge>
+              <div className="min-w-0 flex-1">
+                 <h2 className="text-sm font-bold text-slate-900 truncate uppercase">
+                    {profile?.name || "Aspirant"}
+                 </h2>
+                 <div className="flex items-center mt-1">
+                    <Badge className="bg-white text-blue-600 border-blue-100 text-[10px] font-semibold px-2 py-0 h-5 rounded-lg shadow-sm">
+                       {profile?.pass?.active ? (profile.pass.plan || 'PREMIUM') : 'FREE PASS'}
+                    </Badge>
+                 </div>
               </div>
            </div>
         </div>
-        <button onClick={() => { router.push('/profile'); onClose(); }} className="w-full h-8 rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-between px-3 group active:scale-95 transition-all relative z-10 mb-2 mt-2">
-           <div className="flex items-center gap-2"><User className="h-3 w-3 text-primary" /><span className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-200">PROFILE SETTINGS</span></div>
-           <ChevronRight className="h-3 w-3 text-slate-600" />
-        </button>
-      </div>
 
-      <div className="px-6 mb-2 mt-4"><p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">MANAGEMENT CENTER</p></div>
-
-      <div className="flex flex-col py-0">
-        <div className="px-6 mb-4">
-          <PWAInstallButton 
-            className="w-full h-10 bg-primary text-white rounded-xl justify-start px-4" 
-            variant="primary" 
-          />
+        {/* 3. PROFILE SETTINGS SECTION */}
+        <div className="px-8 mb-3">
+           <p className="text-[11px] uppercase font-bold tracking-widest text-slate-400">Profile Settings</p>
+        </div>
+        <div className="px-4 mb-8">
+           <Link 
+             href="/profile" 
+             onClick={onClose}
+             className={cn(
+               "h-12 w-full flex items-center gap-3 px-4 rounded-2xl transition-all duration-200 group",
+               pathname === '/profile' ? "bg-blue-600 text-white shadow-lg" : "text-slate-600 hover:bg-blue-50 hover:text-blue-600"
+             )}
+           >
+              <User className={cn("h-5 w-5", pathname === '/profile' ? "text-white" : "text-slate-400 group-hover:text-blue-600")} />
+              <span className="text-[15px] font-semibold">My Profile</span>
+           </Link>
         </div>
 
-        {menuItems.map((item) => {
-          const isActive = mounted && pathname === item.href;
-          const Icon = item.icon;
-          return (
-            <Link key={item.label} href={item.href} onClick={onClose} className={cn("flex items-center gap-4 px-6 h-[44px] transition-all border-l-[3px]", isActive ? "bg-white/[0.05] border-primary text-white" : "hover:bg-white/[0.02] border-transparent text-slate-400")}>
-               <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-primary" : "text-slate-600")} />
-               <span className={cn("text-[11px] font-black uppercase tracking-tight", isActive ? "text-white" : "text-slate-400")}>{item.label}</span>
-            </Link>
-          )
-        })}
-        <button onClick={handleLogout} className="flex items-center gap-4 px-6 h-[44px] text-rose-500 hover:bg-rose-50/5 transition-all w-full text-left active:scale-95">
-          <LogOut className="h-4 w-4 shrink-0" /><span className="text-[11px] font-black uppercase tracking-tight">LOG OUT SESSION</span>
-        </button>
+        {/* 4. MANAGEMENT CENTER SECTION */}
+        <div className="px-8 mb-3">
+           <p className="text-[11px] uppercase font-bold tracking-widest text-slate-400">Management Center</p>
+        </div>
+        
+        <div className="flex flex-col gap-1 px-4 mb-8">
+           {managementItems.map((item) => {
+             const isActive = pathname === item.href;
+             const Icon = item.icon;
+             return (
+               <Link 
+                 key={item.label} 
+                 href={item.href} 
+                 onClick={onClose} 
+                 className={cn(
+                   "h-12 flex items-center gap-3 px-4 rounded-2xl transition-all duration-200 group",
+                   isActive ? "bg-blue-600 text-white shadow-lg" : "text-slate-600 hover:bg-blue-50 hover:text-blue-600"
+                 )}
+               >
+                  <Icon className={cn("h-5 w-5 shrink-0", isActive ? "text-white" : "text-slate-400 group-hover:text-blue-600")} />
+                  <span className="text-[15px] font-semibold">{item.label.toUpperCase()}</span>
+               </Link>
+             )
+           })}
+        </div>
       </div>
 
-      <div className="mt-auto px-6 py-4 flex flex-col items-center gap-1 bg-black/30 border-t border-white/5 pb-safe">
-         <p className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">CRACKLIX v2.0</p>
-         <p className="text-[7px] font-bold text-slate-600 uppercase tracking-widest leading-none text-center">OFFICIAL REGISTRY NODE</p>
+      {/* 5. LOGOUT SECTION */}
+      <div className="p-6 border-t border-slate-200 bg-white mt-auto pb-safe">
+         <button 
+           onClick={handleLogout} 
+           className="h-12 w-full flex items-center gap-3 px-4 rounded-2xl bg-red-50 text-red-600 hover:bg-red-100 transition-all font-semibold active:scale-95"
+         >
+           <LogOut className="h-5 w-5" />
+           <span className="text-[15px]">LOG OUT SESSION</span>
+         </button>
       </div>
     </div>
   );

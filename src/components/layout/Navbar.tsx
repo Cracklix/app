@@ -12,7 +12,8 @@ import {
   Newspaper, 
   Gem, 
   ShieldCheck,
-  Download
+  Download,
+  Loader2
 } from "lucide-react";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -34,13 +35,13 @@ import Logo from "@/components/brand/Logo";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview High-Density Master Navbar Hub v55.0.
- * UPDATED: Removed 'uppercase' for a premium Title Case look.
+ * @fileOverview High-Density Master Navbar Hub v56.0.
+ * UPDATED: Optimized for Premium Blue sidebar integration.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { user, profile } = useUser();
+  const { user, profile, loading } = useUser();
   const auth = useAuth();
   const pathname = usePathname();
   const router = useRouter();
@@ -106,17 +107,11 @@ export default function Navbar() {
           </div>
 
           {/* RIGHT: ACTION NODES */}
-          <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
+          <div className="flex items-center justify-end gap-1.5 md:gap-3 shrink-0 flex-1 md:flex-none">
              
              <div className="hidden sm:block">
-               <Button asChild className="h-9 md:h-11 px-3 md:px-5 bg-[#0F172A] hover:bg-black text-white font-black text-[8px] md:text-[9px] tracking-widest rounded-lg md:rounded-xl gap-2 shadow-lg border-none">
-                  <Link href="/pass"><Gem className="h-3.5 w-3.5 text-blue-500" /> Pass</Link>
-               </Button>
-             </div>
-
-             <div className="hidden md:block">
-               <Button asChild className="h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white font-black text-[9px] tracking-widest rounded-xl gap-2 shadow-lg border-none">
-                  <Link href="/install"><Download className="h-3.5 w-3.5" /> App</Link>
+               <Button asChild className="h-9 md:h-11 px-3 md:px-5 bg-blue-600 hover:bg-blue-700 text-white font-black text-[8px] md:text-[9px] tracking-widest rounded-lg md:rounded-xl gap-2 shadow-lg border-none">
+                  <Link href="/pass"><Gem className="h-3.5 w-3.5 text-white/80" /> Pass</Link>
                </Button>
              </div>
 
@@ -131,7 +126,11 @@ export default function Navbar() {
                 <Search className="h-4.5 w-4.5 md:h-5 md:w-5" />
              </Link>
 
-             {user ? (
+             {loading ? (
+                <div className="w-9 h-9 md:w-11 md:h-11 rounded-full flex items-center justify-center bg-slate-50">
+                   <Loader2 className="h-4 w-4 text-slate-300 animate-spin" />
+                </div>
+             ) : user ? (
                <DropdownMenu>
                  <DropdownMenuTrigger asChild>
                    <button className="w-9 h-9 md:w-11 md:h-11 rounded-full border border-slate-100 overflow-hidden shadow-sm cursor-pointer bg-white active:scale-95 transition-transform flex items-center justify-center">
@@ -146,10 +145,10 @@ export default function Navbar() {
                        </Link>
                     </DropdownMenuItem>
                     {isAdmin && (
-                      <DropdownMenuItem asChild className="px-4 py-3 cursor-pointer rounded-xl focus:bg-rose-50 mt-1 border border-rose-50">
+                      <DropdownMenuItem asChild className="px-4 py-3 cursor-pointer rounded-xl focus:bg-blue-50 mt-1 border border-blue-50">
                         <Link href="/admin" className="flex items-center gap-3">
-                          <ShieldCheck className="h-5 w-5 text-rose-500" />
-                          <span className="font-black text-xs tracking-tight text-rose-600">Admin Hub</span>
+                          <ShieldCheck className="h-5 w-5 text-blue-600" />
+                          <span className="font-black text-xs tracking-tight text-blue-700">Admin Hub</span>
                         </Link>
                       </DropdownMenuItem>
                     )}
@@ -170,7 +169,7 @@ export default function Navbar() {
       </nav>
 
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetContent side="left" className="p-0 border-none w-[300px] bg-[#0A0E1A] z-[2001]">
+        <SheetContent side="left" className="p-0 border-none w-[300px] bg-white z-[2001]">
           <SheetHeader className="sr-only">
              <SheetTitle>Navigation Sidebar</SheetTitle>
              <SheetDescription>Access institutional preparation resources and exam verticals.</SheetDescription>
