@@ -24,13 +24,11 @@ import Link from "next/link";
 import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
-import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Final High-Fidelity Hero Hub v12.0.
- * UPDATED: Reconstructed the Statistics Bar to perfectly match the user's screenshot.
- * ICONS: Switched to solid colored circles with white icons.
- * TYPOGRAPHY: Set colored values and bold black labels with sub-text.
+ * @fileOverview Final Majestic Hero Hub v13.0.
+ * UPDATED: Removed extra logo, increased image scale, and shifted illustration upwards.
+ * LAYOUT: Optimized for a premium SaaS-style balance.
  */
 
 export default function Hero() {
@@ -116,9 +114,8 @@ export default function Hero() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           
           {/* CONTENT LEFT */}
-          <div className="space-y-8 md:space-y-10">
+          <div className="space-y-8 md:space-y-10 lg:pr-12">
             <div className="space-y-4">
-               <Logo imgClassName="h-10 md:h-14 mb-2" />
                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.05]">
                  Crack Punjab <br />
                  <span className="text-blue-600">Government Exams</span> <br />
@@ -138,30 +135,30 @@ export default function Hero() {
                ))}
             </div>
 
-            {/* MINI FEATURE CARDS - SCREENSHOT MATCHED */}
+            {/* MINI FEATURE CARDS */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                <MiniFeatureCard 
                   icon={<ClipboardCheck className="text-blue-600" />} 
                   title="Mock Tests" 
-                  sub="Exam-focused mock tests" 
+                  sub="Exam-focused" 
                   bgColor="bg-blue-50"
                />
                <MiniFeatureCard 
                   icon={<FileText className="text-emerald-600" />} 
                   title="Previous Papers" 
-                  sub="Previous year question papers" 
+                  sub="Official papers" 
                   bgColor="bg-emerald-50"
                />
                <MiniFeatureCard 
                   icon={<Target className="text-purple-600" />} 
                   title="Daily Practice" 
-                  sub="Practice daily & stay ahead" 
+                  sub="Stay ahead" 
                   bgColor="bg-purple-50"
                />
                <MiniFeatureCard 
                   icon={<Landmark className="text-orange-500" />} 
                   title="Punjab Exams" 
-                  sub="All major Punjab exams at one place" 
+                  sub="All boards" 
                   bgColor="bg-orange-50"
                />
             </div>
@@ -181,9 +178,9 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* ILLUSTRATION HUB RIGHT */}
-          <div className="relative flex justify-center py-12 lg:py-0 w-full group">
-            <div className="relative w-full max-w-[320px] sm:max-w-[420px] lg:max-w-[560px] xl:max-w-[620px]">
+          {/* ILLUSTRATION HUB RIGHT - SHIFTED UP & SCALED */}
+          <div className="relative flex justify-center py-12 lg:py-0 w-full group lg:pl-8">
+            <div className="relative w-full max-w-[380px] md:max-w-[500px] lg:max-w-[620px] xl:max-w-[680px] -mt-4 lg:-mt-8">
                {/* Background Circle */}
                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-blue-100/40 rounded-full -z-10" />
 
@@ -225,7 +222,7 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* BOTTOM STATS REGISTRY - SCREENSHOT MATCHED */}
+        {/* BOTTOM STATS REGISTRY */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-20 md:mt-32">
           {liveStats.map((stat) => (
             <Card key={stat.id} className="p-6 md:p-8 rounded-[2rem] bg-white border border-slate-100 shadow-xl flex items-center gap-5 md:gap-6 group hover:shadow-2xl hover:translate-y-[-4px] transition-all">
