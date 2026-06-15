@@ -9,7 +9,6 @@ import {
   Zap,
   ChevronRight,
   BookOpen,
-  FileText,
   Star,
   Target,
   FileStack,
@@ -17,8 +16,7 @@ import {
   Trophy,
   CheckCircle2,
   Landmark,
-  Play,
-  MonitorPlay
+  Play
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -29,9 +27,10 @@ import { cn } from "@/lib/utils";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Majestic Hero Hub v19.0 (Collision Fix).
- * FIXED: Shifted floating cards higher and outwards to avoid plant (left) and laptop (right).
- * FIXED: Hardened button text scaling to prevent overflow in "Take Free Mock Test".
+ * @fileOverview Majestic Hero Hub v20.0 (Anti-Overlap & Alignment Fix).
+ * FIXED: Shifted Daily Practice below laptop level and Previous Papers below plant/book level.
+ * FIXED: Hardened button text scaling to prevent overflow.
+ * FIXED: Scaled mobile illustration to touch edges.
  */
 
 export default function Hero() {
@@ -100,7 +99,7 @@ export default function Hero() {
 
       <div className="max-w-7xl mx-auto px-4 pt-4 md:pt-8 space-y-8">
          
-         {/* MOBILE HEADER */}
+         {/* MOBILE HEADER - SEQUENCED PER SCREENSHOT */}
          <div className="flex items-center justify-between lg:hidden mb-2">
             <Logo imgClassName="h-8" />
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-100 shadow-sm">
@@ -132,7 +131,7 @@ export default function Hero() {
             <div className="space-y-10">
                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm">
                   <div className="bg-blue-600 rounded-full p-0.5"><Star className="h-3 w-3 text-white fill-current" /></div>
-                  <span className="text-sm font-bold text-slate-600 uppercase tracking-widest">10,000+ Aspirants Trust Cracklix</span>
+                  <span className="text-sm font-bold text-slate-600 uppercase tracking-widest">10,000+ Aspirants Trust Us</span>
                </div>
                
                <div className="space-y-4">
@@ -173,35 +172,38 @@ export default function Hero() {
                   className="w-full max-w-[620px] h-auto object-contain relative z-10"
                   alt="Cracklix Student"
                />
-               <FloatingNode icon={<Zap className="text-blue-600 h-5 w-5" />} label="Mock Tests" className="top-[5%] left-[5%]" link="/mocks" />
-               <FloatingNode icon={<BookOpen className="text-indigo-600 h-5 w-5" />} label="Punjab Exams" className="top-[10%] right-[5%]" link="/exams" />
-               <FloatingNode icon={<FileStack className="text-emerald-600 h-5 w-5" />} label="Previous Papers" className="bottom-[45%] left-[2%]" link="/pyqs" />
-               <FloatingNode icon={<Target className="text-rose-500 h-5 w-5" />} label="Daily Practice" className="bottom-[48%] right-[2%]" link="/current-affairs" />
+               
+               {/* FLOATING NODES - DESKTOP CALIBRATED TO AVOID ASSET OVERLAP */}
+               <FloatingNode icon={<Zap className="text-blue-600 h-5 w-5" />} label="Mock Tests" className="top-[12%] left-[8%]" link="/mocks" />
+               <FloatingNode icon={<Landmark className="text-indigo-600 h-5 w-5" />} label="Punjab Exams" className="top-[18%] right-[15%]" link="/exams" />
+               <FloatingNode icon={<FileStack className="text-emerald-600 h-5 w-5" />} label="Previous Papers" className="bottom-[10%] left-[5%]" link="/pyqs" />
+               <FloatingNode icon={<Target className="text-rose-500 h-5 w-5" />} label="Daily Practice" className="bottom-[15%] right-[12%]" link="/current-affairs" />
             </div>
          </div>
 
-         {/* MOBILE ILLUSTRATION & ACTIONS */}
+         {/* MOBILE ILLUSTRATION & ACTIONS - EDGE TO EDGE */}
          <div className="lg:hidden relative flex flex-col items-center w-full px-0">
-            <div className="relative w-full max-w-[360px] aspect-square flex items-center justify-center">
+            <div className="relative w-full max-w-[480px] aspect-square flex items-center justify-center overflow-visible">
                <div className="absolute inset-0 bg-blue-100/30 rounded-full blur-2xl -z-10" />
                <img src="/images/hero-student.png" className="w-full h-full object-contain relative z-10" alt="Student" />
+               
                {/* COLLISION SAFE POSITIONS FOR MOBILE */}
-               <FloatingNode icon={<FileStack className="text-emerald-600 h-3 w-3" />} label="Papers" className="top-[2%] left-[2%]" link="/pyqs" />
-               <FloatingNode icon={<Zap className="text-blue-600 h-3 w-3" />} label="Mocks" className="bottom-[45%] left-[2%]" link="/mocks" />
-               <FloatingNode icon={<BookOpen className="text-indigo-600 h-3 w-3" />} label="Exams" className="top-[8%] right-[2%]" link="/exams" />
-               <FloatingNode icon={<Target className="text-rose-500 h-3 w-3" />} label="Practice" className="bottom-[48%] right-[2%]" link="/current-affairs" />
+               <FloatingNode icon={<FileStack className="text-emerald-600 h-3 w-3" />} label="Papers" className="bottom-[12%] left-[2%]" link="/pyqs" />
+               <FloatingNode icon={<Zap className="text-blue-600 h-3 w-3" />} label="Mocks" className="top-[5%] left-[2%]" link="/mocks" />
+               <FloatingNode icon={<Landmark className="text-indigo-600 h-3 w-3" />} label="Exams" className="top-[12%] right-[5%]" link="/exams" />
+               <FloatingNode icon={<Target className="text-rose-500 h-3 w-3" />} label="Practice" className="bottom-[18%] right-[5%]" link="/current-affairs" />
             </div>
 
             <div className="w-full px-4 flex flex-col gap-3 mt-4">
                <Button asChild className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm tracking-widest rounded-full shadow-xl shadow-blue-600/20 border-none transition-all active:scale-95">
-                  <Link href="/exams" className="flex items-center justify-between w-full px-4 md:px-6">
+                  <Link href="/exams" className="flex items-center justify-between w-full px-6">
                      <div className="flex items-center gap-3"><BookOpen className="h-5 w-5 fill-current" /> <span>Start Learning</span></div>
                      <ChevronRight className="h-5 w-5" />
                   </Link>
                </Button>
                <Button asChild variant="outline" className="w-full h-14 border-2 border-blue-600 bg-white text-blue-600 font-black tracking-widest rounded-full transition-all active:scale-95">
-                  <Link href="/mocks" className="flex items-center justify-between w-full px-4 md:px-6">
-                     <div className="flex items-center gap-3"><ClipboardCheck className="h-5 w-5" /> <span className="text-[13px] md:text-sm whitespace-nowrap">Take Free Mock Test</span></div>
+                  <Link href="/mocks" className="flex items-center justify-between w-full px-6">
+                     <div className="flex items-center gap-3"><ClipboardCheck className="h-5 w-5" /> <span className="text-[13px] whitespace-nowrap">Take Free Mock Test</span></div>
                      <ChevronRight className="h-5 w-5" />
                   </Link>
                </Button>
@@ -238,7 +240,7 @@ export default function Hero() {
                <p className="text-[10px] md:text-sm font-black text-white uppercase tracking-tight">Join 10,000+ Successful Aspirants Today!</p>
             </div>
             <Button asChild variant="ghost" className="text-white hover:bg-white/10 font-black uppercase text-[9px] md:text-[11px] tracking-widest gap-2 mr-6">
-               <Link href="/success-stories">View Merit List <Trophy className="h-4 w-4 text-amber-400" /></Link>
+               <Link href="/success-stories" className="flex items-center gap-2">View Merit List <Trophy className="h-4 w-4 text-amber-400" /></Link>
             </Button>
          </div>
 
@@ -253,15 +255,15 @@ function FloatingNode({ icon, label, className, link }: { icon: React.ReactNode,
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       className={cn(
-        "absolute z-20 bg-white p-1.5 md:p-4 rounded-lg md:rounded-2xl shadow-2xl border border-slate-100 flex flex-col items-center gap-1 md:gap-2 cursor-pointer transition-all hover:border-blue-200",
+        "absolute z-20 bg-white p-2 md:p-4 rounded-lg md:rounded-2xl shadow-2xl border border-slate-100 flex flex-col items-center gap-1 md:gap-2 cursor-pointer transition-all hover:border-blue-200",
         className
       )}
     >
        <Link href={link} className="flex flex-col items-center gap-1 md:gap-2 w-full h-full">
-          <div className="h-5 w-5 md:h-11 md:w-11 rounded-md md:rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner">
+          <div className="h-6 w-6 md:h-11 md:w-11 rounded-md md:rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner">
              {icon}
           </div>
-          <span className="text-[6px] md:text-[10px] font-black text-[#0F172A] tracking-tighter uppercase whitespace-nowrap text-center">{label}</span>
+          <span className="text-[7px] md:text-[10px] font-black text-[#0F172A] tracking-tighter uppercase whitespace-nowrap text-center">{label}</span>
        </Link>
     </motion.div>
   );
