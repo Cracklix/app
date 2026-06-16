@@ -23,8 +23,8 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Official Cracklix High-Fidelity Hero v57.0.
- * UPDATED: Restored icons to the preparation features grid as requested.
+ * @fileOverview Official Cracklix High-Fidelity Hero v58.0.
+ * CLEANED: Removed floating nodes from the image area to keep it unobstructed.
  * FIXED: Matched "PUNJAB EXAMS" blue styling from user screenshot.
  */
 
@@ -126,7 +126,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* 2. ILLUSTRATION HUB */}
+          {/* 2. ILLUSTRATION HUB - CLEAN AREA */}
           <div className="order-2 relative flex items-center justify-center lg:justify-end w-full">
              <div className="relative w-full max-w-[400px] md:max-w-[770px] lg:max-w-[850px] flex items-center justify-center">
                 <motion.div
@@ -144,14 +144,6 @@ export default function Hero() {
                      priority
                    />
                 </motion.div>
-
-                {/* Floating Navigation Nodes */}
-                <div className="absolute inset-0 pointer-events-none hidden lg:block">
-                  <FloatingNode position="top-[2%] left-[-4%]" title="MOCK TESTS" icon={<Zap className="h-4 w-4 text-blue-600" />} delay={0.3} href="/mocks" />
-                  <FloatingNode position="top-[2%] right-[-4%]" title="PUNJAB EXAMS" icon={<Landmark className="h-4 w-4 text-blue-600" />} delay={0.6} href="/exams" isBlue />
-                  <FloatingNode position="bottom-[8%] left-[-6%]" title="FREE PRACTICE" icon={<BookOpen className="h-4 w-4 text-indigo-600" />} delay={0.5} href="/practice" />
-                  <FloatingNode position="bottom-[8%] right-[-6%]" title="PREVIOUS PAPERS" icon={<Layers className="h-4 w-4 text-emerald-600" />} delay={0.4} href="/pyqs" />
-                </div>
              </div>
           </div>
 
@@ -221,27 +213,4 @@ export default function Hero() {
       </div>
     </section>
   );
-}
-
-function FloatingNode({ position, title, icon, delay, href, isBlue }: { position: string, title: string, icon?: React.ReactNode, delay: number, href: string, isBlue?: boolean }) {
-   return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay, duration: 0.8 }}
-        className={cn("absolute z-20 w-[210px] xl:w-[250px]", position)}
-      >
-         <Link href={href}>
-            <Card className="p-5 md:p-6 rounded-2xl md:rounded-3xl bg-white/95 backdrop-blur-xl border-none shadow-2xl flex items-center justify-center gap-3 group hover:shadow-primary/10 hover:translate-y-[-4px] transition-all cursor-pointer pointer-events-auto">
-               {icon}
-               <p className={cn(
-                 "text-[11px] md:text-[12px] font-black tracking-widest truncate leading-none uppercase text-center",
-                 isBlue ? "text-blue-600" : "text-slate-900"
-               )}>
-                 {title}
-               </p>
-            </Card>
-         </Link>
-      </motion.div>
-   )
 }
