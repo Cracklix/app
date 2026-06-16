@@ -36,8 +36,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview High-Density Master Navbar Hub v59.0.
- * UPDATED: Removed 'uppercase' from navigation links for a premium Title Case look.
+ * @fileOverview High-Density Master Navbar Hub v60.0.
+ * UPDATED: Branding colors shifted to Blue node.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -162,7 +162,7 @@ export default function Navbar() {
                  </DropdownMenuContent>
                </DropdownMenu>
              ) : (
-               <Button asChild className="px-5 md:px-8 h-10 md:h-12 bg-[#0F172A] hover:bg-black text-white font-black text-[10px] md:text-[11px] rounded-xl transition-all tracking-widest border-none active:scale-95">
+               <Button asChild className="px-5 md:px-8 h-10 md:h-12 bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] md:text-[11px] rounded-xl transition-all tracking-widest border-none active:scale-95">
                  <Link href="/login">Login</Link>
                </Button>
              )}
