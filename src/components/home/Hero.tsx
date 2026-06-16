@@ -25,9 +25,9 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Cracklix Majestic Hero v13.0.
- * RESTORED: Trust badge now visible on mobile/PWA.
- * CALIBRATED: Top floating nodes at top-[2%] to prevent student overlap.
+ * @fileOverview Official Cracklix Majestic Hero v14.0 (Stabilized).
+ * HARDENED: Fixed preparation node positions to prevent overlap.
+ * SYNCED: Proportional scaling for all illustration elements.
  */
 
 export default function Hero() {
@@ -139,29 +139,29 @@ export default function Hero() {
           <div className="relative flex flex-col items-center justify-center w-full overflow-visible">
             <div className="relative w-full max-w-[320px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[650px] xl:max-w-[750px] aspect-square flex items-center justify-center">
                 
-                {/* FLOATING NODES - CENTERED SPACING FIXED */}
+                {/* FLOATING NODES - STABILIZED POSITIONS */}
                 <FloatingNode 
                    icon={<Zap className="text-blue-600 h-5 w-5 fill-current" />} 
                    label="Mock Tests" 
-                   className="top-[2%] left-[-2%] sm:left-[2%] md:left-[5%]" 
+                   className="top-[2%] left-[-5%] sm:left-[0%] md:left-[2%] lg:left-[5%]" 
                 />
 
                 <FloatingNode 
                    icon={<Target className="text-purple-600 h-5 w-5" />} 
                    label="Daily Practice" 
-                   className="bottom-[-2%] left-[-2%] sm:left-[2%] md:left-[5%]" 
+                   className="bottom-[5%] left-[-5%] sm:left-[0%] md:left-[2%] lg:left-[5%]" 
                 />
 
                 <FloatingNode 
                    icon={<Landmark className="text-orange-500 h-5 w-5" />} 
                    label="Punjab Exams" 
-                   className="top-[2%] right-[-2%] sm:right-[2%] md:right-[5%]" 
+                   className="top-[2%] right-[-5%] sm:right-[0%] md:right-[2%] lg:right-[5%]" 
                 />
 
                 <FloatingNode 
                    icon={<FileStack className="text-emerald-500 h-5 w-5" />} 
                    label="Previous Papers" 
-                   className="bottom-[-2%] right-[-2%] sm:right-[2%] md:right-[5%]" 
+                   className="bottom-[5%] right-[-5%] sm:right-[0%] md:right-[2%] lg:right-[5%]" 
                 />
 
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-100/30 rounded-full blur-3xl -z-10" />
@@ -181,7 +181,7 @@ export default function Hero() {
             </div>
 
             {/* MOBILE ACTION HUB */}
-            <div className="flex flex-col gap-3 w-full lg:hidden mt-20 sm:mt-24">
+            <div className="flex flex-col gap-3 w-full lg:hidden mt-12 sm:mt-16">
               <Button asChild className="h-14 w-full bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-xs tracking-widest shadow-xl border-none transition-all active:scale-95">
                 <Link href="/exams" className="flex items-center justify-between w-full px-6">
                   <div className="flex items-center gap-3">
@@ -233,7 +233,7 @@ function FloatingNode({ icon, label, className }: { icon: React.ReactNode, label
       animate={{ y: [0, -12, 0] }}
       transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       className={cn(
-        "absolute z-20 bg-white p-4 md:p-5 rounded-[1.5rem] md:rounded-[2rem] shadow-2xl border border-slate-100 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all hover:scale-105 active:scale-95 w-[130px] sm:w-[150px] md:w-[180px] lg:w-[200px]",
+        "absolute z-20 bg-white p-4 md:p-5 rounded-[1.5rem] md:rounded-[2.2rem] shadow-2xl border border-slate-100 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all hover:scale-105 active:scale-95 w-[130px] sm:w-[150px] md:w-[180px] lg:w-[210px]",
         className
       )}
     >
