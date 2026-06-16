@@ -6,8 +6,8 @@ import { Zap, Home, BarChart3, Target, Gem } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Production PWA Bottom Navigation v4.0.
- * DESIGN: Active = Blue/White | Inactive = Transparent/Gray | Pass = Blue CTA.
+ * @fileOverview Production PWA Bottom Navigation v5.0.
+ * DESIGN: Active = Blue/White | Inactive = Transparent/Gray | Pass = Elite Gem CTA.
  */
 
 export default function MobileNav() {

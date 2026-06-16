@@ -32,8 +32,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Production-Grade Responsive PWA Header v81.0.
- * UPDATED: Simplified mobile pass button to a single Gem icon.
+ * @fileOverview Production-Grade Responsive PWA Header v82.0.
+ * UPDATED: Hidden Pass button on mobile (redundant with bottom nav).
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -87,7 +87,8 @@ export default function Navbar() {
 
           {/* RIGHT: ACTIONS */}
           <div className="flex items-center justify-end gap-2 lg:gap-4 shrink-0">
-             <Button asChild className="h-11 lg:h-16 px-4 lg:px-10 bg-[#2563EB] hover:bg-blue-700 text-white font-black text-[10px] lg:text-[11px] tracking-widest rounded-2xl lg:rounded-3xl gap-2 shadow-lg shadow-blue-600/20 border-none transition-all active:scale-95">
+             {/* HIDDEN ON MOBILE: PASS BUTTON */}
+             <Button asChild className="hidden lg:flex h-11 lg:h-16 px-4 lg:px-10 bg-[#2563EB] hover:bg-blue-700 text-white font-black text-[10px] lg:text-[11px] tracking-widest rounded-2xl lg:rounded-3xl gap-2 shadow-lg shadow-blue-600/20 border-none transition-all active:scale-95">
                 <Link href="/pass">
                   <Gem className="h-4 w-4 text-white" /> 
                   <span className="hidden lg:inline">PASS</span>
