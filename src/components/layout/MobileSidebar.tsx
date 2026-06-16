@@ -28,7 +28,8 @@ import Logo from "@/components/brand/Logo";
 import { TELEGRAM_GROUP, INSTAGRAM_PROFILE } from "@/lib/constants";
 
 /**
- * @fileOverview Premium Sidebar Hub v22.0 (Title Case Update).
+ * @fileOverview Premium Sidebar Hub v23.0.
+ * UPDATED: Synchronized with 80px (h-20) header and 40px logo standard.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -69,8 +70,8 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex flex-col h-full bg-white font-body select-none text-left relative overflow-hidden">
       
-      {/* 1. BRAND HEADER - 140px */}
-      <div className="flex items-center justify-between px-4 h-[140px] border-b shrink-0 bg-white">
+      {/* 1. BRAND HEADER - h-20 (80px) */}
+      <div className="flex items-center justify-between px-4 h-20 border-b shrink-0 bg-white">
         <Logo variant="light" href="/" onClick={onClose} />
         <button 
           onClick={onClose}

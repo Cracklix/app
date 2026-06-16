@@ -14,8 +14,8 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview Official Cracklix Brand Hub v35.0.
- * UPDATED: Hardened 120px height standard across all platform registries.
+ * @fileOverview Official Cracklix Brand Hub v36.0.
+ * UPDATED: Standardized to 40px (Mobile) and 48px (Desktop) heights.
  */
 export default function Logo({ className = "", href = "/", variant = 'light', imgClassName = "", onClick }: LogoProps) {
   const logoSrc = variant === 'light' ? '/logo/cracklix-logo-dark.png' : '/logo/cracklix-logo-light.png';
@@ -32,11 +32,11 @@ export default function Logo({ className = "", href = "/", variant = 'light', im
       <Image 
         src={logoSrc} 
         alt="Cracklix" 
-        width={400}
-        height={120}
+        width={160}
+        height={48}
         priority
         className={cn(
-          "h-[120px] w-auto object-contain shrink-0",
+          "h-10 lg:h-12 w-auto object-contain shrink-0",
           imgClassName
         )}
       />

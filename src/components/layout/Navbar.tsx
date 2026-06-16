@@ -29,8 +29,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Final Hardened Header v116.0.
- * UPDATED: Reduced width via max-w-7xl and synchronized brand spacing.
+ * @fileOverview Final Hardened Header v117.0.
+ * UPDATED: Left-aligned branding with 40px/48px logo standard.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -56,16 +56,16 @@ export default function Navbar() {
   const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || (user?.email && SUPER_ADMIN_WHITELIST.includes(user.email.toLowerCase()));
 
   if (!mounted) return (
-    <nav className="w-full border-b border-[#E5E7EB] bg-white h-[140px]" />
+    <nav className="w-full border-b border-[#E5E7EB] bg-white h-20" />
   );
 
   return (
     <div className="w-full sticky top-0 z-50 font-body">
-      <nav className="w-full border-b border-[#E5E7EB] bg-white h-[140px] shadow-[0_2px_10px_rgba(0,0,0,0.06)] flex items-center overflow-hidden">
+      <nav className="w-full border-b border-[#E5E7EB] bg-white h-20 shadow-sm flex items-center overflow-hidden">
         <div className="w-full max-w-7xl mx-auto flex items-center justify-between h-full px-4 md:px-8">
           
-          {/* LEFT GROUP: MENU + LOGO (SYNCHRONIZED SPACING) */}
-          <div className="flex items-center gap-4 md:gap-8 shrink-0">
+          {/* LEFT GROUP: MENU + LOGO (8-12px GAP) */}
+          <div className="flex items-center gap-3 md:gap-4 shrink-0">
             <button 
               onClick={() => setIsSidebarOpen(true)}
               className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 active:bg-gray-50 transition-all shrink-0 shadow-sm"
@@ -79,7 +79,7 @@ export default function Navbar() {
             />
           </div>
 
-          {/* CENTER: DESKTOP NAVIGATION */}
+          {/* CENTER: DESKTOP NAVIGATION (DESKTOP ONLY) */}
           <nav className="hidden lg:flex items-center gap-8 flex-1 justify-center h-full mx-6">
              <NavLink href="/" label="Home" active={pathname === '/'} />
              <NavLink href="/mocks" label="Practice" active={pathname === '/mocks'} />
@@ -87,18 +87,18 @@ export default function Navbar() {
           </nav>
 
           {/* RIGHT GROUP: SEARCH + PROFILE */}
-          <div className="flex items-center gap-1 md:gap-3 shrink-0">
-             <Link href="/search" className="w-11 h-11 lg:w-14 lg:h-14 rounded-2xl flex items-center justify-center text-slate-700 hover:text-[#2563EB] transition-all active:scale-95">
-                <Search className="w-5 h-5 lg:w-6 lg:h-6" />
+          <div className="flex items-center gap-3 shrink-0">
+             <Link href="/search" className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-700 hover:text-[#2563EB] transition-all active:scale-95 bg-gray-50">
+                <Search className="w-5 h-5" />
              </Link>
 
              {loading ? (
-                <Skeleton className="w-11 h-11 lg:w-14 lg:h-14 rounded-2xl bg-gray-100" />
+                <Skeleton className="w-11 h-11 rounded-2xl bg-gray-100" />
              ) : user ? (
                <DropdownMenu>
                  <DropdownMenuTrigger asChild>
-                   <button className="w-11 h-11 lg:w-14 lg:h-14 rounded-2xl border border-slate-100 overflow-hidden shadow-sm cursor-pointer bg-gray-50 active:scale-95 transition-transform flex items-center justify-center">
-                      <StudentAvatar profile={profile} className="h-full w-full border-none" iconClassName="w-6 h-6 lg:w-7 lg:h-7" />
+                   <button className="w-11 h-11 rounded-2xl border border-slate-100 overflow-hidden shadow-sm cursor-pointer bg-gray-50 active:scale-95 transition-transform flex items-center justify-center">
+                      <StudentAvatar profile={profile} className="h-full w-full border-none" iconClassName="w-6 h-6" />
                    </button>
                  </DropdownMenuTrigger>
                  <DropdownMenuContent align="end" className="w-64 bg-white border border-gray-200 text-[#04102B] rounded-[2rem] p-2 shadow-5xl z-[2001] mt-4">
@@ -124,8 +124,8 @@ export default function Navbar() {
                  </DropdownMenuContent>
                </DropdownMenu>
              ) : (
-               <Link href="/login" className="w-11 h-11 lg:w-14 lg:h-14 rounded-2xl bg-gray-50 flex items-center justify-center text-slate-700 hover:text-[#2563EB] transition-all active:scale-95">
-                 <User className="w-5 h-5 lg:w-6 lg:h-6" />
+               <Link href="/login" className="w-11 h-11 rounded-2xl bg-gray-50 flex items-center justify-center text-slate-700 hover:text-[#2563EB] transition-all active:scale-95">
+                 <User className="w-5 h-5" />
                </Link>
              )}
           </div>
