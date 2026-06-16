@@ -25,8 +25,8 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Cracklix Majestic Hero v11.0.
- * RECALIBRATED: Floating nodes moved closer to center with matched reference icons.
+ * @fileOverview Official Cracklix Majestic Hero v12.0.
+ * RECALIBRATED: Moved top floating nodes higher to top-[2%] to fix overlap with student illustration.
  */
 
 export default function Hero() {
@@ -142,7 +142,7 @@ export default function Hero() {
                 <FloatingNode 
                    icon={<Zap className="text-blue-600 h-5 w-5 fill-current" />} 
                    label="Mock Tests" 
-                   className="top-[12%] left-[-2%] sm:left-[2%] md:left-[5%]" 
+                   className="top-[2%] left-[-2%] sm:left-[2%] md:left-[5%]" 
                 />
 
                 <FloatingNode 
@@ -154,7 +154,7 @@ export default function Hero() {
                 <FloatingNode 
                    icon={<Landmark className="text-orange-500 h-5 w-5" />} 
                    label="Punjab Exams" 
-                   className="top-[12%] right-[-2%] sm:right-[2%] md:right-[5%]" 
+                   className="top-[2%] right-[-2%] sm:right-[2%] md:right-[5%]" 
                 />
 
                 <FloatingNode 
