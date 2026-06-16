@@ -9,6 +9,9 @@ import {
   ShieldCheck,
   Users,
   ClipboardList,
+  Target,
+  Files,
+  Landmark,
   Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,8 +22,8 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Elite Hero Hub v72.0 (High Fidelity Match).
- * UPDATED: Integrated Stats Bar from screenshot with live registry sync.
+ * @fileOverview Elite Hero Hub v75.0 (High Fidelity Match).
+ * UPDATED: Repositioned Feature Grid above buttons as per screenshot request.
  */
 
 export default function Hero() {
@@ -32,9 +35,40 @@ export default function Hero() {
   }, []);
 
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
-  const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
+  const { data: stats } = useDoc<any>(statsRef);
 
   const heroImage = "/images/hero-student.png";
+
+  const features = [
+    { 
+      title: "Mock Tests", 
+      sub: "Exam-focused mock tests", 
+      icon: <ClipboardList className="h-5 w-5" />, 
+      color: "text-blue-600", 
+      bgColor: "bg-blue-50" 
+    },
+    { 
+      title: "Previous Papers", 
+      sub: "Previous year question papers", 
+      icon: <Files className="h-5 w-5" />, 
+      color: "text-emerald-600", 
+      bgColor: "bg-emerald-50" 
+    },
+    { 
+      title: "Daily Practice", 
+      sub: "Practice daily & stay ahead", 
+      icon: <Target className="h-5 w-5" />, 
+      color: "text-purple-600", 
+      bgColor: "bg-purple-50" 
+    },
+    { 
+      title: "Punjab Exams", 
+      sub: "All major Punjab exams at one place", 
+      icon: <Landmark className="h-5 w-5" />, 
+      color: "text-orange-600", 
+      bgColor: "bg-orange-50" 
+    }
+  ];
 
   const liveStats = useMemo(() => {
     const format = (val: number, baseline: string) => {
@@ -85,7 +119,7 @@ export default function Hero() {
     <section className="relative overflow-hidden bg-white pt-6 pb-12 md:pt-16 md:pb-24 text-center lg:text-left w-full border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
         
-        <div className="flex flex-col items-center lg:items-start space-y-8">
+        <div className="flex flex-col items-center lg:items-start space-y-6 md:space-y-8">
           
           {/* 1. TEXT COPY */}
           <div className="space-y-4 md:space-y-6 max-w-3xl">
@@ -108,19 +142,34 @@ export default function Hero() {
           </div>
 
           {/* 2. HERO IMAGE */}
-          <div className="relative flex items-center justify-center w-full mt-4 md:mt-8">
+          <div className="relative flex items-center justify-center w-full mt-2">
              <motion.div 
                initial={{ opacity: 0, scale: 0.95 }} 
                animate={{ opacity: 1, scale: 1 }} 
                transition={{ duration: 0.8 }} 
-               className="relative z-10 w-full max-w-[280px] md:max-w-[440px]"
+               className="relative z-10 w-full max-w-[260px] md:max-w-[400px]"
              >
                 <img src={heroImage} alt="Cracklix Prep" className="w-full h-auto object-contain drop-shadow-2xl" />
              </motion.div>
           </div>
 
-          {/* 3. BUTTONS (SCREENSHOT MATCH) */}
-          <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 w-full sm:w-auto pt-4 pb-12 md:pb-16 border-b border-slate-50">
+          {/* 3. FEATURE GRID (EXACT POSITION: ABOVE BUTTONS) */}
+          <div className="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 pt-4">
+             {features.map((f, idx) => (
+                <Card key={idx} className="border-none shadow-xl shadow-slate-200/40 rounded-[1.8rem] p-4 md:p-6 bg-white border border-slate-50 flex items-center gap-4 md:gap-6 group hover:translate-y-[-4px] transition-all duration-300">
+                   <div className={cn("h-12 w-12 md:h-14 md:w-14 rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500", f.bgColor, f.color)}>
+                      {f.icon}
+                   </div>
+                   <div className="text-left min-w-0">
+                      <h3 className="text-sm md:text-lg font-black text-[#04102B] uppercase tracking-tight leading-none">{f.title}</h3>
+                      <p className="text-[9px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1.5 truncate">{f.sub}</p>
+                   </div>
+                </Card>
+             ))}
+          </div>
+
+          {/* 4. BUTTON ACTION HUB */}
+          <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 w-full sm:w-auto pt-6 pb-12 md:pb-16 border-b border-slate-50">
             <Button asChild className="h-14 md:h-16 px-10 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs md:text-sm tracking-widest rounded-2xl shadow-xl shadow-blue-600/20 border-none transition-all active:scale-95">
               <Link href="/mocks" className="flex items-center justify-center gap-3">
                 Start Free Mock Test <ArrowRight className="h-5 w-5" />
@@ -134,7 +183,7 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* 4. STATS BAR (SCREENSHOT MATCH) */}
+        {/* 5. STATS BAR (AT THE BOTTOM) */}
         <div className="mt-12 md:mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
            {liveStats.map((stat, idx) => (
              <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} viewport={{ once: true }}>
