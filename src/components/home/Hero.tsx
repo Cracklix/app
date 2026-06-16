@@ -26,8 +26,8 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Official Cracklix High-Fidelity Hero v45.0.
- * SIZING: Implemented user-specified dimensions (700-800px desktop / 300-400px mobile).
+ * @fileOverview Official Cracklix High-Fidelity Hero v46.0.
+ * SIZING: Implemented 770x517 intrinsic dimensions with 850px safe-cap.
  * ORDERING: Trust -> Text -> Pills -> CTAs -> Image -> Stats (Mobile Stack).
  */
 
@@ -75,7 +75,7 @@ export default function Hero() {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm mx-auto lg:mx-0"
               >
                 <Star className="h-3.5 w-3.5 text-amber-500 fill-current" />
-                <span className="text-[10px] md:text-xs font-bold text-slate-600 tracking-widest">10,000+ Aspirants Trust Cracklix</span>
+                <span className="text-[10px] md:text-xs font-bold text-slate-600 tracking-widest uppercase">10,000+ Aspirants Trust Cracklix</span>
               </motion.div>
 
               {/* Heading (Step 2) */}
@@ -102,7 +102,7 @@ export default function Hero() {
 
               {/* CTA Hub (Step 5) */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-                <Button asChild className="h-12 md:h-16 px-10 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm tracking-widest rounded-2xl shadow-xl shadow-blue-600/20 gap-3 border-none transition-all active:scale-95">
+                <Button asChild className="h-12 md:h-14 px-10 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm tracking-widest rounded-2xl shadow-xl shadow-blue-600/20 gap-3 border-none transition-all active:scale-95">
                   <Link href="/mocks">Start Free Mock Test <ArrowRight className="h-5 w-5" /></Link>
                 </Button>
                 <Button asChild variant="outline" className="h-12 md:h-16 px-10 border-2 border-blue-600 bg-white text-blue-600 font-black text-sm tracking-widest rounded-2xl shadow-sm transition-all active:scale-95 hover:bg-blue-50">
@@ -114,20 +114,24 @@ export default function Hero() {
 
           {/* 2. ILLUSTRATION HUB (RIGHT / Step 6 on Mobile) */}
           <div className="relative flex items-center justify-center lg:justify-end w-full order-2">
-             <div className="relative w-full max-w-[350px] sm:max-w-[500px] md:max-w-[600px] lg:max-w-[700px] xl:max-w-[800px] aspect-square flex items-center justify-center">
+             {/* 
+                Sizing Logic:
+                Mobile: max-w-[320-400px]
+                Large Screens: Scale to 770px (native) up to 850px (safe display max)
+             */}
+             <div className="relative w-full max-w-[400px] md:max-w-[650px] lg:max-w-[770px] xl:max-w-[850px] flex items-center justify-center">
                 
-                {/* Responsive Large Image */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.8 }}
-                  className="relative z-10 w-full h-full"
+                  className="relative z-10 w-full h-auto"
                 >
                    <Image 
                      src={heroImage}
                      alt="Cracklix Student" 
-                     width={800}
-                     height={800}
+                     width={770}
+                     height={517}
                      className="w-full h-auto drop-shadow-3xl object-contain"
                      priority
                    />
@@ -136,28 +140,28 @@ export default function Hero() {
                 {/* Floating Action Cards - Corner Positioned (Desktop Only) */}
                 <div className="absolute inset-0 pointer-events-none hidden lg:block">
                   <FloatingNode 
-                     position="top-[5%] left-[-5%]"
+                     position="top-[5%] left-[-8%]"
                      icon={<Zap className="h-4 w-4 text-blue-600 fill-current" />}
                      title="MOCK TESTS"
                      delay={0.3}
                      href="/mocks"
                   />
                   <FloatingNode 
-                     position="top-[5%] right-[-5%]"
+                     position="top-[5%] right-[-8%]"
                      icon={<Landmark className="h-4 w-4 text-orange-500" />}
                      title="PUNJAB EXAMS"
                      delay={0.6}
                      href="/exams"
                   />
                   <FloatingNode 
-                     position="bottom-[10%] left-[-8%]"
+                     position="bottom-[15%] left-[-12%]"
                      icon={<Target className="h-4 w-4 text-purple-600" />}
                      title="FREE PRACTICE"
                      delay={0.5}
                      href="/practice"
                   />
                   <FloatingNode 
-                     position="bottom-[10%] right-[-8%]"
+                     position="bottom-[15%] right-[-12%]"
                      icon={<FileStack className="h-4 w-4 text-emerald-600" />}
                      title="PREVIOUS PAPERS"
                      delay={0.4}
