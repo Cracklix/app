@@ -27,9 +27,10 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Official Cracklix High-Fidelity Hero v50.0.
- * MOBILE ORDER: Trust -> Text -> Image -> FEATURES (Restored) -> BUTTONS -> Stats.
- * RESTORED: Horizontal 4-card feature row exactly above CTA buttons.
+ * @fileOverview Official Cracklix High-Fidelity Hero v51.0.
+ * FIXED: Adjusted desktop floating node positions to prevent clipping.
+ * FIXED: Increased node widths to prevent "PREVIOUS PAPERS" truncation.
+ * MOBILE ORDER: Header -> Image -> Features -> Buttons -> Stats.
  */
 
 export default function Hero() {
@@ -59,10 +60,10 @@ export default function Hero() {
   }, [stats]);
 
   const prepFeatures = [
-    { label: "Mock Tests", sub: "Exam-focused mock tests", icon: <Zap />, color: "bg-blue-600", href: "/mocks" },
-    { label: "Previous Papers", sub: "Previous year question papers", icon: <FileText />, color: "bg-emerald-600", href: "/pyqs" },
-    { label: "Daily Practice", sub: "Practice daily & stay ahead", icon: <Target />, color: "bg-indigo-600", href: "/practice" },
-    { label: "Punjab Exams", sub: "All major Punjab exams at one place", icon: <Landmark />, color: "bg-orange-500", href: "/exams" },
+    { label: "MOCK TESTS", sub: "Exam-focused mock tests", icon: <Zap />, color: "bg-blue-600", href: "/mocks" },
+    { label: "PREVIOUS PAPERS", sub: "Previous year question papers", icon: <FileText />, color: "bg-emerald-600", href: "/pyqs" },
+    { label: "DAILY PRACTICE", sub: "Practice daily & stay ahead", icon: <Target />, color: "bg-indigo-600", href: "/practice" },
+    { label: "PUNJAB EXAMS", sub: "All major Punjab exams at one place", icon: <Landmark />, color: "bg-orange-500", href: "/exams" },
   ];
 
   if (!mounted) return null;
@@ -73,7 +74,7 @@ export default function Hero() {
         
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           
-          {/* 1. CONTENT HUB (Order 1 on Mobile) */}
+          {/* 1. CONTENT HUB (Header Text) */}
           <div className="order-1 space-y-8 text-center lg:text-left">
             <div className="space-y-6">
               <motion.div
@@ -125,18 +126,19 @@ export default function Hero() {
                    />
                 </motion.div>
 
+                {/* Floating Navigation Nodes - Calibrated Positions */}
                 <div className="absolute inset-0 pointer-events-none hidden lg:block">
-                  <FloatingNode position="top-[5%] left-[-8%]" icon={<Zap className="h-4 w-4 text-blue-600 fill-current" />} title="MOCK TESTS" delay={0.3} href="/mocks" />
-                  <FloatingNode position="top-[5%] right-[-8%]" icon={<Landmark className="h-4 w-4 text-orange-500" />} title="PUNJAB EXAMS" delay={0.6} href="/exams" />
-                  <FloatingNode position="bottom-[15%] left-[-12%]" icon={<Target className="h-4 w-4 text-purple-600" />} title="FREE PRACTICE" delay={0.5} href="/practice" />
-                  <FloatingNode position="bottom-[15%] right-[-12%]" icon={<FileStack className="h-4 w-4 text-emerald-600" />} title="PREVIOUS PAPERS" delay={0.4} href="/pyqs" />
+                  <FloatingNode position="top-[8%] left-[-2%]" icon={<Zap className="h-4 w-4 text-blue-600 fill-current" />} title="MOCK TESTS" delay={0.3} href="/mocks" />
+                  <FloatingNode position="top-[8%] right-[-2%]" icon={<Landmark className="h-4 w-4 text-orange-500" />} title="PUNJAB EXAMS" delay={0.6} href="/exams" />
+                  <FloatingNode position="bottom-[18%] left-[-4%]" icon={<Target className="h-4 w-4 text-purple-600" />} title="FREE PRACTICE" delay={0.5} href="/practice" />
+                  <FloatingNode position="bottom-[18%] right-[-4%]" icon={<FileStack className="h-4 w-4 text-emerald-600" />} title="PREVIOUS PAPERS" delay={0.4} href="/pyqs" />
                 </div>
              </div>
           </div>
 
           {/* 3. FEATURE HUB & CTA (Order 3 on Mobile) */}
           <div className="order-3 lg:col-span-2 w-full space-y-10">
-             {/* Preparation Feature Hub (The 4 restored cards) */}
+             {/* Preparation Feature Hub (4 Restored Cards) */}
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {prepFeatures.map((feat, idx) => (
                   <Link key={feat.label} href={feat.href}>
@@ -206,7 +208,7 @@ function FloatingNode({ position, icon, title, delay, href }: { position: string
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay, duration: 0.8 }}
-        className={cn("absolute z-20 w-[180px] xl:w-[220px]", position)}
+        className={cn("absolute z-20 w-[210px] xl:w-[250px]", position)}
       >
          <Link href={href}>
             <Card className="p-5 rounded-2xl md:rounded-3xl bg-white/95 backdrop-blur-xl border-none shadow-2xl flex items-center gap-4 group hover:shadow-primary/10 hover:translate-y-[-4px] transition-all cursor-pointer pointer-events-auto">
