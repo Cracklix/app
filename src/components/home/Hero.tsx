@@ -6,21 +6,18 @@ import {
   Zap, 
   Target, 
   Landmark, 
-  FileStack, 
   ArrowRight,
   Star,
-  ChevronRight,
-  BookOpen,
-  ClipboardCheck,
   ShieldCheck,
   LayoutGrid,
-  Loader2,
   FileText,
-  Users
+  Users,
+  ClipboardCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useDoc, useFirestore } from '@/firebase';
@@ -28,8 +25,9 @@ import { doc } from 'firebase/firestore';
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Official Cracklix High-Fidelity Hero v35.0.
- * RECONSTRUCTED: Strictly matched to user reference image layout and positioning.
+ * @fileOverview Official Cracklix High-Fidelity Hero v36.0 (Reference Matched).
+ * FIXED: Imported missing Skeleton component to resolve ReferenceError.
+ * LAYOUT: 2-column desktop split, strictly matched to reference design.
  */
 
 export default function Hero() {
@@ -62,20 +60,11 @@ export default function Hero() {
 
   return (
     <section className="relative overflow-hidden bg-[#F8FAFC] pt-8 pb-16 md:pt-12 md:pb-24 text-left w-full">
-      {/* Ambient Background Accents */}
-      <div className="absolute top-0 right-0 p-20 opacity-20 pointer-events-none">
-         <div className="grid grid-cols-3 gap-4">
-            {Array.from({ length: 9 }).map((_, i) => (
-               <div key={i} className="h-1.5 w-1.5 rounded-full bg-slate-300" />
-            ))}
-         </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* TOP ROW: LOGO & TRUST BADGE */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-8 md:mb-12 gap-6">
-           <div className="flex flex-col items-center md:items-start gap-4">
+        {/* IDENTITY ROW */}
+        <div className="flex flex-col md:flex-row items-center justify-between mb-10 md:mb-16 gap-6">
+           <div className="flex flex-col items-center md:items-start gap-4 w-full">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -90,7 +79,7 @@ export default function Hero() {
            </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
           
           {/* LEFT CONTENT HUB */}
           <div className="space-y-10 text-center lg:text-left">
@@ -115,12 +104,12 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* SECONDARY FEATURE ROW */}
+            {/* MIDDLE FEATURE ROW */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                <FeatureCard icon={<ClipboardCheck className="text-blue-600" />} title="Mock Tests" sub="Exam-focused mock tests" />
                <FeatureCard icon={<FileText className="text-emerald-500" />} title="Previous Papers" sub="Previous year question papers" />
                <FeatureCard icon={<Target className="text-purple-600" />} title="Daily Practice" sub="Practice daily & stay ahead" />
-               <FeatureCard icon={<Landmark className="text-orange-500" />} title="Punjab Exams" sub="All major Punjab exams at one place" />
+               <FeatureCard icon={<Landmark className="text-orange-500" />} title="Punjab Exams" sub="All major Punjab exams" />
             </div>
 
             {/* CTA HUB */}
@@ -135,7 +124,7 @@ export default function Hero() {
           </div>
 
           {/* RIGHT ILLUSTRATION HUB */}
-          <div className="relative flex items-center justify-center lg:justify-end w-full lg:pt-10">
+          <div className="relative flex items-center justify-center lg:justify-end w-full">
              <div className="relative w-full max-w-[320px] sm:max-w-[420px] md:max-w-[520px] lg:max-w-[620px] aspect-square flex items-center justify-center">
                 
                 {/* Center Image */}
@@ -156,38 +145,38 @@ export default function Hero() {
                    />
                 </motion.div>
 
-                {/* Floating Action Cards - Strictly Matched to Design */}
+                {/* Corner Floating Cards */}
                 <div className="absolute inset-0 pointer-events-none">
                   <FloatingNode 
-                     position="top-[10%] left-[-10%]"
-                     icon={<ClipboardCheck className="h-4 w-4 text-blue-600" />}
+                     position="top-[12%] left-[-10%]"
+                     icon={<Zap className="h-4 w-4 text-blue-600 fill-current" />}
                      title="Mock Tests"
                      delay={0.3}
                   />
                   <FloatingNode 
-                     position="top-[35%] left-[-15%]"
+                     position="top-[12%] right-[-10%]"
+                     icon={<Landmark className="h-4 w-4 text-orange-500" />}
+                     title="Punjab Exams"
+                     delay={0.6}
+                  />
+                  <FloatingNode 
+                     position="bottom-[5%] left-[-15%]"
                      icon={<Target className="h-4 w-4 text-purple-600" />}
                      title="Daily Practice"
                      delay={0.5}
                   />
                   <FloatingNode 
-                     position="top-[5%] right-[-10%]"
-                     icon={<FileText className="h-4 w-4 text-emerald-600" />}
+                     position="bottom-[5%] right-[-15%]"
+                     icon={<LayoutGrid className="h-4 w-4 text-emerald-600" />}
                      title="Previous Papers"
                      delay={0.4}
-                  />
-                  <FloatingNode 
-                     position="top-[25%] right-[-15%]"
-                     icon={<Landmark className="h-4 w-4 text-orange-500" />}
-                     title="Punjab Exams"
-                     delay={0.6}
                   />
                 </div>
              </div>
           </div>
         </div>
 
-        {/* BOTTOM ROW: STATS CARDS */}
+        {/* BOTTOM STATS HUB */}
         <div className="mt-20 md:mt-32">
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {liveStats.map((stat, idx) => (
