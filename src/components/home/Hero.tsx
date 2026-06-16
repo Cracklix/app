@@ -27,10 +27,9 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Official Cracklix High-Fidelity Hero v51.0.
- * FIXED: Adjusted desktop floating node positions to prevent clipping.
- * FIXED: Increased node widths to prevent "PREVIOUS PAPERS" truncation.
- * MOBILE ORDER: Header -> Image -> Features -> Buttons -> Stats.
+ * @fileOverview Official Cracklix High-Fidelity Hero v52.0.
+ * FIXED: Repositioned floating nodes to Top and Bottom as per reference image.
+ * FIXED: Updated labels and horizontal offsets to prevent clipping.
  */
 
 export default function Hero() {
@@ -61,9 +60,9 @@ export default function Hero() {
 
   const prepFeatures = [
     { label: "MOCK TESTS", sub: "Exam-focused mock tests", icon: <Zap />, color: "bg-blue-600", href: "/mocks" },
-    { label: "PREVIOUS PAPERS", sub: "Previous year question papers", icon: <FileText />, color: "bg-emerald-600", href: "/pyqs" },
-    { label: "DAILY PRACTICE", sub: "Practice daily & stay ahead", icon: <Target />, color: "bg-indigo-600", href: "/practice" },
-    { label: "PUNJAB EXAMS", sub: "All major Punjab exams at one place", icon: <Landmark />, color: "bg-orange-500", href: "/exams" },
+    { label: "PUNJAB EXAMS", sub: "All major Punjab exams", icon: <Landmark />, color: "bg-orange-500", href: "/exams" },
+    { label: "FREE PRACTICE", sub: "Daily study practice", icon: <Target />, color: "bg-purple-600", href: "/practice" },
+    { label: "PREVIOUS PAPERS", sub: "Official year papers", icon: <FileStack />, color: "bg-emerald-600", href: "/pyqs" },
   ];
 
   if (!mounted) return null;
@@ -126,12 +125,12 @@ export default function Hero() {
                    />
                 </motion.div>
 
-                {/* Floating Navigation Nodes - Calibrated Positions */}
+                {/* Floating Navigation Nodes - Calibrated Positions (Top & Bottom spread) */}
                 <div className="absolute inset-0 pointer-events-none hidden lg:block">
-                  <FloatingNode position="top-[8%] left-[-2%]" icon={<Zap className="h-4 w-4 text-blue-600 fill-current" />} title="MOCK TESTS" delay={0.3} href="/mocks" />
-                  <FloatingNode position="top-[8%] right-[-2%]" icon={<Landmark className="h-4 w-4 text-orange-500" />} title="PUNJAB EXAMS" delay={0.6} href="/exams" />
-                  <FloatingNode position="bottom-[18%] left-[-4%]" icon={<Target className="h-4 w-4 text-purple-600" />} title="FREE PRACTICE" delay={0.5} href="/practice" />
-                  <FloatingNode position="bottom-[18%] right-[-4%]" icon={<FileStack className="h-4 w-4 text-emerald-600" />} title="PREVIOUS PAPERS" delay={0.4} href="/pyqs" />
+                  <FloatingNode position="top-[2%] left-[-4%]" icon={<Zap className="h-4 w-4 text-blue-600 fill-current" />} title="MOCK TESTS" delay={0.3} href="/mocks" />
+                  <FloatingNode position="top-[2%] right-[-4%]" icon={<Landmark className="h-4 w-4 text-orange-500" />} title="PUNJAB EXAMS" delay={0.6} href="/exams" />
+                  <FloatingNode position="bottom-[8%] left-[-6%]" icon={<Target className="h-4 w-4 text-purple-600" />} title="FREE PRACTICE" delay={0.5} href="/practice" />
+                  <FloatingNode position="bottom-[8%] right-[-6%]" icon={<FileStack className="h-4 w-4 text-emerald-600" />} title="PREVIOUS PAPERS" delay={0.4} href="/pyqs" />
                 </div>
              </div>
           </div>
