@@ -12,13 +12,13 @@ interface SidebarHeaderProps {
 }
 
 /**
- * @fileOverview High-Fidelity Admin Sidebar Header v5.0.
- * FIXED: Uses variant="dark" (White text) for the dark navy sidebar.
+ * @fileOverview High-Fidelity Admin Sidebar Header v6.0.
+ * FIXED: Uses standard maximized logo height (112px/128px) for consistency.
  */
 export default function SidebarHeader({ isOpen, onToggle }: SidebarHeaderProps) {
   return (
     <div className={cn(
-      "h-28 px-6 flex flex-col shrink-0 relative border-b border-white/5",
+      "h-[112px] lg:h-[128px] px-6 flex flex-col shrink-0 relative border-b border-white/5",
       isOpen ? "items-stretch justify-center" : "items-center justify-center gap-4"
     )}>
       <div className={cn(
@@ -31,7 +31,7 @@ export default function SidebarHeader({ isOpen, onToggle }: SidebarHeaderProps) 
           isOpen ? "w-[160px]" : "w-[44px]"
         )}>
           {isOpen ? (
-            <Logo href="/admin" variant="dark" imgClassName="h-8 w-auto" />
+            <Logo href="/admin" variant="dark" />
           ) : (
             <div className="relative h-8 w-8">
                <Image 

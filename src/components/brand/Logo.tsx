@@ -10,20 +10,22 @@ interface LogoProps {
   variant?: 'light' | 'dark';
   href?: string;
   imgClassName?: string;
+  onClick?: () => void;
 }
 
 /**
- * @fileOverview Official Cracklix Brand Hub v30.0.
+ * @fileOverview Official Cracklix Brand Hub v31.0.
  * HARDENED: Maximized dimensions (112px/128px) for dominant brand presence.
- * LAYOUT: Zero-constraint wrapper for precision header positioning.
+ * UPDATED: Added onClick support for sidebar integration.
  */
-export default function Logo({ className = "", href = "/", variant = 'light', imgClassName = "" }: LogoProps) {
+export default function Logo({ className = "", href = "/", variant = 'light', imgClassName = "", onClick }: LogoProps) {
   // Use dark logo for light background, and light logo for dark background
   const logoSrc = variant === 'light' ? '/logo/cracklix-logo-dark.png' : '/logo/cracklix-logo-light.png';
 
   return (
     <Link 
       href={href} 
+      onClick={onClick}
       className={cn(
         "flex items-center group pointer-events-auto select-none shrink-0", 
         className

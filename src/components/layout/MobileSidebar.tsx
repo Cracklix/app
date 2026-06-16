@@ -25,12 +25,13 @@ import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import StudentAvatar from "@/components/brand/StudentAvatar";
+import Logo from "@/components/brand/Logo";
 import { TELEGRAM_GROUP, INSTAGRAM_PROFILE } from "@/lib/constants";
 
 /**
- * @fileOverview Premium Sidebar Hub v16.0.
- * UPDATED: Prominent Sidebar Logo (h-112px) matched to header standard.
- * FIXED: Standardized rounded containers for a cohesive preparation ecosystem.
+ * @fileOverview Premium Sidebar Hub v17.0.
+ * UPDATED: Synchronized Logo Size (112px/128px) with Header Standard.
+ * FIXED: Clean Logo component integration with click-to-close handler.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -71,21 +72,12 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex flex-col h-full bg-white font-body select-none text-left relative overflow-hidden">
       
-      {/* 1. BRAND HEADER - 112px/128px */}
-      <div className="flex items-center justify-between px-5 h-[112px] lg:h-[128px] border-b shrink-0 bg-white">
-        <Link href="/" onClick={onClose} className="flex items-center">
-          <Image
-            src="/logo/cracklix-logo-dark.png"
-            alt="Cracklix"
-            width={240}
-            height={112}
-            className="h-24 lg:h-28 w-auto object-contain max-w-[200px]"
-            priority
-          />
-        </Link>
+      {/* 1. BRAND HEADER - 112px/128px (SYNCHRONIZED) */}
+      <div className="flex items-center justify-between px-2 h-[112px] lg:h-[128px] border-b shrink-0 bg-white">
+        <Logo variant="light" href="/" onClick={onClose} />
         <button 
           onClick={onClose}
-          className="w-11 h-11 flex items-center justify-center rounded-xl bg-slate-50 text-slate-500 active:scale-95 transition-all shadow-sm"
+          className="w-11 h-11 flex items-center justify-center rounded-xl bg-slate-50 text-slate-500 active:scale-95 transition-all shadow-sm z-10 mr-4"
           aria-label="Close menu"
         >
           <X className="w-6 h-6" />
