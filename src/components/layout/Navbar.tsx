@@ -30,10 +30,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Hardened Header v97.0.
- * LAYOUT: [Menu + Logo] -------------------- [Search + Profile]
+ * @fileOverview Hardened Header v98.0.
+ * LAYOUT: [Menu + Logo] Snug on left.
  * SIZING: Mobile 72px / Desktop 88px.
- * FIXED: Pass section removed.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -67,11 +66,11 @@ export default function Navbar() {
       <nav className="w-full border-b border-[#E5E7EB] bg-white h-[72px] lg:h-[88px] px-4 lg:px-8 shadow-[0_2px_10px_rgba(0,0,0,0.06)] flex items-center overflow-hidden">
         <div className="w-full max-w-7xl mx-auto flex items-center justify-between h-full">
           
-          {/* LEFT GROUP: MENU + LOGO */}
-          <div className="flex items-center gap-3 md:gap-4 shrink-0">
+          {/* LEFT GROUP: MENU + LOGO (SNUG) */}
+          <div className="flex items-center gap-3 shrink-0">
             <button 
               onClick={() => setIsSidebarOpen(true)}
-              className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl bg-gray-50 flex items-center justify-center text-slate-700 active:scale-95 transition-all shadow-sm"
+              className="w-11 h-11 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl bg-gray-50 flex items-center justify-center text-slate-700 active:scale-95 transition-all shadow-sm"
               aria-label="Open menu"
             >
               <Menu className="w-6 h-6 lg:w-8 lg:h-8" />
@@ -79,8 +78,8 @@ export default function Navbar() {
             <Logo variant="light" />
           </div>
 
-          {/* CENTER: DESKTOP NAVIGATION */}
-          <nav className="hidden lg:flex items-center gap-12 flex-1 justify-center h-full">
+          {/* CENTER: DESKTOP NAVIGATION (Hidden on Mobile) */}
+          <nav className="hidden lg:flex items-center gap-8 flex-1 justify-center h-full mx-10">
              <NavLink href="/" label="Home" active={pathname === '/'} />
              <NavLink href="/mocks" label="Practice" active={pathname === '/mocks'} />
              <NavLink href="/current-affairs" label="Updates" active={pathname === '/current-affairs'} />
@@ -88,16 +87,16 @@ export default function Navbar() {
 
           {/* RIGHT GROUP: SEARCH + PROFILE */}
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
-             <Link href="/search" className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl bg-gray-50 flex items-center justify-center text-slate-700 hover:text-[#2563EB] transition-all active:scale-95 shadow-sm">
+             <Link href="/search" className="w-11 h-11 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl bg-gray-50 flex items-center justify-center text-slate-700 hover:text-[#2563EB] transition-all active:scale-95 shadow-sm">
                 <Search className="w-6 h-6 lg:w-8 lg:h-8" />
              </Link>
 
              {loading ? (
-                <Skeleton className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl bg-gray-100" />
+                <Skeleton className="w-11 h-11 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl bg-gray-100" />
              ) : user ? (
                <DropdownMenu>
                  <DropdownMenuTrigger asChild>
-                   <button className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl border border-slate-100 overflow-hidden shadow-sm cursor-pointer bg-gray-50 active:scale-95 transition-transform flex items-center justify-center">
+                   <button className="w-11 h-11 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl border border-slate-100 overflow-hidden shadow-sm cursor-pointer bg-gray-50 active:scale-95 transition-transform flex items-center justify-center">
                       <StudentAvatar profile={profile} className="h-full w-full border-none" iconClassName="w-6 h-6 lg:w-8 lg:h-8" />
                    </button>
                  </DropdownMenuTrigger>
@@ -124,7 +123,7 @@ export default function Navbar() {
                  </DropdownMenuContent>
                </DropdownMenu>
              ) : (
-               <Link href="/login" className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl bg-gray-50 flex items-center justify-center text-slate-700 hover:text-[#2563EB] transition-all active:scale-95 shadow-sm">
+               <Link href="/login" className="w-11 h-11 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl bg-gray-50 flex items-center justify-center text-slate-700 hover:text-[#2563EB] transition-all active:scale-95 shadow-sm">
                  <User className="w-6 h-6 lg:w-8 lg:h-8" />
                </Link>
              )}
