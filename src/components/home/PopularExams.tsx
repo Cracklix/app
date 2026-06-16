@@ -19,8 +19,7 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Popular Exams v54.0.
- * DESIGN: Compact mobile-first cards (min-h-180px) and 64px logos.
+ * @fileOverview High-Fidelity Popular Exams v55.0 (Title Case).
  */
 
 function getBoardFallbackIcon(id: string, abbrev: string) {
@@ -60,7 +59,7 @@ export default function PopularExams() {
          
          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-4 text-left">
             <div className="space-y-1">
-               <h2 className="text-3xl md:text-5xl font-black text-[#04102B] uppercase tracking-tight leading-none">Popular Punjab Exams</h2>
+               <h2 className="text-3xl md:text-5xl font-black text-[#04102B] tracking-tight leading-none">Popular Punjab Exams</h2>
                <p className="text-[#94A3B8] font-bold uppercase tracking-widest text-[10px] md:text-xs">Most Targeted Recruitment Exams</p>
             </div>
             <Link href="/exams" className="flex items-center gap-2 text-[#2F6BFF] font-black uppercase text-[10px] md:text-sm hover:underline tracking-widest group">

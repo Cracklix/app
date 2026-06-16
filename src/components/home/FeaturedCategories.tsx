@@ -16,8 +16,7 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Elite Exam Categories Hub v9.0 (Responsive).
- * FIXED: Oversized typography and logo scaling on mobile.
+ * @fileOverview Elite Exam Categories Hub v10.0 (Title Case).
  */
 
 const CATEGORY_META = [
@@ -25,7 +24,7 @@ const CATEGORY_META = [
     id: "punjab-govt",
     title: "Punjab General Exams",
     desc: "Police • PSSSB • PPSC • Revenue",
-    icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR8W5eTBPdzztA7cziqnMmtWk9InL1yflUD_xb4vAsLw&s=10",
+    icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR8W5eTBPdzztA7czinmtWk9InL1yflUD_xb4vAsLw&s=10",
     color: "text-primary",
     bgColor: "bg-orange-50"
   },
@@ -79,7 +78,7 @@ export default function FeaturedCategories() {
       const count = (mounted && exams) ? exams.filter((e: any) => e.categoryId === cat.id).length : 0;
       return {
         ...cat,
-        countLabel: `${count} EXAMS LIVE`
+        countLabel: `${count} Exams Live`
       };
     });
   }, [exams, mounted]);
@@ -95,8 +94,8 @@ export default function FeaturedCategories() {
                 <Landmark className="h-4 w-4 text-primary" />
                 <span className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-slate-500">EXAM CATEGORIES</span>
              </div>
-             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#0F172A] uppercase tracking-tight leading-[0.95] break-words">
-                CHOOSE YOUR <span className="text-primary">CATEGORY</span>
+             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#0F172A] tracking-tight leading-[0.95] break-words">
+                Choose Your <span className="text-primary">Category</span>
              </h2>
              <p className="text-slate-500 text-xs xs:text-sm md:text-lg font-medium">Select your field to explore preparation hubs.</p>
           </div>

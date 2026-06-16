@@ -18,8 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Latest Mock Hub v40.0.
- * DESIGN: 380px x 420px geometry with 32px radius and 70px circular logos.
+ * @fileOverview Elite Latest Mock Hub v41.0 (Title Case).
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -67,7 +66,7 @@ export default function LatestMocks() {
                 <Zap className="h-6 w-6 text-primary fill-current" />
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">PUNJAB REGISTRY</span>
               </div>
-              <h2 className="text-3xl md:text-5xl font-headline font-black text-[#04102B] uppercase tracking-tight leading-none">Latest Mock Tests</h2>
+              <h2 className="text-3xl md:text-5xl font-headline font-black text-[#04102B] tracking-tight leading-none">Latest Mock Tests</h2>
               <p className="text-[#64748B] font-medium text-lg">High-fidelity preparation nodes recently deployed.</p>
            </div>
            <Link href="/mocks" className="bg-slate-50 px-6 py-3 rounded-xl text-primary font-black uppercase text-[10px] md:text-xs tracking-widest hover:bg-primary hover:text-white transition-all flex items-center gap-2 shadow-sm">

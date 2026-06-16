@@ -22,8 +22,8 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Elite Hero Hub v76.0 (Fully Responsive).
- * FIXED: Headline text clipping and oversized layout on mobile.
+ * @fileOverview Elite Hero Hub v77.0 (Title Case Optimization).
+ * UPDATED: Switched from uppercase to Title Case for a premium look.
  */
 
 export default function Hero() {
@@ -126,13 +126,13 @@ export default function Hero() {
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-100 shadow-sm mx-auto lg:mx-0">
               <Star className="h-3 w-3 text-amber-500 fill-current" />
               <span className="text-[8px] xs:text-[10px] md:text-xs font-black text-[#334155] tracking-widest uppercase truncate max-w-[200px] xs:max-w-none">
-                {stats?.totalUsers ? stats.totalUsers.toLocaleString() : "15,000"}+ ASPIRANTS TRUST CRACKLIX
+                {stats?.totalUsers ? stats.totalUsers.toLocaleString() : "15,000"}+ Aspirants Trust Cracklix
               </span>
             </motion.div>
 
-            <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-slate-900 leading-[0.95] tracking-tight antialiased uppercase break-words">
+            <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-slate-900 leading-[1.05] tracking-tight antialiased break-words">
               Crack Punjab <br />
-              <span className="text-blue-600">Govt Exams</span> <br />
+              <span className="text-blue-600">Government Exams</span> <br />
               With Confidence
             </h1>
             
