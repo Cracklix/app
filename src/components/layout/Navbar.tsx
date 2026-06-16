@@ -7,7 +7,6 @@ import {
   User, 
   LogOut, 
   Menu, 
-  Gem, 
   ShieldCheck
 } from "lucide-react";
 import { useUser, useAuth } from "@/firebase";
@@ -31,7 +30,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Hardened Header v95.0 (Final Specs).
+ * @fileOverview Hardened Header v96.0 (Pass Section Removed).
  * LAYOUT: [Menu + Logo] -------------------- [Search + Profile]
  * SIZING: Mobile 72px / Desktop 88px.
  * BUTTONS: Mobile 48px / Desktop 64px.
@@ -89,14 +88,6 @@ export default function Navbar() {
 
           {/* RIGHT GROUP: SEARCH + PROFILE */}
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
-             <Button asChild className="h-[56px] w-[72px] lg:w-[140px] lg:h-[64px] bg-[#2563EB] hover:bg-blue-700 text-white font-black text-[10px] lg:text-xs tracking-widest rounded-2xl lg:rounded-3xl gap-2 shadow-lg shadow-blue-600/20 border-none transition-all active:scale-95">
-                <Link href="/pass" className="flex items-center justify-center gap-2">
-                  <Gem className="h-4 w-4 lg:h-5 lg:w-5" /> 
-                  <span className="hidden lg:inline">ELITE PASS</span>
-                  <span className="lg:hidden">PASS</span>
-                </Link>
-             </Button>
-
              <Link href="/search" className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl bg-gray-50 flex items-center justify-center text-slate-700 hover:text-[#2563EB] transition-all active:scale-95 shadow-sm">
                 <Search className="w-6 h-6 lg:w-8 lg:h-8" />
              </Link>
