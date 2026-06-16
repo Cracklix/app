@@ -22,9 +22,9 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Native-Scaled Elite Hero Hub v64.0.
- * FIXED: Permanently removed external Golden Temple URL.
- * ASSET: Using local /logo/hero-student.png for clean focal point.
+ * @fileOverview Native-Scaled Elite Hero Hub v65.0.
+ * FIXED: Permanently mapped to local /images/hero-student.png.
+ * ASSET: Using local student illustration with subject-labeled books.
  */
 
 export default function Hero() {
@@ -38,8 +38,8 @@ export default function Hero() {
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
 
-  // Strictly local asset node
-  const heroImage = "/logo/hero-student.png";
+  // Strictly local institutional asset
+  const heroImage = "/images/hero-student.png";
 
   const liveStats = useMemo(() => {
     const format = (n: number, fallback: string) => {
@@ -137,7 +137,6 @@ export default function Hero() {
                      src={heroImage}
                      alt="Cracklix Preparation" 
                      className="w-full h-auto object-contain drop-shadow-3xl"
-                     // Purged external fallback URL
                    />
                 </motion.div>
              </div>
@@ -199,7 +198,7 @@ export default function Hero() {
                       ) : (
                         <p className="text-xl md:text-3xl lg:text-4xl font-black text-slate-900 tracking-tighter leading-none tabular-nums">{stat.val}</p>
                       )}
-                      <p className="text-[10px] md:text-[11px] font-black text-slate-900 uppercase tracking-widest leading-none">{stat.label}</p>
+                      <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest leading-none">{stat.label}</p>
                     </div>
                   </Card>
                 </motion.div>
