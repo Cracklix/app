@@ -7,8 +7,7 @@ import Logo from "@/components/brand/Logo";
 import { TELEGRAM_GROUP, INSTAGRAM_PROFILE, SUPPORT_EMAIL, SUPPORT_PHONE } from "@/lib/constants";
 
 /**
- * @fileOverview High-Fidelity Institutional Footer v13.2.
- * UPDATED: Logo size 120px for high-density branding.
+ * @fileOverview High-Fidelity Institutional Footer v13.3 (Title Case Update).
  */
 
 export default function Footer() {
@@ -26,7 +25,7 @@ export default function Footer() {
             </div>
             
             <p className="text-[15px] text-[#CBD5E1] leading-relaxed max-w-[300px]">
-              Punjab&apos;s most advanced government exam portal. Built for serious aspirants.
+              Punjab's most advanced government exam portal. Built for serious aspirants.
             </p>
             
             <div className="space-y-3">
@@ -47,17 +46,17 @@ export default function Footer() {
           </div>
 
           <div className="space-y-8">
-            <h4 className="text-[18px] font-bold text-white tracking-tight uppercase">Support Hub</h4>
+            <h4 className="text-[18px] font-bold text-white tracking-tight">Support Hub</h4>
             <ul className="flex flex-col gap-5">
               <FooterLink href="/support">Support Center</FooterLink>
               <FooterLink href="/help">Help Articles</FooterLink>
-              <FooterLink href="/privacy">Privacy Node</FooterLink>
-              <FooterLink href="/terms">Terms Node</FooterLink>
+              <FooterLink href="/privacy">Privacy Policy</FooterLink>
+              <FooterLink href="/terms">Terms of Service</FooterLink>
             </ul>
           </div>
 
           <div className="space-y-8">
-            <h4 className="text-[18px] font-bold text-white tracking-tight uppercase">Resources</h4>
+            <h4 className="text-[18px] font-bold text-white tracking-tight">Resources</h4>
             <ul className="flex flex-col gap-5">
               <FooterLink href="/mocks">Mock Tests</FooterLink>
               <FooterLink href="/pyqs">Previous Papers</FooterLink>
@@ -67,7 +66,7 @@ export default function Footer() {
           </div>
 
           <div className="space-y-8">
-            <h4 className="text-[18px] font-bold text-white tracking-tight uppercase">Connect</h4>
+            <h4 className="text-[18px] font-bold text-white tracking-tight">Connect With Us</h4>
             <div className="space-y-6">
               <div className="flex items-center gap-4 group">
                  <div className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-[#2F6BFF]">
@@ -84,7 +83,7 @@ export default function Footer() {
               </div>
 
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-[#2F6BFF]/20">
-                 <span className="text-[11px] font-bold text-[#2F6BFF] uppercase tracking-wider">Official Resolution Channel</span>
+                 <span className="text-[11px] font-bold text-[#2F6BFF] tracking-tight">Official Resolution Channel</span>
               </div>
             </div>
           </div>
@@ -98,7 +97,7 @@ export default function Footer() {
             © {currentYear} Cracklix. All Rights Reserved.
           </p>
           <p className="text-[#64748B] text-[14px] hidden md:block">
-            Punjab&apos;s Leading Preparation Ecosystem.
+            Punjab's Leading Preparation Ecosystem.
           </p>
         </div>
       </div>

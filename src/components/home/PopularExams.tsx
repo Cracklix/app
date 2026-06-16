@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useState, useEffect } from "react"
@@ -21,7 +20,7 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Popular Exams v56.0 (next/image optimized).
+ * @fileOverview High-Fidelity Popular Exams v57.0 (Title Case Update).
  */
 
 function getBoardFallbackIcon(id: string, abbrev: string) {
@@ -61,10 +60,10 @@ export default function PopularExams() {
          
          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-4 text-left">
             <div className="space-y-1">
-               <h2 className="text-3xl md:text-5xl font-black text-[#04102B] tracking-tight leading-none">Popular Punjab Exams</h2>
-               <p className="text-[#94A3B8] font-bold uppercase tracking-widest text-[10px] md:text-xs">Most Targeted Recruitment Exams</p>
+               <h2 className="text-3xl md:text-5xl font-extrabold text-[#04102B] tracking-tight leading-none">Popular Punjab Exams</h2>
+               <p className="text-[#94A3B8] font-bold text-[10px] md:text-xs tracking-tight uppercase">Most Targeted Recruitment Exams</p>
             </div>
-            <Link href="/exams" className="flex items-center gap-2 text-[#2F6BFF] font-black uppercase text-[10px] md:text-sm hover:underline tracking-widest group">
+            <Link href="/exams" className="flex items-center gap-2 text-blue-600 font-bold text-sm hover:underline tracking-tight group">
                View All Exams <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
          </div>
@@ -96,24 +95,24 @@ export default function PopularExams() {
                               )}
                            </div>
                            <div className="min-w-0">
-                              <h3 className="text-xl md:text-2xl font-black text-[#04102B] uppercase tracking-tight group-hover:text-[#2F6BFF] transition-colors truncate">{board.abbreviation} Exams</h3>
+                              <h3 className="text-xl md:text-2xl font-bold text-[#04102B] tracking-tight group-hover:text-blue-600 transition-colors truncate">{board.abbreviation} Exams</h3>
                               <p className="text-[12px] font-semibold text-[#94A3B8] leading-tight line-clamp-1">{board.name}</p>
                            </div>
                         </div>
 
                         <div className="flex items-center gap-6 mt-auto">
                            <div className="flex items-center gap-2">
-                              <BookOpen className="h-4 w-4 text-[#2F6BFF]" />
-                              <span className="text-[12px] font-bold text-[#64748B] uppercase">{examCount} Exams</span>
+                              <BookOpen className="h-4 w-4 text-blue-600" />
+                              <span className="text-[12px] font-bold text-[#64748B]">{examCount} Exams</span>
                            </div>
                            <div className="flex items-center gap-2">
-                              <Zap className="h-4 w-4 text-[#F97316]" />
-                              <span className="text-[12px] font-bold text-[#64748B] uppercase">{mockCount} Mocks</span>
+                              <Zap className="h-4 w-4 text-blue-600" />
+                              <span className="text-[12px] font-bold text-[#64748B]">{mockCount} Mocks</span>
                            </div>
                         </div>
 
                         <div className="mt-6 pt-4 border-t border-slate-50">
-                           <span className="text-[#2F6BFF] font-black uppercase text-[11px] tracking-widest flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+                           <span className="text-blue-600 font-bold text-sm tracking-tight flex items-center gap-2 group-hover:translate-x-1 transition-transform">
                               Explore Exams <ArrowRight className="h-3 w-3" />
                            </span>
                         </div>

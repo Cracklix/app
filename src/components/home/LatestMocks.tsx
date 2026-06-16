@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useState, useEffect } from "react"
@@ -20,7 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Latest Mock Hub v42.0 (next/image optimized).
+ * @fileOverview Elite Latest Mock Hub v43.0 (Title Case Update).
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -65,13 +64,13 @@ export default function LatestMocks() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6 text-left">
            <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <Zap className="h-6 w-6 text-primary fill-current" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">PUNJAB REGISTRY</span>
+                <Zap className="h-6 w-6 text-blue-600 fill-current" />
+                <span className="text-[10px] font-bold text-slate-400 tracking-tight">Punjab Registry</span>
               </div>
-              <h2 className="text-3xl md:text-5xl font-headline font-black text-[#04102B] tracking-tight leading-none">Latest Mock Tests</h2>
+              <h2 className="text-3xl md:text-5xl font-extrabold text-[#04102B] tracking-tight leading-none">Latest Mock Tests</h2>
               <p className="text-[#64748B] font-medium text-lg">High-fidelity preparation nodes recently deployed.</p>
            </div>
-           <Link href="/mocks" className="bg-slate-50 px-6 py-3 rounded-xl text-primary font-black uppercase text-[10px] md:text-xs tracking-widest hover:bg-primary hover:text-white transition-all flex items-center gap-2 shadow-sm">
+           <Link href="/mocks" className="bg-slate-50 px-6 py-3 rounded-xl text-blue-600 font-bold text-sm tracking-tight hover:bg-blue-600 hover:text-white transition-all flex items-center gap-2 shadow-sm">
               Explore All <ArrowRight className="h-4 w-4" />
            </Link>
         </div>
@@ -92,10 +91,10 @@ export default function LatestMocks() {
                   
                   <div className="absolute top-6 right-6 flex flex-col gap-2 items-end">
                     {(i === 0 || i === 1) && (
-                      <Badge className="bg-orange-50 text-[#D97706] border-none text-[8px] font-black uppercase tracking-widest px-3 py-1 shadow-sm">🔥 Popular</Badge>
+                      <Badge className="bg-orange-50 text-[#D97706] border-none text-[8px] font-bold px-3 py-1 shadow-sm">🔥 Popular</Badge>
                     )}
                     {mock.isTrending && (
-                      <Badge className="bg-blue-50 text-[#2F6BFF] border-none text-[8px] font-black uppercase tracking-widest px-3 py-1 shadow-sm">⭐ Featured</Badge>
+                      <Badge className="bg-blue-50 text-[#2F6BFF] border-none text-[8px] font-bold px-3 py-1 shadow-sm">⭐ Featured</Badge>
                     )}
                   </div>
 
@@ -110,7 +109,7 @@ export default function LatestMocks() {
                          onError={() => setFailedImages(prev => ({...prev, [board.id]: true}))}
                        />
                      ) : (
-                       <Zap className="h-8 w-8 text-primary fill-current opacity-40" />
+                       <Zap className="h-8 w-8 text-blue-600 fill-current opacity-40" />
                      )}
                   </div>
 
@@ -120,24 +119,24 @@ export default function LatestMocks() {
                      </CardTitle>
 
                      <div className="flex items-center justify-center gap-4 text-[14px] font-bold text-[#64748B] tracking-tight">
-                        <span className="flex items-center gap-1.5"><BookOpen className="h-4 w-4 text-primary opacity-50" /> {mock.totalQuestions} Qs</span>
+                        <span className="flex items-center gap-1.5"><BookOpen className="h-4 w-4 text-blue-600 opacity-50" /> {mock.totalQuestions} Qs</span>
                         <div className="h-4 w-px bg-slate-100" />
-                        <span className="flex items-center gap-1.5"><Clock className="h-4 w-4 text-primary opacity-50" /> {mock.duration} Min</span>
+                        <span className="flex items-center gap-1.5"><Clock className="h-4 w-4 text-blue-600 opacity-50" /> {mock.duration} Min</span>
                      </div>
 
                      <div className="flex items-center justify-center gap-3">
                         <DifficultyBadge level={difficulty} isPremium={isPremium} />
-                        <Badge variant="outline" className="border-slate-100 text-[#94A3B8] text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-widest">{board?.abbreviation || 'PSSSB'}</Badge>
+                        <Badge variant="outline" className="border-slate-100 text-[#94A3B8] text-[9px] font-bold px-3 py-1 rounded-lg tracking-tight">{board?.abbreviation || 'PSSSB'}</Badge>
                      </div>
                   </CardHeader>
 
                   <CardContent className="p-0 mt-10">
                      {locked ? (
-                       <Button asChild className="w-full h-[56px] bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-widest rounded-[18px] transition-all shadow-xl shadow-amber-500/10 active:scale-95 border-none gap-2">
+                       <Button asChild className="w-full h-[56px] bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm rounded-[18px] transition-all shadow-xl shadow-amber-500/10 active:scale-95 border-none gap-2">
                           <Link href="/pass"><Lock className="h-4 w-4" /> Unlock Premium Pass</Link>
                        </Button>
                      ) : (
-                       <Button asChild className="w-full h-[56px] bg-[#04102B] hover:bg-[#2F6BFF] text-white font-black text-xs uppercase tracking-widest rounded-[18px] transition-all shadow-xl shadow-slate-900/10 active:scale-95 border-none group/btn">
+                       <Button asChild className="w-full h-[56px] bg-[#04102B] hover:bg-[#2F6BFF] text-white font-bold text-sm rounded-[18px] transition-all shadow-xl shadow-slate-900/10 active:scale-95 border-none group/btn">
                           <Link href={`/mocks/${mock.id}`} className="flex items-center justify-center gap-2">
                              Attempt Now <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
                           </Link>
@@ -155,8 +154,8 @@ export default function LatestMocks() {
 }
 
 function DifficultyBadge({ level, isPremium }: { level: string, isPremium: boolean }) {
-  if (isPremium) return <Badge className="bg-[#EEF2FF] text-[#2F6BFF] border-none text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-widest">PREMIUM</Badge>;
-  if (level === 'Easy') return <Badge className="bg-[#DCFCE7] text-[#16A34A] border-none text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-widest">EASY</Badge>;
-  if (level === 'Hard') return <Badge className="bg-[#FEE2E2] text-[#DC2626] border-none text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-widest">HARD</Badge>;
-  return <Badge className="bg-[#FEF3C7] text-[#D97706] border-none text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-widest">MEDIUM</Badge>;
+  if (isPremium) return <Badge className="bg-[#EEF2FF] text-[#2F6BFF] border-none text-[9px] font-bold px-3 py-1 rounded-lg tracking-tight">Premium</Badge>;
+  if (level === 'Easy') return <Badge className="bg-[#DCFCE7] text-[#16A34A] border-none text-[9px] font-bold px-3 py-1 rounded-lg tracking-tight">Easy</Badge>;
+  if (level === 'Hard') return <Badge className="bg-[#FEE2E2] text-[#DC2626] border-none text-[9px] font-bold px-3 py-1 rounded-lg tracking-tight">Hard</Badge>;
+  return <Badge className="bg-[#FEF3C7] text-[#D97706] border-none text-[9px] font-bold px-3 py-1 rounded-lg tracking-tight">Medium</Badge>;
 }

@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -18,8 +17,7 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Elite Exam Categories Hub v12.0.
- * UPDATED: Optimized icons with next/image for better performance and data usage.
+ * @fileOverview Elite Exam Categories Hub v13.0 (Title Case Update).
  */
 
 const CATEGORY_META = [
@@ -95,14 +93,14 @@ export default function FeaturedCategories() {
           <div className="space-y-1.5 md:space-y-2">
              <div className="flex items-center gap-2">
                 <Landmark className="h-4 w-4 text-primary" />
-                <span className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-slate-500">EXAM CATEGORIES</span>
+                <span className="text-[9px] md:text-[11px] font-bold text-slate-500 tracking-tight">Exam Categories</span>
              </div>
-             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#0F172A] tracking-tight leading-[0.95] break-words">
-                Choose Your <span className="text-primary">Category</span>
+             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#0F172A] tracking-tight leading-[0.95] break-words">
+                Choose Your <span className="text-blue-600">Category</span>
              </h2>
              <p className="text-slate-500 text-xs xs:text-sm md:text-lg font-medium">Select your field to explore preparation hubs.</p>
           </div>
-          <Button asChild variant="ghost" className="text-primary font-black uppercase text-[9px] md:text-[11px] tracking-widest gap-2 hover:bg-slate-50 px-0 md:px-4">
+          <Button asChild variant="ghost" className="text-blue-600 font-bold text-sm tracking-tight gap-2 hover:bg-slate-50 px-0 md:px-4">
              <Link href="/exams">View All <ArrowRight className="h-3.5 w-3.5" /></Link>
           </Button>
         </div>
@@ -130,17 +128,17 @@ export default function FeaturedCategories() {
                      </div>
                      
                      <div className="space-y-1 md:space-y-2 flex-1 min-w-0">
-                        <h3 className="text-base xs:text-lg md:text-xl font-black text-[#0F172A] uppercase leading-[1.1] group-hover:text-primary transition-colors line-clamp-2">{cat.title}</h3>
-                        <p className="text-[9px] xs:text-[10px] md:text-sm font-semibold text-slate-400 leading-tight uppercase tracking-tight line-clamp-2">{cat.desc}</p>
+                        <h3 className="text-base xs:text-lg md:text-xl font-bold text-[#0F172A] leading-[1.1] group-hover:text-blue-600 transition-colors line-clamp-2">{cat.title}</h3>
+                        <p className="text-[9px] xs:text-[10px] md:text-sm font-semibold text-slate-400 leading-tight tracking-tight line-clamp-2">{cat.desc}</p>
                      </div>
 
                      <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between">
                         {loading ? (
                           <Skeleton className="h-2.5 w-16 bg-slate-50 rounded" />
                         ) : (
-                          <span className="text-[8px] xs:text-[9px] md:text-[10px] font-black text-[#0F172A] uppercase tracking-widest">{cat.countLabel}</span>
+                          <span className="text-[8px] xs:text-[9px] md:text-[10px] font-bold text-[#0F172A] tracking-tight">{cat.countLabel}</span>
                         )}
-                        <div className="h-6 w-6 xs:h-7 xs:w-7 md:h-8 md:w-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all text-slate-300">
+                        <div className="h-6 w-6 xs:h-7 xs:w-7 md:h-8 md:w-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all text-slate-300">
                            <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4" />
                         </div>
                      </div>

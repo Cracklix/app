@@ -28,8 +28,7 @@ import Logo from "@/components/brand/Logo";
 import { TELEGRAM_GROUP, INSTAGRAM_PROFILE } from "@/lib/constants";
 
 /**
- * @fileOverview Premium Sidebar Hub v21.0.
- * UPDATED: Logo size 120px and header height 140px.
+ * @fileOverview Premium Sidebar Hub v22.0 (Title Case Update).
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -70,7 +69,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex flex-col h-full bg-white font-body select-none text-left relative overflow-hidden">
       
-      {/* 1. BRAND HEADER - 140px (SYNCHRONIZED WITH NAVBAR) */}
+      {/* 1. BRAND HEADER - 140px */}
       <div className="flex items-center justify-between px-4 h-[140px] border-b shrink-0 bg-white">
         <Logo variant="light" href="/" onClick={onClose} />
         <button 
@@ -85,7 +84,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
       {/* 2. NAVIGATION HUB */}
       <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar py-2">
         
-        {/* PROFILE CARD - 32px ROUNDING */}
+        {/* PROFILE CARD */}
         <div className="mx-5 mt-6">
            <Link href="/profile" onClick={onClose} className="block active:scale-[0.98] transition-all">
               <div className="p-5 rounded-[32px] border border-blue-100 bg-white flex items-center gap-4 shadow-sm hover:shadow-md transition-all">
@@ -93,12 +92,12 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                     <StudentAvatar profile={profile} className="h-full w-full border-none" iconClassName="w-8 h-8" />
                  </div>
                  <div className="min-w-0 flex-1 space-y-2">
-                    <h3 className="text-lg font-bold text-slate-900 uppercase tracking-tight leading-tight break-words">
+                    <h3 className="text-lg font-bold text-slate-900 tracking-tight leading-tight break-words">
                       {profile?.name || "Aspirant"}
                     </h3>
                     <div>
-                      <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#2563EB] text-white text-[10px] font-black uppercase tracking-widest shadow-sm">
-                        {profile?.pass?.active ? (profile.pass.plan || 'ELITE') : 'FREE_PASS'}
+                      <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#2563EB] text-white text-[10px] font-bold shadow-sm">
+                        {profile?.pass?.active ? (profile.pass.plan || 'Elite') : 'Free Pass'}
                       </span>
                     </div>
                  </div>
@@ -108,8 +107,8 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
         </div>
 
         {/* SECTION HEADING */}
-        <h4 className="px-6 mt-8 mb-4 text-xs font-bold tracking-[0.25em] text-slate-400 uppercase">
-          Personalized Prep
+        <h4 className="px-6 mt-8 mb-4 text-xs font-bold tracking-tight text-slate-400">
+          Personalized Preparation
         </h4>
 
         {/* MENU ITEMS */}
@@ -122,21 +121,21 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                    isActive ? "bg-blue-50 text-[#2563EB] shadow-sm" : "text-slate-600 hover:bg-slate-50"
                  )}>
                    <item.icon className={cn("w-6 h-6 shrink-0 transition-colors", isActive ? "text-[#2563EB]" : "text-slate-500 group-hover:text-[#2563EB]")} />
-                   <span className={cn("font-semibold uppercase text-sm tracking-tight", isActive ? "text-[#2563EB]" : "text-slate-700")}>{item.label}</span>
+                   <span className={cn("font-semibold text-sm tracking-tight", isActive ? "text-[#2563EB]" : "text-slate-700")}>{item.label}</span>
                  </Link>
               )
            })}
         </div>
 
         {/* RESOLUTION HUB */}
-        <h4 className="px-6 mt-8 mb-4 text-xs font-bold tracking-[0.25em] text-slate-400 uppercase">
-          Resolution Hub
+        <h4 className="px-6 mt-8 mb-4 text-xs font-bold tracking-tight text-slate-400">
+          Support Hub
         </h4>
         <div className="flex flex-col gap-1 px-4">
            {supportItems.map((item: any) => (
               <Link key={item.label} href={item.href} onClick={onClose} className="w-full h-14 px-6 flex items-center gap-4 rounded-2xl hover:bg-slate-50 transition-all active:scale-[0.98] text-slate-600">
                 <item.icon className="w-6 h-6 text-slate-500" />
-                <span className="font-semibold uppercase text-sm tracking-tight text-slate-700">{item.label}</span>
+                <span className="font-semibold text-sm tracking-tight text-slate-700">{item.label}</span>
               </Link>
            ))}
         </div>
@@ -146,9 +145,9 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
       <div className="p-4 border-t border-slate-100 bg-white mt-auto pb-[env(safe-area-inset-bottom)]">
          <button 
            onClick={handleLogout} 
-           className="h-14 w-full rounded-2xl bg-slate-900 text-white hover:bg-black transition-all font-semibold uppercase text-xs tracking-widest active:scale-95 shadow-xl flex items-center justify-center gap-3"
+           className="h-14 w-full rounded-2xl bg-slate-900 text-white hover:bg-black transition-all font-bold text-sm active:scale-95 shadow-xl flex items-center justify-center gap-3"
          >
-           <LogOut className="w-5 h-5 text-primary" />
+           <LogOut className="w-5 h-5 text-blue-600" />
            <span>Log Out Session</span>
          </button>
       </div>

@@ -29,9 +29,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Final Hardened Header v114.0.
- * LAYOUT: 140px height to accommodate 120px Logo.
- * BRANDING: Left-aligned menu + logo group with zero dead space.
+ * @fileOverview Final Hardened Header v115.0 (Title Case Update).
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -152,7 +150,7 @@ export default function Navbar() {
 function NavLink({ href, label, active }: { href: string, label: string, active?: boolean }) {
   return (
     <Link href={href} className={cn(
-      "flex items-center px-4 py-2 rounded-xl font-bold text-[14px] transition-all shrink-0 uppercase tracking-widest",
+      "flex items-center px-4 py-2 rounded-xl font-bold text-[14px] transition-all shrink-0 tracking-tight",
       active 
         ? "bg-blue-50 text-[#2563EB] shadow-sm" 
         : "text-slate-400 hover:text-[#04102B] hover:bg-gray-50"

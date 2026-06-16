@@ -22,8 +22,7 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Elite Hero Hub v87.0 (Locked Assets & Final Scaling).
- * SIZING: Mobile 220px / Desktop 420px. Min-Height: 520px/680px.
+ * @fileOverview Elite Hero Hub v88.0 (Premium Title Case Update).
  */
 export default function Hero() {
   const db = useFirestore();
@@ -73,14 +72,14 @@ export default function Hero() {
           <div className="space-y-4 md:space-y-6 max-w-4xl min-w-0">
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-100 shadow-sm mx-auto lg:mx-0">
               <Star className="h-3 w-3 text-amber-500 fill-current" />
-              <span className="text-[8px] xs:text-[10px] md:text-xs font-black text-[#334155] tracking-widest uppercase truncate max-w-[200px] xs:max-w-none">
+              <span className="text-[10px] md:text-xs font-bold text-[#334155] tracking-tight truncate max-w-[220px] xs:max-w-none">
                 {stats?.totalUsers ? stats.totalUsers.toLocaleString() : "15,000"}+ Aspirants Trust Cracklix
               </span>
             </motion.div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-slate-900 leading-[1.05] tracking-tight antialiased break-words uppercase">
-              Crack Punjab <br />
-              <span className="text-blue-600">Government Exams</span> <br />
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.05] antialiased break-words">
+              Crack Punjab 
+              <span className="block text-blue-600">Government Exams</span> 
               With Confidence
             </h1>
             
@@ -117,20 +116,20 @@ export default function Hero() {
                       {f.icon}
                    </div>
                    <div className="text-left min-w-0">
-                      <h3 className="text-sm md:text-lg font-black text-[#04102B] uppercase tracking-tight leading-none truncate">{f.title}</h3>
-                      <p className="text-[8px] xs:text-[10px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1.5 truncate">{f.sub}</p>
+                      <h3 className="text-sm md:text-lg font-bold text-[#04102B] leading-none truncate">{f.title}</h3>
+                      <p className="text-[9px] xs:text-[10px] md:text-[11px] font-semibold text-slate-400 mt-1.5 truncate">{f.sub}</p>
                    </div>
                 </Card>
              ))}
           </div>
 
           <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 w-full sm:w-auto pt-6 pb-12 md:pb-16 border-b border-slate-50">
-            <Button asChild className="h-14 md:h-16 px-8 md:px-12 bg-[#2563EB] hover:bg-blue-700 text-white font-black text-[10px] xs:text-xs md:text-sm tracking-widest rounded-xl md:rounded-2xl shadow-xl shadow-blue-600/20 border-none transition-all active:scale-95">
+            <Button asChild className="h-14 md:h-16 px-8 md:px-12 bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-sm rounded-xl md:rounded-2xl shadow-xl shadow-blue-600/20 border-none transition-all active:scale-95">
               <Link href="/mocks" className="flex items-center justify-center gap-2 md:gap-3">
                 Start Free Mock Test <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild variant="outline" className="h-14 md:h-16 px-8 md:px-12 border-2 border-[#2563EB] bg-white text-[#2563EB] font-black text-[10px] xs:text-xs md:text-sm tracking-widest rounded-xl md:rounded-2xl transition-all active:scale-95 hover:bg-blue-50">
+            <Button asChild variant="outline" className="h-14 md:h-16 px-8 md:px-12 border-2 border-[#2563EB] bg-white text-[#2563EB] font-bold text-sm rounded-xl md:rounded-2xl transition-all active:scale-95 hover:bg-blue-50">
               <Link href="/exams" className="flex items-center justify-center gap-2 md:gap-3">
                 Browse Exams <ArrowRight className="h-4 w-4" />
               </Link>
@@ -147,8 +146,8 @@ export default function Hero() {
                  </div>
                  <div className="min-w-0 flex-1 space-y-0.5 text-left">
                    <p className={cn("text-lg md:text-2xl font-black tabular-nums leading-none tracking-tight", stat.color)}>{stat.val}</p>
-                   <p className="text-[10px] md:text-sm font-bold text-slate-900 leading-none uppercase tracking-tight">{stat.label}</p>
-                   <p className="text-[8px] md:text-[10px] font-medium text-slate-400 uppercase tracking-tight truncate">{stat.desc}</p>
+                   <p className="text-[10px] md:text-sm font-bold text-slate-900 leading-none tracking-tight">{stat.label}</p>
+                   <p className="text-[8px] md:text-[10px] font-medium text-slate-400 tracking-tight truncate">{stat.desc}</p>
                  </div>
                </Card>
              </motion.div>

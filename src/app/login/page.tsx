@@ -25,8 +25,7 @@ import { getDeviceId, getBrowserInfo } from "@/lib/device"
 import { motion } from "framer-motion"
 
 /**
- * @fileOverview Hardened Login Hub v16.2.
- * UPDATED: Lead with maximized 120px logo node.
+ * @fileOverview Hardened Login Hub v16.3 (Premium Title Case).
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -110,7 +109,7 @@ function LoginContent() {
     e.preventDefault()
     setDeviceError(null);
     if (mode === 'register' && password !== confirmPassword) {
-      toast({ variant: "destructive", title: "Audit Blocked", description: "Passwords must match." })
+      toast({ variant: "destructive", title: "Wait", description: "Passwords must match." })
       return
     }
 
@@ -206,7 +205,7 @@ function LoginContent() {
 
   return (
     <div className="min-h-screen bg-[#020817] flex flex-col items-center justify-center p-4 md:p-10 relative overflow-hidden text-white">
-      <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/10 blur-[140px] rounded-full" />
+      <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-600/10 blur-[140px] rounded-full" />
       
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="z-10 w-full max-w-[440px] space-y-8">
         <div className="flex flex-col items-center h-auto w-full mb-4">
@@ -217,18 +216,18 @@ function LoginContent() {
           <div className="bg-rose-500/10 border border-rose-500/20 p-5 md:p-8 rounded-[2rem] flex items-start gap-5 animate-in slide-in-from-top-6 duration-700">
             <Smartphone className="h-7 w-7 text-rose-500 shrink-0" />
             <div className="space-y-2">
-              <p className="text-sm font-black uppercase text-rose-500 tracking-widest">Security Guard</p>
+              <p className="text-sm font-bold text-rose-500 tracking-tight">Security Guard</p>
               <p className="text-[13px] text-slate-400 leading-relaxed font-medium">{deviceError}</p>
-              <Button onClick={() => setDeviceError(null)} variant="ghost" className="h-8 px-0 text-white font-black text-[9px] hover:bg-transparent hover:text-white uppercase tracking-widest">Switch Account</Button>
+              <Button onClick={() => setDeviceError(null)} variant="ghost" className="h-8 px-0 text-white font-bold text-[11px] hover:bg-transparent hover:text-white tracking-tight">Switch Account</Button>
             </div>
           </div>
         )}
 
         <Card className="border-white/5 bg-white/[0.02] backdrop-blur-3xl shadow-5xl rounded-[2.5rem] md:rounded-[4rem] overflow-hidden border-2">
-          <div className="h-1.5 w-full bg-primary" />
+          <div className="h-1.5 w-full bg-blue-600" />
           <CardHeader className="text-center pt-10 md:pt-14 pb-4 px-8 md:px-16">
-            <CardTitle className="text-2xl md:text-4xl font-headline font-black uppercase tracking-tight text-white">{mode === 'login' ? "Login" : "Sign Up"}</CardTitle>
-            <CardDescription className="text-slate-500 font-bold uppercase text-[9px] md:text-[11px] tracking-[0.3em] mt-3">REGISTRY ACCESS v16.0</CardDescription>
+            <CardTitle className="text-2xl md:text-4xl font-extrabold tracking-tight text-white">{mode === 'login' ? "Login" : "Sign Up"}</CardTitle>
+            <CardDescription className="text-slate-500 font-bold text-[10px] md:text-[12px] tracking-tight mt-3">Registry Access v16.0</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 md:space-y-10 pb-12 md:pb-20 px-8 md:px-16">
             <form onSubmit={handleEmailAuth} className="space-y-4 md:space-y-6">
@@ -238,16 +237,16 @@ function LoginContent() {
                     value={name} 
                     onChange={(e) => setName(e.target.value)} 
                     required 
-                    className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-primary text-sm md:text-lg font-medium px-6" 
+                    className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-blue-600 text-sm md:text-lg font-medium px-6" 
                     placeholder="Full Identity" 
                   />
                   <div className="relative">
-                    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 font-black text-sm md:text-lg">+91</span>
+                    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 font-bold text-sm md:text-lg">+91</span>
                     <Input 
                       value={phone} 
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0,10))} 
                       required 
-                      className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-primary text-sm md:text-lg font-black pl-16 px-6 tracking-widest" 
+                      className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-blue-600 text-sm md:text-lg font-bold pl-16 px-6 tracking-widest" 
                       placeholder="Mobile Node" 
                     />
                   </div>
@@ -258,7 +257,7 @@ function LoginContent() {
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)} 
                 required 
-                className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-primary text-sm md:text-lg font-medium px-6" 
+                className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-blue-600 text-sm md:text-lg font-medium px-6" 
                 placeholder="Email Address" 
               />
               <div className="space-y-2">
@@ -268,7 +267,7 @@ function LoginContent() {
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
                     required 
-                    className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-primary pr-14 px-6 text-sm md:text-lg" 
+                    className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-blue-600 pr-14 px-6 text-sm md:text-lg" 
                     placeholder="Password" 
                   />
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-600 hover:text-white transition-colors">
@@ -277,7 +276,7 @@ function LoginContent() {
                 </div>
                 {mode === 'login' && (
                   <div className="flex justify-end pr-2">
-                    <button type="button" onClick={() => setIsResetDialogOpen(true)} className="text-[9px] md:text-[11px] font-black uppercase text-primary hover:text-orange-400 transition-colors tracking-widest">Recover Password?</button>
+                    <button type="button" onClick={() => setIsResetDialogOpen(true)} className="text-[10px] md:text-[12px] font-bold text-blue-600 hover:text-blue-400 transition-colors tracking-tight">Recover Password?</button>
                   </div>
                 )}
               </div>
@@ -288,7 +287,7 @@ function LoginContent() {
                     value={confirmPassword} 
                     onChange={(e) => setConfirmPassword(e.target.value)} 
                     required 
-                    className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-primary pr-14 px-6 text-sm md:text-lg" 
+                    className="h-12 md:h-16 rounded-2xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-blue-600 pr-14 px-6 text-sm md:text-lg" 
                     placeholder="Verify Password" 
                   />
                   <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-600 hover:text-white transition-colors">
@@ -296,16 +295,16 @@ function LoginContent() {
                   </button>
                 </div>
               )}
-              <Button type="submit" className="w-full h-14 md:h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.3em] text-[11px] md:text-[14px] rounded-[1.5rem] md:rounded-[2.5rem] shadow-3xl shadow-primary/20 border-none transition-all active:scale-95" disabled={isActuallyLoading}>
-                {isActuallyLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (mode === 'login' ? "ENTER REGISTRY" : "CREATE NODE")}
+              <Button type="submit" className="w-full h-14 md:h-20 bg-blue-600 hover:bg-blue-700 text-white font-bold text-base md:text-lg rounded-[1.5rem] md:rounded-[2.5rem] shadow-3xl shadow-blue-600/20 border-none transition-all active:scale-95" disabled={isActuallyLoading}>
+                {isActuallyLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (mode === 'login' ? "Enter Registry" : "Create Account")}
               </Button>
             </form>
-            <div className="flex items-center gap-4 py-2"><div className="h-px flex-1 bg-white/5" /><span className="text-[9px] font-black text-slate-700 uppercase tracking-widest">OR CONNECT</span><div className="h-px flex-1 bg-white/5" /></div>
-            <Button variant="outline" className="w-full h-12 md:h-16 border-white/5 bg-white/[0.03] text-white gap-4 rounded-2xl font-black text-[10px] md:text-xs hover:bg-white/10 tracking-[0.2em] shadow-xl uppercase" onClick={handleGoogleSignIn} disabled={isActuallyLoading}>
+            <div className="flex items-center gap-4 py-2"><div className="h-px flex-1 bg-white/5" /><span className="text-[10px] font-bold text-slate-700 tracking-tight">OR CONNECT</span><div className="h-px flex-1 bg-white/5" /></div>
+            <Button variant="outline" className="w-full h-12 md:h-16 border-white/5 bg-white/[0.03] text-white gap-4 rounded-2xl font-bold text-sm hover:bg-white/10 tracking-tight shadow-xl" onClick={handleGoogleSignIn} disabled={isActuallyLoading}>
                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="h-4 w-4 md:h-5 md:w-5" alt="G" /> Google Account
             </Button>
-            <div className="text-center text-[10px] md:text-[12px] font-black uppercase text-slate-600 tracking-widest">
-               {mode === 'login' ? (<p>NEW ASPIRANT? <button onClick={() => setMode('register')} className="text-primary hover:text-white transition-colors">CREATE ACCOUNT</button></p>) : (<p>ALREADY REGISTERED? <button onClick={() => setMode('login')} className="text-primary hover:text-white transition-colors">LOGIN NOW</button></p>)}
+            <div className="text-center text-[11px] md:text-[14px] font-bold text-slate-600 tracking-tight">
+               {mode === 'login' ? (<p>New aspirant? <button onClick={() => setMode('register')} className="text-blue-600 hover:text-white transition-colors">Create account</button></p>) : (<p>Already registered? <button onClick={() => setMode('login')} className="text-blue-600 hover:text-white transition-colors">Login now</button></p>)}
             </div>
           </CardContent>
         </Card>
@@ -314,23 +313,23 @@ function LoginContent() {
       <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
         <DialogContent className="bg-[#0F172A] text-white border-white/10 rounded-[3rem] max-w-[400px] p-10 shadow-5xl text-left">
           <DialogHeader className="text-center space-y-4">
-            <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto text-primary shadow-xl"><RefreshCw className={cn("h-8 w-8", resetLoading && "animate-spin")} /></div>
-            <DialogTitle className="text-2xl font-headline font-black uppercase tracking-tight">Recover Node</DialogTitle>
-            <DialogDescription className="text-slate-500 text-[10px] font-bold uppercase tracking-widest leading-relaxed">ENTER YOUR EMAIL TO RECEIVE A RESET LINK.</DialogDescription>
+            <div className="h-16 w-16 bg-blue-600/10 rounded-2xl flex items-center justify-center mx-auto text-blue-600 shadow-xl"><RefreshCw className={cn("h-8 w-8", resetLoading && "animate-spin")} /></div>
+            <DialogTitle className="text-2xl font-extrabold tracking-tight">Recover Node</DialogTitle>
+            <DialogDescription className="text-slate-500 text-[11px] font-bold tracking-tight leading-relaxed">Enter your email to receive a reset link.</DialogDescription>
           </DialogHeader>
           <div className="py-8 space-y-6">
             <div className="space-y-2 text-left">
-              <Label className="text-[10px] font-black uppercase text-slate-600 ml-1">Registry Email</Label>
+              <Label className="text-[11px] font-bold text-slate-600 ml-1">Registry Email</Label>
               <Input 
                 type="email" 
                 value={resetEmail} 
                 onChange={(e) => setResetEmail(e.target.value)} 
                 placeholder="aspirant@cracklix.com" 
-                className="h-14 bg-white/5 border-white/10 rounded-xl focus-visible:ring-primary text-white text-base px-6 font-medium" 
+                className="h-14 bg-white/5 border-white/10 rounded-xl focus-visible:ring-blue-600 text-white text-base px-6 font-medium" 
               />
             </div>
           </div>
-          <DialogFooter><Button onClick={handleResetPassword} disabled={resetLoading} className="w-full h-16 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-3xl shadow-primary/20 transition-all">{resetLoading ? "TRANSMITTING..." : "SEND RESET LINK"}</Button></DialogFooter>
+          <DialogFooter><Button onClick={handleResetPassword} disabled={resetLoading} className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg rounded-2xl shadow-3xl shadow-blue-600/20 transition-all">{resetLoading ? "Transmitting..." : "Send Reset Link"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
