@@ -13,9 +13,9 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview Official Cracklix Brand Hub v21.0.
- * HARDENED: Maximized responsive scaling for high-impact visibility.
- * DIMENSIONS: Mobile 64px (h-16) / Desktop 80px (lg:h-20).
+ * @fileOverview Official Cracklix Brand Hub v22.0.
+ * HARDENED: Maximized responsive scaling for dominant brand visibility.
+ * DIMENSIONS: Mobile 68px (h-[68px]) / Desktop 84px (lg:h-[84px]).
  * MIN-WIDTH: 200px to protect brand identity.
  */
 export default function Logo({ className = "", href = "/", variant = 'light', imgClassName = "" }: LogoProps) {
@@ -37,7 +37,7 @@ export default function Logo({ className = "", href = "/", variant = 'light', im
         height={80}
         priority
         className={cn(
-          "h-16 w-auto lg:h-20 object-contain transition-transform group-hover:scale-105 shrink-0",
+          "h-[68px] w-auto lg:h-[84px] object-contain transition-transform group-hover:scale-105 shrink-0",
           imgClassName
         )}
       />

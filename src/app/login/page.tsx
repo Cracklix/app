@@ -25,8 +25,8 @@ import { getDeviceId, getBrowserInfo } from "@/lib/device"
 import { motion } from "framer-motion"
 
 /**
- * @fileOverview Hardened Login Hub v16.0.
- * UPDATED: Uses variant="dark" (White text) for dark atmospheric background.
+ * @fileOverview Hardened Login Hub v16.1.
+ * UPDATED: Adjusted logo container to fit the new maximized institutional logo.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -209,7 +209,7 @@ function LoginContent() {
       <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/10 blur-[140px] rounded-full" />
       
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="z-10 w-full max-w-[440px] space-y-8">
-        <div className="flex flex-col items-center h-12 md:h-20 w-full mb-4">
+        <div className="flex flex-col items-center h-auto w-full mb-4">
           <Logo variant="dark" />
         </div>
 
@@ -302,7 +302,7 @@ function LoginContent() {
             </form>
             <div className="flex items-center gap-4 py-2"><div className="h-px flex-1 bg-white/5" /><span className="text-[9px] font-black text-slate-700 uppercase tracking-widest">OR CONNECT</span><div className="h-px flex-1 bg-white/5" /></div>
             <Button variant="outline" className="w-full h-12 md:h-16 border-white/5 bg-white/[0.03] text-white gap-4 rounded-2xl font-black text-[10px] md:text-xs hover:bg-white/10 tracking-[0.2em] shadow-xl uppercase" onClick={handleGoogleSignIn} disabled={isActuallyLoading}>
-               <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_\"G\"_logo.svg" className="h-4 w-4 md:h-5 md:w-5" alt="G" /> Google Account
+               <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="h-4 w-4 md:h-5 md:w-5" alt="G" /> Google Account
             </Button>
             <div className="text-center text-[10px] md:text-[12px] font-black uppercase text-slate-600 tracking-widest">
                {mode === 'login' ? (<p>NEW ASPIRANT? <button onClick={() => setMode('register')} className="text-primary hover:text-white transition-colors">CREATE ACCOUNT</button></p>) : (<p>ALREADY REGISTERED? <button onClick={() => setMode('login')} className="text-primary hover:text-white transition-colors">LOGIN NOW</button></p>)}
