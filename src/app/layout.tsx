@@ -65,13 +65,19 @@ export default function RootLayout({
                 window.dispatchEvent(new CustomEvent('pwa-installed'));
               });
 
-              // 2. Service Worker Recovery (Purge old workers)
+              // 2. Service Worker Cleanup (Purge stale/custom workers)
               if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then(function(registrations) {
                   for (let registration of registrations) {
-                    // Only purge if it's not managed by next-pwa (optional logic)
-                    // registration.unregister();
+                    registration.unregister();
                   }
+                });
+              }
+              
+              // 3. Clear Stale Caches for Stability
+              if ('caches' in window) {
+                caches.keys().then(function(names) {
+                  for (let name of names) caches.delete(name);
                 });
               }
             `,

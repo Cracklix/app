@@ -1,3 +1,4 @@
+
 'use client';
 
 import { motion } from "framer-motion";
@@ -5,11 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, ArrowRight, Target, Sparkles, User } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Standalone Founder Leadership Node v3.0.
- * DESIGN: Clean spacious section with focused bio card.
+ * @fileOverview Standalone Founder Leadership Node v4.0 (next/image optimized).
  */
 
 export default function MeetFounder() {
@@ -47,14 +48,12 @@ export default function MeetFounder() {
             <div className="relative shrink-0">
                <div className="absolute -inset-6 bg-gradient-to-tr from-primary/20 to-transparent rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition duration-1000" />
                <div className="relative h-44 w-44 sm:h-56 sm:w-56 md:h-64 md:w-64 lg:h-72 lg:w-72 rounded-full overflow-hidden border-[6px] md:border-[10px] border-slate-50 shadow-3xl bg-[#0B1528] ring-1 ring-slate-200">
-                  <img 
+                  <Image 
                     src={founderImg} 
                     alt="Arsh Grewal" 
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all scale-105 group-hover:scale-100 duration-1000"
+                    fill
+                    className="object-cover grayscale group-hover:grayscale-0 transition-all scale-105 group-hover:scale-100 duration-1000"
                     referrerPolicy="no-referrer"
-                    onError={(e) => {
-                       (e.target as HTMLImageElement).src = "https://picsum.photos/seed/arsh/400/400";
-                    }}
                   />
                </div>
                <div className="absolute -bottom-2 -right-2 h-12 w-12 md:h-16 md:w-16 bg-emerald-500 rounded-2xl border-4 border-white flex items-center justify-center text-white shadow-2xl">

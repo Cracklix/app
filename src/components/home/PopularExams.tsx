@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from "react"
@@ -12,6 +13,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useCollection, useFirestore } from "@/firebase";
 import { collection, query, orderBy } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,7 +21,7 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Popular Exams v55.0 (Title Case).
+ * @fileOverview High-Fidelity Popular Exams v56.0 (next/image optimized).
  */
 
 function getBoardFallbackIcon(id: string, abbrev: string) {
@@ -79,9 +81,16 @@ export default function PopularExams() {
                   <Link key={board.id} href={`/exams/hub/${board.id}`}>
                      <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-4px] transition-all duration-500 rounded-[2rem] bg-white group p-6 md:p-8 text-left h-full min-h-[200px] md:min-h-[260px] flex flex-col relative overflow-hidden">
                         <div className="flex items-center gap-4 mb-6">
-                           <div className="h-14 w-14 md:h-16 md:w-16 rounded-full bg-[#F8FAFC] flex items-center justify-center p-2.5 shrink-0 shadow-inner group-hover:scale-105 transition-transform overflow-hidden border border-slate-100">
+                           <div className="h-14 w-14 md:h-16 md:w-16 rounded-full bg-[#F8FAFC] flex items-center justify-center p-0.5 shrink-0 shadow-inner group-hover:scale-105 transition-transform overflow-hidden border border-slate-100 relative">
                               {logoUrl && !failedImages[board.id] ? (
-                                <img src={logoUrl} className="h-full w-full object-contain" alt={board.abbreviation} referrerPolicy="no-referrer" onError={() => setFailedImages(prev => ({ ...prev, [board.id]: true }))} />
+                                <Image 
+                                  src={logoUrl} 
+                                  alt={board.abbreviation} 
+                                  fill
+                                  className="object-contain p-2.5"
+                                  referrerPolicy="no-referrer"
+                                  onError={() => setFailedImages(prev => ({ ...prev, [board.id]: true }))} 
+                                />
                               ) : (
                                 <div className="p-1 w-full h-full opacity-40">{getBoardFallbackIcon(board.id, board.abbreviation)}</div>
                               )}
