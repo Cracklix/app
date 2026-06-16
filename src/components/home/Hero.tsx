@@ -22,9 +22,8 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Native-Scaled Elite Hero Hub v66.0 (Live Logic Refined).
- * FIXED: Trust badge now uses live student data with a 10,000+ baseline as requested.
- * ASSET: Using local student illustration with subject-labeled books.
+ * @fileOverview Native-Scaled Elite Hero Hub v67.0 (Real Data Only).
+ * UPDATED: Replaced 10,000 baseline with real-time student registry data.
  */
 
 export default function Hero() {
@@ -42,17 +41,15 @@ export default function Hero() {
   const heroImage = "/images/hero-student.png";
 
   const trustCount = useMemo(() => {
-    if (statsLoading || !stats) return "10,000+";
+    if (statsLoading || !stats) return "---";
     const actual = stats.totalUsers || 0;
-    // Show real data if above 10k, else show 10,000+ baseline as requested
-    const displayNum = Math.max(10000, actual);
-    return displayNum.toLocaleString() + "+";
+    return actual.toLocaleString() + "+";
   }, [stats, statsLoading]);
 
   const liveStats = useMemo(() => {
     const format = (n: number, fallback: string) => {
       if (!n) return fallback;
-      return n >= 1000 ? `${(n/1000).toFixed(0)}K+` : n.toString() + "+";
+      return n >= 1000 ? `${(n/1000).toFixed(1)}K+` : n.toString() + "+";
     };
     return [
       { 
@@ -82,7 +79,7 @@ export default function Hero() {
       { 
         label: "ASPIRANTS", 
         sub: "PREPARING NOW", 
-        val: format(stats?.totalUsers, "10,000+"), 
+        val: format(stats?.totalUsers, "---"), 
         color: "text-orange-500",
         bgColor: "bg-orange-50",
         icon: <Users className="h-6 w-6 fill-current" /> 

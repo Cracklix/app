@@ -13,8 +13,8 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Home Punjab Merit Preview v2.0.
- * UPDATED: Real-time student count from registry and updated to 23 districts.
+ * @fileOverview Home Punjab Merit Preview v2.1 (Real Data).
+ * UPDATED: Removed 10,000 floor; now uses actual totalUsers count from registry.
  */
 export default function MeritPreview() {
   const db = useFirestore();
@@ -43,8 +43,8 @@ export default function MeritPreview() {
   }, [results]);
 
   const liveAspirantCount = useMemo(() => {
-    if (statsLoading || !stats) return "10,000+";
-    const count = stats.totalUsers || 10000;
+    if (statsLoading || !stats) return "---";
+    const count = stats.totalUsers || 0;
     return count >= 1000 ? `${(count / 1000).toFixed(1)}K+` : `${count}+`;
   }, [stats, statsLoading]);
 
