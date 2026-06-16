@@ -31,8 +31,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Professional White Navbar v69.0.
- * DESIGN: Restored clean white aesthetic with scaled mobile height (72px).
+ * @fileOverview Professional White Navbar v70.0.
+ * UPDATED: Removed Menu button for a cleaner minimalist top bar.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -67,12 +67,6 @@ export default function Navbar() {
         <div className="w-full max-w-7xl mx-auto flex items-center justify-between h-full gap-2 md:gap-4">
           
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
-            <button 
-              onClick={() => setIsSidebarOpen(true)} 
-              className="w-10 h-10 md:w-12 md:h-12 bg-gray-50 text-slate-400 rounded-xl md:rounded-2xl border border-gray-100 flex items-center justify-center cursor-pointer active:scale-90 transition-all hover:bg-gray-100"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
             <Logo imgClassName="h-8 md:h-12" />
           </div>
 

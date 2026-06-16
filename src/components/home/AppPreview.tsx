@@ -9,13 +9,13 @@ import { doc } from 'firebase/firestore';
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Redesigned Mobile App Hub v14.0.
- * UPDATED: Removed maps, added smartphone mockup and checkmark benefits.
+ * @fileOverview Redesigned Mobile App Hub v15.0.
+ * UPDATED: Removed floating "Safe Registry" badge for a cleaner look.
  */
 
 export default function AppPreview() {
   const db = useFirestore();
-  const phoneMockup = "https://picsum.photos/seed/phone/600/1200"; // Placeholder for app mockup
+  const phoneMockup = "https://picsum.photos/seed/phone/600/1200"; 
 
   const { data: settings } = useDoc<any>(useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]));
 
@@ -92,21 +92,6 @@ export default function AppPreview() {
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/20 to-transparent pointer-events-none" />
                    </div>
                 </div>
-
-                {/* DECORATIVE BADGE */}
-                <motion.div 
-                   animate={{ y: [0, -10, 0] }}
-                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                   className="absolute -right-8 top-1/4 bg-white p-4 rounded-2xl shadow-4xl border border-slate-100 flex items-center gap-3 z-30"
-                >
-                   <div className="h-10 w-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 shadow-inner">
-                      <ShieldCheck className="h-5 w-5" />
-                   </div>
-                   <div className="text-left">
-                      <p className="text-[10px] font-black text-[#0F172A] uppercase leading-none">Safe Registry</p>
-                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1">Verified App</p>
-                   </div>
-                </motion.div>
              </motion.div>
           </div>
         </div>
