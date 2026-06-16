@@ -1,17 +1,16 @@
-
 {
   "placeholderImages": [
+    {
+      "id": "hero-student",
+      "description": "Professional Student Preparation Hero",
+      "imageUrl": "https://i.ibb.co/fYJttX5d/Gemini-Generated-Image-n1so6on1so6on1so.png",
+      "imageHint": "student studying"
+    },
     {
       "id": "hero-golden-temple-custom",
       "description": "Custom Stylized Golden Temple Hero Background",
       "imageUrl": "https://i.ibb.co/LXgcLVVq/Gemini-Generated-Image-n1so6on1so6on1so.png",
       "imageHint": "golden temple"
-    },
-    {
-      "id": "hero-student",
-      "description": "Professional Student Preparation Hero",
-      "imageUrl": "https://picsum.photos/seed/student-hero/800/800",
-      "imageHint": "student studying"
     },
     {
       "id": "hero-police-premium",

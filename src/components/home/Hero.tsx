@@ -18,12 +18,11 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import imagePool from '@/app/lib/placeholder-images.json';
 
 /**
- * @fileOverview Official Cracklix High-Fidelity Hero v18.0.
- * FIXED: 'motion/react' import resolution error to 'framer-motion'.
- * FIXED: Floating nodes layout as per strict 5-element specification (Center + 4 Corners).
+ * @fileOverview Official Cracklix High-Fidelity Hero v20.0.
+ * RESTORED: High-fidelity student illustration and 5-element corner framing.
+ * FIXED: Proportional scaling and zero overlap matrix.
  */
 
 export default function Hero() {
@@ -33,9 +32,7 @@ export default function Hero() {
     setMounted(true);
   }, []);
 
-  const heroImage = useMemo(() => {
-    return imagePool.placeholderImages.find(img => img.id === 'hero-student')?.imageUrl || "https://picsum.photos/seed/student-hero/800/800";
-  }, []);
+  const heroImage = "https://i.ibb.co/fYJttX5d/Gemini-Generated-Image-n1so6on1so6on1so.png";
 
   if (!mounted) return null;
 
@@ -45,7 +42,7 @@ export default function Hero() {
       <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-blue-50/50 blur-[120px] rounded-full -z-10" />
       
       <div className="max-w-7xl mx-auto px-4 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           
           {/* 1. TEXT COLUMN (Left Side Desktop) */}
           <div className="space-y-8 z-20 text-center lg:text-left">
@@ -87,58 +84,57 @@ export default function Hero() {
 
           {/* 2. ILLUSTRATION COLUMN (The 5-Element Preparation Hub) */}
           <div className="relative flex items-center justify-center lg:justify-end py-16 md:py-24 lg:py-0 w-full">
-             <div className="relative w-full max-w-[380px] md:max-w-[550px] lg:max-w-[620px] aspect-square flex items-center justify-center">
+             <div className="relative w-full max-w-[320px] sm:max-w-[440px] md:max-w-[550px] lg:max-w-[620px] aspect-square flex items-center justify-center">
                 
                 {/* Visual Anchor: Symmetrical Glow */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] bg-blue-100/40 rounded-full blur-[80px] md:blur-[120px] -z-10" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] bg-blue-100/30 rounded-full blur-[60px] md:blur-[120px] -z-10" />
                 
                 {/* CENTER NODE: Student Illustration */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 1 }}
-                  className="relative z-10 w-[85%] h-[85%] flex items-center justify-center"
+                  className="relative z-10 w-[80%] h-[80%] flex items-center justify-center"
                 >
                    <img 
                      src={heroImage}
                      className="w-full h-auto drop-shadow-2xl object-contain" 
                      alt="Cracklix Student Hub" 
-                     data-ai-hint="student studying"
                    />
                 </motion.div>
 
-                {/* CORNER NODES: Floating Action Matrix */}
+                {/* CORNER NODES: Floating Action Matrix - Percentages for Proportional Scaling */}
                 
-                {/* Top Left: Mock Tests (Elevation Lock) */}
+                {/* Top Left: Mock Tests */}
                 <FloatingNode 
-                   position="top-[2%] left-[-2%] md:left-[-8%]"
+                   position="top-[5%] left-[-5%] md:left-[-15%]"
                    icon={<Zap className="h-5 w-5 text-blue-500 fill-current" />}
                    title="Mock Tests"
                    desc="Latest Pattern"
                    delay={0.2}
                 />
 
-                {/* Bottom Left: Daily Practice (Base Lock) */}
+                {/* Bottom Left: Daily Practice */}
                 <FloatingNode 
-                   position="bottom-[5%] left-[-2%] md:left-[-8%]"
+                   position="bottom-[8%] left-[-5%] md:left-[-15%]"
                    icon={<Target className="h-5 w-5 text-purple-600" />}
                    title="Daily Practice"
                    desc="Subject mastery"
                    delay={0.4}
                 />
 
-                {/* Top Right: Punjab Exams (Elevation Lock) */}
+                {/* Top Right: Punjab Exams */}
                 <FloatingNode 
-                   position="top-[2%] right-[-2%] md:right-[-8%]"
+                   position="top-[5%] right-[-5%] md:right-[-15%]"
                    icon={<Landmark className="h-5 w-5 text-orange-500" />}
                    title="Punjab Exams"
                    desc="All state boards"
                    delay={0.6}
                 />
 
-                {/* Bottom Right: Previous Papers (Base Lock) */}
+                {/* Bottom Right: Previous Papers */}
                 <FloatingNode 
-                   position="bottom-[5%] right-[-2%] md:right-[-8%]"
+                   position="bottom-[8%] right-[-5%] md:right-[-15%]"
                    icon={<FileStack className="h-5 w-5 text-emerald-600" />}
                    title="Previous Papers"
                    desc="Official PYQ Bank"
@@ -149,7 +145,7 @@ export default function Hero() {
         </div>
 
         {/* 3. MOBILE ACTION HUB (PWA/Compact Optimized) */}
-        <div className="flex flex-col gap-3 w-full lg:hidden mt-12">
+        <div className="flex flex-col gap-3 w-full lg:hidden mt-8 md:mt-16">
           <Button asChild className="h-14 w-full bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-xs tracking-widest shadow-xl border-none transition-all active:scale-95">
             <Link href="/exams" className="flex items-center justify-between w-full px-6">
               <div className="flex items-center gap-3">
@@ -175,9 +171,6 @@ export default function Hero() {
   );
 }
 
-/**
- * @fileOverview Individual preparation node card with motion.
- */
 function FloatingNode({ position, icon, title, desc, delay }: { position: string, icon: React.ReactNode, title: string, desc: string, delay: number }) {
    return (
       <motion.div
@@ -185,17 +178,17 @@ function FloatingNode({ position, icon, title, desc, delay }: { position: string
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay, duration: 0.8 }}
         className={cn(
-           "absolute z-20 w-[130px] sm:w-[150px] md:w-[190px] lg:w-[210px] pointer-events-auto",
+           "absolute z-20 w-[120px] sm:w-[150px] md:w-[200px] pointer-events-auto",
            position
         )}
       >
-         <Card className="p-2.5 md:p-5 rounded-2xl md:rounded-[2rem] bg-white/95 backdrop-blur-xl border-none shadow-[0_20px_50px_rgba(0,0,0,0.12)] flex items-center gap-3 md:gap-4 transition-all hover:scale-105 hover:shadow-[0_25px_60px_rgba(37,99,235,0.15)] group cursor-default">
-            <div className="h-9 w-9 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-blue-50 transition-colors">
+         <Card className="p-2.5 md:p-5 rounded-2xl md:rounded-[2rem] bg-white/95 backdrop-blur-xl border-none shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex items-center gap-3 md:gap-4 transition-all hover:scale-105 hover:shadow-[0_25px_60px_rgba(37,99,235,0.12)] group cursor-default">
+            <div className="h-8 w-8 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-blue-50 transition-colors">
                {icon}
             </div>
             <div className="text-left min-w-0">
-               <p className="text-[9px] md:text-sm font-black text-slate-900 uppercase tracking-tighter truncate leading-none mb-1 group-hover:text-blue-600 transition-colors">{title}</p>
-               <p className="text-[6px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none truncate">{desc}</p>
+               <p className="text-[8px] md:text-[13px] font-black text-slate-900 uppercase tracking-tighter truncate leading-none mb-1 group-hover:text-blue-600 transition-colors">{title}</p>
+               <p className="text-[6px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none truncate">{desc}</p>
             </div>
          </Card>
       </motion.div>
