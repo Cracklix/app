@@ -12,7 +12,8 @@ import {
   LayoutGrid,
   FileText,
   Users,
-  ClipboardCheck
+  ClipboardCheck,
+  CheckCircle2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -22,12 +23,11 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Official Cracklix High-Fidelity Hero v36.0 (Reference Matched).
- * FIXED: Imported missing Skeleton component to resolve ReferenceError.
- * LAYOUT: 2-column desktop split, strictly matched to reference design.
+ * @fileOverview Official Cracklix High-Fidelity Hero v38.0 (Brand Sync).
+ * UPDATED: Replaced Logo PNG with Styled Text + Tagline as requested.
+ * UPDATED: Re-calibrated vertical stack for mobile and desktop.
  */
 
 export default function Hero() {
@@ -62,9 +62,9 @@ export default function Hero() {
     <section className="relative overflow-hidden bg-[#F8FAFC] pt-8 pb-16 md:pt-12 md:pb-24 text-left w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* IDENTITY ROW */}
+        {/* IDENTITY ROW - TEXT LOGO RESTORATION */}
         <div className="flex flex-col md:flex-row items-center justify-between mb-10 md:mb-16 gap-6">
-           <div className="flex flex-col items-center md:items-start gap-4 w-full">
+           <div className="flex flex-col items-center md:items-start gap-6 w-full">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -75,7 +75,17 @@ export default function Hero() {
                 </div>
                 <span className="text-[10px] md:text-xs font-bold text-slate-600 uppercase tracking-widest">10,000+ Aspirants Trust Cracklix</span>
               </motion.div>
-              <Logo imgClassName="h-10 md:h-14" />
+
+              {/* TEXT BASED BRANDING */}
+              <div className="flex flex-col items-center md:items-start group transition-all">
+                <div className="flex items-center gap-1">
+                   <span className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 uppercase">Crack</span>
+                   <span className="text-4xl md:text-6xl font-black tracking-tighter text-blue-600 uppercase">lix</span>
+                </div>
+                <p className="text-[8px] md:text-[11px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-1 md:mt-2">
+                   Punjab&apos;s Smart Mock Test Platform
+                </p>
+              </div>
            </div>
         </div>
 
@@ -84,11 +94,11 @@ export default function Hero() {
           {/* LEFT CONTENT HUB */}
           <div className="space-y-10 text-center lg:text-left">
             <div className="space-y-6">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight text-slate-900 leading-[1.1] antialiased uppercase">
+              <h2 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 leading-[1.1] antialiased uppercase">
                 Crack Punjab <br />
                 <span className="text-blue-600">Government Exams</span> <br />
                 With Confidence
-              </h1>
+              </h2>
               
               <p className="text-base md:text-lg text-slate-500 font-medium max-w-xl leading-relaxed mx-auto lg:mx-0">
                 Practice with high-quality mock tests, previous papers and exam-focused preparation for top Punjab exams.
@@ -106,10 +116,10 @@ export default function Hero() {
 
             {/* MIDDLE FEATURE ROW */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-               <FeatureCard icon={<ClipboardCheck className="text-blue-600" />} title="Mock Tests" sub="Exam-focused mock tests" />
-               <FeatureCard icon={<FileText className="text-emerald-500" />} title="Previous Papers" sub="Previous year question papers" />
-               <FeatureCard icon={<Target className="text-purple-600" />} title="Daily Practice" sub="Practice daily & stay ahead" />
-               <FeatureCard icon={<Landmark className="text-orange-500" />} title="Punjab Exams" sub="All major Punjab exams" />
+               <FeatureCard icon={<ClipboardCheck className="text-blue-600" />} title="Mock Tests" sub="Exam-focused tests" />
+               <FeatureCard icon={<FileText className="text-emerald-500" />} title="Previous Papers" sub="Verified paper bank" />
+               <FeatureCard icon={<Target className="text-purple-600" />} title="Daily Practice" sub="Learn daily sessions" />
+               <FeatureCard icon={<Landmark className="text-orange-500" />} title="Punjab Exams" sub="All state boards" />
             </div>
 
             {/* CTA HUB */}
@@ -139,9 +149,6 @@ export default function Hero() {
                      className="w-full h-auto drop-shadow-3xl object-contain" 
                      alt="Cracklix Student" 
                      referrerPolicy="no-referrer"
-                     onError={(e) => {
-                        (e.target as HTMLImageElement).src = "https://i.ibb.co/fYJttX5d/Gemini-Generated-Image-n1so6on1so6on1so.png";
-                     }}
                    />
                 </motion.div>
 
@@ -194,7 +201,7 @@ export default function Hero() {
                       {statsLoading ? (
                         <Skeleton className="h-8 w-20 bg-slate-100" />
                       ) : (
-                        <p className="text-2xl md:text-3xl font-black text-slate-900 tracking-tighter leading-none">{stat.val}</p>
+                        <p className="text-2xl md:text-3xl font-black text-slate-900 tracking-tighter leading-none tabular-nums">{stat.val}</p>
                       )}
                       <p className="text-sm font-black text-slate-900 uppercase leading-none">{stat.label}</p>
                       <p className="text-[10px] font-medium text-slate-400 leading-tight">{stat.sub}</p>
@@ -216,8 +223,8 @@ function FeatureCard({ icon, title, sub }: { icon: React.ReactNode, title: strin
          <div className="h-8 w-8 rounded-lg bg-slate-50 flex items-center justify-center shrink-0 group-hover:bg-blue-50 transition-colors">
             {icon}
          </div>
-         <div>
-            <h4 className="text-[11px] font-black text-slate-900 uppercase leading-tight">{title}</h4>
+         <div className="min-w-0">
+            <h4 className="text-[11px] font-black text-slate-900 uppercase leading-tight truncate">{title}</h4>
             <p className="text-[9px] text-slate-400 font-medium leading-tight mt-0.5">{sub}</p>
          </div>
       </div>
