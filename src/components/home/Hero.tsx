@@ -22,8 +22,8 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Elite Hero Hub v85.0.
- * FIXED: Removed conflicting style prop from Image with fill property.
+ * @fileOverview Elite Hero Hub v86.0 (Locked Assets).
+ * FIXED: Path set to permanent /images/ node with onError fallback.
  */
 export default function Hero() {
   const db = useFirestore();
@@ -36,7 +36,9 @@ export default function Hero() {
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats } = useDoc<any>(statsRef);
 
-  const heroImage = "/logo/hero-student.png";
+  // PERMANENT ASSET NODE
+  const heroImage = "/images/hero-student.png";
+  const fallbackIcon = "/logo/cracklix-icon.png";
 
   const features = [
     { title: "Mock Tests", sub: "Exam-focused mock tests", icon: <ClipboardList className="h-4 w-4 md:h-5 md:w-5" />, color: "text-blue-600", bgColor: "bg-blue-50" },
@@ -100,13 +102,17 @@ export default function Hero() {
                   fill
                   priority
                   className="object-contain"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = fallbackIcon;
+                  }}
                 />
              </motion.div>
           </div>
 
           <div className="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-6 pt-4">
              {features.map((f, idx) => (
-                <Card key={idx} className="border-none shadow-xl shadow-slate-200/40 rounded-2xl md:rounded-[1.8rem] p-4 md:p-6 bg-white border border-slate-100 flex items-center gap-4 md:gap-6 group hover:translate-y-[-4px] transition-all duration-300 min-h-[72px] md:min-h-0">
+                <Card key={idx} className="border-none shadow-xl shadow-slate-200/40 rounded-2xl md:rounded-[1.8rem] p-4 md:p-6 bg-white border border-slate-100 flex items-center gap-4 md:gap-6 group hover:translate-y-[-4px] transition-all duration-300 min-h-[72px] md:min-h-0 text-left">
                    <div className={cn("h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500", f.bgColor, f.color)}>
                       {f.icon}
                    </div>
@@ -139,7 +145,7 @@ export default function Hero() {
                  <div className={cn("h-10 w-10 md:h-16 md:w-16 rounded-full flex items-center justify-center shrink-0 shadow-lg text-white transition-transform group-hover:scale-110", stat.circleBg)}>
                     {stat.icon}
                  </div>
-                 <div className="min-w-0 flex-1 space-y-0.5">
+                 <div className="min-w-0 flex-1 space-y-0.5 text-left">
                    <p className={cn("text-lg md:text-2xl font-black tabular-nums leading-none tracking-tight", stat.color)}>{stat.val}</p>
                    <p className="text-[10px] md:text-sm font-bold text-slate-900 leading-none uppercase tracking-tight">{stat.label}</p>
                    <p className="text-[8px] md:text-[10px] font-medium text-slate-400 uppercase tracking-tight truncate">{stat.desc}</p>

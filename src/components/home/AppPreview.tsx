@@ -10,13 +10,13 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 /**
- * @fileOverview High-Fidelity Balanced Mobile App Hub v19.0.
- * FIXED: Explicit Image import restored to resolve TypeError.
+ * @fileOverview High-Fidelity Balanced Mobile App Hub v20.0 (Locked Assets).
  */
 
 export default function AppPreview() {
   const db = useFirestore();
-  const phoneMockup = "/logo/hero-student.png"; 
+  // PERMANENT ASSET NODE
+  const phoneMockup = "/images/hero-student.png"; 
 
   const { data: settings } = useDoc<any>(useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]));
 
@@ -88,6 +88,10 @@ export default function AppPreview() {
                         alt="App Screenshot" 
                         fill
                         className="object-contain p-8 md:p-12"
+                        onError={(e) => {
+                           const target = e.target as HTMLImageElement;
+                           target.src = "/logo/cracklix-icon.png";
+                        }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/5 to-transparent pointer-events-none" />
                    </div>
