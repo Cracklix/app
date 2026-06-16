@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -93,7 +92,7 @@ export default function SidebarNav({ isOpen, pathname }: SidebarNavProps) {
             {isOpen ? (
               <h5 className="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] animate-in fade-in duration-500">
                 {group.label}
-              h5>
+              </h5>
             ) : (
               <div className="h-4" />
             )}

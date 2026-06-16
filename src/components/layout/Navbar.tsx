@@ -32,8 +32,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Production-Grade Responsive PWA Header v82.0.
- * UPDATED: Hidden Pass button on mobile (redundant with bottom nav).
+ * @fileOverview Production-Grade Responsive PWA Header v83.0.
+ * UPDATED: Precise Z-Index (z-[2001]) for Sidebar to cover all UI elements.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -71,7 +71,7 @@ export default function Navbar() {
           <div className="flex items-center gap-3 lg:gap-6 shrink-0">
             <button 
               onClick={() => setIsSidebarOpen(true)}
-              className="flex lg:hidden w-11 h-11 rounded-2xl bg-slate-50 border border-slate-100 items-center justify-center text-slate-600 active:scale-95 transition-all"
+              className="flex lg:hidden w-11 h-11 rounded-2xl bg-slate-50 border border-slate-100 items-center justify-center text-slate-600 active:scale-95 transition-all shadow-sm"
             >
               <Menu className="h-5 w-5" />
             </button>
@@ -87,7 +87,6 @@ export default function Navbar() {
 
           {/* RIGHT: ACTIONS */}
           <div className="flex items-center justify-end gap-2 lg:gap-4 shrink-0">
-             {/* HIDDEN ON MOBILE: PASS BUTTON */}
              <Button asChild className="hidden lg:flex h-11 lg:h-16 px-4 lg:px-10 bg-[#2563EB] hover:bg-blue-700 text-white font-black text-[10px] lg:text-[11px] tracking-widest rounded-2xl lg:rounded-3xl gap-2 shadow-lg shadow-blue-600/20 border-none transition-all active:scale-95">
                 <Link href="/pass">
                   <Gem className="h-4 w-4 text-white" /> 
@@ -95,7 +94,7 @@ export default function Navbar() {
                 </Link>
              </Button>
 
-             <Link href="/search" className="w-11 h-11 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#2563EB] hover:bg-blue-50/50 transition-all active:scale-95">
+             <Link href="/search" className="w-11 h-11 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#2563EB] hover:bg-blue-50/50 transition-all active:scale-95 shadow-sm">
                 <Search className="h-5 w-5 lg:h-6 lg:w-6" />
              </Link>
 
@@ -131,7 +130,7 @@ export default function Navbar() {
                  </DropdownMenuContent>
                </DropdownMenu>
              ) : (
-               <Button asChild className="px-5 lg:px-8 h-11 lg:h-16 bg-[#2563EB] hover:bg-blue-700 text-white font-black text-[10px] lg:text-[11px] rounded-2xl lg:rounded-3xl transition-all tracking-widest border-none active:scale-95 shadow-lg">
+               <Button asChild className="px-5 lg:px-8 h-11 lg:h-16 bg-[#2563EB] hover:bg-blue-700 text-white font-black text-[10px] lg:text-[11px] rounded-2xl lg:rounded-3xl transition-all tracking-widest border-none active:scale-95 shadow-lg shadow-blue-600/20">
                  <Link href="/login">LOGIN</Link>
                </Button>
              )}
@@ -139,9 +138,9 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* SIDEBAR OVERLAY */}
+      {/* SIDEBAR OVERLAY - FIXED WIDTH & Z-INDEX */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetContent side="left" className="p-0 border-none w-[300px] bg-white z-[2001]">
+        <SheetContent side="left" className="p-0 border-none w-[300px] bg-white z-[2001] shadow-5xl">
           <SheetHeader className="sr-only">
              <SheetTitle>Navigation Sidebar</SheetTitle>
              <SheetDescription>Access institutional preparation resources and exam verticals.</SheetDescription>
