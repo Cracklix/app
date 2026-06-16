@@ -7,12 +7,8 @@ import {
   User, 
   LogOut, 
   Menu, 
-  Home, 
-  Zap, 
-  Newspaper, 
   Gem, 
   ShieldCheck,
-  Download,
   Loader2
 } from "lucide-react";
 import { useUser, useAuth } from "@/firebase";
@@ -36,8 +32,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview High-Density Master Navbar Hub v61.0.
- * UPDATED: Removed uppercase transformation for a premium Title Case look.
+ * @fileOverview High-Density Master Navbar Hub v65.0.
+ * UPDATED: Icons removed from desktop navigation links for a cleaner look.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -87,23 +83,20 @@ export default function Navbar() {
             <Logo imgClassName="h-10 md:h-14" />
           </div>
 
-          {/* CENTER: COMPACT NAV */}
+          {/* CENTER: TEXT-ONLY NAV */}
           <div className="hidden lg:flex items-center gap-2 xl:gap-4">
              <NavLink 
                href="/" 
-               icon={<Home className="h-4 w-4" />} 
                label="Home" 
                active={pathname === '/'} 
              />
              <NavLink 
                href="/mocks" 
-               icon={<Zap className="h-4 w-4" />} 
                label="Practice" 
                active={pathname === '/mocks'} 
              />
              <NavLink 
                href="/current-affairs" 
-               icon={<Newspaper className="h-4 w-4" />} 
                label="Updates" 
                active={pathname === '/current-affairs'} 
              />
@@ -129,7 +122,7 @@ export default function Navbar() {
                 <Search className="h-5 w-5" />
              </Link>
 
-             {/* AUTHENTICATION ACTION BLOCK - FLICKER-FREE */}
+             {/* AUTHENTICATION ACTION BLOCK */}
              {loading ? (
                 <Skeleton className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-slate-100" />
              ) : user ? (
@@ -183,13 +176,12 @@ export default function Navbar() {
   );
 }
 
-function NavLink({ href, icon, label, active }: { href: string, icon: React.ReactNode, label: string, active?: boolean }) {
+function NavLink({ href, label, active }: { href: string, label: string, active?: boolean }) {
   return (
     <Link href={href} className={cn(
-      "flex items-center gap-3 px-4 py-2 rounded-xl font-bold text-[10px] md:text-sm transition-all shrink-0",
+      "flex items-center px-4 py-2 rounded-xl font-bold text-[10px] md:text-sm transition-all shrink-0",
       active ? "bg-blue-50 text-blue-600 shadow-sm" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"
     )}>
-       {icon}
        <span>{label}</span>
     </Link>
   )
