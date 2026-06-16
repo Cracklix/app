@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Balanced Punjab Merit Preview v3.1 (Title Case Update).
+ * @fileOverview Balanced Punjab Merit Preview v3.2 (Fixed ReferenceError).
  */
 export default function MeritPreview() {
   const db = useFirestore();
@@ -31,12 +31,12 @@ export default function MeritPreview() {
   const topRankers = useMemo(() => {
     if (!results) return [];
     const map = new Map();
-    [...results].sort((a, b) => b.score - a.score).forEach(r => {
+    [...results].sort((a, b) => (b.score || 0) - (a.score || 0)).forEach(r => {
       if (!map.has(r.userId) || map.get(r.userId).score < r.score) {
         map.set(r.userId, r);
       }
     });
-    return Array.from(map.values()).sort((a, b) => b.score - a.score).slice(0, 5);
+    return Array.from(map.values()).sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, 5);
   }, [results]);
 
   const liveAspirantCount = useMemo(() => {
@@ -101,7 +101,7 @@ export default function MeritPreview() {
                        {resultsLoading ? (
                           Array.from({ length: 4 }).map((_, i) => <div key={i} className="p-6"><Skeleton className="h-10 w-full rounded-xl" /></div>)
                        ) : topRankers.length > 0 ? topRankers.map((res: any, idx: number) => {
-                          const name = (r.userName && r.userName !== 'Aspirant' && !r.userName.includes('@')) ? r.userName : (r.userEmail?.split('@')[0] || "Aspirant");
+                          const name = (res.userName && res.userName !== 'Aspirant' && res.userName !== 'Student' && !res.userName.includes('@')) ? res.userName : (res.userEmail?.split('@')[0] || "Aspirant");
                           return (
                             <div key={res.id} className="p-6 md:p-8 flex items-center justify-between group hover:bg-slate-50/50 transition-colors">
                                <div className="flex items-center gap-4 md:gap-6 min-w-0">
