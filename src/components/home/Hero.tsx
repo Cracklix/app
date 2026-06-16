@@ -25,9 +25,8 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Official Cracklix High-Fidelity Hero v38.0 (Brand Sync).
- * UPDATED: Replaced Logo PNG with Styled Text + Tagline as requested.
- * UPDATED: Re-calibrated vertical stack for mobile and desktop.
+ * @fileOverview Official Cracklix High-Fidelity Hero v39.0 (Streamlined).
+ * UPDATED: Removed text wordmark and tagline for a direct trust-to-heading flow.
  */
 
 export default function Hero() {
@@ -62,8 +61,8 @@ export default function Hero() {
     <section className="relative overflow-hidden bg-[#F8FAFC] pt-8 pb-16 md:pt-12 md:pb-24 text-left w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* IDENTITY ROW - TEXT LOGO RESTORATION */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-10 md:mb-16 gap-6">
+        {/* IDENTITY ROW */}
+        <div className="flex flex-col md:flex-row items-center justify-between mb-10 md:mb-12 gap-6">
            <div className="flex flex-col items-center md:items-start gap-6 w-full">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -75,17 +74,6 @@ export default function Hero() {
                 </div>
                 <span className="text-[10px] md:text-xs font-bold text-slate-600 uppercase tracking-widest">10,000+ Aspirants Trust Cracklix</span>
               </motion.div>
-
-              {/* TEXT BASED BRANDING */}
-              <div className="flex flex-col items-center md:items-start group transition-all">
-                <div className="flex items-center gap-1">
-                   <span className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 uppercase">Crack</span>
-                   <span className="text-4xl md:text-6xl font-black tracking-tighter text-blue-600 uppercase">lix</span>
-                </div>
-                <p className="text-[8px] md:text-[11px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-1 md:mt-2">
-                   Punjab&apos;s Smart Mock Test Platform
-                </p>
-              </div>
            </div>
         </div>
 
