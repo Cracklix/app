@@ -12,8 +12,8 @@ interface SidebarHeaderProps {
 }
 
 /**
- * @fileOverview High-Fidelity Sidebar Header v3.0.
- * UPDATED: Synchronized with root-relative logo paths for production stability.
+ * @fileOverview High-Fidelity Sidebar Header v4.0.
+ * FIXED: Updated collapsed logo path to include '/logo/' prefix.
  */
 export default function SidebarHeader({ isOpen, onToggle }: SidebarHeaderProps) {
   return (
@@ -35,7 +35,7 @@ export default function SidebarHeader({ isOpen, onToggle }: SidebarHeaderProps) 
           ) : (
             <div className="relative h-8 w-8">
                <Image 
-                  src="/cracklix-logo-dark.png" 
+                  src="/logo/cracklix-logo-dark.png" 
                   alt="C" 
                   fill
                   className="object-contain"

@@ -1,8 +1,8 @@
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Production-Grade PWA Manifest v4.0.
- * UPDATED: Pointed to professional icon and maskable icon nodes.
+ * @fileOverview Production-Grade PWA Manifest v5.0.
+ * FIXED: Updated icon paths to include '/logo/' prefix.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -18,19 +18,19 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: 'portrait',
     icons: [
       {
-        src: '/icons/cracklix-icon.png',
+        src: '/logo/cracklix-icon.png',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'any',
       },
       {
-        src: '/icons/cracklix-icon.png',
+        src: '/logo/cracklix-icon.png',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any',
       },
       {
-        src: '/icons/maskable-icon-512x512.png',
+        src: '/logo/cracklix-icon.png',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'maskable',
