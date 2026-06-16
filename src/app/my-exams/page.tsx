@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useEffect, useState } from "react"
@@ -25,7 +24,8 @@ import {
   RefreshCw,
   Loader2,
   CheckCircle2,
-  Plus
+  Plus,
+  X
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -36,8 +36,8 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @file Overview My Hub Dashboard v3.0.
- * UPDATED: Replaced 'Delete' trash icon with 'Select Target' logic.
+ * @file Overview My Hub Dashboard v3.1.
+ * FIXED: Missing X import resolved to fix runtime crash.
  */
 
 export default function MyExamsPage() {
