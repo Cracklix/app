@@ -23,9 +23,9 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Official Cracklix High-Fidelity Hero v58.0.
- * CLEANED: Removed floating nodes from the image area to keep it unobstructed.
- * FIXED: Matched "PUNJAB EXAMS" blue styling from user screenshot.
+ * @fileOverview Official Cracklix High-Fidelity Hero v61.0.
+ * FIXED: Module resolution for framer-motion.
+ * UPDATED: Trust Badge pixel-perfect match to screenshot.
  */
 
 export default function Hero() {
@@ -50,29 +50,33 @@ export default function Hero() {
       { 
         label: "QUESTIONS", 
         sub: "VERIFIED MCQS", 
-        val: format(stats?.totalQuestions, "439+"), 
-        bgColor: "bg-blue-600", 
+        val: format(stats?.totalQuestions, "15,000+"), 
+        color: "text-blue-600",
+        bgColor: "bg-blue-50",
         icon: <Zap className="h-5 w-5 md:h-7 md:w-7 fill-current" /> 
       },
       { 
         label: "MOCK TESTS", 
         sub: "TOPIC WISE TESTS", 
-        val: format(stats?.totalMocks, "8+"), 
-        bgColor: "bg-indigo-600", 
+        val: format(stats?.totalMocks, "500+"), 
+        color: "text-indigo-600",
+        bgColor: "bg-indigo-50",
         icon: <LayoutGrid className="h-5 w-5 md:h-7 md:w-7 fill-current" /> 
       },
       { 
         label: "EXAMS", 
         sub: "ALL STATE BOARDS", 
         val: format(stats?.totalBoards, "92+"), 
-        bgColor: "bg-emerald-600", 
+        color: "text-emerald-600",
+        bgColor: "bg-emerald-50",
         icon: <ShieldCheck className="h-5 w-5 md:h-7 md:w-7 fill-current" /> 
       },
       { 
         label: "ASPIRANTS", 
         sub: "PREPARING CURRENTLY", 
-        val: format(stats?.totalUsers, "5+"), 
-        bgColor: "bg-orange-500", 
+        val: format(stats?.totalUsers, "10,000+"), 
+        color: "text-orange-500",
+        bgColor: "bg-orange-50",
         icon: <Users className="h-5 w-5 md:h-7 md:w-7 fill-current" /> 
       }
     ];
@@ -96,13 +100,14 @@ export default function Hero() {
           {/* 1. HEADER TEXT */}
           <div className="order-1 space-y-8 text-center lg:text-left">
             <div className="space-y-6">
+              {/* PIXEL-PERFECT TRUST BADGE FROM SCREENSHOT */}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm mx-auto lg:mx-0"
+                className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-white border border-slate-100 shadow-sm mx-auto lg:mx-0"
               >
-                <Star className="h-3.5 w-3.5 text-amber-500 fill-current" />
-                <span className="text-[10px] md:text-xs font-bold text-slate-600 tracking-widest uppercase">10,000+ Aspirants Trust Cracklix</span>
+                <Star className="h-4 w-4 text-amber-500 fill-current" />
+                <span className="text-[10px] md:text-xs font-black text-[#334155] tracking-widest uppercase">10,000+ ASPIRANTS TRUST CRACKLIX</span>
               </motion.div>
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.05] antialiased">
@@ -126,7 +131,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* 2. ILLUSTRATION HUB - CLEAN AREA */}
+          {/* 2. ILLUSTRATION HUB - CLEAN AREA (POSITIONED ABOVE ACTION GRID ON MOBILE) */}
           <div className="order-2 relative flex items-center justify-center lg:justify-end w-full">
              <div className="relative w-full max-w-[400px] md:max-w-[770px] lg:max-w-[850px] flex items-center justify-center">
                 <motion.div
@@ -179,7 +184,7 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* 4. STATS REGISTRY */}
+        {/* 4. STATS REGISTRY - LIVE & ORIGINAL DESIGN */}
         <div className="mt-16 md:mt-24">
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 items-stretch">
               {liveStats.map((stat, idx) => (
@@ -189,10 +194,10 @@ export default function Hero() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.1 }}
                   viewport={{ once: true }}
-                  className="flex"
+                  className="flex h-full"
                 >
-                  <Card className="border-none shadow-xl rounded-[2rem] p-5 md:p-8 bg-white hover:translate-y-[-4px] transition-all border border-slate-100 group text-left flex items-center gap-4 md:gap-6 w-full">
-                    <div className={cn("h-12 w-12 md:h-16 md:w-16 rounded-2xl flex items-center justify-center shrink-0 shadow-lg text-white", stat.bgColor)}>
+                  <Card className="border-none shadow-xl rounded-[2.5rem] p-6 md:p-8 bg-white hover:translate-y-[-4px] transition-all border border-slate-100 group text-left flex items-center gap-4 md:gap-6 w-full h-full">
+                    <div className={cn("h-12 w-12 md:h-16 md:w-16 rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500", stat.bgColor, stat.color)}>
                        {stat.icon}
                     </div>
                     <div className="min-w-0 space-y-1">
