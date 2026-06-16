@@ -23,8 +23,8 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Cracklix Majestic Hero v7.0.
- * REFACTORED: Proportional illustration hub with overlap protection and 4-corner stability.
+ * @fileOverview Official Cracklix Majestic Hero v7.1.
+ * REFACTORED: Moved Daily Practice and Previous Papers nodes to the absolute bottom.
  */
 
 export default function Hero() {
@@ -149,7 +149,7 @@ export default function Hero() {
                 <FloatingNode 
                    icon={<Target className="text-purple-600 h-5 w-5" />} 
                    label="Daily Practice" 
-                   className="bottom-[15%] left-[-10%] sm:left-[-5%] lg:left-[5%] xl:left-[10%]" 
+                   className="bottom-[2%] left-[-10%] sm:left-[-5%] lg:left-[5%] xl:left-[10%]" 
                 />
 
                 {/* TOP RIGHT: PUNJAB EXAMS */}
@@ -163,7 +163,7 @@ export default function Hero() {
                 <FloatingNode 
                    icon={<FileStack className="text-emerald-500 h-5 w-5" />} 
                    label="Previous Papers" 
-                   className="bottom-[15%] right-[-10%] sm:right-[-5%] lg:right-[5%] xl:right-[10%]" 
+                   className="bottom-[2%] right-[-10%] sm:right-[-5%] lg:right-[5%] xl:right-[10%]" 
                 />
 
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-100/30 rounded-full blur-3xl -z-10" />
