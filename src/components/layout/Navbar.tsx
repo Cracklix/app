@@ -36,8 +36,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview High-Density Master Navbar Hub v60.0.
- * UPDATED: Branding colors shifted to Blue node.
+ * @fileOverview High-Density Master Navbar Hub v61.0.
+ * UPDATED: Removed uppercase transformation for a premium Title Case look.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -113,7 +113,7 @@ export default function Navbar() {
           <div className="flex items-center justify-end gap-2 md:gap-4 shrink-0">
              
              <div className="hidden sm:block">
-               <Button asChild className="h-10 md:h-12 px-4 md:px-6 bg-blue-600 hover:bg-blue-700 text-white font-black text-[9px] md:text-[10px] tracking-widest rounded-xl gap-2 shadow-lg border-none transition-all active:scale-95">
+               <Button asChild className="h-10 md:h-12 px-4 md:px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] md:text-[11px] tracking-widest rounded-xl gap-2 shadow-lg border-none transition-all active:scale-95">
                   <Link href="/pass"><Gem className="h-4 w-4" /> Pass</Link>
                </Button>
              </div>
@@ -121,7 +121,7 @@ export default function Navbar() {
              {isActivePass && (
                 <div className="hidden xs:flex items-center gap-2 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-xl shadow-sm">
                    <div className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
-                   <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Active</span>
+                   <span className="text-[9px] font-bold text-emerald-600">Active</span>
                 </div>
              )}
 
@@ -143,26 +143,26 @@ export default function Navbar() {
                     <DropdownMenuItem asChild className="px-4 py-3 cursor-pointer rounded-xl focus:bg-slate-50">
                        <Link href="/profile" className="flex items-center gap-3">
                           <User className="h-5 w-5 text-blue-500" />
-                          <span className="font-black text-xs tracking-tight text-slate-700 uppercase">My Profile</span>
+                          <span className="font-bold text-sm tracking-tight text-slate-700">My Profile</span>
                        </Link>
                     </DropdownMenuItem>
                     {isAdmin && (
                       <DropdownMenuItem asChild className="px-4 py-3 cursor-pointer rounded-xl focus:bg-blue-50 mt-1 border border-blue-50">
                         <Link href="/admin" className="flex items-center gap-3">
                           <ShieldCheck className="h-5 w-5 text-blue-600" />
-                          <span className="font-black text-xs tracking-tight text-blue-700 uppercase">Admin Center</span>
+                          <span className="font-bold text-sm tracking-tight text-blue-700">Admin Center</span>
                         </Link>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator className="bg-slate-50 my-1" />
                     <DropdownMenuItem onClick={handleLogout} className="px-4 py-3 cursor-pointer rounded-xl focus:bg-rose-50 text-rose-500">
                        <LogOut className="h-5 w-5 shrink-0" />
-                       <span className="font-black text-xs tracking-tight uppercase">Log Out</span>
+                       <span className="font-bold text-sm tracking-tight">Log Out</span>
                     </DropdownMenuItem>
                  </DropdownMenuContent>
                </DropdownMenu>
              ) : (
-               <Button asChild className="px-5 md:px-8 h-10 md:h-12 bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] md:text-[11px] rounded-xl transition-all tracking-widest border-none active:scale-95">
+               <Button asChild className="px-5 md:px-8 h-10 md:h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] md:text-[11px] rounded-xl transition-all tracking-widest border-none active:scale-95">
                  <Link href="/login">Login</Link>
                </Button>
              )}
@@ -186,7 +186,7 @@ export default function Navbar() {
 function NavLink({ href, icon, label, active }: { href: string, icon: React.ReactNode, label: string, active?: boolean }) {
   return (
     <Link href={href} className={cn(
-      "flex items-center gap-3 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shrink-0",
+      "flex items-center gap-3 px-4 py-2 rounded-xl font-bold text-[10px] md:text-sm transition-all shrink-0",
       active ? "bg-blue-50 text-blue-600 shadow-sm" : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"
     )}>
        {icon}

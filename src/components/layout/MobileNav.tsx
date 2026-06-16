@@ -6,8 +6,8 @@ import { Zap, Home, BarChart3, Target, Gem } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Premium Mobile Navigation Hub v2.0.
- * Reconstructed with high-fidelity app-style components and premium active states.
+ * @fileOverview Premium Mobile Navigation Hub v3.0.
+ * UPDATED: Removed uppercase transformation for a premium look.
  */
 
 export default function MobileNav() {
@@ -41,7 +41,7 @@ export default function MobileNav() {
                     : "bg-gradient-to-br from-blue-600 to-indigo-600 shadow-blue-500/20"
                 )}>
                   <Icon className="h-5 w-5 text-white" />
-                  <span className="text-[10px] font-black text-white uppercase tracking-tighter">
+                  <span className="text-[10px] font-bold text-white tracking-tighter">
                     {item.label}
                   </span>
                 </div>

@@ -13,7 +13,8 @@ import {
   FileText,
   Users,
   ClipboardCheck,
-  CheckCircle2
+  CheckCircle2,
+  FileStack
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -25,8 +26,8 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Official Cracklix High-Fidelity Hero v39.0 (Streamlined).
- * UPDATED: Removed text wordmark and tagline for a direct trust-to-heading flow.
+ * @fileOverview Official Cracklix High-Fidelity Hero v40.0.
+ * UPDATED: Removed uppercase transformation for a premium Title Case look.
  */
 
 export default function Hero() {
@@ -40,7 +41,7 @@ export default function Hero() {
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
 
-  const heroImage = "/images/hero-student.png";
+  const heroImage = "https://i.ibb.co/fYJttX5d/Gemini-Generated-Image-n1so6on1so6on1so.png";
 
   const liveStats = useMemo(() => {
     const format = (n: number, fallback: string) => {
@@ -61,32 +62,27 @@ export default function Hero() {
     <section className="relative overflow-hidden bg-[#F8FAFC] pt-8 pb-16 md:pt-12 md:pb-24 text-left w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* IDENTITY ROW */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-10 md:mb-12 gap-6">
-           <div className="flex flex-col items-center md:items-start gap-6 w-full">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm"
-              >
-                <div className="h-5 w-5 rounded-full bg-blue-600 flex items-center justify-center">
-                   <Star className="h-3 w-3 text-white fill-current" />
-                </div>
-                <span className="text-[10px] md:text-xs font-bold text-slate-600 uppercase tracking-widest">10,000+ Aspirants Trust Cracklix</span>
-              </motion.div>
-           </div>
-        </div>
-
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
           
           {/* LEFT CONTENT HUB */}
           <div className="space-y-10 text-center lg:text-left">
             <div className="space-y-6">
-              <h2 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 leading-[1.1] antialiased uppercase">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm mx-auto lg:mx-0"
+              >
+                <div className="h-5 w-5 rounded-full bg-blue-600 flex items-center justify-center">
+                   <Star className="h-3 w-3 text-white fill-current" />
+                </div>
+                <span className="text-[10px] md:text-xs font-bold text-slate-600 tracking-widest">10,000+ Aspirants Trust Cracklix</span>
+              </motion.div>
+
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.05] antialiased">
                 Crack Punjab <br />
                 <span className="text-blue-600">Government Exams</span> <br />
                 With Confidence
-              </h2>
+              </h1>
               
               <p className="text-base md:text-lg text-slate-500 font-medium max-w-xl leading-relaxed mx-auto lg:mx-0">
                 Practice with high-quality mock tests, previous papers and exam-focused preparation for top Punjab exams.
@@ -95,7 +91,7 @@ export default function Hero() {
               {/* Recruitment Board Pills */}
               <div className="flex flex-wrap justify-center lg:justify-start gap-3 pt-2">
                 {["PSSSB", "Punjab Police", "PSTET", "PSPCL", "PPSC"].map((pill) => (
-                  <div key={pill} className="bg-white border border-blue-600 text-blue-600 px-5 py-2 rounded-full font-black text-[10px] md:text-xs uppercase tracking-widest shadow-sm hover:bg-blue-50 transition-all cursor-default">
+                  <div key={pill} className="bg-white border border-blue-600 text-blue-600 px-5 py-2 rounded-full font-black text-[10px] md:text-xs tracking-widest shadow-sm hover:bg-blue-50 transition-all cursor-default">
                     {pill}
                   </div>
                 ))}
@@ -122,7 +118,7 @@ export default function Hero() {
           </div>
 
           {/* RIGHT ILLUSTRATION HUB */}
-          <div className="relative flex items-center justify-center lg:justify-end w-full">
+          <div className="relative flex items-center justify-center lg:justify-end w-full min-h-[400px] md:min-h-[500px]">
              <div className="relative w-full max-w-[320px] sm:max-w-[420px] md:max-w-[520px] lg:max-w-[620px] aspect-square flex items-center justify-center">
                 
                 {/* Center Image */}
@@ -143,26 +139,26 @@ export default function Hero() {
                 {/* Corner Floating Cards */}
                 <div className="absolute inset-0 pointer-events-none">
                   <FloatingNode 
-                     position="top-[12%] left-[-10%]"
+                     position="top-[2%] left-[0%] lg:left-[-10%]"
                      icon={<Zap className="h-4 w-4 text-blue-600 fill-current" />}
                      title="Mock Tests"
                      delay={0.3}
                   />
                   <FloatingNode 
-                     position="top-[12%] right-[-10%]"
+                     position="top-[2%] right-[0%] lg:right-[-10%]"
                      icon={<Landmark className="h-4 w-4 text-orange-500" />}
                      title="Punjab Exams"
                      delay={0.6}
                   />
                   <FloatingNode 
-                     position="bottom-[5%] left-[-15%]"
+                     position="bottom-[5%] left-[0%] lg:left-[-15%]"
                      icon={<Target className="h-4 w-4 text-purple-600" />}
                      title="Daily Practice"
                      delay={0.5}
                   />
                   <FloatingNode 
-                     position="bottom-[5%] right-[-15%]"
-                     icon={<LayoutGrid className="h-4 w-4 text-emerald-600" />}
+                     position="bottom-[5%] right-[0%] lg:right-[-15%]"
+                     icon={<FileStack className="h-4 w-4 text-emerald-600" />}
                      title="Previous Papers"
                      delay={0.4}
                   />
@@ -191,7 +187,7 @@ export default function Hero() {
                       ) : (
                         <p className="text-2xl md:text-3xl font-black text-slate-900 tracking-tighter leading-none tabular-nums">{stat.val}</p>
                       )}
-                      <p className="text-sm font-black text-slate-900 uppercase leading-none">{stat.label}</p>
+                      <p className="text-sm font-black text-slate-900 leading-none">{stat.label}</p>
                       <p className="text-[10px] font-medium text-slate-400 leading-tight">{stat.sub}</p>
                     </div>
                   </Card>
@@ -212,7 +208,7 @@ function FeatureCard({ icon, title, sub }: { icon: React.ReactNode, title: strin
             {icon}
          </div>
          <div className="min-w-0">
-            <h4 className="text-[11px] font-black text-slate-900 uppercase leading-tight truncate">{title}</h4>
+            <h4 className="text-[11px] font-black text-slate-900 leading-tight truncate">{title}</h4>
             <p className="text-[9px] text-slate-400 font-medium leading-tight mt-0.5">{sub}</p>
          </div>
       </div>
@@ -225,13 +221,13 @@ function FloatingNode({ position, icon, title, delay }: { position: string, icon
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay, duration: 0.8 }}
-        className={cn("absolute z-20 w-[140px] hidden md:block", position)}
+        className={cn("absolute z-20 w-[140px] md:w-[180px] lg:w-[210px] hidden md:block", position)}
       >
-         <Card className="p-3 rounded-xl bg-white/95 backdrop-blur-xl border-none shadow-xl flex items-center gap-3">
-            <div className="h-8 w-8 rounded-lg bg-slate-50 flex items-center justify-center shrink-0 shadow-inner">
+         <Card className="p-3 md:p-5 rounded-xl md:rounded-2xl bg-white/95 backdrop-blur-xl border-none shadow-xl flex items-center gap-3 md:gap-4 group hover:shadow-2xl transition-all cursor-pointer pointer-events-auto">
+            <div className="h-8 w-8 md:h-12 md:w-12 rounded-lg md:rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-blue-50 transition-colors">
                {icon}
             </div>
-            <p className="text-[9px] font-black text-slate-900 uppercase tracking-tight truncate leading-none">{title}</p>
+            <p className="text-[9px] md:text-xs font-black text-slate-900 tracking-tight truncate leading-none">{title}</p>
          </Card>
       </motion.div>
    )
