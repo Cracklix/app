@@ -28,13 +28,14 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
 import { Skeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Production-Grade Responsive PWA Header v87.0.
- * SIZING: Height 64px (Mobile) / 72px (Desktop) to frame 44px Logo.
- * BUTTONS: Standardized 44px (Mobile) / 48px (Desktop).
+ * @fileOverview Production-Grade Responsive PWA Header v88.0.
+ * SIZING: Height 64px (Mobile) / 72px (Desktop).
+ * BUTTONS: 44x44px (Mobile) with 24px icons.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -60,23 +61,23 @@ export default function Navbar() {
   const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || (user?.email && SUPER_ADMIN_WHITELIST.includes(user.email.toLowerCase()));
 
   if (!mounted) return (
-    <nav className="w-full border-b border-gray-200 bg-white h-[64px] md:h-[72px]" />
+    <nav className="w-full border-b border-gray-200 bg-white h-16 md:h-[72px]" />
   );
 
   return (
     <div className="w-full sticky top-0 z-50 font-body">
-      <nav className="w-full border-b border-gray-100 bg-white h-[64px] md:h-[72px] px-4 md:px-6 shadow-[0_2px_10px_rgba(0,0,0,0.06)] flex items-center overflow-hidden">
+      <nav className="w-full border-b border-gray-100 bg-white h-16 md:h-[72px] px-4 md:px-6 shadow-[0_2px_10px_rgba(0,0,0,0.06)] flex items-center overflow-hidden">
         <div className="w-full max-w-7xl mx-auto flex items-center justify-between h-full">
           
           {/* LEFT: HAMBURGER (Mobile) + LOGO */}
           <div className="flex items-center gap-3 md:gap-4 shrink-0">
             <button 
               onClick={() => setIsSidebarOpen(true)}
-              className="flex lg:hidden w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-white border border-slate-100 items-center justify-center text-slate-600 active:scale-95 transition-all shadow-sm"
+              className="flex lg:hidden w-11 h-11 rounded-2xl bg-gray-50 items-center justify-center text-slate-600 active:scale-95 transition-all"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <Logo variant="light" />
+            <Logo variant="light" imgClassName="h-7 md:h-8 w-auto" />
           </div>
 
           {/* CENTER: NAVIGATION (Desktop ONLY) */}
@@ -95,17 +96,17 @@ export default function Navbar() {
                 </Link>
              </Button>
 
-             <Link href="/search" className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#2563EB] transition-all active:scale-95 shadow-sm">
+             <Link href="/search" className="w-11 h-11 rounded-2xl bg-gray-50 flex items-center justify-center text-slate-400 hover:text-[#2563EB] transition-all active:scale-95">
                 <Search className="w-6 h-6" />
              </Link>
 
              {loading ? (
-                <Skeleton className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-gray-100" />
+                <Skeleton className="w-11 h-11 rounded-2xl bg-gray-100" />
              ) : user ? (
                <DropdownMenu>
                  <DropdownMenuTrigger asChild>
-                   <button className="w-11 h-11 md:w-12 md:h-12 rounded-2xl border border-slate-100 overflow-hidden shadow-sm cursor-pointer bg-slate-50 active:scale-95 transition-transform flex items-center justify-center">
-                      <StudentAvatar profile={profile} className="h-full w-full border-none" />
+                   <button className="w-11 h-11 rounded-2xl border border-slate-100 overflow-hidden shadow-sm cursor-pointer bg-slate-50 active:scale-95 transition-transform flex items-center justify-center">
+                      <StudentAvatar profile={profile} className="h-full w-full border-none" iconClassName="w-6 h-6" />
                    </button>
                  </DropdownMenuTrigger>
                  <DropdownMenuContent align="end" className="w-64 bg-white border border-gray-200 text-[#04102B] rounded-[2rem] p-2 shadow-5xl z-[2001] mt-4">
@@ -139,9 +140,9 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* SIDEBAR OVERLAY */}
+      {/* SIDEBAR OVERLAY - FIXED WIDTH 80% */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetContent side="left" className="p-0 border-none w-[85vw] max-w-[360px] bg-white z-[2001] shadow-5xl">
+        <SheetContent side="left" className="p-0 border-none w-[80%] max-w-[320px] bg-white z-[2001] shadow-5xl">
           <SheetHeader className="sr-only">
              <SheetTitle>Navigation Sidebar</SheetTitle>
              <SheetDescription>Access institutional preparation resources and exam verticals.</SheetDescription>

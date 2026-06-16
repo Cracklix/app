@@ -6,8 +6,8 @@ import { Zap, Home, BarChart3, Target, Gem } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Production PWA Bottom Navigation v8.0.
- * SIZING: Height 84px. Active Box: 56x56px (Mobile) / 64x64px (Tablet).
+ * @fileOverview Production PWA Bottom Navigation v9.0.
+ * SIZING: Height 84px. Active Box: 56x56px with 24px rounding (3xl).
  * COLORS: Active #2563EB, Inactive #6B7280.
  */
 export default function MobileNav() {
@@ -35,16 +35,13 @@ export default function MobileNav() {
             <Link key={item.href} href={item.href} className="flex-1 flex flex-col items-center justify-center h-full touch-manipulation focus:outline-none">
               <div className="flex flex-col items-center justify-center">
                 <div className={cn(
-                  "flex items-center justify-center transition-all duration-300 w-14 h-14 md:w-16 md:h-16 rounded-2xl",
+                  "flex items-center justify-center transition-all duration-300 w-14 h-14 rounded-3xl",
                   isActive || item.isPremium
                     ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20" 
-                    : "bg-[#F3F4F6] text-[#6B7280]"
+                    : "bg-white text-slate-500"
                 )}>
                   <Icon 
-                    className={cn(
-                      "w-6 h-6 transition-colors duration-300",
-                      isActive || item.isPremium ? "text-white" : "text-[#6B7280]"
-                    )} 
+                    className="w-6 h-6" 
                     fill={isActive || item.isPremium ? "currentColor" : "none"}
                   />
                 </div>
@@ -52,7 +49,7 @@ export default function MobileNav() {
                   "text-[11px] uppercase transition-colors duration-300 mt-1 tracking-tight",
                   isActive || item.isPremium 
                     ? "text-[#2563EB] font-semibold" 
-                    : "text-[#6B7280] font-medium"
+                    : "text-slate-500 font-medium"
                 )}>
                   {item.label}
                 </span>
