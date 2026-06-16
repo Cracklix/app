@@ -23,9 +23,8 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Official Cracklix High-Fidelity Hero v61.0.
- * FIXED: Module resolution for framer-motion.
- * UPDATED: Trust Badge pixel-perfect match to screenshot.
+ * @fileOverview Official Cracklix High-Fidelity Hero v62.0.
+ * UPDATED: Trust Badge now uses real-time student data from Firestore.
  */
 
 export default function Hero() {
@@ -97,17 +96,18 @@ export default function Hero() {
         
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           
-          {/* 1. HEADER TEXT */}
           <div className="order-1 space-y-8 text-center lg:text-left">
             <div className="space-y-6">
-              {/* PIXEL-PERFECT TRUST BADGE FROM SCREENSHOT */}
+              {/* LIVE TRUST BADGE */}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-white border border-slate-100 shadow-sm mx-auto lg:mx-0"
               >
                 <Star className="h-4 w-4 text-amber-500 fill-current" />
-                <span className="text-[10px] md:text-xs font-black text-[#334155] tracking-widest uppercase">10,000+ ASPIRANTS TRUST CRACKLIX</span>
+                <span className="text-[10px] md:text-xs font-black text-[#334155] tracking-widest uppercase">
+                  {statsLoading ? "..." : (stats?.totalUsers ? stats.totalUsers.toLocaleString() + "+" : "10,000+")} ASPIRANTS TRUST CRACKLIX
+                </span>
               </motion.div>
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.05] antialiased">
@@ -131,7 +131,6 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* 2. ILLUSTRATION HUB - CLEAN AREA (POSITIONED ABOVE ACTION GRID ON MOBILE) */}
           <div className="order-2 relative flex items-center justify-center lg:justify-end w-full">
              <div className="relative w-full max-w-[400px] md:max-w-[770px] lg:max-w-[850px] flex items-center justify-center">
                 <motion.div
@@ -152,7 +151,6 @@ export default function Hero() {
              </div>
           </div>
 
-          {/* 3. PREPARATION GRID & CTA HUB */}
           <div className="order-3 lg:col-span-2 w-full space-y-10">
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {prepFeatures.map((feat) => (
@@ -184,7 +182,6 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* 4. STATS REGISTRY - LIVE & ORIGINAL DESIGN */}
         <div className="mt-16 md:mt-24">
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 items-stretch">
               {liveStats.map((stat, idx) => (
