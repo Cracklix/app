@@ -33,9 +33,9 @@ import { TELEGRAM_GROUP, INSTAGRAM_PROFILE } from "@/lib/constants";
 import Image from "next/image";
 
 /**
- * @fileOverview Premium Sidebar Hub v8.0.
- * SIZING: Header 80px, Profile Card 28px rounding, Menu Items 56px height.
- * LOGO: Locked to 32px height for mobile sidebar.
+ * @fileOverview Premium Sidebar Hub v9.0.
+ * SIZING: Width fixed at 280px, Header 80px, Profile Card 28px rounding.
+ * LOGO: Locked to 32px height in sidebar for professional fit.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -78,14 +78,16 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
       
       {/* 1. BRAND HEADER - 80px */}
       <div className="flex items-center justify-between px-5 h-20 border-b shrink-0">
-        <Image 
-          src="/logo/cracklix-logo-dark.png"
-          alt="Cracklix"
-          width={130}
-          height={36}
-          className="h-8 w-auto"
-          priority
-        />
+        <div className="relative h-8 w-auto min-w-[120px]">
+          <Image 
+            src="/logo/cracklix-logo-dark.png"
+            alt="Cracklix"
+            width={130}
+            height={36}
+            className="h-full w-auto object-contain"
+            priority
+          />
+        </div>
         <button 
           onClick={onClose}
           className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-50 transition-colors"

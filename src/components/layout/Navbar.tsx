@@ -28,14 +28,13 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
 import { Skeleton } from "@/components/ui/skeleton";
-import Image from "next/image";
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Production-Grade Responsive PWA Header v88.0.
- * SIZING: Height 64px (Mobile) / 72px (Desktop).
- * BUTTONS: 44x44px (Mobile) with 24px icons.
+ * @fileOverview Hardened Header v92.0.
+ * LAYOUT: [Menu] [Logo] --- [Search] [Profile]
+ * SIZING: Fixed 72px height, 44px (w-11) buttons.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -61,37 +60,37 @@ export default function Navbar() {
   const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || (user?.email && SUPER_ADMIN_WHITELIST.includes(user.email.toLowerCase()));
 
   if (!mounted) return (
-    <nav className="w-full border-b border-gray-200 bg-white h-16 md:h-[72px]" />
+    <nav className="w-full border-b border-gray-100 bg-white h-[72px]" />
   );
 
   return (
     <div className="w-full sticky top-0 z-50 font-body">
-      <nav className="w-full border-b border-gray-100 bg-white h-16 md:h-[72px] px-4 md:px-6 shadow-[0_2px_10px_rgba(0,0,0,0.06)] flex items-center overflow-hidden">
+      <nav className="w-full border-b border-gray-100 bg-white h-[72px] px-4 shadow-[0_2px_10px_rgba(0,0,0,0.06)] flex items-center overflow-hidden">
         <div className="w-full max-w-7xl mx-auto flex items-center justify-between h-full">
           
-          {/* LEFT: HAMBURGER (Mobile) + LOGO */}
-          <div className="flex items-center gap-3 md:gap-4 shrink-0">
+          {/* LEFT: [Menu] [Logo] GROUPED */}
+          <div className="flex items-center gap-3 shrink-0">
             <button 
               onClick={() => setIsSidebarOpen(true)}
               className="flex lg:hidden w-11 h-11 rounded-2xl bg-gray-50 items-center justify-center text-slate-600 active:scale-95 transition-all"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <Logo variant="light" imgClassName="h-7 md:h-8 w-auto" />
+            <Logo variant="light" />
           </div>
 
-          {/* CENTER: NAVIGATION (Desktop ONLY) */}
+          {/* CENTER: DESKTOP NAVIGATION */}
           <nav className="hidden lg:flex items-center gap-10 flex-1 justify-center h-full">
              <NavLink href="/" label="Home" active={pathname === '/'} />
              <NavLink href="/mocks" label="Practice" active={pathname === '/mocks'} />
              <NavLink href="/current-affairs" label="Updates" active={pathname === '/current-affairs'} />
           </nav>
 
-          {/* RIGHT: ACTIONS */}
-          <div className="flex items-center justify-end gap-2 md:gap-3 shrink-0">
-             <Button asChild className="hidden lg:flex h-12 w-[130px] px-0 bg-[#2563EB] hover:bg-blue-700 text-white font-black text-[10px] tracking-widest rounded-2xl gap-2 shadow-lg shadow-blue-600/20 border-none transition-all active:scale-95">
+          {/* RIGHT: [Search] [Profile] GROUPED */}
+          <div className="flex items-center justify-end gap-2 shrink-0">
+             <Button asChild className="hidden lg:flex h-12 px-6 bg-[#2563EB] hover:bg-blue-700 text-white font-black text-[10px] tracking-widest rounded-2xl gap-2 shadow-lg shadow-blue-600/20 border-none transition-all active:scale-95">
                 <Link href="/pass" className="flex items-center justify-center gap-2">
-                  <Gem className="h-4 w-4 text-white" /> 
+                  <Gem className="h-4 w-4" /> 
                   <span>PASS</span>
                 </Link>
              </Button>
@@ -132,7 +131,7 @@ export default function Navbar() {
                  </DropdownMenuContent>
                </DropdownMenu>
              ) : (
-               <Button asChild className="px-5 md:px-8 h-11 md:h-12 bg-[#2563EB] hover:bg-blue-700 text-white font-black text-[9px] md:text-[10px] rounded-2xl transition-all tracking-widest border-none active:scale-95 shadow-lg shadow-blue-600/20">
+               <Button asChild className="px-5 h-11 bg-[#2563EB] hover:bg-blue-700 text-white font-black text-[9px] rounded-2xl transition-all tracking-widest border-none active:scale-95 shadow-lg shadow-blue-600/20">
                  <Link href="/login">LOGIN</Link>
                </Button>
              )}
@@ -140,9 +139,9 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* SIDEBAR OVERLAY - FIXED WIDTH 80% */}
+      {/* SIDEBAR OVERLAY - FIXED WIDTH 280PX */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetContent side="left" className="p-0 border-none w-[80%] max-w-[320px] bg-white z-[2001] shadow-5xl">
+        <SheetContent side="left" className="p-0 border-none w-[280px] max-w-[80%] bg-white z-[2001] shadow-5xl">
           <SheetHeader className="sr-only">
              <SheetTitle>Navigation Sidebar</SheetTitle>
              <SheetDescription>Access institutional preparation resources and exam verticals.</SheetDescription>
