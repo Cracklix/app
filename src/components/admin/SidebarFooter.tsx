@@ -23,16 +23,17 @@ export default function SidebarFooter({ isOpen, profile, handleLogout }: Sidebar
           profile={profile} 
           className="h-10 w-10 rounded-xl bg-white/5 border border-white/10" 
         />
-        {isOpen && (
-          <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-black text-white truncate leading-none mb-1">
-              {profile?.name || 'ADMIN'}
-            </p>
-            <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest truncate">
-              {profile?.role || 'SUPER_ADMIN'}
-            </p>
-          </div>
-        )}
+        <div className={cn(
+          "flex-1 min-w-0 transition-all duration-300",
+          isOpen ? "opacity-100 w-auto" : "opacity-0 w-0 pointer-events-none"
+        )}>
+          <p className="text-[11px] font-black text-white truncate leading-none mb-1">
+            {profile?.name || 'ADMIN'}
+          </p>
+          <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest truncate">
+            {profile?.role || 'SUPER_ADMIN'}
+          </p>
+        </div>
       </div>
 
       <button 
@@ -45,11 +46,12 @@ export default function SidebarFooter({ isOpen, profile, handleLogout }: Sidebar
         )}
       >
         <LogOut className="h-5 w-5 shrink-0" />
-        {isOpen && (
-          <span className="text-[12px] font-bold uppercase tracking-widest">
-            Log Out Session
-          </span>
-        )}
+        <span className={cn(
+          "text-[12px] font-bold uppercase tracking-widest transition-all duration-300",
+          isOpen ? "opacity-100 w-auto" : "opacity-0 w-0 pointer-events-none"
+        )}>
+          Log Out Session
+        </span>
       </button>
     </div>
   );

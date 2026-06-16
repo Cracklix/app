@@ -10,8 +10,9 @@ import { Menu, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Hardened Admin Hub Layout v6.0.
- * Manages global sidebar state and synchronized content area.
+ * @fileOverview Hardened Admin Hub Layout v7.0.
+ * Stabilized widths: 280px (Expanded) / 96px (Collapsed).
+ * Implemented Desktop Push / Mobile Overlay logic.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -24,19 +25,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Initialize state from LocalStorage on mount
   useEffect(() => {
     setMounted(true);
     const savedState = localStorage.getItem('admin-sidebar-state');
     if (savedState) {
       setIsSidebarOpen(savedState === 'expanded');
     } else {
-      // Default behavior: Expanded on desktop, Collapsed on tablet/mobile
       setIsSidebarOpen(window.innerWidth >= 1024);
     }
   }, []);
 
-  // Sync state changes to LocalStorage
   const toggleSidebar = () => {
     const newState = !isSidebarOpen;
     setIsSidebarOpen(newState);
@@ -72,7 +70,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user || !isAdmin) return null;
 
   // Synchronization Widths
-  const sidebarWidth = isSidebarOpen ? 320 : 96;
+  const sidebarWidth = isSidebarOpen ? 280 : 96;
 
   return (
     <div className="min-h-screen w-full bg-white font-body overflow-x-hidden relative flex">
@@ -91,7 +89,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div 
         className="flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out"
         style={{ 
-          marginLeft: typeof window !== 'undefined' && window.innerWidth >= 768 ? sidebarWidth : 0 
+          marginLeft: typeof window !== 'undefined' && window.innerWidth >= 1024 ? sidebarWidth : 0 
         }}
       >
         {/* STICKY HEADER */}
@@ -100,7 +98,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Mobile Trigger Only */}
             <button 
               onClick={() => setIsSidebarOpen(true)}
-              className="md:hidden bg-blue-600 text-white h-11 w-11 rounded-xl shadow-lg flex items-center justify-center active:scale-95 transition-all"
+              className="lg:hidden bg-blue-600 text-white h-11 w-11 rounded-xl shadow-lg flex items-center justify-center active:scale-95 transition-all"
             >
               <Menu className="h-5 w-5" />
             </button>

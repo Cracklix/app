@@ -16,8 +16,8 @@ export default function SidebarHeader({ isOpen, onToggle }: SidebarHeaderProps) 
     <div className="h-24 px-6 flex items-center justify-between shrink-0 relative border-b border-white/5">
       {/* LOGO NODE */}
       <div className={cn(
-        "transition-all duration-300 flex items-center overflow-hidden",
-        isOpen ? "w-auto opacity-100" : "w-10 opacity-100 mx-auto justify-center"
+        "transition-all duration-300 flex items-center overflow-hidden shrink-0",
+        isOpen ? "w-[180px] opacity-100" : "w-[52px] opacity-100 mx-auto justify-center"
       )}>
         {isOpen ? (
           <Logo href="/admin" variant="light" imgClassName="h-10 w-auto" />
@@ -26,11 +26,8 @@ export default function SidebarHeader({ isOpen, onToggle }: SidebarHeaderProps) 
         )}
       </div>
 
-      {/* TOGGLE BUTTON - ONLY VISIBLE ON DESKTOP/TABLET */}
-      <div className={cn(
-        "hidden md:block transition-all duration-300",
-        isOpen ? "relative" : "absolute -right-4 bg-[#0F172A] rounded-full border border-white/10 p-0.5"
-      )}>
+      {/* TOGGLE BUTTON - FIXED RELATIVE TO SIDEBAR EDGE */}
+      <div className="hidden lg:block">
         <SidebarToggle isOpen={isOpen} onToggle={onToggle} />
       </div>
     </div>

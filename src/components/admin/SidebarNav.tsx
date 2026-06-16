@@ -80,10 +80,12 @@ export default function SidebarNav({ isOpen, pathname }: SidebarNavProps) {
     <nav className="flex-1 overflow-y-auto no-scrollbar py-6 px-4 space-y-8">
       {NAV_GROUPS.map((group) => (
         <div key={group.label} className="space-y-2">
-          {isOpen && (
-            <h5 className="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+          {isOpen ? (
+            <h5 className="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] animate-in fade-in duration-500">
               {group.label}
             </h5>
+          ) : (
+            <div className="h-4" />
           )}
           <div className="space-y-1">
             {group.items.map((item) => {
@@ -107,11 +109,12 @@ export default function SidebarNav({ isOpen, pathname }: SidebarNavProps) {
                     "h-5 w-5 shrink-0 transition-colors",
                     isActive ? "text-white" : "group-hover:text-white"
                   )} />
-                  {isOpen && (
-                    <span className="text-[14px] font-semibold truncate">
-                      {item.label}
-                    </span>
-                  )}
+                  <span className={cn(
+                    "text-[14px] font-semibold truncate transition-all duration-300",
+                    isOpen ? "opacity-100 w-auto" : "opacity-0 w-0 pointer-events-none"
+                  )}>
+                    {item.label}
+                  </span>
                 </Link>
               );
             })}
