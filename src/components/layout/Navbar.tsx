@@ -8,7 +8,8 @@ import {
   LogOut, 
   Menu, 
   Gem, 
-  ShieldCheck
+  ShieldCheck,
+  X
 } from "lucide-react";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -31,8 +32,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Professional White Navbar v70.0.
- * UPDATED: Removed Menu button for a cleaner minimalist top bar.
+ * @fileOverview Production-Grade Responsive PWA Header v80.0.
+ * Desktop (≥1024px): Logo Left | Nav Center | Actions Right | H=96px
+ * Mobile (<1024px): Hamburger + Logo Left | Actions Right | H=80px
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -58,39 +60,51 @@ export default function Navbar() {
   const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || (user?.email && SUPER_ADMIN_WHITELIST.includes(user.email.toLowerCase()));
 
   if (!mounted) return (
-    <nav className="w-full border-b border-gray-200 bg-white h-[72px] md:h-20" />
+    <nav className="w-full border-b border-gray-200 bg-white h-20 lg:h-24" />
   );
 
   return (
-    <div className="w-full sticky top-0 z-[1000] font-body">
-      <nav className="w-full border-b border-gray-200 bg-white h-[72px] md:h-20 px-4 md:px-6 shadow-sm flex items-center overflow-hidden">
-        <div className="w-full max-w-7xl mx-auto flex items-center justify-between h-full gap-2 md:gap-4">
+    <div className="w-full sticky top-0 z-50 font-body">
+      <nav className="w-full border-b border-gray-200 bg-white h-20 lg:h-24 px-4 lg:px-8 shadow-sm flex items-center overflow-hidden">
+        <div className="w-full max-w-7xl mx-auto flex items-center justify-between h-full">
           
-          <div className="flex items-center gap-2 md:gap-4 shrink-0">
-            <Logo imgClassName="h-8 md:h-12" />
+          {/* LEFT: HAMBURGER (Mobile) + LOGO */}
+          <div className="flex items-center gap-3 lg:gap-6 shrink-0">
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="flex lg:hidden w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 items-center justify-center text-slate-600 active:scale-95 transition-all"
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+            <Logo imgClassName="h-8 lg:h-10 w-auto" />
           </div>
 
-          <div className="hidden lg:flex items-center gap-2 xl:gap-4">
+          {/* CENTER: NAVIGATION (Desktop ONLY) */}
+          <nav className="hidden lg:flex items-center gap-12 flex-1 justify-center">
              <NavLink href="/" label="Home" active={pathname === '/'} />
              <NavLink href="/mocks" label="Practice" active={pathname === '/mocks'} />
              <NavLink href="/current-affairs" label="Updates" active={pathname === '/current-affairs'} />
-          </div>
+          </nav>
 
-          <div className="flex items-center justify-end gap-2 md:gap-4 shrink-0">
-             <Button asChild className="h-10 md:h-[52px] px-4 md:px-7 bg-[#04102B] hover:bg-[#0B1736] text-white font-bold text-[12px] md:text-[11px] tracking-widest rounded-xl md:rounded-2xl gap-2 shadow-lg border-none transition-all active:scale-95">
-                <Link href="/pass"><Gem className="h-4 w-4 text-[#2F6BFF]" /> <span className="hidden sm:inline">Pass</span></Link>
+          {/* RIGHT: ACTIONS */}
+          <div className="flex items-center justify-end gap-2 lg:gap-4 shrink-0">
+             <Button asChild className="h-12 lg:h-16 px-6 lg:px-10 bg-[#2F6BFF] hover:bg-blue-700 text-white font-black text-[10px] lg:text-[11px] tracking-widest rounded-2xl lg:rounded-3xl gap-2 shadow-lg shadow-blue-600/20 border-none transition-all active:scale-95">
+                <Link href="/pass">
+                  <Gem className="h-4 w-4 text-white" /> 
+                  <span className="hidden sm:inline">PASS</span>
+                </Link>
              </Button>
 
-             <Link href="/search" className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center text-slate-400 hover:text-[#2F6BFF] transition-all">
-                <Search className="h-5 w-5" />
+             <Link href="/search" className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl bg-gray-50 border border-gray-100 flex items-center justify-center text-slate-400 hover:text-[#2F6BFF] hover:bg-blue-50/50 transition-all active:scale-95">
+                <Search className="h-5 w-5 lg:h-6 lg:w-6" />
              </Link>
 
              {loading ? (
-                <Skeleton className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-100" />
+                <Skeleton className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl bg-gray-100" />
              ) : user ? (
                <DropdownMenu>
                  <DropdownMenuTrigger asChild>
-                   <button className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-[#E2E8F0] overflow-hidden shadow-sm cursor-pointer bg-[#F8FAFC] active:scale-95 transition-transform flex items-center justify-center">
+                   <button className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl border border-gray-100 overflow-hidden shadow-sm cursor-pointer bg-gray-50 active:scale-95 transition-transform flex items-center justify-center">
                       <StudentAvatar profile={profile} className="h-full w-full border-none" />
                    </button>
                  </DropdownMenuTrigger>
@@ -117,14 +131,15 @@ export default function Navbar() {
                  </DropdownMenuContent>
                </DropdownMenu>
              ) : (
-               <Button asChild className="px-5 md:px-8 h-10 md:h-12 bg-[#2F6BFF] hover:bg-[#1F5BFF] text-white font-bold text-[11px] rounded-xl md:rounded-xl transition-all tracking-widest border-none active:scale-95">
-                 <Link href="/login">Login</Link>
+               <Button asChild className="px-5 lg:px-8 h-12 lg:h-16 bg-[#2F6BFF] hover:bg-blue-700 text-white font-black text-[10px] lg:text-[11px] rounded-2xl lg:rounded-3xl transition-all tracking-widest border-none active:scale-95 shadow-lg">
+                 <Link href="/login">LOGIN</Link>
                </Button>
              )}
           </div>
         </div>
       </nav>
 
+      {/* SIDEBAR OVERLAY */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
         <SheetContent side="left" className="p-0 border-none w-[300px] bg-white z-[2001]">
           <SheetHeader className="sr-only">
@@ -141,8 +156,10 @@ export default function Navbar() {
 function NavLink({ href, label, active }: { href: string, label: string, active?: boolean }) {
   return (
     <Link href={href} className={cn(
-      "flex items-center px-4 py-2 rounded-xl font-bold text-[10px] md:text-sm transition-all shrink-0",
-      active ? "bg-[#2F6BFF]/10 text-[#2F6BFF] shadow-sm" : "text-slate-400 hover:bg-gray-50 hover:text-[#04102B]"
+      "flex items-center px-8 py-4 rounded-2xl font-semibold text-[15px] transition-all shrink-0 uppercase tracking-widest",
+      active 
+        ? "bg-blue-50 text-[#2F6BFF] shadow-sm" 
+        : "text-slate-400 hover:text-[#04102B] hover:bg-gray-50"
     )}>
        <span>{label}</span>
     </Link>
