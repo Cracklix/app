@@ -30,10 +30,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Hardened Header v96.0 (Pass Section Removed).
+ * @fileOverview Hardened Header v97.0.
  * LAYOUT: [Menu + Logo] -------------------- [Search + Profile]
  * SIZING: Mobile 72px / Desktop 88px.
- * BUTTONS: Mobile 48px / Desktop 64px.
+ * FIXED: Pass section removed.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -134,7 +134,10 @@ export default function Navbar() {
 
       {/* SIDEBAR OVERLAY */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetContent side="left" className="p-0 border-none w-[85vw] max-w-[360px] bg-white z-[2001] shadow-5xl">
+        <SheetContent 
+          side="left" 
+          className="p-0 border-none w-[280px] bg-white z-[2001] shadow-5xl [&>button]:hidden"
+        >
           <SheetHeader className="sr-only">
              <SheetTitle>Navigation Sidebar</SheetTitle>
              <SheetDescription>Access institutional preparation resources and exam verticals.</SheetDescription>

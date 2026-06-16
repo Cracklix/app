@@ -28,9 +28,9 @@ import StudentAvatar from "@/components/brand/StudentAvatar";
 import { TELEGRAM_GROUP, INSTAGRAM_PROFILE } from "@/lib/constants";
 
 /**
- * @fileOverview Premium Sidebar Hub v11.0.
- * SIZING: Width fixed at 280px, Header 88px, Profile Card 32px rounding.
- * LOGO: Locked to 44px height for professional fit.
+ * @fileOverview Premium Sidebar Hub v12.0.
+ * FIXED: Student name truncation and duplicate close button removal.
+ * SIZING: Width fixed at 280px, Profile Card 32px rounding.
  */
 export default function MobileSidebar({ onClose }: { onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -93,7 +93,7 @@ export default function MobileSidebar({ onClose }: { onClose: () => void }) {
                  <div className="w-16 h-16 rounded-3xl bg-slate-50 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
                     <StudentAvatar profile={profile} className="h-full w-full border-none" iconClassName="w-8 h-8" />
                  </div>
-                 <div className="min-w-0 flex-1 space-y-1.5">
+                 <div className="min-w-0 flex-1 space-y-2">
                     <h3 className="text-lg font-bold text-slate-900 uppercase tracking-tight leading-tight break-words">
                       {profile?.name || "Aspirant"}
                     </h3>
