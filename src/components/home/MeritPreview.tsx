@@ -13,7 +13,8 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Balanced Punjab Merit Preview v3.2 (Fixed ReferenceError).
+ * @fileOverview Balanced Punjab Merit Preview v3.3.
+ * FIXED: Corrected reference error where 'r' was used instead of 'res' in mapper.
  */
 export default function MeritPreview() {
   const db = useFirestore();
@@ -31,9 +32,9 @@ export default function MeritPreview() {
   const topRankers = useMemo(() => {
     if (!results) return [];
     const map = new Map();
-    [...results].sort((a, b) => (b.score || 0) - (a.score || 0)).forEach(r => {
-      if (!map.has(r.userId) || map.get(r.userId).score < r.score) {
-        map.set(r.userId, r);
+    [...results].sort((a, b) => (b.score || 0) - (a.score || 0)).forEach(res => {
+      if (!map.has(res.userId) || map.get(res.userId).score < res.score) {
+        map.set(res.userId, res);
       }
     });
     return Array.from(map.values()).sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, 5);

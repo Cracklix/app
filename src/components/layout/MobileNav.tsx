@@ -13,7 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * Production Mobile Bottom Navigation v1.0
+ * Production Mobile Bottom Navigation v1.1
  *
  * Specs:
  * - Height: 80px

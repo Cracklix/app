@@ -35,8 +35,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Balanced Premium Header v55.0.
- * UPDATED: Synchronized 100px Desktop Height and 64px Logo scale.
+ * @fileOverview Balanced Premium Header v56.0.
+ * UPDATED: Optimized spacing for 100px Desktop Height and 64px Logo scale.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -91,7 +91,6 @@ export default function Navbar() {
             <Logo
               variant="light"
               className="shrink-0"
-              imgClassName="h-[44px] md:h-[52px] lg:h-[64px]"
             />
           </div>
 
