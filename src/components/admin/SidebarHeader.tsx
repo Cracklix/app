@@ -12,8 +12,8 @@ interface SidebarHeaderProps {
 }
 
 /**
- * Cracklix Admin Sidebar Header v9.0.
- * FIXED: Synchronized header gap to 24px (gap-6) for visual symmetry.
+ * Cracklix Admin Sidebar Header v10.0.
+ * FIXED: Shifted logo 20px to left and synchronized symmetric gap-4 spacing.
  */
 export default function SidebarHeader({
   isOpen,
@@ -23,7 +23,7 @@ export default function SidebarHeader({
     <div
       className={cn(
         "h-[150px] border-b border-white/5 px-4 shrink-0 flex items-center",
-        isOpen ? "justify-between gap-6" : "justify-center"
+        isOpen ? "justify-between gap-4" : "justify-center"
       )}
     >
       {/* LOGO AREA */}
@@ -37,7 +37,7 @@ export default function SidebarHeader({
           <Logo
             href="/admin"
             variant="dark"
-            className="shrink-0"
+            className="shrink-0 -ml-8"
           />
         ) : (
           <div className="relative h-12 w-12 shrink-0">

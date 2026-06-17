@@ -27,8 +27,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Maximized Mobile Sidebar Drawer v9.0.
- * FIXED: Synchronized header gap to 24px (gap-6) for branding symmetry.
+ * @fileOverview Maximized Mobile Sidebar Drawer v10.0.
+ * FIXED: Shifted logo 20px to left and synchronized symmetric gap-4 spacing.
  */
 export default function MobileSidebar({
   onClose,
@@ -85,13 +85,13 @@ export default function MobileSidebar({
   return (
     <div className="flex h-full flex-col bg-white font-body">
 
-      {/* HEADER: Synchronized height to 150px, Gap to 24px */}
-      <div className="flex h-[150px] items-center justify-between border-b px-4 shrink-0 gap-6">
+      {/* HEADER: gap-4 symmetric, Logo shifted left */}
+      <div className="flex h-[150px] items-center justify-between border-b px-4 shrink-0 gap-4">
         <Logo
           variant="light"
           href="/"
           onClick={onClose}
-          className="shrink-0"
+          className="shrink-0 -ml-8"
         />
 
         <button
