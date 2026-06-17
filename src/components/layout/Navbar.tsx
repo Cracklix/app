@@ -36,7 +36,7 @@ const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
  * @fileOverview Maximized Premium Header v62.0.
- * UPDATED: Shifted logo 20px left (-ml-5) for high-density branding.
+ * UPDATED: Shifted logo 20px left (-ml-5) for high-density branding and matched gap-4 symmetry.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
