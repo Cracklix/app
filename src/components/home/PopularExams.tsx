@@ -20,8 +20,8 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Popular Exams v61.0.
- * UPDATED: Applied 'sizes' and 'w-auto' to resolve Next.js warnings.
+ * @fileOverview High-Fidelity Popular Exams v61.1.
+ * UPDATED: Added sizes to Image components to resolve Next.js warnings.
  */
 
 function getBoardFallbackIcon(id: string, abbrev: string) {

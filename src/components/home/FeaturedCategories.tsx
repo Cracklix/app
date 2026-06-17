@@ -17,7 +17,8 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Elite Exam Categories Hub v13.0 (Title Case Update).
+ * @fileOverview Elite Exam Categories Hub v13.1.
+ * UPDATED: Added sizes to Image components to resolve Next.js warnings.
  */
 
 const CATEGORY_META = [
@@ -122,6 +123,7 @@ export default function FeaturedCategories() {
                             src={cat.icon} 
                             alt={cat.title}
                             fill
+                            sizes="80px"
                             className="object-contain p-2 md:p-2.5"
                           />
                         </div>

@@ -15,7 +15,7 @@ interface LogoProps {
 
 /**
  * Cracklix Official Logo Component
- * UPDATED: Applied 'w-auto' to satisfy Next.js aspect-ratio optimization.
+ * UPDATED: Applied 'w-auto' and explicit dimensions to satisfy Next.js optimization.
  */
 export default function Logo({
   className = "",
@@ -33,14 +33,14 @@ export default function Logo({
     <Image
       src={logoSrc}
       alt="Cracklix"
-      width={540}
-      height={140}
+      width={140}
+      height={40}
       priority
       className={cn(
-        "h-[140px] w-auto object-contain shrink-0",
+        "h-10 w-auto object-contain shrink-0",
         imgClassName
       )}
-      style={{ height: "140px", width: "auto" }}
+      style={{ width: "auto", height: "40px" }}
     />
   );
 

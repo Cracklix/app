@@ -16,15 +16,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import Image from "next/image";
 import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
-import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Hero Hub v95.0.
+ * @fileOverview Official Hero Hub v96.0.
  * RESTORED: High-Fidelity Original Layout with 4-Card Feature Grid.
- * OPTIMIZED: Applied 'sizes' to student image to resolve Next.js warnings.
+ * FIXED: Direct image tag used for student illustration to prevent aspect-ratio warnings.
  */
 export default function Hero() {
   const db = useFirestore();
@@ -111,7 +109,7 @@ export default function Hero() {
                 (item) => (
                   <span
                     key={item}
-                    className="px-4 py-2 rounded-full bg-white border text-[11px] font-bold uppercase tracking-tight text-slate-700"
+                    className="px-4 py-2 rounded-full bg-white border text-sm font-medium text-slate-700"
                   >
                     {item}
                   </span>
@@ -120,16 +118,31 @@ export default function Hero() {
             </div>
 
             <div className="grid grid-cols-2 gap-4 mt-8">
-              <FeatureCard icon={<ClipboardList className="h-6 w-6 text-blue-600" />} label="Mock Tests" />
-              <FeatureCard icon={<BookOpen className="h-6 w-6 text-indigo-600" />} label="Study Material" />
-              <FeatureCard icon={<FileText className="h-6 w-6 text-emerald-600" />} label="Previous Papers" />
-              <FeatureCard icon={<BarChart3 className="h-6 w-6 text-orange-500" />} label="Performance Analytics" />
+              <Card className="p-4 rounded-3xl border bg-white group hover:shadow-lg transition-all">
+                <ClipboardList className="h-6 w-6 text-blue-600 mb-2 transform group-hover:scale-110 transition-transform" />
+                <p className="font-bold">Mock Tests</p>
+              </Card>
+
+              <Card className="p-4 rounded-3xl border bg-white group hover:shadow-lg transition-all">
+                <BookOpen className="h-6 w-6 text-indigo-600 mb-2 transform group-hover:scale-110 transition-transform" />
+                <p className="font-bold">Study Material</p>
+              </Card>
+
+              <Card className="p-4 rounded-3xl border bg-white group hover:shadow-lg transition-all">
+                <FileText className="h-6 w-6 text-emerald-600 mb-2 transform group-hover:scale-110 transition-transform" />
+                <p className="font-bold">Previous Papers</p>
+              </Card>
+
+              <Card className="p-4 rounded-3xl border bg-white group hover:shadow-lg transition-all">
+                <BarChart3 className="h-6 w-6 text-orange-500 mb-2 transform group-hover:scale-110 transition-transform" />
+                <p className="font-bold">Performance Analytics</p>
+              </Card>
             </div>
 
-            <div className="flex flex-wrap gap-4 mt-10">
+            <div className="flex flex-wrap gap-4 mt-8">
               <Button
                 asChild
-                className="h-14 md:h-16 px-10 rounded-2xl bg-blue-600 hover:bg-blue-700 font-bold border-none shadow-2xl active:scale-95 transition-all text-white"
+                className="h-12 md:h-16 px-10 rounded-2xl bg-blue-600 hover:bg-blue-700 font-bold border-none shadow-2xl active:scale-95 transition-all text-white"
               >
                 <Link href="/mocks">
                   Start Free Mock Test
@@ -140,7 +153,7 @@ export default function Hero() {
               <Button
                 asChild
                 variant="outline"
-                className="h-14 md:h-16 px-10 rounded-2xl font-bold border-2 border-slate-200 active:scale-95 transition-all bg-white"
+                className="h-12 md:h-16 px-10 rounded-2xl font-bold border-2 border-slate-200 active:scale-95 transition-all bg-white"
               >
                 <Link href="/exams">
                   Browse Exams
@@ -151,21 +164,14 @@ export default function Hero() {
 
           {/* RIGHT ILLUSTRATION */}
           <div className="relative flex justify-center">
-            <motion.div
+            <motion.img
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
-              className="relative w-full max-w-md aspect-square"
-            >
-              <Image 
-                src="/images/hero-student.png" 
-                alt="Cracklix Student"
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-contain"
-              />
-            </motion.div>
+              src="/images/hero-student.png"
+              alt="Cracklix Student"
+              className="w-full max-w-md h-auto object-contain"
+            />
           </div>
         </div>
 
@@ -174,7 +180,7 @@ export default function Hero() {
           {liveStats.map((stat) => (
             <Card
               key={stat.id}
-              className="p-6 md:p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/40 text-left group hover:translate-y-[-4px] transition-all"
+              className="p-6 md:p-8 rounded-[2rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/40 text-left group hover:translate-y-[-4px] transition-all"
             >
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
@@ -195,13 +201,4 @@ export default function Hero() {
       </div>
     </section>
   );
-}
-
-function FeatureCard({ icon, label }: { icon: React.ReactNode, label: string }) {
-  return (
-    <Card className="p-5 rounded-[2rem] border bg-white shadow-sm border-slate-100 group hover:shadow-lg transition-all text-left">
-      <div className="mb-3 transform group-hover:scale-110 transition-transform">{icon}</div>
-      <p className="font-bold text-[#0F172A] text-sm md:text-base leading-tight">{label}</p>
-    </Card>
-  )
 }

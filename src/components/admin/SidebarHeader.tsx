@@ -12,8 +12,9 @@ interface SidebarHeaderProps {
 }
 
 /**
- * Cracklix Admin Sidebar Header v11.0.
+ * Cracklix Admin Sidebar Header v11.1.
  * FIXED: Shifted logo 48px to left and synchronized symmetric gap-4 spacing.
+ * UPDATED: Added sizes to Image component to resolve Next.js warnings.
  */
 export default function SidebarHeader({
   isOpen,
@@ -46,6 +47,7 @@ export default function SidebarHeader({
               alt="Cracklix"
               fill
               priority
+              sizes="48px"
               className="object-contain"
             />
           </div>
