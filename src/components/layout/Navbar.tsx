@@ -35,9 +35,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Maximized Premium Header v73.0.
- * FIXED: Shifted logo further left (-ml-12) and synchronized symmetric gap-4 spacing.
- * FIXED: Header height locked at 150px to tightly frame 140px logo.
+ * @fileOverview Maximized Premium Header v74.0.
+ * FIXED: Locked 150px height with -ml-12 Logo shift.
+ * FIXED: Symmetric gap-4 (16px) for sidebar-logo and search-profile pairs.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -79,7 +79,7 @@ export default function Navbar() {
       <nav className="w-full h-[150px] bg-white border-b border-slate-100 shadow-sm">
         <div className="w-full max-w-5xl mx-auto px-4 md:px-6 h-full flex items-center justify-between">
 
-          {/* LEFT SIDE: Brand Group (gap-4 symmetric) */}
+          {/* LEFT SIDE: Branding Hub (gap-4 symmetric) */}
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsSidebarOpen(true)}
@@ -97,26 +97,12 @@ export default function Navbar() {
 
           {/* DESKTOP NAVIGATION */}
           <div className="hidden lg:flex items-center justify-center gap-8 flex-1 px-4">
-            <NavLink
-              href="/"
-              label="Home"
-              active={pathname === '/'}
-            />
-
-            <NavLink
-              href="/mocks"
-              label="Practice"
-              active={pathname === '/mocks'}
-            />
-
-            <NavLink
-              href="/current-affairs"
-              label="Updates"
-              active={pathname === '/current-affairs'}
-            />
+            <NavLink href="/" label="Home" active={pathname === '/'} />
+            <NavLink href="/mocks" label="Practice" active={pathname === '/mocks'} />
+            <NavLink href="/current-affairs" label="Updates" active={pathname === '/current-affairs'} />
           </div>
 
-          {/* RIGHT SIDE: Actions (gap-4 symmetric) */}
+          {/* RIGHT SIDE: Action Hub (gap-4 symmetric) */}
           <div className="flex items-center gap-4 shrink-0">
             <Link
               href="/search"
@@ -143,56 +129,32 @@ export default function Navbar() {
                   align="end"
                   className="w-56 mt-4 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl z-[2001]"
                 >
-                  <DropdownMenuItem
-                    asChild
-                    className="rounded-xl px-4 py-3 cursor-pointer"
-                  >
-                    <Link
-                      href="/profile"
-                      className="flex items-center gap-3"
-                    >
+                  <DropdownMenuItem asChild className="rounded-xl px-4 py-3 cursor-pointer">
+                    <Link href="/profile" className="flex items-center gap-3">
                       <User className="w-4 h-4 text-primary" />
-                      <span className="font-bold text-sm">
-                        My Profile
-                      </span>
+                      <span className="font-bold text-sm">My Profile</span>
                     </Link>
                   </DropdownMenuItem>
 
                   {isAdmin && (
-                    <DropdownMenuItem
-                      asChild
-                      className="rounded-xl px-4 py-3 mt-1 border border-primary/10 cursor-pointer"
-                    >
-                      <Link
-                        href="/admin"
-                        className="flex items-center gap-3"
-                      >
+                    <DropdownMenuItem asChild className="rounded-xl px-4 py-3 mt-1 border border-primary/10 cursor-pointer">
+                      <Link href="/admin" className="flex items-center gap-3">
                         <ShieldCheck className="w-4 h-4 text-primary" />
-                        <span className="font-bold text-sm text-primary">
-                          Admin Hub
-                        </span>
+                        <span className="font-bold text-sm text-primary">Admin Hub</span>
                       </Link>
                     </DropdownMenuItem>
                   )}
 
                   <DropdownMenuSeparator className="my-1 bg-slate-100" />
 
-                  <DropdownMenuItem
-                    onClick={handleLogout}
-                    className="rounded-xl px-4 py-3 cursor-pointer text-rose-500 font-bold text-sm flex items-center gap-3"
-                  >
+                  <DropdownMenuItem onClick={handleLogout} className="rounded-xl px-4 py-3 cursor-pointer text-rose-500 font-bold text-sm flex items-center gap-3">
                     <LogOut className="w-4 h-4 shrink-0" />
-                    <span>
-                      Log Out
-                    </span>
+                    <span>Log Out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link
-                href="/login"
-                className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-primary transition-all active:scale-95"
-              >
+              <Link href="/login" className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-primary transition-all active:scale-95">
                 <User className="w-4 h-4" />
               </Link>
             )}
@@ -200,19 +162,9 @@ export default function Navbar() {
         </div>
       </nav>
 
-      <Sheet
-        open={isSidebarOpen}
-        onOpenChange={setIsSidebarOpen}
-      >
-        <SheetContent
-          side="left"
-          className="w-[280px] p-0 border-none bg-white z-[2001] shadow-2xl [&>button]:hidden"
-        >
-          <SheetHeader className="sr-only">
-            <SheetTitle>Menu</SheetTitle>
-            <SheetDescription>Main navigation and profile menu.</SheetDescription>
-          </SheetHeader>
-
+      <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+        <SheetContent side="left" className="w-[280px] p-0 border-none bg-white z-[2001] shadow-2xl [&>button]:hidden">
+          <SheetHeader className="sr-only"><SheetTitle>Menu</SheetTitle><SheetDescription>Main menu.</SheetDescription></SheetHeader>
           <MobileSidebar onClose={() => setIsSidebarOpen(false)} />
         </SheetContent>
       </Sheet>
@@ -220,25 +172,9 @@ export default function Navbar() {
   );
 }
 
-function NavLink({
-  href,
-  label,
-  active,
-}: {
-  href: string;
-  label: string;
-  active?: boolean;
-}) {
+function NavLink({ href, label, active }: { href: string; label: string; active?: boolean; }) {
   return (
-    <Link
-      href={href}
-      className={cn(
-        "text-sm font-bold tracking-tight transition-all",
-        active
-          ? "text-primary"
-          : "text-slate-500 hover:text-[#04102B]"
-      )}
-    >
+    <Link href={href} className={cn("text-sm font-bold tracking-tight transition-all", active ? "text-primary" : "text-slate-500 hover:text-[#04102B]")}>
       {label}
     </Link>
   );

@@ -25,8 +25,8 @@ import { getDeviceId, getBrowserInfo } from "@/lib/device"
 import { motion } from "framer-motion"
 
 /**
- * @fileOverview Hardened Login Hub v18.0.
- * UPDATED: Integrated Session Termination Warning for "1 Device Policy".
+ * @fileOverview Hardened Login Hub v19.0.
+ * UPDATED: Display Session Termination Warning in Red Pill UI.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -81,7 +81,6 @@ function LoginContent() {
     const deviceRef = doc(db, 'users', userId, 'devices', deviceId);
     const deviceSnap = await getDoc(deviceRef);
     
-    // 1. Session Registry Update (Audit Trail)
     if (!deviceSnap.exists()) {
       const devicesSnap = await getDocs(collection(db, 'users', userId, 'devices'));
       if (devicesSnap.size >= 2) {
@@ -104,7 +103,7 @@ function LoginContent() {
       await setDoc(deviceRef, { lastActive: serverTimestamp() }, { merge: true });
     }
 
-    // 2. ONE ACTIVE SESSION HANDOVER
+    // ONE ACTIVE SESSION HANDOVER
     await setDoc(doc(db, 'users', userId), {
       activeDeviceId: deviceId,
       lastLoginAt: serverTimestamp(),
@@ -248,7 +247,7 @@ function LoginContent() {
           <div className="h-1.5 w-full bg-blue-600" />
           <CardHeader className="text-center pt-10 md:pt-14 pb-4 px-8 md:px-16">
             <CardTitle className="text-2xl md:text-4xl font-extrabold tracking-tight text-white">{mode === 'login' ? "Login" : "Sign Up"}</CardTitle>
-            <CardDescription className="text-slate-500 font-bold text-[10px] md:text-[12px] tracking-tight mt-3">Registry Access v18.0</CardDescription>
+            <CardDescription className="text-slate-500 font-bold text-[10px] md:text-[12px] tracking-tight mt-3">Registry Access v19.0</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 md:space-y-10 pb-12 md:pb-20 px-8 md:px-16">
             <form onSubmit={handleEmailAuth} className="space-y-4 md:space-y-6">
