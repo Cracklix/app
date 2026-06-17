@@ -35,8 +35,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Maximized Premium Header v66.0.
- * UPDATED: Reduced height to 134px for ultra-compact vertical profile.
+ * @fileOverview Maximized Premium Header v67.0.
+ * UPDATED: Reduced height to 80px (h-20) to eliminate vertical spacing.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -69,13 +69,13 @@ export default function Navbar() {
 
   if (!mounted) {
     return (
-      <nav className="w-full border-b border-slate-100 bg-white h-[134px]" />
+      <nav className="w-full border-b border-slate-100 bg-white h-20" />
     );
   }
 
   return (
     <div className="sticky top-0 z-50 w-full font-body">
-      <nav className="w-full h-[134px] bg-white border-b border-slate-100 shadow-sm">
+      <nav className="w-full h-20 bg-white border-b border-slate-100 shadow-sm">
         <div className="w-full max-w-5xl mx-auto px-4 md:px-6 h-full flex items-center justify-between">
 
           {/* LEFT SIDE: Brand Group */}
@@ -83,7 +83,7 @@ export default function Navbar() {
             <button
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open menu"
-              className="flex items-center justify-center w-12 h-12 rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0"
+              className="flex items-center justify-center w-11 h-11 rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0"
             >
               <Menu className="w-5 h-5" />
             </button>
