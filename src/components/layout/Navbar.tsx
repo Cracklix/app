@@ -35,8 +35,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Maximized Premium Header v70.0.
- * FIXED: Shifted logo 20px to left and synchronized symmetric gap-4 spacing.
+ * @fileOverview Maximized Premium Header v71.0.
+ * FIXED: Shifted logo 48px to left and synchronized symmetric gap-4 spacing.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -90,7 +90,7 @@ export default function Navbar() {
 
             <Logo
               variant="light"
-              className="shrink-0 -ml-8"
+              className="shrink-0 -ml-12"
             />
           </div>
 

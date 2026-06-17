@@ -27,8 +27,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Maximized Mobile Sidebar Drawer v10.0.
- * FIXED: Shifted logo 20px to left and synchronized symmetric gap-4 spacing.
+ * @fileOverview Maximized Mobile Sidebar Drawer v11.0.
+ * FIXED: Shifted logo 48px to left and synchronized symmetric gap-4 spacing.
  */
 export default function MobileSidebar({
   onClose,
@@ -91,7 +91,7 @@ export default function MobileSidebar({
           variant="light"
           href="/"
           onClick={onClose}
-          className="shrink-0 -ml-8"
+          className="shrink-0 -ml-12"
         />
 
         <button
