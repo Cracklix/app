@@ -14,32 +14,69 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview Official Cracklix Brand Hub v37.0.
- * UPDATED: Hardened to 120px height standard for maximum visibility.
+ * @fileOverview Cracklix Official Logo Component v1.2
+ * Standardized at 120px height for premium brand visibility.
+ * FIXED: Syntax error and runtime onClick safety.
  */
-export default function Logo({ className = "", href = "/", variant = 'light', imgClassName = "", onClick }: LogoProps) {
-  const logoSrc = variant === 'light' ? '/logo/cracklix-logo-dark.png' : '/logo/cracklix-logo-light.png';
+export default function Logo({
+  className = "",
+  href = "/",
+  variant = "light",
+  imgClassName = "",
+  onClick,
+}: LogoProps) {
+
+  const logoSrc =
+    variant === "light"
+      ? "/logo/cracklix-logo-dark.png"
+      : "/logo/cracklix-logo-light.png";
+
+  const logo = (
+    <Image
+      src={logoSrc}
+      alt="Cracklix"
+      width={400}
+      height={120}
+      priority
+      className={cn(
+        "h-[120px] w-auto object-contain shrink-0 select-none",
+        imgClassName
+      )}
+    />
+  );
+
+  // Handle case where onClick might be called but is undefined
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick && typeof onClick === 'function') {
+      onClick();
+    }
+  };
+
+  // Non-clickable logo variant
+  if (!href) {
+    return (
+      <div
+        className={cn(
+          "flex items-center",
+          className
+        )}
+        onClick={handleClick}
+      >
+        {logo}
+      </div>
+    );
+  }
 
   return (
-    <Link 
-      href={href} 
-      onClick={onClick}
+    <Link
+      href={href}
       className={cn(
-        "flex items-center pointer-events-auto select-none shrink-0", 
+        "flex items-center group transition-transform active:scale-95",
         className
       )}
+      onClick={handleClick}
     >
-      <Image 
-        src={logoSrc} 
-        alt="Cracklix" 
-        width={400}
-        height={120}
-        priority
-        className={cn(
-          "h-[120px] w-auto object-contain shrink-0",
-          imgClassName
-        )}
-      />
+      {logo}
     </Link>
   );
 }

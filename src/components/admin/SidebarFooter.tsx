@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -12,47 +11,69 @@ interface SidebarFooterProps {
   handleLogout: () => void;
 }
 
-export default function SidebarFooter({ isOpen, profile, handleLogout }: SidebarFooterProps) {
+export default function SidebarFooter({
+  isOpen,
+  profile,
+  handleLogout,
+}: SidebarFooterProps) {
   return (
-    <div className="p-4 mt-auto border-t border-white/5 bg-[#020617]/40">
-      <div className={cn(
-        "flex items-center gap-4 transition-all duration-300",
-        isOpen ? "px-2" : "justify-center"
-      )}>
-        <StudentAvatar 
-          profile={profile} 
-          className="h-10 w-10 rounded-xl bg-white/5 border border-white/10" 
+    <div className="mt-auto border-t border-white/5 bg-slate-950/40 p-4">
+
+      {/* PROFILE */}
+      <div
+        className={cn(
+          "flex items-center gap-3 transition-all duration-300",
+          isOpen ? "px-1" : "justify-center"
+        )}
+      >
+        <StudentAvatar
+          profile={profile}
+          className="h-11 w-11 rounded-2xl border border-white/10 bg-white/5 shrink-0"
+          iconClassName="w-5 h-5"
         />
-        <div className={cn(
-          "flex-1 min-w-0 transition-all duration-300",
-          isOpen ? "opacity-100 w-auto" : "opacity-0 w-0 pointer-events-none"
-        )}>
-          <p className="text-[11px] font-black text-white truncate leading-none mb-1">
-            {profile?.name || 'ADMIN'}
+
+        <div
+          className={cn(
+            "min-w-0 flex-1 overflow-hidden transition-all duration-300",
+            isOpen
+              ? "opacity-100 max-w-[160px]"
+              : "opacity-0 max-w-0 pointer-events-none"
+          )}
+        >
+          <p className="truncate text-sm font-bold text-white">
+            {profile?.name || "ADMIN"}
           </p>
-          <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest truncate">
-            {profile?.role || 'SUPER_ADMIN'}
+
+          <p className="truncate text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+            {profile?.role || "SUPER_ADMIN"}
           </p>
         </div>
       </div>
 
-      <button 
+      {/* LOGOUT */}
+      <button
         onClick={handleLogout}
         className={cn(
-          "w-full flex items-center justify-center gap-3 h-12 mt-4 rounded-xl transition-all duration-200 active:scale-95 group",
-          isOpen 
-            ? "bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white" 
-            : "text-slate-500 hover:text-red-500"
+          "mt-4 flex h-12 w-full items-center justify-center rounded-2xl transition-all duration-200 active:scale-95",
+          isOpen
+            ? "gap-3 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white"
+            : "text-slate-500 hover:text-red-400"
         )}
       >
         <LogOut className="h-5 w-5 shrink-0" />
-        <span className={cn(
-          "text-[12px] font-bold uppercase tracking-widest transition-all duration-300",
-          isOpen ? "opacity-100 w-auto" : "opacity-0 w-0 pointer-events-none"
-        )}>
-          Log Out Session
+
+        <span
+          className={cn(
+            "overflow-hidden whitespace-nowrap text-[12px] font-bold uppercase tracking-widest transition-all duration-300",
+            isOpen
+              ? "max-w-[120px] opacity-100"
+              : "max-w-0 opacity-0"
+          )}
+        >
+          Log Out
         </span>
       </button>
+
     </div>
   );
 }

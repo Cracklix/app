@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 /**
- * @fileOverview Hardened Admin Hub Layout v17.0.
+ * @fileOverview Hardened Admin Hub Layout v18.0.
  * UPDATED: Synchronized with 140px header height for consistent platform branding.
  */
 

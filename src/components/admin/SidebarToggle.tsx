@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { PanelLeft, PanelRight, Menu } from 'lucide-react';
+import { PanelLeft, PanelRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SidebarToggleProps {
@@ -10,18 +10,36 @@ interface SidebarToggleProps {
 }
 
 /**
- * @fileOverview Refined Internal Sidebar Toggle.
- * Positioned within the flow of the sidebar header to prevent border overlap.
+ * Cracklix Admin Sidebar Toggle v1.0
+ *
+ * Size: 40px × 40px
+ * Icon: 20px
+ * Radius: 16px
  */
-export default function SidebarToggle({ isOpen, onToggle }: SidebarToggleProps) {
+
+export default function SidebarToggle({
+  isOpen,
+  onToggle,
+}: SidebarToggleProps) {
   return (
     <button
+      type="button"
       onClick={onToggle}
+      aria-label={
+        isOpen
+          ? 'Collapse Sidebar'
+          : 'Expand Sidebar'
+      }
       className={cn(
-        "h-10 w-10 flex items-center justify-center rounded-xl bg-blue-600/10 text-blue-500 hover:bg-blue-600 hover:text-white transition-all active:scale-90 border border-blue-500/20",
+        "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl",
+        "border border-blue-500/20",
+        "bg-blue-500/10 text-blue-500",
+        "transition-all duration-200",
+        "hover:bg-blue-600 hover:text-white hover:border-blue-600",
+        "active:scale-95",
+        "focus:outline-none focus:ring-2 focus:ring-blue-500/30",
         !isOpen && "mx-auto"
       )}
-      aria-label={isOpen ? "Collapse Sidebar" : "Expand Sidebar"}
     >
       {isOpen ? (
         <PanelLeft className="h-5 w-5" />

@@ -12,45 +12,57 @@ interface SidebarHeaderProps {
 }
 
 /**
- * @fileOverview High-Fidelity Admin Sidebar Header v12.0.
- * UPDATED: Synchronized with 140px header height and 120px logo standard.
+ * Cracklix Admin Sidebar Header v1.2
+ * Standardized at 140px height with 120px Logo for high-impact branding.
  */
-export default function SidebarHeader({ isOpen, onToggle }: SidebarHeaderProps) {
+export default function SidebarHeader({
+  isOpen,
+  onToggle,
+}: SidebarHeaderProps) {
   return (
-    <div className={cn(
-      "h-[140px] px-4 flex flex-col shrink-0 relative border-b border-white/5",
-      isOpen ? "items-stretch justify-center" : "items-center justify-center gap-4"
-    )}>
-      <div className={cn(
-        "flex items-center transition-all duration-300",
+    <div
+      className={cn(
+        "h-[140px] border-b border-white/5 px-4 shrink-0 flex items-center",
         isOpen ? "justify-between" : "justify-center"
-      )}>
-        <div className={cn(
-          "transition-all duration-300 flex items-center overflow-hidden shrink-0",
-          isOpen ? "w-[240px]" : "w-[40px]"
-        )}>
-          {isOpen ? (
-            <Logo href="/admin" variant="dark" />
-          ) : (
-            <div className="relative h-10 w-10">
-               <Image 
-                  src="/logo/cracklix-icon.png" 
-                  alt="C" 
-                  fill
-                  className="object-contain"
-               />
-            </div>
-          )}
-        </div>
-
-        {isOpen && (
-          <SidebarToggle isOpen={isOpen} onToggle={onToggle} />
+      )}
+    >
+      {/* LOGO AREA */}
+      <div
+        className={cn(
+          "flex items-center overflow-hidden transition-all duration-300",
+          isOpen ? "w-[180px]" : "w-11 justify-center"
+        )}
+      >
+        {isOpen ? (
+          <Logo
+            href="/admin"
+            variant="dark"
+          />
+        ) : (
+          <div className="relative h-11 w-11 shrink-0">
+            <Image
+              src="/logo/cracklix-icon.png"
+              alt="Cracklix"
+              fill
+              priority
+              className="object-contain"
+            />
+          </div>
         )}
       </div>
 
-      {!isOpen && (
-        <SidebarToggle isOpen={isOpen} onToggle={onToggle} />
-      )}
+      {/* TOGGLE BUTTON */}
+      <div
+        className={cn(
+          "flex items-center",
+          !isOpen && "absolute bottom-4"
+        )}
+      >
+        <SidebarToggle
+          isOpen={isOpen}
+          onToggle={onToggle}
+        />
+      </div>
     </div>
   );
 }

@@ -1,117 +1,234 @@
-"use client";
+'use client';
 
 import React from "react";
 import Link from "next/link";
-import { Mail, Phone, MapPin, ShieldCheck, Instagram, MessageCircle } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  ShieldCheck,
+  Instagram,
+  MessageCircle,
+} from "lucide-react";
+
 import Logo from "@/components/brand/Logo";
-import { TELEGRAM_GROUP, INSTAGRAM_PROFILE, SUPPORT_EMAIL, SUPPORT_PHONE } from "@/lib/constants";
+import {
+  TELEGRAM_GROUP,
+  INSTAGRAM_PROFILE,
+  SUPPORT_EMAIL,
+  SUPPORT_PHONE,
+} from "@/lib/constants";
 
 /**
- * @fileOverview High-Fidelity Institutional Footer v13.4.
- * UPDATED: Hardened logo node to the 120px platform standard.
+ * Production Footer v1.1
+ * Cracklix Official Footer
+ * UPDATED: Logo height set to 120px.
  */
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#020617] text-white border-t border-white/5 font-body text-left">
-      <div className="container mx-auto px-6 max-w-7xl pt-20 pb-16">
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 items-start mb-16">
-          
+    <footer className="border-t border-white/5 bg-[#020617] font-body text-white">
+
+      <div className="mx-auto max-w-7xl px-6 pt-16 pb-14">
+
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+
+          {/* Brand Section */}
           <div className="space-y-8">
-            <div className="flex justify-start">
-               <Logo variant="dark" />
-            </div>
-            
-            <p className="text-[15px] text-[#CBD5E1] leading-relaxed max-w-[300px]">
-              Punjab's most advanced government exam portal. Built for serious aspirants.
+
+            <Logo
+              variant="dark"
+            />
+
+            <p className="max-w-[300px] text-[15px] leading-relaxed text-slate-300">
+              Punjab's most advanced government exam platform,
+              built for serious aspirants preparing for success.
             </p>
-            
+
             <div className="space-y-3">
-              <div className="flex items-center gap-3 text-[#94A3B8] text-[13px]">
+
+              <div className="flex items-center gap-3 text-[13px] text-slate-400">
                 <MapPin className="h-4 w-4 shrink-0" />
-                <span>HQs: Shergarh, Bathinda, Punjab</span>
+
+                <span>
+                  Shergarh, Bathinda, Punjab
+                </span>
               </div>
-              <div className="flex items-center gap-3 text-[#94A3B8] text-[13px]">
+
+              <div className="flex items-center gap-3 text-[13px] text-slate-400">
                 <ShieldCheck className="h-4 w-4 shrink-0" />
-                <span>Institutional Registry Verified</span>
+
+                <span>
+                  Institutional Registry Verified
+                </span>
               </div>
+
             </div>
 
-            <div className="flex items-center gap-3 pt-2">
-              <SocialIcon href={TELEGRAM_GROUP} icon={<MessageCircle className="w-5 h-5" />} />
-              <SocialIcon href={INSTAGRAM_PROFILE} icon={<Instagram className="w-5 h-5" />} />
+            <div className="flex items-center gap-3">
+
+              <SocialIcon
+                href={TELEGRAM_GROUP}
+                icon={<MessageCircle className="h-5 w-5" />}
+              />
+
+              <SocialIcon
+                href={INSTAGRAM_PROFILE}
+                icon={<Instagram className="h-5 w-5" />}
+              />
+
             </div>
+
           </div>
 
+          {/* Support */}
           <div className="space-y-8">
-            <h4 className="text-[18px] font-bold text-white tracking-tight">Support Hub</h4>
-            <ul className="flex flex-col gap-5">
-              <FooterLink href="/support">Support Center</FooterLink>
-              <FooterLink href="/help">Help Articles</FooterLink>
-              <FooterLink href="/privacy">Privacy Policy</FooterLink>
-              <FooterLink href="/terms">Terms of Service</FooterLink>
+
+            <h3 className="text-lg font-bold tracking-tight">
+              Support Hub
+            </h3>
+
+            <ul className="space-y-5">
+
+              <FooterLink href="/support">
+                Support Center
+              </FooterLink>
+
+              <FooterLink href="/help">
+                Help Articles
+              </FooterLink>
+
+              <FooterLink href="/privacy">
+                Privacy Policy
+              </FooterLink>
+
+              <FooterLink href="/terms">
+                Terms of Service
+              </FooterLink>
+
             </ul>
+
           </div>
 
+          {/* Resources */}
           <div className="space-y-8">
-            <h4 className="text-[18px] font-bold text-white tracking-tight">Resources</h4>
-            <ul className="flex flex-col gap-5">
-              <FooterLink href="/mocks">Mock Tests</FooterLink>
-              <FooterLink href="/pyqs">Previous Papers</FooterLink>
-              <FooterLink href="/notes">Study Notes</FooterLink>
-              <FooterLink href="/about">About Us</FooterLink>
+
+            <h3 className="text-lg font-bold tracking-tight">
+              Resources
+            </h3>
+
+            <ul className="space-y-5">
+
+              <FooterLink href="/mocks">
+                Mock Tests
+              </FooterLink>
+
+              <FooterLink href="/pyqs">
+                Previous Papers
+              </FooterLink>
+
+              <FooterLink href="/notes">
+                Study Notes
+              </FooterLink>
+
+              <FooterLink href="/about">
+                About Us
+              </FooterLink>
+
             </ul>
+
           </div>
 
+          {/* Contact */}
           <div className="space-y-8">
-            <h4 className="text-[18px] font-bold text-white tracking-tight">Connect With Us</h4>
+
+            <h3 className="text-lg font-bold tracking-tight">
+              Connect With Us
+            </h3>
+
             <div className="space-y-6">
-              <div className="flex items-center gap-4 group">
-                 <div className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-[#2F6BFF]">
-                    <Phone className="h-4 w-4" />
-                 </div>
-                 <a href={`tel:${SUPPORT_PHONE}`} className="text-[15px] font-bold text-[#94A3B8] group-hover:text-white transition-colors">{SUPPORT_PHONE}</a>
+
+              <div className="group flex items-center gap-4">
+
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-[#2563EB]">
+                  <Phone className="h-4 w-4" />
+                </div>
+
+                <a
+                  href={`tel:${SUPPORT_PHONE}`}
+                  className="text-[15px] font-semibold text-slate-400 transition-colors group-hover:text-white"
+                >
+                  {SUPPORT_PHONE}
+                </a>
+
               </div>
 
-              <div className="flex items-center gap-4 group">
-                 <div className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-[#2F6BFF]">
-                    <Mail className="h-4 w-4" />
-                 </div>
-                 <a href={`mailto:${SUPPORT_EMAIL}`} className="text-[15px] font-bold text-[#94A3B8] group-hover:text-white transition-colors">{SUPPORT_EMAIL}</a>
+              <div className="group flex items-center gap-4">
+
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-[#2563EB]">
+                  <Mail className="h-4 w-4" />
+                </div>
+
+                <a
+                  href={`mailto:${SUPPORT_EMAIL}`}
+                  className="text-[15px] font-semibold text-slate-400 transition-colors group-hover:text-white"
+                >
+                  {SUPPORT_EMAIL}
+                </a>
+
               </div>
 
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-[#2F6BFF]/20">
-                 <span className="text-[11px] font-bold text-[#2F6BFF] tracking-tight">Official Resolution Channel</span>
+              <div className="inline-flex items-center rounded-full border border-[#2563EB]/20 bg-white/5 px-3 py-1.5">
+
+                <span className="text-11px] font-bold tracking-tight text-[#2563EB]">
+                  Official Resolution Channel
+                </span>
+
               </div>
+
             </div>
+
           </div>
 
         </div>
+
       </div>
 
-      <div className="bg-black/40 h-[60px] flex items-center justify-center border-t border-white/5">
-        <div className="container mx-auto px-6 max-w-7xl flex flex-col md:flex-row items-center justify-between gap-2">
-          <p className="text-[#64748B] text-[14px]">
+      {/* Bottom Bar */}
+      <div className="border-t border-white/5 bg-black/40">
+
+        <div className="mx-auto flex min-h-[72px] max-w-7xl flex-col items-center justify-between gap-2 px-6 py-3 text-center md:flex-row md:text-left">
+
+          <p className="text-[14px] text-slate-500">
             © {currentYear} Cracklix. All Rights Reserved.
           </p>
-          <p className="text-[#64748B] text-[14px] hidden md:block">
+
+          <p className="hidden text-[14px] text-slate-500 md:block">
             Punjab's Leading Preparation Ecosystem.
           </p>
+
         </div>
+
       </div>
+
     </footer>
   );
 }
 
-function FooterLink({ href, children }: { href: string, children: React.ReactNode }) {
+function FooterLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
   return (
     <li>
-      <Link 
-        href={href} 
-        className="text-[15px] text-[#94A3B8] hover:text-[#2F6BFF] transition-all duration-200"
+      <Link
+        href={href}
+        className="text-[15px] text-slate-400 transition-colors hover:text-[#2563EB]"
       >
         {children}
       </Link>
@@ -119,13 +236,19 @@ function FooterLink({ href, children }: { href: string, children: React.ReactNod
   );
 }
 
-function SocialIcon({ href, icon }: { href: string, icon: React.ReactNode }) {
+function SocialIcon({
+  href,
+  icon,
+}: {
+  href: string;
+  icon: React.ReactNode;
+}) {
   return (
-    <a 
-      href={href} 
-      target="_blank" 
+    <a
+      href={href}
+      target="_blank"
       rel="noopener noreferrer"
-      className="h-[42px] w-[42px] rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-[#2F6BFF] transition-all duration-300 shadow-lg"
+      className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-white/5 text-white shadow-lg transition-all duration-300 hover:bg-[#2563EB]"
     >
       {icon}
     </a>
