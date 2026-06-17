@@ -12,8 +12,8 @@ interface SidebarHeaderProps {
 }
 
 /**
- * Cracklix Admin Sidebar Header v3.0.
- * UPDATED: Shifted expanded logo 10px left (-ml-2.5) for fine-tuned alignment.
+ * Cracklix Admin Sidebar Header v4.0.
+ * UPDATED: Logo shifted significantly left (-ml-10) to counteract image whitespace.
  */
 export default function SidebarHeader({
   isOpen,
@@ -37,7 +37,7 @@ export default function SidebarHeader({
           <Logo
             href="/admin"
             variant="dark"
-            className="-ml-2.5"
+            className="-ml-10"
           />
         ) : (
           <div className="relative h-16 w-16 shrink-0">
