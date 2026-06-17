@@ -20,8 +20,8 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Popular Exams v59.0 (High Density).
- * UPDATED: Reduced font sizes and removed all text truncation for full visibility.
+ * @fileOverview High-Fidelity Popular Exams v60.0.
+ * UPDATED: Added 'sizes' to board logos to resolve optimization warnings.
  */
 
 function getBoardFallbackIcon(id: string, abbrev: string) {
@@ -87,6 +87,7 @@ export default function PopularExams() {
                                   src={logoUrl} 
                                   alt={board.abbreviation} 
                                   fill
+                                  sizes="(max-width: 768px) 100px, 120px"
                                   className="object-contain p-2"
                                   referrerPolicy="no-referrer"
                                   onError={() => setFailedImages(prev => ({ ...prev, [board.id]: true }))} 

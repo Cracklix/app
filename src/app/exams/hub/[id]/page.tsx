@@ -11,12 +11,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, GraduationCap, Zap, BookOpen, Layers, Shield, Loader2, FileText, Landmark, ShieldCheck } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Hub Explorer v10.0 (Fully Responsive).
- * FIXED: Oversized typography and logos on mobile.
+ * @fileOverview Institutional Hub Explorer v11.0.
+ * OPTIMIZED: Added 'sizes' to logo nodes to resolve Next.js warnings.
  */
 
 export default function HubExamsPage() {
@@ -68,9 +69,17 @@ export default function HubExamsPage() {
             </button>
             
             <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 md:gap-10">
-               <div className="h-20 w-20 sm:h-28 sm:w-28 md:h-32 md:w-32 rounded-2xl md:rounded-[2.5rem] bg-slate-50 border-2 md:border-4 border-white shadow-xl flex items-center justify-center overflow-hidden shrink-0">
+               <div className="h-20 w-20 sm:h-28 sm:w-28 md:h-32 md:w-32 rounded-2xl md:rounded-[2.5rem] bg-slate-50 border-2 md:border-4 border-white shadow-xl flex items-center justify-center overflow-hidden shrink-0 relative">
                   {hub?.iconUrl && !failedImages['hub'] ? (
-                    <img src={hub.iconUrl} className="h-full w-full object-contain p-3 md:p-4" alt="Logo" referrerPolicy="no-referrer" onError={() => setFailedImages(p => ({...p, 'hub': true}))} />
+                    <Image 
+                      src={hub.iconUrl} 
+                      alt="Logo" 
+                      fill
+                      sizes="(max-width: 768px) 100px, 128px"
+                      className="object-contain p-3 md:p-4" 
+                      referrerPolicy="no-referrer" 
+                      onError={() => setFailedImages(p => ({...p, 'hub': true}))} 
+                    />
                   ) : (
                     <div className="text-primary opacity-40">{hub?.categoryId === 'punjab-govt' ? (hub.id.toLowerCase().includes('police') ? <ShieldCheck className="h-10 w-10 md:h-16 md:w-16" /> : <Landmark className="h-10 w-10 md:h-16 md:w-16" />) : <Landmark className="h-10 w-10 md:h-16 md:w-16" />}</div>
                   )}
@@ -107,9 +116,17 @@ export default function HubExamsPage() {
                     <Link key={exam.id} href={`/exams/${exam.id}`}>
                        <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-4px] transition-all duration-500 rounded-[2rem] bg-white group overflow-hidden h-full flex flex-col p-6 md:p-10 text-left">
                           <div className="flex justify-between items-start mb-6 md:mb-8">
-                             <div className="h-14 w-14 md:h-18 md:w-18 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 shadow-inner">
+                             <div className="h-14 w-14 md:h-18 md:w-18 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 shadow-inner relative overflow-hidden">
                                 {effectiveLogo && !failedImages[exam.id] ? (
-                                   <img src={effectiveLogo} className="h-full w-full object-contain p-2" alt="Logo" referrerPolicy="no-referrer" onError={() => setFailedImages(p => ({ ...p, [exam.id]: true }))} />
+                                   <Image 
+                                      src={effectiveLogo} 
+                                      alt="Logo" 
+                                      fill
+                                      sizes="72px"
+                                      className="object-contain p-2" 
+                                      referrerPolicy="no-referrer" 
+                                      onError={() => setFailedImages(p => ({ ...p, [exam.id]: true }))} 
+                                   />
                                 ) : (
                                   <Landmark className="h-6 w-6 md:h-10 md:w-10 text-primary opacity-20" />
                                 )}

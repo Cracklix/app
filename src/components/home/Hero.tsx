@@ -2,27 +2,29 @@
 
 import React, { useMemo, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  ArrowRight,
-  Star,
-  Zap,
+import {
+  ClipboardList,
   ShieldCheck,
   Users,
-  ClipboardList,
-  Target,
-  Files,
-  Landmark
+  Zap,
+  ChevronRight,
+  BookOpen,
+  FileText,
+  BarChart3,
+  Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
+import { useDoc, useFirestore } from "@/firebase";
+import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
-import { useDoc, useFirestore } from '@/firebase';
-import { doc } from 'firebase/firestore';
 
 /**
- * @fileOverview Elite Hero Hub v88.0 (Premium Title Case Update).
+ * @fileOverview Official Hero Hub v90.0.
+ * RESTORED: Original high-fidelity layout with feature cards and statistics.
+ * OPTIMIZED: Applied 'sizes' to student image to resolve Next.js optimization warnings.
  */
 export default function Hero() {
   const db = useFirestore();
@@ -32,126 +34,178 @@ export default function Hero() {
     setMounted(true);
   }, []);
 
-  const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
+  const statsRef = useMemo(
+    () => (db ? doc(db, "settings", "stats") : null),
+    [db]
+  );
+
   const { data: stats } = useDoc<any>(statsRef);
 
-  // PERMANENT ASSET NODE
-  const heroImage = "/images/hero-student.png";
-  const fallbackIcon = "/logo/cracklix-icon.png";
-
-  const features = [
-    { title: "Mock Tests", sub: "Exam-focused mock tests", icon: <ClipboardList className="h-4 w-4 md:h-5 md:w-5" />, color: "text-blue-600", bgColor: "bg-blue-50" },
-    { title: "Previous Papers", sub: "Previous year question papers", icon: <Files className="h-4 w-4 md:h-5 md:w-5" />, color: "text-emerald-600", bgColor: "bg-emerald-50" },
-    { title: "Daily Practice", sub: "Practice daily & stay ahead", icon: <Target className="h-4 w-4 md:h-5 md:w-5" />, color: "text-purple-600", bgColor: "bg-purple-50" },
-    { title: "Punjab Exams", sub: "All major Punjab exams at one place", icon: <Landmark className="h-4 w-4 md:h-5 md:w-5" />, color: "text-orange-600", bgColor: "bg-orange-50" }
-  ];
-
   const liveStats = useMemo(() => {
-    const format = (val: number, baseline: string) => {
-      if (!val || val === 0) return baseline;
-      if (val >= 1000) return (val / 1000).toFixed(0) + 'K+';
-      return val + '+';
+    const formatNumber = (num: number, fallback: string) => {
+      if (!num) return fallback;
+      if (num >= 1000) return Math.floor(num / 1000) + "k+";
+      return num + "+";
     };
 
     return [
-      { val: format(stats?.totalQuestions, "50K+"), label: "Questions", desc: "High quality practice questions", color: "text-blue-600", circleBg: "bg-blue-600", icon: <Zap className="h-4 w-4 md:h-5 md:w-5 fill-current" /> },
-      { val: format(stats?.totalMocks, "500+"), label: "Mock Tests", desc: "Topic wise & full length mocks", color: "text-purple-600", circleBg: "bg-purple-600", icon: <ClipboardList className="h-4 w-4 md:h-5 md:w-5" /> },
-      { val: format(stats?.totalBoards, "50+"), label: "Exams", desc: "All major Punjab exams", color: "text-emerald-500", circleBg: "bg-emerald-500", icon: <ShieldCheck className="h-4 w-4 md:h-5 md:w-5" /> },
-      { val: format(stats?.totalUsers, "15K+"), label: "Aspirants", desc: "Trust Cracklix for preparation", color: "text-orange-500", circleBg: "bg-orange-500", icon: <Users className="h-4 w-4 md:h-5 md:w-5" /> }
+      {
+        id: "q",
+        icon: <Zap className="h-5 w-5 text-blue-600" />,
+        val: formatNumber(stats?.totalQuestions, "50k+"),
+        label: "Questions"
+      },
+      {
+        id: "m",
+        icon: <ClipboardList className="h-5 w-5 text-indigo-600" />,
+        val: formatNumber(stats?.totalMocks, "500+"),
+        label: "Mock Tests"
+      },
+      {
+        id: "e",
+        icon: <ShieldCheck className="h-5 w-5 text-emerald-600" />,
+        val: formatNumber(stats?.totalBoards, "50+"),
+        label: "Exams"
+      },
+      {
+        id: "u",
+        icon: <Users className="h-5 w-5 text-orange-500" />,
+        val: formatNumber(stats?.totalUsers, "15k+"),
+        label: "Aspirants"
+      }
     ];
   }, [stats]);
 
   if (!mounted) return null;
 
   return (
-    <section className="relative overflow-hidden bg-white pt-6 pb-12 md:pt-16 md:pb-24 text-center lg:text-left w-full border-b border-slate-100 min-h-[520px] lg:min-h-[680px]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
-        <div className="flex flex-col items-center lg:items-start space-y-6 md:space-y-10">
-          
-          <div className="space-y-4 md:space-y-6 max-w-4xl min-w-0">
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-100 shadow-sm mx-auto lg:mx-0">
-              <Star className="h-3 w-3 text-amber-500 fill-current" />
-              <span className="text-[10px] md:text-xs font-bold text-[#334155] tracking-tight truncate max-w-[220px] xs:max-w-none">
-                {stats?.totalUsers ? stats.totalUsers.toLocaleString() : "15,000"}+ Aspirants Trust Cracklix
-              </span>
-            </motion.div>
+    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-blue-50 py-12 md:py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.05] antialiased break-words">
-              Crack Punjab 
-              <span className="block text-blue-600">Government Exams</span> 
+          {/* LEFT CONTENT */}
+          <div className="text-left">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border shadow-sm mb-6">
+              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+              <span className="text-sm font-semibold text-slate-700">
+                10,000+ Aspirants Trust Cracklix
+              </span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 leading-tight">
+              Crack Punjab
+              <span className="block text-blue-600">
+                Government Exams
+              </span>
               With Confidence
             </h1>
-            
-            <p className="text-xs xs:text-sm md:text-lg text-slate-500 font-medium max-w-xl leading-relaxed mx-auto lg:mx-0">
-              Practice bilingual mock tests and prepare for Punjab Government Exams with verified patterns.
+
+            <p className="mt-6 text-base sm:text-lg text-slate-600 max-w-2xl">
+              Practice with bilingual mock tests, previous papers and
+              exam-focused preparation for PSSSB, Punjab Police,
+              PSTET, PSPCL and more.
             </p>
+
+            <div className="flex flex-wrap gap-3 mt-6">
+              {["PSSSB", "Punjab Police", "PSTET", "PSPCL", "PPSC"].map(
+                (item) => (
+                  <span
+                    key={item}
+                    className="px-4 py-2 rounded-full bg-white border text-sm font-medium text-slate-700"
+                  >
+                    {item}
+                  </span>
+                )
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mt-8">
+              <Card className="p-4 rounded-3xl border bg-white shadow-sm border-slate-100">
+                <ClipboardList className="h-6 w-6 text-blue-600 mb-2" />
+                <p className="font-bold">Mock Tests</p>
+              </Card>
+
+              <Card className="p-4 rounded-3xl border bg-white shadow-sm border-slate-100">
+                <BookOpen className="h-6 w-6 text-indigo-600 mb-2" />
+                <p className="font-bold">Study Material</p>
+              </Card>
+
+              <Card className="p-4 rounded-3xl border bg-white shadow-sm border-slate-100">
+                <FileText className="h-6 w-6 text-emerald-600 mb-2" />
+                <p className="font-bold">Previous Papers</p>
+              </Card>
+
+              <Card className="p-4 rounded-3xl border bg-white shadow-sm border-slate-100">
+                <BarChart3 className="h-6 w-6 text-orange-500 mb-2" />
+                <p className="font-bold">Performance Analytics</p>
+              </Card>
+            </div>
+
+            <div className="flex flex-wrap gap-4 mt-8">
+              <Button
+                asChild
+                className="h-12 md:h-14 px-8 rounded-2xl bg-blue-600 hover:bg-blue-700 font-bold border-none shadow-xl active:scale-95 transition-all"
+              >
+                <Link href="/mocks">
+                  Start Free Mock Test
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+
+              <Button
+                asChild
+                variant="outline"
+                className="h-12 md:h-14 px-8 rounded-2xl font-bold border-2 border-slate-200 active:scale-95 transition-all"
+              >
+                <Link href="/exams">
+                  Browse Exams
+                </Link>
+              </Button>
+            </div>
           </div>
 
-          <div className="relative flex items-center justify-center w-full mt-2">
-             <motion.div 
-               initial={{ opacity: 0, scale: 0.95 }} 
-               animate={{ opacity: 1, scale: 1 }} 
-               transition={{ duration: 0.8 }} 
-               className="relative z-10 w-full max-w-[220px] sm:max-w-[280px] lg:max-w-[420px] aspect-[4/3]"
-             >
-                <Image 
-                  src={heroImage} 
-                  alt="Cracklix Prep" 
-                  fill
-                  priority
-                  className="object-contain"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = fallbackIcon;
-                  }}
-                />
-             </motion.div>
-          </div>
-
-          <div className="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-6 pt-4">
-             {features.map((f, idx) => (
-                <Card key={idx} className="border-none shadow-xl shadow-slate-200/40 rounded-2xl md:rounded-[1.8rem] p-4 md:p-6 bg-white border border-slate-100 flex items-center gap-4 md:gap-6 group hover:translate-y-[-4px] transition-all duration-300 min-h-[72px] md:min-h-0 text-left">
-                   <div className={cn("h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500", f.bgColor, f.color)}>
-                      {f.icon}
-                   </div>
-                   <div className="text-left min-w-0">
-                      <h3 className="text-sm md:text-lg font-bold text-[#04102B] leading-none truncate">{f.title}</h3>
-                      <p className="text-[9px] xs:text-[10px] md:text-[11px] font-semibold text-slate-400 mt-1.5 truncate">{f.sub}</p>
-                   </div>
-                </Card>
-             ))}
-          </div>
-
-          <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 w-full sm:w-auto pt-6 pb-12 md:pb-16 border-b border-slate-50">
-            <Button asChild className="h-14 md:h-16 px-8 md:px-12 bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-sm rounded-xl md:rounded-2xl shadow-xl shadow-blue-600/20 border-none transition-all active:scale-95">
-              <Link href="/mocks" className="flex items-center justify-center gap-2 md:gap-3">
-                Start Free Mock Test <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="h-14 md:h-16 px-8 md:px-12 border-2 border-[#2563EB] bg-white text-[#2563EB] font-bold text-sm rounded-xl md:rounded-2xl transition-all active:scale-95 hover:bg-blue-50">
-              <Link href="/exams" className="flex items-center justify-center gap-2 md:gap-3">
-                Browse Exams <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
+          {/* RIGHT ILLUSTRATION */}
+          <div className="relative flex justify-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              className="relative w-full max-w-md aspect-square"
+            >
+              <Image 
+                src="/images/hero-student.png" 
+                alt="Cracklix Student"
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-contain"
+              />
+            </motion.div>
           </div>
         </div>
 
-        <div className="mt-10 md:mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-           {liveStats.map((stat, idx) => (
-             <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} viewport={{ once: true }}>
-               <Card className="border-none shadow-sm rounded-xl md:rounded-2xl p-4 md:p-6 bg-white border border-slate-100 flex items-center gap-4 md:gap-5 group h-full text-left">
-                 <div className={cn("h-10 w-10 md:h-16 md:w-16 rounded-full flex items-center justify-center shrink-0 shadow-lg text-white transition-transform group-hover:scale-110", stat.circleBg)}>
-                    {stat.icon}
-                 </div>
-                 <div className="min-w-0 flex-1 space-y-0.5 text-left">
-                   <p className={cn("text-lg md:text-2xl font-black tabular-nums leading-none tracking-tight", stat.color)}>{stat.val}</p>
-                   <p className="text-[10px] md:text-sm font-bold text-slate-900 leading-none tracking-tight">{stat.label}</p>
-                   <p className="text-[8px] md:text-[10px] font-medium text-slate-400 tracking-tight truncate">{stat.desc}</p>
-                 </div>
-               </Card>
-             </motion.div>
-           ))}
+        {/* STATS HUB */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16">
+          {liveStats.map((stat) => (
+            <Card
+              key={stat.id}
+              className="p-6 rounded-3xl bg-white border border-slate-100 shadow-xl shadow-slate-200/40 text-left"
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
+                  {stat.icon}
+                </div>
+                <div>
+                  <p className="text-2xl font-black text-slate-900 tabular-nums leading-none">
+                    {stat.val}
+                  </p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">
+                    {stat.label}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          ))}
         </div>
       </div>
     </section>
