@@ -27,9 +27,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Maximized Mobile Sidebar Drawer v8.0.
- * UPDATED: Synchronized header height to 150px to accommodate 140px logo.
- * FIXED: Removed negative margin to eliminate menu button overlap.
+ * @fileOverview Maximized Mobile Sidebar Drawer v9.0.
+ * FIXED: Synchronized header gap to 24px (gap-6) for branding symmetry.
  */
 export default function MobileSidebar({
   onClose,
@@ -86,8 +85,8 @@ export default function MobileSidebar({
   return (
     <div className="flex h-full flex-col bg-white font-body">
 
-      {/* HEADER: Synchronized height to 150px */}
-      <div className="flex h-[150px] items-center justify-between border-b px-4 shrink-0">
+      {/* HEADER: Synchronized height to 150px, Gap to 24px */}
+      <div className="flex h-[150px] items-center justify-between border-b px-4 shrink-0 gap-6">
         <Logo
           variant="light"
           href="/"
@@ -98,7 +97,7 @@ export default function MobileSidebar({
         <button
           onClick={onClose}
           aria-label="Close sidebar"
-          className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-50 text-slate-700 active:scale-95 transition-all"
+          className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-50 text-slate-700 active:scale-95 transition-all shrink-0"
         >
           <X className="h-5 w-5" />
         </button>

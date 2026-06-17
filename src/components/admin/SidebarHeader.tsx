@@ -12,9 +12,8 @@ interface SidebarHeaderProps {
 }
 
 /**
- * Cracklix Admin Sidebar Header v8.0.
- * UPDATED: Synchronized to 150px height standard.
- * FIXED: Removed negative margin to prevent button overlap.
+ * Cracklix Admin Sidebar Header v9.0.
+ * FIXED: Synchronized header gap to 24px (gap-6) for visual symmetry.
  */
 export default function SidebarHeader({
   isOpen,
@@ -24,7 +23,7 @@ export default function SidebarHeader({
     <div
       className={cn(
         "h-[150px] border-b border-white/5 px-4 shrink-0 flex items-center",
-        isOpen ? "justify-between" : "justify-center"
+        isOpen ? "justify-between gap-6" : "justify-center"
       )}
     >
       {/* LOGO AREA */}
