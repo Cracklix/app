@@ -35,8 +35,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Balanced Premium Header v58.0.
- * UPDATED: Reduced height to 130px and button size to 48px while keeping 120px Logo.
+ * @fileOverview Maximized Premium Header v60.0.
+ * UPDATED: Increased height to 160px to support the high-impact 140px Logo.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -69,13 +69,13 @@ export default function Navbar() {
 
   if (!mounted) {
     return (
-      <nav className="w-full border-b border-slate-100 bg-white h-[130px]" />
+      <nav className="w-full border-b border-slate-100 bg-white h-[160px]" />
     );
   }
 
   return (
     <div className="sticky top-0 z-50 w-full font-body">
-      <nav className="w-full h-[130px] bg-white border-b border-slate-100 shadow-sm">
+      <nav className="w-full h-[160px] bg-white border-b border-slate-100 shadow-sm">
         <div className="w-full max-w-5xl mx-auto px-4 md:px-6 h-full flex items-center justify-between">
 
           {/* LEFT SIDE: Brand Group */}

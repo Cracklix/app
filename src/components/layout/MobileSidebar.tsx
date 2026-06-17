@@ -27,8 +27,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar";
 import Logo from "@/components/brand/Logo";
 
 /**
- * @fileOverview Mobile Sidebar Drawer v1.8.
- * UPDATED: Reduced Header height to 130px while keeping 120px logo.
+ * @fileOverview Maximized Mobile Sidebar Drawer v1.9.
+ * UPDATED: Standardized Header height to 160px for the 140px logo standard.
  */
 export default function MobileSidebar({
   onClose,
@@ -85,8 +85,8 @@ export default function MobileSidebar({
   return (
     <div className="flex h-full flex-col bg-white font-body">
 
-      {/* HEADER: Standardized at 130px for 120px logo */}
-      <div className="flex h-[130px] items-center justify-between border-b px-4 shrink-0">
+      {/* HEADER: Maximized at 160px for 140px logo */}
+      <div className="flex h-[160px] items-center justify-between border-b px-4 shrink-0">
         <Logo
           variant="light"
           href="/"
