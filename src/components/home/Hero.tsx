@@ -21,9 +21,9 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Refined Hero Hub v3.0.
- * TYPOGRAPHY: Removed uppercase for a premium Title Case look.
- * REALIGNMENT: Student image positioned exactly above feature cards.
+ * @fileOverview Official Hero Hub v5.0.
+ * TYPOGRAPHY: Title Case applied to all headings for a premium look.
+ * POSITIONING: Student image moved exactly above the feature cards in the left column.
  */
 export default function Hero() {
   const db = useFirestore();
@@ -120,7 +120,7 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* STUDENT HERO IMAGE - POSITIONED ABOVE FEATURE CARDS */}
+            {/* STUDENT HERO IMAGE - MOVED ABOVE FEATURE CARDS */}
             <div className="relative flex justify-center lg:justify-start">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -184,7 +184,7 @@ export default function Hero() {
 
           {/* RIGHT COLUMN (DESKTOP BALANCE) */}
           <div className="hidden lg:block relative">
-             {/* Spacing for desktop layout balance */}
+             {/* Space reserved for layout balance */}
           </div>
         </div>
 
@@ -200,12 +200,12 @@ export default function Hero() {
                   {stat.icon}
                 </div>
                 <div className="min-w-0 text-left">
-                  <p className="text-2xl md:text-3xl font-black text-slate-900 tabular-nums">
+                  <div className="text-2xl md:text-3xl font-black text-slate-900 tabular-nums">
                     {stat.val}
-                  </p>
-                  <p className="text-xs text-slate-500 font-semibold">
+                  </div>
+                  <div className="text-xs text-slate-500 font-semibold">
                     {stat.label}
-                  </p>
+                  </div>
                 </div>
               </div>
             </Card>

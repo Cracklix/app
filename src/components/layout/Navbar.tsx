@@ -35,8 +35,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Header v85.0 (Logo Maximized).
- * UPDATED: Optimized logo container to prevent horizontal shifting.
+ * @fileOverview Institutional Header v86.0 (Logo Realigned).
+ * FIXED: Removed gap between menu button and logo with -ml-4.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -78,8 +78,8 @@ export default function Navbar() {
       <nav className="w-full h-20 bg-white border-b border-slate-100 shadow-sm overflow-visible">
         <div className="w-full max-w-7xl mx-auto px-4 md:px-6 h-full flex items-center justify-between">
 
-          {/* LEFT SIDE: Menu Hub + Integrated Logo */}
-          <div className="flex items-center shrink-0 gap-3 md:gap-4">
+          {/* LEFT SIDE: Menu Hub + Integrated Logo (Gap Reduced) */}
+          <div className="flex items-center shrink-0 gap-1 md:gap-2">
             <button
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open menu"
@@ -90,7 +90,7 @@ export default function Navbar() {
 
             <Logo
               variant="light"
-              className="shrink-0 transition-all duration-500 origin-left"
+              className="shrink-0 -ml-2 md:-ml-4 transition-all duration-500 origin-left"
               imgClassName="h-[78px]"
             />
           </div>

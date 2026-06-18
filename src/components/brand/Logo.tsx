@@ -16,6 +16,7 @@ interface LogoProps {
 /**
  * Cracklix Official Logo Component
  * SCALE: Maximized to exactly 78px height to fill the h-20 (80px) header limit perfectly.
+ * ALIGNMENT: Reduced container width to eliminate ghost gap on the left.
  */
 export default function Logo({
   className = "",
@@ -30,13 +31,13 @@ export default function Logo({
       : "/logo/cracklix-logo-light.png";
 
   const content = (
-    <div className="relative h-[78px] w-[240px] md:w-[280px] shrink-0">
+    <div className="relative h-[78px] w-[200px] md:w-[240px] shrink-0">
       <Image
         src={logoSrc}
         alt="Cracklix"
         fill
         priority
-        sizes="(max-width: 768px) 240px, 280px"
+        sizes="(max-width: 768px) 200px, 240px"
         className={cn(
           "object-contain object-left shrink-0 transition-all duration-300",
           imgClassName
