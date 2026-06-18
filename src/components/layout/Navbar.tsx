@@ -31,12 +31,14 @@ import MobileSidebar from "./MobileSidebar";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/brand/Logo";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Header v89.0 (Maximized & Aligned).
- * FIXED: DropdownMenuContent updated with requested responsive width and premium shadows.
+ * @fileOverview Institutional Header v90.0 (Hardened Responsiveness).
+ * FIXED: DropdownMenuContent precision-aligned to 92vw for mobile safety.
+ * FIXED: Title Case and Premium button scaling implemented.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -130,41 +132,51 @@ export default function Navbar() {
                   align="end"
                   sideOffset={12}
                   className="
-                    w-[calc(100vw-32px)]
-                    max-w-[340px]
-                    sm:w-[380px]
-                    md:w-[420px]
-
+                    w-[92vw]
+                    max-w-[420px]
+                    min-w-[280px]
                     rounded-[28px]
                     p-4 sm:p-6 md:p-8
-
                     bg-white
                     border border-slate-200
                     shadow-[0_20px_60px_rgba(15,23,42,0.15)]
                     z-[2001]
                   "
                 >
-                  <DropdownMenuItem asChild className="rounded-2xl px-4 py-4 cursor-pointer focus:bg-slate-50">
-                    <Link href="/profile" className="flex items-center gap-3">
-                      <User className="w-5 h-5 text-primary" />
-                      <span className="font-bold text-base">My Profile</span>
-                    </Link>
-                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-2xl p-0 focus:bg-transparent cursor-default">
+                    <div className="w-full">
+                       {/* PROFILE HEADER */}
+                       <Link href="/profile" className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6 group cursor-pointer">
+                          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
+                             <User className="h-5 w-5 sm:h-6 sm:w-6" />
+                          </div>
+                          <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">My Profile</h3>
+                       </Link>
 
-                  {isAdmin && (
-                    <DropdownMenuItem asChild className="rounded-2xl px-4 py-4 mt-1 border border-primary/10 cursor-pointer bg-primary/5 focus:bg-primary/10">
-                      <Link href="/admin" className="flex items-center gap-3">
-                        <ShieldCheck className="w-5 h-5 text-primary" />
-                        <span className="font-bold text-base text-primary">Admin Hub</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
+                       {/* ADMIN HUB (IF APPLICABLE) */}
+                       {isAdmin && (
+                         <div className="mb-4 sm:mb-6">
+                            <Button asChild className="w-full h-14 sm:h-16 rounded-2xl sm:rounded-3xl text-lg sm:text-xl font-black px-4 sm:px-6 bg-primary hover:bg-blue-700 text-white shadow-lg border-none transition-all active:scale-95">
+                               <Link href="/admin">
+                                  <ShieldCheck className="h-5 w-5 sm:h-6 sm:w-6 mr-3" />
+                                  Admin Hub
+                               </Link>
+                            </Button>
+                         </div>
+                       )}
 
-                  <DropdownMenuSeparator className="my-2 bg-slate-100" />
+                       <DropdownMenuSeparator className="my-4 bg-slate-100" />
 
-                  <DropdownMenuItem onClick={handleLogout} className="rounded-2xl px-4 py-4 cursor-pointer text-rose-500 font-bold text-base flex items-center gap-3 focus:bg-rose-50">
-                    <LogOut className="w-5 h-5 shrink-0" />
-                    <span>Log Out</span>
+                       {/* LOGOUT NODE */}
+                       <Button
+                          variant="ghost"
+                          onClick={handleLogout}
+                          className="w-full h-14 sm:h-16 justify-start text-red-500 text-lg sm:text-xl font-black rounded-2xl hover:bg-red-50 hover:text-red-600 transition-all active:scale-95"
+                       >
+                          <LogOut className="h-5 w-5 sm:h-6 sm:w-6 mr-3" />
+                          Log Out
+                       </Button>
+                    </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

@@ -30,8 +30,8 @@ import ShareButton from "@/components/navigation/ShareButton";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Mobile Sidebar Hardened v33.0.
- * UPDATED: Premium Logout Node with requested red-destructive aesthetic.
+ * @fileOverview Mobile Sidebar Hardened v34.0 (Title Case & Overlap Fix).
+ * UPDATED: Reduced vertical footprint of Share card to prevent section overlap.
  */
 export default function MobileSidebar({
   onClose,
@@ -81,7 +81,7 @@ export default function MobileSidebar({
           variant="light"
           href="/"
           onClick={onClose}
-          className="shrink-0 transition-all duration-300 origin-left"
+          className="shrink-0 transition-all duration-500 origin-left"
           imgClassName="h-[78px] w-auto"
         />
 
@@ -170,13 +170,12 @@ export default function MobileSidebar({
           </div>
         </div>
 
-        {/* SHARE NODE */}
+        {/* SHARE NODE - COMPACT FOR MOBILE HEIGHT */}
         <div className="px-4 py-4">
            <div className="bg-[#0B1528] rounded-[1.8rem] p-4 space-y-3 border border-white/5 shadow-2xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><Award className="h-16 w-16" /></div>
+              <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><Award className="h-12 w-12" /></div>
               <div className="relative z-10 text-left">
-                <h4 className="text-[11px] font-black text-white tracking-widest leading-none mb-1">Elite Network</h4>
-                <p className="text-[9px] font-bold text-slate-500">Invite fellow aspirants</p>
+                <h4 className="text-[10px] font-black text-white tracking-widest leading-none mb-1">Elite Network</h4>
               </div>
               <ShareButton 
                 variant="dark" 
@@ -186,7 +185,7 @@ export default function MobileSidebar({
         </div>
 
         {/* SUPPORT */}
-        <div className="px-2 pb-12">
+        <div className="px-2 pb-8">
           <p className="mb-2 px-6 text-[10px] font-bold text-slate-400 tracking-wide">
             Institutional Support
           </p>
@@ -212,7 +211,7 @@ export default function MobileSidebar({
         </div>
       </div>
 
-      {/* FOOTER - LOGOUT NODE */}
+      {/* FOOTER - PREMIUM LOGOUT NODE */}
       <div className="border-t border-slate-100 bg-white p-4 pb-[calc(env(safe-area-inset-bottom)+16px)] shrink-0">
         <Button
           variant="ghost"
