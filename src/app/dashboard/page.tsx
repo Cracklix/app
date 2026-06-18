@@ -147,10 +147,10 @@ export default function StudentDashboard() {
 
               {/* METRICS GRID */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
-                <MetricItem label="PREP SCORE" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : `${stats.readiness}%`} icon={<TrendingUp className="text-primary h-5 w-5" />} />
-                <MetricItem label="ACCURACY" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : `${stats.avgAccuracy}%`} icon={<Target className="text-emerald-500 h-5 w-5" />} />
-                <MetricItem label="TESTS DONE" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : stats.total} icon={<ClipboardList className="text-blue-500 h-5 w-5" />} />
-                <MetricItem label="TIME SPENT" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : stats.hours} icon={<Clock className="text-amber-500 h-5 w-5" />} />
+                <MetricItem label="PREP SCORE" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : <div className="min-w-0">{stats.readiness}%</div>} icon={<TrendingUp className="text-primary h-5 w-5" />} />
+                <MetricItem label="ACCURACY" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : <div className="min-w-0">{stats.avgAccuracy}%</div>} icon={<Target className="text-emerald-500 h-5 w-5" />} />
+                <MetricItem label="TESTS DONE" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : <div className="min-w-0">{stats.total}</div>} icon={<ClipboardList className="text-blue-500 h-5 w-5" />} />
+                <MetricItem label="TIME SPENT" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : <div className="min-w-0">{stats.hours}</div>} icon={<Clock className="text-amber-500 h-5 w-5" />} />
               </div>
 
               {/* RECENT ATTEMPTS */}
