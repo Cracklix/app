@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 /**
  * @fileOverview Final Administrative Control Center v4.4 (Strictly Hardened).
+ * FIXED: Hydration error - changed p tag to div for value in MetricCard.
  */
 
 interface MetricCardProps {
@@ -160,7 +161,7 @@ function MetricCard({ label, value, trend, icon }: MetricCardProps) {
           <div className="h-16 w-16 rounded-[1.5rem] bg-slate-50 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">{icon}</div>
           <div className={`text-[10px] font-black px-3 py-1 rounded-xl bg-slate-50 text-slate-400 uppercase tracking-widest`}>{trend}</div>
        </div>
-       <p className="text-5xl font-headline font-black text-[#0F172A] tracking-tighter leading-none">{value}</p>
+       <div className="text-5xl font-headline font-black text-[#0F172A] tracking-tighter leading-none">{value}</div>
        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mt-5">{label}</p>
     </Card>
   )
@@ -171,7 +172,7 @@ function MetricChip({ label, value, icon }: MetricChipProps) {
       <Card className="border-none shadow-xl bg-white rounded-3xl p-8 flex items-center gap-6 border border-slate-50 hover:bg-slate-50/50 transition-colors">
          <div className="h-12 w-12 bg-slate-50 rounded-2xl flex items-center justify-center shadow-inner">{icon}</div>
          <div className="text-left">
-            <p className="text-3xl font-headline font-black text-[#0F172A] leading-none tabular-nums">{value}</p>
+            <div className="text-3xl font-headline font-black text-[#0F172A] leading-none tabular-nums">{value}</div>
             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">{label}</p>
          </div>
       </Card>

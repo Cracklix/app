@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Institutional Command Center v43.0 (Production Hardened).
+ * FIXED: Hydration error - changed p tag to div for value in MetricCard.
  */
 
 interface MetricCardProps {
@@ -139,7 +140,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6 md:space-y-12 text-[#0F172A] text-left">
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 md:gap-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-8">
         <div className="min-w-0 flex-1">
            <div className="flex items-center gap-3 mb-2 flex-wrap">
               <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-100 shrink-0">
@@ -268,7 +269,7 @@ function MetricCard({ label, value, subLabel, icon, href, highlight }: MetricCar
             </div>
             <div className="text-left">
                <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">{label}</p>
-               <p className="text-3xl font-headline font-black text-[#0F172A] leading-none">{value}</p>
+               <div className="text-3xl font-headline font-black text-[#0F172A] leading-none">{value}</div>
                <p className="text-[8px] font-bold text-slate-300 uppercase mt-2">{subLabel}</p>
             </div>
          </div>

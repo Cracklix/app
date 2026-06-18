@@ -25,6 +25,7 @@ import { Skeleton } from "@/components/ui/skeleton";
  * @fileOverview Institutional Hero Hub v112.0 (Hardened Build).
  * FIXED: Removed merge conflict markers.
  * FIXED: Scaled typography for 320px screens.
+ * FIXED: Hydration error - changed p/span wrappers of Skeleton to div.
  */
 export default function Hero() {
   const db = useFirestore();
@@ -85,9 +86,9 @@ export default function Hero() {
           
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border shadow-sm mb-6">
             <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-            <span className="text-[11px] sm:text-sm font-semibold text-slate-700">
-              {loading ? <Skeleton className="h-4 w-20 inline-block" /> : (stats?.totalUsers?.toLocaleString() || "0")} Aspirants Preparing
-            </span>
+            <div className="text-[11px] sm:text-sm font-semibold text-slate-700 flex items-center gap-2">
+              {loading ? <Skeleton className="h-4 w-20" /> : (stats?.totalUsers?.toLocaleString() || "0")} Aspirants Preparing
+            </div>
           </div>
 
           <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-7xl font-black text-slate-900 leading-tight">
@@ -189,9 +190,9 @@ export default function Hero() {
                   {stat.icon}
                 </div>
                 <div>
-                  <p className="text-xl md:text-4xl font-black text-slate-900 tabular-nums leading-none tracking-tight">
+                  <div className="text-xl md:text-4xl font-black text-slate-900 tabular-nums leading-none tracking-tight">
                     {loading ? <Skeleton className="h-8 w-16" /> : (stat.val || "0")}
-                  </p>
+                  </div>
                   <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mt-2">
                     {stat.label}
                   </p>
