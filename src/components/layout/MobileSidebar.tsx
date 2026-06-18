@@ -25,6 +25,7 @@ import { signOut } from "firebase/auth";
 import { useRouter, usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import StudentAvatar from "@/components/brand/StudentAvatar";
 import Logo from "@/components/brand/Logo";
 import { Skeleton } from "@/components/ui/skeleton";
