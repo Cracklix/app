@@ -37,7 +37,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 /**
  * @fileOverview Institutional Mock Builder Hub v15.0.
- * FIXED: Explicitly typed all map and filter parameters to resolve build-time implicit any errors.
+ * FIXED: Explicitly typed 'id' in line 136 and other callback parameters.
  */
 
 export default function MockBuilderPage() {

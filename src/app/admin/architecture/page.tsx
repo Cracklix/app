@@ -23,9 +23,17 @@ import { cn } from "@/lib/utils"
 import type { Category, Board, Exam } from "@/types"
 
 /**
- * @fileOverview Punjab Registry Architect v14.0.
- * FIXED: Explicitly typed sort parameters to resolve implicit any build blockers.
+ * @fileOverview Punjab Registry Architect v15.0.
+ * FIXED: Local ExtendedBoard interface to resolve 'exams' property error.
  */
+
+interface ExtendedBoard extends Board {
+  exams: Exam[];
+}
+
+interface ExtendedCategory extends Category {
+  hubs: ExtendedBoard[];
+}
 
 export default function ArchitectureManager() {
   const db = useFirestore()
@@ -36,14 +44,14 @@ export default function ArchitectureManager() {
   const { data: exams, loading: examsLoading } = useCollection<Exam>(useMemo(() => (db ? collection(db, "exams") : null), [db]) as any)
 
   const hierarchy = useMemo(() => {
-    if (!categories || !hubs || !exams) return []
+    if (!categories || !hubs || !exams) return [] as ExtendedCategory[]
     return (categories as Category[]).map((cat: Category) => ({
       ...cat,
       hubs: (hubs as Board[]).filter((h: Board) => h.categoryId === cat.id).map((hub: Board) => ({
         ...hub,
         exams: (exams as Exam[]).filter((e: Exam) => e.boardId === hub.id || e.boardId === hub.abbreviation)
       }))
-    }))
+    })) as ExtendedCategory[]
   }, [categories, hubs, exams])
 
   return (
@@ -73,7 +81,7 @@ export default function ArchitectureManager() {
             <div className="grid grid-cols-1 gap-12">
                {catLoading ? (
                   Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-[3rem]" />)
-               ) : hierarchy.map((cat: any) => (
+               ) : hierarchy.map((cat: ExtendedCategory) => (
                   <Card key={cat.id} className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden border border-slate-100">
                      <div className="h-2 w-full bg-primary/20" />
                      <CardHeader className="p-10 pb-6 border-b border-slate-50 bg-slate-50/30 flex flex-row items-center justify-between">
@@ -92,7 +100,7 @@ export default function ArchitectureManager() {
                      </CardHeader>
                      <CardContent className="p-10">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                           {cat.hubs.length > 0 ? [...cat.hubs].sort((a: Board, b: Board) => (a.displayOrder || 0) - (b.displayOrder || 0)).map((hub: Board) => (
+                           {cat.hubs.length > 0 ? [...cat.hubs].sort((a: ExtendedBoard, b: ExtendedBoard) => (a.displayOrder || 0) - (b.displayOrder || 0)).map((hub: ExtendedBoard) => (
                               <div key={hub.id} className="space-y-4 bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100">
                                  <div className="flex items-center justify-between">
                                     <h4 className="font-black text-sm uppercase text-[#0F172A] flex items-center gap-2">

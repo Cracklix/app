@@ -23,7 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * @fileOverview Official Hero Section v75.0.
- * FIXED: Replaced nested div-in-p structures with valid HTML5 nodes to prevent hydration errors.
+ * FIXED: Hydration error - Replaced dynamic numeric p tags with div containers.
  */
 
 export default function Hero() {
