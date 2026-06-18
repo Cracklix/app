@@ -5,15 +5,10 @@ import { useUser, useAuth } from "@/firebase";
 import { useRouter, usePathname } from "next/navigation";
 import { signOut } from "firebase/auth";
 import AdminSidebar from "@/components/admin/AdminSidebar";
-import { Menu, ShieldCheck } from "lucide-react";
+import { Menu, ShieldCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/brand/Logo";
 import Link from "next/link";
-
-/**
- * @fileOverview Maximized Admin Hub Layout v41.0 (Build Hardened).
- * FIXED: Removed merge conflict markers.
- */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
@@ -69,10 +64,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   
   if (!user || !isAdmin) return null;
 
-  const sidebarWidth = isSidebarOpen ? 280 : 88;
-
   return (
-    <div className="min-h-screen w-full bg-white font-body overflow-x-hidden relative flex">
+    <div className="min-h-screen w-full bg-white font-body relative flex overflow-hidden">
       
       <AdminSidebar 
         isOpen={isSidebarOpen} 
@@ -83,44 +76,47 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         pathname={pathname}
       />
 
-      <div 
-        className="flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out"
-        style={{ 
-          marginLeft: typeof window !== 'undefined' && window.innerWidth >= 1024 ? sidebarWidth : 0 
-        }}
-      >
+      {/* Main Content Hub */}
+      <div className={cn(
+        "flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out w-full",
+        isSidebarOpen ? "lg:pl-[280px]" : "lg:pl-[88px]"
+      )}>
         <header className="h-20 border-b border-slate-100 flex items-center px-4 md:px-8 justify-between bg-white/80 backdrop-blur-xl sticky top-0 z-40 shrink-0">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsSidebarOpen(true)}
-              className="lg:hidden bg-white border border-slate-200 text-slate-700 h-12 w-12 rounded-xl shadow-sm flex items-center justify-center active:scale-95 transition-all"
+              className="lg:hidden bg-white border border-slate-200 text-slate-700 h-11 w-11 rounded-xl shadow-sm flex items-center justify-center active:scale-95 transition-all"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-5 h-5" />
             </button>
 
             <Logo
               variant="light"
               className="shrink-0 -ml-4"
-              imgClassName="h-[78px]"
+              imgClassName="h-[70px]"
             />
           </div>
           
           <div className="flex items-center gap-6">
-             <Button asChild variant="outline" className="h-12 px-8 rounded-xl border-slate-200 font-bold text-sm tracking-tight gap-2 hover:bg-slate-50 transition-all active:scale-95">
+             <Button asChild variant="outline" className="hidden sm:flex h-11 px-6 rounded-xl border-slate-200 font-bold text-sm tracking-tight gap-2 hover:bg-slate-50 transition-all active:scale-95">
                 <Link href="/">View Site</Link>
              </Button>
              <div className="flex items-center gap-4 pl-4 border-l border-slate-100">
-                <div className="h-12 w-12 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-lg shadow-lg">
+                <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-lg shadow-lg">
                   {profile?.name?.[0] || 'A'}
                 </div>
              </div>
           </div>
         </header>
 
-        <main className="flex-1 p-4 md:p-10 max-w-full">
-           {children}
+        <main className="flex-1 p-4 md:p-8 lg:p-12 w-full max-w-full overflow-x-hidden">
+           <div className="max-w-7xl mx-auto">
+              {children}
+           </div>
         </main>
       </div>
     </div>
   );
 }
+
+import { cn } from "@/lib/utils";
