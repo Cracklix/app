@@ -31,8 +31,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ShareButton from "@/components/navigation/ShareButton";
 
 /**
- * @fileOverview Mobile Sidebar Realignment v22.0.
+ * @fileOverview Mobile Sidebar Realignment v23.0 (Overlap Hardened).
  * MAXIMIZED: Logo height set to 78px to match the header limit.
+ * FIXED: Reduced vertical bulk of sections to prevent content overlapping.
  */
 export default function MobileSidebar({
   onClose,
@@ -90,7 +91,7 @@ export default function MobileSidebar({
     <div className="flex h-full flex-col bg-white font-body">
 
       {/* HEADER: Maximized Logo */}
-      <div className="flex h-20 items-center justify-between border-b px-4 shrink-0 gap-2">
+      <div className="flex h-20 items-center justify-between border-b px-4 shrink-0 gap-1">
         <Logo
           variant="light"
           href="/"
@@ -102,59 +103,57 @@ export default function MobileSidebar({
         <button
           onClick={onClose}
           aria-label="Close sidebar"
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-500 active:scale-95 transition-all shrink-0 border border-slate-100"
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-400 active:scale-95 transition-all shrink-0 border border-slate-100"
         >
           <X className="h-5 w-5" />
         </button>
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 overflow-y-auto no-scrollbar">
+      <div className="flex-1 overflow-y-auto no-scrollbar py-2">
 
         {/* PROFILE CARD */}
-        <div className="p-6">
+        <div className="px-4 py-4">
           <Link
             href="/profile"
             onClick={onClose}
             className="block active:scale-[0.98] transition-all"
           >
-            <div className="flex items-center gap-4 rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm hover:border-primary/20 transition-all">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl">
+            <div className="flex items-center gap-4 rounded-[1.5rem] border border-slate-100 bg-white p-4 shadow-sm hover:border-primary/20 transition-all">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl">
                 {profileLoading ? (
                   <Skeleton className="h-full w-full rounded-xl bg-slate-100" />
                 ) : (
                   <StudentAvatar
                     profile={profile}
                     className="h-full w-full border-none"
-                    iconClassName="w-7 h-7"
+                    iconClassName="w-6 h-6"
                   />
                 )}
               </div>
 
               <div className="min-w-0 flex-1">
-                <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">
+                <h3 className="text-base font-black text-slate-900 uppercase tracking-tight truncate">
                   {profile?.name || user?.displayName || "Aspirant"}
                 </h3>
-                <p className="mt-0.5 text-sm text-slate-400 font-bold uppercase tracking-widest text-[9px]">
+                <p className="mt-0.5 text-[8px] text-slate-400 font-bold uppercase tracking-widest">
                   Manage Node
                 </p>
               </div>
 
-              <ChevronRight className="h-5 w-5 shrink-0 text-slate-300" />
+              <ChevronRight className="h-4 w-4 shrink-0 text-slate-300" />
             </div>
           </Link>
         </div>
 
         {/* MAIN MENU */}
-        <div className="px-4 pb-2">
-          <p className="mb-4 px-4 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
+        <div className="px-2">
+          <p className="mb-2 px-6 text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">
             Preparation Registry
           </p>
 
-          <div className="space-y-1">
-            {[
-              ...mainItems,
-            ].map((item) => {
+          <div className="space-y-0.5">
+            {mainItems.map((item) => {
               const isActive = pathname === item.href;
 
               return (
@@ -163,7 +162,7 @@ export default function MobileSidebar({
                   href={item.href}
                   onClick={onClose}
                   className={cn(
-                    "flex h-14 items-center gap-5 rounded-2xl px-6 transition-all active:scale-[0.98]",
+                    "flex h-12 items-center gap-4 rounded-xl px-6 transition-all active:scale-[0.98]",
                     isActive
                       ? "bg-blue-50 text-primary shadow-sm"
                       : "text-slate-600 hover:bg-slate-50"
@@ -178,7 +177,7 @@ export default function MobileSidebar({
                     )}
                   />
 
-                  <span className="font-bold text-sm uppercase tracking-tight">
+                  <span className="font-bold text-[13px] uppercase tracking-tight">
                     {item.label}
                   </span>
                 </Link>
@@ -187,37 +186,37 @@ export default function MobileSidebar({
           </div>
         </div>
 
-        {/* SHARE NODE */}
-        <div className="px-6 py-6">
-           <div className="bg-slate-900 rounded-[2.5rem] p-6 space-y-4 border border-white/5 shadow-2xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><Award className="h-24 w-24" /></div>
+        {/* SHARE NODE - REDUCED BULK */}
+        <div className="px-4 py-4">
+           <div className="bg-[#0B1528] rounded-[2rem] p-5 space-y-4 border border-white/5 shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><Award className="h-20 w-20" /></div>
               <div className="relative z-10 text-left">
-                <h4 className="text-xs font-black uppercase text-white">Elite Network</h4>
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mt-1">Invite fellow aspirants</p>
+                <h4 className="text-[11px] font-black uppercase text-white">Elite Network</h4>
+                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none mt-1">Invite fellow aspirants</p>
               </div>
               <ShareButton 
                 variant="dark" 
-                className="w-full h-12 rounded-xl bg-primary hover:bg-blue-600 text-white text-[10px] border-none shadow-lg relative z-10" 
+                className="w-full h-11 rounded-xl bg-primary hover:bg-blue-600 text-white text-[9px] border-none shadow-lg relative z-10" 
               />
            </div>
         </div>
 
         {/* SUPPORT */}
-        <div className="px-4 pb-8">
-          <p className="mb-4 px-4 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
+        <div className="px-2 pb-8">
+          <p className="mb-2 px-6 text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">
             Institutional Support
           </p>
 
-          <div className="space-y-1">
+          <div className="space-y-0.5">
             {supportItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={onClose}
-                className="flex h-14 items-center gap-5 rounded-2xl px-6 text-slate-600 transition-all hover:bg-slate-50 active:scale-[0.98]"
+                className="flex h-12 items-center gap-4 rounded-xl px-6 text-slate-600 transition-all hover:bg-slate-50 active:scale-[0.98]"
               >
                 <item.icon className="h-5 w-5 shrink-0 text-slate-400" />
-                <span className="font-bold text-sm uppercase tracking-tight">
+                <span className="font-bold text-[13px] uppercase tracking-tight">
                   {item.label}
                 </span>
               </Link>
@@ -226,11 +225,11 @@ export default function MobileSidebar({
         </div>
       </div>
 
-      {/* FOOTER */}
-      <div className="border-t border-slate-100 bg-white p-6 pb-[env(safe-area-inset-bottom)]">
+      {/* FOOTER - HARDENED FOOTER */}
+      <div className="border-t border-slate-100 bg-white p-4 pb-[env(safe-area-inset-bottom)]">
         <button
           onClick={handleLogout}
-          className="flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-[#0F172A] text-sm font-black uppercase tracking-widest text-white shadow-xl transition-all active:scale-95"
+          className="flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-[#0F172A] text-[11px] font-black uppercase tracking-widest text-white shadow-xl transition-all active:scale-95"
         >
           <LogOut className="h-4 w-4" />
           <span>Exit Account</span>

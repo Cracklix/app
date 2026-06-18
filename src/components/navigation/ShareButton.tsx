@@ -24,8 +24,8 @@ interface ShareButtonProps {
 }
 
 /**
- * @fileOverview Hardened Social Share Hub v6.0.
- * DIRECT SHARING: Provides instant WhatsApp/Telegram triggers if the OS share sheet is unavailable.
+ * @fileOverview Hardened Social Share Hub v7.0.
+ * COMPACT: Optimized dialog dimensions and button heights for mobile clarity.
  */
 export default function ShareButton({ 
   className = "", 
@@ -114,52 +114,52 @@ export default function ShareButton({
       </Button>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsShareDialogOpen}>
-        <DialogContent className="bg-white rounded-[2.5rem] md:rounded-[3.5rem] border-none shadow-5xl max-w-[400px] w-[95vw] p-0 overflow-hidden text-left">
-          <div className="h-2 w-full bg-primary" />
-          <DialogHeader className="p-10 pb-6 text-center">
-             <div className="h-16 w-16 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto text-primary shadow-xl mb-4">
-                <Share2 className="h-8 w-8" />
+        <DialogContent className="bg-white rounded-[2rem] md:rounded-[3.5rem] border-none shadow-5xl max-w-[400px] w-[95vw] p-0 overflow-hidden text-left">
+          <div className="h-1.5 w-full bg-primary" />
+          <DialogHeader className="p-8 md:p-10 pb-4 text-center">
+             <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto text-primary shadow-xl mb-4">
+                <Share2 className="h-7 w-7" />
              </div>
-             <DialogTitle className="text-2xl font-black font-headline uppercase text-[#0F172A]">Share Prep Hub</DialogTitle>
-             <DialogDescription className="text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-relaxed">Choose a platform to invite aspirants</DialogDescription>
+             <DialogTitle className="text-xl md:text-2xl font-black font-headline uppercase text-[#0F172A]">Share Prep Hub</DialogTitle>
+             <DialogDescription className="text-slate-400 text-[9px] md:text-[11px] font-bold uppercase tracking-widest leading-relaxed">Choose a platform to invite aspirants</DialogDescription>
           </DialogHeader>
 
-          <div className="px-10 pb-10 space-y-4">
+          <div className="px-8 md:px-10 pb-10 space-y-3">
              <button 
                onClick={shareToWhatsApp}
-               className="w-full h-16 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl flex items-center px-6 gap-5 shadow-lg transition-all active:scale-95 group"
+               className="w-full h-14 md:h-16 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl flex items-center px-5 gap-4 shadow-lg transition-all active:scale-95 group"
              >
-                <div className="h-10 w-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                   <MessageSquare className="h-5 w-5 fill-current" />
+                <div className="h-9 w-9 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                   <MessageSquare className="h-4 w-4 fill-current" />
                 </div>
-                <span className="font-black uppercase text-xs tracking-widest">Share to WhatsApp</span>
+                <span className="font-black uppercase text-[10px] md:text-xs tracking-widest">Share to WhatsApp</span>
              </button>
 
              <button 
                onClick={shareToTelegram}
-               className="w-full h-16 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl flex items-center px-6 gap-5 shadow-lg transition-all active:scale-95 group"
+               className="w-full h-14 md:h-16 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl flex items-center px-5 gap-4 shadow-lg transition-all active:scale-95 group"
              >
-                <div className="h-10 w-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                   <Send className="h-5 w-5 fill-current" />
+                <div className="h-9 w-9 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                   <Send className="h-4 w-4 fill-current" />
                 </div>
-                <span className="font-black uppercase text-xs tracking-widest">Share to Telegram</span>
+                <span className="font-black uppercase text-[10px] md:text-xs tracking-widest">Share to Telegram</span>
              </button>
 
              <div className="h-px w-full bg-slate-50 my-2" />
 
              <button 
                onClick={copyToClipboard}
-               className="w-full h-14 bg-slate-50 hover:bg-slate-100 text-[#0F172A] rounded-2xl flex items-center px-6 gap-5 border border-slate-100 transition-all active:scale-95 group"
+               className="w-full h-12 bg-slate-50 hover:bg-slate-100 text-[#0F172A] rounded-2xl flex items-center px-6 gap-5 border border-slate-100 transition-all active:scale-95 group"
              >
-                <Copy className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
-                <span className="font-bold text-[11px] uppercase tracking-widest truncate">{shareUrl}</span>
+                <Copy className="h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" />
+                <span className="font-bold text-[10px] md:text-[11px] uppercase tracking-widest truncate">{shareUrl}</span>
              </button>
           </div>
 
-          <DialogFooter className="bg-slate-50 p-6 flex justify-center">
-             <div className="flex items-center gap-3 text-slate-300">
+          <DialogFooter className="bg-slate-50 p-4 flex justify-center">
+             <div className="flex items-center gap-2.5 text-slate-300">
                 <Globe className="h-3 w-3" />
-                <p className="text-[8px] font-black uppercase tracking-widest">Institutional Direct Share Node Active</p>
+                <p className="text-[7px] md:text-[8px] font-black uppercase tracking-widest">Institutional Direct Share Node Active</p>
              </div>
           </DialogFooter>
         </DialogContent>
