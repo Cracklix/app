@@ -11,11 +11,14 @@ interface LogoProps {
   href?: string;
   imgClassName?: string;
   onClick?: () => void;
+  iconOnly?: boolean;
+  align?: 'left' | 'center' | 'right';
 }
 
 /**
- * @fileOverview Cracklix Official Logo Hub v25.0.
- * RESTORED: Balanced sizing (h-14 on mobile, h-16 on desktop).
+ * @fileOverview Institutional Logo Node v26.0 (Hardened).
+ * RESTORED: Standard Cracklix Branding with responsive sizing.
+ * FIXED: Fill-mode parent relative positioning.
  */
 export default function Logo({
   className = "",
@@ -23,19 +26,29 @@ export default function Logo({
   variant = "light",
   imgClassName = "",
   onClick,
+  iconOnly = false,
+  align = 'left'
 }: LogoProps) {
-  const logoSrc = "/logo/cracklix-logo.png";
+  const fullLogo = "/logo/cracklix-logo.png";
+  const iconLogo = "/logo/cracklix-icon.png";
 
   const content = (
-    <div className="relative h-14 lg:h-16 w-[180px] md:w-[200px] lg:w-[220px] shrink-0">
+    <div className={cn(
+      "relative shrink-0 transition-all duration-300",
+      iconOnly 
+        ? "h-10 w-10 md:h-12 md:w-12" 
+        : "h-12 md:h-16 w-[160px] md:w-[220px]",
+      align === 'center' && "mx-auto"
+    )}>
       <Image
-        src={logoSrc}
+        src={iconOnly ? iconLogo : fullLogo}
         alt="Cracklix"
         fill
         priority
-        sizes="(max-width: 768px) 180px, 220px"
+        sizes={iconOnly ? "48px" : "(max-width: 768px) 160px, 220px"}
         className={cn(
-          "object-contain object-left shrink-0 transition-all duration-300",
+          "object-contain shrink-0",
+          align === 'left' ? "object-left" : align === 'right' ? "object-right" : "object-center",
           imgClassName
         )}
       />
@@ -48,7 +61,8 @@ export default function Logo({
         href={href || "#"}
         onClick={onClick}
         className={cn(
-          "flex items-center shrink-0 select-none overflow-hidden",
+          "flex items-center shrink-0 select-none overflow-hidden hover:opacity-90 transition-opacity",
+          align === 'center' ? "justify-center w-full" : align === 'right' ? "justify-end" : "justify-start",
           className
         )}
       >
@@ -61,6 +75,7 @@ export default function Logo({
     <div
       className={cn(
         "flex items-center shrink-0 select-none overflow-hidden",
+        align === 'center' ? "justify-center w-full" : align === 'right' ? "justify-end" : "justify-start",
         className
       )}
     >

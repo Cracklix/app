@@ -26,7 +26,8 @@ import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Login Hub v25.0 (Restored Logo & Takeover Fix).
+ * @fileOverview Hardened Login Hub v26.0 (Branding Restored).
+ * FIXED: Logo is now centered at the top of the card using align="center".
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -66,7 +67,6 @@ function LoginContent() {
   const sessionTerminated = searchParams.get('session') === 'terminated';
 
   useEffect(() => {
-    // If user is already authenticated and NO session termination flag, redirect
     if (!authLoading && user && !sessionTerminated && !deviceError) {
        router.replace(returnUrl);
     }
@@ -79,7 +79,6 @@ function LoginContent() {
     const deviceId = await getDeviceId();
     const { browser, platform } = getBrowserInfo();
     
-    // 1. Device Registration Node
     const deviceRef = doc(db, 'users', userId, 'devices', deviceId);
     const deviceSnap = await getDoc(deviceRef);
     
@@ -105,7 +104,6 @@ function LoginContent() {
       await setDoc(deviceRef, { lastActive: serverTimestamp() }, { merge: true });
     }
 
-    // 2. SDL ENFORCEMENT: Take control of the session (Last Login Wins)
     await setDoc(doc(db, 'users', userId), {
       activeDeviceId: deviceId,
       lastLoginAt: serverTimestamp(),
@@ -222,7 +220,7 @@ function LoginContent() {
         
         {/* LOGO NODE */}
         <div className="flex flex-col items-center justify-center w-full mb-2 md:mb-6">
-          <Logo variant="light" />
+          <Logo variant="light" align="center" />
         </div>
 
         {sessionTerminated && (

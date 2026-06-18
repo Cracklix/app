@@ -36,8 +36,8 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Header v93.0 (Restored Layout).
- * FIXED: Balanced spacing and centered desktop navigation.
+ * @fileOverview Institutional Header v94.0 (Hardened Branding).
+ * FIXED: Normalized spacing for Logo and Menu button across all screens.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -76,11 +76,11 @@ export default function Navbar() {
 
   return (
     <div className="sticky top-0 z-50 w-full font-body">
-      <nav className="w-full h-20 bg-white border-b border-slate-100 shadow-sm overflow-visible">
+      <nav className="w-full h-20 bg-white border-b border-slate-100 shadow-sm">
         <div className="w-full max-w-7xl mx-auto px-4 md:px-6 h-full flex items-center justify-between gap-4">
 
           {/* LEFT SIDE: Menu Hub + Logo */}
-          <div className="flex items-center shrink-0">
+          <div className="flex items-center gap-2 md:gap-4 shrink-0">
             <button
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open menu"
@@ -91,7 +91,7 @@ export default function Navbar() {
 
             <Logo
               variant="light"
-              className="shrink-0 -ml-2 md:-ml-3 transition-all duration-500 origin-left scale-90 md:scale-100"
+              className="shrink-0"
             />
           </div>
 
@@ -129,17 +129,7 @@ export default function Navbar() {
                 <DropdownMenuContent
                   align="end"
                   sideOffset={12}
-                  className="
-                    w-[92vw]
-                    max-w-[420px]
-                    min-w-[280px]
-                    rounded-[28px]
-                    p-4 sm:p-6
-                    bg-white
-                    border border-slate-200
-                    shadow-[0_20px_60px_rgba(15,23,42,0.15)]
-                    z-[2001]
-                  "
+                  className="w-[92vw] max-w-[420px] min-w-[280px] rounded-[28px] p-4 sm:p-6 bg-white border border-slate-200 shadow-[0_20px_60px_rgba(15,23,42,0.15)] z-[2001]"
                 >
                   <DropdownMenuItem asChild className="rounded-2xl p-0 focus:bg-transparent cursor-default">
                     <div className="w-full">

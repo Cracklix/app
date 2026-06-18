@@ -20,9 +20,9 @@ import {
 } from "@/lib/constants";
 
 /**
- * Production Footer v1.2
+ * Production Footer v1.3
  * Cracklix Official Footer
- * UPDATED: Logo height synchronized to 120px standard.
+ * UPDATED: Logo node synchronized to institucional standards.
  */
 
 export default function Footer() {
@@ -40,6 +40,7 @@ export default function Footer() {
 
             <Logo
               variant="dark"
+              align="left"
             />
 
             <p className="max-w-[300px] text-[15px] leading-relaxed text-slate-300">
@@ -86,7 +87,7 @@ export default function Footer() {
           {/* Support */}
           <div className="space-y-8">
 
-            <h3 className="text-lg font-bold tracking-tight">
+            <h3 className="text-lg font-bold tracking-tight text-white uppercase">
               Support Hub
             </h3>
 
@@ -115,7 +116,7 @@ export default function Footer() {
           {/* Resources */}
           <div className="space-y-8">
 
-            <h3 className="text-lg font-bold tracking-tight">
+            <h3 className="text-lg font-bold tracking-tight text-white uppercase">
               Resources
             </h3>
 
@@ -144,7 +145,7 @@ export default function Footer() {
           {/* Contact */}
           <div className="space-y-8">
 
-            <h3 className="text-lg font-bold tracking-tight">
+            <h3 className="text-lg font-bold tracking-tight text-white uppercase">
               Connect With Us
             </h3>
 
@@ -152,7 +153,7 @@ export default function Footer() {
 
               <div className="group flex items-center gap-4">
 
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-[#2563EB]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-primary">
                   <Phone className="h-4 w-4" />
                 </div>
 
@@ -167,7 +168,7 @@ export default function Footer() {
 
               <div className="group flex items-center gap-4">
 
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-[#2563EB]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-primary">
                   <Mail className="h-4 w-4" />
                 </div>
 
@@ -180,9 +181,9 @@ export default function Footer() {
 
               </div>
 
-              <div className="inline-flex items-center rounded-full border border-[#2563EB]/20 bg-white/5 px-3 py-1.5">
+              <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5">
 
-                <span className="text-11px] font-bold tracking-tight text-[#2563EB]">
+                <span className="text-[10px] font-black tracking-tight text-primary uppercase">
                   Official Resolution Channel
                 </span>
 
@@ -228,7 +229,7 @@ function FooterLink({
     <li>
       <Link
         href={href}
-        className="text-[15px] text-slate-400 transition-colors hover:text-[#2563EB]"
+        className="text-[15px] text-slate-400 transition-colors hover:text-primary"
       >
         {children}
       </Link>
@@ -248,7 +249,7 @@ function SocialIcon({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-white/5 text-white shadow-lg transition-all duration-300 hover:bg-[#2563EB]"
+      className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-white/5 text-white shadow-lg transition-all duration-300 hover:bg-primary"
     >
       {icon}
     </a>

@@ -30,8 +30,8 @@ import ShareButton from "@/components/navigation/ShareButton";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Mobile Sidebar Hardened v34.1 (Typo Fix).
- * FIXED: MessageMessage typo resolved to MessageCircle.
+ * @fileOverview Mobile Sidebar Hardened v35.0 (Branding Update).
+ * FIXED: Standardized Logo node placement.
  */
 export default function MobileSidebar({
   onClose,
@@ -81,7 +81,7 @@ export default function MobileSidebar({
           variant="light"
           href="/"
           onClick={onClose}
-          className="shrink-0 transition-all duration-500 origin-left"
+          className="shrink-0"
         />
 
         <button
@@ -131,7 +131,7 @@ export default function MobileSidebar({
 
         {/* MAIN MENU */}
         <div className="px-2">
-          <p className="mb-2 px-6 text-[10px] font-bold text-slate-400 tracking-wide">
+          <p className="mb-2 px-6 text-[10px] font-bold text-slate-400 tracking-wide uppercase">
             Preparation Registry
           </p>
 
@@ -185,7 +185,7 @@ export default function MobileSidebar({
 
         {/* SUPPORT */}
         <div className="px-2 pb-8">
-          <p className="mb-2 px-6 text-[10px] font-bold text-slate-400 tracking-wide">
+          <p className="mb-2 px-6 text-[10px] font-bold text-slate-400 tracking-wide uppercase">
             Institutional Support
           </p>
 

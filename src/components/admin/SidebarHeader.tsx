@@ -4,7 +4,6 @@ import React from 'react';
 import { cn } from "@/lib/utils";
 import SidebarToggle from './SidebarToggle';
 import Logo from '@/components/brand/Logo';
-import Image from 'next/image';
 
 interface SidebarHeaderProps {
   isOpen: boolean;
@@ -12,8 +11,8 @@ interface SidebarHeaderProps {
 }
 
 /**
- * Cracklix Admin Sidebar Header v20.0.
- * RESTORED: Standard 80px height and centered icon when collapsed.
+ * Cracklix Admin Sidebar Header v21.0.
+ * UPDATED: Uses unified Logo component for both expanded and collapsed states.
  */
 export default function SidebarHeader({
   isOpen,
@@ -27,31 +26,16 @@ export default function SidebarHeader({
       )}
     >
       {/* LOGO AREA */}
-      <div
+      <Logo
+        href="/admin"
+        variant="dark"
+        iconOnly={!isOpen}
+        align={isOpen ? "left" : "center"}
         className={cn(
-          "flex items-center overflow-hidden transition-all duration-300",
-          isOpen ? "w-[190px]" : "w-12 justify-center"
+          "transition-all duration-300",
+          isOpen ? "w-[190px]" : "w-12"
         )}
-      >
-        {isOpen ? (
-          <Logo
-            href="/admin"
-            variant="dark"
-            className="shrink-0"
-          />
-        ) : (
-          <div className="relative h-10 w-10 shrink-0">
-            <Image
-              src="/logo/cracklix-icon.png"
-              alt="Cracklix"
-              fill
-              priority
-              sizes="40px"
-              className="object-contain"
-            />
-          </div>
-        )}
-      </div>
+      />
 
       {/* TOGGLE BUTTON */}
       {isOpen && (
