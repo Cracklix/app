@@ -23,9 +23,10 @@ import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { getDeviceId, getBrowserInfo } from "@/lib/device"
 import { motion } from "framer-motion"
+import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Login Hub v24.0 (SDL Enforcement).
+ * @fileOverview Hardened Login Hub v24.1 (Fixed Missing Imports).
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
