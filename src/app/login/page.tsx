@@ -26,8 +26,9 @@ import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Login Hub v26.0 (Branding Restored).
- * FIXED: Logo is now centered at the top of the card using align="center".
+ * @fileOverview Hardened Login Hub v27.0 (UI Fixes).
+ * FIXED: Mobile number padding increased to prevent overlap with +91 prefix.
+ * FIXED: Suppressed native browser reveal buttons via globals.css.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -273,7 +274,7 @@ function LoginContent() {
                         value={phone} 
                         onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0,10))} 
                         required 
-                        className="h-12 md:h-16 rounded-xl md:rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-sm md:text-lg font-bold pl-14 md:pl-16 px-4 md:px-6 tracking-widest shadow-inner" 
+                        className="h-12 md:h-16 rounded-xl md:rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-sm md:text-lg font-bold pl-16 md:pl-20 px-4 md:px-6 tracking-widest shadow-inner" 
                         placeholder="10-digit number" 
                       />
                     </div>

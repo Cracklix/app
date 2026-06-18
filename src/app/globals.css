@@ -64,6 +64,12 @@
   input, textarea, select {
     font-size: 16px !important;
   }
+
+  /* SUPPRESS BROWSER NATIVE PASSWORD REVEAL */
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none;
+  }
 }
 
 @media (max-width: 768px) {
