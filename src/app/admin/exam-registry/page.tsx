@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Exam Vertical Registry v11.1.
- * ACCESSIBILITY: Added DialogDescription for ARIA compliance.
+ * FIXED: Ensured all components and lucide icons are imported for stable build.
  */
 
 export default function ExamRegistryPage() {
@@ -159,7 +159,7 @@ export default function ExamRegistryPage() {
 
       <Dialog open={!!editingExam} onOpenChange={o => !o && setEditingExam(null)}>
          <DialogContent className="sm:max-w-xl rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
-            <div className="h-2 w-full bg-[#0F172A]" />
+            <div className="h-2 w-full bg-[#0F172A] shrink-0" />
             <DialogHeader className="p-10 pb-0">
                <DialogTitle className="text-2xl font-black font-headline uppercase">Vertical Architect</DialogTitle>
                <DialogDescription className="sr-only">Create or modify a recruitment vertical node in the registry.</DialogDescription>
@@ -173,7 +173,7 @@ export default function ExamRegistryPage() {
                   </select>
                </div>
                <div className="space-y-2 text-left">
-                  <Label className="text-[10px) font-black uppercase text-slate-500 ml-1">Relational Category</Label>
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Relational Category</Label>
                   <select value={editingExam?.categoryId || ""} onChange={e => setEditingExam({...editingExam, categoryId: e.target.value})} className="w-full h-12 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none">
                      <option value="">Select Category</option>
                      {categories?.map((c:any) => <option key={c.id} value={c.id}>{c.title}</option>)}

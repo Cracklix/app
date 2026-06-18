@@ -19,8 +19,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Latest Mock Hub v45.0 (Fixed Imports).
- * FIXED: Integrated missing Badge and cn references.
+ * @fileOverview Elite Latest Mock Hub v46.0 (Hardened Imports).
+ * FIXED: Ensured Badge and cn are imported for stable build.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];

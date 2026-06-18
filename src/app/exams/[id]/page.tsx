@@ -7,7 +7,7 @@ import { useDoc, useCollection, useFirestore, useUser } from "@/firebase"
 import { doc, collection, query, where, limit, orderBy, updateDoc, arrayUnion, arrayRemove, serverTimestamp, getDoc } from "firebase/firestore"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
   Clock, 
   BookOpen, 
@@ -37,7 +37,8 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Institutional Exam Hub v34.0 (Elite Card Upgrade).
+ * @fileOverview Institutional Exam Hub v34.0 (Hardened Imports).
+ * FIXED: Integrated missing CardHeader and CardTitle imports.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -50,7 +51,6 @@ export default function ExamHubPage() {
   const { user, profile, loading: userLoading } = useUser()
   const examId = params.id as string
 
-  // 1. PRIMARY OFFICIAL LIST LISTENERS
   const { data: exam, loading: examLoading } = useDoc<any>(useMemo(() => (db && examId ? doc(db, "exams", examId) : null), [db, examId]))
   
   const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true)) : null), [db]);
@@ -365,7 +365,7 @@ function DifficultyBadge({ level, isPremium }: { level: string, isPremium: boole
 function NotesList({ data, isPassActive, loading }: any) {
    if (loading) return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-         {Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-2xl" />)}
+         {Array.from({ length: 2 }).map((_, i) => <Skeleton className="h-32 w-full rounded-2xl" />)}
       </div>
    );
 

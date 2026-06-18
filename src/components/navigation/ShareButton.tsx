@@ -26,7 +26,7 @@ interface ShareButtonProps {
 
 /**
  * @fileOverview Hardened Social Share Hub v11.0.
- * UPDATED: Implemented high-fidelity responsive design for modal nodes.
+ * FIXED: Implemented high-fidelity responsive design for modal nodes.
  */
 export default function ShareButton({ 
   className = "", 
@@ -127,10 +127,10 @@ export default function ShareButton({
                 <Share2 className="h-6 w-6 sm:h-8 sm:w-8" />
              </div>
              <DialogTitle className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0F172A] uppercase leading-tight text-center">
-                Direct Share Hub
+                DIRECT SHARE HUB
              </DialogTitle>
              <DialogDescription className="text-slate-400 text-xs sm:text-sm md:text-base font-bold uppercase tracking-widest text-center mt-2">
-                Invite fellow aspirants to the registry
+                INVITE FELLOW ASPIRANTS TO THE REGISTRY
              </DialogDescription>
           </DialogHeader>
 

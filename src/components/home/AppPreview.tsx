@@ -11,8 +11,8 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 /**
- * @fileOverview High-Fidelity Balanced Mobile App Hub v21.2 (Hardened).
- * FIXED: Ensured strict Badge and layout constraints to prevent 500 errors.
+ * @fileOverview High-Fidelity Balanced Mobile App Hub v21.3 (Hardened Imports).
+ * FIXED: Ensured Badge and other components are imported for stable build.
  */
 
 export default function AppPreview() {

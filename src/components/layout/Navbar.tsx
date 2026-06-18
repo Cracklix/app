@@ -36,9 +36,8 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Header v90.0 (Hardened Responsiveness).
- * FIXED: DropdownMenuContent precision-aligned to 92vw for mobile safety.
- * FIXED: Title Case and Premium button scaling implemented.
+ * @fileOverview Institutional Header v91.0 (Hardened Responsiveness).
+ * FIXED: Logo alignment and responsive dropdown dimensions.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);

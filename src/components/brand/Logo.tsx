@@ -17,7 +17,6 @@ interface LogoProps {
  * Cracklix Official Logo Hub v22.0.
  * MAXIMIZED: Logo height fixed to 78px to fill the 80px (h-20) header perfectly.
  * ALIGNMENT: Reduced container width to 200px to eliminate ghost white-space on left.
- * RESPONSIVE: Dynamic width scaling to prevent push-out on 320px screens.
  */
 export default function Logo({
   className = "",

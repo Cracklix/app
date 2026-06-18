@@ -22,8 +22,8 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Fluid Hero Hub v11.0 (Build Fixed).
- * FIXED: Added missing Badge and cn imports to resolve compilation errors.
+ * @fileOverview Official Fluid Hero Hub v12.0 (Build Fixed).
+ * FIXED: Realigned Student image above feature cards and implemented fluid Title Case typography.
  */
 export default function Hero() {
   const db = useFirestore();

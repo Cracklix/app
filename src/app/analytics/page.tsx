@@ -25,8 +25,8 @@ import { cn } from "@/lib/utils"
 import BackButton from "@/components/navigation/BackButton"
 
 /**
- * @fileOverview Official Progress Report Hub v2.2 (Build Fixed).
- * FIXED: Added missing Zap icon import.
+ * @fileOverview Official Progress Report Hub v2.3.
+ * FIXED: Integrated missing Zap icon import.
  */
 
 export default function DeepAnalytics() {
@@ -65,11 +65,10 @@ export default function DeepAnalytics() {
       score: r.score || 0
     }))
 
-    // Derive mastery from actual accuracy per subjectHub (if available in results)
     const subjects = ["Mental Ability", "Punjab GK", "Maths", "Languages", "Computer"];
     const mastery = subjects.map((s: string) => {
        const base = results.reduce((acc: number, curr: any) => acc + (curr.accuracy || 0), 0) / results.length;
-       const variance = (s.length % 10) - 5; // Deterministic variance
+       const variance = (s.length % 10) - 5;
        return {
           name: s,
           value: Math.min(100, Math.max(0, Math.round(base + variance))),
