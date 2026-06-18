@@ -35,9 +35,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Header v81.0 (Mobile Overlap Fixed).
- * FIXED: Graduated logo scaling and negative margin adjustments for 320px-375px screens.
- * ENSURED: Brand identity remains centered without pushing search/user icons off-screen.
+ * @fileOverview Institutional Header v82.0 (Right-Aligned Logo).
+ * UPDATED: Logo moved to right side to fix overlap with menu button.
+ * MAXIMIZED: Logo height increased to 88px for dominant visibility.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -76,26 +76,21 @@ export default function Navbar() {
 
   return (
     <div className="sticky top-0 z-50 w-full font-body">
-      <nav className="w-full h-20 bg-white border-b border-slate-100 shadow-sm">
-        <div className="w-full max-w-7xl mx-auto px-2 xs:px-4 md:px-6 h-full flex items-center justify-between">
+      <nav className="w-full h-20 bg-white border-b border-slate-100 shadow-sm overflow-visible">
+        <div className="w-full max-w-7xl mx-auto px-4 md:px-6 h-full flex items-center justify-between">
 
-          {/* LEFT SIDE: Branding Hub */}
-          <div className="flex items-center gap-1 xs:gap-4 min-w-0">
+          {/* LEFT SIDE: Menu Hub */}
+          <div className="flex items-center shrink-0">
             <button
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open menu"
-              className="flex items-center justify-center w-10 h-10 xs:w-12 xs:h-12 rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0"
+              className="flex items-center justify-center w-11 h-11 md:w-12 md:h-12 rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0 hover:border-primary/30"
             >
-              <Menu className="w-5 h-5 xs:w-6 xs:h-6" />
+              <Menu className="w-6 h-6" />
             </button>
-
-            <Logo
-              variant="light"
-              className="shrink-0 -ml-10 xs:-ml-12 lg:-ml-16 scale-[0.72] xs:scale-90 sm:scale-100 origin-left"
-            />
           </div>
 
-          {/* DESKTOP NAVIGATION */}
+          {/* DESKTOP NAVIGATION (CENTERED) */}
           <div className="hidden lg:flex items-center justify-center gap-10 flex-1 px-8">
             <NavLink href="/" label="Home" active={pathname === '/'} />
             <NavLink href="/mocks" label="Practice" active={pathname === '/mocks'} />
@@ -103,25 +98,25 @@ export default function Navbar() {
             <NavLink href="/current-affairs" label="Study Center" active={pathname === '/current-affairs'} />
           </div>
 
-          {/* RIGHT SIDE: Action Hub */}
-          <div className="flex items-center gap-2 xs:gap-4 shrink-0">
+          {/* RIGHT SIDE: Action Hub & Right-Aligned Logo */}
+          <div className="flex items-center gap-3 md:gap-4 shrink-0">
             <Link
               href="/search"
-              className="w-10 h-10 xs:w-12 xs:h-12 rounded-2xl flex items-center justify-center bg-slate-50 text-slate-600 hover:text-primary transition-all active:scale-95"
+              className="w-10 h-10 md:w-11 md:h-11 rounded-2xl flex items-center justify-center bg-slate-50 text-slate-600 hover:text-primary transition-all active:scale-95"
             >
-              <Search className="w-4 h-4 xs:w-5 xs:h-5" />
+              <Search className="w-5 h-5" />
             </Link>
 
             {loading ? (
-              <Skeleton className="w-10 h-10 xs:w-12 xs:h-12 rounded-2xl bg-slate-100" />
+              <Skeleton className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-slate-100" />
             ) : user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="w-10 h-10 xs:w-12 xs:h-12 rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center active:scale-95 transition-all">
+                  <button className="w-10 h-10 md:w-11 md:h-11 rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center active:scale-95 transition-all">
                     <StudentAvatar
                       profile={profile}
                       className="w-full h-full border-none"
-                      iconClassName="w-5 h-5 xs:w-6 xs:h-6"
+                      iconClassName="w-6 h-6"
                     />
                   </button>
                 </DropdownMenuTrigger>
@@ -155,10 +150,17 @@ export default function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link href="/login" className="px-4 xs:px-8 h-10 xs:h-12 rounded-2xl bg-primary text-white font-bold text-xs xs:text-base flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-primary/20">
+              <Link href="/login" className="px-5 md:px-8 h-11 md:h-12 rounded-2xl bg-primary text-white font-bold text-sm md:text-base flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-primary/20">
                 Login
               </Link>
             )}
+
+            {/* BRANDING: Right side anchored with maximized scale */}
+            <Logo
+              variant="light"
+              className="shrink-0 -mr-10 xs:-mr-12 lg:-mr-14 scale-[0.8] xs:scale-100 sm:scale-110 origin-right transition-all duration-500"
+              imgClassName="h-[88px]"
+            />
           </div>
         </div>
       </nav>
