@@ -19,11 +19,6 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import type { Question } from "@/types"
 
-/**
- * @fileOverview Institutional Integrity & Cleanup Dashboard v2.6 (Strict Type Fixed).
- * FIXED: Explicitly typed loop parameter to resolve build blocker.
- */
-
 interface QAStatCardProps {
   label: string;
   value: string | number;
@@ -38,7 +33,6 @@ export default function QADashboard() {
 
   const { data: questions, loading: qLoading } = useCollection<Question>(useMemo(() => (db ? collection(db, "questions") : null), [db]) as any)
 
-  // ADVANCED INTEGRITY ANALYSIS
   const audit = useMemo(() => {
     if (!questions) return { duplicates: [], broken: [], stats: { dup: 0, broken: 0 } }
 
@@ -47,7 +41,7 @@ export default function QADashboard() {
     const broken: any[] = [];
 
     questions.forEach((q: Question) => {
-       const hash = `${q.englishQuestion?.trim()}_${q.correctAnswer}`.toLowerCase();
+       const hash = `${(q.englishQuestion || "").trim()}_${q.correctAnswer}`.toLowerCase();
        if (contentHashes[hash]) {
           duplicates.push({ ...q, originalId: contentHashes[hash][0] });
           contentHashes[hash].push(q.id);
@@ -93,7 +87,7 @@ export default function QADashboard() {
      try {
         const batch = writeBatch(db);
         batch.update(doc(db, "questions", dup.id), { 
-           status: 'DUPLICATE', 
+           status: 'DUPLICATE' as any, 
            isDuplicateOf: dup.originalId,
            updatedAt: serverTimestamp() 
         });

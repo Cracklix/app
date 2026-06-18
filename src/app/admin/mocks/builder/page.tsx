@@ -35,11 +35,6 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
-/**
- * @fileOverview Hardened Mock Architect v97.0 (Explicit Typing Fixed).
- * FIXED: Explicitly typed id parameters in mapping functions to resolve implicit any errors.
- */
-
 export default function MockBuilderPage() {
   return (
     <Suspense fallback={<div className="h-screen flex items-center justify-center bg-white"><Loader2 className="animate-spin text-primary" /></div>}>

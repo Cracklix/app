@@ -13,11 +13,6 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 
-/**
- * @fileOverview Institutional Device Monitoring Console v1.1.
- * Layout refactor: Removed redundant horizontal padding.
- */
-
 export default function DeviceMonitoringPage() {
   const db = useFirestore()
   const [searchTerm, setSearchTerm] = useState("")
@@ -31,10 +26,10 @@ export default function DeviceMonitoringPage() {
 
   const filteredUsers = useMemo(() => {
     if (!userNodes) return [];
-    return userNodes.filter(u => 
-      u.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      u.email?.toLowerCase().includes(searchTerm.toLowerCase())
-    ).sort((a, b) => (b.deviceCount || 0) - (a.deviceCount || 0));
+    return userNodes.filter((u: any) => 
+      (u.name || "").toLowerCase().includes(searchTerm.toLowerCase()) || 
+      (u.email || "").toLowerCase().includes(searchTerm.toLowerCase())
+    ).sort((a: any, b: any) => (b.deviceCount || 0) - (a.deviceCount || 0));
   }, [userNodes, searchTerm]);
 
   const stats = useMemo(() => {

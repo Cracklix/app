@@ -5,20 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Trash2, Edit, Search, GitMerge, Loader2, AlertTriangle, CheckCircle2, Layers, ChevronRight, Database, RefreshCw, X, SearchCode } from "lucide-react"
+import { Plus, Trash2, Edit, Search, GitMerge, Loader2, SearchCode } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, doc, deleteDoc, writeBatch, updateDoc, setDoc, serverTimestamp, getDocs, where, limit } from "firebase/firestore"
+import { collection, query, doc, deleteDoc, writeBatch, setDoc, serverTimestamp, getDocs, where, limit } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
-import { cn } from "@/lib/utils"
-
-/**
- * @fileOverview Institutional Subject Master Registry v10.1.
- * ACCESSIBILITY: Added DialogDescription for ARIA compliance.
- */
+import { Textarea } from "@/components/ui/textarea"
 
 export default function SubjectRegistryPage() {
   const db = useFirestore()
@@ -37,10 +32,10 @@ export default function SubjectRegistryPage() {
 
   const filteredSubjects = useMemo(() => {
     if (!subjects) return []
-    return subjects.filter(s => 
-      s.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    return (subjects || []).filter((s: any) => 
+      (s.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.aliases?.some((a: string) => a.toLowerCase().includes(searchTerm.toLowerCase()))
-    ).sort((a, b) => a.name.localeCompare(b.name))
+    ).sort((a: any, b: any) => (a.name || "").localeCompare(b.name || ""))
   }, [subjects, searchTerm])
 
   const handleSaveSubject = async () => {
@@ -60,10 +55,8 @@ export default function SubjectRegistryPage() {
 
     try {
       await setDoc(subjectRef, payload, { merge: true })
-      toast({ title: "Registry Updated", description: `${payload.name} synced.` })
+      toast({ title: "Registry Updated" })
       setEditingSubject(null)
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Sync Failed" })
     } finally {
       setIsSaving(false)
     }
@@ -92,7 +85,7 @@ export default function SubjectRegistryPage() {
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Canonical Mapping Registry</span>
            </div>
           <h1 className="text-4xl md:text-6xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Subject List</h1>
-          <p className="text-slate-500 font-medium text-lg">Normalize preparation nodes for the global question bank.</p>
+          <p className="text-slate-500 font-medium text-lg">Normalize preparation nodes.</p>
         </div>
         <div className="flex gap-4">
            <Button onClick={() => setMergeDialogOpen(true)} variant="outline" className="h-16 px-8 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 border-slate-200 bg-white shadow-xl hover:bg-slate-50">
@@ -109,7 +102,7 @@ export default function SubjectRegistryPage() {
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
           <Input 
             className="h-16 pl-16 rounded-[1.5rem] bg-white border-none shadow-2xl text-lg font-medium" 
-            placeholder="Search subjects or aliases..." 
+            placeholder="Search subjects..." 
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
@@ -131,7 +124,7 @@ export default function SubjectRegistryPage() {
                 Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}><TableCell colSpan={3} className="px-10 py-8"><Skeleton className="h-12 w-full rounded-2xl bg-slate-50" /></TableCell></TableRow>
                 ))
-              ) : filteredSubjects.map((s) => (
+              ) : filteredSubjects.map((s: any) => (
                 <TableRow key={s.id} className="hover:bg-slate-50 border-slate-50 transition-colors group">
                   <TableCell className="px-10 py-8">
                     <div className="flex items-center gap-6">
@@ -168,10 +161,10 @@ export default function SubjectRegistryPage() {
 
       <Dialog open={!!editingSubject} onOpenChange={o => !o && setEditingSubject(null)}>
          <DialogContent className="sm:max-w-xl rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
-            <div className="h-2 w-full bg-[#0F172A]" />
+            <div className="h-2 w-full bg-[#0F172A] shrink-0" />
             <DialogHeader className="p-10 pb-0">
                <DialogTitle className="text-2xl font-black font-headline uppercase">Subject Architect</DialogTitle>
-               <DialogDescription className="sr-only">Update the canonical name and aliases for this subject node.</DialogDescription>
+               <DialogDescription className="sr-only">Update the canonical name and aliases.</DialogDescription>
             </DialogHeader>
             <div className="p-10 space-y-6">
                <div className="space-y-2 text-left">
@@ -179,13 +172,13 @@ export default function SubjectRegistryPage() {
                   <Input value={editingSubject?.name ?? ""} onChange={e => setEditingSubject({...editingSubject, name: e.target.value})} className="h-12 rounded-xl font-bold" />
                </div>
                <div className="space-y-2 text-left">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Aliases (Comma separated)</Label>
-                  <Textarea value={typeof editingSubject?.aliases === 'string' ? editingSubject.aliases : editingSubject?.aliases?.join(', ') || ""} onChange={e => setEditingSubject({...editingSubject, aliases: e.target.value})} className="h-32 rounded-xl bg-slate-50 border-none font-medium" placeholder="GK, General Awareness, Static GK" />
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Aliases</Label>
+                  <Textarea value={typeof editingSubject?.aliases === 'string' ? editingSubject.aliases : editingSubject?.aliases?.join(', ') || ""} onChange={e => setEditingSubject({...editingSubject, aliases: e.target.value})} className="h-32 rounded-xl bg-slate-50 border-none font-medium" />
                </div>
             </div>
             <DialogFooter className="p-10 pt-0">
                <Button onClick={handleSaveSubject} disabled={isSaving} className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl">
-                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Commit Subject Hub
+                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Commit Hub
                </Button>
             </DialogFooter>
          </DialogContent>
@@ -196,27 +189,27 @@ export default function SubjectRegistryPage() {
             <DialogHeader className="text-center space-y-4">
                <div className="h-20 w-20 bg-emerald-500/20 rounded-[2rem] flex items-center justify-center mx-auto text-emerald-500"><GitMerge className="h-10 w-10" /></div>
                <DialogTitle className="text-3xl font-headline font-black uppercase">Deep Merge Hub</DialogTitle>
-               <DialogDescription className="text-slate-400 text-sm">Consolidate preparation nodes across the global registry.</DialogDescription>
+               <DialogDescription className="text-slate-400 text-sm">Consolidate nodes.</DialogDescription>
             </DialogHeader>
             <div className="py-8 space-y-6">
                <div className="space-y-2 text-left">
-                  <Label className="text-[10px] font-black uppercase text-slate-500">Source Subject (Purge)</Label>
+                  <Label className="text-[10px] font-black uppercase text-slate-500">Source Subject</Label>
                   <select value={mergeSource} onChange={e => setMergeSource(e.target.value)} className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-4 outline-none font-bold">
                      <option value="" disabled className="bg-[#0F172A]">Select Source</option>
                      {subjects?.map((s:any) => <option key={s.id} value={s.id} className="bg-[#0F172A]">{s.name}</option>)}
                   </select>
                </div>
                <div className="space-y-2 text-left">
-                  <Label className="text-[10px] font-black uppercase text-slate-500">Target Hub (Canonical)</Label>
+                  <Label className="text-[10px] font-black uppercase text-slate-500">Target Hub</Label>
                   <select value={mergeTarget} onChange={e => setMergeTarget(e.target.value)} className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-4 outline-none font-bold">
                      <option value="" disabled className="bg-[#0F172A]">Select Target</option>
-                     {subjects?.filter((s:any) => s.id !== mergeSource).map((s:any) => <option key={s.id} value={s.id} className="bg-[#0F172A]">{s.name}</option>)}
+                     {(subjects || []).filter((s:any) => s.id !== mergeSource).map((s:any) => <option key={s.id} value={s.id} className="bg-[#0F172A]">{s.name}</option>)}
                   </select>
                </div>
             </div>
             <DialogFooter>
                <Button onClick={handleDeepMerge} disabled={isMerging || !mergeSource || !mergeTarget} className="w-full bg-emerald-600 hover:bg-emerald-700 h-14 rounded-xl font-black uppercase text-[11px] tracking-widest shadow-2xl">
-                  {isMerging ? <Loader2 className="h-4 w-4 animate-spin" /> : "Authorize Deep Merge"}
+                  Authorize Merge
                </Button>
             </DialogFooter>
          </DialogContent>

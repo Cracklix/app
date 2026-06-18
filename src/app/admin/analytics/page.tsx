@@ -8,11 +8,6 @@ import { collection } from "firebase/firestore"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 import { Skeleton } from "@/components/ui/skeleton"
 
-/**
- * @fileOverview Final Administrative Control Center v4.6 (Strict Type Fixed).
- * FIXED: Explicitly typed reduce accumulators and chart data parameters.
- */
-
 interface MetricCardProps {
   label: string;
   value: string | number;
@@ -34,7 +29,6 @@ interface UsageProgressProps {
 export default function AdminAnalytics() {
   const db = useFirestore()
   
-  // STABILIZED LISTENERS
   const usersQuery = useMemo(() => (db ? collection(db, "users") : null), [db]);
   const resultsQuery = useMemo(() => (db ? collection(db, "results") : null), [db]);
   const questionsQuery = useMemo(() => (db ? collection(db, "questions") : null), [db]);

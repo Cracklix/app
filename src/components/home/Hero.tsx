@@ -21,9 +21,6 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/**
- * @fileOverview Institutional Hero Hub v113.0 (Hydration Refined).
- */
 export default function Hero() {
   const db = useFirestore();
   const [mounted, setMounted] = useState(false);

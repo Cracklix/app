@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
@@ -23,16 +23,10 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import type { Category, Board, Exam } from "@/types"
 
-/**
- * @fileOverview Punjab Exam Architecture Manager v2.7 (Build Hardened).
- * FIXED: Explicitly typed sort parameters to resolve implicit any errors.
- */
-
 export default function ArchitectureManager() {
   const db = useFirestore()
   const [activeTab, setActiveTab] = useState("overview")
 
-  // STABILIZED DATA LISTENERS
   const { data: categories, loading: catLoading } = useCollection<Category>(useMemo(() => (db ? query(collection(db, "categories"), orderBy("displayOrder", "asc")) : null), [db]) as any)
   const { data: hubs, loading: hubsLoading } = useCollection<Board>(useMemo(() => (db ? collection(db, "boards") : null), [db]) as any)
   const { data: exams, loading: examsLoading } = useCollection<Exam>(useMemo(() => (db ? collection(db, "exams") : null), [db]) as any)

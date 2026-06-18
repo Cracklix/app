@@ -13,12 +13,7 @@ import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
-
-/**
- * @fileOverview Institutional Content Audit Node.
- * Standardised to high-contrast Navy/White theme for readability.
- * Fixed: Robust Resolve/Delete logic with error emission.
- */
+import { cn } from "@/lib/utils"
 
 export default function AdminReports() {
   const db = useFirestore()
@@ -41,7 +36,7 @@ export default function AdminReports() {
     const docRef = doc(db, "reports", id)
     updateDoc(docRef, { status: 'RESOLVED' })
       .then(() => {
-        toast({ title: "Audit Resolved", description: "The content report has been marked as audited and corrected." })
+        toast({ title: "Audit Resolved", description: "Corrected." })
       })
       .catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
@@ -58,7 +53,7 @@ export default function AdminReports() {
     const docRef = doc(db, "reports", id)
     deleteDoc(docRef)
       .then(() => {
-        toast({ title: "Record Purged", description: "Report record removed from queue." })
+        toast({ title: "Record Purged" })
       })
       .catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
@@ -78,7 +73,7 @@ export default function AdminReports() {
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Quality Assurance Registry</span>
           </div>
           <h1 className="text-5xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Audit Queue</h1>
-          <p className="text-slate-500 mt-2 text-lg font-medium">Review and correct aspirant reports regarding institutional MCQ accuracy.</p>
+          <p className="text-slate-500 mt-2 text-lg font-medium">Review student reports regarding MCQ accuracy.</p>
         </div>
         <div className="flex gap-4">
            <div className="px-8 py-4 bg-white border border-slate-100 rounded-[1.5rem] flex items-center gap-6 shadow-xl">
@@ -106,7 +101,7 @@ export default function AdminReports() {
             <TableBody>
               {loading ? (
                 Array.from({ length: 6 }).map((_, i) => (
-                  <TableRow key={i}><TableCell colSpan={4} className="px-12 py-10"><Skeleton className="h-20 w-full rounded-[2rem] bg-slate-50" /></TableCell></TableRow>
+                  <TableRow key={i} className="border-slate-50"><TableCell colSpan={4} className="px-12 py-10"><Skeleton className="h-20 w-full rounded-[2rem] bg-slate-50" /></TableCell></TableRow>
                 ))
               ) : reports && reports.length > 0 ? (
                 reports.map((r: any) => (
@@ -161,7 +156,7 @@ export default function AdminReports() {
                       <div className="flex flex-col items-center justify-center text-slate-300 opacity-20 text-center">
                          <ShieldAlert className="h-32 w-32 mb-10" />
                          <p className="font-black font-headline text-3xl uppercase tracking-[0.2em]">Institutional Integrity High</p>
-                         <p className="text-lg font-bold uppercase tracking-[0.3em] mt-4">Zero pending flags in the global audit registry.</p>
+                         <p className="text-lg font-bold uppercase tracking-[0.3em] mt-4">Zero pending flags.</p>
                       </div>
                    </TableCell>
                 </TableRow>
