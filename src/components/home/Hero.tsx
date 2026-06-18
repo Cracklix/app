@@ -21,9 +21,9 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Premium Redesigned Hero Hub v24.0.
+ * @fileOverview Premium Redesigned Hero Hub v25.0.
  * THEME: Modern SaaS-style Blue (#2563EB) & Indigo (#4F46E5).
- * LAYOUT: 2-Column Desktop, Vertical Optimized Stack Mobile.
+ * LAYOUT: Optimized for mobile ordering - Buttons below feature grid.
  */
 
 export default function Hero() {
@@ -78,6 +78,30 @@ export default function Hero() {
 
   if (!mounted) return null;
 
+  const CTAButtons = ({ className }: { className?: string }) => (
+    <div className={cn("flex flex-col sm:flex-row gap-4 w-full sm:w-auto", className)}>
+      <Button
+        asChild
+        className="h-14 md:h-16 px-10 bg-[#2563EB] hover:bg-blue-700 text-white font-black uppercase text-[11px] md:text-xs tracking-[0.1em] rounded-full shadow-xl transition-all active:scale-95 border-none group/btn"
+      >
+        <Link href="/mocks" className="flex items-center justify-between w-full">
+          <span>Start Free Mock Test</span>
+          <ChevronRight className="ml-4 h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
+        </Link>
+      </Button>
+
+      <Button
+        asChild
+        variant="outline"
+        className="h-14 md:h-16 px-10 border-2 border-slate-200 bg-white text-[#0F172A] font-black uppercase text-[11px] md:text-xs tracking-[0.1em] rounded-full shadow-sm hover:bg-slate-50 transition-all active:scale-95"
+      >
+        <Link href="/exams">
+          Browse Exams
+        </Link>
+      </Button>
+    </div>
+  );
+
   return (
     <section className="relative overflow-hidden bg-[#F8FAFC] py-12 md:py-24">
       {/* Background Decorative Element */}
@@ -128,28 +152,8 @@ export default function Hero() {
               ))}
             </div>
 
-            {/* 5. CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-              <Button
-                asChild
-                className="h-12 md:h-14 px-8 bg-[#2563EB] hover:bg-blue-700 text-white font-black uppercase text-[11px] md:text-xs tracking-[0.1em] rounded-2xl shadow-xl transition-all active:scale-95 border-none"
-              >
-                <Link href="/mocks">
-                  Start Free Mock Test
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-
-              <Button
-                asChild
-                variant="outline"
-                className="h-12 md:h-14 px-8 border-2 border-white bg-white/50 backdrop-blur-sm text-[#0F172A] font-black uppercase text-[11px] md:text-xs tracking-[0.1em] rounded-2xl shadow-sm hover:bg-white transition-all active:scale-95"
-              >
-                <Link href="/exams">
-                  Browse Exams
-                </Link>
-              </Button>
-            </div>
+            {/* 5. CTA Buttons (Desktop Only) */}
+            <CTAButtons className="hidden lg:flex" />
           </div>
 
           {/* COLUMN 2: VISUAL HUB */}
@@ -203,12 +207,17 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* MOBILE FEATURE GRID (Below image) */}
-        <div className="lg:hidden grid grid-cols-2 gap-4 mt-12">
-            <MobileFeatureCard icon={<Zap className="h-5 w-5 text-blue-600" />} label="Mock Tests" href="/mocks" />
-            <MobileFeatureCard icon={<BookOpen className="h-5 w-5 text-indigo-600" />} label="Punjab Exams" href="/exams" />
-            <MobileFeatureCard icon={<FileText className="h-5 w-5 text-blue-500" />} label="Previous Papers" href="/previous-papers" />
-            <MobileFeatureCard icon={<ShieldCheck className="h-5 w-5 text-indigo-500" />} label="Free Practice" href="/practice" />
+        {/* MOBILE FEATURE GRID & BUTTONS */}
+        <div className="lg:hidden mt-12 space-y-12">
+            <div className="grid grid-cols-2 gap-4">
+                <MobileFeatureCard icon={<Zap className="h-5 w-5 text-blue-600" />} label="Mock Tests" href="/mocks" />
+                <MobileFeatureCard icon={<BookOpen className="h-5 w-5 text-indigo-600" />} label="Punjab Exams" href="/exams" />
+                <MobileFeatureCard icon={<FileText className="h-5 w-5 text-blue-500" />} label="Previous Papers" href="/previous-papers" />
+                <MobileFeatureCard icon={<ShieldCheck className="h-5 w-5 text-indigo-500" />} label="Free Practice" href="/practice" />
+            </div>
+
+            {/* CTA Buttons (Mobile Only - Positioned below grid) */}
+            <CTAButtons />
         </div>
 
         {/* STATS SECTION */}
