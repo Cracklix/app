@@ -2,12 +2,11 @@
 
 import { create } from 'zustand';
 import { AttemptState, ExamLanguage, QuestionStatus, Question, LanguageDisplayMode } from '@/types';
-import { doc, updateDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase/app';
 
 /**
- * @fileOverview Elite CBT Global Store v51.1 (TypeScript Hardened).
- * UPDATED: Explicit parameter typing for all higher-order function calls.
+ * @fileOverview Elite CBT Global Store v52.0 (Production Hardened).
  */
 
 interface ExamStore extends AttemptState {
@@ -26,12 +25,12 @@ interface ExamStore extends AttemptState {
   setLanguage: (lang: ExamLanguage | LanguageDisplayMode) => void;
   setPaused: (val: boolean) => void;
   setCurrentIdx: (idx: number) => void;
-  setAnswer: (idx: number, optionIdx: number | null, db: any) => void;
-  clearAnswer: (idx: number, db: any) => void;
-  markForReview: (idx: number, db: any) => void;
-  saveAndNext: (db: any) => void;
+  setAnswer: (idx: number, optionIdx: number | null, db: Firestore) => void;
+  clearAnswer: (idx: number, db: Firestore) => void;
+  markForReview: (idx: number, db: Firestore) => void;
+  saveAndNext: (db: Firestore) => void;
   tick: () => void;
-  addViolation: (db: any) => void;
+  addViolation: (db: Firestore) => void;
   resetStore: () => void;
 }
 
@@ -67,21 +66,19 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const now = Date.now();
     const state = get();
     
-    // Safety check for stale state from previous test session or different mock
     const isCompleted = savedState?.status === 'COMPLETED';
     const isTimedOut = savedState?.endTime && now >= savedState.endTime;
     const isDifferentMock = state.mockId !== mockId && state.mockId !== '';
     const forceReset = isCompleted || isTimedOut || isDifferentMock;
 
     const finalDuration = duration || 120;
-    const actualStartTime = (forceReset || !savedState?.startTime) ? now : savedState.startTime;
-    const finalEndTime = (forceReset || !savedState?.endTime) ? (now + (finalDuration * 60 * 1000)) : savedState.endTime;
+    const actualStartTime = (forceReset || !savedState?.startTime) ? now : Number(savedState.startTime);
+    const finalEndTime = (forceReset || !savedState?.endTime) ? (now + (finalDuration * 60 * 1000)) : Number(savedState.endTime);
     const initialTimeLeft = Math.max(0, Math.floor((finalEndTime - now) / 1000));
     const finalBaseMode = languageMode || 'ENGLISH_PUNJABI';
 
     let initialLang = (state.language && state.language !== '' && !forceReset) ? (state.language as string) : finalBaseMode;
     
-    // Normalize language based on available data
     if (finalBaseMode === 'ENGLISH_PUNJABI' && initialLang.includes('HINDI')) initialLang = 'ENGLISH_PUNJABI';
     if (finalBaseMode === 'ENGLISH_HINDI' && initialLang.includes('PUNJABI')) initialLang = 'ENGLISH_HINDI';
 
@@ -107,7 +104,6 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       isSyncing: false
     });
 
-    // Background registry sync for new sessions
     if (userId && mockId && (forceReset || !savedState)) {
       const { firestore: dbInstance } = initializeFirebase();
       setDoc(doc(dbInstance, 'attempts', `${userId}_${mockId}`), {

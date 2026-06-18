@@ -10,7 +10,7 @@ import { Plus, Search, Edit, Trash2, Database, Loader2, RefreshCw, Filter, Check
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, deleteDoc, doc, where, limit, getDocs, startAfter, writeBatch, serverTimestamp, orderBy } from "firebase/firestore"
+import { collection, query, deleteDoc, doc, where, limit, getDocs, startAfter, writeBatch, serverTimestamp, orderBy, DocumentData } from "firebase/firestore"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/hooks/use-toast"
@@ -18,10 +18,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Paginated Question Bank Hub v37.2 (Strictly Typed).
+ * @fileOverview Paginated Question Bank Hub v37.3 (Production Hardened).
  */
 
 type QuestionFilterType = 'ALL' | 'UNUSED' | 'USED' | 'LOCKED' | 'DUPLICATE' | 'REPEATED';
+
+interface FilterChipProps {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+  color?: string;
+}
+
+interface BulkActionBtnProps {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+}
 
 export default function QuestionBank() {
   return (
@@ -45,7 +59,7 @@ function QuestionBankContent() {
   
   const [loading, setLoading] = useState(true)
   const [questions, setQuestions] = useState<any[]>([])
-  const [lastDoc, setLastDoc] = useState<any>(null)
+  const [lastDoc, setLastDoc] = useState<DocumentData | null>(null)
   const [hasMore, setHasMore] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -57,7 +71,7 @@ function QuestionBankContent() {
 
   const activeBoard = useMemo(() => boards?.find((b: any) => b.id === boardParam), [boards, boardParam]);
 
-  const fetchQuestions = useCallback(async (nextCursor: any = null) => {
+  const fetchQuestions = useCallback(async (nextCursor: DocumentData | null = null) => {
     if (!dbInstance) return
     setLoading(true)
     
@@ -74,7 +88,7 @@ function QuestionBankContent() {
 
       const q = query(collection(dbInstance, "questions"), ...constraints)
       const snap = await getDocs(q)
-      const newQs = snap.docs.map(d => ({ ...d.data(), id: d.id }))
+      const newQs = snap.docs.map((d: DocumentData) => ({ ...d.data(), id: d.id }))
       
       if (nextCursor) {
         setQuestions(prev => [...prev, ...newQs])
@@ -214,7 +228,7 @@ function QuestionBankContent() {
   )
 }
 
-function FilterChip({ active, label, onClick, color = "text-slate-400" }: any) {
+function FilterChip({ active, label, onClick, color = "text-slate-400" }: FilterChipProps) {
    return (<button onClick={onClick} className={cn("px-6 py-3 rounded-xl font-black uppercase text-[10px] md:text-xs tracking-widest transition-all border-2 whitespace-nowrap snap-center", active ? "bg-[#0F172A] border-[#0F172A] text-white shadow-2xl scale-105" : "bg-white border-slate-50 hover:border-slate-100 " + color)}>{label}</button>)
 }
 
@@ -223,6 +237,6 @@ function LifecycleBadge({ status }: { status: string }) {
    return (<Badge className={cn("border-none px-4 py-1.5 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm", styles[status] || styles.UNUSED)}>{status}</Badge>)
 }
 
-function BulkActionBtn({ icon, label, onClick, disabled }: any) {
+function BulkActionBtn({ icon, label, onClick, disabled }: BulkActionBtnProps) {
    return (<Button onClick={onClick} disabled={disabled} variant="outline" className="bg-white/5 border-white/10 hover:bg-primary hover:border-primary text-white h-12 md:h-14 px-6 md:px-10 rounded-2xl font-black uppercase text-[10px] md:text-[11px] tracking-widest gap-3 transition-all active:scale-95 shadow-xl">{icon} {label}</Button>)
 }

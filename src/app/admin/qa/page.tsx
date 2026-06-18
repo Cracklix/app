@@ -20,8 +20,15 @@ import { cn } from "@/lib/utils"
 import type { Question } from "@/types"
 
 /**
- * @fileOverview Institutional Integrity & Cleanup Dashboard v2.4 (TypeScript Hardened).
+ * @fileOverview Institutional Integrity & Cleanup Dashboard v2.5 (Production Hardened).
  */
+
+interface QAStatCardProps {
+  label: string;
+  value: string | number;
+  color: string;
+  desc: string;
+}
 
 export default function QADashboard() {
   const db = useFirestore()
@@ -39,7 +46,6 @@ export default function QADashboard() {
     const broken: any[] = [];
 
     questions.forEach((q: Question) => {
-       // 1. DUPLICATE DETECTION HASH (Text + Options + Answer)
        const hash = `${q.englishQuestion?.trim()}_${q.correctAnswer}`.toLowerCase();
        if (contentHashes[hash]) {
           duplicates.push({ ...q, originalId: contentHashes[hash][0] });
@@ -48,7 +54,6 @@ export default function QADashboard() {
           contentHashes[hash] = [q.id];
        }
 
-       // 2. BROKEN NODE DETECTION
        if (!q.correctAnswer || !q.englishQuestion || !q.subjectId) {
           broken.push(q);
        }
@@ -86,7 +91,6 @@ export default function QADashboard() {
      setIsProcessing(true);
      try {
         const batch = writeBatch(db);
-        // Mark as duplicate in registry instead of delete (Soft Merge)
         batch.update(doc(db, "questions", dup.id), { 
            status: 'DUPLICATE', 
            isDuplicateOf: dup.originalId,
@@ -187,11 +191,12 @@ export default function QADashboard() {
   )
 }
 
-function QAStatCard({ label, value, color, desc }: any) {
+function QAStatCard({ label, value, color, desc }: QAStatCardProps) {
    return (
       <Card className="border-slate-100 bg-white rounded-[2.5rem] p-10 shadow-2xl text-left border border-slate-50">
          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6">{label}</p>
          <h4 className={`text-6xl font-headline font-black tracking-tighter ${color} leading-none`}>{value}</h4>
          <p className="text-xs font-bold text-slate-500 mt-5 leading-relaxed">{desc}</p>
       </Card>
+   )
 }

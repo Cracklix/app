@@ -9,8 +9,26 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tool
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Final Administrative Control Center v4.3 (TypeScript Hardened).
+ * @fileOverview Final Administrative Control Center v4.4 (Strictly Hardened).
  */
+
+interface MetricCardProps {
+  label: string;
+  value: string | number;
+  trend: string;
+  icon: React.ReactNode;
+}
+
+interface MetricChipProps {
+  label: string;
+  value: string | number;
+  icon: React.ReactNode;
+}
+
+interface UsageProgressProps {
+  label: string;
+  value: number;
+}
 
 export default function AdminAnalytics() {
   const db = useFirestore()
@@ -51,7 +69,6 @@ export default function AdminAnalytics() {
     return Math.round(results.reduce((acc: number, r: any) => acc + (r.accuracy || 0), 0) / (results.length || 1))
   }, [results])
 
-  // Derive simple engagement flow from real data counts
   const dynamicChartData = useMemo(() => {
      const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
      const base = users?.length || 0;
@@ -136,7 +153,7 @@ export default function AdminAnalytics() {
   )
 }
 
-function MetricCard({ label, value, trend, icon }: any) {
+function MetricCard({ label, value, trend, icon }: MetricCardProps) {
   return (
     <Card className="border-none shadow-2xl rounded-[2.5rem] p-10 bg-white hover:translate-y-[-4px] transition-all group border border-slate-50">
        <div className="flex items-center justify-between mb-8">
@@ -149,7 +166,7 @@ function MetricCard({ label, value, trend, icon }: any) {
   )
 }
 
-function MetricChip({ label, value, icon }: any) {
+function MetricChip({ label, value, icon }: MetricChipProps) {
    return (
       <Card className="border-none shadow-xl bg-white rounded-3xl p-8 flex items-center gap-6 border border-slate-50 hover:bg-slate-50/50 transition-colors">
          <div className="h-12 w-12 bg-slate-50 rounded-2xl flex items-center justify-center shadow-inner">{icon}</div>
@@ -161,7 +178,7 @@ function MetricChip({ label, value, icon }: any) {
    )
 }
 
-function UsageProgress({ label, value }: any) {
+function UsageProgress({ label, value }: UsageProgressProps) {
    return (
       <div className="space-y-3">
          <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400"><span>{label}</span><span className="text-primary">{value}%</span></div>

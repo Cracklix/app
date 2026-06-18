@@ -1,8 +1,7 @@
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Production-Grade PWA Manifest v9.0.
- * HARDENED: Added maskable icon support and categories for high-fidelity app store appearance.
+ * @fileOverview Production-Grade PWA Manifest v10.0 (Adaptive Hardened).
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -69,7 +68,7 @@ export default function manifest(): MetadataRoute.Manifest {
         src: '/icons/maskable-icon-512x512.png',
         sizes: '512x512',
         type: 'image/png',
-        purpose: 'maskable',
+        purpose: 'maskable any',
       },
     ],
     categories: ['education', 'lifestyle', 'productivity']

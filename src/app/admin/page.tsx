@@ -21,7 +21,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
-import { collection, query, orderBy, limit, doc, where, getDocs, setDoc, serverTimestamp } from "firebase/firestore"
+import { collection, query, orderBy, limit, doc, where, getDocs, setDoc, serverTimestamp, DocumentData } from "firebase/firestore"
 import { seedInitialData } from "@/services/seed-data"
 import { useToast } from "@/hooks/use-toast"
 import StudentAvatar from "@/components/brand/StudentAvatar"
@@ -29,9 +29,23 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Command Center v42.0.
- * Layout refactor: Removed redundant horizontal padding.
+ * @fileOverview Institutional Command Center v43.0 (Production Hardened).
  */
+
+interface MetricCardProps {
+  label: string;
+  value: string | number;
+  subLabel: string;
+  icon: React.ReactNode;
+  href: string;
+  highlight?: boolean;
+}
+
+interface QuickLinkProps {
+  label: string;
+  href: string;
+  highlight?: boolean;
+}
 
 export default function AdminDashboard() {
   const db = useFirestore()
@@ -61,7 +75,7 @@ export default function AdminDashboard() {
   }, [db]);
 
   const finance = useMemo(() => {
-    const totalRev = approvedRequests?.reduce((acc, r) => acc + (r.amount || 0), 0) || 0;
+    const totalRev = approvedRequests?.reduce((acc: number, r: any) => acc + (r.amount || 0), 0) || 0;
     const activePasses = allUsers?.filter((u: any) => u.pass?.active === true).length || 0;
     return {
       totalRevenue: totalRev,
@@ -74,18 +88,17 @@ export default function AdminDashboard() {
      if (!db) return;
      if (!silent) setIsStatsSyncing(true);
      try {
-        const [qSnap, mSnap, uSnap, rSnap, bSnap, eSnap] = await Promise.all([
+        const [qSnap, mSnap, uSnap, rSnap, eSnap] = await Promise.all([
            getDocs(collection(db, "questions")),
            getDocs(collection(db, "mocks")),
            getDocs(collection(db, "users")),
            getDocs(collection(db, "results")),
-           getDocs(collection(db, "boards")),
            getDocs(collection(db, "exams"))
         ]);
 
         const totalResults = rSnap.docs.length;
         const avgAcc = totalResults > 0 
-           ? Math.round(rSnap.docs.reduce((acc, d) => acc + (Number(d.data().accuracy) || 0), 0) / totalResults)
+           ? Math.round(rSnap.docs.reduce((acc: number, d: DocumentData) => acc + (Number(d.data().accuracy) || 0), 0) / totalResults)
            : 94;
 
         await setDoc(doc(db, "settings", "stats"), {
@@ -242,7 +255,7 @@ export default function AdminDashboard() {
   )
 }
 
-function MetricCard({ label, value, subLabel, icon, href, highlight }: any) {
+function MetricCard({ label, value, subLabel, icon, href, highlight }: MetricCardProps) {
   return (
     <Link href={href}>
       <Card className={cn(
@@ -264,7 +277,7 @@ function MetricCard({ label, value, subLabel, icon, href, highlight }: any) {
   )
 }
 
-function QuickLink({ label, href, highlight }: { label: string, href: string, highlight?: boolean }) {
+function QuickLink({ label, href, highlight }: QuickLinkProps) {
    return (
       <Link href={href} className="group">
          <div className={cn(
