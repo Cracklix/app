@@ -22,8 +22,8 @@ import { doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Official Hero Section v75.2.
- * FIXED: Hydration error - replaced standard <p> containers with <div> nodes for stat points.
+ * @fileOverview Official Hero Section v75.5.
+ * FIXED: Replaced standard <p> containers with <div> nodes for dynamic stat points to resolve hydration mismatches.
  */
 
 export default function Hero() {

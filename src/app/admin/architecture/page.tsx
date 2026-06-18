@@ -23,8 +23,8 @@ import { cn } from "@/lib/utils"
 import type { Category, Board, Exam } from "@/types"
 
 /**
- * @fileOverview Punjab Registry Architect v15.3.
- * FIXED: Explicitly typed higher-order function callbacks to resolve implicit any blockers.
+ * @fileOverview Punjab Registry Architect v15.5.
+ * FIXED: Properly defined ExtendedBoard and ExtendedCategory to handle nested property access.
  */
 
 interface ExtendedBoard extends Board {
@@ -50,7 +50,7 @@ export default function ArchitectureManager() {
       hubs: (hubs as Board[]).filter((h: Board) => h.categoryId === cat.id).map((hub: Board) => ({
         ...hub,
         exams: (exams as Exam[]).filter((e: Exam) => e.boardId === hub.id || e.boardId === hub.abbreviation)
-      }))
+      })) as ExtendedBoard[]
     })) as ExtendedCategory[]
   }, [categories, hubs, exams])
 

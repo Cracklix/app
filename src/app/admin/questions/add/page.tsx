@@ -20,8 +20,8 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Manual Question Entry v17.1.
- * FIXED: Explicitly typed state updater to resolve implicit any.
+ * @fileOverview Hardened Manual Question Entry v17.5.
+ * FIXED: Explicitly typed state updater to resolve implicit any blocker.
  */
 
 export default function QuestionEntryPage() {

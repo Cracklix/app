@@ -26,7 +26,8 @@ import {
   ShieldCheck,
   ChevronRight,
   Database,
-  SearchCode
+  SearchCode,
+  Save
 } from "lucide-react"
 import { useCollection, useFirestore, useStorage } from "@/firebase"
 import { collection, query, doc, deleteDoc, writeBatch, setDoc, serverTimestamp, getDocs, where, limit } from "firebase/firestore"
@@ -37,8 +38,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Master Registry Hub v17.1.
- * FIXED: Added missing DialogDescription and explicitly typed callbacks.
+ * @fileOverview Master Registry Hub v17.5.
+ * FIXED: Added missing Save icon import and explicitly typed all callbacks.
  */
 
 export default function MasterRegistryPage() {
@@ -136,7 +137,7 @@ export default function MasterRegistryPage() {
        const coll = activeTab === 'boards' ? 'boards' : activeTab === 'verticals' ? 'exams' : 'subjects'
        
        const qSnap = await getDocs(query(collection(db, "questions"), where(field, "==", mergeSource), limit(500)))
-       qSnap.docs.forEach(d => batch.update(doc(db, "questions", d.id), { [field]: mergeTarget, updatedAt: serverTimestamp() }))
+       qSnap.docs.forEach((d) => batch.update(doc(db, "questions", d.id), { [field]: mergeTarget, updatedAt: serverTimestamp() }))
 
        batch.delete(doc(db, coll, mergeSource))
        await batch.commit()
@@ -289,7 +290,7 @@ export default function MasterRegistryPage() {
          </Card>
       </Tabs>
 
-      <Dialog open={mergeDialogOpen} onOpenChange={mergeDialogOpen && !isMerging ? setMergeDialogOpen : undefined}>
+      <Dialog open={mergeDialogOpen} onOpenChange={(o) => mergeDialogOpen && !isMerging ? setMergeDialogOpen(o) : undefined}>
          <DialogContent className="sm:max-w-xl rounded-[2.5rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left">
             <div className="h-2 w-full bg-emerald-500" />
             <DialogHeader className="p-10 pb-4">

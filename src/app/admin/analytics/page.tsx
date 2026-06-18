@@ -10,8 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import type { Question, MockTest } from "@/types"
 
 /**
- * @fileOverview Institutional Analytics Hub v16.1.
- * FIXED: Explicitly typed all callbacks and resolved property access on Firestore results.
+ * @fileOverview Institutional Analytics Hub v16.5.
+ * FIXED: Explicitly typed all callbacks and resolved hydration blockers in chart defs.
  */
 
 interface MetricCardProps {
