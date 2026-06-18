@@ -32,8 +32,8 @@ import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/e
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Integrity & Cleanup Dashboard v2.1.
- * FIXED: Defined handleReScan to prevent reference errors.
+ * @fileOverview Institutional Integrity & Cleanup Dashboard v2.2 (Type Fixed).
+ * FIXED: Added explicit types for duplicate detection logic.
  */
 
 export default function QADashboard() {
@@ -52,7 +52,7 @@ export default function QADashboard() {
     const duplicates: any[] = [];
     const broken: any[] = [];
 
-    questions.forEach(q => {
+    questions.forEach((q: any) => {
        // 1. DUPLICATE DETECTION HASH (Text + Options + Answer)
        const hash = `${q.englishQuestion?.trim()}_${q.correctAnswer}`.toLowerCase();
        if (contentHashes[hash]) {
@@ -85,7 +85,7 @@ export default function QADashboard() {
     
     setIsProcessing(true)
     const batch = writeBatch(db)
-    audit.duplicates.forEach(d => batch.delete(doc(db, "questions", d.id)))
+    audit.duplicates.forEach((d: any) => batch.delete(doc(db, "questions", d.id)))
 
     try {
       await batch.commit()
@@ -158,7 +158,7 @@ export default function QADashboard() {
                   <TableHeader className="bg-slate-50/50">
                      <TableRow className="border-slate-50 h-16">
                         <TableHead className="px-10 text-[10px] font-black uppercase text-slate-500">Conflict Statements</TableHead>
-                        <TableHead className="text-[10px) font-black uppercase text-center text-slate-500">Confidence</TableHead>
+                        <TableHead className="text-[10px] font-black uppercase text-center text-slate-500">Confidence</TableHead>
                         <TableHead className="text-right px-10 text-[10px] font-black uppercase text-slate-500">Audit Action</TableHead>
                      </TableRow>
                   </TableHeader>

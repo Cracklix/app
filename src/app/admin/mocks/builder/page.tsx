@@ -36,8 +36,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview Hardened Mock Architect v96.0.
- * ACCESSIBILITY: Added sr-only labels for better ARIA compliance in popovers.
+ * @fileOverview Hardened Mock Architect v96.1 (Type Fixed).
+ * FIXED: Parameter 'id' explicitly typed to resolve Vercel build failure.
  */
 
 export default function MockBuilderPage() {
@@ -128,12 +128,12 @@ function MockBuilderContent() {
       let currentIndex = 0;
       const hydratedSections = (existingMock.sections || [{ name: 'GENERAL HUB', count: existingMock.questionIds.length }]).map((s: any, idx: number) => {
         const count = Number(s.count) || 0;
-        const sectionQIds = existingMock.questionIds.slice(currentIndex, currentIndex + count);
+        const sectionQIds: string[] = existingMock.questionIds.slice(currentIndex, currentIndex + count);
         currentIndex += count;
         return { 
           id: `sec-${idx + 1}`, 
           name: s.name, 
-          questions: sectionQIds.map(id => questionBank.find(q => q.id === id)).filter(Boolean) 
+          questions: sectionQIds.map((id: string) => questionBank.find(q => q.id === id)).filter(Boolean) 
         };
       });
       setSections(hydratedSections.length > 0 ? hydratedSections : [{ id: 'sec-1', name: 'GENERAL HUB', questions: [] }]);
@@ -158,7 +158,7 @@ function MockBuilderContent() {
   }, [rawExams, mockData.boardIds]);
 
   const filteredBank = useMemo(() => {
-    const allSelectedIds = sections.flatMap(s => (s.questions || []).map(q => q.id));
+    const allSelectedIds = sections.flatMap(s => (s.questions || []).map((q: any) => q.id));
     return questionBank.filter((q: any) => {
       const matchesBoard = filterBoard === "all" || q.boardId === filterBoard;
       const matchesSub = filterSubject === "all" || q.subjectId === filterSubject;
@@ -199,7 +199,7 @@ function MockBuilderContent() {
       toast({ variant: "destructive", title: "Audit Blocked", description: "Series Title is mandatory." })
       return
     }
-    const flatQuestionIds = sections.flatMap(s => (s.questions || []).map(q => q.id));
+    const flatQuestionIds = sections.flatMap(s => (s.questions || []).map((q: any) => q.id));
     if (flatQuestionIds.length === 0) {
        toast({ variant: "destructive", title: "Link Blocked", description: "Please add questions to the hub." });
        return;
@@ -330,7 +330,7 @@ function MockBuilderContent() {
                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 pt-6 border-t border-white/10"><div className="flex-1 text-left"><p className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Selection Queue</p><p className="text-xl md:text-3xl font-headline font-black tabular-nums">{bankSelection.length} <span className="text-sm text-slate-500">Nodes Staged</span></p></div><Button onClick={handleLinkQuestions} disabled={bankSelection.length === 0} className="w-full md:w-auto h-16 px-12 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[11px] tracking-widest rounded-2xl shadow-3xl gap-3 transition-all">Link Staged Assets <CheckCircle2 className="h-5 w-5" /></Button></div>
                 </Card>
                 <div className="grid grid-cols-1 gap-3">
-                   {bankLoading ? Array.from({length: 5}).map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl bg-white" />) : visibleBank.map((q) => {
+                   {bankLoading ? Array.from({length: 5}).map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl bg-white" />) : visibleBank.map((q: any) => {
                       const isSelected = bankSelection.includes(q.id);
                       return (<Card key={q.id} onClick={() => setBankSelection(p => isSelected ? p.filter(id => id !== q.id) : [...p, q.id])} className={cn("border-none shadow-sm rounded-2xl p-5 md:px-8 flex items-center justify-between cursor-pointer transition-all border-2", isSelected ? "bg-primary/5 border-primary shadow-lg scale-[1.01]" : "bg-white border-transparent hover:border-slate-100")}><div className="flex items-center gap-6 min-w-0"><div className={cn("h-6 w-6 rounded-full border-2 flex items-center justify-center shrink-0", isSelected ? "bg-primary border-primary" : "bg-white border-slate-200")}>{isSelected && <Check className="h-3 w-3 text-white stroke-[4px]" />}</div><div className="min-w-0 text-left"><p className="font-bold text-[#0F172A] truncate text-sm md:text-base">{q.englishQuestion}</p><p className="text-[9px] font-black uppercase text-slate-400 tracking-widest mt-1.5">{q.subjectId} • {q.difficulty}</p></div></div></Card>)
                    })}

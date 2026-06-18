@@ -18,8 +18,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Paginated Question Bank Hub v37.0.
- * Layout refactor: Removed redundant horizontal padding.
+ * @fileOverview Paginated Question Bank Hub v37.1 (Type Fixed).
+ * FIXED: Explicit types added to higher-order callback parameters.
  */
 
 type QuestionFilterType = 'ALL' | 'UNUSED' | 'USED' | 'LOCKED' | 'DUPLICATE' | 'REPEATED';
@@ -99,7 +99,7 @@ function QuestionBankContent() {
 
   const filteredQuestions = useMemo(() => {
     if (!questions) return []
-    return questions.filter(q => {
+    return questions.filter((q: any) => {
         const term = searchTerm.toLowerCase();
         const qText = (q.englishQuestion || q.questionEn || "").toLowerCase();
         const matchesSearch = qText.includes(term) || (q.id || "").toLowerCase().includes(term);
@@ -114,12 +114,12 @@ function QuestionBankContent() {
     setIsBulkProcessing(true);
     const batch = writeBatch(dbInstance);
     
-    selectedIds.forEach(id => {
+    selectedIds.forEach((id: string) => {
       batch.update(doc(dbInstance, "questions", id), { status: newStatus, updatedAt: serverTimestamp() });
     });
 
     batch.commit().then(() => {
-       setQuestions(prev => prev.map(q => selectedIds.includes(q.id) ? { ...q, status: newStatus } : q));
+       setQuestions(prev => prev.map((q: any) => selectedIds.includes(q.id) ? { ...q, status: newStatus } : q));
        setSelectedIds([]);
        toast({ title: "Registry Synced" });
     }).catch(() => toast({ variant: "destructive", title: "Update Failed" })).finally(() => setIsBulkProcessing(false));
@@ -157,7 +157,7 @@ function QuestionBankContent() {
           <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
             <div className="relative w-full lg:w-[40%]"><Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" /><Input className="pl-14 h-14 rounded-2xl bg-white border-none shadow-inner text-sm md:text-base font-medium" placeholder="Search statements..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
-              <Select value={subjectFilter} onValueChange={setSubjectFilter}><SelectTrigger className="w-full sm:w-56 rounded-xl h-12 bg-white border-none shadow-sm font-bold text-xs"><SelectValue placeholder="Subject Hub" /></SelectTrigger><SelectContent className="max-h-80 overflow-y-auto"><SelectItem value="all">All Subjects</SelectItem>{subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select>
+              <Select value={subjectFilter} onValueChange={setSubjectFilter}><SelectTrigger className="w-full sm:w-56 rounded-xl h-12 bg-white border-none shadow-sm font-bold text-xs"><SelectValue placeholder="Subject Hub" /></SelectTrigger><SelectContent className="max-h-80 overflow-y-auto"><SelectItem value="all">All Subjects</SelectItem>{subjects?.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select>
               <Select value={difficultyFilter} onValueChange={setDifficultyFilter}><SelectTrigger className="w-full sm:w-44 rounded-xl h-12 bg-white border-none shadow-sm font-bold text-xs"><SelectValue placeholder="Difficulty" /></SelectTrigger><SelectContent><SelectItem value="all">All Levels</SelectItem><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent></Select>
             </div>
           </div>
@@ -166,7 +166,7 @@ function QuestionBankContent() {
           <div className="overflow-x-auto relative scroll-smooth">
             <Table className="min-w-[900px]">
               <TableHeader className="bg-slate-50/50">
-                <TableRow className="h-20 border-slate-100"><TableHead className="w-20 px-8 text-center"><Checkbox checked={selectedIds.length === filteredQuestions.length && filteredQuestions.length > 0} onCheckedChange={(checked) => setSelectedIds(checked ? filteredQuestions.map(q => q.id) : [])} className="border-primary h-5 w-5" /></TableHead><TableHead className="px-8 text-[11px] font-black uppercase tracking-widest text-slate-500">Statement Identity</TableHead><TableHead className="text-[11px] font-black uppercase tracking-widest text-slate-500">Board & Exam</TableHead><TableHead className="text-[11px] font-black uppercase tracking-widest text-slate-500">Audit Status</TableHead><TableHead className="text-right px-10 text-[11px] font-black uppercase tracking-widest text-slate-500">Control</TableHead></TableRow>
+                <TableRow className="h-20 border-slate-100"><TableHead className="w-20 px-8 text-center"><Checkbox checked={selectedIds.length === filteredQuestions.length && filteredQuestions.length > 0} onCheckedChange={(checked) => setSelectedIds(checked ? filteredQuestions.map((q: any) => q.id) : [])} className="border-primary h-5 w-5" /></TableHead><TableHead className="px-8 text-[11px] font-black uppercase tracking-widest text-slate-500">Statement Identity</TableHead><TableHead className="text-[11px] font-black uppercase tracking-widest text-slate-500">Board & Exam</TableHead><TableHead className="text-[11px] font-black uppercase tracking-widest text-slate-500">Audit Status</TableHead><TableHead className="text-right px-10 text-[11px] font-black uppercase tracking-widest text-slate-500">Control</TableHead></TableRow>
               </TableHeader>
               <TableBody>
                 {loading && questions.length === 0 ? Array.from({ length: 8 }).map((_, i) => (<TableRow key={i}><TableCell colSpan={5} className="px-10 py-8"><Skeleton className="h-16 w-full rounded-2xl" /></TableCell></TableRow>)) : 

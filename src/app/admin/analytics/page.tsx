@@ -9,9 +9,8 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tool
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Final Administrative Control Center v3.9 (Build Fixed).
- * FIXED: Removed duplicate 'x2' attribute in linearGradient.
- * REALITY AUDIT: Now derives engagement flow from real collection counts.
+ * @fileOverview Final Administrative Control Center v4.0 (Type Fixed).
+ * FIXED: Implicit 'any' types in chart mapping and reducers resolved.
  */
 
 export default function AdminAnalytics() {
@@ -31,9 +30,9 @@ export default function AdminAnalytics() {
   const stats = useMemo(() => {
      if (!questions) return { used: 0, unused: 0, locked: 0, total: 0 };
      return {
-        used: questions.filter(q => q.status === 'USED').length,
-        unused: questions.filter(q => q.status === 'UNUSED' || !q.status).length,
-        locked: questions.filter(q => q.status === 'LOCKED').length,
+        used: questions.filter((q: any) => q.status === 'USED').length,
+        unused: questions.filter((q: any) => q.status === 'UNUSED' || !q.status).length,
+        locked: questions.filter((q: any) => q.status === 'LOCKED').length,
         total: questions.length
      }
   }, [questions]);
@@ -41,8 +40,8 @@ export default function AdminAnalytics() {
   const mockStats = useMemo(() => {
     if (!mocks) return { free: 0, premium: 0 };
     return {
-      free: mocks.filter(m => (m.accessLevel || 'FREE') === 'FREE').length,
-      premium: mocks.filter(m => m.accessLevel === 'PREMIUM').length
+      free: mocks.filter((m: any) => (m.accessLevel || 'FREE') === 'FREE').length,
+      premium: mocks.filter((m: any) => m.accessLevel === 'PREMIUM').length
     };
   }, [mocks]);
 
@@ -50,7 +49,7 @@ export default function AdminAnalytics() {
 
   const avgAccuracy = useMemo(() => {
     if (!results || results.length === 0) return 0
-    return Math.round(results.reduce((acc, r: any) => acc + (r.accuracy || 0), 0) / (results.length || 1))
+    return Math.round(results.reduce((acc: number, r: any) => acc + (r.accuracy || 0), 0) / (results.length || 1))
   }, [results])
 
   // Derive simple engagement flow from real data counts
@@ -59,7 +58,7 @@ export default function AdminAnalytics() {
      const base = users?.length || 0;
      const resultBase = results?.length || 0;
      
-     return days.map((day, i) => ({
+     return days.map((day: string, i: number) => ({
         day,
         users: Math.round((base * 0.1) + (resultBase * (0.05 * (i + 1)))) || 10 
      }));
