@@ -14,8 +14,9 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Refined Admin Layout v2.0.
+ * @fileOverview Refined Admin Layout v3.0.
  * FIXED: Standardized fixed spacing to prevent content squashing.
+ * MAXIMIZED: Logo scale to fill header height.
  */
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -99,7 +100,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Logo
               variant="light"
               className="shrink-0 -ml-4"
-              imgClassName="h-[70px]"
+              imgClassName="h-[78px]"
             />
           </div>
           

@@ -29,8 +29,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Command Center v44.0 (UI Repair).
- * FIXED: Text clipping and layout squashing on low-res and framed viewports.
+ * @fileOverview Institutional Command Center v45.0 (UI Hardened).
+ * FIXED: Text clipping and layout squashing on high-density viewports.
+ * FIXED: Hydration nodes standardized from <p> to <div>.
  */
 
 interface MetricCardProps {
@@ -154,10 +155,10 @@ export default function AdminDashboard() {
           <p className="text-slate-400 text-sm md:text-lg font-medium max-w-xl">Monitoring preparation nodes and institutional financial flow.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-           <Button onClick={() => handleSyncLiveStats()} disabled={isStatsSyncing} className="h-11 md:h-12 bg-primary hover:bg-primary/90 text-white rounded-xl font-black shadow-lg uppercase tracking-widest text-[10px] px-8">
+           <Button onClick={() => handleSyncLiveStats()} disabled={isStatsSyncing} className="h-11 md:h-12 bg-primary hover:bg-primary/90 text-white rounded-xl font-black shadow-lg uppercase tracking-widest text-[10px] px-8 border-none">
               {isStatsSyncing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />} Sync Stats
            </Button>
-           <Button onClick={handlePushToRegistry} disabled={isSyncing} className="h-11 md:h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black shadow-lg uppercase tracking-widest text-[10px] px-8">
+           <Button onClick={handlePushToRegistry} disabled={isSyncing} className="h-11 md:h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black shadow-lg uppercase tracking-widest text-[10px] px-8 border-none">
               {isSyncing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Database className="h-4 w-4 mr-2" />} Seed Hub
            </Button>
         </div>

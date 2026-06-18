@@ -12,9 +12,9 @@ interface SidebarHeaderProps {
 }
 
 /**
- * Cracklix Admin Sidebar Header v17.0.
+ * Cracklix Admin Sidebar Header v18.0.
  * RESTORED: Standard 80px (h-20) height.
- * MAXIMIZED: Logo scale strictly synchronized to 78px to match main site branding.
+ * MAXIMIZED: Logo height set to 78px to fill the header without overflow.
  */
 export default function SidebarHeader({
   isOpen,

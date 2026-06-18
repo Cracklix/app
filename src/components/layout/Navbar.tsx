@@ -35,9 +35,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Header v83.0 (Left-Integrated Logo).
- * UPDATED: Logo moved next to the menu button on the left.
- * MAXIMIZED: Logo height locked to 88px with origin-left scaling.
+ * @fileOverview Institutional Header v84.0 (Logo Maximized).
+ * UPDATED: Logo height set to 78px to fill the 80px header perfectly.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -91,8 +90,8 @@ export default function Navbar() {
 
             <Logo
               variant="light"
-              className="shrink-0 -ml-4 scale-[0.85] xs:scale-100 sm:scale-110 origin-left transition-all duration-500"
-              imgClassName="h-[88px]"
+              className="shrink-0 -ml-2 transition-all duration-500 origin-left"
+              imgClassName="h-[78px]"
             />
           </div>
 

@@ -15,9 +15,8 @@ interface LogoProps {
 
 /**
  * Cracklix Official Logo Component
- * SCALE: Maximized for brand dominance. Standard height increased to 88px.
- * UNIFIED: Flexible height based on context, default is maximized for the 80px header.
- * SAFETY: Uses max-w-full to prevent horizontal layout breaks.
+ * SCALE: Maximized for brand dominance. 
+ * Standard height increased to fill the 80px (h-20) header without overflow.
  */
 export default function Logo({
   className = "",
@@ -39,7 +38,7 @@ export default function Logo({
       height={90}
       priority
       className={cn(
-        "h-[88px] w-auto max-w-full object-contain shrink-0 transition-all duration-300",
+        "h-[78px] w-auto max-w-full object-contain shrink-0 transition-all duration-300",
         imgClassName
       )}
       style={{ width: "auto" }}

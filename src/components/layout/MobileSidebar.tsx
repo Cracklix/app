@@ -31,10 +31,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ShareButton from "@/components/navigation/ShareButton";
 
 /**
- * @fileOverview Mobile Sidebar Realignment v21.0.
- * FIXED: Removed negative margins on Logo to prevent clipping.
- * FIXED: Removed truncation on profile name for better readability.
- * THEME: Professional high-contrast layout.
+ * @fileOverview Mobile Sidebar Realignment v22.0.
+ * MAXIMIZED: Logo height set to 78px to match the header limit.
  */
 export default function MobileSidebar({
   onClose,
@@ -91,14 +89,14 @@ export default function MobileSidebar({
   return (
     <div className="flex h-full flex-col bg-white font-body">
 
-      {/* HEADER: Balanced Logo */}
-      <div className="flex h-20 items-center justify-between border-b px-6 shrink-0 gap-4">
+      {/* HEADER: Maximized Logo */}
+      <div className="flex h-20 items-center justify-between border-b px-4 shrink-0 gap-2">
         <Logo
           variant="light"
           href="/"
           onClick={onClose}
-          className="shrink-0 transition-all duration-300"
-          imgClassName="h-[80px]"
+          className="shrink-0 transition-all duration-300 origin-left"
+          imgClassName="h-[78px]"
         />
 
         <button

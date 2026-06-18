@@ -14,9 +14,9 @@ import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * @fileOverview Institutional Administrative Portal v12.0.
- * FIXED: Added missing Support Info (social) tab content.
- * DESIGN: Standardized card padding and typography to prevent clipping.
+ * @fileOverview Institutional Administrative Portal v13.0.
+ * FIXED: Standardized card padding and typography to prevent clipping.
+ * POPULATED: Restored Support Info fields for institutional contact management.
  */
 
 export default function AdminSettings() {
