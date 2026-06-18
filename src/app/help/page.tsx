@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useCollection, useFirestore } from "@/firebase"
@@ -28,8 +29,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { HelpArticle } from "@/types"
 
 /**
- * @fileOverview Official Institutional Help Hub v2.3.
- * HARDENED: Resolved React global reference errors and type mismatches.
+ * @fileOverview Official Institutional Help Hub v2.4.
+ * FIXED: Integrated missing Badge import to resolve build failure.
  */
 
 const HELP_CATEGORIES = [
@@ -130,7 +131,7 @@ export default function HelpCenterPage() {
 
            <div className="lg:col-span-5 space-y-8">
               <Card className="border-none shadow-3xl rounded-[3rem] bg-[#0F172A] text-white p-10 md:p-12 space-y-8 relative overflow-hidden group">
-                 <div className="absolute top-0 right-0 p-8 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><MessageCircle className="h-64 w-64" /></div>
+                 <div className="absolute top-0 right-0 p-8 opacity-5 rotate-12 group-hover:scale-110 transition-transform duration-1000"><MessageCircle className="h-64 w-64" /></div>
                  <div className="relative z-10 space-y-6 text-left">
                     <h3 className="text-3xl font-headline font-black uppercase text-primary leading-tight">Can&apos;t find an <br/> answer?</h3>
                     <p className="text-slate-400 text-lg font-medium leading-relaxed">Raise a support ticket and our management node will audit your issue within 24 hours.</p>

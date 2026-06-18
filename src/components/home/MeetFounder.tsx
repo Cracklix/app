@@ -9,7 +9,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Standalone Founder Leadership Node v4.2.
+ * @fileOverview Standalone Founder Leadership Node v4.3.
  * FIXED: Updated duration class to prevent ambiguous utility warnings.
  */
 
@@ -72,7 +72,7 @@ export default function MeetFounder() {
                     <h3 className="text-3xl md:text-5xl font-extrabold text-[#0F172A] tracking-tight leading-none">
                        Arsh Grewal
                     </h3>
-                    <p className="text-blue-600 font-bold text-[11px] md:text-sm flex items-center justify-center md:justify-start gap-2">
+                    <p className="text-blue-600 font-bold text-[11px] md:sm flex items-center justify-center md:justify-start gap-2">
                        <Target className="h-3 w-3" /> Platform Architect
                     </p>
                   </div>

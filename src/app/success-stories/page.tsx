@@ -1,4 +1,3 @@
-
 "use client"
 
 import Navbar from "@/components/layout/Navbar"
@@ -16,8 +15,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { SuccessStory } from "@/types"
 
 /**
- * @fileOverview Official Hall of Rankers v5.0.
- * UPDATED: Connected to Firestore 'success_stories' registry.
+ * @fileOverview Official Hall of Rankers v5.1.
+ * UPDATED: Optimized duration class for Tailwind compatibility.
  */
 
 export default function SuccessStoriesPage() {
@@ -71,7 +70,7 @@ export default function SuccessStoriesPage() {
                            />
                            <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-transparent to-transparent opacity-60" />
                            <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between">
-                              <Badge className="bg-emerald-500 text-white border-none px-4 py-1 rounded-xl font-black text-[10px] shadow-lg">{story.rank}</Badge>
+                              <Badge className="bg-emerald-50 text-white border-none px-4 py-1 rounded-xl font-black text-[10px] shadow-lg">{story.rank}</Badge>
                            </div>
                         </div>
                      </div>
