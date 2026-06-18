@@ -23,11 +23,11 @@ import { cn } from "@/lib/utils"
  */
 
 const CATEGORY_ICONS: Record<string, any> = {
-  "punjab-govt": <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR8W5eTBPdzztA7cziqnMmtWk9InL1yflUD_xb4vAsLw&s=10" className="h-full w-full object-contain p-1" />,
+  "punjab-govt": <img src="https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg" className="h-full w-full object-contain p-1" />,
   "punjab-teaching": <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10" className="h-full w-full object-contain p-1" />,
   "punjab-technical": <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo0ZK9JI5KMfg9RoNdIwcsNlpx5IcPBWuKZw&s" className="h-full w-full object-contain p-1" />,
   "banking": <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7McWqZqOgKy-BakccvR02WQdEQFrwuvmHBG5rYJzuEg&s=10" className="h-full w-full object-contain p-1" />,
-  "central-govt": <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmRNHVIV2W9Pn_87u6EQmluADidwUQWhOotUwQUV_VWtEBWqoxjf-OBEt4&s=10" className="h-full w-full object-contain p-1" />
+  "central-govt": <img src="https://upload.wikimedia.org/wikipedia/commons/b/bc/Emblem_of_India.svg" className="h-full w-full object-contain p-1" />
 };
 
 export default function CategoryManagement() {
@@ -172,7 +172,7 @@ export default function CategoryManagement() {
                   </div>
                   Category Hub Architect
                </DialogTitle>
-               <DialogDescription className="sr-only">Configure the identity and display settings for this exam category node.</DialogDescription>
+               <DialogDescription className="text-slate-400 font-medium">Configure category node settings.</DialogDescription>
             </DialogHeader>
             <div className="p-10 space-y-6">
                <div className="grid grid-cols-2 gap-6">

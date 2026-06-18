@@ -36,6 +36,11 @@ import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
+/**
+ * @fileOverview Master Registry Hub v17.1.
+ * FIXED: Added missing DialogDescription and explicitly typed callbacks.
+ */
+
 export default function MasterRegistryPage() {
   const db = useFirestore()
   const storage = useStorage()
@@ -351,7 +356,7 @@ export default function MasterRegistryPage() {
                   </div>
                   <DialogFooter className="pt-0 px-0">
                      <Button onClick={handleSaveBoard} disabled={isSaving || isUploading} className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl">
-                        {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Commit Authority Node"}
+                        {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Commit Authority Node
                      </Button>
                   </DialogFooter>
                </div>
@@ -365,7 +370,7 @@ export default function MasterRegistryPage() {
                   </div>
                   <DialogFooter className="pt-4 px-0">
                      <Button onClick={handleSaveExam} disabled={isSaving} className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl">
-                        {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Commit Vertical Node"}
+                        {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Commit Vertical Node
                      </Button>
                   </DialogFooter>
                </div>
@@ -379,7 +384,7 @@ export default function MasterRegistryPage() {
                   </div>
                   <DialogFooter className="pt-4 px-0">
                      <Button onClick={handleSaveSubject} disabled={isSaving} className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl">
-                        {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Commit Subject Node"}
+                        {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Commit Subject Node
                      </Button>
                   </DialogFooter>
                </div>

@@ -15,6 +15,11 @@ import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
 import { cn } from "@/lib/utils"
 
+/**
+ * @fileOverview Institutional Audit Reports Hub v13.1.
+ * FIXED: Added missing Button import and explicitly typed sorting callbacks.
+ */
+
 export default function AdminReports() {
   const db = useFirestore()
   const { toast } = useToast()
@@ -24,7 +29,7 @@ export default function AdminReports() {
 
   const reports = useMemo(() => {
     if (!allReports) return []
-    return [...allReports].sort((a, b) => {
+    return [...allReports].sort((a: any, b: any) => {
       const timeA = a.timestamp?.seconds || 0
       const timeB = b.timestamp?.seconds || 0
       return timeB - timeA
