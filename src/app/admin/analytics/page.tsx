@@ -9,7 +9,8 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tool
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Final Administrative Control Center v4.5 (TypeScript & Hydration Hardened).
+ * @fileOverview Final Administrative Control Center v4.6 (Strict Type Fixed).
+ * FIXED: Explicitly typed reduce accumulators and chart data parameters.
  */
 
 interface MetricCardProps {

@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
+import { DialogDescription } from "@/components/ui/dialog"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
@@ -23,7 +24,8 @@ import { cn } from "@/lib/utils"
 import type { Category, Board, Exam } from "@/types"
 
 /**
- * @fileOverview Punjab Exam Architecture Manager v2.6 (TypeScript Hardened).
+ * @fileOverview Punjab Exam Architecture Manager v2.7 (Build Hardened).
+ * FIXED: Explicitly typed sort parameters to resolve implicit any errors.
  */
 
 export default function ArchitectureManager() {

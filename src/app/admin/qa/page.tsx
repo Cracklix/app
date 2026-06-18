@@ -20,7 +20,8 @@ import { cn } from "@/lib/utils"
 import type { Question } from "@/types"
 
 /**
- * @fileOverview Institutional Integrity & Cleanup Dashboard v2.5 (Production Hardened).
+ * @fileOverview Institutional Integrity & Cleanup Dashboard v2.6 (Strict Type Fixed).
+ * FIXED: Explicitly typed loop parameter to resolve build blocker.
  */
 
 interface QAStatCardProps {

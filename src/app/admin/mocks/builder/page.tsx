@@ -28,7 +28,7 @@ import {
   Layers
 } from "lucide-react"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
-import { collection, doc, setDoc, serverTimestamp, query, limit, getDocs, writeBatch, where, documentId, orderBy } from "firebase/firestore"
+import { collection, doc, setDoc, serverTimestamp, query, limit, getDocs, writeBatch, where, documentId, orderBy, DocumentData } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { MockType, Difficulty, AccessLevel, LanguageDisplayMode, MockAssignmentMode, Question, ExamSection } from "@/types"
 import { cn } from "@/lib/utils"
@@ -36,7 +36,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview Hardened Mock Architect v96.5 (Strict Type Fix).
+ * @fileOverview Hardened Mock Architect v97.0 (Explicit Typing Fixed).
+ * FIXED: Explicitly typed id parameters in mapping functions to resolve implicit any errors.
  */
 
 export default function MockBuilderPage() {
@@ -100,7 +101,7 @@ function MockBuilderContent() {
     try {
       const q = query(collection(db, "questions"), limit(3000))
       const snap = await getDocs(q)
-      setQuestionBank(snap.docs.map((d: any) => ({ ...d.data(), id: d.id })))
+      setQuestionBank(snap.docs.map((d: DocumentData) => ({ ...d.data(), id: d.id })))
     } finally {
       setBankLoading(false)
     }
@@ -282,7 +283,7 @@ function MockBuilderContent() {
                 <Label className="text-[12px] font-black uppercase text-slate-500 ml-1">Assigned Authorities</Label>
                 <div className="space-y-2 max-h-[160px] overflow-y-auto custom-scrollbar pr-2">
                    {boards?.map((b: any) => (
-                      <div key={b.id} onClick={() => toggleBoardId(b.id)} className="flex items-center space-x-3 p-3 bg-slate-50/50 rounded-xl hover:bg-slate-100 transition-all cursor-pointer group"><div className={cn("h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all", mockData.boardIds?.includes(b.id) ? "border-primary bg-primary" : "border-slate-300 bg-white")}>{mockData.boardIds?.includes(b.id) && <Check className="h-3 w-3 text-white stroke-[3px]" />}</div><span className="text-[11px] font-black text-[#0F172A] uppercase">{b.abbreviation} HUB</span></div>
+                      <div key={b.id} onClick={() => toggleBoardId(b.id)} className="flex items-center space-x-3 p-3 bg-slate-50/50 rounded-xl hover:bg-slate-100 transition-all cursor-pointer group"><div className={cn("h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all", mockData.boardIds?.includes(b.id) ? "border-primary bg-primary" : "border-slate-300 bg-white")}>{mockData.boardIds?.includes(b.id) && <Check className="h-3 w-3 text-white stroke-[3px]" />}</div><span className="text-sm font-black text-[#0F172A] uppercase">{b.abbreviation} HUB</span></div>
                    ))}
                 </div>
               </div>
@@ -290,7 +291,7 @@ function MockBuilderContent() {
                 <Label className="text-[12px] font-black uppercase text-slate-500 ml-1">Target Verticals</Label>
                 <div className="space-y-2 max-h-[160px] overflow-y-auto custom-scrollbar pr-2">
                    {uniqueExams.map((e: any) => (
-                        <div key={e.id} onClick={() => toggleExamId(e.id)} className="flex items-center space-x-3 p-3 bg-slate-50/50 rounded-xl hover:bg-slate-100 transition-all cursor-pointer group"><div className={cn("h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all", mockData.examIds?.includes(e.id) ? "border-primary bg-primary" : "border-slate-300 bg-white")}>{mockData.examIds?.includes(e.id) && <Check className="h-3 w-3 text-white stroke-[3px]" />}</div><span className="text-[11px] font-black text-[#0F172A] uppercase truncate">{e.name}</span></div>
+                        <div key={e.id} onClick={() => toggleExamId(e.id)} className="flex items-center space-x-3 p-3 bg-slate-50/50 rounded-xl hover:bg-slate-100 transition-all cursor-pointer group"><div className={cn("h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all", mockData.examIds?.includes(e.id) ? "border-primary bg-primary" : "border-slate-300 bg-white")}>{mockData.examIds?.includes(e.id) && <Check className="h-3 w-3 text-white stroke-[3px]" />}</div><span className="text-sm font-black text-[#0F172A] uppercase truncate">{e.name}</span></div>
                    ))}
                 </div>
               </div>
