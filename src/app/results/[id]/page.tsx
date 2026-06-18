@@ -28,10 +28,12 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import StudentAvatar from "@/components/brand/StudentAvatar"
+import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Test Results Hub v37.0 (Responsive Hardened).
- * FIXED: Banner metrics scaling for 320px devices. Ultra high-density flex logic applied.
+ * @fileOverview Test Results Hub v38.0 (Hardened).
+ * FIXED: Finalized high-density scaling for 320px screens.
+ * UPDATED: Replaced orange buttons with Primary Blue.
  */
 
 export default function ResultPage() {

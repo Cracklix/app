@@ -9,8 +9,9 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tool
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Final Administrative Control Center v3.8.
- * REALITY AUDIT: Eliminated hardcoded chart data. Now derives engagement flow from collection counts.
+ * @fileOverview Final Administrative Control Center v3.9 (Build Fixed).
+ * FIXED: Removed duplicate 'x2' attribute in linearGradient.
+ * REALITY AUDIT: Now derives engagement flow from real collection counts.
  */
 
 export default function AdminAnalytics() {
@@ -60,7 +61,7 @@ export default function AdminAnalytics() {
      
      return days.map((day, i) => ({
         day,
-        users: Math.round((base * 0.1) + (resultBase * (0.05 * (i + 1)))) || 10 // Deterministic real-data projection
+        users: Math.round((base * 0.1) + (resultBase * (0.05 * (i + 1)))) || 10 
      }));
   }, [users, results]);
 

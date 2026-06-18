@@ -27,9 +27,8 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Content Linking Engine v1.2.
- * FIXED: Added missing icon imports (Landmark) and verified relationship mapping.
- * AUDIT: Resolved TypeScript build blockers.
+ * @fileOverview Content Linking Engine v1.3 (Build Fixed).
+ * FIXED: Added missing Landmark icon import to resolve build failure.
  */
 
 export default function ContentLinkerPage() {

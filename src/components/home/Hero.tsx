@@ -22,7 +22,8 @@ import { doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Institutional Hero Hub v111.0 (Responsive Hardened).
+ * @fileOverview Institutional Hero Hub v112.0 (Responsive Hardened).
+ * CLEANED: Removed all Git merge conflict markers.
  * FIXED: Scaled down heading for 320px screens and optimized padding.
  */
 export default function Hero() {

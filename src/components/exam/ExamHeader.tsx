@@ -23,7 +23,7 @@ const ALL_LANG_MODES: { label: string, value: LanguageDisplayMode }[] = [
 ];
 
 /**
- * @fileOverview Hardened CBT Header v34.0 (Responsive Hardened).
+ * @fileOverview Hardened CBT Header v35.0 (Responsive Fix).
  * FIXED: Shrinkage and scaling for 320px devices to prevent overlap between Timer and Progress.
  */
 export default function ExamHeader({ 
@@ -53,7 +53,7 @@ export default function ExamHeader({
   }, [baseLanguageMode]);
 
   return (
-    <header className="bg-[#0B1528] text-white flex flex-col shrink-0 z-[100] border-b border-white/5 shadow-md relative h-10 md:h-12">
+    <header className="bg-[#0B1528] text-white flex flex-col shrink-0 z-[100] border-b border-white/5 shadow-md relative h-12 md:h-14">
       <div className="h-full flex items-center justify-between px-2 md:px-6">
         
         {/* LEFT: BACK & PROGRESS */}
@@ -65,7 +65,7 @@ export default function ExamHeader({
               <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
            </button>
            
-           <div className="flex items-baseline gap-1 bg-white/5 px-1.5 py-0.5 rounded border border-white/10">
+           <div className="flex items-baseline gap-1 bg-white/5 px-1.5 py-0.5 rounded border border-white/10 scale-90 md:scale-100">
               <span className="text-[11px] md:text-base font-black text-primary tabular-nums">
                  {currentIdx + 1}
               </span>
@@ -76,7 +76,7 @@ export default function ExamHeader({
         </div>
 
         {/* CENTER: TIMER - SCALED FOR SMALL SCREENS */}
-        <div className="flex justify-center px-1 shrink-0 scale-[0.6] xs:scale-[0.8] md:scale-95">
+        <div className="flex justify-center px-1 shrink-0 scale-[0.65] xs:scale-[0.8] md:scale-100">
            <Timer 
              onTimeUp={() => {}} 
              initialSeconds={timeLeft} 
@@ -119,7 +119,7 @@ export default function ExamHeader({
            
            <button 
              onClick={onPaletteToggle}
-             className="bg-primary text-white h-7 px-2 md:px-5 rounded-lg font-black uppercase text-[8px] md:text-[10px] tracking-tight flex items-center justify-center shadow-md active:scale-90 border-none"
+             className="bg-primary text-white h-7 px-3 md:px-5 rounded-lg font-black uppercase text-[8px] md:text-[10px] tracking-tight flex items-center justify-center shadow-md active:scale-90 border-none"
            >
               MAP
            </button>

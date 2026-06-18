@@ -33,19 +33,20 @@ import ShareButton from "@/components/navigation/ShareButton"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview High-Performance Student Dashboard v27.0 (Hardened).
- * UPDATED: Strictly enforced Skeleton Screens during profile and results hydration.
+ * @fileOverview High-Performance Student Dashboard v28.0 (Hardened).
+ * UPDATED: Optimized Skeleton screens for 100% smooth hydration.
+ * BRAND: Synchronized with Institutional Blue palette.
  */
 export default function StudentDashboard() {
-  const { user, profile, loading, profileLoading } = useUser() as any;
+  const { user, profile, loading: authLoading, profileLoading } = useUser() as any;
   const db = useFirestore()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
-    if (!loading && !user) router.push("/login")
-  }, [user, loading, router])
+    if (!authLoading && !user) router.push("/login")
+  }, [user, authLoading, router])
 
   const resultsQuery = useMemo(() => {
     if (!db || !user || !mounted) return null
@@ -147,10 +148,10 @@ export default function StudentDashboard() {
 
               {/* METRICS GRID */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
-                <MetricItem label="PREP SCORE" val={resultsLoading ? "..." : `${stats.readiness}%`} icon={<TrendingUp className="text-primary h-5 w-5" />} />
-                <MetricItem label="ACCURACY" val={resultsLoading ? "..." : `${stats.avgAccuracy}%`} icon={<Target className="text-emerald-500 h-5 w-5" />} />
-                <MetricItem label="TESTS DONE" val={resultsLoading ? "..." : stats.total} icon={<ClipboardList className="text-blue-500 h-5 w-5" />} />
-                <MetricItem label="TIME SPENT" val={resultsLoading ? "..." : stats.hours} icon={<Clock className="text-amber-500 h-5 w-5" />} />
+                <MetricItem label="PREP SCORE" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : `${stats.readiness}%`} icon={<TrendingUp className="text-primary h-5 w-5" />} />
+                <MetricItem label="ACCURACY" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : `${stats.avgAccuracy}%`} icon={<Target className="text-emerald-500 h-5 w-5" />} />
+                <MetricItem label="TESTS DONE" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : stats.total} icon={<ClipboardList className="text-blue-500 h-5 w-5" />} />
+                <MetricItem label="TIME SPENT" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : stats.hours} icon={<Clock className="text-amber-500 h-5 w-5" />} />
               </div>
 
               {/* RECENT ATTEMPTS */}
@@ -167,10 +168,18 @@ export default function StudentDashboard() {
                 <CardContent className="p-0">
                     <div className="divide-y divide-slate-50">
                       {resultsLoading ? (
-                          Array.from({ length: 3 }).map((_, i) => <div key={i} className="p-6 md:p-8"><Skeleton className="h-12 w-full rounded-xl" /></div>)
+                          Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} className="p-6 md:p-10 flex gap-6 items-center">
+                               <Skeleton className="h-14 w-14 rounded-xl" />
+                               <div className="flex-1 space-y-2">
+                                  <Skeleton className="h-5 w-1/3" />
+                                  <Skeleton className="h-3 w-1/4" />
+                               </div>
+                            </div>
+                          ))
                       ) : results && results.length > 0 ? (
                           results.slice(0, 5).map((r: any) => (
-                            <Link key={r.id} href={`/results/${r.id || r.mockId}`} className="p-6 md:p-10 flex items-center justify-between hover:bg-slate-50/50 transition-all group border-l-[4px] border-transparent hover:border-primary">
+                            <Link key={r.id} href={`/results/${r.mockId}`} className="p-6 md:p-10 flex items-center justify-between hover:bg-slate-50/50 transition-all group border-l-[4px] border-transparent hover:border-primary">
                                 <div className="flex items-center gap-4 md:gap-8 min-w-0 flex-1">
                                   <div className="h-10 w-10 md:h-14 md:w-14 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
                                       <Zap className="h-5 w-5 md:h-6 md:w-6 text-primary" />
@@ -198,7 +207,7 @@ export default function StudentDashboard() {
           </div>
 
           <div className="lg:col-span-4 space-y-6 md:space-y-10">
-              <Card className="border-none shadow-4xl bg-gradient-to-br from-orange-500 to-primary text-white p-8 md:p-12 rounded-[2.5rem] md:rounded-[3rem] relative overflow-hidden group">
+              <Card className="border-none shadow-4xl bg-gradient-to-br from-blue-600 to-primary text-white p-8 md:p-12 rounded-[2.5rem] md:rounded-[3rem] relative overflow-hidden group">
                 <div className="absolute bottom-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-110 transition-transform duration-1000"><Flame className="h-48 w-48 md:h-64 md:w-64" /></div>
                 <div className="relative z-10 space-y-4 md:space-y-6 text-left">
                     <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-white/70">STUDY STREAK</p>
@@ -254,7 +263,7 @@ function MetricItem({ label, val, icon }: any) {
       <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center mb-6 md:mb-8 group-hover:bg-primary/5 transition-all shadow-inner border border-slate-100">
         {icon}
       </div>
-      <p className="text-xl md:text-4xl lg:text-5xl font-headline font-black text-[#0F172A] leading-none tracking-tighter tabular-nums">{val}</p>
+      <div className="text-xl md:text-4xl lg:text-5xl font-headline font-black text-[#0F172A] leading-none tracking-tighter tabular-nums">{val}</div>
       <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mt-2 md:mt-4">{label}</p>
     </Card>
   )
