@@ -29,8 +29,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ShareButton from "@/components/navigation/ShareButton";
 
 /**
- * @fileOverview Mobile Sidebar Realignment v29.0 (Overlap Hardened).
- * FIXED: Reduced vertical density of share node and sanitized spacing to ensure zero overlap.
+ * @fileOverview Mobile Sidebar Hardened v30.0 (Zero Overlap).
+ * FIXED: Standardized sectional gaps and reduced Elite Network card padding.
  */
 export default function MobileSidebar({
   onClose,
@@ -169,9 +169,9 @@ export default function MobileSidebar({
           </div>
         </div>
 
-        {/* SHARE NODE - COMPACTED */}
-        <div className="px-4 py-6">
-           <div className="bg-[#0B1528] rounded-[1.8rem] p-5 space-y-4 border border-white/5 shadow-2xl relative overflow-hidden group">
+        {/* SHARE NODE - COMPACTED TO PREVENT OVERLAP */}
+        <div className="px-4 py-4">
+           <div className="bg-[#0B1528] rounded-[1.8rem] p-4 space-y-3 border border-white/5 shadow-2xl relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><Award className="h-16 w-16" /></div>
               <div className="relative z-10 text-left">
                 <h4 className="text-[10px] font-black uppercase text-white tracking-widest leading-none mb-1">Elite Network</h4>

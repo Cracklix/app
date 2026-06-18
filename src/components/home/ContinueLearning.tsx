@@ -6,14 +6,13 @@ import { collection, query, where, limit } from 'firebase/firestore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Zap, History, Trophy, ArrowRight, Target, Star, GraduationCap, ChevronRight } from 'lucide-react';
+import { Zap, Trophy, Target, Star, GraduationCap, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview High-Fidelity "My Exams" Hub v10.2 (Hardened).
- * FIXED: Explicitly typed all mapping callbacks to satisfy strict TSC requirements.
+ * @fileOverview High-Fidelity "My Exams" Hub v10.3 (Fixed Imports).
  */
 
 export default function ContinueLearning() {
@@ -26,7 +25,6 @@ export default function ContinueLearning() {
     setMounted(true);
   }, []);
 
-  // 1. DATA LISTENERS
   const resultsQuery = useMemo(() => {
     if (!db || !user || !mounted) return null;
     return query(collection(db, "results"), where("userId", "==", user.uid), limit(2));
@@ -41,21 +39,15 @@ export default function ContinueLearning() {
   const { data: allExams, loading: examsLoading } = useCollection<any>(examsQuery);
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]));
 
-  // 2. PINNED EXAMS SELECTOR
   const pinnedExams = useMemo(() => {
     if (!allExams || !profile?.pinnedExams) return [];
     return (allExams as any[]).filter((e: any) => profile.pinnedExams?.includes(e.id)).slice(0, 3);
   }, [allExams, profile]);
 
-  if (!mounted || !user) {
-    return null;
-  }
+  if (!mounted || !user) return null;
 
   const hasData = (recentAttempts && recentAttempts.length > 0) || (pinnedExams && pinnedExams.length > 0);
-
-  if (!hasData && !resultsLoading && !examsLoading) {
-    return null;
-  }
+  if (!hasData && !resultsLoading && !examsLoading) return null;
 
   return (
     <section className="py-12 md:py-16 bg-white animate-in fade-in slide-in-from-bottom-4 duration-1000">
@@ -73,8 +65,6 @@ export default function ContinueLearning() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-           
-           {/* RECENT ATTEMPTS NODES (LEFT) */}
            <div className="lg:col-span-7 space-y-6">
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1 flex items-center gap-2">
                  <Zap className="h-3 w-3 text-primary" /> RESUME PRACTICE
@@ -101,15 +91,9 @@ export default function ContinueLearning() {
                        </div>
                     </Card>
                  ))}
-                 {recentAttempts?.length === 0 && !resultsLoading && (
-                    <div className="h-40 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 flex items-center justify-center opacity-40">
-                       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">No recent tests found.</p>
-                    </div>
-                 )}
               </div>
            </div>
 
-           {/* PINNED INTERESTS (RIGHT) */}
            <div className="lg:col-span-5 space-y-6">
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1 flex items-center gap-2">
                  <Star className="h-3 w-3 text-amber-500 fill-current" /> PINNED INTERESTS
@@ -142,15 +126,8 @@ export default function ContinueLearning() {
                        </Link>
                     )
                  })}
-                 {pinnedExams.length === 0 && !examsLoading && (
-                    <div className="h-40 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center opacity-40 text-center px-8 gap-3">
-                       <Star className="h-6 w-6 text-slate-300" />
-                       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 leading-tight">Pin exams in "Exam List" to track them here.</p>
-                    </div>
-                 )}
               </div>
            </div>
-
         </div>
       </div>
     </section>

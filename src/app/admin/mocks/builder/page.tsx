@@ -36,9 +36,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview Institutional Mock Builder Hub v17.6 (Hardened).
- * FIXED: Explicitly typed all mapping callbacks to satisfy strict TSC requirements.
- * FIXED: Corrected JSX tag mismatch where Button was closed with button.
+ * @fileOverview Institutional Mock Builder Hub v17.7 (Tag Fix).
+ * FIXED: Corrected mismatched JSX tag where Button was closed with button.
  */
 
 export default function MockBuilderPage() {
@@ -333,7 +332,7 @@ function MockBuilderContent() {
                 <div className="grid grid-cols-1 gap-3">
                    {bankLoading ? Array.from({length: 5}).map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl bg-white" />) : visibleBank.map((q: Question) => {
                       const isSelected = bankSelection.includes(q.id);
-                      return (<Card key={q.id} onClick={() => setBankSelection((p: string[]) => isSelected ? p.filter(id => id !== q.id) : [...p, q.id])} className={cn("border-none shadow-sm rounded-2xl p-5 md:px-8 flex items-center justify-between cursor-pointer transition-all border-2", isSelected ? "bg-primary/5 border-primary shadow-lg scale-[1.01]" : "bg-white border-transparent hover:border-slate-100")}><div className="flex items-center gap-6 min-w-0"><div className={cn("h-6 w-6 rounded-full border-2 flex items-center justify-center shrink-0", isSelected ? "bg-primary border-primary" : "bg-white border-slate-200")}>{isSelected && <Check className="h-3 w-3 text-white stroke-[4px]" />}</div><div className="min-w-0 text-left"><p className="font-bold text-[#0F172A] truncate text-sm md:text-base">{q.englishQuestion}</p><p className="text-[9px] font-black uppercase text-slate-400 tracking-widest mt-1.5">{q.subjectId} • {q.difficulty}</p></div></div></Card>)
+                      return (<Card key={q.id} onClick={() => setBankSelection((p: string[]) => isSelected ? p.filter(id => id !== q.id) : [...p, q.id])} className={cn("border-none shadow-sm rounded-2xl p-5 md:px-8 flex items-center justify-between cursor-pointer transition-all border-2", isSelected ? "bg-primary/5 border-primary shadow-lg scale-[1.01]" : "bg-white border-transparent hover:border-slate-100")}><div className="flex items-center gap-6 min-w-0"><div className={cn("h-6 w-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all", isSelected ? "bg-primary border-primary" : "bg-white border-slate-200")}>{isSelected && <Check className="h-3 w-3 text-white stroke-[4px]" />}</div><div className="min-w-0 text-left"><p className="font-bold text-[#0F172A] truncate text-sm md:text-base">{q.englishQuestion}</p><p className="text-[9px] font-black uppercase text-slate-400 tracking-widest mt-1.5">{q.subjectId} • {q.difficulty}</p></div></div></Card>)
                    })}
                    {filteredBank.length > displayLimit && <Button variant="ghost" onClick={() => setDisplayLimit((d: number) => d + 100)} className="w-full h-14 font-black uppercase tracking-widest text-[10px] text-slate-400">Load Next Block ({filteredBank.length - displayLimit} Remaining)</Button>}
                 </div>
