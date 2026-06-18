@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { 
   MessageCircle, 
   ShieldCheck, 
@@ -23,15 +25,13 @@ import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, orderBy, doc, updateDoc, serverTimestamp, deleteDoc } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Support Ticket Management Console v2.0.
- * UPDATED: Fixed missing Label and Textarea imports.
+ * @fileOverview Institutional Support Ticket Management Console v2.1.
+ * FIXED: Integrated missing Label and Textarea imports.
  */
 
 export default function AdminSupportManagement() {

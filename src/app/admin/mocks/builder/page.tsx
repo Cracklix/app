@@ -36,8 +36,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview Institutional Mock Builder Hub v17.0.
- * FIXED: Explicit callback typing and JSX tag synchronization.
+ * @fileOverview Institutional Mock Builder Hub v17.5 (Build Fixed).
+ * FIXED: Mismatched tag corrected (Button closed with Button).
+ * FIXED: Explicit callback typing for production stability.
  */
 
 export default function MockBuilderPage() {

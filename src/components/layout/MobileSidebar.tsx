@@ -29,9 +29,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ShareButton from "@/components/navigation/ShareButton";
 
 /**
- * @fileOverview Mobile Sidebar Realignment v25.0 (Overlap Hardened).
- * FIXED: Reduced vertical bulk of sections to ensure zero overlap.
- * FIXED: Sanitized padding for 320px screen support.
+ * @fileOverview Mobile Sidebar Realignment v26.0 (Overlap Hardened).
+ * FIXED: Maximized logo visibility within fixed header.
+ * FIXED: Reduced Elite card height to prevent support section overlap.
  */
 export default function MobileSidebar({
   onClose,
@@ -82,7 +82,7 @@ export default function MobileSidebar({
           href="/"
           onClick={onClose}
           className="shrink-0 transition-all duration-300 origin-left"
-          imgClassName="h-[78px]"
+          imgClassName="h-[78px] w-auto"
         />
 
         <button
@@ -173,15 +173,14 @@ export default function MobileSidebar({
 
         {/* SHARE NODE - REDUCED VERTICAL BULK */}
         <div className="px-4 py-4">
-           <div className="bg-[#0B1528] rounded-[1.8rem] p-5 space-y-4 border border-white/5 shadow-2xl relative overflow-hidden group">
+           <div className="bg-[#0B1528] rounded-[1.8rem] p-4 space-y-3 border border-white/5 shadow-2xl relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><Award className="h-16 w-16" /></div>
               <div className="relative z-10 text-left">
-                <h4 className="text-[10px] font-black uppercase text-white leading-none">Elite Network</h4>
-                <p className="text-[7px] font-bold text-slate-500 uppercase tracking-widest mt-1.5">Invite fellow aspirants</p>
+                <h4 className="text-[9px] font-black uppercase text-white leading-none">Elite Network</h4>
               </div>
               <ShareButton 
                 variant="dark" 
-                className="w-full h-11 rounded-xl bg-primary hover:bg-blue-600 text-white text-[9px] border-none shadow-lg relative z-10" 
+                className="w-full h-10 rounded-xl bg-primary hover:bg-blue-600 text-white text-[8px] border-none shadow-lg relative z-10" 
               />
            </div>
         </div>

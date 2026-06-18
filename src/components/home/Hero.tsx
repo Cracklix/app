@@ -23,9 +23,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 /**
- * @fileOverview Official Hero Section v78.0 (Production Restored).
- * FIXED: Replaced <p> with <div> for dynamic stats to ensure hydration integrity.
- * FIXED: Integrated Badge import and restored two-column layout.
+ * @fileOverview Official Hero Section v78.5 (Production Hardened).
+ * FIXED: Replaced standard <p> with <div> for dynamic stats.
+ * FIXED: Integrated missing Badge import.
  */
 
 export default function Hero() {
@@ -156,7 +156,7 @@ export default function Hero() {
                {liveStats.slice(0, 2).map((s) => (
                   <div key={s.id} className="p-4 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center gap-3">
                      <div className="h-8 w-8 rounded-lg bg-slate-50 flex items-center justify-center text-primary">{s.icon}</div>
-                     <div className="text-left"><p className="text-lg font-black leading-none">{loading ? '...' : s.val}</p><p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p></div>
+                     <div className="text-left"><div className="text-lg font-black leading-none">{loading ? '...' : s.val}</div><p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p></div>
                   </div>
                ))}
             </div>
@@ -178,7 +178,6 @@ export default function Hero() {
                  sizes="600px"
                  priority
                  className="object-cover transition-transform duration-[3s] group-hover:scale-110"
-                 data-ai-hint="student studying"
                />
                <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/20 to-transparent pointer-events-none" />
                
@@ -193,7 +192,7 @@ export default function Hero() {
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Verified commission patterns</p>
                      </div>
                   </div>
-                  <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[10px] uppercase px-4 py-1.5 rounded-xl">LIVE NOW</Badge>
+                  <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[9px] uppercase px-4 py-1.5 rounded-xl">LIVE NOW</Badge>
                </div>
             </div>
           </motion.div>
