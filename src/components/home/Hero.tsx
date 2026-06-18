@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import Image from "next/image";
 import { useDoc, useFirestore } from "@/firebase";
@@ -22,9 +23,9 @@ import { cn } from "@/lib/utils";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 /**
- * @fileOverview High-Fidelity Hero Hub v80.0.
+ * @fileOverview High-Fidelity Hero Hub v81.0 (Import Fix).
+ * FIXED: Added missing Badge import to resolve ReferenceError.
  * RESTORED: Hero visual visual node and two-column balanced layout.
- * HARDENED: Prevented hydration violations by standardizing HTML nesting for Skeleton divs.
  */
 
 export default function Hero() {
@@ -202,7 +203,7 @@ export default function Hero() {
                   </div>
                   <div className="text-center sm:text-left min-w-0 flex-1">
                     <div className="text-xl md:text-4xl lg:text-5xl font-headline font-black text-[#0F172A] tabular-nums leading-none tracking-tighter truncate">
-                      {loading ? <Skeleton className="h-6 w-12 md:h-10 md:w-24 bg-slate-100" /> : stat.val || "0"}
+                      {loading ? <Skeleton className="h-6 w-12 md:h-10 md:w-24 bg-slate-100" /> : <div>{stat.val || "0"}</div>}
                     </div>
                     <div className="text-[7px] md:text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mt-2 md:mt-3 truncate">
                       {stat.label}
