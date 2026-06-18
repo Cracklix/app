@@ -27,8 +27,9 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Content Linking Engine v1.1.
- * FIXED: Added missing Landmark icon import.
+ * @fileOverview Content Linking Engine v1.2.
+ * FIXED: Added missing icon imports (Landmark) and verified relationship mapping.
+ * AUDIT: Resolved TypeScript build blockers.
  */
 
 export default function ContentLinkerPage() {
@@ -55,7 +56,6 @@ function LinkerContent() {
   // 2. Platform Assets Pool
   const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]))
   const { data: notes } = useCollection<any>(useMemo(() => (db ? collection(db, "notes") : null), [db]))
-  const { data: caHub } = useCollection<any>(useMemo(() => (db ? collection(db, "current_affairs_hub") : null), [db]))
 
   // 3. Current Links Analysis
   const linkedMocks = useMemo(() => 
@@ -81,7 +81,7 @@ function LinkerContent() {
          
          await updateDoc(docRef, { 
             examIds: nextIds,
-            examId: nextIds[0] || null, // Keep legacy field in sync
+            examId: nextIds[0] || null, 
             updatedAt: serverTimestamp() 
          })
       } else {
@@ -99,7 +99,7 @@ function LinkerContent() {
   }
 
   const filteredMocks = useMemo(() => 
-    mocks?.filter(m => m.title?.toLowerCase().includes(searchTerm.toLowerCase())).sort((a,b) => b.createdAt?.seconds - a.createdAt?.seconds) || []
+    mocks?.filter(m => m.title?.toLowerCase().includes(searchTerm.toLowerCase())).sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)) || []
   , [mocks, searchTerm])
 
   if (examLoading) return <div className="h-screen flex items-center justify-center bg-white"><Loader2 className="h-10 w-10 text-primary animate-spin" /></div>

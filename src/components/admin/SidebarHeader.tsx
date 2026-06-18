@@ -12,9 +12,9 @@ interface SidebarHeaderProps {
 }
 
 /**
- * Cracklix Admin Sidebar Header v16.0.
- * RESTORED: Height matched to standard 80px (h-20).
- * MAXIMIZED: Logo scaled to 78px to match main site dominance.
+ * Cracklix Admin Sidebar Header v17.0.
+ * RESTORED: Standard 80px (h-20) height.
+ * MAXIMIZED: Logo scale strictly synchronized to 78px to match main site branding.
  */
 export default function SidebarHeader({
   isOpen,
@@ -42,13 +42,13 @@ export default function SidebarHeader({
             imgClassName="h-[78px]"
           />
         ) : (
-          <div className="relative h-10 w-10 shrink-0">
+          <div className="relative h-12 w-12 shrink-0">
             <Image
               src="/logo/cracklix-icon.png"
               alt="Cracklix"
               fill
               priority
-              sizes="40px"
+              sizes="48px"
               className="object-contain"
             />
           </div>

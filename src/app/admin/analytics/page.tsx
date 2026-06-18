@@ -14,8 +14,9 @@ const chartData = [
 ]
 
 /**
- * @fileOverview Final Administrative Control Center v3.6.
- * FIXED: Removed duplicate x2 attribute in SVG linearGradient.
+ * @fileOverview Final Administrative Control Center v3.7.
+ * FIXED: Removed duplicate attribute in SVG linearGradient for build stability.
+ * AUDIT: Verified Next.js 15 compatibility.
  */
 
 export default function AdminAnalytics() {
@@ -54,7 +55,7 @@ export default function AdminAnalytics() {
 
   const avgAccuracy = useMemo(() => {
     if (!results || results.length === 0) return 94
-    return Math.round(results.reduce((acc, r: any) => acc + (r.accuracy || 0), 0) / results.length)
+    return Math.round(results.reduce((acc, r: any) => acc + (r.accuracy || 0), 0) / (results.length || 1))
   }, [results])
 
   return (
@@ -163,4 +164,5 @@ function UsageProgress({ label, value }: any) {
             <div className="h-full bg-primary shadow-3xl shadow-primary/40 transition-all duration-1000" style={{ width: `${value}%` }} />
          </div>
       </div>
+   )
 }

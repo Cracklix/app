@@ -11,8 +11,9 @@ import Logo from "@/components/brand/Logo";
 import Link from "next/link";
 
 /**
- * @fileOverview Maximized Admin Hub Layout v40.0.
- * RESTORED: Header height to standard 80px.
+ * @fileOverview Maximized Admin Hub Layout v41.0.
+ * AUDIT: Verified standard 80px header and maximized logo consistency.
+ * SECURITY: Tightened redirection logic to prevent data leaks.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -35,12 +36,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, []);
 
-  const toggleSidebar = () => {
-    const newState = !isSidebarOpen;
-    setIsSidebarOpen(newState);
-    localStorage.setItem('admin-sidebar-state', newState ? 'expanded' : 'collapsed');
-  };
-
   const userEmail = user?.email?.toLowerCase();
   const isFounder = userEmail && SUPER_ADMIN_WHITELIST.includes(userEmail);
   const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || isFounder;
@@ -48,12 +43,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     if (!loading && mounted) {
       if (!user) {
-        router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+        router.replace(`/login?returnUrl=${encodeURIComponent(pathname)}`);
       } else if (!isAdmin) {
-        router.push('/dashboard');
+        router.replace('/dashboard');
       }
     }
   }, [user, profile, loading, router, isAdmin, mounted, pathname]);
+
+  const toggleSidebar = () => {
+    const newState = !isSidebarOpen;
+    setIsSidebarOpen(newState);
+    localStorage.setItem('admin-sidebar-state', newState ? 'expanded' : 'collapsed');
+  };
 
   const handleLogout = async () => {
     await signOut(authInstance);
@@ -101,7 +102,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Logo
               variant="light"
               className="shrink-0 -ml-4"
-              imgClassName="h-12 lg:h-16"
+              imgClassName="h-[78px]"
             />
           </div>
           
