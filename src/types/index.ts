@@ -16,6 +16,19 @@ export type CurrentAffairType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'QUIZ' | 'SPECI
 
 export type MockAssignmentMode = 'SINGLE' | 'MULTIPLE' | 'AUTHORITY';
 
+export type Notification = {
+  id: string;
+  title: string;
+  message: string;
+  time: string;
+  isRead: boolean;
+  type: string;
+  pdfUrl?: string;
+  category?: string;
+  board?: string;
+  important?: boolean;
+};
+
 export interface UserDevice {
   id: string;
   browser: string;
@@ -67,6 +80,13 @@ export interface Exam {
   updatedAt?: any;
   createdAt?: any;
   iconUrl?: string;
+  description?: string;
+  totalMocks?: number;
+  activeQuestions?: number;
+  totalQuestions?: number;
+  duration?: number;
+  board?: string;
+  thumbnail?: string;
 }
 
 export interface Subject {
@@ -103,7 +123,14 @@ export interface MockTest {
   attemptLimit: number;
   createdAt: any;
   updatedAt: any;
+  isTrending?: boolean;
+  accessType?: string;
+  durationInMinutes?: number;
+  attempts?: number;
+  questions?: Question[];
 }
+
+export type Mock = MockTest;
 
 export interface Question {
   id: string;
@@ -137,6 +164,15 @@ export interface Question {
   mockIdsUsedIn?: string[];
   createdAt: any;
   updatedAt: any;
+  topic?: string;
+  subject?: string;
+  question?: string;
+  options?: string[];
+  explanation?: string;
+  questionEn?: string;
+  questionPa?: string;
+  questionHi?: string;
+  displayId?: string;
 }
 
 export interface UserProfile {
@@ -166,7 +202,7 @@ export interface UserProfile {
   lastLoginAt?: any;
   pass?: {
     active: boolean;
-    plan: 'FREE_PASS' | 'MONTHLY' | 'QUARTERLY' | 'YEARLY';
+    plan: 'FREE_PASS' | 'MONTHLY' | 'QUARTERLY' | 'YEARLY' | string;
     purchaseDate: string;
     expiryDate: string;
     freePassClaimed: boolean;
@@ -225,6 +261,14 @@ export interface CurrentAffairHubItem {
   updatedAt: any;
 }
 
+export interface CurrentAffair {
+  id: string;
+  title: string;
+  date: string;
+  category: string;
+  summary: string;
+};
+
 export interface AttemptState {
   answers: Record<number, number | null>;
   status: Record<number, QuestionStatus>;
@@ -238,39 +282,21 @@ export interface AttemptState {
   endTime: number;
 }
 
-export interface SuccessStory {
-  id: string;
-  name: string;
-  exam: string;
-  rank: string;
-  year: string;
-  quote: string;
-  imageUrl: string;
-  published: boolean;
+export type AttemptResult = {
+  userId: string;
+  userName: string;
+  userEmail: string;
+  mockId: string;
+  mockTitle: string;
+  score: number;
+  correctCount: number;
+  wrongCount: number;
+  attemptedCount: number;
+  totalQuestions: number;
+  accuracy: number;
+  timeTaken: number;
+  answers: Record<number, number | null>;
+  timestamp: string;
   createdAt: any;
-  updatedAt: any;
-}
-
-export interface HelpArticle {
-  id: string;
-  title: string;
-  category: 'PAYMENTS' | 'PASS' | 'PWA' | 'TECHNICAL' | 'ACCOUNT' | 'FAQ';
-  content: string;
-  published: boolean;
-  displayOrder: number;
-  createdAt: any;
-  updatedAt: any;
-}
-
-export interface CalendarEvent {
-  id: string;
-  board: string;
-  post: string;
-  date: string;
-  status: string;
-  type: 'Exam' | 'Registration' | 'Event' | 'Forecast';
-  color: string;
-  published: boolean;
-  createdAt: any;
-  updatedAt: any;
-}
+  accessLevel: string;
+};

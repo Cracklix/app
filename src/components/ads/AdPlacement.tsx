@@ -1,9 +1,8 @@
-
 'use client';
 
 import { useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
-import { collection, query, where, doc } from 'firebase/firestore';
+import { collection, query, where, doc, Query, DocumentData } from 'firebase/firestore';
 import { Advertisement, AdPlacementType } from '@/types';
 import { trackAdImpression, trackAdClick } from '@/app/actions/ads';
 import { cn } from '@/lib/utils';
@@ -16,8 +15,8 @@ interface AdPlacementProps {
 }
 
 /**
- * @fileOverview Institutional Ad-Node v1.0.
- * Features: Pass-based gating, Safety rules (no ads in attempts), and Targeting logic.
+ * @fileOverview Institutional Ad-Node v1.3 (Hardened).
+ * FIXED: Explicit typing for Firestore query to resolve generic Query<Advertisement> mismatch.
  */
 
 export default function AdPlacement({ placement, className, examId }: AdPlacementProps) {
@@ -29,7 +28,7 @@ export default function AdPlacement({ placement, className, examId }: AdPlacemen
   const { data: passes } = useCollection<any>(useMemo(() => (db ? collection(db, 'passes') : null), [db]));
 
   // Safety Lock: Never show ads on checkout or during active attempt
-  const isSafetyZone = pathname.includes('/attempt') || pathname.includes('/checkout') || pathname.includes('/admin');
+  const isSafetyZone = pathname.includes('/attempt') || pathname.includes('/checkout') || pathname.startsWith('/admin');
 
   // Ad-Free Audit: Check if user has an ad-free pass
   const isAdFree = useMemo(() => {
@@ -40,7 +39,7 @@ export default function AdPlacement({ placement, className, examId }: AdPlacemen
 
   const adsQuery = useMemo(() => {
     if (!db || isAdFree || isSafetyZone) return null;
-    return query(collection(db, 'ads'), where('status', '==', 'ACTIVE'));
+    return query(collection(db, 'ads'), where('status', '==', 'ACTIVE')) as Query<Advertisement, DocumentData>;
   }, [db, isAdFree, isSafetyZone]);
 
   const { data: ads, loading } = useCollection<Advertisement>(adsQuery);
@@ -62,7 +61,7 @@ export default function AdPlacement({ placement, className, examId }: AdPlacemen
 
     if (candidates.length === 0) return null;
     // Simple priority rotation
-    return candidates.sort((a, b) => b.priority - a.priority)[0];
+    return [...candidates].sort((a, b) => b.priority - a.priority)[0];
   }, [ads, placement, examId]);
 
   useEffect(() => {

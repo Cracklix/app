@@ -2,10 +2,8 @@ import {
   Firestore, 
   collection, 
   doc, 
-  getDoc, 
   getDocs, 
   setDoc, 
-  updateDoc, 
   deleteDoc, 
   query, 
   where, 
@@ -16,11 +14,15 @@ import {
 import { 
   Board, 
   Exam, 
-  Subject, 
   Question, 
   MockTest, 
   AttemptResult 
 } from '@/types';
+
+/**
+ * @fileOverview Production Firestore Service Hub.
+ * HARDENED: Unified types for consistent build artifacts.
+ */
 
 export const FirestoreService = {
   // --- Boards ---
@@ -70,7 +72,7 @@ export const FirestoreService = {
   },
 
   // --- Results ---
-  async saveResult(db: Firestore, result: any) {
+  async saveResult(db: Firestore, result: AttemptResult) {
     return addDoc(collection(db, 'results'), {
       ...result,
       timestamp: serverTimestamp()

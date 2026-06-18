@@ -12,8 +12,8 @@ import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Global Search Hub v2.2 (Hardened).
- * FIXED: Explicit React import for cloneElement compatibility.
+ * @fileOverview Elite Global Search Hub v2.5 (Hardened Build).
+ * FIXED: Explicit React import and correct cloneElement typing.
  */
 
 export default function SearchPage() {
@@ -44,20 +44,20 @@ function SearchContent() {
     if (query.trim().length < 2) return []
     const term = query.toLowerCase().trim()
     
-    const examMatches = (exams || []).filter(e => 
+    const examMatches = (exams || []).filter((e: any) => 
       e.name?.toLowerCase().includes(term) || 
       e.boardId?.toLowerCase().includes(term)
-    ).map(e => ({ title: e.name, type: "Exam Hub", href: `/exams/${e.id}`, icon: <ShieldCheck className="text-primary" /> }))
+    ).map((e: any) => ({ title: e.name, type: "Exam Hub", href: `/exams/${e.id}`, icon: <ShieldCheck className="text-primary" /> }))
 
-    const mockMatches = (mocks || []).filter(m => 
+    const mockMatches = (mocks || []).filter((m: any) => 
       m.title?.toLowerCase().includes(term) || 
       m.boardId?.toLowerCase().includes(term)
-    ).map(m => ({ title: m.title, type: "Practice Test", href: `/mocks/${m.id}`, icon: <Zap className="text-orange-500" /> }))
+    ).map((m: any) => ({ title: m.title, type: "Practice Test", href: `/mocks/${m.id}`, icon: <Zap className="text-orange-500" /> }))
 
-    const notesMatches = (notes || []).filter(n => 
+    const notesMatches = (notes || []).filter((n: any) => 
        n.title?.toLowerCase().includes(term) || 
        n.subjectId?.toLowerCase().includes(term)
-    ).map(n => ({ title: n.title, type: "Study PDF", href: `/notes`, icon: <FileText className="text-blue-500" /> }))
+    ).map((n: any) => ({ title: n.title, type: "Study PDF", href: `/notes`, icon: <FileText className="text-blue-500" /> }))
 
     return [...examMatches, ...mockMatches, ...notesMatches]
   }, [query, exams, mocks, notes])
@@ -144,13 +144,13 @@ function SearchContent() {
   )
 }
 
-function SearchResultItem({ icon, title, category, href }: any) {
+function SearchResultItem({ icon, title, category, href }: { icon: React.ReactNode, title: string, category: string, href: string }) {
    return (
       <Link href={href} className="block active:scale-[0.99] transition-all">
          <div className="bg-white p-4 md:p-6 rounded-2xl shadow-sm hover:shadow-xl flex items-center justify-between group border border-slate-100 transition-all duration-300">
             <div className="flex items-center gap-4 min-w-0 flex-1">
                <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-primary/5 transition-all shrink-0 shadow-inner">
-                  {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5" })}
+                  {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<{ className?: string }>, { className: "h-5 w-5" }) : icon}
                </div>
                <div className="text-left min-w-0 flex-1 space-y-1">
                   <p className="font-black text-[#0F172A] group-hover:text-primary transition-colors text-sm md:text-xl uppercase leading-tight line-clamp-1 truncate">{title}</p>

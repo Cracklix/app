@@ -6,7 +6,8 @@ import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/fir
 import { initializeFirebase } from '@/firebase/app';
 
 /**
- * @fileOverview Elite CBT Global Store v52.0 (Production Hardened).
+ * @fileOverview Elite CBT Global Store v54.1 (Hardened).
+ * FIXED: Valid language initialization and removed duplicate userId key in update payload.
  */
 
 interface ExamStore extends AttemptState {
@@ -53,14 +54,22 @@ export const useExamStore = create<ExamStore>((set, get) => ({
   mockId: '',
   mockTitle: '',
   userId: '',
-  language: '',
+  language: 'ENGLISH_PUNJABI',
   baseLanguageMode: 'ENGLISH_PUNJABI',
   isPaused: false,
   isSubmitting: false,
   isPaletteVisible: true,
   isSyncing: false,
 
-  resetStore: () => set({ ...initialState, questions: [], mockId: '', mockTitle: '', userId: '' }),
+  resetStore: () => set({ 
+    ...initialState, 
+    questions: [], 
+    mockId: '', 
+    mockTitle: '', 
+    userId: '', 
+    language: 'ENGLISH_PUNJABI',
+    baseLanguageMode: 'ENGLISH_PUNJABI'
+  }),
 
   initExam: (mockId, mockTitle, userId, questions, duration, savedState, languageMode) => {
     const now = Date.now();
@@ -77,11 +86,8 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const initialTimeLeft = Math.max(0, Math.floor((finalEndTime - now) / 1000));
     const finalBaseMode = languageMode || 'ENGLISH_PUNJABI';
 
-    let initialLang = (state.language && state.language !== '' && !forceReset) ? (state.language as string) : finalBaseMode;
+    let initialLang = (!forceReset && state.language && (state.language as string) !== "ENGLISH_PUNJABI") ? state.language : finalBaseMode;
     
-    if (finalBaseMode === 'ENGLISH_PUNJABI' && initialLang.includes('HINDI')) initialLang = 'ENGLISH_PUNJABI';
-    if (finalBaseMode === 'ENGLISH_HINDI' && initialLang.includes('PUNJABI')) initialLang = 'ENGLISH_HINDI';
-
     set({
       mockId, 
       mockTitle, 
@@ -107,11 +113,16 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     if (userId && mockId && (forceReset || !savedState)) {
       const { firestore: dbInstance } = initializeFirebase();
       setDoc(doc(dbInstance, 'attempts', `${userId}_${mockId}`), {
-        userId, mockId, 
-        startTime: actualStartTime, endTime: finalEndTime,
+        userId, 
+        mockId, 
+        startTime: actualStartTime, 
+        endTime: finalEndTime,
         status: 'IN_PROGRESS', 
         updatedAt: serverTimestamp(),
-        answers: {}, status: {}, currentIdx: 0, visited: [0]
+        answers: {}, 
+        questionStatuses: {}, 
+        currentIdx: 0, 
+        visited: [0]
       }, { merge: true }).catch(e => console.error("[STORE_INIT_SYNC_FAIL]:", e));
     }
   },

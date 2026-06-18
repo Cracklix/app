@@ -5,7 +5,7 @@ import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useFirestore, useCollection } from "@/firebase"
 import { collection, addDoc, serverTimestamp, query, where, orderBy } from "firebase/firestore"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -28,15 +28,17 @@ import {
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
-import { TELEGRAM_GROUP, INSTAGRAM_PROFILE } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import Link from "next/link"
 
+const TELEGRAM_GROUP = "https://t.me/cracklixapp";
+const INSTAGRAM_PROFILE = "https://www.instagram.com/arshgrewal_official/";
+
 /**
- * @fileOverview Student Support Hub v1.1 (Hardened).
- * FIXED: Missing Link and Loader2 imports.
+ * @fileOverview Student Support Hub v1.4 (Hardened Imports).
+ * FIXED: Integrated missing Link and Loader2 imports.
  */
 
 export default function SupportPage() {
@@ -116,7 +118,6 @@ export default function SupportPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-           {/* TICKET HISTORY */}
            <div className="lg:col-span-8 space-y-8">
               <div className="flex items-center gap-3 px-2">
                  <History className="h-4 w-4 text-slate-400" />
@@ -173,7 +174,6 @@ export default function SupportPage() {
               )}
            </div>
 
-           {/* COMMUNITY CARDS */}
            <div className="lg:col-span-4 space-y-6">
               <Card className="border-none shadow-3xl rounded-[3rem] bg-[#0B1528] text-white p-10 space-y-8 relative overflow-hidden group">
                  <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-110 transition-transform duration-1000"><Zap className="h-48 w-48" /></div>
