@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -28,6 +29,9 @@ import {
   FileCode2,
   NotebookPen,
   MessageCircle,
+  Trophy,
+  Calendar,
+  HelpCircle
 } from "lucide-react";
 
 import {
@@ -57,7 +61,7 @@ const NAV_GROUPS = [
   },
 
   {
-    label: "Content",
+    label: "Content CMS",
     items: [
       { label: "Content Pulse", href: "/admin/qa", icon: Activity },
       { label: "Brand Magic", href: "/admin/brand-magic", icon: Sparkles },
@@ -66,6 +70,9 @@ const NAV_GROUPS = [
       { label: "Current Affairs", href: "/admin/current-affairs", icon: Newspaper },
       { label: "Study Notes", href: "/admin/notes", icon: NotebookPen },
       { label: "PYQ Archive", href: "/admin/pyqs", icon: Archive },
+      { label: "Exam Calendar", href: "/admin/calendar", icon: Calendar },
+      { label: "Success Stories", href: "/admin/success-stories", icon: Trophy },
+      { label: "Help Center", href: "/admin/help-center", icon: HelpCircle },
       { label: "Free CMS", href: "/admin/free-content", icon: FileCode2 },
     ],
   },

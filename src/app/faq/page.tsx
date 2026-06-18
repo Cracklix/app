@@ -1,6 +1,7 @@
 
 "use client"
 
+import { useMemo } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { 
@@ -9,67 +10,59 @@ import {
   AccordionItem, 
   AccordionTrigger 
 } from "@/components/ui/accordion"
-import { HelpCircle, ShieldCheck, Sparkles, BookOpen, GraduationCap } from "lucide-react"
+import { HelpCircle, ShieldCheck, BookOpen, GraduationCap, Zap } from "lucide-react"
+import { useCollection, useFirestore } from "@/firebase"
+import { collection, query, where, orderBy } from "firebase/firestore"
+import { Skeleton } from "@/components/ui/skeleton"
+import { HelpArticle } from "@/types"
 
 /**
- * @fileOverview Institutional FAQ Hub v2.0.
- * UPDATED: Removed Daily Analysis question.
+ * @fileOverview Institutional FAQ Hub v3.0.
+ * UPDATED: Connected to Firestore 'help_articles' collection.
  */
 
-const FAQS = [
-  {
-    q: "Are the mock tests updated as per upcoming exams?",
-    a: "Yes. All high-fidelity mock series on Cracklix are designed to mirror the latest PSSSB and PPSC cabinet notifications for upcoming recruitment cycles."
-  },
-  {
-    q: "How does the 'Punjabi Qualifying' section work?",
-    a: "Every mock includes a mandatory Part-A section (50 Marks) covering Gurmukhi grammar and Sikh history. You must score 50% for your main paper to be evaluated, just like real exams."
-  },
-  {
-    q: "Is there any negative marking in the practice tests?",
-    a: "Yes. Following official norms, Cracklix applies a penalty for every mismatched audit choice in standard PSSSB/PPSC mocks."
-  },
-  {
-    q: "Can I attempt mocks in Punjabi language?",
-    a: "Absolutely. Our CBT engine features a 'Bilingual Toggle' on the top-bar, allowing you to switch between English and Punjabi for every question instantly."
-  },
-  {
-    q: "Can I access the platform on my mobile?",
-    a: "Yes, Cracklix is fully optimized for mobile browsers and also offers a native application for Android and iOS devices for seamless learning."
-  }
-]
-
 export default function FAQPage() {
+  const db = useFirestore()
+  
+  const faqQuery = useMemo(() => (db ? query(collection(db, "help_articles"), where("category", "==", "FAQ"), where("published", "==", true), orderBy("displayOrder", "asc")) : null), [db])
+  const { data: faqs, loading } = useCollection<HelpArticle>(faqQuery as any)
+
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
-      <main className="container mx-auto px-6 py-24 max-w-4xl">
+      <main className="container mx-auto px-4 md:px-6 py-12 md:py-24 max-w-4xl">
         <div className="space-y-16">
           <div className="text-center space-y-6">
              <div className="h-16 w-16 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto text-primary shadow-2xl">
                 <HelpCircle className="h-8 w-8" />
              </div>
-             <h1 className="text-5xl md:text-7xl font-headline font-black text-[#0F172A] uppercase tracking-tight">Institutional <span className="text-primary">FAQ</span></h1>
-             <p className="text-slate-500 font-medium text-lg max-w-xl mx-auto">Everything you need to know about preparing for Punjab Government Exams with Cracklix.</p>
+             <h1 className="text-4xl md:text-7xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-[0.9]">Institutional <span className="text-primary">FAQ</span></h1>
+             <p className="text-slate-500 font-medium text-lg max-w-xl mx-auto leading-relaxed">Everything you need to know about preparing for Punjab Government Exams with Cracklix.</p>
           </div>
 
-          <div className="bg-white p-12 rounded-[4rem] shadow-3xl shadow-slate-900/5 space-y-8">
+          <div className="bg-white p-8 md:p-12 rounded-[2.5rem] md:rounded-[4rem] shadow-3xl border border-slate-100 space-y-8">
             <Accordion type="single" collapsible className="w-full">
-              {FAQS.map((faq, idx) => (
-                <AccordionItem key={idx} value={`item-${idx}`} className="border-b border-slate-50 py-4 last:border-0">
-                  <AccordionTrigger className="text-left font-headline font-black text-xl text-[#0F172A] hover:text-primary transition-colors hover:no-underline px-4">
-                    {faq.q}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-lg text-slate-500 font-medium leading-relaxed px-4 pt-4 pb-8">
-                    {faq.a}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+              {loading ? (
+                 Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-xl mb-4" />)
+              ) : faqs && faqs.length > 0 ? (
+                 faqs.map((faq, idx) => (
+                  <AccordionItem key={faq.id} value={`item-${idx}`} className="border-b border-slate-50 py-4 last:border-0">
+                    <AccordionTrigger className="text-left font-headline font-black text-base md:text-xl text-[#0F172A] hover:text-primary transition-colors hover:no-underline px-4 uppercase tracking-tight">
+                      {faq.title}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-sm md:text-lg text-slate-500 font-medium leading-relaxed px-4 pt-4 pb-8">
+                      {faq.content}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))
+              ) : (
+                 <div className="py-20 text-center opacity-30 italic font-black uppercase text-xl">FAQ Registry Empty</div>
+              )}
             </Accordion>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-             <QuickHelp icon={<ShieldCheck />} label="Verified Patterns" desc="Upcoming official norms" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+             <QuickHelp icon={<ShieldCheck />} label="Verified Patterns" desc="Official commission norms" />
              <QuickHelp icon={<BookOpen />} label="Bilingual Hub" desc="Punjabi/English Support" />
              <QuickHelp icon={<GraduationCap />} label="Elite Mentors" desc="Arsh Grewal Management" />
           </div>
@@ -82,12 +75,12 @@ export default function FAQPage() {
 
 function QuickHelp({ icon, label, desc }: any) {
   return (
-    <div className="p-10 bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 text-center space-y-4 border border-slate-50">
-       <div className="h-12 w-12 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-primary">
-          {icon}
+    <div className="p-8 md:p-10 bg-white rounded-[2.5rem] shadow-xl border border-slate-100 text-center space-y-4">
+       <div className="h-12 w-12 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-primary shadow-inner">
+          {React.cloneElement(icon, { className: "h-6 w-6" })}
        </div>
        <div className="space-y-1">
-          <p className="font-headline font-black text-sm uppercase text-[#0F172A]">{label}</p>
+          <p className="font-headline font-black text-sm uppercase text-[#0F172A] tracking-tight">{label}</p>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{desc}</p>
        </div>
     </div>

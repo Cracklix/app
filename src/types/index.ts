@@ -224,3 +224,40 @@ export interface AttemptState {
   startTime: number;
   endTime: number;
 }
+
+export interface SuccessStory {
+  id: string;
+  name: string;
+  exam: string;
+  rank: string;
+  year: string;
+  quote: string;
+  imageUrl: string;
+  published: boolean;
+  createdAt: any;
+  updatedAt: any;
+}
+
+export interface HelpArticle {
+  id: string;
+  title: string;
+  category: 'PAYMENTS' | 'PASS' | 'PWA' | 'TECHNICAL' | 'ACCOUNT' | 'FAQ';
+  content: string;
+  published: boolean;
+  displayOrder: number;
+  createdAt: any;
+  updatedAt: any;
+}
+
+export interface CalendarEvent {
+  id: string;
+  board: string;
+  post: string;
+  date: string;
+  status: string;
+  type: 'Exam' | 'Registration' | 'Event' | 'Forecast';
+  color: string;
+  published: boolean;
+  createdAt: any;
+  updatedAt: any;
+}
