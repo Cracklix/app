@@ -1,11 +1,9 @@
 "use client"
 
-import { useState, useMemo, useEffect, Suspense } from "react"
+import React, { useState, useMemo, useEffect, Suspense } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
-import { Input } from "@/components/ui/input"
 import { Search as SearchIcon, Zap, BookOpen, Newspaper, Bell, ChevronRight, Sparkles, ShieldCheck, FileText, LayoutGrid, Loader2 } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { useCollection, useFirestore } from "@/firebase"
@@ -14,8 +12,8 @@ import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Global Search Hub v2.0 (High Density).
- * UPDATED: Reduced input size and font scaling for a more compact experience.
+ * @fileOverview Elite Global Search Hub v2.2 (Hardened).
+ * FIXED: Explicit React import for cloneElement compatibility.
  */
 
 export default function SearchPage() {
@@ -77,14 +75,14 @@ function SearchContent() {
               </div>
               
               <div className="relative max-w-2xl mx-auto group">
-                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-2xl blur opacity-5 group-hover:opacity-15 transition duration-1000"></div>
+                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-2xl blur opacity-5 group-focus-within:opacity-15 transition duration-1000"></div>
                  <div className="relative">
                     <SearchIcon className={cn("absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 transition-colors", isLoading ? "text-primary animate-pulse" : "text-slate-400")} />
-                    <Input 
+                    <input 
                       value={query}
                       onChange={e => setQuery(e.target.value)}
                       autoFocus
-                      className="h-12 md:h-16 pl-14 pr-6 text-sm md:text-xl rounded-2xl border-none shadow-xl bg-white focus-visible:ring-primary text-[#0F172A] font-bold" 
+                      className="w-full h-12 md:h-16 pl-14 pr-6 text-sm md:text-xl rounded-2xl border-none shadow-xl bg-white focus:ring-2 focus:ring-primary/20 text-[#0F172A] font-bold outline-none" 
                       placeholder="Search exams, tests, or notes..." 
                     />
                     {isLoading && <Loader2 className="absolute right-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-100 animate-spin" />}
@@ -152,7 +150,7 @@ function SearchResultItem({ icon, title, category, href }: any) {
          <div className="bg-white p-4 md:p-6 rounded-2xl shadow-sm hover:shadow-xl flex items-center justify-between group border border-slate-100 transition-all duration-300">
             <div className="flex items-center gap-4 min-w-0 flex-1">
                <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-primary/5 transition-all shrink-0 shadow-inner">
-                  {React.cloneElement(icon, { className: "h-5 w-5" })}
+                  {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5" })}
                </div>
                <div className="text-left min-w-0 flex-1 space-y-1">
                   <p className="font-black text-[#0F172A] group-hover:text-primary transition-colors text-sm md:text-xl uppercase leading-tight line-clamp-1 truncate">{title}</p>

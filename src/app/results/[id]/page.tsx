@@ -30,8 +30,8 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import StudentAvatar from "@/components/brand/StudentAvatar"
 
 /**
- * @fileOverview Test Results Hub v41.2 (Hardened).
- * FIXED: Explicit typing and hydration guards for production stability.
+ * @fileOverview Test Results Hub v41.3 (Hardened).
+ * FIXED: Explicit typing and Recharts hydration guards for production stability.
  */
 
 export default function ResultPage() {
@@ -54,6 +54,11 @@ function ResultContent() {
   const [mockData, setMockData] = useState<any>(null)
   const [loadingQuestions, setLoadingQuestions] = useState(true)
   const [activeReviewFilter, setActiveReviewFilter] = useState<'ALL' | 'CORRECT' | 'WRONG' | 'SKIPPED'>('ALL')
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const resultRef = useMemo(() => (db && user && mockId ? doc(db, "results", `${user.uid}_${mockId}`) : null), [db, user, mockId]);
   const { data: sessionData, loading: resultLoading } = useDoc<any>(resultRef);

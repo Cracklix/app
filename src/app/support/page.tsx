@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
@@ -24,7 +23,8 @@ import {
   Zap,
   ShieldCheck,
   Plus,
-  X
+  X,
+  Loader2
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
@@ -32,10 +32,11 @@ import { TELEGRAM_GROUP, INSTAGRAM_PROFILE } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import Link from "next/link"
 
 /**
- * @fileOverview Student Support Hub v1.0.
- * Allows students to raise tickets and track resolution history.
+ * @fileOverview Student Support Hub v1.1 (Hardened).
+ * FIXED: Missing Link and Loader2 imports.
  */
 
 export default function SupportPage() {
@@ -81,7 +82,7 @@ export default function SupportPage() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       })
-      toast({ title: "Ticket Raised", description: "Our management node will audit your issue shortly." })
+      toast({ title: "Ticket Raised", description: "Our management team will audit your issue shortly." })
       setIsRaising(false)
       setFormData({ subject: "", type: "PAYMENT", message: "", priority: "MEDIUM" })
     } catch (e) {
@@ -211,7 +212,7 @@ export default function SupportPage() {
 
       <Dialog open={isRaising} onOpenChange={setIsRaising}>
          <DialogContent className="sm:max-w-xl rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
-            <div className="h-2 w-full bg-[#0F172A]" />
+            <div className="h-2 w-full bg-[#0F172A] shrink-0" />
             <DialogHeader className="p-10 pb-4">
                <DialogTitle className="text-2xl font-black font-headline uppercase flex items-center gap-4">
                   <Plus className="h-8 w-8 text-primary" /> Raise Support Node
@@ -221,7 +222,7 @@ export default function SupportPage() {
             
             <div className="px-10 pb-10 space-y-6 overflow-y-auto">
                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                  <div className="space-y-2 text-left">
                      <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Issue Category</Label>
                      <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} className="w-full h-12 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none">
                         <option value="PAYMENT">Payment Issue</option>
@@ -232,7 +233,7 @@ export default function SupportPage() {
                         <option value="OTHER">Other Query</option>
                      </select>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 text-left">
                      <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Priority</Label>
                      <select value={formData.priority} onChange={e => setFormData({...formData, priority: e.target.value})} className="w-full h-12 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none">
                         <option value="LOW">Low (2-3 Days)</option>
@@ -243,12 +244,12 @@ export default function SupportPage() {
                   </div>
                </div>
                
-               <div className="space-y-2">
+               <div className="space-y-2 text-left">
                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Brief Subject</Label>
                   <Input value={formData.subject} onChange={e => setFormData({...formData, subject: e.target.value})} className="h-12 rounded-xl font-bold" placeholder="e.g. Pass not showing active" />
                </div>
 
-               <div className="space-y-2">
+               <div className="space-y-2 text-left">
                   <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Message Detail</Label>
                   <Textarea value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} className="min-h-[150px] rounded-2xl bg-slate-50 border-none p-5 font-medium leading-relaxed" placeholder="Describe your issue in detail..." />
                </div>
@@ -264,14 +265,6 @@ export default function SupportPage() {
       </Dialog>
 
       <Footer />
-    </div>
-  )
-}
-
-function HeaderInfo({ icon, text }: any) {
-  return (
-    <div className="flex items-center gap-3 text-slate-400 font-bold uppercase text-[11px] tracking-tight">
-       {icon} <span>{text}</span>
     </div>
   )
 }
