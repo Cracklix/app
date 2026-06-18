@@ -23,9 +23,17 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Fluid Hero Hub v15.1.
- * UPDATED: Removed redundant feature cards from the hero body for a cleaner visual profile.
+ * @fileOverview Official Fluid Hero Hub v16.0.
+ * RESTORED: Integrated Core Feature Cards directly into the content hub as per screenshot.
  */
+
+const CORE_FEATURES = [
+  { icon: ClipboardList, label: "Mock Tests", href: "/mocks", color: "text-blue-600", bgColor: "bg-blue-50" },
+  { icon: BookOpen, label: "Study Material", href: "/study-material", color: "text-indigo-600", bgColor: "bg-indigo-50" },
+  { icon: FileText, label: "Previous Papers", href: "/previous-papers", color: "text-emerald-600", bgColor: "bg-emerald-50" },
+  { icon: BarChart3, label: "Performance Analytics", href: "/analytics", color: "text-orange-500", bgColor: "bg-orange-50" },
+];
+
 export default function Hero() {
   const db = useFirestore();
   const [mounted, setMounted] = useState(false);
@@ -48,46 +56,6 @@ export default function Hero() {
     return num + "+";
   }, [stats, statsLoading]);
 
-  const liveStats = useMemo(() => {
-    const formatNumber = (num: number, fallback: string) => {
-      if (statsLoading) return null;
-      if (!num) return fallback;
-      if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + "k+";
-      return num + "+";
-    };
-
-    return [
-      {
-        id: "q",
-        icon: Zap,
-        iconColor: "text-blue-600",
-        val: formatNumber(stats?.totalQuestions, "50k+"),
-        label: "Questions"
-      },
-      {
-        id: "m",
-        icon: ClipboardList,
-        iconColor: "text-indigo-600",
-        val: formatNumber(stats?.totalMocks, "500+"),
-        label: "Mock Tests"
-      },
-      {
-        id: "e",
-        icon: ShieldCheck,
-        iconColor: "text-emerald-600",
-        val: formatNumber(stats?.totalBoards, "50+"),
-        label: "Exams"
-      },
-      {
-        id: "u",
-        icon: Users,
-        iconColor: "text-orange-500",
-        val: formatNumber(stats?.totalUsers, "15k+"),
-        label: "Aspirants"
-      }
-    ];
-  }, [stats, statsLoading]);
-
   if (!mounted) return null;
 
   return (
@@ -99,7 +67,7 @@ export default function Hero() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
           {/* COLUMN 1: TEXT CONTENT */}
-          <div className="space-y-6 md:space-y-8 max-w-2xl order-2 lg:order-1">
+          <div className="space-y-8 md:space-y-12 max-w-2xl order-2 lg:order-1">
             <div className="space-y-4 md:space-y-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-100 shadow-sm mb-2">
                 <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
@@ -114,30 +82,33 @@ export default function Hero() {
                 With Confidence
               </h1>
 
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-600 font-medium leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-600 font-medium leading-relaxed max-w-xl">
                 Practice with bilingual mock tests, previous papers and
-                exam-focused preparation for PSSSB, Punjab Police,
-                PSTET, PSPCL and more.
+                exam-focused preparation for PSSSB, Punjab Police, and more.
               </p>
-
-              <div className="flex flex-wrap gap-2 md:gap-3">
-                {["PSSSB", "Punjab Police", "PSTET", "PSPCL", "PPSC"].map((item) => (
-                  <Badge
-                    key={item}
-                    variant="outline"
-                    className="px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-white border-slate-200 text-[9px] md:text-xs font-bold text-slate-700 shadow-sm"
-                  >
-                    {item}
-                  </Badge>
-                ))}
-              </div>
             </div>
 
-            {/* CTAS */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            {/* FEATURE CARDS GRID (AS PER SCREENSHOT) */}
+            <div className="grid grid-cols-2 gap-4 md:gap-6">
+              {CORE_FEATURES.map((feature, idx) => (
+                <Link key={idx} href={feature.href}>
+                  <Card className="p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] bg-white border-none shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col items-start gap-4 group cursor-pointer active:scale-95">
+                    <div className={cn("h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform", feature.bgColor, feature.color)}>
+                      <feature.icon className="h-5 w-5 md:h-6 md:w-6" />
+                    </div>
+                    <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-[#0F172A] leading-tight">
+                      {feature.label}
+                    </h3>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+
+            {/* CTAS (AS PER SCREENSHOT) */}
+            <div className="flex flex-col sm:flex-row gap-4 pt-2">
               <Button
                 asChild
-                className="w-full sm:w-auto h-14 md:h-16 px-10 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-[10px] md:text-[11px] tracking-widest rounded-2xl shadow-xl border-none transition-all gap-2"
+                className="w-full sm:w-auto h-14 md:h-16 px-10 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-[10px] md:text-[11px] tracking-widest rounded-full shadow-xl border-none transition-all gap-2"
               >
                 <Link href="/mocks">
                   Start Practice Now
@@ -148,7 +119,7 @@ export default function Hero() {
               <Button
                 asChild
                 variant="outline"
-                className="w-full sm:w-auto h-14 md:h-16 px-10 border-2 border-slate-200 bg-white rounded-2xl font-black uppercase text-[10px] md:text-[11px] tracking-widest transition-all text-slate-600"
+                className="w-full sm:w-auto h-14 md:h-16 px-10 border-none bg-white rounded-full font-black uppercase text-[10px] md:text-[11px] tracking-widest transition-all text-slate-600 shadow-xl hover:bg-slate-50"
               >
                 <Link href="/exams">
                   Browse Exams
@@ -171,37 +142,6 @@ export default function Hero() {
               className="relative w-full h-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)] max-w-[280px] xs:max-w-sm md:max-w-md lg:max-w-[560px] transform hover:scale-[1.02] transition-transform duration-700"
             />
           </motion.div>
-        </div>
-
-        {/* BOTTOM STATS HUB - FULL WIDTH */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-16 md:mt-24 lg:mt-32">
-          {liveStats.map((stat) => {
-            const Icon = stat.icon;
-            return (
-              <Card
-                key={stat.id}
-                className="p-5 md:p-8 rounded-[2rem] bg-white border border-slate-100 shadow-xl group hover:shadow-2xl hover:translate-y-[-4px] transition-all duration-500"
-              >
-                <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-5 text-center sm:text-left">
-                  <div className="shrink-0 p-3 rounded-xl bg-slate-50 group-hover:bg-blue-50 transition-colors shadow-inner">
-                    <Icon className={cn("h-5 w-5", stat.iconColor)} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-slate-900 tabular-nums leading-none tracking-tighter mb-1.5">
-                      {statsLoading ? (
-                        <div className="h-8 w-12 bg-slate-100 animate-pulse rounded" />
-                      ) : (
-                        stat.val
-                      )}
-                    </div>
-                    <div className="text-[8px] md:text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] leading-none">
-                      {stat.label}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            )
-          })}
         </div>
       </div>
     </section>
