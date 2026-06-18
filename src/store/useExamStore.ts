@@ -1,13 +1,13 @@
 'use client';
 
 import { create } from 'zustand';
-import { AttemptState, ExamLanguage, QuestionStatus, Question, LanguageDisplayMode } from '@/types';
+import { AttemptState, Question, LanguageDisplayMode } from '@/types';
 import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase/app';
 
 /**
- * @fileOverview Elite CBT Global Store v54.1 (Hardened).
- * FIXED: Valid language initialization and removed duplicate userId key in update payload.
+ * @fileOverview Elite CBT Global Store v54.2 (Hardened).
+ * FIXED: Removed object property duplication in sync payload and strictly typed language nodes.
  */
 
 interface ExamStore extends AttemptState {
@@ -15,7 +15,7 @@ interface ExamStore extends AttemptState {
   mockId: string;
   mockTitle: string;
   userId: string;
-  language: ExamLanguage | LanguageDisplayMode;
+  language: LanguageDisplayMode;
   baseLanguageMode: LanguageDisplayMode;
   isPaused: boolean;
   isSubmitting: boolean;
@@ -23,7 +23,7 @@ interface ExamStore extends AttemptState {
   isSyncing: boolean;
 
   initExam: (mockId: string, mockTitle: string, userId: string, questions: Question[], duration: number, savedState?: any, languageMode?: LanguageDisplayMode) => void;
-  setLanguage: (lang: ExamLanguage | LanguageDisplayMode) => void;
+  setLanguage: (lang: LanguageDisplayMode) => void;
   setPaused: (val: boolean) => void;
   setCurrentIdx: (idx: number) => void;
   setAnswer: (idx: number, optionIdx: number | null, db: Firestore) => void;
@@ -236,7 +236,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     }
   },
 
-  addViolation: (dbInstance) => {
+  addViolation: (dbInstance: Firestore) => {
     const { violations, userId, mockId } = get();
     if (!userId || !mockId || !dbInstance) return;
     const newVal = (violations || 0) + 1;

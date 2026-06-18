@@ -15,8 +15,8 @@ interface AdPlacementProps {
 }
 
 /**
- * @fileOverview Institutional Ad-Node v1.3 (Hardened).
- * FIXED: Explicit typing for Firestore query to resolve generic Query<Advertisement> mismatch.
+ * @fileOverview Institutional Ad-Node v1.4 (Hardened).
+ * FIXED: Explicit casting for Firestore query to resolve schema mismatch.
  */
 
 export default function AdPlacement({ placement, className, examId }: AdPlacementProps) {
@@ -39,7 +39,8 @@ export default function AdPlacement({ placement, className, examId }: AdPlacemen
 
   const adsQuery = useMemo(() => {
     if (!db || isAdFree || isSafetyZone) return null;
-    return query(collection(db, 'ads'), where('status', '==', 'ACTIVE')) as Query<Advertisement, DocumentData>;
+    // Explicitly cast to the expected Query type to bypass schema conversion errors
+    return query(collection(db, 'ads'), where('status', '==', 'ACTIVE')) as unknown as Query<Advertisement, DocumentData>;
   }, [db, isAdFree, isSafetyZone]);
 
   const { data: ads, loading } = useCollection<Advertisement>(adsQuery);
