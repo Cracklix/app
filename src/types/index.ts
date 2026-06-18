@@ -16,7 +16,7 @@ export type CurrentAffairType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'QUIZ' | 'SPECI
 
 export type MockAssignmentMode = 'SINGLE' | 'MULTIPLE' | 'AUTHORITY';
 
-export type Notification = {
+export interface Notification {
   id: string;
   title: string;
   message: string;
@@ -27,7 +27,7 @@ export type Notification = {
   category?: string;
   board?: string;
   important?: boolean;
-};
+}
 
 export interface UserDevice {
   id: string;
@@ -267,7 +267,7 @@ export interface CurrentAffair {
   date: string;
   category: string;
   summary: string;
-};
+}
 
 export interface AttemptState {
   answers: Record<number, number | null>;
