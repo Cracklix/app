@@ -23,7 +23,7 @@ const CATEGORY_META: Record<string, any> = {
   "punjab-teaching": { title: "Punjab Teaching Exam", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10" className="h-full w-full object-contain" /> },
   "punjab-technical": { title: "Punjab Technical Exam", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo0ZK9JI5KMfg9RoNdIwcsNlpx5IcPBWuKZw&s" className="h-full w-full object-contain" /> },
   "banking": { title: "Punjab Banking Corporation Exam", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7McWqZqOgKy-BakccvR02WQdEQFrwuvmHBG5rYJzuEg&s=10" className="h-full w-full object-contain" /> },
-  "central-govt": { title: "Central Govt", icon: <img src="https://upload.wikimedia.org/wikipedia/commons/b/bc/Emblem_of_India.svg" className="h-full w-full object-contain" /> }
+  "central-govt": { title: "Central Govt", icon: <img src="https://alchetron.com/cdn/government-of-india-973b74d1-e25f-41f2-ba2b-51595702248-resize-750.jpeg" className="h-full w-full object-contain" /> }
 };
 
 export default function CategoryHubsPage() {

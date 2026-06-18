@@ -58,7 +58,7 @@ const CATEGORY_META = [
     id: "central-govt",
     title: "Central Govt Exams",
     desc: "SSC • Railways • Army • National",
-    icon: "https://upload.wikimedia.org/wikipedia/commons/b/bc/Emblem_of_India.svg",
+    icon: "https://alchetron.com/cdn/government-of-india-973b74d1-e25f-41f2-ba2b-51595702248-resize-750.jpeg",
     color: "text-indigo-600",
     bgColor: "bg-indigo-50"
   }
