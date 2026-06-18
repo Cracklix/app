@@ -1,37 +1,26 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { 
   ShieldAlert, 
-  CheckCircle2, 
-  AlertTriangle, 
   Trash2, 
-  Edit, 
-  Search, 
   RefreshCw,
-  FileWarning,
-  Layers,
-  SearchCode,
   Archive,
-  Rocket,
-  GitMerge,
-  Eye,
-  FileText
+  GitMerge
 } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, doc, deleteDoc, writeBatch, updateDoc, serverTimestamp } from "firebase/firestore"
+import { collection, doc, writeBatch, serverTimestamp, deleteDoc } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
-import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-import { Question } from "@/types"
+import type { Question } from "@/types"
 
 /**
- * @fileOverview Institutional Integrity & Cleanup Dashboard v2.3 (Strictly Typed).
+ * @fileOverview Institutional Integrity & Cleanup Dashboard v2.4 (TypeScript Hardened).
  */
 
 export default function QADashboard() {
@@ -40,11 +29,10 @@ export default function QADashboard() {
   const [isProcessing, setIsProcessing] = useState(false)
 
   const { data: questions, loading: qLoading } = useCollection<Question>(useMemo(() => (db ? collection(db, "questions") : null), [db]) as any)
-  const { data: mocks, loading: mLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]))
 
   // ADVANCED INTEGRITY ANALYSIS
   const audit = useMemo(() => {
-    if (!questions || !mocks) return { duplicates: [], broken: [], stats: { dup: 0, broken: 0 } }
+    if (!questions) return { duplicates: [], broken: [], stats: { dup: 0, broken: 0 } }
 
     const contentHashes: Record<string, string[]> = {};
     const duplicates: any[] = [];
@@ -71,7 +59,7 @@ export default function QADashboard() {
        broken, 
        stats: { dup: duplicates.length, broken: broken.length } 
     };
-  }, [questions, mocks])
+  }, [questions])
 
   const handleReScan = () => {
     toast({ title: "Re-scanning Registry", description: "Fidelity audit synchronized with live data." })
@@ -206,5 +194,4 @@ function QAStatCard({ label, value, color, desc }: any) {
          <h4 className={`text-6xl font-headline font-black tracking-tighter ${color} leading-none`}>{value}</h4>
          <p className="text-xs font-bold text-slate-500 mt-5 leading-relaxed">{desc}</p>
       </Card>
-   )
 }

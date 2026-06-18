@@ -7,32 +7,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
   Layers, 
   Landmark, 
-  GraduationCap, 
   ChevronRight, 
   Plus, 
   Edit, 
-  Trash2, 
-  Database, 
-  Zap, 
-  FileText, 
   Link as LinkIcon,
-  RefreshCw,
-  Search,
-  MoveUp,
-  MoveDown,
   Info,
   Box
 } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, orderBy, doc, deleteDoc } from "firebase/firestore"
+import { collection, query, orderBy } from "firebase/firestore"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import type { Category, Board, Exam } from "@/types"
 
 /**
- * @fileOverview Punjab Exam Architecture Manager v2.4 (Strictly Typed).
+ * @fileOverview Punjab Exam Architecture Manager v2.5 (TypeScript Hardened).
  */
 
 export default function ArchitectureManager() {
@@ -40,17 +31,17 @@ export default function ArchitectureManager() {
   const [activeTab, setActiveTab] = useState("overview")
 
   // STABILIZED DATA LISTENERS
-  const { data: categories, loading: catLoading } = useCollection<any>(useMemo(() => (db ? query(collection(db, "categories"), orderBy("displayOrder", "asc")) : null), [db]))
-  const { data: hubs, loading: hubsLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
-  const { data: exams, loading: examsLoading } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]))
+  const { data: categories, loading: catLoading } = useCollection<Category>(useMemo(() => (db ? query(collection(db, "categories"), orderBy("displayOrder", "asc")) : null), [db]) as any)
+  const { data: hubs, loading: hubsLoading } = useCollection<Board>(useMemo(() => (db ? collection(db, "boards") : null), [db]) as any)
+  const { data: exams, loading: examsLoading } = useCollection<Exam>(useMemo(() => (db ? collection(db, "exams") : null), [db]) as any)
 
   const hierarchy = useMemo(() => {
     if (!categories || !hubs || !exams) return []
-    return categories.map((cat: any) => ({
+    return categories.map((cat: Category) => ({
       ...cat,
-      hubs: hubs.filter((h: any) => h.categoryId === cat.id).map((hub: any) => ({
+      hubs: hubs.filter((h: Board) => h.categoryId === cat.id).map((hub: Board) => ({
         ...hub,
-        exams: exams.filter((e: any) => e.boardId === hub.id || e.boardId === hub.abbreviation)
+        exams: exams.filter((e: Exam) => e.boardId === hub.id || e.boardId === hub.abbreviation)
       }))
     }))
   }, [categories, hubs, exams])

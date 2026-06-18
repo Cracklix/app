@@ -6,9 +6,8 @@ import { doc, updateDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase/app';
 
 /**
- * @fileOverview Elite CBT Global Store v51.0 (Hardened Production).
- * UPDATED: Explicit forceReset logic to prevent cross-mock state bleeding.
- * STABILITY: Reinforced endTime synchronization for accurate resumption.
+ * @fileOverview Elite CBT Global Store v51.1 (TypeScript Hardened).
+ * UPDATED: Explicit parameter typing for all higher-order function calls.
  */
 
 interface ExamStore extends AttemptState {

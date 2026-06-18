@@ -30,13 +30,13 @@ import {
 import { useCollection, useFirestore, useDoc } from "@/firebase"
 import { collection, doc, setDoc, serverTimestamp, query, limit, getDocs, writeBatch, where, documentId, getDocs as getDocsStatic, orderBy } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
-import { MockType, Difficulty, AccessLevel, LanguageDisplayMode, MockAssignmentMode } from "@/types"
+import { MockType, Difficulty, AccessLevel, LanguageDisplayMode, MockAssignmentMode, Question, ExamSection } from "@/types"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview Hardened Mock Architect v96.3 (Strictly Typed).
+ * @fileOverview Hardened Mock Architect v96.4 (TypeScript Hardened).
  */
 
 export default function MockBuilderPage() {
@@ -100,7 +100,7 @@ function MockBuilderContent() {
     try {
       const q = query(collection(db, "questions"), limit(3000))
       const snap = await getDocs(q)
-      setQuestionBank(snap.docs.map(d => ({ ...d.data(), id: d.id })))
+      setQuestionBank(snap.docs.map((d: any) => ({ ...d.data(), id: d.id })))
     } finally {
       setBankLoading(false)
     }
@@ -132,7 +132,7 @@ function MockBuilderContent() {
         return { 
           id: `sec-${idx + 1}`, 
           name: s.name, 
-          questions: sectionQIds.map((id: string) => questionBank.find(q => q.id === id)).filter(Boolean) 
+          questions: sectionQIds.map((id: string) => questionBank.find((q: any) => q.id === id)).filter(Boolean) 
         };
       });
       setSections(hydratedSections.length > 0 ? hydratedSections : [{ id: 'sec-1', name: 'GENERAL HUB', questions: [] }]);
@@ -157,7 +157,7 @@ function MockBuilderContent() {
   }, [rawExams, mockData.boardIds]);
 
   const filteredBank = useMemo(() => {
-    const allSelectedIds = sections.flatMap(s => (s.questions || []).map((q: any) => q.id));
+    const allSelectedIds = sections.flatMap((s: any) => (s.questions || []).map((q: any) => q.id));
     return questionBank.filter((q: any) => {
       const matchesBoard = filterBoard === "all" || q.boardId === filterBoard;
       const matchesSub = filterSubject === "all" || q.subjectId === filterSubject;
@@ -186,8 +186,8 @@ function MockBuilderContent() {
   };
 
   const handleLinkQuestions = () => {
-    const toAdd = questionBank.filter(q => bankSelection.includes(q.id));
-    setSections(prev => prev.map(s => s.id === activeSectionId ? { ...s, questions: [...(s.questions || []), ...toAdd] } : s));
+    const toAdd = questionBank.filter((q: any) => bankSelection.includes(q.id));
+    setSections((prev: any[]) => prev.map((s: any) => s.id === activeSectionId ? { ...s, questions: [...(s.questions || []), ...toAdd] } : s));
     setBankSelection([]);
     toast({ title: `Linked ${toAdd.length} Questions` });
   }
@@ -198,7 +198,7 @@ function MockBuilderContent() {
       toast({ variant: "destructive", title: "Audit Blocked", description: "Series Title is mandatory." })
       return
     }
-    const flatQuestionIds = sections.flatMap(s => (s.questions || []).map((q: any) => q.id));
+    const flatQuestionIds = sections.flatMap((s: any) => (s.questions || []).map((q: any) => q.id));
     if (flatQuestionIds.length === 0) {
        toast({ variant: "destructive", title: "Link Blocked", description: "Please add questions to the hub." });
        return;
@@ -207,7 +207,7 @@ function MockBuilderContent() {
     setIsPublishing(true)
     const finalId = mockId || `mock-${Date.now()}`
     const mockRef = doc(db, "mocks", finalId)
-    const sectionMetadata = sections.map(s => ({ name: s.name, count: s.questions?.length || 0 })).filter(s => s.count > 0);
+    const sectionMetadata = sections.map((s: any) => ({ name: s.name, count: s.questions?.length || 0 })).filter((s: any) => s.count > 0);
     
     const payload = {
       ...mockData,
@@ -224,7 +224,7 @@ function MockBuilderContent() {
     try {
       await setDoc(mockRef, payload, { merge: true });
       const batch = writeBatch(db);
-      flatQuestionIds.forEach(id => {
+      flatQuestionIds.forEach((id: string) => {
         batch.update(doc(db, "questions", id), { status: 'USED', updatedAt: serverTimestamp() });
       });
       await batch.commit();
@@ -331,15 +331,15 @@ function MockBuilderContent() {
                 <div className="grid grid-cols-1 gap-3">
                    {bankLoading ? Array.from({length: 5}).map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl bg-white" />) : visibleBank.map((q: any) => {
                       const isSelected = bankSelection.includes(q.id);
-                      return (<Card key={q.id} onClick={() => setBankSelection(p => isSelected ? p.filter(id => id !== q.id) : [...p, q.id])} className={cn("border-none shadow-sm rounded-2xl p-5 md:px-8 flex items-center justify-between cursor-pointer transition-all border-2", isSelected ? "bg-primary/5 border-primary shadow-lg scale-[1.01]" : "bg-white border-transparent hover:border-slate-100")}><div className="flex items-center gap-6 min-w-0"><div className={cn("h-6 w-6 rounded-full border-2 flex items-center justify-center shrink-0", isSelected ? "bg-primary border-primary" : "bg-white border-slate-200")}>{isSelected && <Check className="h-3 w-3 text-white stroke-[4px]" />}</div><div className="min-w-0 text-left"><p className="font-bold text-[#0F172A] truncate text-sm md:text-base">{q.englishQuestion}</p><p className="text-[9px] font-black uppercase text-slate-400 tracking-widest mt-1.5">{q.subjectId} • {q.difficulty}</p></div></div></Card>)
+                      return (<Card key={q.id} onClick={() => setBankSelection((p: string[]) => isSelected ? p.filter(id => id !== q.id) : [...p, q.id])} className={cn("border-none shadow-sm rounded-2xl p-5 md:px-8 flex items-center justify-between cursor-pointer transition-all border-2", isSelected ? "bg-primary/5 border-primary shadow-lg scale-[1.01]" : "bg-white border-transparent hover:border-slate-100")}><div className="flex items-center gap-6 min-w-0"><div className={cn("h-6 w-6 rounded-full border-2 flex items-center justify-center shrink-0", isSelected ? "bg-primary border-primary" : "bg-white border-slate-200")}>{isSelected && <Check className="h-3 w-3 text-white stroke-[4px]" />}</div><div className="min-w-0 text-left"><p className="font-bold text-[#0F172A] truncate text-sm md:text-base">{q.englishQuestion}</p><p className="text-[9px] font-black uppercase text-slate-400 tracking-widest mt-1.5">{q.subjectId} • {q.difficulty}</p></div></div></Card>)
                    })}
-                   {filteredBank.length > displayLimit && <Button variant="ghost" onClick={() => setDisplayLimit(d => d + 100)} className="w-full h-14 font-black uppercase tracking-widest text-[10px] text-slate-400">Load Next Block ({filteredBank.length - displayLimit} Remaining)</Button>}
+                   {filteredBank.length > displayLimit && <Button variant="ghost" onClick={() => setDisplayLimit((d: number) => d + 100)} className="w-full h-14 font-black uppercase tracking-widest text-[10px] text-slate-400">Load Next Block ({filteredBank.length - displayLimit} Remaining)</Button>}
                 </div>
              </div>
            ) : (
              <div className="space-y-8 animate-in fade-in duration-500">
                 <div className="flex flex-col md:flex-row items-center justify-between px-2 gap-4">
-                   <div className="text-left"><h3 className="text-xl font-headline font-black uppercase text-[#0F172A] flex items-center gap-3"><Layers className="h-6 w-6 text-primary" /> Active Composition</h3><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{sections.reduce((a,s) => a + (s.questions?.length || 0), 0)} Total Verified Nodes</p></div>
+                   <div className="text-left"><h3 className="text-xl font-headline font-black uppercase text-[#0F172A] flex items-center gap-3"><Layers className="h-6 w-6 text-primary" /> Active Composition</h3><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{sections.reduce((a: number, s: any) => a + (s.questions?.length || 0), 0)} Total Verified Nodes</p></div>
                    <Popover>
                       <PopoverTrigger asChild><Button className="h-12 px-8 bg-[#0F172A] hover:bg-black text-white rounded-xl font-black uppercase text-[10px] tracking-widest gap-3 shadow-xl"><Plus className="h-4 w-4" /> Add Section Node</Button></PopoverTrigger>
                       <PopoverContent className="w-[320px] p-6 bg-[#0F172A] text-white rounded-[2rem] border-white/10 shadow-5xl z-[1001]">
@@ -358,12 +358,12 @@ function MockBuilderContent() {
                    </Popover>
                 </div>
                 <div className="grid grid-cols-1 gap-8">
-                   {sections.map((sec, sIdx) => (
+                   {sections.map((sec: any, sIdx: number) => (
                       <Card key={sec.id} className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden border border-slate-100 group/sec">
-                         <div className="flex items-center justify-between p-8 bg-slate-50/50 border-b border-slate-50"><div className="flex items-center gap-6"><div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-xl transition-colors", activeSectionId === sec.id ? "bg-primary text-white" : "bg-[#0F172A] text-white")}>{sIdx + 1}</div><div className="text-left"><Input value={sec.name} onChange={e => setSections(p => p.map(s => s.id === sec.id ? { ...s, name: e.target.value.toUpperCase() } : s))} className="h-8 p-0 bg-transparent border-none font-black uppercase text-xl md:text-2xl focus-visible:ring-0 text-[#0F172A]" /><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{(sec.questions?.length || 0)} Linked Preparation Nodes</p></div></div><div className="flex gap-2"><Button onClick={() => setActiveSectionId(sec.id)} variant="ghost" className={cn("h-10 px-6 rounded-xl font-black uppercase text-[9px] tracking-widest", activeSectionId === sec.id ? "bg-primary text-white" : "text-slate-400")}>{activeSectionId === sec.id ? "ACTIVE" : "FOCUS"}</Button><button onClick={() => setSections(p => p.filter(s => s.id !== sec.id))} className="h-10 w-10 text-rose-500 hover:bg-rose-50 rounded-xl transition-all flex items-center justify-center"><Trash2 className="h-5 w-5" /></button></div></div>
+                         <div className="flex items-center justify-between p-8 bg-slate-50/50 border-b border-slate-50"><div className="flex items-center gap-6"><div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-xl transition-colors", activeSectionId === sec.id ? "bg-primary text-white" : "bg-[#0F172A] text-white")}>{sIdx + 1}</div><div className="text-left"><Input value={sec.name} onChange={e => setSections((p: any[]) => p.map((s: any) => s.id === sec.id ? { ...s, name: e.target.value.toUpperCase() } : s))} className="h-8 p-0 bg-transparent border-none font-black uppercase text-xl md:text-2xl focus-visible:ring-0 text-[#0F172A]" /><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{(sec.questions?.length || 0)} Linked Preparation Nodes</p></div></div><div className="flex gap-2"><Button onClick={() => setActiveSectionId(sec.id)} variant="ghost" className={cn("h-10 px-6 rounded-xl font-black uppercase text-[9px] tracking-widest", activeSectionId === sec.id ? "bg-primary text-white" : "text-slate-400")}>{activeSectionId === sec.id ? "ACTIVE" : "FOCUS"}</Button><button onClick={() => setSections((p: any[]) => p.filter((s: any) => s.id !== sec.id))} className="h-10 w-10 text-rose-500 hover:bg-rose-50 rounded-xl transition-all flex items-center justify-center"><Trash2 className="h-5 w-5" /></button></div></div>
                          <div className="p-8 space-y-4">
                             {sec.questions?.map((q: any, qIdx: number) => (
-                               <div key={q.id} className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-2xl hover:bg-white hover:shadow-xl transition-all duration-300"><div className="flex items-center gap-6 min-w-0"><span className="text-lg font-black text-slate-300 w-6">#{qIdx + 1}</span><p className="text-sm font-bold text-slate-600 truncate">{q.englishQuestion}</p></div><button onClick={() => setSections(p => p.map(s => s.id === sec.id ? { ...s, questions: s.questions?.filter((item: any) => item.id !== q.id) || [] } : s))} className="text-slate-300 hover:text-rose-500 transition-colors"><X className="h-4 w-4" /></button></div>
+                               <div key={q.id} className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-2xl hover:bg-white hover:shadow-xl transition-all duration-300"><div className="flex items-center gap-6 min-w-0"><span className="text-lg font-black text-slate-300 w-6">#{qIdx + 1}</span><p className="text-sm font-bold text-slate-600 truncate">{q.englishQuestion}</p></div><button onClick={() => setSections((p: any[]) => p.map((s: any) => s.id === sec.id ? { ...s, questions: s.questions?.filter((item: any) => item.id !== q.id) || [] } : s))} className="text-slate-300 hover:text-rose-500 transition-colors"><X className="h-4 w-4" /></button></div>
                             ))}
                             {(!sec.questions || sec.questions.length === 0) && <div className="py-20 text-center opacity-10 flex flex-col items-center gap-4"><RefreshCw className="h-10 w-10 animate-spin-slow" /><p className="font-black uppercase tracking-widest text-[10px]">Awaiting node link synchronization...</p></div>}
                          </div>

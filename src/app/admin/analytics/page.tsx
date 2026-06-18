@@ -2,14 +2,14 @@
 
 import React, { useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Users, Zap, BarChart3, ShieldCheck, Target, CreditCard, Activity, Lock, Unlock, Loader2 } from "lucide-react"
+import { Users, Zap, BarChart3, ShieldCheck, Target, CreditCard, Activity, Lock, Unlock } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection } from "firebase/firestore"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Final Administrative Control Center v4.2 (Strictly Typed).
+ * @fileOverview Final Administrative Control Center v4.3 (TypeScript Hardened).
  */
 
 export default function AdminAnalytics() {

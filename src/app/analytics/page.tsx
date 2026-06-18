@@ -11,27 +11,20 @@ import {
   Target, 
   CheckCircle2, 
   XCircle, 
-  HelpCircle, 
-  Clock, 
-  ArrowLeft,
   Activity,
-  BarChart3,
-  Calendar,
-  Zap,
   LayoutGrid,
   ShieldCheck,
   Award,
   Loader2
 } from "lucide-react"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import BackButton from "@/components/navigation/BackButton"
 
 /**
- * @fileOverview Official Progress Report Hub v2.1 (Strictly Typed).
+ * @fileOverview Official Progress Report Hub v2.2 (TypeScript Hardened).
  */
 
 export default function DeepAnalytics() {
@@ -169,7 +162,7 @@ export default function DeepAnalytics() {
                               <Award className="h-6 w-6 text-primary" /> Mastery Hub
                            </h3>
                            <div className="space-y-8">
-                              {analytics.subjectMastery.map((s, i) => (
+                              {analytics.subjectMastery.map((s: any, i: number) => (
                                  <div key={i} className="space-y-3">
                                     <div className="flex justify-between items-end text-[10px] font-black uppercase text-slate-400">
                                        <span>{s.name}</span>
