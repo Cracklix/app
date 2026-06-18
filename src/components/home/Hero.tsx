@@ -10,7 +10,6 @@ import {
   ChevronRight,
   Star,
   FileText,
-  BookOpen,
   Landmark
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,9 +21,9 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Premium Clean Hero Hub v28.0.
- * UPDATED: Desktop visual hub simplified for a "clean" look.
- * UPDATED: Feature nodes moved to the content column.
+ * @fileOverview Premium Clean Hero Hub v29.0.
+ * FIXED: Synchronized CTA button alignment (Centered) to match reference screenshot.
+ * FIXED: Updated typography to Uppercase for institutional focus.
  */
 
 export default function Hero() {
@@ -109,7 +108,7 @@ export default function Hero() {
 
               <p className="text-base md:text-lg text-[#64748B] max-w-xl font-medium leading-relaxed">
                 Practice bilingual mock tests and prepare for Punjab Government Exams with confidence. 
-                Access exam-focused practice, previous papers and performance tracking.
+                Access exam-focused practice, previous papers and performance tracking in one place.
               </p>
             </div>
 
@@ -122,7 +121,7 @@ export default function Hero() {
               ))}
             </div>
 
-            {/* INTEGRATED FEATURE GRID (WORKING NODES) */}
+            {/* INTEGRATED FEATURE GRID */}
             <div className="grid grid-cols-2 gap-3 md:gap-4 w-full max-w-lg">
                <FeatureCard icon={<Zap />} label="MOCK TESTS" href="/mocks" />
                <FeatureCard icon={<Landmark />} label="PUNJAB EXAMS" href="/exams" />
@@ -130,25 +129,26 @@ export default function Hero() {
                <FeatureCard icon={<ShieldCheck />} label="FREE PRACTICE" href="/mocks" />
             </div>
 
-            {/* CTA BUTTONS */}
-            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto pt-2">
+            {/* CTA BUTTONS - SYNCHRONIZED ALIGNMENT */}
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto pt-4">
               <Button
                 asChild
-                className="h-14 md:h-16 px-10 bg-[#2563EB] hover:bg-blue-700 text-white font-black uppercase text-[11px] md:text-xs tracking-[0.1em] rounded-full shadow-xl transition-all active:scale-95 border-none group/btn"
+                className="h-14 md:h-16 px-10 bg-[#2563EB] hover:bg-blue-700 text-white font-black uppercase text-[11px] md:text-xs tracking-[0.2em] rounded-full shadow-xl transition-all active:scale-95 border-none group/btn"
               >
-                <Link href="/mocks" className="flex items-center justify-between w-full">
-                  <span>Start Free Mock Test</span>
-                  <ChevronRight className="ml-4 h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
+                <Link href="/mocks" className="flex items-center justify-center gap-3 w-full">
+                  <span>START FREE MOCK TEST</span>
+                  <ChevronRight className="h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
                 </Link>
               </Button>
 
               <Button
                 asChild
                 variant="outline"
-                className="h-14 md:h-16 px-10 border-2 border-slate-200 bg-white text-[#0F172A] font-black uppercase text-[11px] md:text-xs tracking-[0.1em] rounded-full shadow-sm hover:bg-slate-50 transition-all active:scale-95"
+                className="h-14 md:h-16 px-10 border-2 border-slate-200 bg-white text-[#0F172A] font-black uppercase text-[11px] md:text-xs tracking-[0.2em] rounded-full shadow-sm hover:bg-slate-50 transition-all active:scale-95 group/btn2"
               >
-                <Link href="/exams">
-                  Browse Exams
+                <Link href="/exams" className="flex items-center justify-center gap-3 w-full">
+                  <span>BROWSE EXAMS</span>
+                  <ChevronRight className="h-5 w-5 transition-transform group-hover/btn2:translate-x-1" />
                 </Link>
               </Button>
             </div>
@@ -165,7 +165,7 @@ export default function Hero() {
               <div className="absolute inset-0 bg-blue-600/5 blur-[100px] rounded-full scale-110 pointer-events-none" />
               <img
                 src="/images/hero-student.png"
-                alt="Cracklix Student Illustration"
+                alt="Cracklix Student"
                 className="w-full h-auto object-contain drop-shadow-2xl max-w-[320px] md:max-w-[420px] lg:max-w-[520px] xl:max-w-[620px]"
               />
             </motion.div>
