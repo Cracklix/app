@@ -35,8 +35,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Header v86.0 (Logo Realigned).
- * FIXED: Removed gap between menu button and logo with -ml-4.
+ * @fileOverview Institutional Header v87.0 (Logo Maximized).
+ * FIXED: Logo fills 78px of the 80px header.
+ * FIXED: Removed gap between menu and logo with -ml-4.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -78,20 +79,20 @@ export default function Navbar() {
       <nav className="w-full h-20 bg-white border-b border-slate-100 shadow-sm overflow-visible">
         <div className="w-full max-w-7xl mx-auto px-4 md:px-6 h-full flex items-center justify-between">
 
-          {/* LEFT SIDE: Menu Hub + Integrated Logo (Gap Reduced) */}
-          <div className="flex items-center shrink-0 gap-1 md:gap-2">
+          {/* LEFT SIDE: Menu Hub + Maximized Logo */}
+          <div className="flex items-center shrink-0">
             <button
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open menu"
-              className="flex items-center justify-center w-11 h-11 md:w-12 md:h-12 rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0 hover:border-primary/30"
+              className="flex items-center justify-center w-11 h-11 md:w-12 md:h-12 rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0 hover:border-primary/30 z-10"
             >
               <Menu className="w-6 h-6" />
             </button>
 
             <Logo
               variant="light"
-              className="shrink-0 -ml-2 md:-ml-4 transition-all duration-500 origin-left"
-              imgClassName="h-[78px]"
+              className="shrink-0 -ml-3 md:-ml-4 transition-all duration-500 origin-left"
+              imgClassName="h-[78px] w-auto"
             />
           </div>
 
