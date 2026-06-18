@@ -15,8 +15,8 @@ interface LogoProps {
 
 /**
  * Cracklix Official Logo Component
- * SCALE: Maximized to fill the 80px (h-20) header perfectly (78px height).
- * Ensures brand dominance without increasing header height.
+ * SCALE: Maximized to exactly 78px height to fill the h-20 (80px) header limit perfectly.
+ * Ensures maximum brand dominance without causing layout overflow.
  */
 export default function Logo({
   className = "",
@@ -31,18 +31,19 @@ export default function Logo({
       : "/logo/cracklix-logo-light.png";
 
   const content = (
-    <Image
-      src={logoSrc}
-      alt="Cracklix"
-      width={450}
-      height={90}
-      priority
-      className={cn(
-        "h-[78px] w-auto max-w-full object-contain shrink-0 transition-all duration-300",
-        imgClassName
-      )}
-      style={{ width: "auto" }}
-    />
+    <div className="relative h-[78px] w-[240px] md:w-[280px] shrink-0">
+      <Image
+        src={logoSrc}
+        alt="Cracklix"
+        fill
+        priority
+        sizes="(max-width: 768px) 240px, 280px"
+        className={cn(
+          "object-contain object-left shrink-0 transition-all duration-300",
+          imgClassName
+        )}
+      />
+    </div>
   );
 
   if (onClick || href) {
@@ -51,7 +52,7 @@ export default function Logo({
         href={href || "#"}
         onClick={onClick}
         className={cn(
-          "flex items-center shrink-0 select-none",
+          "flex items-center shrink-0 select-none overflow-hidden",
           className
         )}
       >
@@ -63,7 +64,7 @@ export default function Logo({
   return (
     <div
       className={cn(
-        "flex items-center shrink-0 select-none",
+        "flex items-center shrink-0 select-none overflow-hidden",
         className
       )}
     >
