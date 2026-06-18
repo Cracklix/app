@@ -40,8 +40,8 @@ import { parseBulkQuestions } from "@/lib/parser"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 
 /**
- * @fileOverview Institutional Current Affairs Management Hub v19.9.
- * ACCESSIBILITY: Added DialogDescription for ARIA compliance.
+ * @fileOverview Institutional Current Affairs Management Hub v20.0.
+ * FIXED: Missing UI and icon component imports for production build.
  */
 
 export default function AdminCurrentAffairs() {

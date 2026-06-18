@@ -30,8 +30,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Support Ticket Management Console.
- * Allows administrators to audit student issues and provide resolutions.
+ * @fileOverview Institutional Support Ticket Management Console v2.0.
+ * UPDATED: Fixed missing Label and Textarea imports.
  */
 
 export default function AdminSupportManagement() {
@@ -153,15 +153,15 @@ export default function AdminSupportManagement() {
                   </TableCell>
                   <TableCell className="text-right px-12">
                      <div className="flex justify-end gap-3 opacity-20 group-hover:opacity-100 transition-all">
-                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl bg-white shadow-sm border border-slate-100" onClick={() => { setSelectedTicket(ticket); setReply(ticket.adminReply || ""); }}>
+                        <button className="h-12 w-12 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary transition-all" onClick={() => { setSelectedTicket(ticket); setReply(ticket.adminReply || ""); }}>
                            <MessageCircle className="h-5 w-5" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl bg-white shadow-sm border border-slate-100 text-emerald-600" onClick={() => handleResolve(ticket.id)}>
+                        </button>
+                        <button className="h-12 w-12 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-emerald-600 hover:bg-emerald-50 transition-all" onClick={() => handleResolve(ticket.id)}>
                            <CheckCircle2 className="h-5 w-5" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl bg-white shadow-sm border border-slate-100 text-rose-500" onClick={() => handleDelete(ticket.id)}>
+                        </button>
+                        <button className="h-12 w-12 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-rose-500 hover:bg-rose-50 transition-all" onClick={() => handleDelete(ticket.id)}>
                            <Trash2 className="h-5 w-5" />
-                        </Button>
+                        </button>
                      </div>
                   </TableCell>
                 </TableRow>
