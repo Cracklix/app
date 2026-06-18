@@ -36,8 +36,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 /**
- * @fileOverview Institutional Mock Builder Hub v15.0.
- * FIXED: Explicitly typed 'id' in line 136 and other callback parameters.
+ * @fileOverview Institutional Mock Builder Hub v15.1.
+ * FIXED: Explicitly typed section mapping callbacks and Question lookups.
  */
 
 export default function MockBuilderPage() {
@@ -64,7 +64,7 @@ function MockBuilderContent() {
   
   const [isInitializing, setIsInitializing] = useState(true)
   const [bankLoading, setBankLoading] = useState(false)
-  const [questionBank, setQuestionBank] = useState<any[]>([])
+  const [questionBank, setQuestionBank] = useState<Question[]>([])
   const [isPublishing, setIsPublishing] = useState(false)
   const [activeRightTab, setActiveRightTab] = useState<'BANK' | 'ASSEMBLY'>('BANK')
   
@@ -91,7 +91,7 @@ function MockBuilderContent() {
   })
 
   const [sections, setSections] = useState<any[]>([
-    { id: 'sec-1', name: 'GENERAL HUB', questions: [] }
+    { id: 'sec-1', name: 'GENERAL HUB', questions: [] as Question[] }
   ])
   const [activeSectionId, setActiveSectionId] = useState('sec-1')
 
@@ -101,7 +101,7 @@ function MockBuilderContent() {
     try {
       const q = query(collection(db, "questions"), limit(3000))
       const snap = await getDocs(q)
-      setQuestionBank(snap.docs.map((d: DocumentData) => ({ ...d.data(), id: d.id })))
+      setQuestionBank(snap.docs.map((d: DocumentData) => ({ ...d.data(), id: d.id }) as Question))
     } finally {
       setBankLoading(false)
     }
@@ -126,14 +126,14 @@ function MockBuilderContent() {
 
     if (existingMock.questionIds) {
       let currentIndex = 0;
-      const hydratedSections = (existingMock.sections || [{ name: 'GENERAL HUB', count: existingMock.questionIds.length }]).map((s: any, idx: number) => {
+      const hydratedSections = (existingMock.sections || [{ name: 'GENERAL HUB', count: existingMock.questionIds.length }]).map((s: ExamSection, idx: number) => {
         const count = Number(s.count) || 0;
         const sectionQIds: string[] = (existingMock.questionIds as string[]).slice(currentIndex, currentIndex + count);
         currentIndex += count;
         return { 
           id: `sec-${idx + 1}`, 
           name: s.name, 
-          questions: sectionQIds.map((id: string) => questionBank.find((q: any) => q.id === id)).filter(Boolean) 
+          questions: sectionQIds.map((id: string) => questionBank.find((q: Question) => q.id === id)).filter(Boolean) as Question[]
         };
       });
       setSections(hydratedSections.length > 0 ? hydratedSections : [{ id: 'sec-1', name: 'GENERAL HUB', questions: [] }]);
@@ -144,22 +144,22 @@ function MockBuilderContent() {
   const uniqueExams = useMemo(() => {
     if (!rawExams) return [];
     const seen = new Set();
-    const sorted = [...rawExams].sort((a: any, b: any) => (a.name || "").localeCompare(b.name || ""));
-    const filtered = sorted.filter((e: any) => {
+    const sorted = [...rawExams].sort((a: Exam, b: Exam) => (a.name || "").localeCompare(b.name || ""));
+    const filtered = sorted.filter((e: Exam) => {
       const key = (e.name || "").toLowerCase().trim();
       if (!key || seen.has(key)) return false;
       seen.add(key);
       return true;
     });
     if (mockData.boardIds?.length > 0) {
-       return filtered.filter((e: any) => mockData.boardIds.includes(e.boardId));
+       return filtered.filter((e: Exam) => mockData.boardIds.includes(e.boardId));
     }
     return filtered;
   }, [rawExams, mockData.boardIds]);
 
   const filteredBank = useMemo(() => {
-    const allSelectedIds = sections.flatMap((s: any) => (s.questions || []).map((q: any) => q.id));
-    return questionBank.filter((q: any) => {
+    const allSelectedIds = sections.flatMap((s: any) => (s.questions || []).map((q: Question) => q.id));
+    return questionBank.filter((q: Question) => {
       const matchesBoard = filterBoard === "all" || q.boardId === filterBoard;
       const matchesSub = filterSubject === "all" || q.subjectId === filterSubject;
       const notInThisMock = !allSelectedIds.includes(q.id);
@@ -187,7 +187,7 @@ function MockBuilderContent() {
   };
 
   const handleLinkQuestions = () => {
-    const toAdd = questionBank.filter((q: any) => bankSelection.includes(q.id));
+    const toAdd = questionBank.filter((q: Question) => bankSelection.includes(q.id));
     setSections((prev: any[]) => prev.map((s: any) => s.id === activeSectionId ? { ...s, questions: [...(s.questions || []), ...toAdd] } : s));
     setBankSelection([]);
     toast({ title: `Linked ${toAdd.length} Questions` });
@@ -199,7 +199,7 @@ function MockBuilderContent() {
       toast({ variant: "destructive", title: "Audit Blocked", description: "Series Title is mandatory." })
       return
     }
-    const flatQuestionIds = sections.flatMap((s: any) => (s.questions || []).map((q: any) => q.id));
+    const flatQuestionIds = sections.flatMap((s: any) => (s.questions || []).map((q: Question) => q.id));
     if (flatQuestionIds.length === 0) {
        toast({ variant: "destructive", title: "Link Blocked", description: "Please add questions to the hub." });
        return;
@@ -290,7 +290,7 @@ function MockBuilderContent() {
               <div className="space-y-4">
                 <Label className="text-[12px] font-black uppercase text-slate-500 ml-1">Target Verticals</Label>
                 <div className="space-y-2 max-h-[160px] overflow-y-auto custom-scrollbar pr-2">
-                   {uniqueExams.map((e: any) => (
+                   {uniqueExams.map((e: Exam) => (
                         <div key={e.id} onClick={() => toggleExamId(e.id)} className="flex items-center space-x-3 p-3 bg-slate-50/50 rounded-xl hover:bg-slate-100 transition-all cursor-pointer group"><div className={cn("h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all", mockData.examIds?.includes(e.id) ? "border-primary bg-primary" : "border-slate-300 bg-white")}>{mockData.examIds?.includes(e.id) && <Check className="h-3 w-3 text-white stroke-[3px]" />}</div><span className="text-sm font-black text-[#0F172A] uppercase truncate">{e.name}</span></div>
                    ))}
                 </div>
@@ -330,7 +330,7 @@ function MockBuilderContent() {
                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 pt-6 border-t border-white/10"><div className="flex-1 text-left"><p className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Selection Queue</p><div className="text-xl md:text-3xl font-headline font-black tabular-nums">{bankSelection.length} <span className="text-sm text-slate-500">Nodes Staged</span></div></div><Button onClick={handleLinkQuestions} disabled={bankSelection.length === 0} className="w-full md:w-auto h-16 px-12 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[11px] tracking-widest rounded-2xl shadow-3xl gap-3 transition-all">Link Staged Assets <CheckCircle2 className="h-5 w-5" /></Button></div>
                 </Card>
                 <div className="grid grid-cols-1 gap-3">
-                   {bankLoading ? Array.from({length: 5}).map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl bg-white" />) : visibleBank.map((q: any) => {
+                   {bankLoading ? Array.from({length: 5}).map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl bg-white" />) : visibleBank.map((q: Question) => {
                       const isSelected = bankSelection.includes(q.id);
                       return (<Card key={q.id} onClick={() => setBankSelection((p: string[]) => isSelected ? p.filter(id => id !== q.id) : [...p, q.id])} className={cn("border-none shadow-sm rounded-2xl p-5 md:px-8 flex items-center justify-between cursor-pointer transition-all border-2", isSelected ? "bg-primary/5 border-primary shadow-lg scale-[1.01]" : "bg-white border-transparent hover:border-slate-100")}><div className="flex items-center gap-6 min-w-0"><div className={cn("h-6 w-6 rounded-full border-2 flex items-center justify-center shrink-0", isSelected ? "bg-primary border-primary" : "bg-white border-slate-200")}>{isSelected && <Check className="h-3 w-3 text-white stroke-[4px]" />}</div><div className="min-w-0 text-left"><p className="font-bold text-[#0F172A] truncate text-sm md:text-base">{q.englishQuestion}</p><p className="text-[9px] font-black uppercase text-slate-400 tracking-widest mt-1.5">{q.subjectId} • {q.difficulty}</p></div></div></Card>)
                    })}
@@ -363,8 +363,8 @@ function MockBuilderContent() {
                       <Card key={sec.id} className="border-none shadow-3xl rounded-[3rem] bg-white overflow-hidden border border-slate-100 group/sec">
                          <div className="flex items-center justify-between p-8 bg-slate-50/50 border-b border-slate-50"><div className="flex items-center gap-6"><div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center font-black text-xl shadow-xl transition-colors", activeSectionId === sec.id ? "bg-primary text-white" : "bg-[#0F172A] text-white")}>{sIdx + 1}</div><div className="text-left"><Input value={sec.name} onChange={e => setSections((p: any[]) => p.map((s: any) => s.id === sec.id ? { ...s, name: e.target.value.toUpperCase() } : s))} className="h-8 p-0 bg-transparent border-none font-black uppercase text-xl md:text-2xl focus-visible:ring-0 text-[#0F172A]" /><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{(sec.questions?.length || 0)} Linked Preparation Nodes</p></div></div><div className="flex gap-2"><Button onClick={() => setActiveSectionId(sec.id)} variant="ghost" className={cn("h-10 px-6 rounded-xl font-black uppercase text-[9px] tracking-widest", activeSectionId === sec.id ? "bg-primary text-white" : "text-slate-400")}>{activeSectionId === sec.id ? "ACTIVE" : "FOCUS"}</Button><button onClick={() => setSections((p: any[]) => p.filter((s: any) => s.id !== sec.id))} className="h-10 w-10 text-rose-500 hover:bg-rose-50 rounded-xl transition-all flex items-center justify-center"><Trash2 className="h-5 w-5" /></button></div></div>
                          <div className="p-8 space-y-4">
-                            {sec.questions?.map((q: any, qIdx: number) => (
-                               <div key={q.id} className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-2xl hover:bg-white hover:shadow-xl transition-all duration-300"><div className="flex items-center gap-6 min-w-0"><span className="text-lg font-black text-slate-300 w-6">#{qIdx + 1}</span><p className="text-sm font-bold text-slate-600 truncate">{q.englishQuestion}</p></div><button onClick={() => setSections((p: any[]) => p.map((s: any) => s.id === sec.id ? { ...s, questions: s.questions?.filter((item: any) => item.id !== q.id) || [] } : s))} className="text-slate-300 hover:text-rose-500 transition-colors"><X className="h-4 w-4" /></button></div>
+                            {sec.questions?.map((q: Question, qIdx: number) => (
+                               <div key={q.id} className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-2xl hover:bg-white hover:shadow-xl transition-all duration-300"><div className="flex items-center gap-6 min-w-0"><span className="text-lg font-black text-slate-300 w-6">#{qIdx + 1}</span><p className="text-sm font-bold text-slate-600 truncate">{q.englishQuestion}</p></div><button onClick={() => setSections((p: any[]) => p.map((s: any) => s.id === sec.id ? { ...s, questions: s.questions?.filter((item: Question) => item.id !== q.id) || [] } : s))} className="text-slate-300 hover:text-rose-500 transition-colors"><X className="h-4 w-4" /></button></div>
                             ))}
                             {(!sec.questions || sec.questions.length === 0) && <div className="py-20 text-center opacity-10 flex flex-col items-center gap-4"><RefreshCw className="h-10 w-10 animate-spin-slow" /><p className="font-black uppercase tracking-widest text-[10px]">Awaiting node link synchronization...</p></div>}
                          </div>

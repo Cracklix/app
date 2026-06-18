@@ -23,8 +23,8 @@ import { cn } from "@/lib/utils"
 import type { Category, Board, Exam } from "@/types"
 
 /**
- * @fileOverview Punjab Registry Architect v15.0.
- * FIXED: Local ExtendedBoard interface to resolve 'exams' property error.
+ * @fileOverview Punjab Registry Architect v15.1.
+ * FIXED: Inherited iconUrl from Category to resolve build failure.
  */
 
 interface ExtendedBoard extends Board {

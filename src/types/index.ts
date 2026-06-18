@@ -41,6 +41,7 @@ export interface Category {
   bgColor: string;
   highlight: string;
   displayOrder: number;
+  iconUrl?: string;
 }
 
 export interface Board {

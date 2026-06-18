@@ -22,8 +22,8 @@ import { doc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Official Hero Section v75.0.
- * FIXED: Hydration error - Replaced dynamic numeric p tags with div containers.
+ * @fileOverview Official Hero Section v75.1.
+ * FIXED: Replaced standard HTML <p> with <div> to allow nested Skeleton (div) components.
  */
 
 export default function Hero() {

@@ -7,10 +7,11 @@ import { useCollection, useFirestore } from "@/firebase"
 import { collection } from "firebase/firestore"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 import { Skeleton } from "@/components/ui/skeleton"
+import type { Question, MockTest } from "@/types"
 
 /**
- * @fileOverview Institutional Analytics Hub v16.0.
- * FIXED: Explicitly typed all parameters in map, filter, and reduce calls.
+ * @fileOverview Institutional Analytics Hub v16.1.
+ * FIXED: Explicitly typed all callbacks and resolved property access on Firestore results.
  */
 
 interface MetricCardProps {
@@ -41,15 +42,15 @@ export default function AdminAnalytics() {
 
   const { data: users, loading: usersLoading } = useCollection<any>(usersQuery)
   const { data: results, loading: resultsLoading } = useCollection<any>(resultsQuery)
-  const { data: questions, loading: qLoading } = useCollection<any>(questionsQuery)
-  const { data: mocks, loading: mLoading } = useCollection<any>(mocksQuery)
+  const { data: questions, loading: qLoading } = useCollection<Question>(questionsQuery as any)
+  const { data: mocks, loading: mLoading } = useCollection<MockTest>(mocksQuery as any)
 
   const stats = useMemo(() => {
      if (!questions) return { used: 0, unused: 0, locked: 0, total: 0 };
      return {
-        used: (questions as any[]).filter((q: any) => q.status === 'USED').length,
-        unused: (questions as any[]).filter((q: any) => q.status === 'UNUSED' || !q.status).length,
-        locked: (questions as any[]).filter((q: any) => q.status === 'LOCKED').length,
+        used: (questions as Question[]).filter((q: Question) => q.status === 'USED').length,
+        unused: (questions as Question[]).filter((q: Question) => q.status === 'UNUSED' || !q.status).length,
+        locked: (questions as Question[]).filter((q: Question) => q.status === 'LOCKED').length,
         total: questions.length
      }
   }, [questions]);
@@ -57,8 +58,8 @@ export default function AdminAnalytics() {
   const mockStats = useMemo(() => {
     if (!mocks) return { free: 0, premium: 0 };
     return {
-      free: (mocks as any[]).filter((m: any) => (m.accessLevel || 'FREE') === 'FREE').length,
-      premium: (mocks as any[]).filter((m: any) => m.accessLevel === 'PREMIUM').length
+      free: (mocks as MockTest[]).filter((m: MockTest) => (m.accessLevel || 'FREE') === 'FREE').length,
+      premium: (mocks as MockTest[]).filter((m: MockTest) => m.accessLevel === 'PREMIUM').length
     };
   }, [mocks]);
 
