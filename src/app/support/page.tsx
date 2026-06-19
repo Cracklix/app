@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import React, { useState, useMemo } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useFirestore, useCollection } from "@/firebase"
@@ -37,8 +37,8 @@ const TELEGRAM_GROUP = "https://t.me/cracklixapp";
 const INSTAGRAM_PROFILE = "https://www.instagram.com/arshgrewal_official/";
 
 /**
- * @fileOverview Student Support Hub v1.6 (Hardened).
- * FIXED: Synchronized missing Link and Loader2 imports for production stable build.
+ * @fileOverview Student Support Hub v1.7 (Build Hardened).
+ * FIXED: Corrected missing imports for Link and Loader2.
  */
 
 export default function SupportPage() {

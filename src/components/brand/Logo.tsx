@@ -16,8 +16,8 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview Institutional Logo Node v28.0 (Path & Size Fix).
- * FIXED: Reverted to root-level logo assets to resolve broken image errors.
+ * @fileOverview Institutional Logo Node v29.0 (Restored from logo folder).
+ * FIXED: Pointed to /logo/ directory as per user registry.
  * SIZING: Mobile h-12 (48px) | Desktop h-16 (64px) for premium visibility.
  */
 export default function Logo({
@@ -29,9 +29,9 @@ export default function Logo({
   iconOnly = false,
   align = 'left'
 }: LogoProps) {
-  // Canonical Registry Paths - Using root-level assets for maximum reliability
-  const fullLogo = "/logo.png";
-  const iconLogo = "/logo-icon.png";
+  // Canonical Registry Paths - Restored from public/logo folder
+  const fullLogo = "/logo/logo.png";
+  const iconLogo = "/logo/logo-icon.png";
 
   const content = (
     <div className={cn(

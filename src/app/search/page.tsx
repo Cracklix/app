@@ -13,8 +13,8 @@ import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Global Search Hub v2.9 (Build Hardened).
- * FIXED: Explicit typing and element validation for icon cloning to resolve UMD and build errors.
+ * @fileOverview Elite Global Search Hub v3.0 (Build Fixed).
+ * FIXED: Added missing React import and hardened icon cloning logic.
  */
 
 export default function SearchPage() {

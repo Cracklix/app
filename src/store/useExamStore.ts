@@ -6,8 +6,8 @@ import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/fir
 import { initializeFirebase } from '@/firebase/app';
 
 /**
- * @fileOverview Elite CBT Global Store v54.2 (Hardened).
- * FIXED: Removed object property duplication in sync payload and strictly typed language nodes.
+ * @fileOverview Elite CBT Global Store v54.3 (Hardened).
+ * FIXED: Removed duplicate property in sync payload and strictly typed language initialization.
  */
 
 interface ExamStore extends AttemptState {
@@ -84,9 +84,9 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const actualStartTime = (forceReset || !savedState?.startTime) ? now : Number(savedState.startTime);
     const finalEndTime = (forceReset || !savedState?.endTime) ? (now + (finalDuration * 60 * 1000)) : Number(savedState.endTime);
     const initialTimeLeft = Math.max(0, Math.floor((finalEndTime - now) / 1000));
-    const finalBaseMode = languageMode || 'ENGLISH_PUNJABI';
+    const finalBaseMode: LanguageDisplayMode = languageMode || 'ENGLISH_PUNJABI';
 
-    let initialLang = (!forceReset && state.language && (state.language as string) !== "ENGLISH_PUNJABI") ? state.language : finalBaseMode;
+    let initialLang = (!forceReset && state.language && state.language !== "ENGLISH_PUNJABI") ? state.language : finalBaseMode;
     
     set({
       mockId, 
@@ -95,7 +95,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       questions, 
       timeLeft: initialTimeLeft,
       baseLanguageMode: finalBaseMode,
-      language: initialLang as LanguageDisplayMode, 
+      language: initialLang, 
       startTime: actualStartTime,
       endTime: finalEndTime,
       answers: forceReset ? {} : (savedState?.answers || {}),
@@ -120,7 +120,6 @@ export const useExamStore = create<ExamStore>((set, get) => ({
         status: 'IN_PROGRESS', 
         updatedAt: serverTimestamp(),
         answers: {}, 
-        questionStatuses: {}, 
         currentIdx: 0, 
         visited: [0]
       }, { merge: true }).catch(e => console.error("[STORE_INIT_SYNC_FAIL]:", e));

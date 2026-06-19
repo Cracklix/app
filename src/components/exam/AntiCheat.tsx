@@ -6,8 +6,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
 
 /**
- * @fileOverview Institutional Anti-Cheat Node v1.4 (Hardened).
- * FIXED: Pass Firestore instance to addViolation as required by hardened global store.
+ * @fileOverview Institutional Anti-Cheat Node v1.5 (Build Fixed).
+ * FIXED: Explicitly passed Firestore instance to addViolation.
  */
 
 export default function AntiCheat() {
@@ -18,8 +18,7 @@ export default function AntiCheat() {
   useEffect(() => {
     const handleBlur = () => {
       if (!db) return;
-      // Pass the db instance to log the violation in the registry hub.
-      // This ensures standard store integrity.
+      // Pass the db instance as required by the global store.
       addViolation(db);
       
       toast({
