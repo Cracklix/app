@@ -37,8 +37,8 @@ const TELEGRAM_GROUP = "https://t.me/cracklixapp";
 const INSTAGRAM_PROFILE = "https://www.instagram.com/arshgrewal_official/";
 
 /**
- * @fileOverview Student Support Hub v1.9 (Hardened).
- * FIXED: Explicitly added Link and Loader2 for production reliability.
+ * @fileOverview Student Support Hub v2.0 (Build Hardened).
+ * FIXED: Explicit imports for Link and Loader2 nodes.
  */
 
 export default function SupportPage() {
@@ -105,7 +105,7 @@ export default function SupportPage() {
                  <MessageCircle className="h-5 w-5 text-primary" />
                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Student Resolution Hub</span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-headline font-black text-[#0F172A] tracking-tighter uppercase leading-[0.9]">
+              <h1 className="text-5xl md:text-7xl font-black text-[#0F172A] tracking-tighter uppercase leading-[0.9]">
                  Support <br/> <span className="text-primary">Center</span>
               </h1>
               <p className="text-slate-500 font-medium text-lg max-w-xl">
@@ -169,7 +169,7 @@ export default function SupportPage() {
               ) : (
                  <div className="py-20 bg-white rounded-[3rem] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center opacity-30">
                     <MessageCircle className="h-16 w-16 mb-4 text-slate-300" />
-                    <p className="font-headline font-black text-xl uppercase tracking-widest">No Active Tickets</p>
+                    <p className="text-xl font-bold uppercase tracking-widest">No Active Tickets</p>
                  </div>
               )}
            </div>
@@ -181,7 +181,7 @@ export default function SupportPage() {
                     <div className="h-14 w-14 bg-primary/20 rounded-2xl flex items-center justify-center text-primary shadow-2xl">
                        <HelpCircle className="h-8 w-8 fill-current" />
                     </div>
-                    <h3 className="text-3xl font-headline font-black uppercase leading-tight">Help Center</h3>
+                    <h3 className="text-3xl font-black uppercase leading-tight">Help Center</h3>
                     <p className="text-slate-400 text-sm font-medium leading-relaxed">Search through categorized articles to fix common account issues instantly.</p>
                     <Button asChild variant="outline" className="w-full h-14 border-white/10 bg-white/5 text-white hover:bg-white/10 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-2">
                        <Link href="/help">Browse Knowledge Base <ChevronRight className="h-4 w-4" /></Link>
@@ -193,7 +193,7 @@ export default function SupportPage() {
                  <div className="absolute bottom-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-110 transition-transform"><MessageCircle className="h-32 w-32" /></div>
                  <div className="relative z-10 space-y-4">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.3em]">Instant Updates</h4>
-                    <h3 className="text-2xl font-headline font-black uppercase leading-tight">Telegram Community</h3>
+                    <h3 className="text-2xl font-black uppercase leading-tight">Telegram Community</h3>
                     <p className="text-white/80 text-sm font-medium leading-relaxed">Join 15k+ aspirants for official exam patterns & result alerts.</p>
                     <div className="pt-4 flex items-center gap-3 text-xs font-black uppercase tracking-widest">Join Group <ChevronRight className="h-4 w-4" /></div>
                  </div>
@@ -202,7 +202,7 @@ export default function SupportPage() {
               <div className="bg-white border border-slate-100 rounded-[3rem] p-10 space-y-8 relative overflow-hidden group shadow-xl cursor-pointer" onClick={() => window.open(INSTAGRAM_PROFILE, "_blank")}>
                  <div className="relative z-10 space-y-4 text-left">
                     <Instagram className="h-8 w-8 text-rose-500" />
-                    <h3 className="text-xl font-headline font-black uppercase text-[#0F172A]">Follow Hub</h3>
+                    <h3 className="text-xl font-black uppercase text-[#0F172A]">Follow Hub</h3>
                     <p className="text-slate-400 text-[11px] font-bold uppercase tracking-widest">@arshgrewal_official</p>
                  </div>
               </div>
@@ -216,7 +216,7 @@ export default function SupportPage() {
          <DialogContent className="sm:max-w-xl rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
             <div className="h-2 w-full bg-[#0F172A] shrink-0" />
             <DialogHeader className="p-10 pb-4">
-               <DialogTitle className="text-2xl font-black font-headline uppercase flex items-center gap-4">
+               <DialogTitle className="text-2xl font-black uppercase flex items-center gap-4">
                   <Plus className="h-8 w-8 text-primary" /> Raise Support Node
                </DialogTitle>
                <DialogDescription className="sr-only">Raise a new support ticket for our management team to review.</DialogDescription>

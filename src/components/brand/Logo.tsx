@@ -17,11 +17,8 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview Master Cracklix Branding Node v4.0.
- * Strictly implements the official brand system overhaul:
- * - variant="light": Uses cracklix-logo-dark.png (Dark text for Light backgrounds)
- * - variant="dark": Uses cracklix-logo-light.png (Light text for Dark backgrounds)
- * - variant="icon": Uses cracklix-icon.png
+ * @fileOverview Master Cracklix Branding Node v5.0.
+ * Maximized for the 80px institutional header.
  */
 export default function Logo({
   className = "",
@@ -53,8 +50,8 @@ export default function Logo({
       <Image
         src={src}
         alt="Cracklix"
-        width={isIcon ? 64 : 500}
-        height={isIcon ? 64 : 150}
+        width={isIcon ? 64 : 600}
+        height={isIcon ? 64 : 180}
         priority={priority}
         className={cn(
           "object-contain w-auto transition-all flex-shrink-0",

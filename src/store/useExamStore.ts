@@ -1,13 +1,13 @@
 'use client';
 
 import { create } from 'zustand';
-import { AttemptState, Question, LanguageDisplayMode } from '@/types';
+import { AttemptState, Question, LanguageDisplayMode, QuestionStatus } from '@/types';
 import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase/app';
 
 /**
- * @fileOverview Elite CBT Global Store v56.0 (Hardened).
- * FIXED: Removed duplicate property in initial sync and strictly typed language nodes.
+ * @fileOverview Elite CBT Global Store v57.0 (Hardened).
+ * FIXED: Type safety for QuestionStatus and LanguageDisplayMode.
  */
 
 interface ExamStore extends AttemptState {
@@ -86,7 +86,6 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const initialTimeLeft = Math.max(0, Math.floor((finalEndTime - now) / 1000));
     const finalBaseMode: LanguageDisplayMode = languageMode || 'ENGLISH_PUNJABI';
 
-    // Type Audit: Ensure language never falls back to an empty string
     let initialLang: LanguageDisplayMode = (!forceReset && state.language) ? state.language : finalBaseMode;
     
     set({
@@ -211,11 +210,12 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const hasAnswer = answers[idx] !== undefined && answers[idx] !== null;
     
     set({ isSyncing: true });
-    newStatus[idx] = hasAnswer ? 'answered-marked' : 'marked';
+    const finalStatus: QuestionStatus = hasAnswer ? 'answered-marked' : 'marked';
+    newStatus[idx] = finalStatus;
     set({ status: newStatus });
     
     updateDoc(doc(dbInstance, 'attempts', `${userId}_${mockId}`), { 
-       [`status.${idx}`]: newStatus[idx], 
+       [`status.${idx}`]: finalStatus, 
        updatedAt: serverTimestamp() 
     }).then(() => {
        get().saveAndNext(dbInstance);

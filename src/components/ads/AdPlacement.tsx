@@ -2,7 +2,7 @@
 
 import { useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
-import { collection, query, where, doc, Query, DocumentData } from 'firebase/firestore';
+import { collection, query, where, doc, Query } from 'firebase/firestore';
 import { Advertisement, AdPlacementType } from '@/types';
 import { trackAdImpression, trackAdClick } from '@/app/actions/ads';
 import { cn } from '@/lib/utils';
@@ -15,8 +15,8 @@ interface AdPlacementProps {
 }
 
 /**
- * @fileOverview Institutional Ad-Node v1.5 (Hardened).
- * FIXED: Explicit casting and schema mapping for advertisement nodes.
+ * @fileOverview Institutional Ad-Node v1.6 (Hardened).
+ * FIXED: Explicit query casting to prevent type resolution failures.
  */
 
 export default function AdPlacement({ placement, className, examId }: AdPlacementProps) {
@@ -27,10 +27,8 @@ export default function AdPlacement({ placement, className, examId }: AdPlacemen
   const { data: globalSettings } = useDoc<any>(useMemo(() => (db ? doc(db, 'settings', 'global') : null), [db]));
   const { data: passes } = useCollection<any>(useMemo(() => (db ? collection(db, 'passes') : null), [db]));
 
-  // Safety Lock: Never show ads on sensitive preparation paths
   const isSafetyZone = pathname.includes('/attempt') || pathname.includes('/checkout') || pathname.startsWith('/admin');
 
-  // Ad-Free Audit
   const isAdFree = useMemo(() => {
     if (!profile || profile.status === 'Free') return false;
     const activePass = passes?.find(p => p.id === profile.status);
@@ -39,7 +37,7 @@ export default function AdPlacement({ placement, className, examId }: AdPlacemen
 
   const adsQuery = useMemo(() => {
     if (!db || isAdFree || isSafetyZone) return null;
-    return query(collection(db, 'ads'), where('status', '==', 'ACTIVE')) as Query<Advertisement>;
+    return query(collection(db, 'ads'), where('status', '==', 'ACTIVE')) as unknown as Query<Advertisement>;
   }, [db, isAdFree, isSafetyZone]);
 
   const { data: ads, loading } = useCollection<Advertisement>(adsQuery);

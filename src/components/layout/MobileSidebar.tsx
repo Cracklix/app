@@ -30,8 +30,8 @@ import ShareButton from "@/components/navigation/ShareButton";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Mobile Sidebar Overhaul v37.0.
- * TYPOGRAPHY: Switched main items to Title Case.
+ * @fileOverview Mobile Sidebar Overhaul v38.0.
+ * BRAND SYSTEM: Logo height 72px centered.
  */
 export default function MobileSidebar({
   onClose,
@@ -75,7 +75,6 @@ export default function MobileSidebar({
   return (
     <div className="flex h-full flex-col bg-white font-body overflow-hidden text-left">
 
-      {/* HEADER: Centered logo, maximized height (58px), margins, divider */}
       <div className="px-4 shrink-0 bg-white">
         <div className="flex items-center justify-end pt-4">
           <button
@@ -90,17 +89,15 @@ export default function MobileSidebar({
            <Logo
              variant="light"
              align="center"
-             imgClassName="h-[52px] md:h-[58px]"
+             imgClassName="h-[64px] md:h-[72px]"
              onClick={onClose}
            />
            <div className="w-full h-px bg-slate-100 mt-6" />
         </div>
       </div>
 
-      {/* CONTENT AREA */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
 
-        {/* PROFILE CARD */}
         <div className="px-3 py-4">
           <Link
             href="/profile"
@@ -134,7 +131,6 @@ export default function MobileSidebar({
           </Link>
         </div>
 
-        {/* MAIN MENU */}
         <div className="px-2">
           <p className="mb-2 px-6 text-[10px] font-bold text-slate-400 tracking-wide uppercase">
             Preparation Registry
@@ -174,7 +170,6 @@ export default function MobileSidebar({
           </div>
         </div>
 
-        {/* SHARE NODE */}
         <div className="px-4 py-4">
            <div className="bg-[#0B1528] rounded-[1.8rem] p-4 space-y-3 border border-white/5 shadow-2xl relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><Award className="h-12 w-12" /></div>
@@ -189,7 +184,6 @@ export default function MobileSidebar({
         </div>
       </div>
 
-      {/* FOOTER - PREMIUM LOGOUT NODE */}
       <div className="border-t border-slate-100 bg-white p-4 pb-[calc(env(safe-area-inset-bottom)+16px)] shrink-0">
         <Button
           variant="ghost"

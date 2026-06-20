@@ -36,9 +36,8 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Header v101.0 (Overhaul Refined).
- * BRAND SYSTEM: Logo height 40px Desktop / 32px Mobile. Header height 80px.
- * TYPOGRAPHY: Title Case navigation.
+ * @fileOverview Institutional Header v102.0 (Maximized Logo).
+ * BRAND SYSTEM: Logo height 72px Desktop / 64px Mobile inside 80px header.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -78,9 +77,8 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-50 w-full font-body">
       <nav className="w-full h-20 bg-white border-b border-slate-100 shadow-sm">
-        <div className="w-full max-w-7xl mx-auto px-4 h-full flex items-center justify-between gap-4">
+        <div className="w-full max-w-7xl mx-auto px-2 md:px-4 h-full flex items-center justify-between gap-4">
 
-          {/* LEFT SIDE: Menu Hub + Overhauled Logo Node */}
           <div className="flex items-center shrink-0">
             <button
               onClick={() => setIsSidebarOpen(true)}
@@ -90,15 +88,13 @@ export default function Navbar() {
               <Menu className="w-5 h-5 md:w-6 md:h-6" />
             </button>
 
-            {/* BRANDING: 40px desktop / 32px mobile / 16px (ml-4) menu spacing */}
             <Logo
               variant="light"
-              className="ml-4 flex-shrink-0"
-              imgClassName="h-[32px] md:h-[40px]"
+              className="ml-1 flex-shrink-0"
+              imgClassName="h-[64px] md:h-[72px]"
             />
           </div>
 
-          {/* DESKTOP NAVIGATION (CENTERED) */}
           <div className="hidden lg:flex items-center justify-center gap-8 flex-1">
             <NavLink href="/" label="Home" active={pathname === '/'} />
             <NavLink href="/mocks" label="Practice" active={pathname === '/mocks'} />
@@ -106,7 +102,6 @@ export default function Navbar() {
             <NavLink href="/current-affairs" label="Study Center" active={pathname === '/current-affairs'} />
           </div>
 
-          {/* RIGHT SIDE: Action Hub */}
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
             <Link
               href="/search"
