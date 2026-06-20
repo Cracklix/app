@@ -16,8 +16,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Exam List Landing v12.0.
- * FIXED: Implemented responsive mobile typography scale (30px to 64px).
+ * @fileOverview Institutional Exam List Landing v13.0.
+ * TYPOGRAPHY: Unified scale for better content density.
  */
 
 const ACRONYMS = ["PSSSB", "PPSC", "PUNJAB POLICE", "PSPCL", "PSTCL", "PSTET", "CTET", "MCQ", "MCQS", "PYQ", "PYQS", "GK", "CA"];
@@ -68,34 +68,34 @@ export default function ExamsEntryPage() {
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 lg:py-24 max-w-7xl">
-        <div className="text-left mb-10 md:mb-16 lg:mb-24 space-y-4 md:space-y-6">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 max-w-7xl">
+        <div className="text-left mb-10 md:mb-16 space-y-4">
           <div className="flex items-center gap-4">
-             <div className="h-10 w-10 md:h-12 md:w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
-                <Landmark className="h-5 w-5 md:h-6 md:w-6" />
+             <div className="h-8 w-8 md:h-10 md:w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-inner">
+                <Landmark className="h-4 w-4 md:h-5 md:w-5" />
              </div>
-             <span className="text-[10px] md:text-xs font-bold text-slate-500 tracking-tight">Official Exam List</span>
+             <span className="text-[10px] md:text-xs font-bold text-slate-500 tracking-tight uppercase">Official Exam List</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#0F172A] leading-[1.05] break-words">
+          <h1 className="text-[32px] sm:text-[42px] md:text-[48px] lg:text-[60px] xl:text-[72px] font-black tracking-tight text-[#0F172A] leading-[0.95] break-words">
             Choose Your <span className="text-primary">Exam Category</span>
           </h1>
-          <p className="text-slate-500 font-medium text-sm md:text-lg lg:text-2xl max-w-3xl leading-relaxed">
+          <p className="text-slate-500 font-medium text-sm md:text-lg max-w-3xl leading-relaxed">
             Select a vertical to browse official centers and specific exam preparation resources.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
            {loading ? (
-             Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[3.5rem]" />)
+             Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[2.5rem]" />)
            ) : categories && categories.length > 0 ? (
              categories.map((cat) => {
                 const hubCount = (boards || []).filter((b: any) => b.categoryId === cat.id).length;
                 return (
                   <Link key={cat.id} href={`/exams/category/${cat.id}`}>
-                     <Card className="border-none shadow-xl hover:shadow-5xl hover:translate-y-[-12px] transition-all duration-700 rounded-[2.5rem] md:rounded-[3.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100">
-                        <CardContent className="p-6 md:p-10 lg:p-14 flex flex-col h-full">
-                           <div className="flex justify-between items-start mb-8 md:mb-12">
-                              <div className={cn("h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 rounded-2xl md:rounded-[2.2rem] flex items-center justify-center transition-all group-hover:shadow-2xl shadow-inner relative overflow-hidden shrink-0 bg-slate-50 text-slate-300")}>
+                     <Card className="border-none shadow-xl hover:shadow-4xl hover:translate-y-[-8px] transition-all duration-700 rounded-[2rem] md:rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100">
+                        <CardContent className="p-6 md:p-10 flex flex-col h-full">
+                           <div className="flex justify-between items-start mb-8 md:mb-10">
+                              <div className={cn("h-14 w-14 md:h-18 md:w-18 rounded-2xl flex items-center justify-center transition-all group-hover:shadow-2xl shadow-inner relative overflow-hidden shrink-0 bg-slate-50 text-slate-300")}>
                                  {CATEGORY_ICONS[cat.id] || <ShieldCheck className="h-8 w-8 md:h-10 md:w-10" />}
                               </div>
                               <Badge className="bg-[#0F172A] text-white border-none text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 md:px-4 md:py-1.5 rounded-xl shadow-lg">
@@ -103,17 +103,17 @@ export default function ExamsEntryPage() {
                               </Badge>
                            </div>
                            
-                           <div className="space-y-3 md:space-y-5 flex-1">
-                              <h3 className="font-black text-[30px] sm:text-[34px] md:text-[42px] lg:text-[56px] xl:text-[64px] text-[#0F172A] leading-[1.05] tracking-tight group-hover:text-primary transition-colors break-words line-clamp-3">
+                           <div className="space-y-3 md:space-y-4 flex-1">
+                              <h3 className="text-[20px] md:text-[24px] lg:text-[28px] font-black leading-tight tracking-tight text-[#0F172A] group-hover:text-primary transition-colors break-words line-clamp-2">
                                  {toTitleCase(cat.title)}
                               </h3>
-                              <p className="text-sm md:text-base lg:text-lg font-medium text-slate-400 leading-relaxed">
+                              <p className="text-sm md:text-base lg:text-lg font-medium text-slate-400 leading-snug line-clamp-3">
                                  {cat.description}
                               </p>
                            </div>
 
-                           <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-slate-50">
-                              <Button variant="ghost" className="w-full h-12 md:h-14 rounded-xl md:rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-bold text-xs md:text-sm tracking-tight gap-3 border-none">
+                           <div className="mt-8 md:mt-10 pt-6 border-t border-slate-50">
+                              <Button variant="ghost" className="w-full h-12 rounded-xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-bold text-xs md:text-sm tracking-tight gap-3 border-none">
                                  Open Exam Center <ChevronRight className="h-4 w-4" />
                               </Button>
                            </div>

@@ -17,8 +17,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Master Registry v9.0.
- * FIXED: Implemented responsive typography scale (30px to 64px) and reduced mobile padding.
+ * @fileOverview Institutional Master Registry v10.0.
+ * TYPOGRAPHY: Fixed oversized headings and card titles for better content density.
  */
 
 const CATEGORY_ICONS: Record<string, any> = {
@@ -57,42 +57,42 @@ export default function MocksDiscoveryPage() {
       
       <main className="flex-1">
         {/* HERO SECTION */}
-        <section className="bg-white border-b border-slate-100 py-16 md:py-24 overflow-hidden relative">
+        <section className="bg-white border-b border-slate-100 py-12 md:py-20 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-12 lg:gap-16">
               
-              <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 md:space-y-8">
+              <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-4 md:space-y-6">
                 <div className="space-y-4">
                   <div className="flex flex-col items-center lg:items-start gap-4">
-                    <div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
-                      <Landmark className="h-6 w-6" />
+                    <div className="h-10 w-10 md:h-12 md:w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
+                      <Landmark className="h-5 w-5 md:h-6 md:w-6" />
                     </div>
                     <p className="text-xs md:text-sm font-bold tracking-[0.3em] uppercase text-slate-400">
                       Official Exam Registry
                     </p>
                   </div>
                   
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-[#0F172A] leading-[1.05] antialiased">
+                  <h1 className="text-[32px] sm:text-[42px] md:text-[48px] lg:text-[60px] xl:text-[72px] font-black tracking-tight text-[#0F172A] leading-[0.95] antialiased">
                     Master <br/>
                     <span className="text-primary">Registry</span>
                   </h1>
 
-                  <p className="text-slate-500 font-medium text-base md:text-xl lg:text-2xl max-w-3xl leading-relaxed">
+                  <p className="text-slate-500 font-medium text-base md:text-xl lg:text-2xl max-w-2xl leading-tight">
                     Select a recruitment vertical to browse official hubs and exam preparation resources.
                   </p>
                 </div>
               </div>
 
               <div className="relative hidden lg:flex justify-end">
-                <div className="relative h-[300px] md:h-[400px] w-full max-w-[500px]">
+                <div className="relative h-[280px] md:h-[350px] w-full max-w-[450px]">
                   <Image 
                     src="/images/hero-student.png" 
                     alt="Registry Hub" 
                     fill 
                     priority
                     className="object-contain drop-shadow-2xl"
-                    sizes="(max-width: 1024px) 100vw, 500px"
+                    sizes="(max-width: 1024px) 100vw, 450px"
                   />
                 </div>
               </div>
@@ -102,35 +102,35 @@ export default function MocksDiscoveryPage() {
         </section>
 
         {/* CONTENT AREA */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 max-w-7xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 max-w-7xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
              {loading ? (
-               Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[3.5rem]" />)
+               Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[2.5rem]" />)
              ) : categories && categories.length > 0 ? (
                categories.map((cat) => (
                   <Link key={cat.id} href={`/exams/category/${cat.id}`}>
-                     <Card className="border-none shadow-xl hover:shadow-5xl hover:translate-y-[-12px] transition-all duration-700 rounded-[2.5rem] md:rounded-[3.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100">
-                        <CardContent className="p-6 md:p-14 flex flex-col h-full">
-                           <div className="flex justify-between items-start mb-12">
-                              <div className={cn("h-16 w-16 md:h-24 md:w-24 rounded-[1.8rem] md:rounded-[2.2rem] flex items-center justify-center transition-all group-hover:shadow-2xl shadow-inner relative overflow-hidden shrink-0 bg-slate-50 text-slate-300")}>
-                                 {CATEGORY_ICONS[cat.id] || <ShieldCheck className="h-10 w-10" />}
+                     <Card className="border-none shadow-xl hover:shadow-4xl hover:translate-y-[-8px] transition-all duration-700 rounded-[2rem] md:rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100">
+                        <CardContent className="p-6 md:p-10 flex flex-col h-full">
+                           <div className="flex justify-between items-start mb-8">
+                              <div className={cn("h-14 w-14 md:h-18 md:w-18 rounded-2xl flex items-center justify-center transition-all group-hover:shadow-2xl shadow-inner relative overflow-hidden shrink-0 bg-slate-50 text-slate-300")}>
+                                 {CATEGORY_ICONS[cat.id] || <ShieldCheck className="h-8 w-8" />}
                               </div>
-                              <Badge className="bg-[#0F172A] text-white border-none text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-xl shadow-lg">
+                              <Badge className="bg-[#0F172A] text-white border-none text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 md:px-4 md:py-1.5 rounded-xl shadow-lg">
                                  {cat.highlight || "VERTICAL"}
                               </Badge>
                            </div>
                            
-                           <div className="space-y-5 flex-1">
-                              <h3 className="font-black text-[30px] sm:text-[34px] md:text-[42px] lg:text-[56px] xl:text-[64px] text-[#0F172A] leading-[1.1] tracking-tight group-hover:text-primary transition-colors break-words line-clamp-3">
+                           <div className="space-y-4 flex-1">
+                              <h3 className="text-[20px] md:text-[24px] lg:text-[28px] font-black leading-tight tracking-tight text-[#0F172A] group-hover:text-primary transition-colors break-words line-clamp-2">
                                  {cat.title}
                               </h3>
-                              <p className="text-sm md:text-lg font-medium text-slate-400 leading-relaxed">
+                              <p className="text-sm md:text-base text-slate-400 leading-snug line-clamp-3">
                                  {cat.description}
                               </p>
                            </div>
 
-                           <div className="mt-12 pt-8 border-t border-slate-50">
-                              <Button variant="ghost" className="w-full h-12 md:h-14 rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-bold text-xs md:text-sm tracking-tight gap-3 border-none">
+                           <div className="mt-8 md:mt-10 pt-6 border-t border-slate-50">
+                              <Button variant="ghost" className="w-full h-12 md:h-14 rounded-xl md:rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-bold text-xs md:text-sm tracking-tight gap-3 border-none">
                                  Open Category Hub <ChevronRight className="h-4 w-4" />
                               </Button>
                            </div>

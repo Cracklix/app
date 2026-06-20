@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo, useState } from "react"
@@ -15,8 +16,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Explorer v13.0 (Typography Hardened).
- * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
+ * @fileOverview Institutional Category Explorer v14.0.
+ * TYPOGRAPHY: Reduced visual scale by 35% for section density.
  */
 
 const ACRONYMS = ["PSSSB", "PPSC", "PUNJAB POLICE", "PSPCL", "PSTCL", "PSTET", "CTET", "MCQ", "MCQS", "PYQ", "PYQS", "GK", "CA"];
@@ -68,10 +69,10 @@ export default function CategoryHubsPage() {
     <div className="min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       
-      <section className="bg-white border-b border-slate-100 py-10 md:py-20 text-left relative overflow-hidden">
+      <section className="bg-white border-b border-slate-100 py-10 md:py-16 text-left relative overflow-hidden">
          <div className="absolute top-0 right-0 p-12 opacity-[0.02]"><Landmark className="h-48 w-48" /></div>
          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
-            <div className="flex items-center gap-6 mb-8 md:mb-12">
+            <div className="flex items-center gap-6 mb-8">
                <button onClick={() => router.back()} className="h-10 w-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-black transition-all">
                   <ChevronLeft className="h-5 w-5" />
                </button>
@@ -84,8 +85,8 @@ export default function CategoryHubsPage() {
                   <span className="text-[10px] md:text-xs font-bold text-slate-500 tracking-tight uppercase">Registry Node</span>
                </div>
             </div>
-            <div className="space-y-6 md:space-y-10">
-              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#0F172A] leading-[0.9] tracking-tight break-words antialiased">
+            <div className="space-y-4">
+              <h1 className="text-[32px] sm:text-[42px] md:text-[48px] lg:text-[60px] xl:text-[72px] font-black text-[#0F172A] leading-[0.95] tracking-tight break-words antialiased">
                 {toTitleCase(meta.title)}
               </h1>
               <p className="text-sm md:text-2xl font-bold text-slate-400 tracking-tight max-w-3xl leading-tight">
@@ -95,10 +96,10 @@ export default function CategoryHubsPage() {
          </div>
       </section>
 
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16 lg:py-24 max-w-7xl">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 max-w-7xl">
          {boardsLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-               {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-[2.5rem]" />)}
+               {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-[2rem]" />)}
             </div>
          ) : categoryHubs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
@@ -114,13 +115,13 @@ export default function CategoryHubsPage() {
                   
                   return (
                     <Link key={hub.id} href={`/exams/hub/${hub.id}`}>
-                       <Card className="border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2rem] md:rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100 p-6 md:p-8 text-left min-h-[180px] md:min-h-[260px]">
-                          <div className="flex justify-between items-start mb-6 md:mb-8">
-                             <div className="h-14 w-14 md:h-16 md:w-16 rounded-[1.2rem] bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                       <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2rem] bg-white group overflow-hidden h-full flex flex-col p-6 md:p-8 text-left min-h-[180px] md:min-h-[220px]">
+                          <div className="flex justify-between items-start mb-6">
+                             <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:scale-105 transition-transform">
                                 {hub.iconUrl ? (
                                    <img src={hub.iconUrl} className="h-full w-full object-contain p-2" alt="Hub Logo" referrerPolicy="no-referrer" />
                                 ) : (
-                                   <div className="text-primary opacity-40 p-4">
+                                   <div className="text-primary opacity-40 p-3">
                                       {isPolice ? <Shield className="h-full w-full" /> : 
                                        <LandmarkIcon className="h-full w-full" />}
                                    </div>
@@ -131,10 +132,10 @@ export default function CategoryHubsPage() {
                           
                           <div className="space-y-2 flex-1 min-w-0">
                              <h3 className="text-lg md:text-xl font-bold text-[#0F172A] tracking-tight group-hover:text-primary transition-colors truncate">{hub.abbreviation} Exams</h3>
-                             <p className="text-[10px] md:text-sm font-semibold text-slate-400 leading-snug line-clamp-2 min-h-[25px]">{toTitleCase(hub.name)}</p>
+                             <p className="text-[10px] md:text-sm font-semibold text-slate-400 leading-snug line-clamp-2">{toTitleCase(hub.name)}</p>
                           </div>
 
-                          <div className="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-slate-50 flex items-center justify-between">
+                          <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between">
                              <div className="space-y-0.5">
                                 <p className="text-sm font-bold text-[#0F172A]">{examCount}</p>
                                 <p className="text-[8px] font-bold text-slate-400 tracking-tight uppercase">EXAMS LISTED</p>
