@@ -17,9 +17,8 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Elite Exam Categories Hub v17.0.
- * Responsive Grid: 4 Desktop / 2 Tablet / 1 Mobile.
- * Consistent Height: 320px.
+ * @fileOverview Elite Exam Categories Hub v18.0.
+ * OPTIMIZED: Standardized height (320px/260px) and refined typography for premium feel.
  */
 
 const CATEGORY_META = [
@@ -42,7 +41,7 @@ const CATEGORY_META = [
   {
     id: "punjab-technical",
     title: "Punjab Technical Exams",
-    desc: "PSPCL • PSTCL • ALM • Tech Asst.",
+    desc: "PSPCL • PSTCL • ALM • Technical Assistant",
     icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo0ZK9JI5KMfg9RoNdIwcsNlpx5IcPBWuKZw&s",
     color: "text-amber-500",
     bgColor: "bg-amber-50"
@@ -50,7 +49,7 @@ const CATEGORY_META = [
   {
     id: "banking",
     title: "Punjab Banking Exams",
-    desc: "Cooperative • Apex • PADB • Banks",
+    desc: "Cooperative • Apex • PADB • State Banks",
     icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7McWqZqOgKy-BakccvR02WQdEQFrwuvmHBG5rYJzuEg&s=10",
     color: "text-emerald-600",
     bgColor: "bg-emerald-50"
@@ -85,15 +84,15 @@ export default function FeaturedCategories() {
           <div className="space-y-2">
              <div className="flex items-center gap-3">
                 <Landmark className="h-5 w-5 text-primary" />
-                <span className="text-[11px] font-black uppercase text-slate-500 tracking-[0.3em]">Exam Vertical Library</span>
+                <span className="text-[11px] font-black uppercase text-slate-500 tracking-[0.3em]">Vertical Library</span>
              </div>
              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-headline font-black text-[#0F172A] tracking-tight leading-[0.9] uppercase break-words">
-                CHOOSE <span className="text-primary">CATEGORY</span>
+                CHOOSE YOUR <span className="text-primary">CATEGORY</span>
              </h2>
-             <p className="text-slate-500 font-medium text-sm md:text-lg">Select your preparation vertical to explore library items.</p>
+             <p className="text-slate-500 font-medium text-sm md:text-lg">Select a vertical to browse official preparation centers.</p>
           </div>
           <Button asChild variant="ghost" className="text-primary font-black uppercase text-[11px] tracking-widest gap-2">
-             <Link href="/exams">View All Items <ArrowRight className="h-4 w-4" /></Link>
+             <Link href="/exams">Full Category List <ArrowRight className="h-4 w-4" /></Link>
           </Button>
         </div>
 
@@ -109,9 +108,9 @@ export default function FeaturedCategories() {
                 transition={{ delay: idx * 0.05 }}
               >
                  <Link href={`/exams/category/${cat.id}`}>
-                    <Card className="border-none shadow-xl hover:shadow-5xl hover:translate-y-[-8px] transition-all duration-500 rounded-[2.5rem] md:rounded-[3rem] bg-white group overflow-hidden h-[320px] flex flex-col border border-slate-100 p-8 md:p-10 relative">
-                       <div className={cn("h-16 w-16 rounded-[1.8rem] flex items-center justify-center mb-8 shadow-inner transition-transform group-hover:scale-110 relative", cat.bgColor, cat.color)}>
-                          <div className="h-full w-full flex items-center justify-center overflow-hidden rounded-2xl relative p-3">
+                    <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-8px] transition-all duration-500 rounded-[2rem] md:rounded-[2.5rem] bg-white group overflow-hidden h-[260px] md:h-[320px] flex flex-col p-6 md:p-8 relative">
+                       <div className={cn("h-14 w-14 md:h-16 md:w-16 rounded-[1.2rem] flex items-center justify-center mb-6 shadow-inner transition-transform group-hover:scale-110 relative shrink-0", cat.bgColor, cat.color)}>
+                          <div className="h-full w-full flex items-center justify-center overflow-hidden rounded-xl relative p-2.5">
                             <Image 
                               src={cat.icon} 
                               alt={cat.title}
@@ -122,14 +121,14 @@ export default function FeaturedCategories() {
                           </div>
                        </div>
                        
-                       <div className="space-y-2 flex-1 min-w-0">
-                          <h3 className="text-xl font-black text-[#0F172A] uppercase leading-[1.1] group-hover:text-primary transition-colors line-clamp-2">{cat.title}</h3>
-                          <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest leading-tight line-clamp-2">{cat.desc}</p>
+                       <div className="space-y-1 flex-1 min-w-0">
+                          <h3 className="text-lg md:text-xl font-bold text-[#0F172A] leading-tight group-hover:text-primary transition-colors line-clamp-2">{cat.title}</h3>
+                          <p className="text-[10px] md:text-xs font-semibold text-slate-400 tracking-tight leading-snug line-clamp-2">{cat.desc}</p>
                        </div>
 
-                       <div className="mt-8 pt-4 border-t border-slate-50 flex items-center justify-between">
-                          <span className="text-[9px] font-black text-[#0F172A] uppercase tracking-widest">{count} Items Live</span>
-                          <div className="h-8 w-8 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all text-slate-300">
+                       <div className="mt-auto pt-4 border-t border-slate-50 flex items-center justify-between">
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{count} Exams Live</span>
+                          <div className="h-8 w-8 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all text-slate-300 shadow-sm border border-slate-100">
                              <ChevronRight className="h-4 w-4" />
                           </div>
                        </div>

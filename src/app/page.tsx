@@ -13,8 +13,8 @@ import MeetFounder from "@/components/home/MeetFounder";
 import Footer from "@/components/layout/Footer";
 
 /**
- * @fileOverview Official Home Hub v178.0.
- * UPDATED: Removed Core Features section from the home sequence as requested.
+ * @fileOverview Official Home Hub v180.0.
+ * REORDERED: Sequence updated for professional discovery flow.
  */
 
 export default function HomePage() {
@@ -30,16 +30,16 @@ export default function HomePage() {
         <GlobalSearch />
       </div>
 
-      {/* 2. Exam Categories (Broad Discovery) */}
+      {/* 2. Exam Categories (Direct discovery below search) */}
       <FeaturedCategories />
 
-      {/* 3. Popular Exams (Commission Nodes) */}
+      {/* 3. Popular Exams (Authority centers) */}
       <PopularExams />
 
-      {/* 4. Latest Mock Tests (Direct Practice) */}
+      {/* 4. Latest Mock Tests (Recent practicing nodes) */}
       <LatestMocks />
 
-      {/* 5. Personal Prep (Logged-in context) */}
+      {/* 5. Personal Hub (Resume Practice) */}
       <ContinueLearning />
 
       {/* 6. Knowledge Hub (Current Affairs) */}
@@ -48,7 +48,7 @@ export default function HomePage() {
       {/* 7. Competitive Index (Merit List) */}
       <MeritPreview />
 
-      {/* 8. Hardware Hub (Mobile App) */}
+      {/* 8. Mobile App Node */}
       <AppPreview />
 
       {/* 9. Leadership Node (Founder) */}
