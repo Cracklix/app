@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Smart Institutional PWA Install Node v9.0 (Event Broadcast Fix).
- * FIXED: Explicitly dispatches custom event for components to catch beforeinstallprompt.
+ * @fileOverview Smart Institutional PWA Install Node v10.0 (Hardened Capture).
+ * FIXED: Captures event globally and broadcasts to all standalone button components.
  */
 export default function PWAManager() {
   const pathname = usePathname();
@@ -30,6 +30,7 @@ export default function PWAManager() {
       return;
     }
 
+    // Show floating banner if prompt is available and not in excluded routes
     if (!isExcluded && !sessionDismissed && hasPrompt) {
       setShowPrompt(true);
     } else {
@@ -42,21 +43,22 @@ export default function PWAManager() {
 
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
-      // Store globally for all components
+      // Store event globally for custom triggers
       (window as any).deferredPrompt = e;
-      // Dispatch custom signal for hydration
+      // Force sync event for all PWAInstallButton instances
       window.dispatchEvent(new CustomEvent('pwa-installable'));
       checkInstallability();
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('pwa-installable', checkInstallability);
+    
     window.addEventListener('appinstalled', () => {
       setIsInstalled(true);
       setShowPrompt(false);
     });
 
-    // Check on mount
+    // Check current state
     checkInstallability();
 
     return () => {
@@ -102,7 +104,7 @@ export default function PWAManager() {
                       <h4 className="text-sm font-black uppercase tracking-tight leading-none mb-1">Cracklix App</h4>
                       <div className="flex items-center gap-1.5 text-primary">
                          <Sparkles className="h-3 w-3" />
-                         <p className="text-[9px] font-black uppercase tracking-widest">Institutional Hub</p>
+                         <p className="text-[9px] font-black uppercase tracking-widest">Official Hub</p>
                       </div>
                    </div>
                 </div>
@@ -117,9 +119,9 @@ export default function PWAManager() {
                 </button>
              </div>
 
-             <div className="space-y-4">
+             <div className="space-y-4 text-left">
                 <p className="text-[13px] font-bold text-slate-300 leading-snug">
-                   🚀 <span className="text-white">Get Faster Access</span> to Punjab Govt Exams. Install for better performance.
+                   Practice better and faster by installing the Cracklix official app.
                 </p>
                 <Button 
                   onClick={handleInstallClick}

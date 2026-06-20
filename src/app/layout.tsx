@@ -1,4 +1,3 @@
-
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
@@ -17,8 +16,8 @@ const inter = Inter({
 });
 
 /**
- * @fileOverview Root Layout v48.0 (Brand Normalization).
- * FIXED: Normalized title to prevent duplication. Unified institutional icons.
+ * @fileOverview Root Layout v49.0 (Brand Normalization).
+ * FIXED: Strictly normalized title to prevent duplication. Unified institutional icons.
  */
 export const metadata: Metadata = {
   title: "Cracklix | Punjab's Smart Mock Test Platform",

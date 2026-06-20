@@ -1,9 +1,8 @@
-
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Production-Grade PWA Manifest v12.0.
- * BRAND SYSTEM: Unified institutional branding with correct icons and title case.
+ * @fileOverview Production-Grade PWA Manifest v13.0.
+ * BRAND SYSTEM: Unified institutional branding with normalized Title and Icons.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {

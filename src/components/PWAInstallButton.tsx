@@ -1,7 +1,6 @@
-
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, Smartphone, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -14,8 +13,8 @@ interface PWAInstallButtonProps {
 }
 
 /**
- * @fileOverview Hardened PWA Install Trigger v12.0.
- * LOGIC: Self-listening event node that captures beforeinstallprompt independently.
+ * @fileOverview Hardened PWA Install Trigger v13.0.
+ * LOGIC: Synchronized with PWAManager. Captures direct beforeinstallprompt and custom sync event.
  */
 export default function PWAInstallButton({ 
   className, 
@@ -28,7 +27,7 @@ export default function PWAInstallButton({
   const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
 
-  const updateState = () => {
+  const updateState = useCallback(() => {
     if (typeof window === 'undefined') return;
     
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone;
@@ -37,42 +36,38 @@ export default function PWAInstallButton({
     const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(ios);
 
-    // If already installed, hide everything
-    if (isStandalone) {
-      setCanInstall(false);
-      return;
-    }
-
-    // Check for the captured prompt
+    // Button should be visible if not installed AND (deferredPrompt exists OR it is iOS)
     const hasPrompt = !!(window as any).deferredPrompt;
-    setCanInstall(hasPrompt || ios);
-  };
+    setCanInstall(!isStandalone && (hasPrompt || ios));
+  }, []);
 
   useEffect(() => {
     setMounted(true);
 
-    const handleBeforeInstallPrompt = (e: any) => {
+    const handlePrompt = (e: any) => {
+      // Prompt event captured at component level if manager missed it or mounted late
       e.preventDefault();
       (window as any).deferredPrompt = e;
-      setCanInstall(true);
-      // Synchronize all instances
-      window.dispatchEvent(new CustomEvent('pwa-installable'));
+      updateState();
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    // Listen for both native and custom sync event from PWAManager
+    window.addEventListener('beforeinstallprompt', handlePrompt);
     window.addEventListener('pwa-installable', updateState);
+    
     window.addEventListener('appinstalled', () => {
       setIsInstalled(true);
       setCanInstall(false);
     });
     
+    // Initial check
     updateState();
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('beforeinstallprompt', handlePrompt);
       window.removeEventListener('pwa-installable', updateState);
     };
-  }, []);
+  }, [updateState]);
 
   const handleInstall = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -89,8 +84,8 @@ export default function PWAInstallButton({
     const prompt = (window as any).deferredPrompt;
     if (!prompt) {
       toast({
-        title: "PWA Registry Active",
-        description: "Cracklix is optimized. Use your browser's install menu or check if already installed.",
+        title: "PWA Hub Ready",
+        description: "Your browser hasn't triggered the install handshake yet. Try reloading or check your settings.",
       });
       return;
     }
@@ -121,7 +116,7 @@ export default function PWAInstallButton({
       )}
     >
       {isIOS ? <Smartphone className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-      {showLabel && (isIOS ? "Install App" : "Download App")}
+      {showLabel && (isIOS ? "Install App" : "Install App")}
       <Sparkles className="h-3 w-3 text-primary animate-pulse" />
     </Button>
   );
