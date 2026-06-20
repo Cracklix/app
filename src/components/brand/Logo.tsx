@@ -17,9 +17,8 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview Cracklix Maximized Brand Identity v58.0.
- * UPDATED: Optimized scaling to fill header heights (72px/88px) with maximum fidelity.
- * FIXED: Removed object-contain for icons to allow edge-to-edge ring visibility.
+ * @fileOverview Cracklix Maximized Brand Identity v59.0.
+ * FIXED: Removed 'h-full' from wrappers to prevent layout/overlap bugs in footers and flex containers.
  */
 export default function Logo({
   className = "",
@@ -43,7 +42,7 @@ export default function Logo({
 
   const content = (
     <div className={cn(
-      "relative shrink-0 flex items-center transition-all duration-300 h-full",
+      "relative shrink-0 flex items-center transition-all duration-300",
       align === 'center' && "mx-auto justify-center",
       align === 'right' && "justify-end",
       className
@@ -57,8 +56,8 @@ export default function Logo({
         className={cn(
           "transition-all flex-shrink-0 w-auto",
           isIcon 
-            ? "h-11 md:h-14 object-center scale-110" // Maximum visibility for the ring
-            : "h-[64px] md:h-[82px] object-contain", // Optimized for 72px/88px headers
+            ? "h-11 md:h-14 object-center scale-110" 
+            : "h-[64px] md:h-[82px] object-contain",
           imgClassName
         )}
       />
@@ -71,7 +70,7 @@ export default function Logo({
         href={href || "/"}
         onClick={onClick}
         className={cn(
-          "flex items-center select-none hover:opacity-90 transition-opacity flex-shrink-0 h-full",
+          "flex items-center select-none hover:opacity-90 transition-opacity flex-shrink-0",
           align === 'center' && "w-full justify-center"
         )}
       >

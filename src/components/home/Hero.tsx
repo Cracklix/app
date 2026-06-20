@@ -22,8 +22,8 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Restored Hero Hub v9.0 (Strictly Real Data).
- * UPDATED: Removed all hardcoded 'fake' numbers. Now strictly follows the database.
+ * @fileOverview Official Restored Hero Hub v10.0 (Typography Hardened).
+ * UPDATED: Removed 'uppercase' from buttons for Title Case look.
  */
 
 export default function Hero() {
@@ -48,7 +48,6 @@ export default function Hero() {
   };
 
   const trustBadgeContent = useMemo(() => {
-    // Priority: 1. Manual Admin Override, 2. Real Database Count, 3. Zero
     const count = settings?.trustBadgeCount !== undefined ? settings.trustBadgeCount : (stats?.totalUsers || 0);
     const label = settings?.trustBadgeText || "Aspirants Preparing on Cracklix";
     return `${count.toLocaleString()}+ ${label}`;
@@ -123,7 +122,7 @@ export default function Hero() {
                   (item) => (
                     <span
                       key={item}
-                      className="px-4 py-2 rounded-full bg-white border text-sm font-bold text-slate-500 hover:bg-slate-50 transition-colors uppercase tracking-tight"
+                      className="px-4 py-2 rounded-full bg-white border text-sm font-bold text-slate-500 hover:bg-slate-50 transition-colors tracking-tight"
                     >
                       {item}
                     </span>
@@ -185,7 +184,7 @@ export default function Hero() {
             <div className="flex flex-wrap gap-4 mt-10 w-full justify-center">
               <Button
                 asChild
-                className="h-14 px-8 rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-600/20 border-none text-white font-black uppercase text-[10px] tracking-widest gap-3"
+                className="h-14 px-8 rounded-2xl bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-600/20 border-none text-white font-bold text-sm tracking-tight gap-3"
               >
                 <Link href="/mocks">
                   Start Free Mock Test
@@ -196,7 +195,7 @@ export default function Hero() {
               <Button
                 asChild
                 variant="outline"
-                className="h-14 px-8 rounded-2xl border-slate-200 bg-white font-black text-slate-700 hover:bg-slate-50 uppercase text-[10px] tracking-widest gap-3"
+                className="h-14 px-8 rounded-2xl border-slate-200 bg-white font-bold text-slate-700 hover:bg-slate-50 text-sm tracking-tight gap-3"
               >
                 <Link href="/pass">
                    <Gem className="h-4 w-4 text-primary" />
@@ -244,7 +243,7 @@ function FeatureCard({ icon: Icon, label, sub, color, href }: any) {
         <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center mb-4 shadow-inner bg-slate-50 group-hover:scale-110 transition-transform")}>
           <Icon className={cn("h-5 w-5", color)} />
         </div>
-        <p className="font-bold text-slate-900 text-[13px] leading-tight uppercase">{label}</p>
+        <p className="font-bold text-slate-900 text-[13px] leading-tight">{label}</p>
         <p className="text-[9px] text-slate-400 mt-1 uppercase font-bold tracking-widest">{sub}</p>
       </Card>
     </Link>

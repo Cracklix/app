@@ -43,8 +43,8 @@ import PWAInstallButton from "@/components/PWAInstallButton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Standardized Navbar Hub v47.0 (Logo Optimized).
- * FIXED: Maximized logo height to fill 72px/88px header space.
+ * @fileOverview Standardized Navbar Hub v48.0 (Typography Cleaned).
+ * FIXED: Removed 'uppercase' from links and dropdown menus.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);

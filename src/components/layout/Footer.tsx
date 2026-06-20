@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from "react";
@@ -21,8 +20,8 @@ import {
 } from "@/lib/constants";
 
 /**
- * Production Footer v1.7
- * BRAND SYSTEM: Maximized logo height (72px mobile / 96px desktop) for authoritative presence.
+ * Production Footer v1.8
+ * FIXED: Overlap resolution and Title Case normalization.
  */
 
 export default function Footer() {
@@ -36,7 +35,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
 
           {/* Brand Section */}
-          <div className="space-y-8 flex flex-col items-start">
+          <div className="space-y-8 flex flex-col items-start text-left">
 
             <Logo
               variant="dark"
@@ -44,24 +43,22 @@ export default function Footer() {
               imgClassName="h-[72px] md:h-[96px]"
             />
 
-            <p className="max-w-[300px] text-[15px] leading-relaxed text-slate-300 text-left">
+            <p className="max-w-[300px] text-[15px] leading-relaxed text-slate-300">
               Punjab's most advanced government exam platform,
               built for serious aspirants preparing for success.
             </p>
 
-            <div className="space-y-3 text-left">
+            <div className="space-y-4">
 
               <div className="flex items-center gap-3 text-[13px] text-slate-400">
-                <MapPin className="h-4 w-4 shrink-0" />
-
+                <MapPin className="h-4 w-4 shrink-0 text-primary" />
                 <span>
                   Shergarh, Bathinda, Punjab
                 </span>
               </div>
 
               <div className="flex items-center gap-3 text-[13px] text-slate-400">
-                <ShieldCheck className="h-4 w-4 shrink-0" />
-
+                <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
                 <span>
                   Institutional Registry Verified
                 </span>
@@ -69,7 +66,7 @@ export default function Footer() {
 
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 pt-2">
 
               <SocialIcon
                 href={TELEGRAM_GROUP}
@@ -88,7 +85,7 @@ export default function Footer() {
           {/* Support */}
           <div className="space-y-8 text-left">
 
-            <h3 className="text-lg font-bold tracking-tight text-white uppercase">
+            <h3 className="text-lg font-bold tracking-tight text-white">
               Support Hub
             </h3>
 
@@ -117,7 +114,7 @@ export default function Footer() {
           {/* Resources */}
           <div className="space-y-8 text-left">
 
-            <h3 className="text-lg font-bold tracking-tight text-white uppercase">
+            <h3 className="text-lg font-bold tracking-tight text-white">
               Resources
             </h3>
 
@@ -146,7 +143,7 @@ export default function Footer() {
           {/* Contact */}
           <div className="space-y-8 text-left">
 
-            <h3 className="text-lg font-bold tracking-tight text-white uppercase">
+            <h3 className="text-lg font-bold tracking-tight text-white">
               Connect With Us
             </h3>
 
@@ -154,7 +151,7 @@ export default function Footer() {
 
               <div className="group flex items-center gap-4">
 
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-primary">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-primary border border-white/5">
                   <Phone className="h-4 w-4" />
                 </div>
 
@@ -169,7 +166,7 @@ export default function Footer() {
 
               <div className="group flex items-center gap-4">
 
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-primary">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-primary border border-white/5">
                   <Mail className="h-4 w-4" />
                 </div>
 
@@ -207,7 +204,7 @@ export default function Footer() {
             © {currentYear} Cracklix. All Rights Reserved.
           </p>
 
-          <p className="hidden text-[14px] text-slate-500 md:block">
+          <p className="hidden text-[14px] text-slate-500 md:block font-bold">
             Punjab's Leading Preparation Ecosystem.
           </p>
 
@@ -230,7 +227,7 @@ function FooterLink({
     <li>
       <Link
         href={href}
-        className="text-[15px] text-slate-400 transition-colors hover:text-primary"
+        className="text-[15px] text-slate-400 transition-colors hover:text-primary font-medium"
       >
         {children}
       </Link>
@@ -250,7 +247,7 @@ function SocialIcon({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-white/5 text-white shadow-lg transition-all duration-300 hover:bg-primary"
+      className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-white/5 text-white shadow-lg transition-all duration-300 hover:bg-primary border border-white/5"
     >
       {icon}
     </a>
