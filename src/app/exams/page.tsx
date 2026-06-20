@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo, useEffect, useState } from "react"
@@ -15,8 +16,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Exam List Landing v11.0.
- * FIXED: Removed aggressive uppercase and implemented premium Title Case.
+ * @fileOverview Institutional Exam List Landing v12.0.
+ * FIXED: Implemented responsive mobile typography scale (30px to 64px).
  */
 
 const ACRONYMS = ["PSSSB", "PPSC", "PUNJAB POLICE", "PSPCL", "PSTCL", "PSTET", "CTET", "MCQ", "MCQS", "PYQ", "PYQS", "GK", "CA"];
@@ -79,7 +80,7 @@ export default function ExamsEntryPage() {
             Choose Your <span className="text-primary">Exam Category</span>
           </h1>
           <p className="text-slate-500 font-medium text-sm md:text-lg lg:text-2xl max-w-3xl leading-relaxed">
-            Select a recruitment vertical to browse official centers and specific exam preparation resources.
+            Select a vertical to browse official centers and specific exam preparation resources.
           </p>
         </div>
 
@@ -92,7 +93,7 @@ export default function ExamsEntryPage() {
                 return (
                   <Link key={cat.id} href={`/exams/category/${cat.id}`}>
                      <Card className="border-none shadow-xl hover:shadow-5xl hover:translate-y-[-12px] transition-all duration-700 rounded-[2.5rem] md:rounded-[3.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100">
-                        <CardContent className="p-8 md:p-10 lg:p-14 flex flex-col h-full">
+                        <CardContent className="p-6 md:p-10 lg:p-14 flex flex-col h-full">
                            <div className="flex justify-between items-start mb-8 md:mb-12">
                               <div className={cn("h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 rounded-2xl md:rounded-[2.2rem] flex items-center justify-center transition-all group-hover:shadow-2xl shadow-inner relative overflow-hidden shrink-0 bg-slate-50 text-slate-300")}>
                                  {CATEGORY_ICONS[cat.id] || <ShieldCheck className="h-8 w-8 md:h-10 md:w-10" />}
@@ -103,16 +104,16 @@ export default function ExamsEntryPage() {
                            </div>
                            
                            <div className="space-y-3 md:space-y-5 flex-1">
-                              <h3 className="font-black text-3xl md:text-4xl lg:text-5xl text-[#0F172A] leading-[1.1] tracking-tight group-hover:text-primary transition-colors break-words">
+                              <h3 className="font-black text-[30px] sm:text-[34px] md:text-[42px] lg:text-[56px] xl:text-[64px] text-[#0F172A] leading-[1.05] tracking-tight group-hover:text-primary transition-colors break-words line-clamp-3">
                                  {toTitleCase(cat.title)}
                               </h3>
-                              <p className="text-xs md:text-base lg:text-lg font-medium text-slate-400 leading-relaxed">
+                              <p className="text-sm md:text-base lg:text-lg font-medium text-slate-400 leading-relaxed">
                                  {cat.description}
                               </p>
                            </div>
 
                            <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-slate-50">
-                              <Button variant="ghost" className="w-full h-12 md:h-14 rounded-xl md:rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-bold text-sm tracking-tight gap-3 border-none">
+                              <Button variant="ghost" className="w-full h-12 md:h-14 rounded-xl md:rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-bold text-xs md:text-sm tracking-tight gap-3 border-none">
                                  Open Exam Center <ChevronRight className="h-4 w-4" />
                               </Button>
                            </div>

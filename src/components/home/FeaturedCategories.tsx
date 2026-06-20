@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -17,8 +18,8 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Elite Exam Categories Hub v22.0.
- * FIXED: Implemented Title Case and reduced typography for full name visibility.
+ * @fileOverview Elite Exam Categories Hub v23.0.
+ * FIXED: Implemented responsive typography scale (30px to 64px) for mobile balance.
  */
 
 const CATEGORY_META = [
@@ -108,8 +109,8 @@ export default function FeaturedCategories() {
                 transition={{ delay: idx * 0.05 }}
               >
                  <Link href={`/exams/category/${cat.id}`}>
-                    <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-8px] transition-all duration-500 rounded-[2rem] md:rounded-[2.5rem] bg-white group overflow-hidden min-h-[320px] md:min-h-[380px] flex flex-col p-6 md:p-8 relative">
-                       <div className={cn("h-14 w-14 md:h-16 md:w-16 rounded-[1.2rem] flex items-center justify-center mb-6 shadow-inner transition-transform group-hover:scale-110 relative shrink-0", cat.bgColor, cat.color)}>
+                    <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-8px] transition-all duration-500 rounded-[2rem] md:rounded-[2.5rem] bg-white group overflow-hidden min-h-[320px] md:min-h-[440px] flex flex-col p-6 md:p-10 relative">
+                       <div className={cn("h-14 w-14 md:h-20 md:w-20 lg:h-24 lg:w-24 rounded-[1.2rem] md:rounded-[2.2rem] flex items-center justify-center mb-6 shadow-inner transition-transform group-hover:scale-110 relative shrink-0", cat.bgColor, cat.color)}>
                           <div className="h-full w-full flex items-center justify-center overflow-hidden rounded-xl relative p-2.5">
                             <Image 
                               src={cat.icon} 
@@ -122,16 +123,16 @@ export default function FeaturedCategories() {
                        </div>
                        
                        <div className="space-y-4 flex-1 min-w-0">
-                          <h3 className="font-black text-3xl md:text-4xl leading-[1.1] tracking-tight text-[#0F172A] group-hover:text-primary transition-colors break-words">
+                          <h3 className="font-black text-[30px] sm:text-[34px] md:text-[42px] lg:text-[56px] xl:text-[64px] leading-[1.05] tracking-tight text-[#0F172A] group-hover:text-primary transition-colors break-words line-clamp-3">
                             {cat.title}
                           </h3>
-                          <p className="text-[10px] md:text-sm font-semibold text-slate-400 tracking-tight leading-snug">
+                          <p className="text-sm md:text-base lg:text-lg font-medium text-slate-400 tracking-tight leading-snug">
                             {cat.desc}
                           </p>
                        </div>
 
                        <div className="mt-auto pt-4 border-t border-slate-50 flex items-center justify-between">
-                          <span className="text-[10px] font-bold text-slate-500 tracking-tight">{count} Exams Live</span>
+                          <span className="text-xs md:text-sm font-bold text-slate-500 tracking-tight">{count} Exams Live</span>
                           <div className="h-8 w-8 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all text-slate-300 shadow-sm border border-slate-100">
                              <ChevronRight className="h-4 w-4" />
                           </div>
