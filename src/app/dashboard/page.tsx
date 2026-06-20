@@ -32,8 +32,7 @@ import ShareButton from "@/components/navigation/ShareButton"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v30.0 (Language Simplified).
- * SIMPLIFIED: Replaced technical jargon with simple student-friendly terms.
+ * @fileOverview Student Dashboard v31.0 (Simplified Language).
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading, profileLoading } = useUser() as any;

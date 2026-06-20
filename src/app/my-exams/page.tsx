@@ -36,8 +36,7 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @file Overview My Hub Dashboard v3.2.
- * UPDATED: Steady Shell pattern - Navbar is always visible.
+ * @file Overview My Hub Dashboard v3.3.
  */
 
 export default function MyExamsPage() {
@@ -141,7 +140,7 @@ export default function MyExamsPage() {
                      <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Aspirant Prep Hub</span>
                   </div>
                   <h1 className="text-4xl md:text-7xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-none">MY <span className="text-primary">HUB</span></h1>
-                  <p className="text-sm md:text-xl text-slate-400 font-medium max-w-xl">Manage your selected exams and track preparation nodes.</p>
+                  <p className="text-sm md:text-xl text-slate-400 font-medium max-w-xl">Manage your selected exams and track your progress.</p>
                </div>
                <Button asChild className="h-16 px-10 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-4xl gap-3">
                   <Link href="/exams"><Plus className="h-5 w-5 text-primary" /> Select More Exams</Link>
@@ -171,7 +170,7 @@ export default function MyExamsPage() {
                       <Card key={exam.id} className="border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100 relative">
                         {isTarget && (
                            <div className="absolute top-0 right-0 p-6 z-20">
-                              <Badge className="bg-emerald-500 text-white border-none shadow-lg px-3 py-1 font-black text-[8px] uppercase flex items-center gap-1.5 rounded-lg">
+                              <Badge className="bg-emerald-50 text-white border-none shadow-lg px-3 py-1 font-black text-[8px] uppercase flex items-center gap-1.5 rounded-lg">
                                  <CheckCircle2 className="h-3 w-3" /> CURRENT TARGET
                               </Badge>
                            </div>

@@ -38,9 +38,7 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Institutional Exam Hub v37.0 (Typography Hardened).
- * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
- * FIXED: Added Short Title logic to handle long institutional names.
+ * @fileOverview Institutional Exam Hub v38.0 (Typography Simplified).
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];

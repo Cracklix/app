@@ -16,8 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Hub Explorer v13.0 (Typography Overhaul).
- * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
+ * @fileOverview Institutional Hub Explorer v13.0 (Simplified).
  */
 
 export default function HubExamsPage() {
@@ -141,7 +140,7 @@ export default function HubExamsPage() {
 
                           <div className="space-y-2 flex-1">
                              <h3 className="text-xl md:text-2xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors line-clamp-2">{exam.name}</h3>
-                             <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{stats.full + stats.subject + stats.pyq + stats.sectional} PREPARATION NODES</p>
+                             <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{stats.full + stats.subject + stats.pyq + stats.sectional} TESTS AVAILABLE</p>
                           </div>
 
                           <div className="mt-6 md:mt-8">

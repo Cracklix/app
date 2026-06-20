@@ -16,8 +16,7 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Download Center v2.3.
- * SECURITY: Strict Pass Expiry Audit for Premium Assets.
+ * @fileOverview Institutional Download Center v2.4 (Simplified Language).
  */
 
 export default function NotesLibrary() {
@@ -106,7 +105,7 @@ export default function NotesLibrary() {
                 <h2 className="text-3xl md:text-4xl font-headline font-black uppercase leading-tight">Master the <br/> Punjab Study Base</h2>
                 <p className="text-slate-400 text-base md:text-lg font-medium">Download our exclusive summary guides verified for upcoming state exams.</p>
                 <Button asChild className="w-full md:w-auto h-16 px-12 bg-white text-black hover:bg-slate-200 font-black uppercase tracking-widest text-xs rounded-2xl gap-3 shadow-2xl mt-4 border-none">
-                   <Link href="/pass">Unlock Premium Repository <Zap className="h-5 w-5 fill-current" /></Link>
+                   <Link href="/pass">Unlock Premium Resources <Zap className="h-5 w-5 fill-current" /></Link>
                 </Button>
              </div>
           </div>
@@ -169,7 +168,7 @@ function DownloadCard({ asset, profile }: { asset: any, profile: any }) {
                   {asset.isFree ? (
                      <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">FREE ASSET</span>
                   ) : (
-                     <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">ELITE HUB</span>
+                     <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">ELITE PASS</span>
                   )}
                </div>
                <h3 className="text-xl md:text-2xl font-headline font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors flex-1 uppercase">
