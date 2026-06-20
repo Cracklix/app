@@ -33,8 +33,8 @@ import ShareButton from "@/components/navigation/ShareButton"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v33.0 (Optimized).
- * PERFORMANCE: Consolidated metrics to prevent skeleton-lock.
+ * @fileOverview Student Dashboard v34.0 (Onboarding Protected).
+ * FIXED: Redirects incomplete profiles to /profile-setup.
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading, profileLoading } = useUser() as any;
@@ -44,8 +44,18 @@ export default function StudentDashboard() {
 
   useEffect(() => {
     setMounted(true)
-    if (!authLoading && !user) router.push("/login")
-  }, [user, authLoading, router])
+  }, [])
+
+  useEffect(() => {
+    if (mounted && !authLoading) {
+      if (!user) {
+        router.push("/login");
+      } else if (profile && (!profile.phone || !profile.targetExam)) {
+        // Force completion of profile if missing mandatory fields
+        router.push("/profile-setup");
+      }
+    }
+  }, [user, profile, authLoading, router, mounted])
 
   // Optimize: Fetch results once and derive all metrics
   const resultsQuery = useMemo(() => {
@@ -74,7 +84,14 @@ export default function StudentDashboard() {
     return { total, avgAccuracy: avgAcc, streak: uniqueDays.size, readiness, hours: timeFormatted, list: sorted }
   }, [rawResults])
 
-  if (!mounted) return null;
+  if (!mounted || authLoading || (user && !profile)) return (
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-6">
+       <Zap className="h-10 w-10 text-primary animate-pulse" />
+       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Synchronizing Session...</p>
+    </div>
+  );
+
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-slate-50/50 pb-safe text-left">

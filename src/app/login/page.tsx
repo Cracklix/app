@@ -41,8 +41,8 @@ import Link from "next/link"
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Cracklix Premium Login Hub v71.0.
- * FIXED: Mobile bottom cut-off issue resolved by adding safe area padding.
+ * @fileOverview Cracklix Premium Login Hub v72.0 (Onboarding Fix).
+ * FIXED: New users are now redirected to /profile-setup instead of /dashboard.
  */
 
 const formatCompact = (num: number) => {
@@ -71,7 +71,7 @@ function LoginContent() {
   const [resetLoading, setResetLoading] = useState(false)
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false)
   
-  const { user, loading: authLoading } = useUser()
+  const { user, profile, loading: authLoading } = useUser()
   const router = useRouter()
   const searchParams = useSearchParams()
   const auth = useAuth()
@@ -85,9 +85,14 @@ function LoginContent() {
 
   useEffect(() => {
     if (!authLoading && user) {
-      router.replace(returnUrl);
+      // If profile is incomplete, force them to setup regardless of returnUrl
+      if (profile && (!profile.phone || !profile.targetExam)) {
+        router.replace('/profile-setup');
+      } else {
+        router.replace(returnUrl);
+      }
     }
-  }, [user, authLoading, router, returnUrl]);
+  }, [user, profile, authLoading, router, returnUrl]);
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -129,7 +134,7 @@ function LoginContent() {
         })
 
         toast({ title: "Account Created" })
-        router.replace(returnUrl)
+        router.replace('/profile-setup') // Force setup for new registration
       }
     } catch (error: any) {
       toast({ variant: "destructive", title: "Error", description: error.message })
@@ -158,11 +163,11 @@ function LoginContent() {
           updatedAt: serverTimestamp(), status: 'Free', passType: 'FREE', activeDeviceId: sessionId,
           sessionVersion: 1, lastLoginAt: serverTimestamp(), pinnedExams: [], verified: true
         })
+        router.replace('/profile-setup') // Force setup for new Google user
       } else {
         await updateDoc(userRef, { activeDeviceId: sessionId, sessionVersion: increment(1), lastLoginAt: serverTimestamp(), updatedAt: serverTimestamp() });
+        router.replace(returnUrl)
       }
-      
-      router.replace(returnUrl)
     } catch (error: any) {
       toast({ variant: "destructive", title: "Error", description: error.message })
       setLoading(false)
@@ -234,7 +239,7 @@ function LoginContent() {
         <motion.div 
            initial={{ opacity: 0, scale: 0.95 }} 
            animate={{ opacity: 1, scale: 1 }} 
-           className="w-full max-w-[500px] pt-4 lg:pt-20 pb-32" // Added pb-32 for mobile safe area
+           className="w-full max-w-[500px] pt-4 lg:pt-20 pb-32" 
         >
           <Card className="border-none shadow-5xl lg:shadow-none bg-white/92 backdrop-blur-[20px] rounded-[32px] p-8 md:p-12 space-y-8">
             <div className="space-y-1.5 text-center lg:text-left">
