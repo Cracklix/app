@@ -17,13 +17,13 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview Master Cracklix Branding Node v2.1.
+ * @fileOverview Master Cracklix Branding Node v2.2.
  * Strictly implements the official brand guidelines:
  * - variant="light": Uses cracklix-logo-dark.png (for light backgrounds)
  * - variant="dark": Uses cracklix-logo-light.png (for dark backgrounds)
  * - variant="icon": Uses cracklix-icon.png
  * 
- * UPDATED: Increased default responsive heights for better visibility.
+ * UPDATED: Optimized for maximized header visibility (72px desktop / 62px mobile).
  */
 export default function Logo({
   className = "",
@@ -46,10 +46,6 @@ export default function Logo({
   const src = assets[iconOnly ? 'icon' : variant];
   const isIcon = variant === 'icon' || iconOnly;
 
-  // Header: 52px desktop / 42px mobile
-  // Sidebar: 42px desktop / 36px mobile
-  // Login: 60px desktop / 50px mobile
-
   const content = (
     <div className={cn(
       "relative shrink-0 flex items-center transition-all duration-300",
@@ -61,12 +57,12 @@ export default function Logo({
       <Image
         src={src}
         alt="Cracklix"
-        width={isIcon ? 48 : 320}
-        height={isIcon ? 48 : 100}
+        width={isIcon ? 48 : 400}
+        height={isIcon ? 48 : 120}
         priority={priority}
         className={cn(
-          "object-contain w-auto",
-          !isIcon && "h-[42px] md:h-[52px]",
+          "object-contain w-auto transition-all",
+          !isIcon && (imgClassName || "h-[42px] md:h-[52px]"),
           imgClassName
         )}
       />
