@@ -4,10 +4,10 @@ import React, { useState, Suspense, useEffect, useTransition } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import Logo from "@/components/brand/Logo"
-import { Mail, Lock, User, Phone, Eye, EyeOff, Loader2, ShieldAlert, CheckCircle2 } from "lucide-react"
+import { Mail, Lock, User, Phone, Eye, EyeOff, Loader2, ShieldCheck, CheckCircle2, Zap, ArrowRight, Star } from "lucide-react"
 import { useAuth, useFirestore, useUser } from "@/firebase"
 import { 
   signInWithEmailAndPassword, 
@@ -28,8 +28,8 @@ import { cn } from "@/lib/utils"
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Login Hub v16.0
- * BRAND SYSTEM: Maximized logo height (100px) for institutional authority.
+ * @fileOverview Institutional Login Hub v17.0
+ * DESIGN: Two-column layout for desktop with maximized input ergonomics.
  */
 export default function LoginPage() {
   return (
@@ -99,14 +99,10 @@ function LoginContent() {
     try {
       if (mode === 'login') {
         const creds = await signInWithEmailAndPassword(auth, email, password)
-        
-        // Reload user to get latest verification status
         await creds.user.reload();
         
         if (!creds.user.emailVerified) {
-          // If not verified, send email again and redirect
           await sendEmailVerification(creds.user);
-          toast({ title: "Verification Required", description: "Check your inbox for the link." })
           router.push('/verify-email');
           return;
         }
@@ -119,8 +115,6 @@ function LoginContent() {
         const userNode = userCredential.user
         
         await updateProfile(userNode, { displayName: name })
-        
-        // Send initial verification email
         await sendEmailVerification(userNode);
         
         const isSuperAdmin = email && SUPER_ADMIN_WHITELIST.includes(email.toLowerCase());
@@ -139,8 +133,6 @@ function LoginContent() {
           verified: false
         })
 
-        await updateActiveDevice(userNode.uid);
-        toast({ title: "Verify Your Email", description: "A link has been sent to your inbox." })
         router.push('/verify-email');
       }
     } catch (error: any) {
@@ -202,153 +194,217 @@ function LoginContent() {
   const isActuallyLoading = loading || isPending;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-4 md:p-10 relative overflow-hidden text-[#0F172A]">
-      <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[140px] rounded-full" />
+    <div className="min-h-screen bg-white flex flex-col lg:flex-row text-[#0F172A] text-left">
       
-      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="z-10 w-full max-w-[440px] space-y-6">
-        
-        <Logo 
-          variant="light" 
-          align="center" 
-          className="mb-8" 
-          imgClassName="h-[80px] md:h-[100px]"
-        />
+      {/* BRANDING SIDE PANEL (DESKTOP ONLY) */}
+      <div className="hidden lg:flex flex-1 bg-[#0B1528] text-white p-20 flex-col justify-between relative overflow-hidden">
+        <div className="absolute inset-0 bg-primary/5 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2" />
+        <div className="relative z-10 space-y-12">
+           <Logo variant="dark" imgClassName="h-[60px]" />
+           <div className="space-y-6">
+              <h1 className="text-5xl font-black leading-[1.1] uppercase tracking-tight">
+                Punjab&apos;s Leading <br/> 
+                <span className="text-primary">Exam Platform</span>
+              </h1>
+              <p className="text-xl text-slate-400 font-medium max-w-md">
+                Master your preparation with institutional-grade mock tests and real-time state merit rankings.
+              </p>
+           </div>
+           <div className="space-y-6 pt-10">
+              <BenefitItem text="500+ Practice Mocks" />
+              <BenefitItem text="Bilingual Engine (EN/PA)" />
+              <BenefitItem text="Official Pattern Audit" />
+              <BenefitItem text="AI-Driven Rationale" />
+           </div>
+        </div>
+        <div className="relative z-10 flex items-center gap-4 text-slate-500">
+           <ShieldCheck className="h-6 w-6 text-primary" />
+           <p className="text-[10px] font-black uppercase tracking-[0.3em]">Institutional Registry Node v4.0</p>
+        </div>
+      </div>
 
-        {sessionTerminated && (
-          <div className="bg-amber-50 border border-amber-100 p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] flex items-center gap-4 animate-in slide-in-from-top-6 duration-700 shadow-sm">
-            <ShieldAlert className="h-6 w-6 text-amber-600 shrink-0" />
-            <p className="text-xs md:sm font-bold text-amber-700 tracking-tight leading-snug text-left">
-              Your session ended because this account was signed in on another device.
-            </p>
+      {/* FORM PANEL */}
+      <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 lg:p-24 relative overflow-y-auto custom-scrollbar">
+        <div className="w-full max-w-[640px] space-y-10">
+          
+          <div className="lg:hidden text-center space-y-6 mb-10">
+             <Logo variant="light" align="center" imgClassName="h-[50px]" />
+             {sessionTerminated && (
+                <div className="bg-amber-50 border border-amber-100 p-4 rounded-2xl flex items-center gap-4 text-left">
+                  <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
+                  <p className="text-xs font-bold text-amber-700 leading-tight">Session terminated. Account active on another device.</p>
+                </div>
+             )}
           </div>
-        )}
 
-        <Card className="border-slate-100 bg-white/80 backdrop-blur-3xl shadow-5xl rounded-[1.5rem] md:rounded-[3.5rem] overflow-hidden border-2">
-          <div className="h-1.5 w-full bg-primary" />
-          <CardHeader className="text-center pt-8 md:pt-14 pb-4 px-4 md:px-16">
-            <CardTitle className="text-2xl md:text-4xl font-extrabold tracking-tight text-[#0F172A]">
-              {mode === 'login' ? "Login" : "Sign Up"}
-            </CardTitle>
-            <CardDescription className="text-slate-400 font-bold text-[10px] md:text-[12px] tracking-tight mt-2 md:mt-3">Institutional Registry Access</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6 md:space-y-10 pb-10 md:pb-20 px-4 md:px-16 text-left">
-            <form onSubmit={handleEmailAuth} className="space-y-4 md:space-y-6">
-              {mode === 'register' && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-bold text-slate-400 ml-1">Full Identity</Label>
+          <div className="space-y-4">
+             <h2 className="text-3xl md:text-5xl font-black tracking-tight text-[#0F172A]">
+                {mode === 'login' ? "Welcome Back" : "Initialize Account"}
+             </h2>
+             <p className="text-slate-500 font-bold text-[12px] md:text-[14px] uppercase tracking-widest leading-none">
+                {mode === 'login' ? "Login to access your hub" : "Start your journey to selection"}
+             </p>
+          </div>
+
+          <form onSubmit={handleEmailAuth} className="space-y-6">
+            {mode === 'register' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Full Identity</Label>
+                  <div className="relative">
+                    <User className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
                     <Input 
                       value={name} 
                       onChange={(e) => setName(e.target.value)} 
                       required 
-                      className="h-12 md:h-16 rounded-xl md:rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-sm md:text-lg font-bold px-4 md:px-6 shadow-inner" 
+                      className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-lg font-bold pl-16 shadow-inner" 
                       placeholder="e.g. Arsh Grewal" 
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-bold text-slate-400 ml-1">Mobile Node</Label>
-                    <div className="relative">
-                      <span className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm md:text-lg">+91</span>
-                      <Input 
-                        value={phone} 
-                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0,10))} 
-                        required 
-                        className="h-12 md:h-16 rounded-xl md:rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-sm md:text-lg font-bold pl-16 md:pl-20 px-4 md:px-6 shadow-inner" 
-                        placeholder="10-digit number" 
-                      />
-                    </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Mobile Node</Label>
+                  <div className="relative">
+                    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">+91</span>
+                    <Input 
+                      value={phone} 
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0,10))} 
+                      required 
+                      className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-lg font-bold pl-16 shadow-inner" 
+                      placeholder="10 Digit Mobile Number" 
+                    />
                   </div>
                 </div>
-              )}
-              <div className="space-y-2">
-                <Label className="text-[10px] font-bold text-slate-400 ml-1">Email Address</Label>
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Email Address</Label>
+              <div className="relative">
+                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
                 <Input 
                   type="email" 
                   value={email} 
                   onChange={(e) => setEmail(e.target.value)} 
                   required 
-                  className="h-12 md:h-16 rounded-xl md:rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-sm md:text-lg font-bold px-4 md:px-6 shadow-inner" 
+                  className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-lg font-bold pl-16 shadow-inner" 
                   placeholder="name@domain.com" 
                 />
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold text-slate-400 ml-1">Password</Label>
+                <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Password</Label>
                 <div className="relative">
+                  <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
                   <Input 
                     type={showPassword ? "text" : "password"} 
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
                     required 
-                    className="h-12 md:h-16 rounded-xl md:rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary pr-12 md:pr-14 px-4 md:px-6 text-sm md:text-lg font-bold shadow-inner" 
-                    placeholder="Enter secret key" 
+                    className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary pl-16 pr-12 text-lg font-bold shadow-inner" 
+                    placeholder="Secret Key" 
                   />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
-                {mode === 'login' && (
-                  <div className="flex justify-end pr-1">
-                    <button type="button" onClick={() => setIsResetDialogOpen(true)} className="text-[10px] md:text-[12px] font-bold text-primary hover:text-blue-700 transition-colors tracking-tight">Recover Password?</button>
-                  </div>
-                )}
               </div>
               {mode === 'register' && (
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-bold text-slate-400 ml-1">Verify Password</Label>
+                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Confirm Secret</Label>
                   <div className="relative">
                     <Input 
                       type={showConfirmPassword ? "text" : "password"} 
                       value={confirmPassword} 
                       onChange={(e) => setConfirmPassword(e.target.value)} 
                       required 
-                      className="h-12 md:h-16 rounded-xl md:rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary pr-12 md:pr-14 px-4 md:px-6 text-sm md:text-lg font-bold shadow-inner" 
-                      placeholder="Repeat password" 
+                      className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary px-6 text-lg font-bold shadow-inner" 
+                      placeholder="Repeat" 
                     />
-                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">
+                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">
                       {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
                   </div>
                 </div>
               )}
-              <Button type="submit" className="w-full h-14 md:h-20 bg-primary hover:bg-blue-700 text-white font-bold text-base md:text-lg rounded-xl md:rounded-[2.5rem] shadow-4xl shadow-primary/20 border-none transition-all active:scale-95 tracking-tight" disabled={isActuallyLoading}>
-                {isActuallyLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (mode === 'login' ? "Login" : "Create Account")}
-              </Button>
-            </form>
-            <div className="flex items-center gap-4 py-2 md:py-4"><div className="h-px flex-1 bg-slate-100" /><span className="text-[10px] font-bold text-slate-300 tracking-tight">OR</span><div className="h-px flex-1 bg-slate-100" /></div>
-            <Button variant="outline" className="w-full h-12 md:h-16 border-slate-100 bg-white text-[#0F172A] gap-4 rounded-xl md:rounded-2xl font-bold text-sm hover:bg-slate-50 tracking-tight shadow-sm" onClick={handleGoogleSignIn} disabled={isActuallyLoading}>
-               <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="h-4 w-4 md:h-5 md:w-5" alt="G" /> Google Account
-            </Button>
-            <div className="text-center text-[11px] md:text-[14px] font-bold text-slate-400 tracking-tight mt-4">
-               {mode === 'login' ? (<p>New aspirant? <button onClick={() => setMode('register')} className="text-primary hover:text-blue-700 font-bold transition-colors ml-1">Create account</button></p>) : (<p>Already registered? <button onClick={() => mode === 'register' && setMode('login')} className="text-primary hover:text-blue-700 font-bold transition-colors ml-1">Login now</button></p>)}
             </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+
+            {mode === 'login' && (
+              <div className="flex justify-end">
+                <button type="button" onClick={() => setIsResetDialogOpen(true)} className="text-[11px] font-black uppercase tracking-widest text-primary hover:text-blue-700 transition-colors">Forgot Password?</button>
+              </div>
+            )}
+
+            <div className="pt-4 flex flex-col gap-6">
+              <Button type="submit" className="w-full h-16 md:h-20 bg-primary hover:bg-blue-700 text-white font-black text-xs md:text-sm uppercase tracking-[0.3em] rounded-[2rem] shadow-4xl shadow-primary/20 border-none transition-all active:scale-95" disabled={isActuallyLoading}>
+                {isActuallyLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (mode === 'login' ? "Access Hub" : "Create Account")}
+              </Button>
+
+              <div className="flex items-center gap-4 py-2"><div className="h-px flex-1 bg-slate-100" /><span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">OR</span><div className="h-px flex-1 bg-slate-100" /></div>
+
+              <Button variant="outline" className="w-full h-16 border-2 border-slate-100 bg-white text-[#0F172A] gap-4 rounded-2xl font-black text-xs md:text-sm hover:bg-slate-50 uppercase tracking-widest shadow-sm" onClick={handleGoogleSignIn} disabled={isActuallyLoading}>
+                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="h-5 w-5" alt="G" /> Google Registry
+              </Button>
+            </div>
+          </form>
+
+          <div className="text-center pt-8 border-t border-slate-50">
+             {mode === 'login' ? (
+                <p className="text-[13px] font-bold text-slate-400">
+                  New aspirant? 
+                  <button onClick={() => setMode('register')} className="text-primary hover:underline font-black uppercase tracking-widest ml-2">Register Now</button>
+                </p>
+             ) : (
+                <p className="text-[13px] font-bold text-slate-400">
+                  Already registered? 
+                  <button onClick={() => setMode('login')} className="text-primary hover:underline font-black uppercase tracking-widest ml-2">Login Hub</button>
+                </p>
+             )}
+          </div>
+        </div>
+      </div>
 
       <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
-        <DialogContent className="bg-white rounded-[2rem] md:rounded-[3rem] max-w-[90vw] sm:max-w-[400px] p-8 md:p-10 shadow-5xl text-left border-none">
+        <DialogContent className="bg-white rounded-[2rem] md:rounded-[3rem] max-w-[400px] p-10 shadow-5xl text-left border-none">
           <DialogHeader className="text-center space-y-4">
-            <div className="h-14 w-14 md:h-16 md:w-16 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto text-primary shadow-xl">
-              <Loader2 className={cn("h-7 w-7 md:h-8 md:w-8", resetLoading && "animate-spin")} />
+            <div className="h-14 w-14 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto text-primary shadow-xl">
+              {resetLoading ? <Loader2 className="h-7 w-7 animate-spin" /> : <RefreshCw className="h-7 w-7" />}
             </div>
-            <DialogTitle className="text-xl md:text-2xl font-bold tracking-tight text-[#0F172A]">Recover Node</DialogTitle>
-            <DialogDescription className="text-slate-400 text-sm font-medium tracking-tight leading-relaxed">Enter your email to receive a reset link.</DialogDescription>
+            <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tight text-[#0F172A]">Recover Node</DialogTitle>
+            <DialogDescription className="text-slate-400 text-sm font-bold uppercase tracking-widest text-center mt-2 leading-relaxed">Enter your registry email to receive a recovery link.</DialogDescription>
           </DialogHeader>
-          <div className="py-6 md:py-8 space-y-6">
+          <div className="py-8 space-y-6">
             <div className="space-y-2 text-left">
-              <Label className="text-[10px] md:text-[11px] font-bold text-slate-400 ml-1">Registry Email</Label>
+              <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Registry Email</Label>
               <Input 
                 type="email" 
                 value={resetEmail} 
                 onChange={(e) => setResetEmail(e.target.value)} 
                 placeholder="aspirant@cracklix.com" 
-                className="h-12 md:h-14 bg-slate-50 border-none rounded-xl focus-visible:ring-primary text-[#0F172A] text-sm md:text-base px-6 font-bold shadow-inner" 
+                className="h-14 bg-slate-50 border-none rounded-xl focus-visible:ring-primary text-[#0F172A] text-lg font-bold px-6 shadow-inner" 
               />
             </div>
           </div>
-          <DialogFooter><Button onClick={handleResetPassword} disabled={resetLoading} className="w-full h-14 md:h-16 bg-primary hover:bg-blue-700 text-white font-bold text-sm md:text-lg rounded-xl md:rounded-2xl shadow-4xl shadow-primary/20 transition-all border-none tracking-tight">{resetLoading ? "Transmitting..." : "Send Reset Link"}</Button></DialogFooter>
+          <DialogFooter>
+             <Button onClick={handleResetPassword} disabled={resetLoading} className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl transition-all border-none">
+                {resetLoading ? "Transmitting..." : "Send Reset Link"}
+             </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
   )
+}
+
+function BenefitItem({ text }: { text: string }) {
+   return (
+      <div className="flex items-center gap-4 text-slate-300">
+         <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/20">
+            <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+         </div>
+         <span className="text-sm font-black uppercase tracking-widest">{text}</span>
+      </div>
+   )
 }

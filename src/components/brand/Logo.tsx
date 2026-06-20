@@ -17,9 +17,11 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview Master Cracklix Branding Node v7.0.
- * BRAND SYSTEM: Maximized for institutional authority.
- * Sizing: 72px (Desktop) / 64px (Mobile) within 80px nodes.
+ * @fileOverview Standardized Cracklix Branding Node v8.0.
+ * SPECS: 
+ * Desktop: 48px height
+ * Tablet: 42px height
+ * Mobile: 36px height
  */
 export default function Logo({
   className = "",
@@ -55,7 +57,7 @@ export default function Logo({
         height={isIcon ? 64 : 180}
         priority={priority}
         className={cn(
-          "object-contain w-auto transition-all flex-shrink-0 h-[64px] md:h-[72px]",
+          "object-contain w-auto transition-all flex-shrink-0 h-[36px] sm:h-[42px] md:h-[48px]",
           imgClassName
         )}
       />

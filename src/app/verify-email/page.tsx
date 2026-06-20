@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useEffect } from "react"
@@ -13,8 +12,8 @@ import { useToast } from "@/hooks/use-toast"
 import { motion } from "framer-motion"
 
 /**
- * @fileOverview Institutional Verification Hub v2.0.
- * Enforces email validation link flow for secure aspirant registration.
+ * @fileOverview Institutional Verification Hub v3.0.
+ * UPDATED: Standardized Logo and Action Nodes for professional clarity.
  */
 
 export default function VerifyEmailPage() {
@@ -87,7 +86,7 @@ export default function VerifyEmailPage() {
       
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="z-10 w-full max-w-[480px] space-y-8">
         
-        <Logo variant="light" align="center" imgClassName="h-[60px]" />
+        <Logo variant="light" align="center" />
 
         <Card className="border-none shadow-5xl rounded-[2.5rem] bg-white overflow-hidden border border-slate-100">
            <div className="h-2 w-full bg-primary" />
@@ -96,52 +95,41 @@ export default function VerifyEmailPage() {
                  <Mail className="h-10 w-10" />
               </div>
               <div className="space-y-2">
-                 <CardTitle className="text-3xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Verify Your Email</CardTitle>
-                 <CardDescription className="text-slate-500 font-medium text-base">We have sent a secure verification link to:</CardDescription>
-                 <p className="text-primary font-black text-lg underline decoration-primary/20 underline-offset-8">{user?.email}</p>
+                 <CardTitle className="text-3xl font-black font-headline text-[#0F172A] uppercase tracking-tight leading-tight">Verify Your Email</CardTitle>
+                 <CardDescription className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-2">Institutional Security Handshake</CardDescription>
               </div>
            </CardHeader>
            
            <CardContent className="p-10 pt-6 space-y-8">
-              <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
-                 <div className="flex items-center gap-3 text-emerald-600">
-                    <CheckCircle2 className="h-5 w-5" />
-                    <p className="text-[10px] font-black uppercase tracking-widest">Next Steps</p>
-                 </div>
-                 <ul className="space-y-3">
-                    <li className="flex items-center gap-3 text-sm font-bold text-slate-600">
-                       <div className="h-1.5 w-1.5 rounded-full bg-slate-300" />
-                       Click the link in your email inbox
-                    </li>
-                    <li className="flex items-center gap-3 text-sm font-bold text-slate-600">
-                       <div className="h-1.5 w-1.5 rounded-full bg-slate-300" />
-                       Refresh status to activate access
-                    </li>
-                 </ul>
+              <div className="p-8 bg-slate-50 rounded-2xl border border-slate-100 space-y-4 shadow-inner">
+                 <p className="text-slate-500 font-medium text-sm text-center leading-relaxed">
+                   We have sent a secure verification link to: <br/>
+                   <span className="text-primary font-black text-lg underline decoration-primary/20 underline-offset-8 mt-2 block">{user?.email}</span>
+                 </p>
               </div>
 
               <div className="grid grid-cols-1 gap-4">
                  <Button onClick={handleRefreshStatus} className="w-full h-16 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[11px] tracking-[0.2em] rounded-2xl shadow-3xl transition-all active:scale-95 border-none gap-3">
-                    <ShieldCheck className="h-4 w-4" /> I've Verified My Email
+                    <ShieldCheck className="h-4 w-4" /> I&apos;ve Verified My Email
                  </Button>
 
                  <div className="grid grid-cols-2 gap-4">
                     <Button 
                       asChild
                       variant="outline" 
-                      className="h-14 border-slate-200 text-[#0F172A] font-bold uppercase text-[10px] tracking-widest rounded-2xl gap-2"
+                      className="h-14 border-slate-200 text-[#0F172A] font-black uppercase text-[9px] tracking-widest rounded-2xl gap-2 shadow-sm"
                     >
                        <a href="https://mail.google.com" target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-3.5 w-3.5" /> Open Gmail
+                          <ExternalLink className="h-3.5 w-3.5 text-primary" /> Open Gmail
                        </a>
                     </Button>
                     <Button 
                       onClick={handleResend} 
                       disabled={isResending || cooldown > 0} 
                       variant="outline" 
-                      className="h-14 border-slate-200 text-[#0F172A] font-bold uppercase text-[10px] tracking-widest rounded-2xl"
+                      className="h-14 border-slate-200 text-[#0F172A] font-black uppercase text-[9px] tracking-widest rounded-2xl shadow-sm"
                     >
-                       {isResending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                       {isResending ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <RefreshCw className="h-4 w-4 text-primary" />}
                        {cooldown > 0 ? `${cooldown}s` : "Resend Link"}
                     </Button>
                  </div>
@@ -156,8 +144,8 @@ export default function VerifyEmailPage() {
            </CardContent>
         </Card>
 
-        <div className="flex items-center justify-center gap-4 text-slate-400">
-           <ShieldCheck className="h-5 w-5 text-emerald-500" />
+        <div className="flex items-center justify-center gap-4 text-slate-300">
+           <ShieldCheck className="h-5 w-5" />
            <span className="text-[10px] font-black uppercase tracking-[0.3em]">Institutional Verification Hub</span>
         </div>
       </motion.div>

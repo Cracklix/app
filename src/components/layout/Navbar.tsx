@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -42,8 +41,10 @@ import { Badge } from "@/components/ui/badge";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Header v111.0 (Elite Dropdown Hardening).
- * FIXED: Added max-height and overflow-y-auto to fix the scroll issue in the profile hub.
+ * @fileOverview Institutional Header v112.0.
+ * SPECS:
+ * Desktop Height: 88px
+ * Mobile Height: 72px
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -83,13 +84,13 @@ export default function Navbar() {
   }, [profile]);
 
   if (!mounted) {
-    return <nav className="w-full border-b border-slate-100 bg-white h-20" />;
+    return <nav className="w-full border-b border-slate-100 bg-white h-[72px] md:h-[88px]" />;
   }
 
   return (
     <div className="sticky top-0 z-50 w-full font-body">
-      <nav className="w-full h-20 bg-white border-b border-slate-100 shadow-sm">
-        <div className="w-full max-w-7xl mx-auto px-2 md:px-4 h-full flex items-center justify-between gap-2 md:gap-4">
+      <nav className="w-full h-[72px] md:h-[88px] bg-white border-b border-slate-100 shadow-sm transition-all duration-300">
+        <div className="w-full max-w-7xl mx-auto px-4 h-full flex items-center justify-between gap-4">
 
           <div className="flex items-center shrink-0">
             <button
@@ -102,8 +103,7 @@ export default function Navbar() {
 
             <Logo
               variant="light"
-              className="ml-1 flex-shrink-0"
-              imgClassName="h-[64px] md:h-[72px]"
+              className="ml-2 md:ml-4 flex-shrink-0"
             />
           </div>
 

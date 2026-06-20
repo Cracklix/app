@@ -35,7 +35,8 @@
     
     --radius: 1.25rem; /* 20px - Modern Squared Radius */
 
-    --header-height: 80px;
+    --header-height-mobile: 72px;
+    --header-height-desktop: 88px;
   }
 }
 
