@@ -41,8 +41,8 @@ import Link from "next/link"
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Cracklix Premium Login Hub v72.0 (Onboarding Fix).
- * FIXED: New users are now redirected to /profile-setup instead of /dashboard.
+ * @fileOverview Cracklix Premium Login Hub v75.0 (Handshake Hardened).
+ * FIXED: Atomic session initialization to prevent "Session Expired" loops.
  */
 
 const formatCompact = (num: number) => {
@@ -85,10 +85,9 @@ function LoginContent() {
 
   useEffect(() => {
     if (!authLoading && user) {
-      // If profile is incomplete, force them to setup regardless of returnUrl
       if (profile && (!profile.phone || !profile.targetExam)) {
         router.replace('/profile-setup');
-      } else {
+      } else if (profile) {
         router.replace(returnUrl);
       }
     }
@@ -104,17 +103,19 @@ function LoginContent() {
     setLoading(true)
     try {
       if (mode === 'login') {
-        await signInWithEmailAndPassword(auth, email, password)
+        const credentials = await signInWithEmailAndPassword(auth, email, password)
+        
+        // Atomic Session Handshake
         const sessionId = crypto.randomUUID();
         localStorage.setItem('cracklix_session_id', sessionId);
         
-        const userRef = doc(db!, 'users', auth.currentUser!.uid);
-        updateDoc(userRef, { 
+        const userRef = doc(db!, 'users', credentials.user.uid);
+        await updateDoc(userRef, { 
           activeDeviceId: sessionId, 
           sessionVersion: increment(1), 
           lastLoginAt: serverTimestamp(), 
           updatedAt: serverTimestamp() 
-        }).catch(() => {});
+        });
 
         router.replace(returnUrl)
       } else {
@@ -134,10 +135,19 @@ function LoginContent() {
         })
 
         toast({ title: "Account Created" })
-        router.replace('/profile-setup') // Force setup for new registration
+        router.replace('/profile-setup')
       }
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Error", description: error.message })
+      let message = error.message;
+      if (error.code === 'auth/invalid-credential') {
+        message = "Incorrect email or password. Please try again.";
+      } else if (error.code === 'auth/user-not-found') {
+        message = "No account found with this email.";
+      } else if (error.code === 'auth/wrong-password') {
+        message = "Incorrect password.";
+      }
+      
+      toast({ variant: "destructive", title: "Auth Failed", description: message })
       setLoading(false)
     }
   }
@@ -150,9 +160,12 @@ function LoginContent() {
       const result = await signInWithPopup(auth, provider)
       const userNode = result.user
       if (!userNode.email) throw new Error("Email is required.");
+      
       const userRef = doc(db!, 'users', userNode.uid)
       const userSnap = await getDoc(userRef)
       const isSuperAdmin = SUPER_ADMIN_WHITELIST.includes(userNode.email.toLowerCase());
+      
+      // Atomic Session Handshake
       const sessionId = crypto.randomUUID();
       localStorage.setItem('cracklix_session_id', sessionId);
       
@@ -163,13 +176,18 @@ function LoginContent() {
           updatedAt: serverTimestamp(), status: 'Free', passType: 'FREE', activeDeviceId: sessionId,
           sessionVersion: 1, lastLoginAt: serverTimestamp(), pinnedExams: [], verified: true
         })
-        router.replace('/profile-setup') // Force setup for new Google user
+        router.replace('/profile-setup')
       } else {
-        await updateDoc(userRef, { activeDeviceId: sessionId, sessionVersion: increment(1), lastLoginAt: serverTimestamp(), updatedAt: serverTimestamp() });
+        await updateDoc(userRef, { 
+          activeDeviceId: sessionId, 
+          sessionVersion: increment(1), 
+          lastLoginAt: serverTimestamp(), 
+          updatedAt: serverTimestamp() 
+        });
         router.replace(returnUrl)
       }
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Error", description: error.message })
+      toast({ variant: "destructive", title: "Social Auth Error", description: error.message })
       setLoading(false)
     }
   }
@@ -194,7 +212,7 @@ function LoginContent() {
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row text-[#0F172A] font-body selection:bg-primary/20 overflow-x-hidden">
       
-      {/* LEFT PANEL: BRANDING (TOP ALIGNED) */}
+      {/* LEFT PANEL: BRANDING */}
       <div className="hidden lg:flex flex-[1.1] bg-gradient-to-br from-[#020B2D] via-[#071B4D] to-[#0A2D7A] text-white p-12 xl:p-20 flex-col justify-start relative overflow-hidden">
         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
 
@@ -224,16 +242,15 @@ function LoginContent() {
         </div>
       </div>
 
-      {/* RIGHT PANEL: AUTH (TOP ALIGNED) */}
+      {/* RIGHT PANEL: AUTH */}
       <div className="flex-1 flex flex-col items-center justify-start p-6 md:p-12 lg:p-20 relative bg-slate-50 lg:bg-white overflow-y-auto">
         
-        {/* MOBILE HEADER EXIT NODE */}
         <div className="w-full flex items-center justify-between mb-8 lg:hidden">
            <Link href="/" className="flex items-center gap-2 text-slate-400 font-black uppercase text-[10px] tracking-widest hover:text-primary transition-colors">
               <ChevronLeft className="h-4 w-4" /> Home
            </Link>
            <Logo variant="light" align="center" imgClassName="h-[64px]" />
-           <div className="w-10" /> {/* Spacer */}
+           <div className="w-10" />
         </div>
 
         <motion.div 

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -8,9 +7,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 
 /**
- * @fileOverview Hardened Takeover Session Guard v10.0 (Latest Login Wins).
- * LOGIC: Compares authoritative activeDeviceId and sessionVersion from Firestore with local state.
- * If they mismatch, it means a newer login occurred on another device.
+ * @fileOverview Hardened Takeover Session Guard v12.0 (Handshake suppression).
+ * LOGIC: Suppression delay added to allow login writes to propagate before invalidating.
  */
 export default function SessionGuard() {
   const { user, profile, loading } = useUser();
@@ -19,20 +17,24 @@ export default function SessionGuard() {
   const pathname = usePathname();
   const { toast } = useToast();
   const isSigningOut = useRef(false);
+  const mountedAt = useRef(Date.now());
 
   useEffect(() => {
-    // 1. Guard against unauthenticated states or transition phases
+    // 1. Guard against unauthenticated states
     if (loading || !user || !profile || isSigningOut.current) return;
     
     // 2. Ignore guard if on login or registration nodes
     if (pathname === '/login' || pathname === '/profile-setup') return;
 
-    // 3. Authority Validation
+    // 3. Handshake Suppression
+    // Suppress takeover check for 2 seconds after mount to allow login state propagation
+    if (Date.now() - mountedAt.current < 2000) return;
+
+    // 4. Authority Validation
     const localSessionId = localStorage.getItem('cracklix_session_id');
     const cloudSessionId = profile.activeDeviceId;
 
-    // 4. Takeover Detection (Latest Login Wins)
-    // If the cloud says a different device is active, this session is now unauthorized.
+    // 5. Takeover Detection
     if (cloudSessionId && localSessionId && cloudSessionId !== localSessionId) {
       isSigningOut.current = true;
       
