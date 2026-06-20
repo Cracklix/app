@@ -1,12 +1,12 @@
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Production-Grade PWA Manifest v11.3 (Hardened).
- * BRAND SYSTEM: Icons synchronized with overhauled Cracklix branding.
+ * @fileOverview Production-Grade PWA Manifest v11.4 (Hardened).
+ * BRAND SYSTEM: Title and icons synchronized with the unified Cracklix branding.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Cracklix | Punjab Mock Test Platform',
+    name: "Cracklix | Punjab's Smart Mock Test Platform",
     short_name: 'Cracklix',
     description: "Punjab's most trusted government exam preparation platform. PSSSB, PPSC, Punjab Police, and more.",
     start_url: '/',
@@ -20,6 +20,12 @@ export default function manifest(): MetadataRoute.Manifest {
       {
         src: '/logo/cracklix-icon.png',
         sizes: '192x192',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
+      {
+        src: '/logo/cracklix-icon.png',
+        sizes: '512x512',
         type: 'image/png',
         purpose: 'maskable',
       },

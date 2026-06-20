@@ -16,8 +16,8 @@ const inter = Inter({
 });
 
 /**
- * @fileOverview Root Layout v45.0.
- * HARDENED: Synchronized PWA metadata with the unified primary brand color (#1677FF).
+ * @fileOverview Root Layout v46.0.
+ * UPDATED: Optimized metadata to resolve title bar duplication and updated icons to new brand identity.
  */
 export const metadata: Metadata = {
   title: "Cracklix | Punjab's Smart Mock Test Platform",
@@ -30,23 +30,13 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/favicon.ico",
-      },
-      {
-        url: "/icons/icon-192x192.png",
-        sizes: "192x192",
-        type: "image/png",
-      },
-      {
-        url: "/icons/icon-512x512.png",
-        sizes: "512x512",
+        url: "/logo/cracklix-icon.png",
         type: "image/png",
       },
     ],
-
     apple: [
       {
-        url: "/icons/icon-192x192.png",
+        url: "/logo/cracklix-icon.png",
       },
     ],
   },
