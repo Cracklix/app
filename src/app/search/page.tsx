@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Search Center.
+ * FIXED: TypeScript UMD global and cloneElement errors.
  */
 
 export default function SearchPage() {

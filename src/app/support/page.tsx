@@ -33,8 +33,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import Link from "next/link"
 
 /**
- * @fileOverview Official Institutional Support Hub v4.0 (Typography Hardened).
- * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
+ * @fileOverview Official Institutional Support Hub v4.1 (Hardened).
+ * FIXED: Missing Link and Loader2 imports.
  */
 
 const TELEGRAM_GROUP = "https://t.me/cracklixapp";
@@ -46,7 +46,7 @@ export default function SupportPage() {
   const { toast } = useToast()
   
   const [isRaising, setIsRaising] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [raisingLoading, setRaisingLoading] = useState(false)
   const [formData, setFormData] = useState({
     subject: "",
     type: "PAYMENT",
@@ -80,7 +80,7 @@ export default function SupportPage() {
       return
     }
 
-    setLoading(true)
+    setRaisingLoading(true)
     try {
       await addDoc(collection(db, "support_tickets"), {
         userId: user.uid,
@@ -97,7 +97,7 @@ export default function SupportPage() {
     } catch (e) {
       toast({ variant: "destructive", title: "Error", description: "Could not raise ticket." })
     } finally {
-      setLoading(false)
+      setRaisingLoading(false)
     }
   }
 
@@ -260,8 +260,8 @@ export default function SupportPage() {
 
             <DialogFooter className="p-10 pt-4 bg-slate-50 flex gap-4">
                <Button variant="ghost" onClick={() => setIsRaising(false)} className="rounded-xl h-14 font-black uppercase text-[10px] text-slate-400">Cancel</Button>
-               <Button onClick={handleRaiseTicket} disabled={loading} className="flex-1 bg-[#0F172A] hover:bg-black text-white h-14 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl gap-3">
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Send ticket
+               <Button onClick={handleRaiseTicket} disabled={raisingLoading} className="flex-1 bg-[#0F172A] hover:bg-black text-white h-14 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl gap-3">
+                  {raisingLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Send ticket
                </Button>
             </DialogFooter>
          </DialogContent>

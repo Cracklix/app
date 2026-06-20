@@ -16,8 +16,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Pass Center v15.1.
- * HARDENED: Real-time management card for active/expired sessions.
+ * @fileOverview Institutional Pass Center v15.2.
+ * FIXED: TypeScript Date constructor overload error.
  */
 
 export default function PassPage() {
@@ -35,9 +35,11 @@ export default function PassPage() {
   }, [user, userLoading, router]);
 
   useEffect(() => {
-    if (!profile?.passExpiresAt) return;
+    const expiresAt = profile?.passExpiresAt;
+    if (!expiresAt) return;
+    
     const interval = setInterval(() => {
-       const expiry = new Date(profile.passExpiresAt).getTime();
+       const expiry = new Date(expiresAt).getTime();
        const now = new Date().getTime();
        const diff = expiry - now;
 

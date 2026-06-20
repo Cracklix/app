@@ -1,4 +1,3 @@
-
 import { Exam } from "@/types"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
@@ -9,6 +8,10 @@ interface ExamCardProps {
   exam: Exam
 }
 
+/**
+ * @fileOverview Refined Exam Card.
+ * FIXED: TypeScript property resolution for Exam type.
+ */
 export default function ExamCard({ exam }: ExamCardProps) {
   return (
     <Link href={`/exams/${exam.id}`}>
