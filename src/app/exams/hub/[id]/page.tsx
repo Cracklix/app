@@ -1,30 +1,34 @@
 'use client';
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
-import { useDoc, useCollection, useFirestore } from "@/firebase"
-import { collection, query, where, doc } from "firebase/firestore"
+import { useDoc, useCollection, useFirestore, useUser } from "@/firebase"
+import { collection, query, where, doc, updateDoc, arrayUnion, arrayRemove, serverTimestamp } from "firebase/firestore"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, GraduationCap, Zap, BookOpen, Layers, Shield, Loader2, FileText, Landmark, ShieldCheck, Scale } from "lucide-react"
+import { ChevronLeft, ChevronRight, GraduationCap, Zap, BookOpen, Layers, Shield, Loader2, FileText, Landmark, ShieldCheck, Scale, Star, CheckCircle2, RefreshCw } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Institutional Hub Explorer v14.0 (Logo Fixed).
+ * @fileOverview Institutional Hub Explorer v15.0 (Pinning Added).
  */
 
 export default function HubExamsPage() {
   const params = useParams();
   const router = useRouter();
   const db = useFirestore();
+  const { user, profile } = useUser();
+  const { toast } = useToast();
   const hubId = params.id as string;
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
+  const [pinningId, setPinningId] = useState<string | null>(null);
 
   const { data: hub, loading: hubLoading } = useDoc<any>(useMemo(() => (db ? doc(db, "boards", hubId) : null), [db, hubId]));
   
@@ -53,6 +57,30 @@ export default function HubExamsPage() {
     });
     return map;
   }, [mocks]);
+
+  const handleTogglePin = async (e: React.MouseEvent, examId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!db || !user || pinningId) return;
+    
+    setPinningId(examId);
+    const isPinned = profile?.pinnedExams?.includes(examId);
+    const userRef = doc(db, "users", user.uid);
+
+    try {
+      if (isPinned) {
+        await updateDoc(userRef, { pinnedExams: arrayRemove(examId), updatedAt: serverTimestamp() });
+        toast({ title: "Removed from Hub" });
+      } else {
+        await updateDoc(userRef, { pinnedExams: arrayUnion(examId), updatedAt: serverTimestamp() });
+        toast({ title: "Pinned to Hub" });
+      }
+    } catch (err) {
+      toast({ variant: "destructive", title: "Action Failed" });
+    } finally {
+      setPinningId(null);
+    }
+  };
 
   if (hubLoading) return <div className="h-screen bg-white flex items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
 
@@ -124,6 +152,7 @@ export default function HubExamsPage() {
                   const stats = statsMap[exam.id] || { full: 0, subject: 0, pyq: 0, sectional: 0 };
                   const category = categories?.find((c: any) => c.id === exam.categoryId);
                   const effectiveLogo = exam.iconUrl || hub?.iconUrl || category?.iconUrl;
+                  const isPinned = profile?.pinnedExams?.includes(exam.id);
 
                   return (
                     <Link key={exam.id} href={`/exams/${exam.id}`}>
@@ -146,11 +175,20 @@ export default function HubExamsPage() {
                                   <Landmark className="h-6 w-6 md:h-10 md:w-10 text-primary opacity-20" />
                                 )}
                              </div>
-                             <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest border-slate-100 text-slate-400">{hub?.abbreviation} EXAM</Badge>
+                             <button 
+                               onClick={(e) => handleTogglePin(e, exam.id)}
+                               disabled={pinningId === exam.id}
+                               className={cn(
+                                 "h-10 w-10 rounded-xl border flex items-center justify-center transition-all active:scale-90",
+                                 isPinned ? "bg-primary border-primary text-white" : "bg-white border-slate-100 text-slate-300 hover:text-primary hover:border-primary/20"
+                               )}
+                             >
+                                {pinningId === exam.id ? <RefreshCw className="h-4 w-4 animate-spin" /> : isPinned ? <CheckCircle2 className="h-4 w-4" /> : <Star className="h-4 w-4" />}
+                             </button>
                           </div>
 
                           <div className="space-y-2 flex-1">
-                             <h3 className="text-xl md:text-2xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors line-clamp-2">{exam.name}</h3>
+                             <h3 className="text-xl md:text-2xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors line-clamp-2 uppercase">{exam.name}</h3>
                              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{stats.full + stats.subject + stats.pyq + stats.sectional} TESTS AVAILABLE</p>
                           </div>
 

@@ -34,8 +34,8 @@ import { useToast } from "@/hooks/use-toast"
 import { usePWAInstall } from "@/hooks/use-pwa-install"
 
 /**
- * @fileOverview Institutional My Hub Hub v6.1 (Build Fixed).
- * FIXED: Explicitly typed all collection references and verified icon imports.
+ * @fileOverview Institutional My Hub Hub v7.0.
+ * UPDATED: Enhanced visibility for target selection and pinning controls.
  */
 
 export default function MyExamsPage() {
@@ -80,7 +80,7 @@ export default function MyExamsPage() {
     setUnpinningId(examId);
     try {
       await updateDoc(doc(db, "users", user.uid), { pinnedExams: arrayRemove(examId), updatedAt: serverTimestamp() });
-      toast({ title: "Hub Updated" });
+      toast({ title: "Hub Updated", description: "Vertical removed from your personal hub." });
     } catch (e) {
       toast({ variant: "destructive", title: "Action Failed" });
     } finally { setUnpinningId(null); }
@@ -91,7 +91,7 @@ export default function MyExamsPage() {
     setSettingTargetId(examId);
     try {
       await updateDoc(doc(db, "users", user.uid), { targetExam: examName, updatedAt: serverTimestamp() });
-      toast({ title: "Target Locked" });
+      toast({ title: "Target Locked", description: `Your focus is now set to ${examName}.` });
     } catch (e) {
       toast({ variant: "destructive", title: "Update Failed" });
     } finally { setSettingTargetId(null); }
@@ -127,7 +127,7 @@ export default function MyExamsPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 px-2">
            <div className="space-y-4">
               <h1 className="text-5xl md:text-8xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-none">MY <span className="text-primary">HUB</span></h1>
-              <p className="text-sm md:text-2xl text-slate-400 font-medium max-w-xl">Manage your authoritative preparation registry.</p>
+              <p className="text-sm md:text-2xl text-slate-400 font-medium max-w-xl">Manage your authoritative preparation registry and target exams.</p>
            </div>
            <Button asChild className="h-16 px-10 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-[2rem] shadow-4xl gap-3 active:scale-95 transition-all border-none">
               <Link href="/exams"><Plus className="h-5 w-5 text-primary" /> Select More Exams</Link>
@@ -137,7 +137,7 @@ export default function MyExamsPage() {
         <section className="space-y-8">
            <div className="flex items-center gap-3 px-3">
               <ShieldCheck className="h-5 w-5 text-primary" />
-              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500">Registry Selections</h3>
+              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500">Active Registry</h3>
            </div>
            
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
@@ -162,7 +162,7 @@ export default function MyExamsPage() {
                     </div>
                     <div className="space-y-6 pt-10 mt-auto">
                        <div className="grid grid-cols-2 gap-4">
-                          <Button onClick={() => handleSetTarget(exam.name, exam.id)} disabled={settingTargetId === exam.id || isTarget} variant="outline" className={cn("h-14 rounded-2xl border-2 font-black uppercase text-[9px] tracking-widest gap-2 shadow-sm", isTarget ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-white border-slate-100 text-[#0F172A] hover:bg-slate-50")}>{settingTargetId === exam.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Target className="h-4 w-4" />}{isTarget ? 'TARGET SET' : 'SELECT TARGET'}</Button>
+                          <Button onClick={() => handleSetTarget(exam.name, exam.id)} disabled={settingTargetId === exam.id || isTarget} variant="outline" className={cn("h-14 rounded-2xl border-2 font-black uppercase text-[9px] tracking-widest gap-2 shadow-sm", isTarget ? "bg-emerald-50 border-emerald-100 text-emerald-700" : "bg-white border-slate-100 text-[#0F172A] hover:bg-slate-50")}>{settingTargetId === exam.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Target className="h-4 w-4" />}{isTarget ? 'TARGET SET' : 'SELECT TARGET'}</Button>
                           <Button asChild className="h-14 bg-[#0F172A] hover:bg-black text-white rounded-2xl font-black uppercase text-[9px] tracking-widest border-none shadow-xl transition-all"><Link href={`/exams/${exam.id}`}>OPEN HUB</Link></Button>
                        </div>
                        <button onClick={() => handleUnpin(exam.id)} disabled={unpinningId === exam.id} className="w-fit mx-auto flex items-center justify-center gap-2 text-[10px] font-black text-slate-300 hover:text-rose-500 uppercase tracking-widest transition-colors active:scale-90">{unpinningId === exam.id ? <RefreshCw className="h-3 w-3 animate-spin" /> : <X className="h-3.5 w-3.5" />}REMOVE FROM HUB</button>
@@ -172,7 +172,7 @@ export default function MyExamsPage() {
               }) : (
                  <Card className="col-span-full border-2 border-dashed border-slate-200 bg-white/50 py-32 rounded-[4rem] flex flex-col items-center justify-center text-center space-y-8">
                     <div className="h-24 w-24 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 shadow-inner"><Plus className="h-12 w-12" /></div>
-                    <div className="space-y-3 px-6"><p className="text-2xl font-headline font-black text-[#0F172A] uppercase">Selection Registry Empty</p><p className="text-sm md:text-lg font-medium text-slate-400 uppercase tracking-widest max-w-sm">Select exams to build your personalized preparation hub.</p></div>
+                    <div className="space-y-3 px-6"><p className="text-2xl font-headline font-black text-[#0F172A] uppercase">Hub Empty</p><p className="text-sm md:text-lg font-medium text-slate-400 uppercase tracking-widest max-w-sm">Select recruitment verticals to build your preparation hub.</p></div>
                     <Button asChild className="bg-[#0F172A] hover:bg-black rounded-2xl h-16 px-12 font-black uppercase text-[10px] tracking-[0.2em] shadow-4xl border-none"><Link href="/exams">Select Your Exams</Link></Button>
                  </Card>
               )}
@@ -182,7 +182,7 @@ export default function MyExamsPage() {
         <section className="space-y-8 pt-8">
            <div className="flex items-center gap-3 px-3">
               <History className="h-5 w-5 text-slate-400" />
-              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400">Recent Test Logs</h3>
+              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400">Preparation Logs</h3>
            </div>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {attemptsLoading ? Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-[2.5rem] bg-white" />) : 
@@ -196,7 +196,7 @@ export default function MyExamsPage() {
                        <ChevronRight className="h-6 w-6 text-slate-200 group-hover:text-primary transition-all group-hover:translate-x-2 shrink-0 ml-4" />
                     </Card>
                  </Link>
-              )) : <div className="col-span-full py-20 text-center bg-white rounded-[3.5rem] border border-slate-100 shadow-sm opacity-30 italic"><p className="font-black uppercase tracking-[0.4em] text-[10px]">No recent test sessions detected.</p></div>}
+              )) : <div className="col-span-full py-20 text-center bg-white rounded-[3.5rem] border border-slate-100 shadow-sm opacity-30 italic"><p className="font-black uppercase tracking-[0.4em] text-[10px]">No recent test activity detected.</p></div>}
            </div>
         </section>
       </main>
