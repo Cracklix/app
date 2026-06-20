@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, Suspense, useEffect, useTransition } from "react"
@@ -17,7 +16,6 @@ import {
   GoogleAuthProvider,
   sendPasswordResetEmail,
   updateProfile,
-  sendEmailVerification,
   signOut
 } from "firebase/auth"
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore"
@@ -56,38 +54,24 @@ function LoginContent() {
   const { toast } = useToast()
 
   const returnUrl = searchParams.get("returnUrl") || "/dashboard"
-  const sessionTerminated = searchParams.get('session') === 'terminated';
 
   useEffect(() => {
-    if (!authLoading && user && !sessionTerminated) {
-       if (user.emailVerified) {
-          router.replace(returnUrl);
-       } else {
-          router.replace('/verify-email');
-       }
+    if (!authLoading && user) {
+      router.replace(returnUrl);
     }
-  }, [user, authLoading, router, returnUrl, sessionTerminated]);
+  }, [user, authLoading, router, returnUrl]);
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault()
     if (mode === 'register' && password !== confirmPassword) {
-      toast({ variant: "destructive", title: "Error", description: "Passwords must match." })
+      toast({ variant: "destructive", title: "Wait", description: "Passwords must match." })
       return
     }
 
     setLoading(true)
     try {
       if (mode === 'login') {
-        const creds = await signInWithEmailAndPassword(auth, email, password)
-        await creds.user.reload();
-        
-        if (!creds.user.emailVerified) {
-          toast({ title: "Account Not Verified", description: "Check your email for the verification link." });
-          router.push('/verify-email');
-          setLoading(false);
-          return;
-        }
-
+        await signInWithEmailAndPassword(auth, email, password)
         toast({ title: "Welcome Back" })
         startTransition(() => { router.replace(returnUrl) })
       } else {
@@ -95,7 +79,6 @@ function LoginContent() {
         const userNode = userCredential.user
         
         await updateProfile(userNode, { displayName: name })
-        await sendEmailVerification(userNode);
         
         const isSuperAdmin = email && SUPER_ADMIN_WHITELIST.includes(email.toLowerCase());
         
@@ -111,14 +94,14 @@ function LoginContent() {
           passType: 'FREE',
           passStatus: 'none',
           pinnedExams: [],
-          verified: false
+          verified: true
         })
 
-        toast({ title: "Verification Required", description: "We have sent a link to your email." });
-        router.push('/verify-email');
+        toast({ title: "Account Created", description: "Welcome to Cracklix!" })
+        startTransition(() => { router.replace(returnUrl) })
       }
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Auth Error", description: error.message })
+      toast({ variant: "destructive", title: "Error", description: error.message })
       setLoading(false)
     }
   }
@@ -142,31 +125,31 @@ function LoginContent() {
           email: userNode.email, role: isSuperAdmin ? 'SUPER_ADMIN' : 'STUDENT',
           state: "Punjab", createdAt: new Date().toISOString(),
           updatedAt: serverTimestamp(), status: 'Free', passType: 'FREE', 
-          passStatus: userNode.emailVerified ? 'active' : 'none',
-          pinnedExams: [], verified: userNode.emailVerified
+          passStatus: 'active',
+          pinnedExams: [], verified: true
         })
       }
       
-      toast({ title: "Verification Sync Complete" })
+      toast({ title: "Welcome" })
       startTransition(() => { router.replace(returnUrl) })
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Sync Failed", description: error.message })
+      toast({ variant: "destructive", title: "Error", description: error.message })
       setLoading(false)
     }
   }
 
   const handleResetPassword = async () => {
     if (!resetEmail) {
-      toast({ variant: "destructive", title: "Missing Email", description: "Enter your email address." });
+      toast({ variant: "destructive", title: "Wait", description: "Enter your email address." });
       return;
     }
     setResetLoading(true);
     try {
       await sendPasswordResetEmail(auth, resetEmail);
-      toast({ title: "Reset Link Sent", description: "Check your email for recovery instructions." });
+      toast({ title: "Reset Link Sent", description: "Check your email for instructions." });
       setIsResetDialogOpen(false);
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Reset Failed", description: error.message });
+      toast({ variant: "destructive", title: "Error", description: error.message });
     } finally {
       setResetLoading(false);
     }
@@ -199,7 +182,7 @@ function LoginContent() {
         </div>
         <div className="relative z-10 flex items-center gap-4 text-slate-500">
            <ShieldCheck className="h-6 w-6 text-primary" />
-           <p className="text-[10px] font-black uppercase tracking-[0.3em]">Institutional Hub Secured</p>
+           <p className="text-[10px] font-black uppercase tracking-[0.3em]">System Verified</p>
         </div>
       </div>
 
@@ -297,7 +280,7 @@ function LoginContent() {
 
             <div className="pt-4 flex flex-col gap-6">
               <Button type="submit" className="w-full h-16 md:h-20 bg-primary hover:bg-blue-700 text-white font-black text-xs md:text-sm uppercase tracking-[0.3em] rounded-[2rem] shadow-4xl shadow-primary/20 border-none transition-all active:scale-95" disabled={isActuallyLoading}>
-                {isActuallyLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (mode === 'login' ? "Login Hub" : "Create Account")}
+                {isActuallyLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (mode === 'login' ? "Login" : "Create Account")}
               </Button>
 
               <div className="flex items-center gap-4 py-2"><div className="h-px flex-1 bg-slate-100" /><span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">OR</span><div className="h-px flex-1 bg-slate-100" /></div>
@@ -331,7 +314,7 @@ function LoginContent() {
               {resetLoading ? <Loader2 className="h-7 w-7 animate-spin" /> : <RefreshCw className="h-7 w-7" />}
             </div>
             <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tight text-[#0F172A]">Recover Account</DialogTitle>
-            <DialogDescription className="text-slate-400 text-sm font-bold uppercase tracking-widest text-center mt-2 leading-relaxed">Enter your email to receive a password reset link.</DialogDescription>
+            <DialogDescription className="text-slate-400 text-sm font-bold uppercase tracking-widest text-center mt-2 leading-relaxed">Enter your email to receive a reset link.</DialogDescription>
           </DialogHeader>
           <div className="py-8 space-y-6">
             <div className="space-y-2 text-left">

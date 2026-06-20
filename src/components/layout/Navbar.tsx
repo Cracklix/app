@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -42,16 +41,11 @@ import { Button } from "@/components/ui/button";
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
-/**
- * @fileOverview Refined Institutional Navbar v42.0.
- * UPDATED: Responsive Profile Dropdown (280px on mobile).
- * FIXED: Added missing AlertCircle import.
- */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const { user, profile, loading, emailVerified } = useUser();
+  const { user, profile, loading } = useUser();
   const auth = useAuth();
 
   const pathname = usePathname();
@@ -153,11 +147,9 @@ export default function Navbar() {
                     <div className="flex flex-col items-center gap-4">
                        <div className="h-16 w-16 rounded-2xl bg-[#EEF4FF] flex items-center justify-center text-[#2563EB] shadow-sm border border-blue-50 relative">
                           <User className="h-8 w-8" />
-                          {emailVerified && (
-                            <div className="absolute -top-1 -right-1 bg-emerald-500 h-5 w-5 rounded-full border-2 border-white flex items-center justify-center shadow-lg">
-                               <ShieldCheck className="h-3 w-3 text-white" />
-                            </div>
-                          )}
+                          <div className="absolute -top-1 -right-1 bg-emerald-500 h-5 w-5 rounded-full border-2 border-white flex items-center justify-center shadow-lg">
+                             <ShieldCheck className="h-3 w-3 text-white" />
+                          </div>
                        </div>
                        <div className="space-y-0.5">
                          <h3 className="text-lg xs:text-xl font-[800] text-[#0F172A] tracking-tight leading-tight truncate max-w-[240px]">
@@ -171,13 +163,6 @@ export default function Navbar() {
                          </Link>
                        </div>
                     </div>
-
-                    {!emailVerified && (
-                       <div className="w-full p-4 bg-rose-50 rounded-2xl border border-rose-100 flex items-center gap-3">
-                          <AlertCircle className="h-4 w-4 text-rose-500 shrink-0" />
-                          <p className="text-[10px] font-bold text-rose-600 uppercase text-left leading-tight">Verify email first</p>
-                       </div>
-                    )}
 
                     <div className="h-px w-full bg-slate-100" />
 

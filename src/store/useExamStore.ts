@@ -1,4 +1,3 @@
-
 'use client';
 
 import { create } from 'zustand';
@@ -7,8 +6,7 @@ import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/fir
 import { initializeFirebase } from '@/firebase/app';
 
 /**
- * @fileOverview Elite CBT Global Store v60.1 (Hardened).
- * FIXED: Removed duplicate property error and corrected language type mapping.
+ * @fileOverview Global Test Store.
  */
 
 interface ExamStore extends AttemptState {
@@ -87,7 +85,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const initialTimeLeft = Math.max(0, Math.floor((finalEndTime - now) / 1000));
     const finalBaseMode: LanguageDisplayMode = languageMode || 'ENGLISH_PUNJABI';
 
-    let initialLang: LanguageDisplayMode = (!forceReset && state.language) ? state.language : finalBaseMode;
+    let initialLang: LanguageDisplayMode = (!forceReset && state.language !== 'ENGLISH_PUNJABI') ? state.language : finalBaseMode;
     
     set({
       mockId, 

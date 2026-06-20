@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -7,8 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
 
 /**
- * @fileOverview Institutional Security Node.
- * FIXED: Passed Firestore instance to violation logger.
+ * @fileOverview Anti-Cheat Security Node.
  */
 export default function AntiCheat() {
   const { addViolation } = useExamStore();

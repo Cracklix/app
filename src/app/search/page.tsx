@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo, useEffect, Suspense, cloneElement, isValidElement } from "react"
@@ -14,8 +13,7 @@ import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Search Center v14.0.
- * FIXED: Explicit React import and type-safe cloneElement handling.
+ * @fileOverview Search Center.
  */
 
 export default function SearchPage() {

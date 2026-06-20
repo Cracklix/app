@@ -8,8 +8,8 @@ import { UserProfile } from '@/types';
 import { getDeviceId } from '@/lib/device';
 
 /**
- * @fileOverview Hardened Auth & Profile Hook v15.0.
- * Automatically audits pass expiry on every profile sync.
+ * @fileOverview Auth & Profile Hook.
+ * Automatically syncs user profile from Firestore.
  */
 export function useUser() {
   const auth = useAuth();
@@ -27,7 +27,6 @@ export function useUser() {
     getDeviceId().then(setCurrentDeviceId);
   }, []);
 
-  // 1. Auth Sync Hub
   useEffect(() => {
     if (!auth) return;
 
@@ -65,7 +64,6 @@ export function useUser() {
     };
   }, [auth]);
 
-  // 2. Firestore Profile Real-time Sync
   useEffect(() => {
     if (!user || !db) {
       setProfile(null);
@@ -80,7 +78,6 @@ export function useUser() {
         const data = docSnap.data();
         let passStatus = data.passStatus || 'none';
         
-        // Pass Expiry Logic: Auto-audit locally and revert if expired
         if (data.passExpiresAt) {
            const expiry = new Date(data.passExpiresAt);
            if (new Date() > expiry) {
@@ -111,6 +108,6 @@ export function useUser() {
     loading: !authResolved, 
     profileLoading,         
     currentDeviceId,
-    emailVerified: user?.emailVerified || false
+    emailVerified: true // Set to true as requirement is removed
   };
 }
