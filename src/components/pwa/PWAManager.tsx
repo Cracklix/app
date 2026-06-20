@@ -7,129 +7,67 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Smart Institutional PWA Install Node v10.0 (Hardened Capture).
- * FIXED: Captures event globally and broadcasts to all standalone button components.
+ * @fileOverview Smart Institutional PWA Install Node v11.0 (Hardened State).
  */
 export default function PWAManager() {
   const pathname = usePathname();
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [sessionDismissed, setSessionDismissed] = useState(false);
 
-  const checkInstallability = useCallback(() => {
+  const checkStatus = useCallback(() => {
     if (typeof window === 'undefined') return;
-    
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone;
-    const isExcluded = pathname?.includes('/attempt') || pathname?.startsWith('/admin');
-    const hasPrompt = !!(window as any).deferredPrompt;
+    const isExcluded = pathname?.includes('/attempt') || pathname?.startsWith('/admin') || pathname === '/install';
+    const isDismissed = localStorage.getItem('cracklix_pwa_dismissed') === 'true';
     
-    if (isStandalone) {
-      setIsInstalled(true);
-      setShowPrompt(false);
-      return;
-    }
-
-    // Show floating banner if prompt is available and not in excluded routes
-    if (!isExcluded && !sessionDismissed && hasPrompt) {
-      setShowPrompt(true);
-    } else {
-      setShowPrompt(false);
-    }
-  }, [pathname, sessionDismissed]);
+    setIsInstalled(isStandalone);
+    setShowPrompt(!isStandalone && !isExcluded && !isDismissed && !!(window as any).deferredPrompt);
+  }, [pathname]);
 
   useEffect(() => {
     setMounted(true);
-
-    const handleBeforeInstallPrompt = (e: any) => {
+    const handlePrompt = (e: any) => {
       e.preventDefault();
-      // Store event globally for custom triggers
       (window as any).deferredPrompt = e;
-      // Force sync event for all PWAInstallButton instances
       window.dispatchEvent(new CustomEvent('pwa-installable'));
-      checkInstallability();
+      checkStatus();
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('pwa-installable', checkInstallability);
-    
-    window.addEventListener('appinstalled', () => {
-      setIsInstalled(true);
-      setShowPrompt(false);
-    });
-
-    // Check current state
-    checkInstallability();
+    window.addEventListener('beforeinstallprompt', handlePrompt);
+    window.addEventListener('pwa-installable', checkStatus);
+    window.addEventListener('appinstalled', () => setIsInstalled(true));
+    checkStatus();
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('pwa-installable', checkInstallability);
+      window.removeEventListener('beforeinstallprompt', handlePrompt);
+      window.removeEventListener('pwa-installable', checkStatus);
     };
-  }, [checkInstallability]);
-
-  const handleInstallClick = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    const prompt = (window as any).deferredPrompt;
-    if (!prompt) return;
-
-    prompt.prompt();
-    const { outcome } = await prompt.userChoice;
-    
-    if (outcome === 'accepted') {
-      setShowPrompt(false);
-      (window as any).deferredPrompt = null;
-    }
-  };
+  }, [checkStatus]);
 
   if (!mounted || isInstalled || !showPrompt) return null;
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 100, opacity: 0 }}
-        className="fixed bottom-28 md:bottom-12 left-4 md:left-auto md:right-8 z-[2000] w-[calc(100%-2rem)] md:w-[360px] pointer-events-auto"
-      >
-        <div className="bg-[#0B1528] text-white p-5 rounded-[2.5rem] shadow-5xl border border-white/10 relative overflow-hidden group">
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 blur-3xl rounded-full pointer-events-none" />
-          
-          <div className="flex flex-col gap-5 relative z-10">
+      <motion.div initial={{ y: 100 }} animate={{ y: 0 }} exit={{ y: 100 }} className="fixed bottom-28 md:bottom-12 left-4 md:right-8 z-[2000] w-[calc(100%-2rem)] md:w-[360px]">
+        <div className="bg-[#0B1528] text-white p-6 rounded-[2.5rem] shadow-5xl border border-white/10 relative overflow-hidden group">
+          <div className="flex flex-col gap-6 relative z-10">
              <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
-                   <div className="h-12 w-12 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0 shadow-inner">
-                      <Zap className="h-6 w-6 text-primary fill-current animate-pulse" />
-                   </div>
-                   <div className="min-w-0 text-left">
-                      <h4 className="text-sm font-black uppercase tracking-tight leading-none mb-1">Cracklix App</h4>
-                      <div className="flex items-center gap-1.5 text-primary">
-                         <Sparkles className="h-3 w-3" />
-                         <p className="text-[9px] font-black uppercase tracking-widest">Official Hub</p>
-                      </div>
-                   </div>
+                   <div className="h-12 w-12 rounded-2xl bg-primary/20 flex items-center justify-center shrink-0 shadow-inner"><Zap className="h-6 w-6 text-primary" /></div>
+                   <div className="text-left"><h4 className="text-sm font-black uppercase tracking-tight">Cracklix App</h4><p className="text-[9px] font-black uppercase text-primary tracking-widest">Get Native Experience</p></div>
                 </div>
-                <button 
-                  onClick={() => {
-                    setSessionDismissed(true);
-                    setShowPrompt(false);
-                  }}
-                  className="h-8 w-8 flex items-center justify-center text-slate-500 hover:text-white bg-white/5 rounded-xl border border-white/5"
-                >
-                   <X className="h-4 w-4" />
-                </button>
+                <button onClick={() => { localStorage.setItem('cracklix_pwa_dismissed', 'true'); setShowPrompt(false); }} className="p-2 hover:bg-white/5 rounded-xl transition-colors"><X className="h-4 w-4 text-slate-500" /></button>
              </div>
-
-             <div className="space-y-4 text-left">
-                <p className="text-[13px] font-bold text-slate-300 leading-snug">
-                   Practice better and faster by installing the Cracklix official app.
-                </p>
-                <Button 
-                  onClick={handleInstallClick}
-                  className="w-full h-14 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-3xl border-none transition-all active:scale-95 gap-3"
-                >
-                   <Download className="h-4 w-4" /> INSTALL APP
-                </Button>
-             </div>
+             <p className="text-[13px] font-bold text-slate-300 leading-snug text-left">Practice faster and better with the official app.</p>
+             <Button onClick={async () => {
+                const prompt = (window as any).deferredPrompt;
+                if (prompt) {
+                   prompt.prompt();
+                   const { outcome } = await prompt.userChoice;
+                   if (outcome === 'accepted') setShowPrompt(false);
+                }
+             }} className="w-full h-14 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl border-none shadow-3xl">INSTALL NOW</Button>
           </div>
         </div>
       </motion.div>

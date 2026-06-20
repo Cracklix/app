@@ -24,8 +24,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Login Hub v53.0 (Desktop Redesigned).
- * REDESIGN: Perfectly balanced split-screen, centered branding, and high-fidelity typography.
+ * @fileOverview Institutional Login Hub v54.0 (Security Hardened).
+ * HARDENED: Strict session versioning and activeDeviceId establishment.
  */
 export default function LoginPage() {
   return (
@@ -64,7 +64,7 @@ function LoginContent() {
     }
   }, [user, authLoading, router, returnUrl]);
 
-  const registerNewSession = async (userId: string) => {
+  const establishAuthority = async (userId: string) => {
     if (!db) return;
     const sessionId = crypto.randomUUID();
     localStorage.setItem('cracklix_session_id', sessionId);
@@ -88,7 +88,7 @@ function LoginContent() {
     try {
       if (mode === 'login') {
         const result = await signInWithEmailAndPassword(auth, email, password)
-        await registerNewSession(result.user.uid);
+        await establishAuthority(result.user.uid);
         toast({ title: "Welcome Back" })
         startTransition(() => {
           router.replace(returnUrl)
@@ -97,31 +97,19 @@ function LoginContent() {
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
         const userNode = userCredential.user
-        
         await updateProfile(userNode, { displayName: name })
-        
         const isSuperAdmin = email && SUPER_ADMIN_WHITELIST.includes(email.toLowerCase());
         const sessionId = crypto.randomUUID();
         localStorage.setItem('cracklix_session_id', sessionId);
         
         await setDoc(doc(db!, 'users', userNode.uid), {
-          id: userNode.uid, 
-          name, 
-          email, 
-          role: isSuperAdmin ? 'SUPER_ADMIN' : 'STUDENT',
-          state: "Punjab", 
-          createdAt: new Date().toISOString(),
-          updatedAt: serverTimestamp(), 
-          status: 'Free',
-          passType: 'FREE',
-          activeDeviceId: sessionId,
-          sessionVersion: 1,
-          lastLoginAt: serverTimestamp(),
-          pinnedExams: [],
-          verified: true
+          id: userNode.uid, name, email, role: isSuperAdmin ? 'SUPER_ADMIN' : 'STUDENT',
+          state: "Punjab", createdAt: new Date().toISOString(), updatedAt: serverTimestamp(),
+          status: 'Free', passType: 'FREE', activeDeviceId: sessionId, sessionVersion: 1,
+          lastLoginAt: serverTimestamp(), pinnedExams: [], verified: true
         })
 
-        toast({ title: "Account Created", description: "Welcome to Cracklix!" })
+        toast({ title: "Account Created" })
         startTransition(() => {
           router.replace(returnUrl)
           router.refresh()
@@ -141,32 +129,21 @@ function LoginContent() {
       const result = await signInWithPopup(auth, provider)
       const userNode = result.user
       if (!userNode.email) throw new Error("Email is required.");
-      
       const userRef = doc(db!, 'users', userNode.uid)
       const userSnap = await getDoc(userRef)
       const isSuperAdmin = SUPER_ADMIN_WHITELIST.includes(userNode.email.toLowerCase());
-      
       const sessionId = crypto.randomUUID();
       localStorage.setItem('cracklix_session_id', sessionId);
       
       if (!userSnap.exists()) {
         await setDoc(userRef, {
-          id: userNode.uid, name: userNode.displayName || "Aspirant",
-          email: userNode.email, role: isSuperAdmin ? 'SUPER_ADMIN' : 'STUDENT',
-          state: "Punjab", createdAt: new Date().toISOString(),
-          updatedAt: serverTimestamp(), status: 'Free', passType: 'FREE', 
-          activeDeviceId: sessionId,
-          sessionVersion: 1,
-          lastLoginAt: serverTimestamp(),
-          pinnedExams: [], verified: true
+          id: userNode.uid, name: userNode.displayName || "Aspirant", email: userNode.email,
+          role: isSuperAdmin ? 'SUPER_ADMIN' : 'STUDENT', state: "Punjab", createdAt: new Date().toISOString(),
+          updatedAt: serverTimestamp(), status: 'Free', passType: 'FREE', activeDeviceId: sessionId,
+          sessionVersion: 1, lastLoginAt: serverTimestamp(), pinnedExams: [], verified: true
         })
       } else {
-        await updateDoc(userRef, {
-          activeDeviceId: sessionId,
-          sessionVersion: increment(1),
-          lastLoginAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
+        await updateDoc(userRef, { activeDeviceId: sessionId, sessionVersion: increment(1), lastLoginAt: serverTimestamp(), updatedAt: serverTimestamp() });
       }
       
       toast({ title: "Welcome" })
@@ -181,74 +158,46 @@ function LoginContent() {
   }
 
   const handleResetPassword = async () => {
-    if (!resetEmail) {
-      toast({ variant: "destructive", title: "Wait", description: "Enter your email address." });
-      return;
-    }
+    if (!resetEmail) { toast({ variant: "destructive", title: "Wait", description: "Enter your email." }); return; }
     setResetLoading(true);
     try {
       await sendPasswordResetEmail(auth, resetEmail);
-      toast({ title: "Reset Link Sent", description: "Check your email for instructions." });
+      toast({ title: "Reset Link Sent" });
       setIsResetDialogOpen(false);
     } catch (error: any) {
       toast({ variant: "destructive", title: "Error", description: error.message });
-    } finally {
-      setResetLoading(false);
-    }
+    } finally { setResetLoading(false); }
   };
 
   const isActuallyLoading = loading || isPending;
 
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row text-[#0F172A] text-left overflow-hidden">
-      
-      {/* LEFT PANEL: BRANDING HUB (CENTERED) */}
       <div className="hidden lg:flex flex-1 bg-[#0B1528] text-white p-12 md:p-20 flex-col justify-center items-center relative overflow-hidden">
-        {/* Ambient Glow */}
         <div className="absolute inset-0 bg-primary/5 blur-[120px] rounded-full translate-x-1/3 -translate-y-1/3" />
-        
         <div className="relative z-10 space-y-16 max-w-xl w-full">
            <Logo variant="dark" align="left" imgClassName="h-[100px] md:h-[130px]" />
-           
            <div className="space-y-10">
-              <h1 className="text-5xl md:text-7xl xl:text-8xl font-black tracking-tight text-white leading-[0.95] uppercase">
-                Crack <br/> 
-                <span className="text-primary">Punjab Exams</span>
-              </h1>
-              <p className="text-base md:text-xl text-slate-400 font-medium leading-relaxed max-w-lg">
-                Access Punjab's smartest mock test registry. Practice with verified patterns and AI-driven insights to secure your success.
-              </p>
+              <h1 className="text-5xl md:text-7xl xl:text-8xl font-black tracking-tight text-white leading-[0.95] uppercase">Crack <br/> <span className="text-primary">Punjab Exams</span></h1>
+              <p className="text-base md:text-xl text-slate-400 font-medium leading-relaxed max-w-lg">Access Punjab's smartest mock test registry. Practice with verified patterns and AI insights.</p>
            </div>
-
            <div className="space-y-6 pt-4">
               <BenefitItem text="500+ Practice Mock Series" />
               <BenefitItem text="Official Previous Year Papers" />
               <BenefitItem text="Latest Pattern Registry Nodes" />
            </div>
         </div>
-
-        {/* Anchor Security Badge */}
         <div className="absolute bottom-12 left-12 md:left-20 flex items-center gap-4 text-slate-500 opacity-60">
-           <ShieldCheck className="h-6 w-6 text-primary" />
-           <p className="text-[10px] font-black uppercase tracking-[0.4em]">Institutional Gateway Secured</p>
+           <ShieldCheck className="h-6 w-6 text-primary" /><p className="text-[10px] font-black uppercase tracking-[0.4em]">Institutional Gateway Secured</p>
         </div>
       </div>
 
-      {/* RIGHT PANEL: AUTH FORM HUB */}
       <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 lg:p-20 relative overflow-y-auto bg-white custom-scrollbar">
         <div className="w-full max-w-[480px] space-y-12">
-          
-          <div className="lg:hidden text-center space-y-6 mb-10">
-             <Logo variant="light" align="center" imgClassName="h-[80px]" />
-          </div>
-
+          <div className="lg:hidden text-center space-y-6 mb-10"><Logo variant="light" align="center" imgClassName="h-[80px]" /></div>
           <div className="space-y-4">
-             <h2 className="text-4xl md:text-6xl font-black tracking-tight text-[#0F172A] leading-none uppercase">
-                {mode === 'login' ? "Welcome Back" : "Register"}
-             </h2>
-             <p className="text-slate-400 font-bold text-[12px] md:text-[14px] uppercase tracking-[0.25em] leading-none">
-                {mode === 'login' ? "Access your preparation hub" : "Join the elite merit list"}
-             </p>
+             <h2 className="text-4xl md:text-6xl font-black tracking-tight text-[#0F172A] leading-none uppercase">{mode === 'login' ? "Welcome Back" : "Register"}</h2>
+             <p className="text-slate-400 font-bold text-[12px] md:text-[14px] uppercase tracking-[0.25em] leading-none">{mode === 'login' ? "Access your preparation hub" : "Join the elite merit list"}</p>
           </div>
 
           <form onSubmit={handleEmailAuth} className="space-y-8">
@@ -257,66 +206,30 @@ function LoginContent() {
                 <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Full Name</Label>
                 <div className="relative">
                   <User className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
-                  <Input 
-                    value={name} 
-                    onChange={(e) => setName(e.target.value)} 
-                    required 
-                    className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-lg font-bold pl-16 shadow-inner" 
-                    placeholder="e.g. Arsh Grewal" 
-                  />
+                  <Input value={name} onChange={(e) => setName(e.target.value)} required className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-lg font-bold pl-16 shadow-inner" placeholder="e.g. Arsh Grewal" />
                 </div>
               </div>
             )}
-            
             <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Email Address</Label>
               <div className="relative">
                 <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
-                <Input 
-                  type="email" 
-                  value={email} 
-                  onChange={(e) => setEmail(e.target.value)} 
-                  required 
-                  className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-lg font-bold pl-16 shadow-inner" 
-                  placeholder="name@domain.com" 
-                />
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-lg font-bold pl-16 shadow-inner" placeholder="name@domain.com" />
               </div>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
-                  <Input 
-                    type={showPassword ? "text" : "password"} 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
-                    required 
-                    className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary pl-16 pr-12 text-lg font-bold shadow-inner" 
-                    placeholder="Secret Key" 
-                  />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
+                  <Input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary pl-16 pr-12 text-lg font-bold shadow-inner" placeholder="Secret Key" />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">{showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}</button>
                 </div>
               </div>
               {mode === 'register' && (
                 <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Repeat Key</Label>
-                  <div className="relative">
-                    <Input 
-                      type={showConfirmPassword ? "text" : "password"} 
-                      value={confirmPassword} 
-                      onChange={(e) => setConfirmPassword(e.target.value)} 
-                      required 
-                      className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary px-6 text-lg font-bold shadow-inner" 
-                      placeholder="Repeat password" 
-                    />
-                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">
-                      {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                  </div>
+                  <Input type={showConfirmPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary px-6 text-lg font-bold shadow-inner" placeholder="Repeat password" />
                 </div>
               )}
             </div>
@@ -331,9 +244,7 @@ function LoginContent() {
               <Button type="submit" className="w-full h-16 md:h-20 bg-primary hover:bg-blue-700 text-white font-black text-xs md:text-sm uppercase tracking-[0.3em] rounded-[2rem] shadow-4xl shadow-primary/20 border-none transition-all active:scale-95" disabled={isActuallyLoading}>
                 {isActuallyLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (mode === 'login' ? "CONTINUE TO HUB" : "CREATE MY ACCOUNT")}
               </Button>
-
               <div className="flex items-center gap-4 py-2"><div className="h-px flex-1 bg-slate-100" /><span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">OR</span><div className="h-px flex-1 bg-slate-100" /></div>
-
               <Button variant="outline" className="w-full h-16 border-2 border-slate-100 bg-white text-[#0F172A] gap-4 rounded-2xl font-black text-xs md:text-sm hover:bg-slate-50 uppercase tracking-widest shadow-sm transition-all" onClick={handleGoogleSignIn} disabled={isActuallyLoading}>
                  <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="h-5 w-5" alt="G" /> Google One-Tap
               </Button>
@@ -341,48 +252,22 @@ function LoginContent() {
           </form>
 
           <div className="text-center pt-8 border-t border-slate-50">
-             {mode === 'login' ? (
-                <p className="text-[13px] font-bold text-slate-400">
-                  New aspirant? 
-                  <button onClick={() => setMode('register')} className="text-primary hover:underline font-black uppercase tracking-widest ml-2">Register Now</button>
-                </p>
-             ) : (
-                <p className="text-[13px] font-bold text-slate-400">
-                  Already registered? 
-                  <button onClick={() => setMode('login')} className="text-primary hover:underline font-black uppercase tracking-widest ml-2">Login Hub</button>
-                </p>
-             )}
+             <p className="text-[13px] font-bold text-slate-400">{mode === 'login' ? "New aspirant?" : "Already registered?"}<button onClick={() => setMode(mode === 'login' ? 'register' : 'login')} className="text-primary hover:underline font-black uppercase tracking-widest ml-2">{mode === 'login' ? 'Register Now' : 'Login Hub'}</button></p>
           </div>
         </div>
       </div>
 
-      {/* Reset Dialog */}
       <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
         <DialogContent className="bg-white rounded-[2rem] md:rounded-[3rem] max-w-[400px] p-10 shadow-5xl text-left border-none">
           <DialogHeader className="text-center space-y-4">
-            <div className="h-14 w-14 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto text-primary shadow-xl">
-              {resetLoading ? <Loader2 className="h-7 w-7 animate-spin" /> : <RefreshCw className="h-7 w-7" />}
-            </div>
+            <div className="h-14 w-14 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto text-primary shadow-xl">{resetLoading ? <Loader2 className="h-7 w-7 animate-spin" /> : <RefreshCw className="h-7 w-7" />}</div>
             <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tight text-[#0F172A]">Recover Account</DialogTitle>
             <DialogDescription className="text-slate-400 text-sm font-bold uppercase tracking-widest text-center mt-2 leading-relaxed">Enter your email to receive a reset link.</DialogDescription>
           </DialogHeader>
           <div className="py-8 space-y-6">
-            <div className="space-y-2 text-left">
-              <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Your Email</Label>
-              <Input 
-                type="email" 
-                value={resetEmail} 
-                onChange={(e) => setResetEmail(e.target.value)} 
-                placeholder="aspirant@cracklix.com" 
-                className="h-14 bg-slate-50 border-none rounded-xl focus-visible:ring-primary text-[#0F172A] text-lg font-bold px-6 shadow-inner" 
-              />
-            </div>
+            <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Your Email</Label><Input type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="aspirant@cracklix.com" className="h-14 bg-slate-50 border-none rounded-xl focus-visible:ring-primary text-[#0F172A] text-lg font-bold px-6 shadow-inner" /></div>
           </div>
-          <DialogFooter>
-             <Button onClick={handleResetPassword} disabled={resetLoading} className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl transition-all border-none">
-                {resetLoading ? "Processing..." : "Send Reset Link"}
-             </Button>
-          </DialogFooter>
+          <DialogFooter><Button onClick={handleResetPassword} disabled={resetLoading} className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl transition-all border-none">{resetLoading ? "Processing..." : "Send Reset Link"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
@@ -392,9 +277,7 @@ function LoginContent() {
 function BenefitItem({ text }: { text: string }) {
    return (
       <div className="flex items-center gap-4 text-slate-300 group">
-         <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/20 transition-colors group-hover:bg-primary/40">
-            <CheckCircle2 className="h-4 w-4 text-primary" />
-         </div>
+         <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/20 transition-colors group-hover:bg-primary/40"><CheckCircle2 className="h-4 w-4 text-primary" /></div>
          <span className="text-sm md:text-base font-black uppercase tracking-widest">{text}</span>
       </div>
    )

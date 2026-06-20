@@ -1,9 +1,8 @@
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Production-Grade PWA Manifest v16.0.
- * FIXED: Implemented specific maskable purpose to prevent Android icon shrinking.
- * NOTE: Requires icon-192x192.png, icon-512x512.png, and maskable-icon-512x512.png in /public/icons/
+ * @fileOverview Production-Grade PWA Manifest v17.0.
+ * FIXED: Implemented specific maskable purpose with safe-area optimizations.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
