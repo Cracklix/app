@@ -13,8 +13,9 @@ interface PWAInstallButtonProps {
 }
 
 /**
- * @fileOverview Production PWA Trigger Node v10.0 (Event Capture Fixed).
+ * @fileOverview Production PWA Trigger Node v11.0 (Direct Broadcast Capture).
  * LOGIC: Directly captures beforeinstallprompt and syncs with global state.
+ * FIXED: Reliable visibility by checking standalone state independently of the prompt event.
  */
 export default function PWAInstallButton({ 
   className, 
@@ -36,7 +37,7 @@ export default function PWAInstallButton({
     const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(ios);
 
-    // If it's not installed, and we either have a prompt or it's iOS
+    // Show button if not installed AND (browser says installable OR it's iOS which always allows manual install)
     const hasPrompt = !!(window as any).deferredPrompt;
     setCanInstall(!isStandalone && (hasPrompt || ios));
   };
@@ -46,10 +47,8 @@ export default function PWAInstallButton({
 
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
-      // Store the event globally
       (window as any).deferredPrompt = e;
       setCanInstall(true);
-      // Notify other buttons
       window.dispatchEvent(new CustomEvent('pwa-installable'));
     };
 
@@ -57,7 +56,7 @@ export default function PWAInstallButton({
     window.addEventListener('pwa-installable', updateState);
     window.addEventListener('appinstalled', updateState);
     
-    // Initial check
+    // Initial sync
     updateState();
 
     return () => {
@@ -82,8 +81,8 @@ export default function PWAInstallButton({
     const prompt = (window as any).deferredPrompt;
     if (!prompt) {
       toast({
-        title: "Already Optimized",
-        description: "Cracklix is already installed or your browser handles installation automatically.",
+        title: "PWA Optimized",
+        description: "Cracklix is ready. Use your browser's install icon or check if already installed.",
       });
       return;
     }

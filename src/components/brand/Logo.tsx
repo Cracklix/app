@@ -17,10 +17,11 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview Cracklix Maximized Brand Identity v55.0.
+ * @fileOverview Cracklix Maximized Brand Identity v56.0.
  * SPECS:
  * Desktop Header Logo: 72px height (within 88px header)
  * Mobile Header Logo: 60px height (within 72px header)
+ * FIXED: Optimized container constraints to prevent clipping.
  */
 export default function Logo({
   className = "",
@@ -44,7 +45,7 @@ export default function Logo({
 
   const content = (
     <div className={cn(
-      "relative shrink-0 flex items-center transition-all duration-300",
+      "relative shrink-0 flex items-center transition-all duration-300 h-full",
       align === 'center' && "mx-auto justify-center",
       align === 'right' && "justify-end",
       className
@@ -52,11 +53,12 @@ export default function Logo({
       <Image
         src={src}
         alt="Cracklix"
-        width={isIcon ? 80 : 600}
-        height={isIcon ? 80 : 200}
+        width={isIcon ? 80 : 800}
+        height={isIcon ? 80 : 250}
         priority={priority}
         className={cn(
-          "object-contain w-auto transition-all flex-shrink-0 h-[60px] md:h-[72px]",
+          "object-contain w-auto transition-all flex-shrink-0",
+          isIcon ? "h-10 md:h-12" : "h-[56px] md:h-[72px]",
           imgClassName
         )}
       />
@@ -69,7 +71,7 @@ export default function Logo({
         href={href || "/"}
         onClick={onClick}
         className={cn(
-          "flex items-center select-none hover:opacity-90 transition-opacity flex-shrink-0",
+          "flex items-center select-none hover:opacity-90 transition-opacity flex-shrink-0 h-full",
           align === 'center' && "w-full justify-center"
         )}
       >

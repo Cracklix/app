@@ -7,9 +7,8 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Smart Institutional PWA Install Node v8.0.
- * LOGIC: Captures native beforeinstallprompt and manages the global installation state.
- * Syncs with PWAInstallButton components.
+ * @fileOverview Smart Institutional PWA Install Node v9.0 (Event Broadcast Fix).
+ * FIXED: Explicitly dispatches custom event for components to catch beforeinstallprompt.
  */
 export default function PWAManager() {
   const pathname = usePathname();
@@ -31,7 +30,6 @@ export default function PWAManager() {
       return;
     }
 
-    // Only show the floating prompt if we have a prompt and aren't in an excluded route
     if (!isExcluded && !sessionDismissed && hasPrompt) {
       setShowPrompt(true);
     } else {
@@ -42,11 +40,11 @@ export default function PWAManager() {
   useEffect(() => {
     setMounted(true);
 
-    const handleBeforeInstallPrompt = (e: Event) => {
+    const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
-      // Store globally for all buttons
+      // Store globally for all components
       (window as any).deferredPrompt = e;
-      // Trigger a custom event so buttons can re-render
+      // Dispatch custom signal for hydration
       window.dispatchEvent(new CustomEvent('pwa-installable'));
       checkInstallability();
     };

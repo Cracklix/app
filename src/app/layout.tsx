@@ -16,8 +16,8 @@ const inter = Inter({
 });
 
 /**
- * @fileOverview Root Layout v46.0.
- * UPDATED: Optimized metadata to resolve title bar duplication and updated icons to new brand identity.
+ * @fileOverview Root Layout v47.0 (Title & Icon Fix).
+ * FIXED: Removed title template to prevent duplication. Updated all icon nodes to unified brand icon.
  */
 export const metadata: Metadata = {
   title: "Cracklix | Punjab's Smart Mock Test Platform",
@@ -34,6 +34,7 @@ export const metadata: Metadata = {
         type: "image/png",
       },
     ],
+    shortcut: "/logo/cracklix-icon.png",
     apple: [
       {
         url: "/logo/cracklix-icon.png",
