@@ -88,7 +88,7 @@ export default function PopularExams() {
                                   alt={board.abbreviation} 
                                   fill
                                   sizes="64px"
-                                  className="object-contain p-2"
+                                  className="object-contain p-3.5"
                                   referrerPolicy="no-referrer"
                                   onError={() => setFailedImages(prev => ({ ...prev, [board.id]: true }))} 
                                 />
