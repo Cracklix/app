@@ -37,8 +37,9 @@ const TELEGRAM_GROUP = "https://t.me/cracklixapp";
 const INSTAGRAM_PROFILE = "https://www.instagram.com/arshgrewal_official/";
 
 /**
- * @fileOverview Student Support Hub v2.3 (Build Hardened).
+ * @fileOverview Student Support Center v3.0 (Language Simplified).
  * FIXED: Restored missing Link and Loader2 nodes for stable production build.
+ * SIMPLIFIED: Terms like "Resolution Hub" and "Nodes" replaced with "Support Center" and "Items".
  */
 
 export default function SupportPage() {
@@ -84,7 +85,7 @@ export default function SupportPage() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       })
-      toast({ title: "Ticket Raised", description: "Our management team will audit your issue shortly." })
+      toast({ title: "Ticket Raised", description: "Our team will review your issue shortly." })
       setIsRaising(false)
       setFormData({ subject: "", type: "PAYMENT", message: "", priority: "MEDIUM" })
     } catch (e) {
@@ -103,13 +104,13 @@ export default function SupportPage() {
            <div className="space-y-4">
               <div className="flex items-center gap-3">
                  <MessageCircle className="h-5 w-5 text-primary" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Student Resolution Hub</span>
+                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Support Hub</span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-black text-[#0F172A] tracking-tighter uppercase leading-[0.9]">
+              <h1 className="text-4xl md:text-7xl font-black text-[#0F172A] tracking-tighter uppercase leading-[0.9]">
                  Support <br/> <span className="text-primary">Center</span>
               </h1>
               <p className="text-slate-500 font-medium text-lg max-w-xl">
-                 Raise tickets for payment issues, pass activation, or technical glitches.
+                 Raise tickets for payment issues, pass activation, or any other problems.
               </p>
            </div>
            <Button onClick={() => setIsRaising(true)} className="h-16 px-10 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-3xl gap-3">
@@ -121,7 +122,7 @@ export default function SupportPage() {
            <div className="lg:col-span-8 space-y-8">
               <div className="flex items-center gap-3 px-2">
                  <History className="h-4 w-4 text-slate-400" />
-                 <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-400">My Support Nodes</h3>
+                 <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-400">My Support Tickets</h3>
               </div>
 
               {ticketsLoading ? (
@@ -158,7 +159,7 @@ export default function SupportPage() {
                              {t.adminReply && (
                                 <div className="p-5 bg-blue-50 rounded-2xl border border-blue-100 space-y-2 relative overflow-hidden">
                                    <div className="absolute top-0 right-0 p-3 opacity-10"><ShieldCheck className="h-10 w-10 text-primary" /></div>
-                                   <p className="text-[9px] font-black text-primary uppercase tracking-widest">Admin Resolution</p>
+                                   <p className="text-[9px] font-black text-primary uppercase tracking-widest">Team Response</p>
                                    <p className="text-sm text-blue-900 font-semibold leading-relaxed italic">"{t.adminReply}"</p>
                                 </div>
                              )}
@@ -182,9 +183,9 @@ export default function SupportPage() {
                        <HelpCircle className="h-8 w-8 fill-current" />
                     </div>
                     <h3 className="text-3xl font-black uppercase leading-tight">Help Center</h3>
-                    <p className="text-slate-400 text-sm font-medium leading-relaxed">Search through categorized articles to fix common account issues instantly.</p>
+                    <p className="text-slate-400 text-sm font-medium leading-relaxed">Browse help articles to solve your problems instantly.</p>
                     <Button asChild variant="outline" className="w-full h-14 border-white/10 bg-white/5 text-white hover:bg-white/10 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-2">
-                       <Link href="/help">Browse Knowledge Base <ChevronRight className="h-4 w-4" /></Link>
+                       <Link href="/help">View Help Articles <ChevronRight className="h-4 w-4" /></Link>
                     </Button>
                  </div>
               </Card>
@@ -194,15 +195,15 @@ export default function SupportPage() {
                  <div className="relative z-10 space-y-4">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.3em]">Instant Updates</h4>
                     <h3 className="text-2xl font-black uppercase leading-tight">Telegram Community</h3>
-                    <p className="text-white/80 text-sm font-medium leading-relaxed">Join 15k+ aspirants for official exam patterns & result alerts.</p>
-                    <div className="pt-4 flex items-center gap-3 text-xs font-black uppercase tracking-widest">Join Group <ChevronRight className="h-4 w-4" /></div>
+                    <p className="text-white/80 text-sm font-medium leading-relaxed">Join 15k+ students for official exam patterns & result alerts.</p>
+                    <div className="pt-4 flex items-center gap-3 text-xs font-black uppercase tracking-widest">Join Now <ChevronRight className="h-4 w-4" /></div>
                  </div>
               </div>
 
               <div className="bg-white border border-slate-100 rounded-[3rem] p-10 space-y-8 relative overflow-hidden group shadow-xl cursor-pointer" onClick={() => window.open(INSTAGRAM_PROFILE, "_blank")}>
                  <div className="relative z-10 space-y-4 text-left">
                     <Instagram className="h-8 w-8 text-rose-500" />
-                    <h3 className="text-xl font-black uppercase text-[#0F172A]">Follow Hub</h3>
+                    <h3 className="text-xl font-black uppercase text-[#0F172A]">Follow Us</h3>
                     <p className="text-slate-400 text-[11px] font-bold uppercase tracking-widest">@arshgrewal_official</p>
                  </div>
               </div>
@@ -217,9 +218,9 @@ export default function SupportPage() {
             <div className="h-2 w-full bg-[#0F172A] shrink-0" />
             <DialogHeader className="p-10 pb-4">
                <DialogTitle className="text-2xl font-black font-headline uppercase flex items-center gap-4">
-                  <Plus className="h-8 w-8 text-primary" /> Raise Support Node
+                  <Plus className="h-8 w-8 text-primary" /> Raise Support Ticket
                </DialogTitle>
-               <DialogDescription className="sr-only">Raise a new support ticket for our management team to review.</DialogDescription>
+               <DialogDescription className="sr-only">Submit a new support request for our team to review.</DialogDescription>
             </DialogHeader>
             
             <div className="px-10 pb-10 space-y-6 overflow-y-auto">
@@ -229,9 +230,9 @@ export default function SupportPage() {
                      <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} className="w-full h-12 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none">
                         <option value="PAYMENT">Payment Issue</option>
                         <option value="PASS">Pass Activation</option>
-                        <option value="MOCK_TEST">Mock Test Bug</option>
-                        <option value="TECHNICAL">App/PWA Issues</option>
-                        <option value="ACCOUNT">Account Recovery</option>
+                        <option value="MOCK_TEST">Mock Test Issue</option>
+                        <option value="TECHNICAL">App Issues</option>
+                        <option value="ACCOUNT">Account Issue</option>
                         <option value="OTHER">Other Query</option>
                      </select>
                   </div>
@@ -241,26 +242,26 @@ export default function SupportPage() {
                         <option value="LOW">Low (2-3 Days)</option>
                         <option value="MEDIUM">Medium (24 Hours)</option>
                         <option value="HIGH">High (4-8 Hours)</option>
-                        <option value="URGENT">Urgent (ASAP)</option>
+                        <option value="URGENT">Urgent (As soon as possible)</option>
                      </select>
                   </div>
                </div>
                
                <div className="space-y-2 text-left">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Brief Subject</Label>
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Subject</Label>
                   <Input value={formData.subject} onChange={e => setFormData({...formData, subject: e.target.value})} className="h-12 rounded-xl font-bold" placeholder="e.g. Pass not showing active" />
                </div>
 
                <div className="space-y-2 text-left">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Message Detail</Label>
-                  <Textarea value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} className="min-h-[150px] rounded-2xl bg-slate-50 border-none p-5 font-medium leading-relaxed" placeholder="Describe your issue in detail..." />
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Problem Details</Label>
+                  <Textarea value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} className="min-h-[150px] rounded-2xl bg-slate-50 border-none p-5 font-medium leading-relaxed" placeholder="Describe your problem in detail..." />
                </div>
             </div>
 
             <DialogFooter className="p-10 pt-4 bg-slate-50 flex gap-4">
                <Button variant="ghost" onClick={() => setIsRaising(false)} className="rounded-xl h-14 font-black uppercase text-[10px] text-slate-400">Cancel</Button>
                <Button onClick={handleRaiseTicket} disabled={loading} className="flex-1 bg-[#0F172A] hover:bg-black text-white h-14 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl gap-3">
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Transmit Ticket
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Send Ticket
                </Button>
             </DialogFooter>
          </DialogContent>

@@ -12,8 +12,8 @@ import { useToast } from "@/hooks/use-toast"
 import { motion } from "framer-motion"
 
 /**
- * @fileOverview Institutional Verification Hub v3.0.
- * UPDATED: Optimized action nodes for instant status refresh and Gmail shortcuts.
+ * @fileOverview Official Verification Hub v4.0 (Language Simplified).
+ * SIMPLIFIED: Replaced "Institutional" and "Handshake" with "Account" and "Verification".
  */
 
 export default function VerifyEmailPage() {
@@ -45,7 +45,7 @@ export default function VerifyEmailPage() {
     setIsResending(true)
     try {
       await sendEmailVerification(user)
-      toast({ title: "Email Sent", description: "Verification link dispatched. Check your inbox." })
+      toast({ title: "Email Sent", description: "Verification link sent. Check your inbox." })
       setCooldown(60)
     } catch (e: any) {
       toast({ variant: "destructive", title: "Error", description: e.message })
@@ -59,10 +59,10 @@ export default function VerifyEmailPage() {
     try {
       await user.reload();
       if (user.emailVerified) {
-        toast({ title: "Account Activated", description: "Your email has been verified." });
+        toast({ title: "Account Verified", description: "Your email has been confirmed." });
         router.replace('/dashboard');
       } else {
-        toast({ title: "Still Unverified", description: "Please click the link in the email we sent you." });
+        toast({ title: "Not Verified Yet", description: "Please click the link in your email." });
       }
     } catch (e: any) {
        toast({ variant: "destructive", title: "Refresh Failed" });
@@ -96,7 +96,7 @@ export default function VerifyEmailPage() {
               </div>
               <div className="space-y-2">
                  <CardTitle className="text-3xl font-black font-headline text-[#0F172A] uppercase tracking-tight leading-tight">Verify Email</CardTitle>
-                 <CardDescription className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-2">Security Verification Required</CardDescription>
+                 <CardDescription className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-2">Account Verification Required</CardDescription>
               </div>
            </CardHeader>
            
@@ -130,7 +130,7 @@ export default function VerifyEmailPage() {
                       className="h-14 border-slate-200 text-[#0F172A] font-black uppercase text-[9px] tracking-widest rounded-2xl shadow-sm"
                     >
                        {isResending ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <RefreshCw className="h-4 w-4 text-primary" />}
-                       {cooldown > 0 ? `${cooldown}s` : "Resend Link"}
+                       {cooldown > 0 ? `${cooldown}s` : "Resend Email"}
                     </Button>
                  </div>
               </div>
@@ -139,14 +139,14 @@ export default function VerifyEmailPage() {
                 onClick={handleLogout}
                 className="w-full flex items-center justify-center gap-2 text-[10px] font-black uppercase text-slate-400 hover:text-rose-500 transition-colors tracking-widest"
               >
-                <LogOut className="h-3.5 w-3.5" /> Use a different email address
+                <LogOut className="h-3.5 w-3.5" /> Use another email address
               </button>
            </CardContent>
         </Card>
 
         <div className="flex items-center justify-center gap-4 text-slate-300">
            <ShieldCheck className="h-5 w-5" />
-           <span className="text-[10px] font-black uppercase tracking-[0.3em]">Institutional Verification Hub</span>
+           <span className="text-[10px] font-black uppercase tracking-[0.3em]">Official Verification Hub</span>
         </div>
       </motion.div>
     </div>

@@ -6,8 +6,9 @@ import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/fir
 import { initializeFirebase } from '@/firebase/app';
 
 /**
- * @fileOverview Elite CBT Global Store v58.0 (Hardened).
- * FIXED: Removed duplicate property definition and correctly typed initial language state.
+ * @fileOverview Elite CBT Global Store v59.0 (Hardened).
+ * FIXED: Removed duplicate property definition and corrected initial language state.
+ * SIMPLIFIED: Replaced technical jargon with easy student terms.
  */
 
 interface ExamStore extends AttemptState {
@@ -86,7 +87,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const initialTimeLeft = Math.max(0, Math.floor((finalEndTime - now) / 1000));
     const finalBaseMode: LanguageDisplayMode = languageMode || 'ENGLISH_PUNJABI';
 
-    let initialLang: LanguageDisplayMode = (!forceReset && state.language && state.language !== 'ENGLISH_PUNJABI') ? state.language : finalBaseMode;
+    let initialLang: LanguageDisplayMode = (!forceReset && state.language && (state.language as string) !== '') ? state.language : finalBaseMode;
     
     set({
       mockId, 
@@ -204,9 +205,9 @@ export const useExamStore = create<ExamStore>((set, get) => ({
   },
 
   markForReview: (idx, dbInstance) => {
-    const { status, answers, userId, mockId } = get();
+    const { status: currentStatus, answers, userId, mockId } = get();
     if (!userId || !mockId || !dbInstance) return;
-    const newStatus = { ...status };
+    const newStatus = { ...currentStatus };
     const hasAnswer = answers[idx] !== undefined && answers[idx] !== null;
     
     set({ isSyncing: true });

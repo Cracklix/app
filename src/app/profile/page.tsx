@@ -50,8 +50,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Profile Center v29.0 (Responsive Typography Fix).
- * FIXED: Applied fluid typography text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
+ * @fileOverview Student Profile Center v30.0 (Language Simplified).
+ * SIMPLIFIED: Terms like "Registry Metadata" and "Modify Node" replaced with "Profile Details" and "Edit Profile".
  */
 export default function ProfilePage() {
   const { user, profile, loading, profileLoading, currentDeviceId } = useUser()
@@ -137,7 +137,7 @@ export default function ProfilePage() {
     const mandatory = ['name', 'email', 'phone', 'dob', 'address', 'targetExam'];
     const missing = mandatory.find(key => !editForm[key]?.trim());
     if (missing) {
-      toast({ variant: "destructive", title: "Setup Blocked", description: `Please enter your ${missing.toUpperCase()}.` });
+      toast({ variant: "destructive", title: "Wait", description: `Please enter your ${missing.toUpperCase()}.` });
       return;
     }
     setIsSaving(true)
@@ -145,10 +145,10 @@ export default function ProfilePage() {
        const digits = editForm.phone.replace(/\D/g, '');
        const finalPhone = `+91 ${digits}`;
        await updateDoc(doc(db, "users", user.uid), { ...editForm, phone: finalPhone, updatedAt: serverTimestamp() })
-       toast({ title: "Registry Synced", description: "Your identity node has been updated." })
+       toast({ title: "Profile Updated", description: "Your profile details have been saved." })
        setIsEditing(false)
     } catch (e: any) {
-       toast({ variant: "destructive", title: "Sync Failed", description: e.message })
+       toast({ variant: "destructive", title: "Error", description: e.message })
     } finally {
        setIsSaving(false)
     }
@@ -157,7 +157,7 @@ export default function ProfilePage() {
   if (loading) return (
      <div className="min-h-screen bg-white flex flex-col items-center justify-center space-y-4">
         <Loader2 className="h-10 w-10 text-primary animate-spin" />
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Auditing Node...</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Loading Profile...</p>
      </div>
   );
 
@@ -199,7 +199,7 @@ export default function ProfilePage() {
                         <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 md:gap-x-10 gap-y-2">
                           <HeaderInfo icon={<Mail className="h-4 w-4 text-primary" />} text={profile?.email || ""} />
                           <HeaderInfo icon={<Phone className="h-4 w-4 text-primary" />} text={profile?.phone || "Not Added"} />
-                          <HeaderInfo icon={<GraduationCap className="h-4 w-4 text-primary" />} text={`Target: ${profile?.targetExam || 'General'}`} />
+                          <HeaderInfo icon={<GraduationCap className="h-4 w-4 text-primary" />} text={`Exam: ${profile?.targetExam || 'General'}`} />
                         </div>
                       </>
                     )}
@@ -243,28 +243,28 @@ export default function ProfilePage() {
                  )}
 
                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-8">
-                    <StatsCard icon={ClipboardList} label="TESTS DONE" value={resultsLoading ? "..." : stats.total} color="text-blue-500" bgColor="bg-blue-50" />
+                    <StatsCard icon={ClipboardList} label="TOTAL TESTS" value={resultsLoading ? "..." : stats.total} color="text-blue-500" bgColor="bg-blue-50" />
                     <StatsCard icon={Target} label="ACCURACY" value={resultsLoading ? "..." : `${stats.avgAccuracy}%`} color="text-primary" bgColor="bg-primary/10" />
                     <StatsCard icon={Trophy} label="RANK" value={resultsLoading ? "..." : stats.rank} color="text-emerald-500" bgColor="bg-emerald-50" className="hidden sm:flex" />
                  </div>
 
                  <Card className="border-none shadow-3xl rounded-[2.5rem] md:rounded-[3.5rem] bg-white p-8 md:p-14 space-y-8 md:space-y-12 text-left border border-slate-100">
-                    <div className="flex items-center justify-between border-b border-slate-50 pb-6 md:pb-10"><h3 className="font-headline font-black text-xl md:text-3xl uppercase flex items-center gap-4 md:gap-6 text-[#0F172A]"><UserIcon className="h-6 w-6 md:h-8 md:w-8 text-primary" /> Registry Metadata</h3></div>
+                    <div className="flex items-center justify-between border-b border-slate-50 pb-6 md:pb-10"><h3 className="font-headline font-black text-xl md:text-3xl uppercase flex items-center gap-4 md:gap-6 text-[#0F172A]"><UserIcon className="h-6 w-6 md:h-8 md:w-8 text-primary" /> Profile Details</h3></div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-8 md:gap-y-12">
-                      <ProfileDataNode icon={Calendar} label="DATE OF BIRTH" value={profile?.dob ? new Date(profile.dob).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : "Not Linked"} />
-                      <ProfileDataNode icon={Phone} label="MOBILE NODE" value={profile?.phone || "Not Linked"} />
-                      <ProfileDataNode icon={MapPin} label="HQs ADDRESS" value={profile?.address || "Not Added"} colSpan={2} />
-                      <ProfileDataNode icon={ShieldCheck} label="ACCESS LEVEL" value={`${profile?.role || 'STUDENT'}`} />
-                      <ProfileDataNode icon={Activity} label="REGISTRY SINCE" value={profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) : "---"} />
+                      <ProfileDataNode icon={Calendar} label="DATE OF BIRTH" value={profile?.dob ? new Date(profile.dob).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : "Not Added"} />
+                      <ProfileDataNode icon={Phone} label="MOBILE NUMBER" value={profile?.phone || "Not Added"} />
+                      <ProfileDataNode icon={MapPin} label="ADDRESS" value={profile?.address || "Not Added"} colSpan={2} />
+                      <ProfileDataNode icon={ShieldCheck} label="ACCOUNT TYPE" value={`${profile?.role || 'STUDENT'}`} />
+                      <ProfileDataNode icon={Activity} label="JOINED ON" value={profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) : "---"} />
                     </div>
                  </Card>
               </div>
               <div className="lg:col-span-4 space-y-6 md:space-y-10">
                  <Card className="border-none shadow-2xl rounded-[2.5rem] md:rounded-[3.5rem] bg-white p-8 md:p-12 space-y-8 md:space-y-10 border border-slate-100">
-                    <h3 className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.4em] text-slate-400">Quick Portal</h3>
+                    <h3 className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.4em] text-slate-400">Settings</h3>
                     <div className="space-y-4 md:space-y-5">
-                       <Button onClick={() => setIsEditing(true)} className="w-full h-14 md:h-18 bg-[#0F172A] hover:bg-black text-white rounded-2xl font-black uppercase text-[10px] md:text-[12px] tracking-widest shadow-2xl transition-all active:scale-95 border-none gap-3"><Edit className="h-5 w-5 text-primary" /> Update Node</Button>
-                       <Button asChild className="w-full h-14 md:h-18 bg-primary hover:bg-blue-700 text-white rounded-2xl font-black uppercase text-[10px] md:text-[12px] tracking-widest shadow-2xl transition-all active:scale-95 border-none gap-3"><Link href="/pass"><Gem className="h-5 w-5" /> Pass Hub</Link></Button>
+                       <Button onClick={() => setIsEditing(true)} className="w-full h-14 md:h-18 bg-[#0F172A] hover:bg-black text-white rounded-2xl font-black uppercase text-[10px] md:text-[12px] tracking-widest shadow-xl transition-all active:scale-95 border-none gap-3"><Edit className="h-5 w-5 text-primary" /> Edit Profile</Button>
+                       <Button asChild className="w-full h-14 md:h-18 bg-primary hover:bg-blue-700 text-white rounded-2xl font-black uppercase text-[10px] md:text-[12px] tracking-widest shadow-xl transition-all active:scale-95 border-none gap-3"><Link href="/pass"><Gem className="h-5 w-5" /> Elite Pass</Link></Button>
                     </div>
                  </Card>
               </div>
@@ -279,35 +279,35 @@ export default function ProfilePage() {
             <DialogHeader className="p-8 md:p-14 pb-4 md:pb-6 shrink-0">
                <div className="flex justify-between items-center">
                   <DialogTitle className="text-2xl md:text-4xl font-black font-headline uppercase text-[#0F172A] flex items-center gap-4 md:gap-6">
-                     <ShieldCheck className="h-7 w-7 md:h-10 md:w-10 text-primary" /> Modify Profile
+                     <ShieldCheck className="h-7 w-7 md:h-10 md:w-10 text-primary" /> Edit Profile
                   </DialogTitle>
                   <button onClick={() => setIsEditing(false)} className="p-3 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer"><X className="h-6 w-6 text-slate-400" /></button>
                </div>
             </DialogHeader>
             <div className="px-8 md:px-14 pb-8 md:pb-14 space-y-5 md:space-y-8 overflow-y-auto custom-scrollbar flex-1">
                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8">
-                  <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Full Identity</Label><Input value={editForm?.name || ""} onChange={e => setEditForm((prev: any) => ({...prev, name: e.target.value}))} className="h-14 md:h-16 rounded-2xl bg-slate-50 border-none font-bold px-6" /></div>
-                  <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Contact String</Label><Input type="email" value={editForm?.email || ""} onChange={e => setEditForm((prev: any) => ({...prev, email: e.target.value}))} className="h-14 md:h-16 rounded-2xl bg-slate-50 border-none font-bold px-6" /></div>
+                  <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Full Name</Label><Input value={editForm?.name || ""} onChange={e => setEditForm((prev: any) => ({...prev, name: e.target.value}))} className="h-14 md:h-16 rounded-2xl bg-slate-50 border-none font-bold px-6" /></div>
+                  <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Email Address</Label><Input type="email" value={editForm?.email || ""} onChange={e => setEditForm((prev: any) => ({...prev, email: e.target.value}))} className="h-14 md:h-16 rounded-2xl bg-slate-50 border-none font-bold px-6" /></div>
                </div>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8">
                   <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Date of Birth</Label><Input type="date" value={editForm?.dob || ""} onChange={e => setEditForm((prev: any) => ({...prev, dob: e.target.value}))} className="h-14 md:h-16 rounded-2xl bg-slate-50 border-none font-bold px-6" /></div>
-                  <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Target Authority</Label><select value={editForm?.targetExam || ""} onChange={e => setEditForm((prev: any) => ({...prev, targetExam: e.target.value}))} className="w-full h-14 md:h-16 rounded-2xl bg-slate-50 border-none font-bold px-6 outline-none"><option value="PSSSB">PSSSB</option><option value="PPSC">PPSC</option><option value="Punjab Police">Punjab Police</option><option value="Army">Indian Army</option><option value="High Court">High Court</option></select></div>
+                  <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Target Exam</Label><select value={editForm?.targetExam || ""} onChange={e => setEditForm((prev: any) => ({...prev, targetExam: e.target.value}))} className="w-full h-14 md:h-16 rounded-2xl bg-slate-50 border-none font-bold px-6 outline-none"><option value="PSSSB">PSSSB</option><option value="PPSC">PPSC</option><option value="Punjab Police">Punjab Police</option><option value="Army">Indian Army</option><option value="High Court">High Court</option></select></div>
                </div>
                <div className="space-y-2 text-left">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Mobile Node</Label>
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Mobile Number</Label>
                   <div className="relative">
                      <span className="absolute left-6 top-1/2 -translate-y-1/2 text-sm md:text-lg font-black text-slate-400">+91</span>
                      <Input value={editForm?.phone || ""} onChange={e => setEditForm((prev: any) => ({...prev, phone: e.target.value.replace(/\D/g, '').slice(0,10)}))} className="h-14 md:h-16 pl-16 md:pl-20 rounded-2xl bg-slate-50 border-none font-black text-lg md:text-2xl" />
                   </div>
                </div>
                <div className="space-y-2 text-left">
-                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Home Hub Address</Label>
+                  <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Home Address</Label>
                   <Textarea value={editForm?.address || ""} onChange={e => setEditForm((prev: any) => ({...prev, address: e.target.value}))} className="min-h-[120px] rounded-[1.5rem] bg-slate-50 border-none font-medium p-5 shadow-inner resize-none" />
                </div>
             </div>
             <DialogFooter className="p-8 md:p-14 pt-4 bg-slate-50 border-t border-slate-100 flex flex-row gap-4 items-center justify-between">
-               <Button variant="ghost" onClick={() => setIsEditing(false)} className="h-14 px-6 font-black uppercase text-[9px] text-slate-400">Discard</Button>
-               <Button onClick={handleUpdateProfile} disabled={isSaving} className="bg-primary hover:bg-orange-600 text-white h-14 px-8 rounded-2xl font-black uppercase text-[10px] flex-1 shadow-3xl transition-all active:scale-95 gap-3">{isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Sync Registry</Button>
+               <Button variant="ghost" onClick={() => setIsEditing(false)} className="h-14 px-6 font-black uppercase text-[9px] text-slate-400">Cancel</Button>
+               <Button onClick={handleUpdateProfile} disabled={isSaving} className="bg-primary hover:bg-orange-600 text-white h-14 px-8 rounded-2xl font-black uppercase text-[10px] flex-1 shadow-3xl transition-all active:scale-95 gap-3">{isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save Profile</Button>
             </DialogFooter>
          </DialogContent>
       </Dialog>
@@ -316,7 +316,7 @@ export default function ProfilePage() {
 }
 
 function HeaderInfo({ icon, text }: { icon: React.ReactNode, text: string }) {
-   return (<div className="flex items-center gap-2.5 text-white/60 font-bold uppercase text-[9px] md:text-[12px] tracking-tight"><span className="shrink-0">{icon}</span><span className="truncate max-w-[180px] md:max-w-[320px]">{text || 'Awaiting Node'}</span></div>)
+   return (<div className="flex items-center gap-2.5 text-white/60 font-bold uppercase text-[9px] md:text-[12px] tracking-tight"><span className="shrink-0">{icon}</span><span className="truncate max-w-[180px] md:max-w-[320px]">{text || 'Not Added'}</span></div>)
 }
 function StatsCard({ icon: Icon, label, value, color, bgColor, className }: { icon: LucideIcon, label: string, value: string | number, color: string, bgColor: string, className?: string }) {
    return (<Card className={cn("border-none shadow-2xl rounded-[1.5rem] md:rounded-[3rem] p-6 md:p-12 bg-white group hover:translate-y-[-6px] transition-all duration-500", className)}><div className="flex flex-col gap-5 md:gap-8"><div className={cn("h-10 w-10 md:h-16 md:w-16 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 shadow-inner", bgColor)}><Icon className={cn("h-5 w-5 md:h-8 md:w-8", color)} /></div><div className="space-y-1 text-left"><p className="text-[8px] md:text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">{label}</p><p className={cn("text-xl md:text-5xl font-headline font-black leading-none tabular-nums", color)}>{value}</p></div></div></Card>)

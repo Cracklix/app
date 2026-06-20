@@ -21,8 +21,8 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Refined Dynamic Hero Hub v36.0 (Responsive Fix).
- * FIXED: Applied responsive leading-[0.9] and Title Case typography.
+ * @fileOverview Hero Section v37.0 (Language Simplified).
+ * SIMPLIFIED: Replaced technical jargon with easy student terms.
  */
 
 export default function Hero() {
@@ -75,7 +75,7 @@ export default function Hero() {
         id: "u",
         icon: <Users className="h-5 w-5 text-indigo-500" />,
         val: formatNumber(stats?.totalUsers, "15,000+"),
-        label: "Aspirants"
+        label: "Students"
       }
     ];
   }, [stats]);
@@ -99,7 +99,7 @@ export default function Hero() {
             >
               <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
               <span className="text-[10px] md:text-[13px] font-black text-[#04102B] tracking-wider uppercase">
-                {statsLoading ? "10,000+" : `${dynamicUserCount}+`} Aspirants Trust Cracklix
+                {statsLoading ? "10,000+" : `${dynamicUserCount}+`} Students Trust Cracklix
               </span>
             </motion.div>
 
@@ -111,8 +111,8 @@ export default function Hero() {
               </h1>
 
               <p className="text-sm md:text-xl text-[#64748B] max-w-2xl mx-auto font-medium leading-relaxed">
-                Practice bilingual mock tests and prepare for Punjab Government Exams with confidence. 
-                Access exam-focused practice, previous papers and performance tracking in one place.
+                Practice bilingual mock tests and prepare for Punjab Government Exams. 
+                Access practice tests, previous papers and track your performance.
               </p>
             </div>
 
@@ -132,7 +132,7 @@ export default function Hero() {
               />
             </motion.div>
 
-            {/* INTEGRATED FEATURE GRID */}
+            {/* FEATURES GRID */}
             <div className="grid grid-cols-2 gap-3 md:gap-6 w-full max-w-2xl">
                <FeatureCard icon={<Zap />} label="Mock Tests" href="/mocks" />
                <FeatureCard icon={<Landmark />} label="Punjab Exams" href="/exams" />

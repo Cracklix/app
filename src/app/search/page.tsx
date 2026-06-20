@@ -13,7 +13,7 @@ import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Global Search Hub v3.9 (Build Hardened).
+ * @fileOverview Elite Global Search Center v4.0 (Language Simplified).
  * FIXED: Resolved cloneElement type errors and UMD global mismatch.
  */
 
@@ -127,7 +127,7 @@ function SearchContent() {
                  </Card>
                  <Card className="border-none shadow-xl rounded-[2rem] p-8 bg-white group overflow-hidden border border-slate-100">
                     <div className="relative z-10 space-y-6">
-                       <h4 className="font-black text-[9px] text-slate-400 uppercase tracking-[0.3em]">Preparation Hubs</h4>
+                       <h4 className="font-black text-[9px] text-slate-400 uppercase tracking-[0.3em]">Preparation Centers</h4>
                        <div className="flex flex-wrap gap-2">
                           <SearchBadge label="Army Hub" />
                           <SearchBadge label="Teaching" />

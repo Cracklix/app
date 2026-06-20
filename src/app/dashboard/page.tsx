@@ -32,9 +32,8 @@ import ShareButton from "@/components/navigation/ShareButton"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview High-Performance Student Dashboard v29.0 (Hardened).
- * FIXED: Consistent flex-col for mobile stat nodes to prevent overlap.
- * FIXED: Standardized HTML nesting to prevent hydration errors.
+ * @fileOverview Student Dashboard v30.0 (Language Simplified).
+ * SIMPLIFIED: Replaced technical jargon with simple student-friendly terms.
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading, profileLoading } = useUser() as any;
@@ -128,7 +127,7 @@ export default function StudentDashboard() {
                               {(profile?.status || 'Free').toUpperCase()} PASS
                             </Badge>
                             <div className="text-slate-400 font-bold uppercase tracking-widest text-[9px] md:text-[11px] flex items-center gap-2">
-                              <Target className="h-4 w-4 text-primary" /> {profile?.targetExam || 'Punjab General'}
+                              <Target className="h-4 w-4 text-primary" /> {profile?.targetExam || 'Punjab Exams'}
                             </div>
                           </div>
                       </div>
@@ -138,7 +137,7 @@ export default function StudentDashboard() {
                           <Link href="/profile">My Profile</Link>
                         </Button>
                         <Button asChild className="h-11 md:h-12 px-6 md:px-8 bg-primary hover:bg-orange-600 text-white rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-widest shadow-xl transition-all active:scale-95 border-none">
-                          <Link href="/pass">Upgrade Center</Link>
+                          <Link href="/pass">Upgrade Pass</Link>
                         </Button>
                     </div>
                   </div>
@@ -147,9 +146,9 @@ export default function StudentDashboard() {
 
               {/* METRICS GRID */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
-                <MetricItem label="PREP SCORE" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : <div className="min-w-0">{stats.readiness}%</div>} icon={<TrendingUp className="text-primary h-5 w-5" />} />
+                <MetricItem label="PROGRESS" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : <div className="min-w-0">{stats.readiness}%</div>} icon={<TrendingUp className="text-primary h-5 w-5" />} />
                 <MetricItem label="ACCURACY" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : <div className="min-w-0">{stats.avgAccuracy}%</div>} icon={<Target className="text-emerald-500 h-5 w-5" />} />
-                <MetricItem label="TESTS DONE" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : <div className="min-w-0">{stats.total}</div>} icon={<ClipboardList className="text-blue-500 h-5 w-5" />} />
+                <MetricItem label="TESTS" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : <div className="min-w-0">{stats.total}</div>} icon={<ClipboardList className="text-blue-500 h-5 w-5" />} />
                 <MetricItem label="TIME SPENT" val={resultsLoading ? <Skeleton className="h-8 w-12" /> : <div className="min-w-0">{stats.hours}</div>} icon={<Clock className="text-amber-500 h-5 w-5" />} />
               </div>
 
@@ -157,8 +156,8 @@ export default function StudentDashboard() {
               <Card className="border-none shadow-3xl rounded-[2.5rem] md:rounded-[3.5rem] bg-white overflow-hidden text-left border border-slate-100">
                 <CardHeader className="p-6 md:p-10 border-b border-slate-50 bg-slate-50/30 flex flex-row items-center justify-between">
                     <div className="space-y-1">
-                      <h3 className="font-headline text-lg md:text-3xl font-black text-[#0F172A] uppercase">Test Archives</h3>
-                      <p className="text-[9px] md:text-[11px] font-bold uppercase tracking-widest text-slate-400">Your recent attempt history</p>
+                      <h3 className="font-headline text-lg md:text-3xl font-black text-[#0F172A] uppercase">Test History</h3>
+                      <p className="text-[9px] md:text-[11px] font-bold uppercase tracking-widest text-slate-400">Your recent practice sessions</p>
                     </div>
                     <Button asChild variant="ghost" className="h-10 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary gap-2">
                       <Link href="/my-exams">View All <ChevronRight className="h-4 w-4" /></Link>
@@ -198,7 +197,7 @@ export default function StudentDashboard() {
                             </Link>
                           ))
                       ) : (
-                          <div className="p-20 text-center opacity-30 italic text-sm md:text-lg uppercase font-black tracking-widest text-slate-400">No session nodes recorded.</div>
+                          <div className="p-20 text-center opacity-30 italic text-sm md:text-lg uppercase font-black tracking-widest text-slate-400">No test results found.</div>
                       )}
                     </div>
                 </CardContent>
@@ -214,7 +213,7 @@ export default function StudentDashboard() {
                       <div className="text-6xl md:text-8xl lg:text-9xl font-headline font-black leading-none">{resultsLoading ? "..." : stats.streak}</div>
                       <div className="space-y-0.5">
                           <p className="text-lg md:text-2xl font-black uppercase">Days</p>
-                          <p className="text-[8px] md:text-[9px] font-bold uppercase text-white/60">Node Active</p>
+                          <p className="text-[8px] md:text-[9px] font-bold uppercase text-white/60">Active Now</p>
                       </div>
                     </div>
                     <div className="pt-4 flex gap-1.5">
@@ -228,8 +227,8 @@ export default function StudentDashboard() {
               <div className="grid grid-cols-2 gap-4">
                 <DashboardTile icon={<Bookmark className="text-primary h-5 w-5" />} label="REVISION" href="/revision" />
                 <DashboardTile icon={<Trophy className="text-amber-500 h-5 w-5" />} label="RANKINGS" href="/leaderboard" />
-                <DashboardTile icon={<LayoutGrid className="text-blue-500 h-5 w-5" />} label="EXAM HUBS" href="/exams" />
-                <DashboardTile icon={<Activity className="text-emerald-500 h-5 w-5" />} label="ANALYSIS" href="/analytics" />
+                <DashboardTile icon={<LayoutGrid className="text-blue-500 h-5 w-5" />} label="EXAMS" href="/exams" />
+                <DashboardTile icon={<Activity className="text-emerald-500 h-5 w-5" />} label="PROGRESS" href="/analytics" />
               </div>
 
               <Card className="border-none shadow-2xl bg-white p-8 md:p-10 rounded-[2.5rem] text-left space-y-6 border border-slate-100">
@@ -239,7 +238,7 @@ export default function StudentDashboard() {
                     </div>
                     <div className="space-y-0.5">
                       <h4 className="text-lg md:text-xl font-black uppercase text-[#0B1528]">Elite Network</h4>
-                      <p className="text-[9px] md:text-[10px] font-bold uppercase text-slate-400">Invite fellow aspirants</p>
+                      <p className="text-[9px] md:text-[10px] font-bold uppercase text-slate-400">Invite fellow students</p>
                     </div>
                 </div>
                 <ShareButton 

@@ -17,8 +17,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Elite PASS Hub v16.0 (Responsive Typography Fix).
- * FIXED: Applied text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
+ * @fileOverview Elite Pass Hub v17.0 (Language Simplified).
+ * SIMPLIFIED: Replaced "Elite PASS Hub" and "Monetization Node" with "Pass Plans" and "Upgrade".
  */
 
 export default function PassPage() {
@@ -96,12 +96,12 @@ export default function PassPage() {
                              <ShieldCheck className="h-8 w-8" />
                           </div>
                           <div>
-                             <h2 className="text-2xl md:text-3xl font-headline font-black text-[#0F172A] uppercase tracking-tight">Elite Pass</h2>
+                             <h2 className="text-2xl md:text-3xl font-headline font-black text-[#0F172A] uppercase tracking-tight">Active Pass</h2>
                              <div className="flex items-center gap-3">
                                 <Badge className={cn("border-none text-[8px] font-black px-3 py-1 rounded-lg uppercase", passStatus === 'active' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600')}>
                                    Status: {passStatus.toUpperCase()}
                                 </Badge>
-                                {passStatus === 'active' && <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Valid Till: {new Date(profile.passExpiresAt!).toLocaleDateString('en-GB')}</p>}
+                                {passStatus === 'active' && <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Valid Until: {new Date(profile.passExpiresAt!).toLocaleDateString('en-GB')}</p>}
                              </div>
                           </div>
                        </div>
@@ -116,14 +116,14 @@ export default function PassPage() {
                        ) : (
                           <div className="p-6 bg-rose-50 rounded-2xl border border-rose-100 flex items-center gap-4 text-rose-600">
                              <AlertCircle className="h-6 w-6 shrink-0" />
-                             <p className="text-sm font-bold uppercase tracking-tight">Your pass expired on {new Date(profile.passExpiresAt!).toLocaleDateString()}. Renew now to resume preparation.</p>
+                             <p className="text-sm font-bold uppercase tracking-tight">Your pass expired on {new Date(profile.passExpiresAt!).toLocaleDateString()}. Please renew to continue.</p>
                           </div>
                        )}
                     </div>
 
                     <div className="shrink-0 w-full md:w-auto">
                        <Button asChild className={cn("w-full h-16 px-10 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl border-none transition-all", passStatus === 'active' ? "bg-slate-100 text-slate-400 cursor-default hover:bg-slate-100" : "bg-primary hover:bg-blue-700 text-white")}>
-                          {passStatus === 'active' ? <span>Premium Enabled</span> : <Link href="#plans">Renew Elite Pass <ArrowRight className="ml-2 h-4 w-4" /></Link>}
+                          {passStatus === 'active' ? <span>Pass Enabled</span> : <Link href="#plans">Renew My Pass <ArrowRight className="ml-2 h-4 w-4" /></Link>}
                        </Button>
                     </div>
                  </div>
@@ -134,10 +134,10 @@ export default function PassPage() {
         <div id="plans" className="space-y-6 md:space-y-10">
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[0.9] text-white break-words">
-                 Elite <span className="text-[#2F6BFF]">Master Pass</span>
+                 Master <span className="text-[#2F6BFF]">Pass Plans</span>
               </h1>
               <p className="text-sm md:text-2xl font-medium text-[#94A3B8] max-w-3xl mx-auto mt-6 md:mt-8 leading-relaxed">
-                 Unlock all premium mock tests, verified answer keys, and performance reports to secure your selection.
+                 Unlock all premium mock tests, solved papers, and performance reports to help you succeed.
               </p>
            </motion.div>
         </div>
@@ -146,7 +146,7 @@ export default function PassPage() {
            {passesLoading ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[400px] w-full bg-white/5 rounded-[32px]" />) : passes.filter(p => p.price > 0).map((plan, idx) => (
              <motion.div key={plan.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}>
                 <Card className={cn("h-full border border-white/5 bg-[#081632] rounded-[32px] md:rounded-[40px] overflow-hidden flex flex-col transition-all duration-500 hover:translate-y-[-8px]", plan.id.includes('quarterly') ? "shadow-[0_0_40px_rgba(47,107,255,.15)]" : "shadow-xl")}>
-                   {plan.id.includes('quarterly') && <div className="bg-[#2F6BFF] h-[48px] flex items-center justify-center text-white text-[10px] font-black uppercase tracking-[4px]">MANAGEMENT PICK</div>}
+                   {plan.id.includes('quarterly') && <div className="bg-[#2F6BFF] h-[48px] flex items-center justify-center text-white text-[10px] font-black uppercase tracking-[4px]">BEST VALUE</div>}
                    <CardHeader className="p-8 md:p-14 pb-6 text-center space-y-6">
                       <div className="h-14 w-14 md:h-18 md:w-18 rounded-[40%] bg-[#2F6BFF]/15 text-[#2F6BFF] flex items-center justify-center mx-auto shadow-2xl"><Gem className="h-7 w-7 md:h-9 md:w-9 fill-current" /></div>
                       <CardTitle className="font-black text-xl md:text-3xl uppercase tracking-tight text-white">{plan.name}</CardTitle>
