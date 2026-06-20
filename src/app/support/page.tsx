@@ -32,6 +32,11 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import Link from "next/link"
 
+/**
+ * @fileOverview Official Institutional Support Hub v4.0 (Typography Hardened).
+ * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
+ */
+
 const TELEGRAM_GROUP = "https://t.me/cracklixapp";
 const INSTAGRAM_PROFILE = "https://www.instagram.com/arshgrewal_official/";
 
@@ -49,7 +54,6 @@ export default function SupportPage() {
     priority: "MEDIUM"
   })
 
-  // Removed orderBy to bypass composite index requirement
   const ticketsQuery = useMemo(() => {
     if (!db || !user) return null
     return query(
@@ -60,7 +64,6 @@ export default function SupportPage() {
 
   const { data: rawTickets, loading: ticketsLoading } = useCollection<any>(ticketsQuery)
 
-  // Implement client-side sorting
   const tickets = useMemo(() => {
     if (!rawTickets) return [];
     return [...rawTickets].sort((a: any, b: any) => {
@@ -103,17 +106,17 @@ export default function SupportPage() {
       <Navbar />
       
       <main className="container mx-auto px-4 md:px-6 py-12 md:py-20 max-w-6xl space-y-12">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-           <div className="space-y-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
+           <div className="space-y-6 md:space-y-10">
               <div className="flex items-center gap-3">
                  <MessageCircle className="h-5 w-5 text-primary" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Support Hub</span>
+                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Support Center</span>
               </div>
-              <h1 className="text-4xl md:text-7xl font-black text-[#0F172A] tracking-tighter uppercase leading-[0.9]">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-[#0F172A] tracking-tight leading-[0.9] break-words antialiased">
                  Support <br/> <span className="text-primary">Center</span>
               </h1>
-              <p className="text-slate-500 font-medium text-lg max-w-xl">
-                 Raise tickets for payment issues, pass activation, or any other problems.
+              <p className="text-slate-500 font-medium text-lg md:text-2xl max-w-xl leading-tight tracking-tight">
+                 Raise tickets for institutional issues or pass activation assistance.
               </p>
            </div>
            <Button onClick={() => setIsRaising(true)} className="h-16 px-10 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-3xl gap-3">
@@ -187,7 +190,7 @@ export default function SupportPage() {
                     <div className="h-14 w-14 bg-primary/20 rounded-2xl flex items-center justify-center text-primary shadow-2xl">
                        <HelpCircle className="h-8 w-8 fill-current" />
                     </div>
-                    <h3 className="text-3xl font-black uppercase leading-tight">Help hub</h3>
+                    <h3 className="text-3xl font-black uppercase leading-tight">Help center</h3>
                     <p className="text-slate-400 text-sm font-medium leading-relaxed">Browse help articles to solve your problems instantly.</p>
                     <Button asChild variant="outline" className="w-full h-14 border-white/10 bg-white/5 text-white hover:bg-white/10 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-2">
                        <Link href="/help">View help articles <ChevronRight className="h-4 w-4" /></Link>
@@ -202,14 +205,6 @@ export default function SupportPage() {
                     <h3 className="text-2xl font-black uppercase leading-tight">Telegram community</h3>
                     <p className="text-white/80 text-sm font-medium leading-relaxed">Join 15k+ students for official exam patterns & result alerts.</p>
                     <div className="pt-4 flex items-center gap-3 text-xs font-black uppercase tracking-widest">Join now <ChevronRight className="h-4 w-4" /></div>
-                 </div>
-              </div>
-
-              <div className="bg-white border border-slate-100 rounded-[3rem] p-10 space-y-8 relative overflow-hidden group shadow-xl cursor-pointer" onClick={() => window.open(INSTAGRAM_PROFILE, "_blank")}>
-                 <div className="relative z-10 space-y-4 text-left">
-                    <Instagram className="h-8 w-8 text-rose-500" />
-                    <h3 className="text-xl font-black uppercase text-[#0F172A]">Follow us</h3>
-                    <p className="text-slate-400 text-[11px] font-bold uppercase tracking-widest">@arshgrewal_official</p>
                  </div>
               </div>
            </div>

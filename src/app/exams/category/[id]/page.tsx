@@ -15,8 +15,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Explorer v12.0 (Responsive Fix).
- * FIXED: Applied responsive typography scale with leading-[0.9].
+ * @fileOverview Institutional Category Explorer v13.0 (Typography Hardened).
+ * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
  */
 
 const ACRONYMS = ["PSSSB", "PPSC", "PUNJAB POLICE", "PSPCL", "PSTCL", "PSTET", "CTET", "MCQ", "MCQS", "PYQ", "PYQS", "GK", "CA"];
@@ -65,7 +65,7 @@ export default function CategoryHubsPage() {
   }, [boards, catId]);
 
   return (
-    <div className="min-h-screen bg-slate-50/50 font-body">
+    <div className="min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       
       <section className="bg-white border-b border-slate-100 py-10 md:py-20 text-left relative overflow-hidden">
@@ -81,14 +81,14 @@ export default function CategoryHubsPage() {
                         {meta.icon}
                      </div>
                   </div>
-                  <span className="text-[10px] md:text-xs font-bold text-slate-500 tracking-tight">Registry Nodes</span>
+                  <span className="text-[10px] md:text-xs font-bold text-slate-500 tracking-tight uppercase">Registry Node</span>
                </div>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-6 md:space-y-10">
               <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#0F172A] leading-[0.9] tracking-tight break-words antialiased">
                 {toTitleCase(meta.title)}
               </h1>
-              <p className="text-sm md:text-2xl font-bold text-slate-400 tracking-tight max-w-3xl">
+              <p className="text-sm md:text-2xl font-bold text-slate-400 tracking-tight max-w-3xl leading-tight">
                 Official recruitment centers for the {toTitleCase(meta.title)} category.
               </p>
             </div>

@@ -31,8 +31,8 @@ import { doc } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Refined Founder's Story Hub v17.1 (Hardened Build).
- * FIXED: Switched to type-safe component references for icons and explicitly typed reduction callbacks.
+ * @fileOverview Institutional About Center v18.0 (Typography Hardened).
+ * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
  */
 
 export default function AboutPage() {
@@ -88,9 +88,9 @@ export default function AboutPage() {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="text-3xl md:text-6xl font-headline font-black leading-[1.1] tracking-tighter uppercase"
+                    className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.9] tracking-tight antialiased"
                  >
-                    From a Student&apos;s Dream <br/>
+                    From a Student's Dream <br/>
                     <span className="text-primary italic">To a Nation of Learners</span>
                  </motion.h1>
 
@@ -98,9 +98,9 @@ export default function AboutPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="text-sm md:text-lg text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed"
+                    className="text-sm md:text-2xl text-slate-400 font-medium max-w-2xl mx-auto leading-tight tracking-tight"
                  >
-                    The journey of one student&apos;s vision to empower thousands of students across Punjab.
+                    The journey of one student's vision to empower thousands of aspirants across Punjab.
                  </motion.p>
               </div>
            </div>
@@ -139,7 +139,7 @@ export default function AboutPage() {
                     className="lg:col-span-7 space-y-8 text-left"
                  >
                     <div className="space-y-4">
-                       <h2 className="text-2xl md:text-3xl font-headline font-black uppercase tracking-tight leading-none">
+                       <h2 className="text-2xl md:text-4xl font-headline font-black uppercase tracking-tight leading-none">
                           The <span className="text-primary">Journey</span> Began with a Challenge.
                        </h2>
                        <div className="h-1 w-16 bg-primary rounded-full" />

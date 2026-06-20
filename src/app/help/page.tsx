@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo } from "react"
@@ -31,8 +30,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { HelpArticle } from "@/types"
 
 /**
- * @fileOverview Official Institutional Help Hub v4.0.
- * FIXED: Category filtering and search integration made fully functional.
+ * @fileOverview Official Institutional Help Hub v5.0 (Typography Hardened).
+ * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
  */
 
 const HELP_CATEGORIES = [
@@ -77,13 +76,17 @@ export default function HelpCenterPage() {
       <Navbar />
       
       <main className="container mx-auto px-4 md:px-6 py-12 md:py-20 max-w-6xl space-y-12 md:space-y-16 pb-40">
-        <div className="text-center space-y-8">
-           <div className="space-y-4">
+        <div className="text-center space-y-10 md:space-y-14">
+           <div className="space-y-6 md:space-y-10">
               <div className="h-16 w-16 bg-primary/10 rounded-[2rem] flex items-center justify-center mx-auto text-primary shadow-2xl">
                  <HelpCircle className="h-8 w-8" />
               </div>
-              <h1 className="text-4xl md:text-7xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-none">Help <span className="text-primary">Center</span></h1>
-              <p className="text-slate-500 font-medium text-lg max-w-xl mx-auto leading-relaxed">Search through our verified guides to fix issues instantly.</p>
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-[#0F172A] tracking-tight leading-[0.9] break-words antialiased">
+                 Help <span className="text-primary">Center</span>
+              </h1>
+              <p className="text-slate-500 font-medium text-lg md:text-2xl max-w-xl mx-auto leading-tight tracking-tight">
+                 Search through our verified guides to resolve institutional issues instantly.
+              </p>
            </div>
 
            <div className="relative max-w-2xl mx-auto group">

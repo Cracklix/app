@@ -38,8 +38,9 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Institutional Exam Hub v36.0 (Responsive Overhaul).
- * FIXED: Applied fluid typography text-3xl sm:text-5xl lg:text-7xl with shortTitle logic.
+ * @fileOverview Institutional Exam Hub v37.0 (Typography Hardened).
+ * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
+ * FIXED: Added Short Title logic to handle long institutional names.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -156,15 +157,15 @@ export default function ExamHubPage() {
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       
-      <section className="bg-white border-b border-slate-100 py-6 md:py-16 text-left relative overflow-hidden">
+      <section className="bg-white border-b border-slate-100 py-10 md:py-20 text-left relative overflow-hidden">
          <div className="absolute top-0 right-0 p-12 opacity-[0.02]"><GraduationCap className="h-48 w-48" /></div>
          <div className="container mx-auto px-4 max-w-7xl relative z-10">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-10">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-12">
                <div className="flex items-start gap-4 flex-1 min-w-0">
                   <button onClick={() => router.back()} className="h-10 w-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 shrink-0 hover:bg-slate-50">
                      <ChevronLeft className="h-5 w-5" />
                   </button>
-                  <div className="min-w-0 space-y-3">
+                  <div className="min-w-0 space-y-5">
                      <div className="flex items-center gap-3">
                         <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase px-2 py-0.5 rounded shadow-sm">
                            {activeBoard?.abbreviation || 'OFFICIAL'} HUB
@@ -181,11 +182,11 @@ export default function ExamHubPage() {
                            <span className="text-[8px] font-black uppercase tracking-widest">{isPinned ? 'PINNED' : 'PIN TO MY EXAMS'}</span>
                         </button>
                      </div>
-                     <div className="space-y-1">
-                        <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-[#0F172A] leading-[0.9] tracking-tight break-words antialiased">
-                           {activeBoard?.abbreviation || exam.name.split(' ')[0]}
+                     <div className="space-y-4">
+                        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#0F172A] leading-[0.9] tracking-tight break-words antialiased">
+                           {exam.shortTitle || activeBoard?.abbreviation || exam.name.split(' ')[0]}
                         </h1>
-                        <p className="text-sm md:text-2xl font-bold text-slate-400 leading-tight tracking-tight">
+                        <p className="text-sm md:text-2xl font-bold text-slate-400 leading-tight tracking-tight max-w-3xl">
                            {exam.name}
                         </p>
                      </div>

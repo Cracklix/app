@@ -14,6 +14,11 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 
+/**
+ * @fileOverview Institutional Merit Hub v15.0 (Typography Hardened).
+ * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
+ */
+
 export default function LeaderboardPage() {
   const db = useFirestore()
   const { user, loading: authLoading } = useUser()
@@ -80,9 +85,9 @@ export default function LeaderboardPage() {
          <main className="container mx-auto px-4 md:px-6 py-12 md:py-20 max-w-6xl space-y-12 md:space-y-16">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
                <div className="space-y-6 text-left">
-                  <div className="flex items-center gap-4"><div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner"><ShieldCheck className="h-7 w-7" /></div><span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-500">Live Punjab Merit Hub</span></div>
-                  <h1 className="text-5xl md:text-8xl font-headline font-black text-[#0F172A] tracking-tighter uppercase leading-[0.9]">HALL OF <br/> <span className="text-primary">RANKERS</span></h1>
-                  <p className="text-slate-500 font-medium text-lg md:text-xl max-w-xl leading-relaxed">Real-time rankings based on official mock results.</p>
+                  <div className="flex items-center gap-4"><div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner"><ShieldCheck className="h-7 w-7" /></div><span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-500">Live Merit Hub</span></div>
+                  <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-[#0F172A] tracking-tight leading-[0.9] break-words antialiased">Hall of <br/> <span className="text-primary">Rankers</span></h1>
+                  <p className="text-slate-500 font-medium text-lg md:text-xl max-w-xl leading-tight tracking-tight">Real-time rankings based on official mock results across Punjab.</p>
                </div>
                <div className="relative w-full md:w-96 group">
                   <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-400 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>

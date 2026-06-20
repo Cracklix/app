@@ -35,8 +35,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 /**
- * @fileOverview Official Current Affairs Center v14.0 (Responsive Fix).
- * FIXED: Applied text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
+ * @fileOverview Official Current Affairs Center v15.0 (Typography Hardened).
+ * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
  */
 
 const HUB_TYPES = [
@@ -102,7 +102,7 @@ export default function CurrentAffairsCenter() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body">
+    <div className="flex flex-col min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       
       {authLoading ? (
@@ -122,12 +122,12 @@ export default function CurrentAffairsCenter() {
                             STUDY CENTER
                         </Badge>
                     </div>
-                    <div className="space-y-4">
-                        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black tracking-tight leading-[0.9] break-words uppercase">
+                    <div className="space-y-6 md:space-y-10">
+                        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black tracking-tight leading-[0.9] break-words antialiased">
                             Punjab <br/>
                             <span className="text-primary">Study Center</span>
                         </h1>
-                        <p className="text-slate-400 font-medium text-base md:text-2xl max-w-2xl leading-relaxed">
+                        <p className="text-slate-400 font-medium text-base md:text-2xl max-w-2xl leading-tight tracking-tight">
                             Daily, Weekly, and Monthly exam updates verified for all upcoming Punjab recruitment exams.
                         </p>
                     </div>

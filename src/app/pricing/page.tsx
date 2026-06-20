@@ -10,8 +10,8 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 
 /**
- * @fileOverview Final Cracklix Pass Center (Phase 157).
- * UPDATED: Replaced 2026 with Latest Pattern terminology.
+ * @fileOverview Institutional Pass Center v15.0 (Typography Hardened).
+ * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
  */
 
 const PLANS = [
@@ -84,15 +84,15 @@ export default function PricingPage() {
     <div className="min-h-screen bg-slate-50/50">
       <Navbar />
       <main className="container mx-auto px-6 py-24 max-w-7xl">
-        <div className="text-center space-y-8 mb-20">
+        <div className="text-center space-y-10 mb-20">
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <Badge className="bg-primary/10 text-primary border-none px-6 py-2 rounded-full font-black uppercase text-[10px] tracking-[0.2em] mb-6 shadow-sm">
-                 Monetization Node v1.2
+              <Badge className="bg-primary/10 text-primary border-none px-6 py-2 rounded-full font-black uppercase text-[10px] tracking-[0.2em] mb-10 shadow-sm">
+                 Elite Preparation Nodes
               </Badge>
-              <h1 className="text-6xl md:text-8xl font-headline font-black text-[#0F172A] tracking-tight uppercase leading-[0.9]">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-[#0F172A] tracking-tight leading-[0.9] break-words antialiased">
                  Select Your <br/> <span className="text-primary">Cracklix Pass</span>
               </h1>
-              <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto mt-6 leading-relaxed">
+              <p className="text-sm md:text-2xl text-slate-500 font-medium max-w-2xl mx-auto mt-10 leading-tight tracking-tight">
                  Invest in institutional precision. Unlock verified patterns and AI-powered audit rationalizations for Latest Pattern recruitments.
               </p>
            </motion.div>
@@ -109,7 +109,7 @@ export default function PricingPage() {
                 <Card className={`h-full border-none shadow-3xl rounded-[3rem] overflow-hidden flex flex-col group hover:translate-y-[-10px] transition-all duration-500 ${plan.recommended ? 'ring-4 ring-primary ring-offset-8 scale-105 z-10' : 'bg-white'}`}>
                    {plan.recommended && (
                       <div className="bg-primary text-white py-3 text-center text-[10px] font-black uppercase tracking-[0.3em]">
-                        Recommended by Management
+                        Recommended Hub
                       </div>
                    )}
                    <CardHeader className="p-10 pb-6 text-center space-y-6">
@@ -147,44 +147,8 @@ export default function PricingPage() {
              </motion.div>
            ))}
         </div>
-
-        <div className="mt-32 p-16 rounded-[4rem] bg-[#0F172A] text-white relative overflow-hidden shadow-4xl group">
-           <div className="absolute top-0 right-0 p-12 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><Sparkles className="h-64 w-64" /></div>
-           <div className="grid lg:grid-cols-2 gap-16 items-center relative z-10 text-left">
-              <div className="space-y-8">
-                 <div className="flex items-center gap-4">
-                    <Award className="h-8 w-8 text-primary" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Institutional Integrity Check</span>
-                 </div>
-                 <h2 className="text-4xl md:text-6xl font-headline font-black leading-tight uppercase">Bulk Institution <br/> Licensing</h2>
-                 <p className="text-slate-400 text-lg font-medium leading-relaxed">
-                    Are you a coaching center or library in Punjab? Get custom multi-user passes for your aspirants with central management and analytics.
-                 </p>
-                 <Button asChild className="bg-white text-[#0F172A] hover:bg-slate-100 h-16 px-12 rounded-2xl font-black uppercase text-xs tracking-widest shadow-2xl">
-                    <Link href="/contact">Inquire for Library Node</Link>
-                 </Button>
-              </div>
-              <div className="hidden lg:block">
-                 <div className="grid grid-cols-2 gap-8">
-                    <TrustPoint val="15k+" label="Aspirant Nodes" />
-                    <TrustPoint val="500+" label="HQs Mocks" />
-                    <TrustPoint val="22" label="Punjab Districts" />
-                    <TrustPoint val="94%" label="Accuracy Node" />
-                 </div>
-              </div>
-           </div>
-        </div>
       </main>
       <Footer />
     </div>
   )
-}
-
-function TrustPoint({ val, label }: any) {
-   return (
-      <div className="p-8 bg-white/5 rounded-[2.5rem] border border-white/5 shadow-inner">
-         <p className="text-4xl font-headline font-black text-primary mb-1">{val}</p>
-         <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</p>
-      </div>
-   )
 }

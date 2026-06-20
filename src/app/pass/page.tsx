@@ -15,6 +15,11 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
+/**
+ * @fileOverview Institutional Pass Center v15.0 (Typography Hardened).
+ * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
+ */
+
 export default function PassPage() {
   const { user, profile, loading: userLoading } = useUser()
   const db = useFirestore()
@@ -124,10 +129,10 @@ export default function PassPage() {
 
         <div id="plans" className="text-center space-y-6 md:space-y-10">
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[0.9] text-[#0F172A] uppercase break-words">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[0.9] text-[#0F172A] break-words antialiased">
                  Master <span className="text-primary">Pass Plans</span>
               </h1>
-              <p className="text-sm md:text-2xl font-medium text-slate-500 max-w-3xl mx-auto mt-6 md:mt-8 leading-relaxed">
+              <p className="text-sm md:text-2xl font-medium text-slate-500 max-w-3xl mx-auto mt-6 md:mt-8 leading-tight tracking-tight">
                  Unlock all premium mock tests, solved papers, and institutional analytics to secure your success.
               </p>
            </motion.div>

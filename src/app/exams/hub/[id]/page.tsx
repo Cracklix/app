@@ -16,8 +16,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Hub Explorer v12.0 (Responsive Fix).
- * FIXED: Applied text-3xl sm:text-5xl lg:text-7xl with shortTitle pattern.
+ * @fileOverview Institutional Hub Explorer v13.0 (Typography Overhaul).
+ * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
  */
 
 export default function HubExamsPage() {
@@ -85,18 +85,18 @@ export default function HubExamsPage() {
                   )}
                </div>
                
-               <div className="space-y-4 md:space-y-6 text-center lg:text-left min-w-0">
+               <div className="space-y-6 md:space-y-8 text-center lg:text-left min-w-0">
                   <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
                      <Badge className="bg-primary text-white border-none font-black px-4 py-1 rounded-xl text-[9px] tracking-widest uppercase">
-                       {hub?.abbreviation} EXAMS
+                       {hub?.abbreviation} HUB
                      </Badge>
-                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">OFFICIAL VERTICALS</span>
+                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">OFFICIAL CENTER</span>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#0F172A] leading-[0.9] tracking-tight break-words antialiased">
                       {hub?.abbreviation || hub?.name?.split(' ')[0]}
                     </h1>
-                    <p className="text-sm md:text-2xl font-bold text-slate-400 leading-tight tracking-tight">
+                    <p className="text-sm md:text-2xl font-bold text-slate-400 leading-tight tracking-tight max-w-4xl">
                        {hub?.name}
                     </p>
                   </div>

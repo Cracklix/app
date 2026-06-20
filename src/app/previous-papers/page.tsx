@@ -15,7 +15,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Official Institutional Previous Papers Hub v1.0.
+ * @fileOverview Institutional Previous Papers Hub v2.0 (Typography Hardened).
+ * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
  */
 
 export default function PreviousPapersPage() {
@@ -50,11 +51,11 @@ export default function PreviousPapersPage() {
       <Navbar />
       <main className="container mx-auto px-4 md:px-6 py-12 md:py-24 max-w-5xl text-center">
         <div className="space-y-16">
-          <div className="space-y-4">
-            <h1 className="text-4xl md:text-7xl font-headline font-black text-primary uppercase tracking-tight leading-none">
-              PREVIOUS PAPERS
+          <div className="space-y-6 md:space-y-10">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#0F172A] break-words antialiased leading-[0.9] tracking-tight">
+              Previous <br/> <span className="text-primary">Papers</span>
             </h1>
-            <p className="text-slate-500 font-medium text-lg md:text-xl max-w-2xl mx-auto">
+            <p className="text-slate-500 font-medium text-lg md:text-2xl max-w-2xl mx-auto leading-tight tracking-tight">
               Access authentic exam papers with official answer keys for all major recruitments.
             </p>
           </div>
