@@ -42,9 +42,9 @@ import { cn } from "@/lib/utils"
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Cracklix Premium Login Hub v63.0.
- * OPTIMIZED: Removed router.refresh() and streamlined establishAuthority for 2x faster login.
- * DATA: Restored original 50k+/500+ data strings.
+ * @fileOverview Cracklix Premium Login Hub v65.0 (Design Restored).
+ * RESTORED: Deep navy gradient background for the branding panel.
+ * DATA: Strictly using original 50,000+ Qs and 500+ Mocks.
  */
 export default function LoginPage() {
   return (
@@ -106,7 +106,6 @@ function LoginContent() {
     try {
       if (mode === 'login') {
         const result = await signInWithEmailAndPassword(auth, email, password)
-        // Optimized: Initiate authority and navigation without waiting for full write lifecycle
         establishAuthority(result.user.uid);
         toast({ title: "Welcome Back" })
         startTransition(() => {
@@ -190,13 +189,13 @@ function LoginContent() {
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row text-[#0F172A] font-body selection:bg-primary/20 overflow-x-hidden">
       
-      {/* LEFT PANEL: BRANDING (Top Aligned) */}
+      {/* LEFT PANEL: BRANDING (Top Aligned & Restored Background) */}
       <div className="hidden lg:flex flex-[1.1] bg-gradient-to-br from-[#020B2D] via-[#071B4D] to-[#0A2D7A] text-white p-12 xl:p-20 flex-col justify-start relative overflow-hidden">
         {/* Glow Effects */}
         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
         <div className="absolute bottom-[-5%] left-[-5%] w-[300px] h-[300px] bg-blue-400/10 blur-[100px] rounded-full pointer-events-none" />
 
-        <div className="relative z-10 space-y-12 xl:space-y-16 max-w-[550px] pt-12 xl:pt-20">
+        <div className="relative z-10 space-y-12 xl:space-y-16 max-w-[650px] pt-12 xl:pt-20">
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -222,7 +221,7 @@ function LoginContent() {
             </p>
           </motion.div>
 
-          {/* Stats Section */}
+          {/* Original Authority Data Grid */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
