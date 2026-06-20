@@ -16,8 +16,8 @@ const inter = Inter({
 });
 
 /**
- * @fileOverview Root Layout v49.0 (Brand Normalization).
- * FIXED: Strictly normalized title to prevent duplication. Unified institutional icons.
+ * @fileOverview Root Layout v50.0 (Height Hardened).
+ * FIXED: Removed fixed pb-[90px] from body to prevent layout gaps in full-screen components.
  */
 export const metadata: Metadata = {
   title: "Cracklix | Punjab's Smart Mock Test Platform",
@@ -74,10 +74,7 @@ export default function RootLayout({
           antialiased
           bg-white
           text-[#0F172A]
-          min-h-screen
           overflow-x-hidden
-          pb-[90px]
-          md:pb-0
         `}
       >
         <FirebaseClientProvider>
