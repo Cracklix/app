@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo, useEffect, useState } from "react"
@@ -16,9 +17,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Master Registry v4.0.
- * TYPOGRAPHY: Responsive scale 4xl to 7xl. Title Case normalization.
- * LAYOUT: 2-Column Hero Grid on Desktop.
+ * @fileOverview Institutional Master Registry v5.0.
+ * TYPOGRAPHY: Responsive scale 4xl to 7xl. Title Case normalization for category cards.
  */
 
 const CATEGORY_ICONS: Record<string, any> = {
@@ -56,7 +56,7 @@ export default function MocksDiscoveryPage() {
       <Navbar />
       
       <main className="flex-1">
-        {/* HERO SECTION - RESTRUCTURED */}
+        {/* HERO SECTION */}
         <section className="bg-white border-b border-slate-100 py-16 md:py-24 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
@@ -121,7 +121,7 @@ export default function MocksDiscoveryPage() {
                            </div>
                            
                            <div className="space-y-5 flex-1">
-                              <h3 className="font-headline text-3xl md:text-4xl font-black text-[#0F172A] uppercase leading-[0.95] group-hover:text-primary transition-colors">
+                              <h3 className="font-black text-4xl md:text-5xl text-[#0F172A] leading-[0.95] tracking-tight group-hover:text-primary transition-colors line-clamp-2">
                                  {cat.title}
                               </h3>
                               <p className="text-sm md:text-lg font-medium text-slate-400 leading-relaxed">
@@ -130,7 +130,7 @@ export default function MocksDiscoveryPage() {
                            </div>
 
                            <div className="mt-12 pt-8 border-t border-slate-50">
-                              <Button variant="ghost" className="w-full h-12 md:h-14 rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-black uppercase text-[8px] md:text-[9px] tracking-[0.2em] gap-3 border-none">
+                              <Button variant="ghost" className="w-full h-12 md:h-14 rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-bold text-sm tracking-tight gap-3 border-none">
                                  OPEN CATEGORY HUB <ChevronRight className="h-4 w-4" />
                               </Button>
                            </div>

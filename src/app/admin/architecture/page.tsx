@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -23,8 +24,8 @@ import { cn } from "@/lib/utils"
 import type { Category, Board, Exam } from "@/types"
 
 /**
- * @fileOverview Punjab Registry Architect v15.8.
- * FIXED: Removed 'uppercase' from exam names in the architecture tree.
+ * @fileOverview Punjab Registry Architect v16.0.
+ * TYPOGRAPHY: Normalized Title Case for category and hub headings.
  */
 
 interface ExtendedBoard extends Board {
@@ -90,7 +91,7 @@ export default function ArchitectureManager() {
                               {cat.iconUrl ? <img src={cat.iconUrl} className="h-full w-full object-contain p-2" alt="Icon" /> : <Layers className="h-6 w-6 text-slate-300" />}
                            </div>
                            <div className="text-left">
-                              <h3 className="text-2xl font-black font-headline uppercase text-[#0F172A]">{cat.title}</h3>
+                              <h3 className="text-2xl font-bold font-headline text-[#0F172A]">{cat.title}</h3>
                               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{cat.hubs.length} Hubs Assigned</p>
                            </div>
                         </div>
@@ -103,7 +104,7 @@ export default function ArchitectureManager() {
                            {cat.hubs.length > 0 ? [...cat.hubs].sort((a: ExtendedBoard, b: ExtendedBoard) => (a.displayOrder || 0) - (b.displayOrder || 0)).map((hub: ExtendedBoard) => (
                               <div key={hub.id} className="space-y-4 bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100">
                                  <div className="flex items-center justify-between">
-                                    <h4 className="font-black text-sm uppercase text-[#0F172A] flex items-center gap-2">
+                                    <h4 className="font-bold text-sm uppercase text-[#0F172A] flex items-center gap-2">
                                        <Landmark className="h-3.5 w-3.5 text-primary" /> {hub.abbreviation} Hub
                                     </h4>
                                     <Badge className="bg-white border-slate-200 text-slate-400 text-[7px] font-black uppercase px-2">{hub.exams.length} Verticals</Badge>

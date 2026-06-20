@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -18,8 +19,8 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Governance Node v14.0.
- * Layout refactor: Removed redundant horizontal padding.
+ * @fileOverview Institutional Category Governance Node v15.0.
+ * TYPOGRAPHY: Removed uppercase from category titles in the list view.
  */
 
 const CATEGORY_ICONS: Record<string, any> = {
@@ -136,7 +137,7 @@ export default function CategoryManagement() {
                              {CATEGORY_ICONS[cat.id] || <Layers className="h-6 w-6" />}
                           </div>
                           <div>
-                             <p className="font-black text-[#0F172A] text-xl uppercase leading-none">{cat.title}</p>
+                             <p className="font-bold text-[#0F172A] text-xl leading-none">{cat.title}</p>
                              <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest">{cat.id}</p>
                           </div>
                        </div>

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo, useEffect, useState } from "react"
@@ -15,8 +16,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Exam List Landing v8.0 (Typography Overhaul).
- * TYPOGRAPHY: Responsive heading scale text-3xl to text-6xl. Title Case normalization.
+ * @fileOverview Institutional Exam List Landing v9.0.
+ * TYPOGRAPHY: Premium Title Case for category titles with text-4xl/5xl sizing.
  */
 
 const ACRONYMS = ["PSSSB", "PPSC", "PUNJAB POLICE", "PSPCL", "PSTCL", "PSTET", "CTET", "MCQ", "MCQS", "PYQ", "PYQS", "GK", "CA"];
@@ -79,7 +80,7 @@ export default function ExamsEntryPage() {
             Choose Your <span className="text-primary">Exam Category</span>
           </h1>
           <p className="text-slate-500 font-medium text-sm md:text-lg lg:text-2xl max-w-3xl leading-relaxed">
-            Select a recruitment vertical to browse official centers and specific exam preparation nodes.
+            Select a recruitment vertical to browse official centers and specific exam preparation resources.
           </p>
         </div>
 
@@ -98,12 +99,12 @@ export default function ExamsEntryPage() {
                                  {CATEGORY_ICONS[cat.id] || <ShieldCheck className="h-8 w-8 md:h-10 md:w-10" />}
                               </div>
                               <Badge className="bg-[#0F172A] text-white border-none text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 md:px-4 md:py-1.5 rounded-xl shadow-lg">
-                                 {hubCount} EXAMS LIVE
+                                 {cat.highlight || "VERTICAL"}
                               </Badge>
                            </div>
                            
                            <div className="space-y-3 md:space-y-5 flex-1">
-                              <h3 className="text-xl md:text-2xl font-bold text-[#0F172A] leading-tight group-hover:text-primary transition-colors">
+                              <h3 className="font-black text-4xl md:text-5xl text-[#0F172A] leading-[0.95] tracking-tight group-hover:text-primary transition-colors line-clamp-2">
                                  {toTitleCase(cat.title)}
                               </h3>
                               <p className="text-xs md:text-base lg:text-lg font-medium text-slate-400 leading-relaxed">
