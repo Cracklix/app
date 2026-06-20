@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, Suspense, useEffect } from "react"
+import React, { useState, Suspense, useEffect, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,7 +21,7 @@ import {
   Users,
   FileText
 } from "lucide-react"
-import { useAuth, useFirestore, useUser } from "@/firebase"
+import { useAuth, useFirestore, useUser, useDoc } from "@/firebase"
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
@@ -39,9 +39,15 @@ import { Checkbox } from "@/components/ui/checkbox"
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Cracklix Premium Login Hub v69.0.
- * RESTORED: High-authority hardcoded data strings.
+ * @fileOverview Cracklix Premium Login Hub v70.0.
+ * UPDATED: Dynamic Live Stats integration for branding panel.
  */
+
+const formatCompact = (num: number) => {
+  if (!num || num === 0) return "0";
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+  return num.toString();
+};
 
 export default function LoginPage() {
   return (
@@ -70,6 +76,9 @@ function LoginContent() {
   const db = useFirestore()
   const { toast } = useToast()
 
+  const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
+  const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
+
   const returnUrl = searchParams.get("returnUrl") || "/dashboard"
 
   useEffect(() => {
@@ -92,7 +101,6 @@ function LoginContent() {
         const sessionId = crypto.randomUUID();
         localStorage.setItem('cracklix_session_id', sessionId);
         
-        // Parallelized session write for speed
         const userRef = doc(db!, 'users', auth.currentUser!.uid);
         updateDoc(userRef, { 
           activeDeviceId: sessionId, 
@@ -201,9 +209,9 @@ function LoginContent() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="grid grid-cols-2 gap-6 pt-6">
-            <HeroStat icon={ClipboardList} label="500+ MOCK TESTS" />
-            <HeroStat icon={Zap} label="50,000+ QUESTIONS" />
-            <HeroStat icon={Users} label="15,000+ ASPIRANTS" />
+            <HeroStat icon={ClipboardList} label={`${statsLoading ? '...' : formatCompact(stats?.totalMocks)}+ MOCK TESTS`} />
+            <HeroStat icon={Zap} label={`${statsLoading ? '...' : formatCompact(stats?.totalQuestions)}+ QUESTIONS`} />
+            <HeroStat icon={Users} label={`${statsLoading ? '...' : formatCompact(stats?.totalUsers)}+ ACTIVE ASPIRANTS`} />
             <HeroStat icon={ShieldCheck} label="REAL EXAM PATTERN" />
           </motion.div>
         </div>

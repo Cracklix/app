@@ -20,46 +20,58 @@ import Link from "next/link";
 import { useDoc, useFirestore, useUser } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Official High-Authority Hero Hub v16.0.
- * RESTORED: Hardcoded high-density stats to project platform scale.
+ * @fileOverview Official Live Hero Hub v17.0.
+ * UPDATED: Fully dynamic counters listening to the settings/stats registry node.
  */
+
+const formatCompact = (num: number) => {
+  if (!num || num === 0) return "0";
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+  return num.toString();
+};
 
 export default function Hero() {
   const { profile } = useUser();
+  const db = useFirestore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const liveStats = [
+  const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
+  const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
+
+  const liveStats = useMemo(() => [
     {
       id: "q",
       icon: <Zap className="h-5 w-5 text-blue-600" />,
-      val: "50,000+",
+      val: statsLoading ? "..." : `${formatCompact(stats?.totalQuestions)}+`,
       label: "QUESTIONS"
     },
     {
       id: "m",
       icon: <ClipboardList className="h-5 w-5 text-indigo-600" />,
-      val: "500+",
+      val: statsLoading ? "..." : `${formatCompact(stats?.totalMocks)}+`,
       label: "MOCK TESTS"
     },
     {
       id: "e",
       icon: <ShieldCheck className="h-5 w-5 text-emerald-600" />,
-      val: "50+",
+      val: statsLoading ? "..." : `${formatCompact(stats?.totalCategories)}+`,
       label: "CATEGORIES"
     },
     {
       id: "u",
       icon: <Users className="h-5 w-5 text-orange-500" />,
-      val: "15,000+",
+      val: statsLoading ? "..." : `${formatCompact(stats?.totalUsers)}+`,
       label: "ASPIRANTS"
     }
-  ];
+  ], [stats, statsLoading]);
 
   if (!mounted) return null;
 
@@ -77,7 +89,7 @@ export default function Hero() {
             >
               <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500 animate-pulse" />
               <span className="text-[12px] font-black text-slate-700 tracking-tight uppercase">
-                15,000+ ASPIRANTS TRUSTING CRACKLIX
+                {statsLoading ? "..." : (stats?.totalUsers || 0).toLocaleString()} ASPIRANTS TRUSTING CRACKLIX
               </span>
             </motion.div>
 
@@ -127,10 +139,34 @@ export default function Hero() {
 
             {/* Feature Matrix Cards */}
             <div className="grid grid-cols-2 gap-3 w-full">
-              <FeatureCard icon={ClipboardList} label="Mock Tests" sub="500+ SERIES" color="text-blue-600" href="/mocks" />
-              <FeatureCard icon={BookOpen} label="Study Material" sub="100+ NOTES" color="text-indigo-600" href="/notes" />
-              <FeatureCard icon={FileText} label="Previous Papers" sub="SOLVED PYQS" color="text-emerald-600" href="/pyqs" />
-              <FeatureCard icon={BarChart3} label="Analytics" sub="STATE MERIT" color="text-orange-500" href="/dashboard" />
+              <FeatureCard 
+                icon={ClipboardList} 
+                label="Mock Tests" 
+                sub={statsLoading ? "..." : `${formatCompact(stats?.totalMocks)}+ SERIES`} 
+                color="text-blue-600" 
+                href="/mocks" 
+              />
+              <FeatureCard 
+                icon={BookOpen} 
+                label="Study Material" 
+                sub={statsLoading ? "..." : `${formatCompact(stats?.totalNotes)}+ NOTES`} 
+                color="text-indigo-600" 
+                href="/notes" 
+              />
+              <FeatureCard 
+                icon={FileText} 
+                label="Previous Papers" 
+                sub={statsLoading ? "..." : `${formatCompact(stats?.totalPYQs)}+ SOLVED`} 
+                color="text-emerald-600" 
+                href="/pyqs" 
+              />
+              <FeatureCard 
+                icon={BarChart3} 
+                label="Analytics" 
+                sub="STATE MERIT" 
+                color="text-orange-500" 
+                href="/dashboard" 
+              />
             </div>
 
             {/* CTA Buttons */}
