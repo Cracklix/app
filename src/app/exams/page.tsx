@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useEffect, useState } from "react"
@@ -16,8 +15,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Exam List Landing v10.0.
- * FIXED: Reduced title size and removed line-clamp to fix overflow truncation.
+ * @fileOverview Institutional Exam List Landing v11.0.
+ * FIXED: Removed aggressive uppercase and implemented premium Title Case.
  */
 
 const ACRONYMS = ["PSSSB", "PPSC", "PUNJAB POLICE", "PSPCL", "PSTCL", "PSTET", "CTET", "MCQ", "MCQS", "PYQ", "PYQS", "GK", "CA"];

@@ -16,7 +16,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Master Registry v7.0 (Typography Refined).
+ * @fileOverview Institutional Master Registry v8.0.
+ * FIXED: Implemented Title Case and reduced typography for full name visibility.
  */
 
 const CATEGORY_ICONS: Record<string, any> = {
@@ -71,12 +72,12 @@ export default function MocksDiscoveryPage() {
                     </p>
                   </div>
                   
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight text-[#0F172A] leading-[0.9] antialiased">
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-[#0F172A] leading-[1.05] antialiased">
                     Master <br/>
                     <span className="text-primary">Registry</span>
                   </h1>
 
-                  <p className="text-slate-500 font-medium text-base md:text-xl lg:text-2xl max-w-2xl leading-relaxed">
+                  <p className="text-slate-500 font-medium text-base md:text-xl lg:text-2xl max-w-3xl leading-relaxed">
                     Select a recruitment vertical to browse official hubs and exam preparation resources.
                   </p>
                 </div>
@@ -129,7 +130,7 @@ export default function MocksDiscoveryPage() {
 
                            <div className="mt-12 pt-8 border-t border-slate-50">
                               <Button variant="ghost" className="w-full h-12 md:h-14 rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-bold text-sm tracking-tight gap-3 border-none">
-                                 OPEN CATEGORY HUB <ChevronRight className="h-4 w-4" />
+                                 Open Category Hub <ChevronRight className="h-4 w-4" />
                               </Button>
                            </div>
                         </CardContent>

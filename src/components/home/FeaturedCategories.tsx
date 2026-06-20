@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -18,8 +17,8 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Elite Exam Categories Hub v21.0.
- * FIXED: Reduced title size and removed line-clamp to prevent overflow truncation.
+ * @fileOverview Elite Exam Categories Hub v22.0.
+ * FIXED: Implemented Title Case and reduced typography for full name visibility.
  */
 
 const CATEGORY_META = [

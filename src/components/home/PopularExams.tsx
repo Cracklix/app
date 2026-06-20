@@ -21,7 +21,8 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Popular Exams v64.0 (Typography Refined).
+ * @fileOverview High-Fidelity Popular Exams v65.0 (Typography Hardened).
+ * FIXED: Removed aggressive uppercase from titles for premium Title Case look.
  */
 
 function getBoardFallbackIcon(id: string, abbrev: string) {

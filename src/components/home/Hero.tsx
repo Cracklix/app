@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useEffect, useState } from "react";
@@ -23,8 +22,8 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Restored Hero Hub v6.0 (Real Data Hardened).
- * FIXED: Removed fake data fallbacks (500+, 100+) to show actual registry counts.
+ * @fileOverview Official Restored Hero Hub v7.0 (Typography Hardened).
+ * FIXED: Removed aggressive uppercase from headings for premium Title Case look.
  */
 
 export default function Hero() {
@@ -105,7 +104,7 @@ export default function Hero() {
             </motion.div>
 
             <div className="space-y-6">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 leading-tight uppercase">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.05]">
                 Crack Punjab <br/>
                 <span className="block text-blue-600">
                   Government Exams
@@ -245,7 +244,7 @@ function FeatureCard({ icon: Icon, label, sub, color, href }: any) {
         <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center mb-4 shadow-inner bg-slate-50 group-hover:scale-110 transition-transform")}>
           <Icon className={cn("h-5 w-5", color)} />
         </div>
-        <p className="font-black text-slate-900 text-[13px] uppercase leading-tight">{label}</p>
+        <p className="font-bold text-slate-900 text-[13px] leading-tight">{label}</p>
         <p className="text-[9px] text-slate-400 mt-1 uppercase font-bold tracking-widest">{sub}</p>
       </Card>
     </Link>

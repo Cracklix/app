@@ -19,7 +19,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Latest Mock Hub v48.0 (Typography Refined).
+ * @fileOverview Elite Latest Mock Hub v49.0 (Typography Refined).
+ * FIXED: Removed aggressive uppercase from headings and card titles.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
