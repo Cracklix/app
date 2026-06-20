@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 
 /**
- * @fileOverview Institutional Session Monitoring v13.0 (Takeover Aware).
- * UPDATED: Focused on session history and active login tracking.
+ * @fileOverview Institutional Session Monitoring v14.0 (Takeover Aware).
+ * MONITORING: Shows active login sessions and tracking versioning.
  */
 
 export default function DeviceMonitoringPage() {
@@ -44,7 +44,7 @@ export default function DeviceMonitoringPage() {
         <div>
            <div className="flex items-center gap-3 mb-2">
               <History className="h-6 w-6 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Session Integrity monitor</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Session Integrity Monitor</span>
            </div>
           <h1 className="text-5xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Active Sessions</h1>
           <p className="text-slate-500 mt-2 text-lg font-medium">Monitoring the latest authorized login points across the aspirant registry.</p>
@@ -67,8 +67,8 @@ export default function DeviceMonitoringPage() {
             <TableHeader className="bg-slate-50/50">
               <TableRow className="border-slate-50 h-20">
                 <TableHead className="px-12 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Aspirant Profile</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 text-center">Last Login</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Status</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 text-center">Version & ID</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Last Active</TableHead>
                 <TableHead className="text-right px-12 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Audit</TableHead>
               </TableRow>
             </TableHeader>
@@ -93,16 +93,21 @@ export default function DeviceMonitoringPage() {
                     </TableCell>
                     <TableCell className="text-center">
                        <div className="inline-flex flex-col items-center">
-                          <p className="text-sm font-bold text-[#0F172A] tabular-nums">
-                            {u.lastLoginAt ? new Date(u.lastLoginAt.seconds * 1000).toLocaleString() : '---'}
-                          </p>
-                          <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">REGISTRY TIMESTAMP</p>
+                          <Badge className="bg-blue-50 text-blue-600 border-none px-2 py-0.5 rounded text-[9px] font-black mb-1">
+                             v{u.sessionVersion || 1}
+                          </Badge>
+                          <code className="text-[8px] text-slate-400 font-mono">
+                            {u.activeDeviceId?.slice(0, 8)}...
+                          </code>
                        </div>
                     </TableCell>
                     <TableCell>
-                       <Badge className="border-none text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-lg bg-emerald-50 text-emerald-600">
-                          AUTHORIZED
-                       </Badge>
+                       <div className="flex flex-col">
+                          <p className="text-sm font-bold text-[#0F172A] tabular-nums">
+                            {u.lastLoginAt ? new Date(u.lastLoginAt.seconds * 1000).toLocaleString() : '---'}
+                          </p>
+                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">REGISTRY TIMESTAMP</span>
+                       </div>
                     </TableCell>
                     <TableCell className="text-right px-12">
                        <Button asChild variant="ghost" className="h-10 rounded-xl font-black uppercase text-[9px] tracking-widest text-primary gap-2">

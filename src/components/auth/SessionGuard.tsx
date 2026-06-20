@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -7,11 +8,12 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 
 /**
- * @fileOverview Hardened Takeover Session Guard v8.0.
- * PERFORMANCE: Non-blocking background verification to ensure fast initial dashboard paint.
+ * @fileOverview Hardened Takeover Session Guard v9.0.
+ * LOGIC: Compares authoritative activeDeviceId from Firestore with the local cracklix_session_id.
+ * If they mismatch, it means a newer login occurred on another device.
  */
 export default function SessionGuard() {
-  const { user, profile, loading, profileLoading } = useUser();
+  const { user, profile, loading } = useUser();
   const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -20,37 +22,37 @@ export default function SessionGuard() {
 
   useEffect(() => {
     // 1. Guard against unauthenticated states or transition phases
-    // We don't block on 'profileLoading' to allow the UI to render first
     if (loading || !user || !profile || isSigningOut.current) return;
     
     // 2. Ignore guard if on login or registration nodes
     if (pathname === '/login' || pathname === '/profile-setup') return;
 
-    // 3. Background Verification
+    // 3. Authority Validation
     const localSessionId = localStorage.getItem('cracklix_session_id');
     const cloudSessionId = profile.activeDeviceId;
 
-    // 4. Takeover Detection
+    // 4. Takeover Detection (Latest Login Wins)
+    // If we have a local session, but the cloud says a different one is active, this session is dead.
     if (cloudSessionId && localSessionId && cloudSessionId !== localSessionId) {
       isSigningOut.current = true;
       
       toast({
         variant: "destructive",
         title: "Session Expired",
-        description: "Your account was logged in on another device. This session has been closed for security.",
+        description: "Your account was logged in on another device. This session has been terminated for security.",
       });
 
-      // Atomic Sign Out
+      // Atomic Sign Out node
       signOut(auth).then(() => {
         localStorage.removeItem('cracklix_session_id');
         router.replace('/login');
         isSigningOut.current = false;
       }).catch(err => {
-        console.error("[SESSION_TAKEOVER_FAILURE]:", err);
+        console.error("[SESSION_TERMINATION_FAILURE]:", err);
         isSigningOut.current = false;
       });
     }
-  }, [user, profile, loading, auth, router, toast, pathname, profileLoading]);
+  }, [user, profile, loading, auth, router, toast, pathname]);
 
   return null;
 }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -8,8 +9,8 @@ import { UserProfile } from '@/types';
 import { getDeviceId } from '@/lib/device';
 
 /**
- * @fileOverview Hardened Auth & Profile Hub v8.0.
- * PERFORMANCE: Implemented timing logs and decoupled loading states to prevent skeleton-lock.
+ * @fileOverview Hardened Auth & Profile Hub v9.0 (Takeover Aware).
+ * SECURITY: Exposes currentDeviceId and handles real-time session tracking.
  */
 export function useUser() {
   const auth = useAuth();
@@ -35,16 +36,13 @@ export function useUser() {
       return;
     }
 
-    console.time("auth-handshake");
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
-      console.timeEnd("auth-handshake");
       setUser(firebaseUser);
       setAuthResolved(true);
       
       if (firebaseUser) {
         if (!profileLoaded.current) {
           setProfileLoading(true);
-          console.time("profile-sync");
         }
       } else {
         setProfile(null);
@@ -72,7 +70,7 @@ export function useUser() {
         if (docSnap.exists()) {
           const data = docSnap.data();
           
-          // REAL-TIME EXPIRY AUDIT
+          // REAL-TIME EXPIRY & SESSION AUDIT
           let passStatus = data.passStatus || 'none';
           let passActive = false;
 
@@ -107,13 +105,11 @@ export function useUser() {
       } catch (e) {
         console.error("[PROFILE_PARSE_ERROR]:", e);
       } finally {
-        if (profileLoading) console.timeEnd("profile-sync");
         profileLoaded.current = true;
         setProfileLoading(false);
       }
     }, (err) => {
       console.error("[PROFILE_SYNC_FAILURE]:", err);
-      if (profileLoading) console.timeEnd("profile-sync");
       profileLoaded.current = true;
       setProfileLoading(false);
     });

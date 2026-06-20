@@ -18,15 +18,15 @@ import {
   sendPasswordResetEmail,
   updateProfile
 } from "firebase/auth"
-import { doc, setDoc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore"
+import { doc, setDoc, getDoc, serverTimestamp, updateDoc, increment } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Professional Login Hub v49.0 (Logo Maximized).
- * SECURITY: Implements "Latest Login Wins" policy. Automatically signs out older devices.
+ * @fileOverview Professional Login Hub v50.0 (Latest Login Wins Policy).
+ * SECURITY: Generates a unique activeDeviceId and increments sessionVersion on every login.
  */
 export default function LoginPage() {
   return (
@@ -70,8 +70,10 @@ function LoginContent() {
     const sessionId = crypto.randomUUID();
     localStorage.setItem('cracklix_session_id', sessionId);
     
+    // Increment sessionVersion to invalidate all existing tokens/cookies in client-side guards
     await updateDoc(doc(db, 'users', userId), {
       activeDeviceId: sessionId,
+      sessionVersion: increment(1),
       lastLoginAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
@@ -115,6 +117,7 @@ function LoginContent() {
           status: 'Free',
           passType: 'FREE',
           activeDeviceId: sessionId,
+          sessionVersion: 1,
           lastLoginAt: serverTimestamp(),
           pinnedExams: [],
           verified: true
@@ -155,12 +158,14 @@ function LoginContent() {
           state: "Punjab", createdAt: new Date().toISOString(),
           updatedAt: serverTimestamp(), status: 'Free', passType: 'FREE', 
           activeDeviceId: sessionId,
+          sessionVersion: 1,
           lastLoginAt: serverTimestamp(),
           pinnedExams: [], verified: true
         })
       } else {
         await updateDoc(userRef, {
           activeDeviceId: sessionId,
+          sessionVersion: increment(1),
           lastLoginAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         });
