@@ -19,8 +19,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Latest Mock Hub v46.0 (Hardened Imports).
- * FIXED: Ensured Badge and cn are imported for stable build.
+ * @fileOverview Elite Latest Mock Hub v47.0 (Premium Title Case).
+ * TYPOGRAPHY: Switched to Title Case for headings and subtext.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];

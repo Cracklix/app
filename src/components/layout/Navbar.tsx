@@ -36,9 +36,9 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Header v99.0 (Maximum Branding).
+ * @fileOverview Institutional Header v100.0 (Premium Title Case).
  * BRAND SYSTEM: Logo size maximized to 72px desktop / 62px mobile.
- * ALIGNMENT: Absolute left positioning for authoritative presence.
+ * TYPOGRAPHY: Switched to Title Case for navigation nodes.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -152,7 +152,7 @@ export default function Navbar() {
                                <Link href="/admin">
                                   <ShieldCheck className="h-5 w-5 mr-2" />
                                   Admin Control Hub
-                               </Link>
+                                </Link>
                             </Button>
                          </div>
                        )}

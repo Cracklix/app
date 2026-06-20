@@ -30,8 +30,8 @@ import ShareButton from "@/components/navigation/ShareButton";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Mobile Sidebar Overhaul v36.2.
- * BRAND SYSTEM: Logo centered, maximized height, divider below.
+ * @fileOverview Mobile Sidebar Overhaul v37.0.
+ * TYPOGRAPHY: Switched main items to Title Case.
  */
 export default function MobileSidebar({
   onClose,
@@ -124,7 +124,7 @@ export default function MobileSidebar({
                 <h3 className="text-sm font-black text-slate-900 tracking-tight truncate">
                   {profile?.name || user?.displayName || "Aspirant"}
                 </h3>
-                <p className="mt-0.5 text-[8px] text-slate-400 font-bold tracking-widest">
+                <p className="mt-0.5 text-[8px] text-slate-400 font-bold tracking-widest uppercase">
                   Manage Account Node
                 </p>
               </div>
@@ -179,7 +179,7 @@ export default function MobileSidebar({
            <div className="bg-[#0B1528] rounded-[1.8rem] p-4 space-y-3 border border-white/5 shadow-2xl relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><Award className="h-12 w-12" /></div>
               <div className="relative z-10 text-left">
-                <h4 className="text-[10px] font-black text-white tracking-widest leading-none mb-1">Elite Network</h4>
+                <h4 className="text-[10px] font-black text-white tracking-widest leading-none mb-1 uppercase">Elite Network</h4>
               </div>
               <ShareButton 
                 variant="dark" 

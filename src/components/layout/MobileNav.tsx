@@ -13,7 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * Production Mobile Bottom Navigation v1.3
+ * Production Mobile Bottom Navigation v1.4
  * TYPOGRAPHY: Switched to Title Case for a cleaner mobile interface.
  */
 

@@ -17,8 +17,9 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Elite Exam Categories Hub v14.0.
+ * @fileOverview Elite Exam Categories Hub v15.0.
  * TYPOGRAPHY: Switched to Title Case for headings and counts.
+ * ACRONYMS: PSSSB, PPSC, etc. remain uppercase.
  */
 
 const CATEGORY_META = [

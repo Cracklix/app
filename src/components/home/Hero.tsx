@@ -21,9 +21,9 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Refined Centered Hero Hub v32.0.
+ * @fileOverview Refined Centered Hero Hub v33.0.
+ * UPDATED: Removed 'uppercase' for a premium Title Case aesthetic.
  * HARDENED: Moved student illustration above features grid.
- * ORIGINAL DATA: Stats (50k, 500, 50, 15k) hardcoded as fallbacks for institutional integrity.
  */
 
 export default function Hero() {
@@ -94,13 +94,13 @@ export default function Hero() {
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white border border-slate-100 shadow-sm"
             >
               <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-              <span className="text-[10px] md:text-[13px] font-black text-[#0F172A] uppercase tracking-wider">
-                10,000+ ASPIRANTS TRUST CRACKLIX
+              <span className="text-[10px] md:text-[13px] font-black text-[#0F172A] tracking-wider">
+                10,000+ Aspirants Trust Cracklix
               </span>
             </motion.div>
 
             <div className="space-y-4">
-              <h1 className="text-4xl md:text-7xl font-black text-[#0F172A] leading-tight tracking-tight uppercase">
+              <h1 className="text-4xl md:text-7xl font-black text-[#0F172A] leading-tight tracking-tight">
                 Crack Punjab <br/>
                 <span className="text-[#2563EB]">Government Exams</span> <br/>
                 With Confidence
@@ -130,10 +130,10 @@ export default function Hero() {
 
             {/* INTEGRATED FEATURE GRID */}
             <div className="grid grid-cols-2 gap-3 md:gap-6 w-full max-w-2xl">
-               <FeatureCard icon={<Zap />} label="MOCK TESTS" href="/mocks" />
-               <FeatureCard icon={<Landmark />} label="PUNJAB EXAMS" href="/exams" />
-               <FeatureCard icon={<FileText />} label="PREVIOUS PAPERS" href="/pyqs" />
-               <FeatureCard icon={<ShieldCheck />} label="FREE PRACTICE" href="/mocks" />
+               <FeatureCard icon={<Zap />} label="Mock Tests" href="/mocks" />
+               <FeatureCard icon={<Landmark />} label="Punjab Exams" href="/exams" />
+               <FeatureCard icon={<FileText />} label="Previous Papers" href="/pyqs" />
+               <FeatureCard icon={<ShieldCheck />} label="Free Practice" href="/mocks" />
             </div>
 
             {/* CTA BUTTONS */}
@@ -143,7 +143,7 @@ export default function Hero() {
                 className="h-14 md:h-20 px-12 bg-[#2563EB] hover:bg-blue-700 text-white font-black uppercase text-[11px] md:text-sm tracking-[0.2em] rounded-full shadow-xl transition-all active:scale-95 border-none group/btn"
               >
                 <Link href="/mocks" className="flex items-center justify-center gap-3">
-                  <span>START FREE MOCK TEST</span>
+                  <span>Start Free Mock Test</span>
                   <ChevronRight className="h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
                 </Link>
               </Button>
@@ -154,7 +154,7 @@ export default function Hero() {
                 className="h-14 md:h-20 px-12 border-2 border-slate-200 bg-white text-[#0F172A] font-black uppercase text-[11px] md:text-sm tracking-[0.2em] rounded-full shadow-sm hover:bg-slate-50 transition-all active:scale-95 group/btn2"
               >
                 <Link href="/exams" className="flex items-center justify-center gap-3">
-                  <span>BROWSE EXAMS</span>
+                  <span>Browse Exams</span>
                   <ChevronRight className="h-5 w-5 transition-transform group-hover/btn2:translate-x-1" />
                 </Link>
               </Button>
@@ -206,7 +206,7 @@ function FeatureCard({ icon, label, href }: { icon: React.ReactNode, label: stri
         <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-blue-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-primary transition-colors duration-300">
            {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5 md:h-6 md:w-6 text-primary group-hover:text-white transition-colors" })}
         </div>
-        <span className="font-black text-[10px] md:text-xs text-[#0F172A] tracking-tight uppercase group-hover:text-primary transition-colors text-left leading-tight">
+        <span className="font-bold text-[10px] md:text-xs text-[#0F172A] tracking-tight uppercase group-hover:text-primary transition-colors text-left leading-tight">
           {label}
         </span>
       </div>

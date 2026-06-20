@@ -25,9 +25,9 @@ import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Login Hub v31.0.
+ * @fileOverview Hardened Login Hub v32.0.
+ * TYPOGRAPHY: Removed forced 'uppercase' for premium Title Case aesthetics.
  * BRAND SYSTEM: Logo centered, height 60px desktop / 50px mobile.
- * UI FIX: Increased mobile input padding to pl-20 for country code clearance.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -199,7 +199,7 @@ function LoginContent() {
         <Card className="border-slate-100 bg-white/80 backdrop-blur-3xl shadow-5xl rounded-[1.5rem] md:rounded-[3.5rem] overflow-hidden border-2">
           <div className="h-1.5 w-full bg-primary" />
           <CardHeader className="text-center pt-8 md:pt-14 pb-4 px-4 md:px-16">
-            <CardTitle className="text-xl md:text-4xl font-black tracking-tight text-[#0F172A] uppercase">
+            <CardTitle className="text-xl md:text-4xl font-black tracking-tight text-[#0F172A]">
               {mode === 'login' ? "Login" : "Sign Up"}
             </CardTitle>
             <CardDescription className="text-slate-400 font-bold text-[9px] md:text-[12px] tracking-widest mt-2 md:mt-3 uppercase">Institutional Registry Access</CardDescription>
