@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import Logo from "@/components/brand/Logo"
-import { Mail, Lock, User, Phone, Eye, EyeOff, Loader2, ShieldCheck, CheckCircle2, Zap, ArrowRight, Star } from "lucide-react"
+import { Mail, Lock, User, Phone, Eye, EyeOff, Loader2, ShieldCheck, CheckCircle2, Zap, ArrowRight, Star, AlertCircle } from "lucide-react"
 import { useAuth, useFirestore, useUser } from "@/firebase"
 import { 
   signInWithEmailAndPassword, 
@@ -28,8 +28,8 @@ import { cn } from "@/lib/utils"
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Login Hub v17.0
- * DESIGN: Two-column layout for desktop with maximized input ergonomics.
+ * @fileOverview Institutional Login Hub v18.0
+ * FIXED: Handled auth/unauthorized-domain error with clear instructions.
  */
 export default function LoginPage() {
   return (
@@ -136,7 +136,15 @@ function LoginContent() {
         router.push('/verify-email');
       }
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Sync Failed", description: error.message })
+      if (error.code === 'auth/unauthorized-domain') {
+        toast({ 
+          variant: "destructive", 
+          title: "Domain Not Authorized", 
+          description: "Please add this domain to 'Authorized Domains' in your Firebase Console." 
+        })
+      } else {
+        toast({ variant: "destructive", title: "Sync Failed", description: error.message })
+      }
       setLoading(false)
     }
   }
@@ -169,7 +177,15 @@ function LoginContent() {
       toast({ title: "Welcome to Cracklix" })
       startTransition(() => { router.replace(returnUrl) })
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Sync Error", description: error.message })
+      if (error.code === 'auth/unauthorized-domain') {
+        toast({ 
+          variant: "destructive", 
+          title: "Domain Not Authorized", 
+          description: "Please whitelist this domain in Firebase Console -> Auth -> Settings." 
+        })
+      } else {
+        toast({ variant: "destructive", title: "Sync Error", description: error.message })
+      }
       setLoading(false)
     }
   }
@@ -270,7 +286,7 @@ function LoginContent() {
                       value={phone} 
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0,10))} 
                       required 
-                      className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-lg font-bold pl-16 shadow-inner" 
+                      className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-lg font-bold pl-20 shadow-inner" 
                       placeholder="10 Digit Mobile Number" 
                     />
                   </div>

@@ -37,7 +37,7 @@ const TELEGRAM_GROUP = "https://t.me/cracklixapp";
 const INSTAGRAM_PROFILE = "https://www.instagram.com/arshgrewal_official/";
 
 /**
- * @fileOverview Student Support Hub v2.1 (Build Hardened).
+ * @fileOverview Student Support Hub v2.2 (Build Hardened).
  * FIXED: Explicit imports for Link and Loader2 nodes.
  */
 
@@ -216,7 +216,7 @@ export default function SupportPage() {
          <DialogContent className="sm:max-w-xl rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
             <div className="h-2 w-full bg-[#0F172A] shrink-0" />
             <DialogHeader className="p-10 pb-4">
-               <DialogTitle className="text-2xl font-black uppercase flex items-center gap-4">
+               <DialogTitle className="text-2xl font-black font-headline uppercase flex items-center gap-4">
                   <Plus className="h-8 w-8 text-primary" /> Raise Support Node
                </DialogTitle>
                <DialogDescription className="sr-only">Raise a new support ticket for our management team to review.</DialogDescription>
