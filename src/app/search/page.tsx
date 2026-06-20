@@ -13,8 +13,9 @@ import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Global Search Center v4.0 (Language Simplified).
+ * @fileOverview Global Search Center v4.0.
  * FIXED: Resolved cloneElement type errors and UMD global mismatch.
+ * SIMPLIFIED: Replaced technical jargon with student-friendly language.
  */
 
 export default function SearchPage() {

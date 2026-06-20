@@ -12,8 +12,8 @@ import { useToast } from "@/hooks/use-toast"
 import { motion } from "framer-motion"
 
 /**
- * @fileOverview Official Verification Hub v4.0 (Language Simplified).
- * SIMPLIFIED: Replaced "Institutional" and "Handshake" with "Account" and "Verification".
+ * @fileOverview Professional Verification Hub v4.0.
+ * SIMPLIFIED: Replaced technical terms with easy student-friendly language.
  */
 
 export default function VerifyEmailPage() {
@@ -62,10 +62,10 @@ export default function VerifyEmailPage() {
         toast({ title: "Account Verified", description: "Your email has been confirmed." });
         router.replace('/dashboard');
       } else {
-        toast({ title: "Not Verified Yet", description: "Please click the link in your email." });
+        toast({ title: "Not verified yet", description: "Please click the link in your email." });
       }
     } catch (e: any) {
-       toast({ variant: "destructive", title: "Refresh Failed" });
+       toast({ variant: "destructive", title: "Refresh failed" });
     }
   }
 

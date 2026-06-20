@@ -26,8 +26,8 @@ import { getDeviceId, getBrowserInfo } from "@/lib/device"
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Login Hub v20.0
- * UPDATED: Integrated Professional Email Verification flow and simplified wording.
+ * @fileOverview Professional Login Hub v21.0.
+ * UPDATED: Integrated sendEmailVerification on signup and simplified wording.
  */
 export default function LoginPage() {
   return (
@@ -131,7 +131,7 @@ function LoginContent() {
           verified: false
         })
 
-        toast({ title: "Account Created", description: "Please verify your email to continue." });
+        toast({ title: "Account Created", description: "Please check your email to verify your account." });
         router.push('/verify-email');
       }
     } catch (error: any) {
@@ -181,7 +181,7 @@ function LoginContent() {
     setResetLoading(true);
     try {
       await sendPasswordResetEmail(auth, resetEmail);
-      toast({ title: "Reset Link Sent", description: "Check your inbox for instructions." });
+      toast({ title: "Reset link sent", description: "Check your email for instructions." });
       setIsResetDialogOpen(false);
     } catch (error: any) {
       toast({ variant: "destructive", title: "Error", description: error.message });
@@ -206,7 +206,7 @@ function LoginContent() {
                 <span className="text-primary">Mock Test Hub</span>
               </h1>
               <p className="text-xl text-slate-400 font-medium max-w-md">
-                Prepare for Punjab Government Exams with high-quality mock tests and real-time merit rankings.
+                Prepare for Punjab Government Exams with high-quality mock tests and real-time rankings.
               </p>
            </div>
            <div className="space-y-6 pt-10">
@@ -218,7 +218,7 @@ function LoginContent() {
         </div>
         <div className="relative z-10 flex items-center gap-4 text-slate-500">
            <ShieldCheck className="h-6 w-6 text-primary" />
-           <p className="text-[10px] font-black uppercase tracking-[0.3em]">Official Registry Secured</p>
+           <p className="text-[10px] font-black uppercase tracking-[0.3em]">Official Platform Secured</p>
         </div>
       </div>
 
@@ -270,7 +270,7 @@ function LoginContent() {
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0,10))} 
                       required 
                       className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-lg font-bold pl-20 shadow-inner" 
-                      placeholder="10 Digit Number" 
+                      placeholder="10 digit number" 
                     />
                   </div>
                 </div>
@@ -278,7 +278,7 @@ function LoginContent() {
             )}
             
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Email</Label>
+              <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Email Address</Label>
               <div className="relative">
                 <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
                 <Input 
@@ -320,7 +320,7 @@ function LoginContent() {
                       onChange={(e) => setConfirmPassword(e.target.value)} 
                       required 
                       className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary px-6 text-lg font-bold shadow-inner" 
-                      placeholder="Repeat Password" 
+                      placeholder="Repeat password" 
                     />
                     <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">
                       {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -344,7 +344,7 @@ function LoginContent() {
               <div className="flex items-center gap-4 py-2"><div className="h-px flex-1 bg-slate-100" /><span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">OR</span><div className="h-px flex-1 bg-slate-100" /></div>
 
               <Button variant="outline" className="w-full h-16 border-2 border-slate-100 bg-white text-[#0F172A] gap-4 rounded-2xl font-black text-xs md:text-sm hover:bg-slate-50 uppercase tracking-widest shadow-sm" onClick={handleGoogleSignIn} disabled={isActuallyLoading}>
-                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="h-5 w-5" alt="G" /> Google Login
+                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="h-5 w-5" alt="G" /> Continue with Google
               </Button>
             </div>
           </form>
@@ -371,7 +371,7 @@ function LoginContent() {
             <div className="h-14 w-14 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto text-primary shadow-xl">
               {resetLoading ? <Loader2 className="h-7 w-7 animate-spin" /> : <RefreshCw className="h-7 w-7" />}
             </div>
-            <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tight text-[#0F172A]">Recover Hub</DialogTitle>
+            <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tight text-[#0F172A]">Recover Account</DialogTitle>
             <DialogDescription className="text-slate-400 text-sm font-bold uppercase tracking-widest text-center mt-2 leading-relaxed">Enter your email to receive a password reset link.</DialogDescription>
           </DialogHeader>
           <div className="py-8 space-y-6">
