@@ -20,9 +20,8 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 
 /**
- * @fileOverview Official Restored Hero Hub.
- * Optimized: Hero image moved above feature cards in a unified visual column.
- * Action: CTA buttons moved below the feature matrix on the right.
+ * @fileOverview Official Restored Hero Hub v5.0 (Live Admin Control).
+ * Optimized: Fetches live trust data and statistics from the global registry.
  */
 
 export default function Hero() {
@@ -33,17 +32,23 @@ export default function Hero() {
     setMounted(true);
   }, []);
 
-  const statsRef = useMemo(
-    () => (db ? doc(db, "settings", "stats") : null),
-    [db]
-  );
+  const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
+  const settingsRef = useMemo(() => (db ? doc(db, "settings", "global") : null), [db]);
 
   const { data: stats } = useDoc<any>(statsRef);
+  const { data: settings } = useDoc<any>(settingsRef);
+
+  const trustBadgeContent = useMemo(() => {
+    if (!settings) return "10,000+ Aspirants Trust Cracklix";
+    const count = settings.trustBadgeCount || 10000;
+    const text = settings.trustBadgeText || "Aspirants Trust Cracklix";
+    return `${count.toLocaleString()}+ ${text}`;
+  }, [settings]);
 
   const liveStats = useMemo(() => {
     const formatNumber = (num: number, fallback: string) => {
       if (!num) return fallback;
-      if (num >= 1000) return Math.floor(num / 1000) + "k+";
+      if (num >= 1000) return (num / 1000).toFixed(1) + "k+";
       return num + "+";
     };
 
@@ -84,12 +89,16 @@ export default function Hero() {
 
           {/* LEFT: Text & Identity Hub */}
           <div className="text-left space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border shadow-sm">
-              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+            <motion.div 
+               initial={{ opacity: 0, x: -20 }}
+               animate={{ opacity: 1, x: 0 }}
+               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border shadow-sm group hover:border-primary/30 transition-all cursor-default"
+            >
+              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 animate-pulse" />
               <span className="text-sm font-semibold text-slate-700">
-                10,000+ Aspirants Trust Cracklix
+                {trustBadgeContent}
               </span>
-            </div>
+            </motion.div>
 
             <div className="space-y-6">
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 leading-tight">
@@ -111,7 +120,7 @@ export default function Hero() {
                   (item) => (
                     <span
                       key={item}
-                      className="px-4 py-2 rounded-full bg-white border text-sm font-medium text-slate-700"
+                      className="px-4 py-2 rounded-full bg-white border text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
                     >
                       {item}
                     </span>
@@ -139,32 +148,13 @@ export default function Hero() {
 
             {/* Feature Matrix Cards */}
             <div className="grid grid-cols-2 gap-4 w-full">
-              <Card className="p-5 rounded-3xl border border-slate-100 bg-white hover:shadow-md transition-all duration-300">
-                <ClipboardList className="h-6 w-6 text-blue-600 mb-3" />
-                <p className="font-bold text-slate-900 text-sm">Mock Tests</p>
-                <p className="text-[10px] text-slate-400 mt-1 uppercase font-black tracking-widest">500+ Series</p>
-              </Card>
-
-              <Card className="p-5 rounded-3xl border border-slate-100 bg-white hover:shadow-md transition-all duration-300">
-                <BookOpen className="h-6 w-6 text-indigo-600 mb-3" />
-                <p className="font-bold text-slate-900 text-sm">Study Material</p>
-                <p className="text-[10px] text-slate-400 mt-1 uppercase font-black tracking-widest">Verified Notes</p>
-              </Card>
-
-              <Card className="p-5 rounded-3xl border border-slate-100 bg-white hover:shadow-md transition-all duration-300">
-                <FileText className="h-6 w-6 text-emerald-600 mb-3" />
-                <p className="font-bold text-slate-900 text-sm">Previous Papers</p>
-                <p className="text-[10px] text-slate-400 mt-1 uppercase font-black tracking-widest">Official PYQs</p>
-              </Card>
-
-              <Card className="p-5 rounded-3xl border border-slate-100 bg-white hover:shadow-md transition-all duration-300">
-                <BarChart3 className="h-6 w-6 text-orange-500 mb-3" />
-                <p className="font-bold text-slate-900 text-sm">Analytics</p>
-                <p className="text-[10px] text-slate-400 mt-1 uppercase font-black tracking-widest">State Merit</p>
-              </Card>
+              <FeatureCard icon={ClipboardList} label="Mock Tests" sub="500+ Series" color="text-blue-600" href="/mocks" />
+              <FeatureCard icon={BookOpen} label="Study Material" sub="Verified Notes" color="text-indigo-600" href="/notes" />
+              <FeatureCard icon={FileText} label="Previous Papers" sub="Official PYQs" color="text-emerald-600" href="/pyqs" />
+              <FeatureCard icon={BarChart3} label="Analytics" sub="State Merit" color="text-orange-500" href="/dashboard" />
             </div>
 
-            {/* CTA Buttons - Positioned below cards as requested */}
+            {/* CTA Buttons */}
             <div className="flex flex-wrap gap-4 mt-10 w-full justify-center">
               <Button
                 asChild
@@ -179,7 +169,7 @@ export default function Hero() {
               <Button
                 asChild
                 variant="outline"
-                className="h-12 md:h-14 px-8 rounded-2xl border-slate-200 bg-white font-bold text-slate-700"
+                className="h-12 md:h-14 px-8 rounded-2xl border-slate-200 bg-white font-bold text-slate-700 hover:bg-slate-50"
               >
                 <Link href="/exams">
                   Browse Exams
@@ -198,11 +188,11 @@ export default function Hero() {
               className="p-6 rounded-3xl bg-white border border-slate-100 shadow-sm group hover:shadow-md transition-all"
             >
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
+                <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                   {stat.icon}
                 </div>
                 <div>
-                  <p className="text-2xl font-black text-slate-900 leading-none">
+                  <p className="text-2xl font-black text-slate-900 leading-none tabular-nums">
                     {stat.val}
                   </p>
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
@@ -217,4 +207,16 @@ export default function Hero() {
       </div>
     </section>
   );
+}
+
+function FeatureCard({ icon: Icon, label, sub, color, href }: any) {
+  return (
+    <Link href={href}>
+      <Card className="p-5 rounded-3xl border border-slate-100 bg-white hover:shadow-md hover:border-primary/20 transition-all duration-300 h-full">
+        <Icon className={cn("h-6 w-6 mb-3", color)} />
+        <p className="font-bold text-slate-900 text-sm uppercase">{label}</p>
+        <p className="text-[10px] text-slate-400 mt-1 uppercase font-black tracking-widest">{sub}</p>
+      </Card>
+    </Link>
+  )
 }

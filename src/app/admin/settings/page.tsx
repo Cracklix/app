@@ -8,15 +8,14 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import { ShieldCheck, Save, RefreshCw, QrCode, Share2, Smartphone, Apple, Play, Info, Megaphone, Target, Zap, Gift, Clock, MessageCircle } from "lucide-react"
+import { ShieldCheck, Save, RefreshCw, QrCode, Share2, Smartphone, Apple, Play, Info, Megaphone, Target, Zap, Gift, Clock, MessageCircle, Star } from "lucide-react"
 import { useDoc, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * @fileOverview Institutional Administrative Portal v14.1.
- * FIXED: Restored full Support Info tab content for managing institutional contact nodes.
- * HARDENED: Explicitly typed callbacks and ensured high-density layout stability.
+ * @fileOverview Institutional Administrative Portal v15.0.
+ * UPDATED: Added Trust Badge configuration for the Hero section.
  */
 
 export default function AdminSettings() {
@@ -45,7 +44,9 @@ export default function AdminSettings() {
     shareTitle: "Cracklix | Punjab's Smart Mock Test Platform",
     shareDescription: "Practice Mock Tests and Prepare for Punjab Government Exams.",
     freeTrialEnabled: true,
-    freeTrialDays: 7
+    freeTrialDays: 7,
+    trustBadgeText: "Aspirants Trust Cracklix",
+    trustBadgeCount: 10000
   });
 
   useEffect(() => {
@@ -152,10 +153,25 @@ export default function AdminSettings() {
                       <Switch checked={formData.showAnnouncement} onCheckedChange={val => setFormData({...formData, showAnnouncement: val})} />
                    </div>
                 </div>
+
                 <div className="space-y-6 text-left">
                    <div className="space-y-2 text-left">
                       <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Platform Identity</Label>
                       <Input value={formData.platformName} onChange={e => setFormData({...formData, platformName: e.target.value})} className="h-14 rounded-xl border-slate-100 bg-slate-50 font-black text-xl" />
+                   </div>
+                   
+                   <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100 space-y-6">
+                      <p className="text-[10px] font-black text-blue-900 uppercase tracking-[0.2em] flex items-center gap-2"><Star className="h-4 w-4" /> Trust Identity (Hero)</p>
+                      <div className="grid grid-cols-1 gap-4">
+                         <div className="space-y-2">
+                            <Label className="text-[9px] font-black text-blue-500 uppercase">Trust Count</Label>
+                            <Input type="number" value={formData.trustBadgeCount} onChange={e => setFormData({...formData, trustBadgeCount: parseInt(e.target.value) || 0})} className="h-11 bg-white border-blue-200 font-black text-lg" />
+                         </div>
+                         <div className="space-y-2">
+                            <Label className="text-[9px] font-black text-blue-500 uppercase">Trust Label</Label>
+                            <Input value={formData.trustBadgeText} onChange={e => setFormData({...formData, trustBadgeText: e.target.value})} className="h-11 bg-white border-blue-200 font-bold text-sm" />
+                         </div>
+                      </div>
                    </div>
                 </div>
              </div>
