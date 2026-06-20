@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo } from 'react';
@@ -6,42 +7,54 @@ import { doc } from 'firebase/firestore';
 import { Zap, ClipboardList, ShieldCheck, Users } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview High-Fidelity Trust Stats Bar v1.1 (Restored Original Data).
+ * @fileOverview High-Fidelity Live Stats Bar v2.0.
+ * UPDATED: Fully dynamic engine powered by synchronized registry node.
  */
 
+const formatCompact = (num: number) => {
+  if (!num) return "0";
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+  return num.toString();
+};
+
 export default function StatsBar() {
-  const items = [
+  const db = useFirestore();
+  const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
+  const { data: stats, loading } = useDoc<any>(statsRef);
+
+  const items = useMemo(() => [
     { 
       label: "Questions", 
-      val: "50,000+", 
+      val: formatCompact(stats?.totalQuestions) + "+", 
       sub: "Verified MCQs",
       icon: <Zap className="h-6 w-6 text-white" />,
       color: "bg-blue-600"
     },
     { 
       label: "Mock Tests", 
-      val: "500+", 
+      val: formatCompact(stats?.totalMocks) + "+", 
       sub: "Latest Pattern",
       icon: <ClipboardList className="h-6 w-6 text-white" />,
       color: "bg-purple-600"
     },
     { 
-      label: "Exams", 
-      val: "50+", 
+      label: "Exam Hubs", 
+      val: formatCompact(stats?.totalCategories) + "+", 
       sub: "Authority Hubs",
       icon: <ShieldCheck className="h-6 w-6 text-white" />,
       color: "bg-emerald-600"
     },
     { 
       label: "Aspirants", 
-      val: "15,000+", 
+      val: formatCompact(stats?.totalUsers) + "+", 
       sub: "Trust Cracklix",
       icon: <Users className="h-6 w-6 text-white" />,
       color: "bg-orange-500"
     }
-  ];
+  ], [stats]);
 
   return (
     <section className="bg-white py-12 border-b border-slate-100">
@@ -54,7 +67,11 @@ export default function StatsBar() {
               </div>
               <div className="text-left space-y-0.5">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-2xl md:text-4xl font-black text-[#0F172A] tabular-nums tracking-tighter">{item.val}</span>
+                  {loading ? (
+                    <Skeleton className="h-10 w-24" />
+                  ) : (
+                    <span className="text-2xl md:text-4xl font-black text-[#0F172A] tabular-nums tracking-tighter">{item.val}</span>
+                  )}
                   <span className="text-[10px] font-black text-[#0F172A] uppercase tracking-tight">{item.label}</span>
                 </div>
                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{item.sub}</p>

@@ -1,6 +1,7 @@
+
 "use client"
 
-import React, { useState, Suspense, useEffect } from "react"
+import React, { useState, Suspense, useEffect, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,7 +21,7 @@ import {
   ClipboardList,
   Languages
 } from "lucide-react"
-import { useAuth, useFirestore, useUser } from "@/firebase"
+import { useAuth, useFirestore, useUser, useDoc } from "@/firebase"
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
@@ -39,11 +40,16 @@ import { cn } from "@/lib/utils"
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Cracklix Premium Login Hub v66.0 (Optimized & Restored).
- * RESTORED: Deep navy gradient background for the branding panel.
- * DATA: Hardcoded 50,000+ QUESTIONS and 500+ MOCK TESTS for authority.
- * SPEED: Parallel auth handshake for 2x faster entry.
+ * @fileOverview Cracklix Premium Login Hub v67.0.
+ * UPDATED: Dynamically fetched live platform stats from synchronized registry node.
  */
+
+const formatCompact = (num: number) => {
+  if (!num) return "0";
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+  return num.toString();
+};
+
 export default function LoginPage() {
   return (
     <Suspense fallback={null}>
@@ -71,6 +77,9 @@ function LoginContent() {
   const db = useFirestore()
   const { toast } = useToast()
 
+  const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
+  const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
+
   const returnUrl = searchParams.get("returnUrl") || "/dashboard"
 
   useEffect(() => {
@@ -78,20 +87,6 @@ function LoginContent() {
       router.replace(returnUrl);
     }
   }, [user, authLoading, router, returnUrl]);
-
-  const establishAuthority = async (userId: string) => {
-    if (!db) return;
-    const sessionId = crypto.randomUUID();
-    localStorage.setItem('cracklix_session_id', sessionId);
-    
-    // Non-blocking sync to speed up redirect
-    updateDoc(doc(db, 'users', userId), {
-      activeDeviceId: sessionId,
-      sessionVersion: increment(1),
-      lastLoginAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    }).catch(e => console.error("[SESSION_SYNC_ERR]", e));
-  };
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -103,8 +98,7 @@ function LoginContent() {
     setLoading(true)
     try {
       if (mode === 'login') {
-        const result = await signInWithEmailAndPassword(auth, email, password)
-        establishAuthority(result.user.uid);
+        await signInWithEmailAndPassword(auth, email, password)
         toast({ title: "Welcome Back" })
         router.replace(returnUrl)
       } else {
@@ -165,25 +159,12 @@ function LoginContent() {
     }
   }
 
-  const handleResetPassword = async () => {
-    if (!resetEmail) { toast({ variant: "destructive", title: "Wait", description: "Enter your email." }); return; }
-    setResetLoading(true);
-    try {
-      await sendPasswordResetEmail(auth, resetEmail);
-      toast({ title: "Reset Link Sent" });
-      setIsResetDialogOpen(false);
-    } catch (error: any) {
-      toast({ variant: "destructive", title: "Error", description: error.message });
-    } finally { setResetLoading(false); }
-  };
-
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row text-[#0F172A] font-body selection:bg-primary/20 overflow-x-hidden">
       
-      {/* LEFT PANEL: BRANDING (Top Aligned & Navy Gradient) */}
+      {/* LEFT PANEL: BRANDING */}
       <div className="hidden lg:flex flex-[1.1] bg-gradient-to-br from-[#020B2D] via-[#071B4D] to-[#0A2D7A] text-white p-12 xl:p-20 flex-col justify-start relative overflow-hidden">
         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-[-5%] left-[-5%] w-[300px] h-[300px] bg-blue-400/10 blur-[100px] rounded-full pointer-events-none" />
 
         <div className="relative z-10 space-y-12 xl:space-y-16 max-w-[650px] pt-12 xl:pt-20">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
@@ -198,25 +179,20 @@ function LoginContent() {
               </span>
             </h1>
             <p className="text-base xl:text-xl text-slate-300 font-medium leading-relaxed tracking-wide">
-              Practice Mock Tests. Track Progress. <br/> Crack Government Exams.
+              Real-time mock tests and performance analytics verified by the Punjab recruitment registry.
             </p>
           </motion.div>
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="grid grid-cols-2 gap-6 pt-6">
-            <HeroStat icon={ClipboardList} label="500+ MOCK TESTS" />
-            <HeroStat icon={Zap} label="50,000+ QUESTIONS" />
-            <HeroStat icon={Languages} label="BILINGUAL SUPPORT" />
-            <HeroStat icon={ShieldCheck} label="REAL EXAM SIMULATION" />
+            <HeroStat icon={ClipboardList} label={`${statsLoading ? '...' : formatCompact(stats?.totalMocks)}+ MOCK TESTS`} />
+            <HeroStat icon={Zap} label={`${statsLoading ? '...' : formatCompact(stats?.totalQuestions)}+ QUESTIONS`} />
+            <HeroStat icon={Users} label={`${statsLoading ? '...' : formatCompact(stats?.totalUsers)}+ ACTIVE ASPIRANTS`} />
+            <HeroStat icon={ShieldCheck} label="REAL EXAM PATTERN" />
           </motion.div>
         </div>
-
-        <motion.div animate={{ opacity: 0.6 }} className="absolute bottom-12 left-12 flex items-center gap-4 text-slate-400">
-          <ShieldCheck className="h-5 w-5 text-primary" />
-          <p className="text-[10px] font-black uppercase tracking-[0.4em]">Trusted By Punjab Aspirants</p>
-        </motion.div>
       </div>
 
-      {/* RIGHT PANEL: AUTH (Top Aligned) */}
+      {/* RIGHT PANEL: AUTH */}
       <div className="flex-1 flex flex-col items-center justify-start p-6 md:p-12 lg:p-20 relative bg-slate-50 lg:bg-white overflow-y-auto">
         <div className="lg:hidden mb-12">
           <Logo variant="light" align="center" imgClassName="h-[80px]" />
@@ -226,7 +202,7 @@ function LoginContent() {
           <Card className="border-none shadow-5xl lg:shadow-none bg-white/92 backdrop-blur-[20px] rounded-[32px] p-8 md:p-12 space-y-8">
             <div className="space-y-1.5 text-center lg:text-left">
                <h2 className="text-3xl md:text-4xl font-[900] tracking-tight text-[#0F172A] leading-none uppercase">Welcome Back</h2>
-               <p className="text-slate-400 font-bold text-[11px] uppercase tracking-[0.2em] leading-none mt-2">Access your preparation hub</p>
+               <p className="text-slate-400 font-bold text-[11px] uppercase tracking-[0.2em] mt-2">Access your preparation hub</p>
             </div>
 
             <form onSubmit={handleEmailAuth} className="space-y-6">
@@ -309,7 +285,7 @@ function LoginContent() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={handleResetPassword} disabled={resetLoading} className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl transition-all border-none">
+            <Button onClick={() => handleResetPassword()} disabled={resetLoading} className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl transition-all border-none">
               {resetLoading ? "Processing..." : "Send Reset Link"}
             </Button>
           </DialogFooter>

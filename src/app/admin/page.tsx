@@ -29,8 +29,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Admin Hub v47.2 (Deep Sync Enabled).
- * UPDATED: handleSyncLiveStats now audits Notes and PYQs for the Hero registry.
+ * @fileOverview Hardened Admin Hub v48.0 (Live Stats Engine).
+ * UPDATED: Deep audit for all platform collections to populate dynamic stats node.
  */
 
 interface MetricCardProps {
@@ -54,11 +54,9 @@ export default function AdminDashboard() {
   const [isSyncing, setIsSyncing] = useState(false)
   const [isStatsSyncing, setIsStatsSyncing] = useState(false)
 
-  // 1. LIGHTWEIGHT LISTENERS (ONLY FOR UI REFRESH)
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats } = useDoc<any>(statsRef);
 
-  // 2. LIMITED AUDIT STREAMS (ONLY LATEST 5 ITEMS)
   const recentUsersQuery = useMemo(() => (db ? query(collection(db, "users"), orderBy("createdAt", "desc"), limit(5)) : null), [db]);
   const { data: recentUsers } = useCollection<any>(recentUsersQuery);
 
@@ -72,43 +70,53 @@ export default function AdminDashboard() {
      if (!db) return;
      setIsStatsSyncing(true);
      try {
-        console.time("admin-heavy-sync");
-        const [qSnap, mSnap, uSnap, rSnap, eSnap, pSnap, nSnap, pyqSnap] = await Promise.all([
+        const [qSnap, mSnap, uSnap, rSnap, cSnap, pSnap, nSnap, pyqSnap] = await Promise.all([
            getDocs(collection(db, "questions")),
-           getDocs(collection(db, "mocks")),
+           getDocs(query(collection(db, "mocks"), where("published", "==", true))),
            getDocs(collection(db, "users")),
            getDocs(collection(db, "results")),
-           getDocs(collection(db, "exams")),
+           getDocs(collection(db, "categories")),
            getDocs(query(collection(db, "payment_requests"), where("status", "==", "APPROVED"))),
-           getDocs(collection(db, "notes")),
+           getDocs(query(collection(db, "notes"), where("published", "==", true))),
            getDocs(collection(db, "pyqs"))
         ]);
 
         const totalResults = rSnap.docs.length;
         const avgAcc = totalResults > 0 
            ? Math.round(rSnap.docs.reduce((acc: number, d: DocumentData) => acc + (Number(d.data().accuracy) || 0), 0) / totalResults)
-           : 94;
+           : 0;
 
         const totalRev = pSnap.docs.reduce((acc: number, d: DocumentData) => acc + (Number(d.data().amount) || 0), 0);
         const activePasses = uSnap.docs.filter((d: DocumentData) => d.data().pass?.active === true).length;
+        
+        // Calculate DAU (Last 24h)
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const dau = uSnap.docs.filter((d: DocumentData) => {
+           const lastLogin = d.data().lastLoginAt?.toDate();
+           return lastLogin && lastLogin > twentyFourHoursAgo;
+        }).length;
+
+        // Sum questions across mocks
+        const totalQuestions = qSnap.size;
 
         await setDoc(doc(db, "settings", "stats"), {
-           totalQuestions: qSnap.size,
+           totalQuestions,
            totalMocks: mSnap.size,
            totalUsers: uSnap.size,
-           totalBoards: eSnap.size, 
+           totalCategories: cSnap.size,
            totalRevenue: totalRev,
            totalNotes: nSnap.size,
            totalPYQs: pyqSnap.size,
+           totalAttempts: rSnap.size,
            activePasses: activePasses,
+           activeStudentsToday: dau,
            averageAccuracy: avgAcc,
            updatedAt: serverTimestamp()
         }, { merge: true });
 
-        console.timeEnd("admin-heavy-sync");
-        toast({ title: "Registry Audited", description: "All institutional metrics updated." });
-     } catch (e) {
-        toast({ variant: "destructive", title: "Sync Failed" });
+        toast({ title: "Live Sync Complete", description: "Global statistics registry updated." });
+     } catch (e: any) {
+        toast({ variant: "destructive", title: "Sync Failed", description: e.message });
      } finally {
         setIsStatsSyncing(false);
      }
@@ -120,9 +128,9 @@ export default function AdminDashboard() {
     try {
       await seedInitialData(db)
       await handleSyncLiveStats()
-      toast({ title: "Registry Synced" })
+      toast({ title: "Registry Seeding Complete" })
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Sync Failed" })
+      toast({ variant: "destructive", title: "Seeding Failed" })
     } finally {
       setIsSyncing(false)
     }
@@ -139,40 +147,40 @@ export default function AdminDashboard() {
                  <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                  <span className="text-[9px] font-black uppercase text-emerald-600 tracking-widest">Live</span>
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Admin Control</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Platform Governance</span>
            </div>
-          <h1 className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-none truncate max-w-[280px] sm:max-w-none">Admin Hub</h1>
-          <p className="text-slate-400 text-sm md:text-lg font-medium max-w-xl">Pre-calculated counts from registry summary nodes.</p>
+          <h1 className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-none">Admin Hub</h1>
+          <p className="text-slate-400 text-sm md:text-lg font-medium">Authoritative control node for Cracklix operations.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto shrink-0">
            <Button onClick={handleSyncLiveStats} disabled={isStatsSyncing} className="h-11 bg-primary hover:bg-primary/90 text-white rounded-xl font-black shadow-lg uppercase tracking-widest text-[10px] px-6 border-none">
-              {isStatsSyncing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />} Force Recalculate
+              {isStatsSyncing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />} Recalculate Live Stats
            </Button>
            <Button onClick={handlePushToRegistry} disabled={isSyncing} className="h-11 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black shadow-lg uppercase tracking-widest text-[10px] px-6 border-none">
-              {isSyncing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Database className="h-4 w-4 mr-2" />} Seed Registry
+              {isSyncing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Database className="h-4 w-4 mr-2" />} Initialize Registry
            </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
          <MetricCard 
-           label="Gross Collection" 
+           label="Total Revenue" 
            value={`₹${(stats?.totalRevenue || 0).toLocaleString()}`} 
-           subLabel="Cached Metrics" 
+           subLabel="Verified Transactions" 
            icon={<DollarSign className="text-emerald-500" />} 
            href="/admin/payments"
          />
          <MetricCard 
-           label="Active Pass Holders" 
+           label="Pass Holders" 
            value={stats?.activePasses || 0} 
-           subLabel="Premium Aspirants" 
+           subLabel="Live Subscriptions" 
            icon={<CreditCard className="text-primary" />} 
            href="/admin/users"
          />
          <MetricCard 
-           label="Verification Queue" 
+           label="Audit Queue" 
            value={pendingNodes?.length || 0} 
-           subLabel="Pending Audits" 
+           subLabel="Pending Payments" 
            icon={<AlertCircle className={cn("h-6 w-6", hasPending ? "text-rose-500 animate-pulse" : "text-slate-300")} />} 
            href="/admin/payments/verify"
            highlight={hasPending}
@@ -182,12 +190,12 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
          <Card className="lg:col-span-8 border-none shadow-2xl bg-white rounded-[2rem] overflow-hidden border border-slate-100 min-w-0">
             <CardHeader className="p-6 md:p-8 border-b border-slate-50 bg-slate-50/30">
-               <CardTitle className="text-xl font-headline font-black uppercase text-[#0F172A]">Audit Stream</CardTitle>
-               <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Latest activity records.</CardDescription>
+               <CardTitle className="text-xl font-headline font-black uppercase text-[#0F172A]">Activity Stream</CardTitle>
+               <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Live operational ledger.</CardDescription>
             </CardHeader>
             <CardContent className="p-6 md:p-8 space-y-8 md:space-y-10">
                <div className="space-y-6">
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><Users className="h-4 w-4" /> Recent Aspirants</h4>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><Users className="h-4 w-4" /> New Registrations</h4>
                   <div className="grid grid-cols-1 gap-3">
                      {recentUsers?.map((u: any) => (
                         <div key={u.id} className="flex items-center justify-between p-4 bg-slate-50/50 rounded-2xl border border-slate-100 min-w-0 gap-4">
@@ -207,7 +215,7 @@ export default function AdminDashboard() {
                </div>
                
                <div className="space-y-6">
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><Activity className="h-4 w-4" /> Recent Test Results</h4>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><Activity className="h-4 w-4" /> Latest Test Sessions</h4>
                   <div className="grid grid-cols-1 gap-3">
                      {recentResults?.map((r: any) => (
                         <div key={r.id} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm min-w-0 gap-4">
@@ -232,13 +240,13 @@ export default function AdminDashboard() {
                <div className="relative z-10 space-y-8 md:space-y-10">
                   <div className="space-y-2 text-left">
                      <h3 className="text-2xl font-headline font-black uppercase tracking-tight">Quick Launch</h3>
-                     <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Operations Hub</p>
+                     <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Operations Control</p>
                   </div>
                   <div className="grid grid-cols-1 gap-3">
-                     <QuickLink label="Assemble Mock" href="/admin/mocks/builder" />
-                     <QuickLink label="Manual MCQ Entry" href="/admin/questions/add" />
+                     <QuickLink label="Mock Builder" href="/admin/mocks/builder" />
+                     <QuickLink label="Platform Stats" href="/admin/analytics" />
                      <QuickLink label="Verify Payments" href="/admin/payments/verify" highlight={hasPending} />
-                     <QuickLink label="Pass Registry" href="/admin/passes" />
+                     <QuickLink label="Manage Categories" href="/admin/categories" />
                   </div>
                </div>
             </Card>
