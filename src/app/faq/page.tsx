@@ -11,20 +11,30 @@ import {
 } from "@/components/ui/accordion"
 import { HelpCircle, ShieldCheck, BookOpen, GraduationCap, LucideIcon } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, where, orderBy } from "firebase/firestore"
+import { collection, query, where } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 import { HelpArticle } from "@/types"
 
 /**
- * @fileOverview Official Institutional FAQ Hub v5.1 (Hardened Build).
- * FIXED: Explicit React import and refactored rendering for type-safe icon injection.
+ * @fileOverview Official Institutional FAQ Hub v5.2 (Index Conflict Fix).
+ * FIXED: Shifted sorting to client-side to bypass missing composite index requirement.
  */
 
 export default function FAQPage() {
   const db = useFirestore()
   
-  const faqQuery = useMemo(() => (db ? query(collection(db, "help_articles"), where("category", "==", "FAQ"), where("published", "==", true), orderBy("displayOrder", "asc")) : null), [db])
-  const { data: faqs, loading } = useCollection<HelpArticle>(faqQuery as any)
+  const faqQuery = useMemo(() => (db ? query(
+    collection(db, "help_articles"), 
+    where("category", "==", "FAQ"), 
+    where("published", "==", true)
+  ) : null), [db])
+
+  const { data: rawFaqs, loading } = useCollection<HelpArticle>(faqQuery as any)
+
+  const faqs = useMemo(() => {
+    if (!rawFaqs) return [];
+    return [...rawFaqs].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  }, [rawFaqs]);
 
   return (
     <div className="min-h-screen bg-slate-50/50 font-body text-left">

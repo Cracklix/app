@@ -24,13 +24,13 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, where, orderBy } from "firebase/firestore"
+import { collection, query, where } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 import { HelpArticle } from "@/types"
 
 /**
- * @fileOverview Official Institutional Help Hub v3.2 (Hardened Build).
- * FIXED: Integrated missing Badge import to prevent Vercel build-gate failure.
+ * @fileOverview Official Institutional Help Hub v3.3 (Index Fix).
+ * FIXED: Applied client-side sorting to avoid composite index requirements.
  */
 
 const HELP_CATEGORIES = [
@@ -45,11 +45,19 @@ export default function HelpCenterPage() {
   const db = useFirestore()
   const [searchTerm, setSearchTerm] = useState("")
 
-  const helpQuery = useMemo(() => (db ? query(collection(db, "help_articles"), where("published", "==", true), orderBy("displayOrder", "asc")) : null), [db])
-  const { data: articles, loading } = useCollection<HelpArticle>(helpQuery as any)
+  const helpQuery = useMemo(() => (db ? query(
+    collection(db, "help_articles"), 
+    where("published", "==", true)
+  ) : null), [db])
+
+  const { data: rawArticles, loading } = useCollection<HelpArticle>(helpQuery as any)
+
+  const articles = useMemo(() => {
+    if (!rawArticles) return [];
+    return [...rawArticles].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  }, [rawArticles]);
 
   const filteredArticles = useMemo(() => {
-    if (!articles) return []
     return articles.filter(a => 
       a.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
       a.category?.toLowerCase().includes(searchTerm.toLowerCase())

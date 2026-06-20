@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
@@ -10,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Plus, Trash2, Edit, Save, HelpCircle, Search, Loader2, X, Layers, BookOpen } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, doc, setDoc, deleteDoc, serverTimestamp, query, orderBy } from "firebase/firestore"
+import { collection, doc, setDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -18,12 +17,22 @@ import { Badge } from "@/components/ui/badge"
 import { HelpArticle } from "@/types"
 import { cn } from "@/lib/utils"
 
+/**
+ * @fileOverview Knowledge Base Hub Management v6.0 (Index Fix).
+ * FIXED: Client-side sorting implemented to prevent index requirements.
+ */
+
 export default function HelpCenterManagement() {
   const db = useFirestore()
   const { toast } = useToast()
   
-  const helpQuery = useMemo(() => (db ? query(collection(db, "help_articles"), orderBy("displayOrder", "asc")) : null), [db])
-  const { data: articles, loading } = useCollection<HelpArticle>(helpQuery as any)
+  const helpQuery = useMemo(() => (db ? collection(db, "help_articles") : null), [db])
+  const { data: rawArticles, loading } = useCollection<HelpArticle>(helpQuery as any)
+
+  const articles = useMemo(() => {
+    if (!rawArticles) return [];
+    return [...rawArticles].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  }, [rawArticles]);
 
   const [editingArticle, setEditingArticle] = useState<any>(null)
   const [isSaving, setIsSaving] = useState(false)
@@ -80,9 +89,9 @@ export default function HelpCenterManagement() {
           <h1 className="text-5xl font-black font-headline text-primary uppercase tracking-tight">Help Center</h1>
           <p className="text-slate-500 mt-2 text-lg font-medium">Manage support articles, tutorials and global FAQs.</p>
         </div>
-        <Button onClick={() => setEditingArticle({ title: "", category: "FAQ", content: "", published: true, displayOrder: (articles?.length || 0) + 1 })} className="bg-[#0F172A] hover:bg-black h-16 px-12 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl gap-3">
+        <button onClick={() => setEditingArticle({ title: "", category: "FAQ", content: "", published: true, displayOrder: (articles?.length || 0) + 1 })} className="bg-[#0F172A] hover:bg-black text-white h-16 px-12 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl flex items-center justify-center gap-3 border-none">
           <Plus className="h-5 w-5" /> Add Knowledge Node
-        </Button>
+        </button>
       </div>
 
       <Card className="border-none shadow-3xl bg-white rounded-[3rem] overflow-hidden">
