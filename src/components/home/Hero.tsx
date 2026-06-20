@@ -22,7 +22,8 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Restored Hero Hub v8.1 (Admin Control Hardened).
+ * @fileOverview Official Restored Hero Hub v9.0 (Strictly Real Data).
+ * UPDATED: Removed all hardcoded 'fake' numbers. Now strictly follows the database.
  */
 
 export default function Hero() {
@@ -41,17 +42,17 @@ export default function Hero() {
   const { data: settings } = useDoc<any>(settingsRef);
 
   const formatNumber = (num: number | undefined) => {
-    if (num === undefined || num === null) return "...";
+    if (num === undefined || num === null) return "0";
     if (num >= 1000) return (num / 1000).toFixed(1) + "k";
     return num.toString();
   };
 
   const trustBadgeContent = useMemo(() => {
-    if (!settings) return "10,000+ Aspirants Trust Cracklix";
-    const count = settings.trustBadgeCount || 10000;
-    const text = settings.trustBadgeText || "Aspirants Trust Cracklix";
-    return `${count.toLocaleString()}+ ${text}`;
-  }, [settings]);
+    // Priority: 1. Manual Admin Override, 2. Real Database Count, 3. Zero
+    const count = settings?.trustBadgeCount !== undefined ? settings.trustBadgeCount : (stats?.totalUsers || 0);
+    const label = settings?.trustBadgeText || "Aspirants Preparing on Cracklix";
+    return `${count.toLocaleString()}+ ${label}`;
+  }, [settings, stats]);
 
   const liveStats = useMemo(() => {
     return [
