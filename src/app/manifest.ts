@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
 
 /**
- * @fileOverview Production-Grade PWA Manifest v17.0.
- * FIXED: Implemented specific maskable purpose with safe-area optimizations.
+ * @fileOverview Production-Grade PWA Manifest v18.0 (Hardened).
+ * FIXED: Implemented specific maskable purpose with safe-area optimizations to ensure 
+ * launcher icons match the visual scale of popular native apps.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {

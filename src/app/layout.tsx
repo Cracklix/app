@@ -16,7 +16,7 @@ const inter = Inter({
 });
 
 /**
- * @fileOverview Root Layout v51.0 (PWA Optimized).
+ * @fileOverview Root Layout v52.0 (PWA Optimized).
  * FIXED: Refined PWA icons and display properties to ensure high-fidelity launcher scaling.
  */
 export const metadata: Metadata = {
@@ -32,12 +32,19 @@ export const metadata: Metadata = {
       {
         url: "/icons/icon-512x512.png",
         type: "image/png",
+        sizes: "512x512",
+      },
+      {
+        url: "/icons/icon-192x192.png",
+        type: "image/png",
+        sizes: "192x192",
       },
     ],
     shortcut: "/icons/icon-192x192.png",
     apple: [
       {
         url: "/icons/icon-512x512.png",
+        sizes: "512x512",
       },
     ],
   },
