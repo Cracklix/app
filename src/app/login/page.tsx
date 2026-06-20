@@ -19,7 +19,9 @@ import {
   Zap, 
   RefreshCw, 
   ClipboardList,
-  Languages
+  Languages,
+  Users,
+  FileText
 } from "lucide-react"
 import { useAuth, useFirestore, useUser, useDoc } from "@/firebase"
 import { 
@@ -40,8 +42,8 @@ import { cn } from "@/lib/utils"
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Cracklix Premium Login Hub v67.0.
- * UPDATED: Dynamically fetched live platform stats from synchronized registry node.
+ * @fileOverview Cracklix Premium Login Hub v68.0.
+ * FIXED: Resolved ReferenceError for Users icon.
  */
 
 const formatCompact = (num: number) => {
@@ -159,6 +161,23 @@ function LoginContent() {
     }
   }
 
+  const handleResetPassword = async () => {
+    if (!resetEmail) {
+      toast({ variant: "destructive", title: "Email Required" })
+      return
+    }
+    setResetLoading(true)
+    try {
+      await sendPasswordResetEmail(auth, resetEmail)
+      toast({ title: "Reset Link Sent" })
+      setIsResetDialogOpen(false)
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error", description: error.message })
+    } finally {
+      setResetLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row text-[#0F172A] font-body selection:bg-primary/20 overflow-x-hidden">
       
@@ -172,7 +191,7 @@ function LoginContent() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-8">
-            <h1 className="text-5xl xl:text-6xl font-[900] tracking-tight text-white leading-[1.05] uppercase">
+            <h1 className="text-5xl xl:text-6xl font-[900] tracking-tight text-white leading-[1.05] uppercase max-w-[550px]">
               Punjab's Smart <br/> 
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-300">
                 Exam Platform
@@ -184,10 +203,10 @@ function LoginContent() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="grid grid-cols-2 gap-6 pt-6">
-            <HeroStat icon={ClipboardList} label={`${statsLoading ? '...' : formatCompact(stats?.totalMocks)}+ MOCK TESTS`} />
-            <HeroStat icon={Zap} label={`${statsLoading ? '...' : formatCompact(stats?.totalQuestions)}+ QUESTIONS`} />
-            <HeroStat icon={Users} label={`${statsLoading ? '...' : formatCompact(stats?.totalUsers)}+ ACTIVE ASPIRANTS`} />
-            <HeroStat icon={ShieldCheck} label="REAL EXAM PATTERN" />
+            <HeroStat icon={ClipboardList} label={`${statsLoading ? '...' : formatCompact(stats?.totalMocks)} Mock Tests`} />
+            <HeroStat icon={FileText} label={`${statsLoading ? '...' : formatCompact(stats?.totalNotes)} Study Materials`} />
+            <HeroStat icon={Users} label={`${statsLoading ? '...' : formatCompact(stats?.totalUsers)} Registered Users`} />
+            <HeroStat icon={ShieldCheck} label="Official Patterns" />
           </motion.div>
         </div>
       </div>

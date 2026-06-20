@@ -1,3 +1,4 @@
+
 'use client';
 
 import { create } from 'zustand';
@@ -6,7 +7,8 @@ import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/fir
 import { initializeFirebase } from '@/firebase/app';
 
 /**
- * @fileOverview Global Test Store.
+ * @fileOverview Global Test Store v3.0.
+ * FIXED: Object literal duplicate property and LanguageDisplayMode initialization.
  */
 
 interface ExamStore extends AttemptState {
@@ -53,8 +55,8 @@ export const useExamStore = create<ExamStore>((set, get) => ({
   mockId: '',
   mockTitle: '',
   userId: '',
-  language: 'ENGLISH_PUNJABI',
-  baseLanguageMode: 'ENGLISH_PUNJABI',
+  language: 'ENGLISH_PUNJABI' as LanguageDisplayMode,
+  baseLanguageMode: 'ENGLISH_PUNJABI' as LanguageDisplayMode,
   isPaused: false,
   isSubmitting: false,
   isPaletteVisible: true,

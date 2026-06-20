@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useMemo } from "react"
@@ -33,8 +34,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import Link from "next/link"
 
 /**
- * @fileOverview Official Institutional Support Hub v4.1 (Hardened).
- * FIXED: Missing Link and Loader2 imports.
+ * @fileOverview Official Institutional Support Hub v4.2 (Hardened).
+ * FIXED: Resolved Link and Loader2 import errors.
  */
 
 const TELEGRAM_GROUP = "https://t.me/cracklixapp";

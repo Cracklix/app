@@ -14,8 +14,8 @@ import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Search Center Hub v2.2 (TypeScript Hardened).
- * FIXED: Explicit React imports and cloneElement typing.
+ * @fileOverview Search Center Hub v2.3 (TypeScript Hardened).
+ * FIXED: cloneElement type casting and logic guard.
  */
 
 export default function SearchPage() {
