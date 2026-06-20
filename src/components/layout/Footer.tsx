@@ -20,8 +20,8 @@ import {
 } from "@/lib/constants";
 
 /**
- * Production Footer v1.8
- * FIXED: Overlap resolution and Title Case normalization.
+ * @fileOverview Hardened Compact Footer v2.0.
+ * FIXED: Removed all excessive spacing and resolved text overlapping.
  */
 
 export default function Footer() {
@@ -29,226 +29,95 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-white/5 bg-[#020617] font-body text-white">
-
-      <div className="mx-auto max-w-7xl px-6 pt-16 pb-14">
-
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+      <div className="mx-auto max-w-7xl px-6 py-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
 
           {/* Brand Section */}
-          <div className="space-y-8 flex flex-col items-start text-left">
-
+          <div className="space-y-4">
             <Logo
               variant="dark"
               align="left"
-              imgClassName="h-[72px] md:h-[96px]"
+              imgClassName="h-[60px] md:h-[80px]"
             />
-
-            <p className="max-w-[300px] text-[15px] leading-relaxed text-slate-300">
-              Punjab's most advanced government exam platform,
-              built for serious aspirants preparing for success.
+            <p className="max-w-[300px] text-sm leading-relaxed text-slate-400">
+              Punjab's most advanced government exam platform for serious aspirants.
             </p>
-
-            <div className="space-y-4">
-
-              <div className="flex items-center gap-3 text-[13px] text-slate-400">
-                <MapPin className="h-4 w-4 shrink-0 text-primary" />
-                <span>
-                  Shergarh, Bathinda, Punjab
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3 text-[13px] text-slate-400">
-                <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
-                <span>
-                  Institutional Registry Verified
-                </span>
-              </div>
-
+            <div className="flex items-center gap-3">
+              <SocialIcon href={TELEGRAM_GROUP} icon={<MessageCircle className="h-4 w-4" />} />
+              <SocialIcon href={INSTAGRAM_PROFILE} icon={<Instagram className="h-4 w-4" />} />
             </div>
-
-            <div className="flex items-center gap-3 pt-2">
-
-              <SocialIcon
-                href={TELEGRAM_GROUP}
-                icon={<MessageCircle className="h-5 w-5" />}
-              />
-
-              <SocialIcon
-                href={INSTAGRAM_PROFILE}
-                icon={<Instagram className="h-5 w-5" />}
-              />
-
-            </div>
-
           </div>
 
-          {/* Support */}
-          <div className="space-y-8 text-left">
-
-            <h3 className="text-lg font-bold tracking-tight text-white">
-              Support Hub
-            </h3>
-
-            <ul className="space-y-5">
-
-              <FooterLink href="/support">
-                Support Center
-              </FooterLink>
-
-              <FooterLink href="/help">
-                Help Articles
-              </FooterLink>
-
-              <FooterLink href="/privacy">
-                Privacy Policy
-              </FooterLink>
-
-              <FooterLink href="/terms">
-                Terms of Service
-              </FooterLink>
-
+          {/* Support Hub */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-black uppercase tracking-widest text-primary">Support Hub</h3>
+            <ul className="space-y-3">
+              <FooterLink href="/support">Support Center</FooterLink>
+              <FooterLink href="/help">Help Articles</FooterLink>
+              <FooterLink href="/privacy">Privacy Policy</FooterLink>
+              <FooterLink href="/terms">Terms of Service</FooterLink>
             </ul>
-
           </div>
 
           {/* Resources */}
-          <div className="space-y-8 text-left">
-
-            <h3 className="text-lg font-bold tracking-tight text-white">
-              Resources
-            </h3>
-
-            <ul className="space-y-5">
-
-              <FooterLink href="/mocks">
-                Mock Tests
-              </FooterLink>
-
-              <FooterLink href="/pyqs">
-                Previous Papers
-              </FooterLink>
-
-              <FooterLink href="/notes">
-                Study Notes
-              </FooterLink>
-
-              <FooterLink href="/about">
-                About Us
-              </FooterLink>
-
+          <div className="space-y-4">
+            <h3 className="text-sm font-black uppercase tracking-widest text-primary">Resources</h3>
+            <ul className="space-y-3">
+              <FooterLink href="/mocks">Mock Tests</FooterLink>
+              <FooterLink href="/pyqs">Previous Papers</FooterLink>
+              <FooterLink href="/notes">Study Notes</FooterLink>
+              <FooterLink href="/about">About Us</FooterLink>
             </ul>
-
           </div>
 
           {/* Contact */}
-          <div className="space-y-8 text-left">
-
-            <h3 className="text-lg font-bold tracking-tight text-white">
-              Connect With Us
-            </h3>
-
-            <div className="space-y-6">
-
-              <div className="group flex items-center gap-4">
-
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-primary border border-white/5">
-                  <Phone className="h-4 w-4" />
-                </div>
-
-                <a
-                  href={`tel:${SUPPORT_PHONE}`}
-                  className="text-[15px] font-semibold text-slate-400 transition-colors group-hover:text-white"
-                >
-                  {SUPPORT_PHONE}
-                </a>
-
+          <div className="space-y-4">
+            <h3 className="text-sm font-black uppercase tracking-widest text-primary">Connect</h3>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 text-sm text-slate-400">
+                <Phone className="h-4 w-4 text-primary" />
+                <a href={`tel:${SUPPORT_PHONE}`} className="hover:text-white transition-colors">{SUPPORT_PHONE}</a>
               </div>
-
-              <div className="group flex items-center gap-4">
-
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-primary border border-white/5">
-                  <Mail className="h-4 w-4" />
-                </div>
-
-                <a
-                  href={`mailto:${SUPPORT_EMAIL}`}
-                  className="text-[15px] font-semibold text-slate-400 transition-colors group-hover:text-white"
-                >
-                  {SUPPORT_EMAIL}
-                </a>
-
+              <div className="flex items-center gap-3 text-sm text-slate-400">
+                <Mail className="h-4 w-4 text-primary" />
+                <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-white transition-colors">{SUPPORT_EMAIL}</a>
               </div>
-
-              <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5">
-
-                <span className="text-[10px] font-black tracking-tight text-primary uppercase">
-                  Official Resolution Channel
-                </span>
-
+              <div className="flex items-center gap-3 text-[11px] text-slate-500 uppercase font-bold">
+                <MapPin className="h-4 w-4 text-primary" />
+                <span>Bathinda, Punjab</span>
               </div>
-
             </div>
-
           </div>
 
         </div>
-
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-white/5 bg-black/40">
-
-        <div className="mx-auto flex min-h-[72px] max-w-7xl flex-col items-center justify-between gap-2 px-6 py-3 text-center md:flex-row md:text-left">
-
-          <p className="text-[14px] text-slate-500">
-            © {currentYear} Cracklix. All Rights Reserved.
-          </p>
-
-          <p className="hidden text-[14px] text-slate-500 md:block font-bold">
-            Punjab's Leading Preparation Ecosystem.
-          </p>
-
+      <div className="border-t border-white/5 bg-black/20 py-4">
+        <div className="mx-auto max-w-7xl px-6 flex flex-col md:flex-row justify-between items-center gap-2">
+          <p className="text-[12px] text-slate-500">© {currentYear} Cracklix. All Rights Reserved.</p>
+          <div className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-600">
+            <ShieldCheck className="h-3 w-3 text-emerald-500" />
+            <span>Institutional Registry Verified</span>
+          </div>
         </div>
-
       </div>
-
     </footer>
   );
 }
 
-function FooterLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
+function FooterLink({ href, children }: { href: string; children: React.ReactNode; }) {
   return (
     <li>
-      <Link
-        href={href}
-        className="text-[15px] text-slate-400 transition-colors hover:text-primary font-medium"
-      >
+      <Link href={href} className="text-sm text-slate-400 hover:text-primary transition-colors font-medium">
         {children}
       </Link>
     </li>
   );
 }
 
-function SocialIcon({
-  href,
-  icon,
-}: {
-  href: string;
-  icon: React.ReactNode;
-}) {
+function SocialIcon({ href, icon }: { href: string; icon: React.ReactNode; }) {
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-white/5 text-white shadow-lg transition-all duration-300 hover:bg-primary border border-white/5"
-    >
+    <a href={href} target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white hover:bg-primary transition-all border border-white/5">
       {icon}
     </a>
   );
