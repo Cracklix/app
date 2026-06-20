@@ -13,7 +13,7 @@ import { motion } from "framer-motion"
 
 /**
  * @fileOverview Institutional Verification Hub v3.0.
- * UPDATED: Standardized Logo and Action Nodes for professional clarity.
+ * UPDATED: Optimized action nodes for instant status refresh and Gmail shortcuts.
  */
 
 export default function VerifyEmailPage() {
@@ -45,10 +45,10 @@ export default function VerifyEmailPage() {
     setIsResending(true)
     try {
       await sendEmailVerification(user)
-      toast({ title: "Verification Sent", description: "Check your spam folder if not found." })
+      toast({ title: "Email Sent", description: "Verification link dispatched. Check your inbox." })
       setCooldown(60)
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Audit Error", description: e.message })
+      toast({ variant: "destructive", title: "Error", description: e.message })
     } finally {
       setIsResending(false)
     }
@@ -59,10 +59,10 @@ export default function VerifyEmailPage() {
     try {
       await user.reload();
       if (user.emailVerified) {
-        toast({ title: "Account Activated", description: "Email successfully verified." });
+        toast({ title: "Account Activated", description: "Your email has been verified." });
         router.replace('/dashboard');
       } else {
-        toast({ title: "Not Verified", description: "Please click the link in your email inbox." });
+        toast({ title: "Still Unverified", description: "Please click the link in the email we sent you." });
       }
     } catch (e: any) {
        toast({ variant: "destructive", title: "Refresh Failed" });
@@ -95,15 +95,15 @@ export default function VerifyEmailPage() {
                  <Mail className="h-10 w-10" />
               </div>
               <div className="space-y-2">
-                 <CardTitle className="text-3xl font-black font-headline text-[#0F172A] uppercase tracking-tight leading-tight">Verify Your Email</CardTitle>
-                 <CardDescription className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-2">Institutional Security Handshake</CardDescription>
+                 <CardTitle className="text-3xl font-black font-headline text-[#0F172A] uppercase tracking-tight leading-tight">Verify Email</CardTitle>
+                 <CardDescription className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-2">Security Verification Required</CardDescription>
               </div>
            </CardHeader>
            
            <CardContent className="p-10 pt-6 space-y-8">
               <div className="p-8 bg-slate-50 rounded-2xl border border-slate-100 space-y-4 shadow-inner">
                  <p className="text-slate-500 font-medium text-sm text-center leading-relaxed">
-                   We have sent a secure verification link to: <br/>
+                   We have sent a verification link to: <br/>
                    <span className="text-primary font-black text-lg underline decoration-primary/20 underline-offset-8 mt-2 block">{user?.email}</span>
                  </p>
               </div>
@@ -139,7 +139,7 @@ export default function VerifyEmailPage() {
                 onClick={handleLogout}
                 className="w-full flex items-center justify-center gap-2 text-[10px] font-black uppercase text-slate-400 hover:text-rose-500 transition-colors tracking-widest"
               >
-                <LogOut className="h-3.5 w-3.5" /> Use different email address
+                <LogOut className="h-3.5 w-3.5" /> Use a different email address
               </button>
            </CardContent>
         </Card>

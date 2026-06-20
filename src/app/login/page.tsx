@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, Suspense, useEffect, useTransition } from "react"
@@ -8,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import Logo from "@/components/brand/Logo"
-import { Mail, Lock, User, Phone, Eye, EyeOff, Loader2, ShieldCheck, CheckCircle2, Zap, ArrowRight, Star, AlertCircle, RefreshCw } from "lucide-react"
+import { Mail, Lock, User, Phone, Eye, EyeOff, Loader2, ShieldCheck, CheckCircle2, Zap, ArrowRight, RefreshCw, AlertCircle } from "lucide-react"
 import { useAuth, useFirestore, useUser } from "@/firebase"
 import { 
   signInWithEmailAndPassword, 
@@ -23,14 +22,12 @@ import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { getDeviceId, getBrowserInfo } from "@/lib/device"
-import { motion } from "framer-motion"
-import { cn } from "@/lib/utils"
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Login Hub v19.0
- * SIMPLIFIED: Replaced technical jargon with easy student-friendly labels.
+ * @fileOverview Institutional Login Hub v20.0
+ * UPDATED: Integrated Professional Email Verification flow and simplified wording.
  */
 export default function LoginPage() {
   return (
@@ -92,7 +89,7 @@ function LoginContent() {
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault()
     if (mode === 'register' && password !== confirmPassword) {
-      toast({ variant: "destructive", title: "Wait", description: "Passwords must match." })
+      toast({ variant: "destructive", title: "Error", description: "Passwords must match." })
       return
     }
 
@@ -103,8 +100,8 @@ function LoginContent() {
         await creds.user.reload();
         
         if (!creds.user.emailVerified) {
-          await sendEmailVerification(creds.user);
           router.push('/verify-email');
+          setLoading(false);
           return;
         }
 
@@ -134,6 +131,7 @@ function LoginContent() {
           verified: false
         })
 
+        toast({ title: "Account Created", description: "Please verify your email to continue." });
         router.push('/verify-email');
       }
     } catch (error: any) {
@@ -183,7 +181,7 @@ function LoginContent() {
     setResetLoading(true);
     try {
       await sendPasswordResetEmail(auth, resetEmail);
-      toast({ title: "Reset Link Sent", description: "Check your inbox." });
+      toast({ title: "Reset Link Sent", description: "Check your inbox for instructions." });
       setIsResetDialogOpen(false);
     } catch (error: any) {
       toast({ variant: "destructive", title: "Error", description: error.message });
@@ -197,7 +195,7 @@ function LoginContent() {
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row text-[#0F172A] text-left">
       
-      {/* BRANDING SIDE PANEL (DESKTOP ONLY) */}
+      {/* BRANDING SIDE PANEL */}
       <div className="hidden lg:flex flex-1 bg-[#0B1528] text-white p-20 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2" />
         <div className="relative z-10 space-y-12">
@@ -208,7 +206,7 @@ function LoginContent() {
                 <span className="text-primary">Mock Test Hub</span>
               </h1>
               <p className="text-xl text-slate-400 font-medium max-w-md">
-                Prepare for Punjab Government Exams with high-quality mock tests and real-time state merit rankings.
+                Prepare for Punjab Government Exams with high-quality mock tests and real-time merit rankings.
               </p>
            </div>
            <div className="space-y-6 pt-10">
@@ -243,7 +241,7 @@ function LoginContent() {
                 {mode === 'login' ? "Login Hub" : "Create Account"}
              </h2>
              <p className="text-slate-500 font-bold text-[12px] md:text-[14px] uppercase tracking-widest leading-none">
-                {mode === 'login' ? "Login to access your tests" : "Register to start practice"}
+                {mode === 'login' ? "Login to access your tests" : "Register to start practicing"}
              </p>
           </div>
 
@@ -334,13 +332,13 @@ function LoginContent() {
 
             {mode === 'login' && (
               <div className="flex justify-end">
-                <button type="button" onClick={() => setIsResetDialogOpen(true)} className="text-[11px] font-black uppercase tracking-widest text-primary hover:text-blue-700 transition-colors">Reset Password?</button>
+                <button type="button" onClick={() => setIsResetDialogOpen(true)} className="text-[11px] font-black uppercase tracking-widest text-primary hover:text-blue-700 transition-colors">Forgot Password?</button>
               </div>
             )}
 
             <div className="pt-4 flex flex-col gap-6">
               <Button type="submit" className="w-full h-16 md:h-20 bg-primary hover:bg-blue-700 text-white font-black text-xs md:text-sm uppercase tracking-[0.3em] rounded-[2rem] shadow-4xl shadow-primary/20 border-none transition-all active:scale-95" disabled={isActuallyLoading}>
-                {isActuallyLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (mode === 'login' ? "Access Hub" : "Create Account")}
+                {isActuallyLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (mode === 'login' ? "Login Hub" : "Create Account")}
               </Button>
 
               <div className="flex items-center gap-4 py-2"><div className="h-px flex-1 bg-slate-100" /><span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">OR</span><div className="h-px flex-1 bg-slate-100" /></div>
@@ -374,7 +372,7 @@ function LoginContent() {
               {resetLoading ? <Loader2 className="h-7 w-7 animate-spin" /> : <RefreshCw className="h-7 w-7" />}
             </div>
             <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tight text-[#0F172A]">Recover Hub</DialogTitle>
-            <DialogDescription className="text-slate-400 text-sm font-bold uppercase tracking-widest text-center mt-2 leading-relaxed">Enter your registry email to receive a reset link.</DialogDescription>
+            <DialogDescription className="text-slate-400 text-sm font-bold uppercase tracking-widest text-center mt-2 leading-relaxed">Enter your email to receive a password reset link.</DialogDescription>
           </DialogHeader>
           <div className="py-8 space-y-6">
             <div className="space-y-2 text-left">
