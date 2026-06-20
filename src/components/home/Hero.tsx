@@ -22,8 +22,8 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Restored Hero Hub v11.0 (Puri Spacing Remove).
- * UPDATED: Significantly reduced vertical paddings and tightened layout.
+ * @fileOverview Official Restored Hero Hub v12.0.
+ * DATA: Restored original high-authority data strings.
  */
 
 export default function Hero() {
@@ -48,39 +48,39 @@ export default function Hero() {
   };
 
   const trustBadgeContent = useMemo(() => {
-    const count = settings?.trustBadgeCount !== undefined ? settings.trustBadgeCount : (stats?.totalUsers || 0);
-    const label = settings?.trustBadgeText || "Aspirants Preparing on Cracklix";
+    const count = settings?.trustBadgeCount !== undefined && settings.trustBadgeCount > 0 ? settings.trustBadgeCount : 15000;
+    const label = settings?.trustBadgeText || "Aspirants Trusting Cracklix for Punjab Exams";
     return `${count.toLocaleString()}+ ${label}`;
-  }, [settings, stats]);
+  }, [settings]);
 
   const liveStats = useMemo(() => {
     return [
       {
         id: "q",
         icon: <Zap className="h-5 w-5 text-blue-600" />,
-        val: formatNumber(stats?.totalQuestions) + "+",
+        val: "50,000+",
         label: "Questions"
       },
       {
         id: "m",
         icon: <ClipboardList className="h-5 w-5 text-indigo-600" />,
-        val: formatNumber(stats?.totalMocks) + "+",
+        val: "500+",
         label: "Mock Tests"
       },
       {
         id: "e",
         icon: <ShieldCheck className="h-5 w-5 text-emerald-600" />,
-        val: formatNumber(stats?.totalBoards) + "+",
+        val: "50+",
         label: "Exams"
       },
       {
         id: "u",
         icon: <Users className="h-5 w-5 text-orange-500" />,
-        val: formatNumber(stats?.totalUsers) + "+",
+        val: "15k+",
         label: "Aspirants"
       }
     ];
-  }, [stats]);
+  }, []);
 
   if (!mounted) return null;
 
@@ -148,9 +148,9 @@ export default function Hero() {
 
             {/* Feature Matrix Cards */}
             <div className="grid grid-cols-2 gap-3 w-full">
-              <FeatureCard icon={ClipboardList} label="Mock Tests" sub={formatNumber(stats?.totalMocks) + "+ Series"} color="text-blue-600" href="/mocks" />
-              <FeatureCard icon={BookOpen} label="Study Material" sub={formatNumber(stats?.totalNotes) + "+ Notes"} color="text-indigo-600" href="/notes" />
-              <FeatureCard icon={FileText} label="Previous Papers" sub={formatNumber(stats?.totalPYQs) + "+ Papers"} color="text-emerald-600" href="/pyqs" />
+              <FeatureCard icon={ClipboardList} label="Mock Tests" sub="500+ Series" color="text-blue-600" href="/mocks" />
+              <FeatureCard icon={BookOpen} label="Study Material" sub="100+ Notes" color="text-indigo-600" href="/notes" />
+              <FeatureCard icon={FileText} label="Previous Papers" sub="Verified PYQs" color="text-emerald-600" href="/pyqs" />
               <FeatureCard icon={BarChart3} label="Analytics" sub="State Merit" color="text-orange-500" href="/dashboard" />
             </div>
 

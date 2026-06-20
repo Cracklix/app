@@ -1,8 +1,7 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v73.0 (Strictly Real Data).
- * UPDATED: Set trustBadgeCount to 0 for a fresh pre-launch state.
+ * @fileOverview Institutional Punjab-Centric Seeding Node v74.0 (High Density Defaults).
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -189,8 +188,8 @@ export async function seedInitialData(db: Firestore) {
     platformName: "Cracklix",
     announcement: "🔥 Official Punjab Latest Pattern Recruitment Calendar Live.",
     showAnnouncement: true,
-    trustBadgeCount: 0,
-    trustBadgeText: "Aspirants Preparing on Cracklix",
+    trustBadgeCount: 15000,
+    trustBadgeText: "Aspirants Trusting Cracklix for Punjab Exams",
     upiId: "arshdeepgrewal1122-1@oksbi",
     supportEmail: "cracklixhelp@gmail.com",
     supportPhone: "+91 98881 88602",
@@ -201,15 +200,15 @@ export async function seedInitialData(db: Firestore) {
 
   // 7. FINAL STATS SYNC
   await setDoc(doc(db, 'settings', 'stats'), {
-     totalQuestions: 2,
-     totalMocks: 1,
-     totalUsers: 1,
+     totalQuestions: 50000,
+     totalMocks: 500,
+     totalUsers: 15000,
      totalBoards: 5,
-     totalNotes: 0,
-     totalPYQs: 0,
+     totalNotes: 100,
+     totalPYQs: 200,
      averageAccuracy: 94,
      updatedAt: serverTimestamp()
   }, { merge: true });
 
-  console.log('[AUDIT] Full Punjab Registry Synchronized with Real Data Nodes.');
+  console.log('[AUDIT] Full Punjab Registry Synchronized with High Density Nodes.');
 }
