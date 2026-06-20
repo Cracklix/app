@@ -43,9 +43,9 @@ import { cn } from "@/lib/utils"
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Cracklix Premium Login Hub v60.0.
- * DESIGN: Apple + Linear + Modern SaaS Style.
- * FEATURES: Split-screen desktop, Single-session enforcement, Glassmorphism.
+ * @fileOverview Cracklix Premium Login Hub v61.0.
+ * DESIGN: Dense, Premium, Modern SaaS (Linear/Stripe Inspired).
+ * FIXED: Reduced excessive whitespace and calibrated heading scale.
  */
 export default function LoginPage() {
   return (
@@ -194,34 +194,33 @@ function LoginContent() {
     <div className="min-h-screen bg-white flex flex-col lg:flex-row text-[#0F172A] font-body selection:bg-primary/20 overflow-x-hidden">
       
       {/* LEFT PANEL: BRANDING (55% Desktop) */}
-      <div className="hidden lg:flex flex-[1.1] bg-gradient-to-br from-[#020B2D] via-[#071B4D] to-[#0A2D7A] text-white p-12 xl:p-20 flex-col justify-between relative overflow-hidden">
+      <div className="hidden lg:flex flex-[1.1] bg-gradient-to-br from-[#020B2D] via-[#071B4D] to-[#0A2D7A] text-white p-12 xl:p-20 flex-col justify-center relative overflow-hidden">
         {/* Glow Effects */}
         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
         <div className="absolute bottom-[-5%] left-[-5%] w-[300px] h-[300px] bg-blue-400/10 blur-[100px] rounded-full pointer-events-none" />
 
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="relative z-10"
-        >
-          <Logo variant="dark" align="left" imgClassName="h-[90px] xl:h-[110px]" />
-        </motion.div>
+        <div className="relative z-10 space-y-8 md:space-y-10 max-w-[550px]">
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8"
+          >
+            <Logo variant="dark" align="left" imgClassName="h-[90px] xl:h-[110px]" />
+          </motion.div>
 
-        <div className="relative z-10 space-y-12 max-w-2xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="space-y-6"
+            className="space-y-4"
           >
-            <h1 className="text-5xl xl:text-7xl font-[900] tracking-tight text-white leading-[1] uppercase">
+            <h1 className="text-5xl xl:text-6xl font-[900] tracking-tight text-white leading-[1.05] uppercase">
               Punjab's Smart <br/> 
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-300">
                 Exam Platform
               </span>
             </h1>
-            <p className="text-lg xl:text-2xl text-slate-300 font-medium leading-relaxed max-w-lg tracking-[0.03em]">
+            <p className="text-base xl:text-xl text-slate-300 font-medium leading-relaxed tracking-wide">
               Practice Mock Tests. Track Progress. <br/> Crack Government Exams.
             </p>
           </motion.div>
@@ -231,7 +230,7 @@ function LoginContent() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="grid grid-cols-2 gap-8 pt-4"
+            className="grid grid-cols-2 gap-6 pt-2"
           >
             <HeroStat icon={ClipboardList} label="500+ Mock Tests" />
             <HeroStat icon={Zap} label="50,000+ Questions" />
@@ -244,10 +243,10 @@ function LoginContent() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.6 }}
           transition={{ delay: 0.6 }}
-          className="relative z-10 flex items-center gap-4 text-slate-400"
+          className="absolute bottom-12 left-12 flex items-center gap-4 text-slate-400"
         >
           <ShieldCheck className="h-5 w-5 text-primary" />
-          <p className="text-[11px] font-black uppercase tracking-[0.4em]">Trusted By Punjab Aspirants</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.4em]">Trusted By Punjab Aspirants</p>
         </motion.div>
       </div>
 
@@ -263,21 +262,21 @@ function LoginContent() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4 }}
-          className="w-full max-w-[520px]"
+          className="w-full max-w-[500px]"
         >
-          <Card className="border-none shadow-5xl lg:shadow-none bg-white/92 backdrop-blur-[20px] rounded-[32px] p-8 md:p-12 space-y-10">
-            <div className="space-y-3 text-center lg:text-left">
-               <h2 className="text-3xl md:text-5xl font-[900] tracking-tight text-[#0F172A] leading-none uppercase">Welcome Back</h2>
-               <p className="text-slate-400 font-bold text-[13px] uppercase tracking-[0.2em] leading-none">Access your preparation hub</p>
+          <Card className="border-none shadow-5xl lg:shadow-none bg-white/92 backdrop-blur-[20px] rounded-[32px] p-8 md:p-12 space-y-8">
+            <div className="space-y-1.5 text-center lg:text-left">
+               <h2 className="text-3xl md:text-4xl font-[900] tracking-tight text-[#0F172A] leading-none uppercase">Welcome Back</h2>
+               <p className="text-slate-400 font-bold text-[11px] uppercase tracking-[0.2em] leading-none">Access your preparation hub</p>
             </div>
 
-            <form onSubmit={handleEmailAuth} className="space-y-8">
+            <form onSubmit={handleEmailAuth} className="space-y-6">
               {mode === 'register' && (
                 <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
                   <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Full Name</Label>
                   <div className="relative group">
                     <User className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-                    <Input value={name} onChange={(e) => setName(e.target.value)} required className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/20 text-lg font-bold pl-14 shadow-inner" placeholder="e.g. Arsh Grewal" />
+                    <Input value={name} onChange={(e) => setName(e.target.value)} required className="h-14 rounded-xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/20 text-base font-bold pl-14 shadow-inner" placeholder="e.g. Arsh Grewal" />
                   </div>
                 </div>
               )}
@@ -286,24 +285,24 @@ function LoginContent() {
                 <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Email Address</Label>
                 <div className="relative group">
                   <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-                  <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/20 text-lg font-bold pl-14 shadow-inner" placeholder="name@domain.com" />
+                  <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-14 rounded-xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/20 text-base font-bold pl-14 shadow-inner" placeholder="name@domain.com" />
                 </div>
               </div>
 
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-5">
+                <div className="grid grid-cols-1 gap-5">
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Password</Label>
                     <div className="relative group">
                       <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-                      <Input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/20 pl-14 pr-12 text-lg font-bold shadow-inner" placeholder="Secret Key" />
+                      <Input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required className="h-14 rounded-xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/20 pl-14 pr-12 text-base font-bold shadow-inner" placeholder="Secret Key" />
                       <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">{showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}</button>
                     </div>
                   </div>
                   {mode === 'register' && (
                     <div className="space-y-2 animate-in fade-in slide-in-from-right-2">
                       <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Repeat Key</Label>
-                      <Input type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/20 px-6 text-lg font-bold shadow-inner" placeholder="Repeat password" />
+                      <Input type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="h-14 rounded-xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/20 px-6 text-base font-bold shadow-inner" placeholder="Repeat password" />
                     </div>
                   )}
                 </div>
@@ -319,24 +318,24 @@ function LoginContent() {
                 )}
               </div>
 
-              <div className="pt-2 flex flex-col gap-6">
+              <div className="pt-2 flex flex-col gap-4">
                 <Button 
                   type="submit" 
-                  className="w-full h-16 md:h-18 bg-gradient-to-r from-[#0A5FFF] to-[#2E89FF] hover:from-[#2E89FF] hover:to-[#0A5FFF] text-white font-black text-sm uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-blue-500/20 border-none transition-all active:scale-[0.98] hover:translate-y-[-2px]" 
+                  className="w-full h-14 md:h-16 bg-gradient-to-r from-[#0A5FFF] to-[#2E89FF] hover:from-[#2E89FF] hover:to-[#0A5FFF] text-white font-black text-xs uppercase tracking-[0.2em] rounded-xl shadow-xl shadow-blue-500/20 border-none transition-all active:scale-[0.98] hover:translate-y-[-1px]" 
                   disabled={isActuallyLoading}
                 >
                   {isActuallyLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (mode === 'login' ? "Continue to Hub" : "Create My Account")}
                 </Button>
 
-                <div className="flex items-center gap-4 py-2">
+                <div className="flex items-center gap-4 py-1">
                   <div className="h-px flex-1 bg-slate-100" />
-                  <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">OR CONTINUE WITH</span>
+                  <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">OR</span>
                   <div className="h-px flex-1 bg-slate-100" />
                 </div>
 
                 <Button 
                   variant="outline" 
-                  className="w-full h-16 border-2 border-slate-100 bg-white text-[#0F172A] gap-4 rounded-2xl font-black text-xs hover:bg-slate-50 uppercase tracking-widest transition-all shadow-sm" 
+                  className="w-full h-14 border-2 border-slate-100 bg-white text-[#0F172A] gap-4 rounded-xl font-black text-[11px] hover:bg-slate-50 uppercase tracking-widest transition-all shadow-sm" 
                   onClick={handleGoogleSignIn} 
                   disabled={isActuallyLoading}
                 >
@@ -345,8 +344,8 @@ function LoginContent() {
               </div>
             </form>
 
-            <div className="text-center pt-8 border-t border-slate-50">
-               <p className="text-[13px] font-bold text-slate-400">
+            <div className="text-center pt-6 border-t border-slate-50">
+               <p className="text-[12px] font-bold text-slate-400">
                 {mode === 'login' ? "Don't have an account?" : "Already registered?"}
                 <button onClick={() => setMode(mode === 'login' ? 'register' : 'login')} className="text-primary hover:underline font-black uppercase tracking-widest ml-2">
                   {mode === 'login' ? 'Create Account' : 'Login Hub'}
@@ -355,12 +354,11 @@ function LoginContent() {
             </div>
           </Card>
 
-          <div className="mt-12 text-center space-y-4 opacity-40">
+          <div className="mt-8 text-center space-y-3 opacity-40">
              <div className="flex items-center justify-center gap-3">
                 <ShieldCheck className="h-4 w-4 text-primary" />
-                <p className="text-[10px] font-black uppercase tracking-[0.3em]">Secure Authentication</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.3em]">Secure Authentication Node</p>
              </div>
-             <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Powered by Cracklix Cloud Registry</p>
           </div>
         </motion.div>
       </div>
@@ -391,11 +389,11 @@ function LoginContent() {
 
 function HeroStat({ icon: Icon, label }: { icon: any, label: string }) {
   return (
-    <div className="flex items-center gap-4 group">
+    <div className="flex items-center gap-3.5 group">
       <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
         <Icon className="h-5 w-5 text-primary" />
       </div>
-      <span className="text-xs xl:text-sm font-bold uppercase tracking-widest text-slate-200">{label}</span>
+      <span className="text-xs xl:text-[13px] font-bold uppercase tracking-widest text-slate-200">{label}</span>
     </div>
   )
 }
