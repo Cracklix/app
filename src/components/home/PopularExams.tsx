@@ -9,7 +9,8 @@ import {
   ShieldCheck, 
   GraduationCap, 
   Activity,
-  ArrowRight
+  ArrowRight,
+  Scale
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -20,8 +21,8 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Popular Exams v61.1.
- * UPDATED: Added sizes to Image components to resolve Next.js warnings.
+ * @fileOverview High-Fidelity Popular Exams v62.0 (Logo Fixed).
+ * UPDATED: Added legal Scale icon for Court related hubs.
  */
 
 function getBoardFallbackIcon(id: string, abbrev: string) {
@@ -31,6 +32,7 @@ function getBoardFallbackIcon(id: string, abbrev: string) {
   if (key.includes('ppsc')) return <Landmark className="h-full w-full text-emerald-700" />;
   if (key.includes('teaching')) return <GraduationCap className="h-full w-full text-orange-500" />;
   if (key.includes('pspcl') || key.includes('pstcl')) return <Zap className="h-full w-full text-blue-500" />;
+  if (key.includes('court') || key.includes('justice') || key.includes('sssc')) return <Scale className="h-full w-full text-slate-600" />;
   return <Activity className="h-full w-full text-slate-300" />;
 }
 

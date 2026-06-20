@@ -9,14 +9,14 @@ import { collection, query, where, doc } from "firebase/firestore"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, GraduationCap, Zap, BookOpen, Layers, Shield, Loader2, FileText, Landmark, ShieldCheck } from "lucide-react"
+import { ChevronLeft, ChevronRight, GraduationCap, Zap, BookOpen, Layers, Shield, Loader2, FileText, Landmark, ShieldCheck, Scale } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Hub Explorer v13.0 (Simplified).
+ * @fileOverview Institutional Hub Explorer v14.0 (Logo Fixed).
  */
 
 export default function HubExamsPage() {
@@ -56,6 +56,8 @@ export default function HubExamsPage() {
 
   if (hubLoading) return <div className="h-screen bg-white flex items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
 
+  const isCourtHub = hub?.name?.toLowerCase().includes('court') || hub?.id?.toLowerCase().includes('court') || hub?.abbreviation?.toLowerCase().includes('sssc');
+
   return (
     <div className="min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
@@ -80,7 +82,14 @@ export default function HubExamsPage() {
                       onError={() => setFailedImages(p => ({...p, 'hub': true}))} 
                     />
                   ) : (
-                    <div className="text-primary opacity-40">{hub?.categoryId === 'punjab-govt' ? (hub.id.toLowerCase().includes('police') ? <ShieldCheck className="h-10 w-10 md:h-16 md:w-16" /> : <Landmark className="h-10 w-10 md:h-16 md:w-16" />) : <Landmark className="h-10 w-10 md:h-16 md:w-16" />}</div>
+                    <div className="text-primary opacity-40">
+                      {isCourtHub ? (
+                        <Scale className="h-10 w-10 md:h-16 md:w-16 text-slate-600" />
+                      ) : hub?.categoryId === 'punjab-govt' ? (
+                        hub.id.toLowerCase().includes('police') ? <ShieldCheck className="h-10 w-10 md:h-16 md:w-16" /> : 
+                        <Landmark className="h-10 w-10 md:h-16 md:w-16" />
+                      ) : <Landmark className="h-10 w-10 md:h-16 md:w-16" />}
+                    </div>
                   )}
                </div>
                
@@ -121,7 +130,9 @@ export default function HubExamsPage() {
                        <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-4px] transition-all duration-500 rounded-[2rem] bg-white group overflow-hidden h-full flex flex-col p-6 md:p-10 text-left">
                           <div className="flex justify-between items-start mb-6 md:mb-8">
                              <div className="h-14 w-14 md:h-18 md:w-18 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 shadow-inner relative overflow-hidden">
-                                {effectiveLogo && !failedImages[exam.id] ? (
+                                {isCourtHub ? (
+                                  <Scale className="h-6 w-6 md:h-10 md:w-10 text-slate-600 opacity-40" />
+                                ) : effectiveLogo && !failedImages[exam.id] ? (
                                    <Image 
                                       src={effectiveLogo} 
                                       alt="Logo" 

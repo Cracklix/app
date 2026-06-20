@@ -28,7 +28,8 @@ import {
   Newspaper,
   Star,
   ArrowRight,
-  LucideIcon
+  LucideIcon,
+  Scale
 } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
@@ -38,7 +39,8 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Institutional Exam Hub v38.0 (Typography Simplified).
+ * @fileOverview Institutional Exam Hub v39.0 (Logo Hardened).
+ * FIXED: Implemented Scale icon override for Court section to prevent Police logos from appearing.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -221,13 +223,13 @@ export default function ExamHubPage() {
 
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                <TabsContent value="FULL" className="m-0">
-                  <MockList data={groupedContent.FULL} results={userResults} isPassActive={isPassActive} user={user} loading={mocksLoading} boards={boards} />
+                  <MockList data={groupedContent.FULL} results={userResults} isPassActive={isPassActive} user={user} loading={mocksLoading} boards={boards} exam={exam} />
                </TabsContent>
                <TabsContent value="SUBJECT" className="m-0">
-                  <MockList data={groupedContent.SUBJECT} results={userResults} isPassActive={isPassActive} user={user} loading={mocksLoading} boards={boards} />
+                  <MockList data={groupedContent.SUBJECT} results={userResults} isPassActive={isPassActive} user={user} loading={mocksLoading} boards={boards} exam={exam} />
                </TabsContent>
                <TabsContent value="SECTIONAL" className="m-0">
-                  <MockList data={groupedContent.SECTIONAL} results={userResults} isPassActive={isPassActive} user={user} loading={mocksLoading} boards={boards} />
+                  <MockList data={groupedContent.SECTIONAL} results={userResults} isPassActive={isPassActive} user={user} loading={mocksLoading} boards={boards} exam={exam} />
                </TabsContent>
                <TabsContent value="CA" className="m-0">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -252,7 +254,7 @@ export default function ExamHubPage() {
                   </div>
                </TabsContent>
                <TabsContent value="PYQ" className="m-0">
-                  <MockList data={groupedContent.PYQ} results={userResults} isPassActive={isPassActive} user={user} loading={mocksLoading} boards={boards} />
+                  <MockList data={groupedContent.PYQ} results={userResults} isPassActive={isPassActive} user={user} loading={mocksLoading} boards={boards} exam={exam} />
                </TabsContent>
                <TabsContent value="NOTES" className="m-0">
                   <NotesList data={groupedContent.NOTES} isPassActive={isPassActive} loading={notesLoading} />
@@ -273,7 +275,7 @@ function DashboardTab({ value, label, icon: Icon }: { value: string, label: stri
    )
 }
 
-function MockList({ data, results, isPassActive, user, loading, boards }: any) {
+function MockList({ data, results, isPassActive, user, loading, boards, exam }: any) {
    const router = useRouter();
    const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
    
@@ -282,6 +284,8 @@ function MockList({ data, results, isPassActive, user, loading, boards }: any) {
          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[420px] w-full rounded-[32px]" />)}
       </div>
    );
+
+   const isCourtExam = exam?.name?.toLowerCase().includes('court') || exam?.id?.toLowerCase().includes('court');
 
    if (data.length === 0) return (
       <div className="py-24 text-center opacity-20 flex flex-col items-center gap-4">
@@ -307,8 +311,10 @@ function MockList({ data, results, isPassActive, user, loading, boards }: any) {
                     {result && <Badge className="bg-emerald-50 text-emerald-600 border-none text-[8px] font-black uppercase tracking-widest px-3 py-1 shadow-sm">Attempted</Badge>}
                   </div>
 
-                  <div className="h-[70px] w-[70px] mx-auto rounded-full bg-[#F8FAFC] flex items-center justify-center p-3.5 shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500 mb-8 overflow-hidden border border-slate-100">
-                     {board?.iconUrl && !failedImages[board.id] ? (
+                  <div className="h-[70px] w-[70px] mx-auto rounded-full bg-[#F8FAFC] flex items-center justify-center p-3.5 shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500 mb-8 overflow-hidden border border-slate-100 relative">
+                     {isCourtExam ? (
+                        <Scale className="h-8 w-8 text-slate-600" />
+                     ) : board?.iconUrl && !failedImages[board.id] ? (
                        <img 
                          src={board.iconUrl} 
                          className="h-full w-full object-contain" 
