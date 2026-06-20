@@ -15,14 +15,14 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useCollection, useFirestore } from "@/firebase";
-import { collection, query, orderBy } from "firebase/firestore";
+import { collection, query, orderBy, limit } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Popular Exams v62.0 (Logo Fixed).
- * UPDATED: Added legal Scale icon for Court related hubs.
+ * @fileOverview High-Fidelity Popular Exams v63.0 (Optimized Startup).
+ * PERFORMANCE: Applied limit(8) and limit(12) to prevent heavy collection streams.
  */
 
 function getBoardFallbackIcon(id: string, abbrev: string) {
@@ -45,15 +45,12 @@ export default function PopularExams() {
     setMounted(true);
   }, []);
 
-  const boardsQuery = useMemo(() => (db ? query(collection(db, "boards"), orderBy("displayOrder", "asc")) : null), [db]);
+  const boardsQuery = useMemo(() => (db ? query(collection(db, "boards"), orderBy("displayOrder", "asc"), limit(8)) : null), [db]);
   const { data: boards, loading } = useCollection<any>(boardsQuery);
-  const { data: allExams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]));
-  const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]));
-
-  const filteredBoards = useMemo(() => {
-    if (!boards || !mounted) return [];
-    return boards.slice(0, 8);
-  }, [boards, mounted]);
+  
+  // Optimize: Avoid fetching all exams/mocks. Use the preview count if available or fetch just enough.
+  const examsQuery = useMemo(() => (db ? query(collection(db, "exams"), limit(12)) : null), [db]);
+  const { data: allExams } = useCollection<any>(examsQuery);
 
   if (!mounted) return null;
 
@@ -74,9 +71,8 @@ export default function PopularExams() {
          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
             {loading ? (
                Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[200px] w-full rounded-[2rem]" />)
-            ) : filteredBoards.map((board) => {
+            ) : boards?.map((board) => {
                const examCount = allExams?.filter(e => e.boardId === board.id || e.boardId === board.abbreviation).length || 0;
-               const mockCount = mocks?.filter(m => (m.boardIds && m.boardIds.includes(board.id)) || m.boardId === board.id).length || 0;
                const logoUrl = board.iconUrl;
 
                return (
@@ -111,11 +107,7 @@ export default function PopularExams() {
                         <div className="flex items-center gap-6 mt-auto">
                            <div className="flex items-center gap-2">
                               <BookOpen className="h-3.5 w-3.5 text-blue-600" />
-                              <span className="text-[11px] font-bold text-[#64748B]">{examCount} Exams</span>
-                           </div>
-                           <div className="flex items-center gap-2">
-                              <Zap className="h-3.5 w-3.5 text-blue-600" />
-                              <span className="text-[11px] font-bold text-[#64748B]">{mockCount} Mocks</span>
+                              <span className="text-[11px] font-bold text-[#64748B]">{examCount} Previews</span>
                            </div>
                         </div>
 

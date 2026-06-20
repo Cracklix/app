@@ -33,8 +33,8 @@ import ShareButton from "@/components/navigation/ShareButton"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v32.0.
- * PERFORMANCE: Optimized metrics calculation to prevent skeleton-lock.
+ * @fileOverview Student Dashboard v33.0 (Optimized).
+ * PERFORMANCE: Consolidated metrics to prevent skeleton-lock.
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading, profileLoading } = useUser() as any;
@@ -47,7 +47,7 @@ export default function StudentDashboard() {
     if (!authLoading && !user) router.push("/login")
   }, [user, authLoading, router])
 
-  // Consolidate queries to reduce mobile socket usage
+  // Optimize: Fetch results once and derive all metrics
   const resultsQuery = useMemo(() => {
     if (!db || !user || !mounted) return null
     return query(collection(db, "results"), where("userId", "==", user.uid), limit(10))
@@ -55,38 +55,24 @@ export default function StudentDashboard() {
 
   const { data: rawResults, loading: resultsLoading } = useCollection<any>(resultsQuery)
 
-  const results = useMemo(() => {
-    if (!rawResults) return []
-    return [...rawResults].sort((a, b) => {
-      const tA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
-      const tB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
-      return tB - tA;
-    });
-  }, [rawResults])
-
   const stats = useMemo(() => {
-    if (!results || results.length === 0) return { total: 0, avgAccuracy: 0, streak: 0, readiness: 0, hours: "0h" }
+    if (!rawResults || rawResults.length === 0) return { total: 0, avgAccuracy: 0, streak: 0, readiness: 0, hours: "0h", list: [] }
     
-    const total = results.length
-    const correct = results.reduce((acc: number, r: any) => acc + (r.correctCount || r.score || 0), 0)
-    const attempted = results.reduce((acc: number, r: any) => acc + (r.attemptedCount || r.totalQuestions || 0), 0)
+    const sorted = [...rawResults].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    const total = sorted.length
+    const correct = sorted.reduce((acc: number, r: any) => acc + (r.correctCount || r.score || 0), 0)
+    const attempted = sorted.reduce((acc: number, r: any) => acc + (r.attemptedCount || r.totalQuestions || 0), 0)
     const avgAcc = attempted > 0 ? Math.round((correct / attempted) * 100) : 0
     
-    const totalSeconds = results.reduce((acc: number, r: any) => acc + (r.timeTaken || 0), 0)
-    let timeFormatted = "0s";
-    if (totalSeconds >= 3600) {
-      timeFormatted = `${(totalSeconds / 3600).toFixed(1)}h`;
-    } else if (totalSeconds >= 60) {
-      timeFormatted = `${Math.floor(totalSeconds / 60)}m`;
-    } else {
-      timeFormatted = `${totalSeconds}s`;
-    }
+    const totalSeconds = sorted.reduce((acc: number, r: any) => acc + (r.timeTaken || 0), 0)
+    let timeFormatted = totalSeconds >= 3600 ? `${(totalSeconds / 3600).toFixed(1)}h` : 
+                       totalSeconds >= 60 ? `${Math.floor(totalSeconds / 60)}m` : `${totalSeconds}s`;
     
-    const uniqueDays = new Set(results.filter((r: any) => r.timestamp).map((r: any) => new Date(r.timestamp).toDateString()))
+    const uniqueDays = new Set(sorted.filter((r: any) => r.timestamp).map((r: any) => new Date(r.timestamp).toDateString()))
     const readiness = Math.min(100, Math.round((avgAcc * 0.7) + (Math.min(total, 30) * 1)))
 
-    return { total, avgAccuracy: avgAcc, streak: uniqueDays.size, readiness, hours: timeFormatted }
-  }, [results])
+    return { total, avgAccuracy: avgAcc, streak: uniqueDays.size, readiness, hours: timeFormatted, list: sorted }
+  }, [rawResults])
 
   if (!mounted) return null;
 
@@ -102,7 +88,7 @@ export default function StudentDashboard() {
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
                 <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-10">
                   <div className="relative shrink-0">
-                    {(profileLoading && !profile) ? (
+                    {profileLoading && !profile ? (
                       <Skeleton className="h-24 w-24 md:h-36 md:w-36 rounded-[2rem] md:rounded-[3rem] bg-white/5" />
                     ) : (
                       <div className="relative">
@@ -127,23 +113,15 @@ export default function StudentDashboard() {
                           </div>
                         </div>
                     </div>
-                    <div className="pt-2 flex flex-wrap justify-center md:justify-start gap-3">
-                        <Button asChild className="h-11 md:h-12 px-6 md:px-8 bg-white/10 hover:bg-white/20 text-white rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-widest border border-white/10 transition-all active:scale-95">
-                          <Link href="/profile">My Profile</Link>
-                        </Button>
-                        <Button asChild className="h-11 md:h-12 px-6 md:px-8 bg-primary hover:bg-orange-600 text-white rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-widest shadow-xl transition-all active:scale-95 border-none">
-                          <Link href="/pass">Upgrade Pass</Link>
-                        </Button>
-                    </div>
                   </div>
                 </div>
               </section>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
-                <MetricItem label="PROGRESS" val={resultsLoading ? <Loader2 className="h-6 w-6 animate-spin text-slate-300" /> : `${stats.readiness}%`} icon={<TrendingUp className="text-primary h-5 w-5" />} />
-                <MetricItem label="ACCURACY" val={resultsLoading ? <Loader2 className="h-6 w-6 animate-spin text-slate-300" /> : `${stats.avgAccuracy}%`} icon={<Target className="text-emerald-500 h-5 w-5" />} />
-                <MetricItem label="TESTS" val={resultsLoading ? <Loader2 className="h-6 w-6 animate-spin text-slate-300" /> : stats.total} icon={<ClipboardList className="text-blue-500 h-5 w-5" />} />
-                <MetricItem label="TIME SPENT" val={resultsLoading ? <Loader2 className="h-6 w-6 animate-spin text-slate-300" /> : stats.hours} icon={<Clock className="text-amber-500 h-5 w-5" />} />
+                <MetricItem label="PROGRESS" val={resultsLoading ? "..." : `${stats.readiness}%`} icon={<TrendingUp className="text-primary h-5 w-5" />} />
+                <MetricItem label="ACCURACY" val={resultsLoading ? "..." : `${stats.avgAccuracy}%`} icon={<Target className="text-emerald-500 h-5 w-5" />} />
+                <MetricItem label="TESTS" val={resultsLoading ? "..." : stats.total} icon={<ClipboardList className="text-blue-500 h-5 w-5" />} />
+                <MetricItem label="TIME SPENT" val={resultsLoading ? "..." : stats.hours} icon={<Clock className="text-amber-500 h-5 w-5" />} />
               </div>
 
               <Card className="border-none shadow-3xl rounded-[2.5rem] md:rounded-[3.5rem] bg-white overflow-hidden text-left border border-slate-100">
@@ -152,9 +130,6 @@ export default function StudentDashboard() {
                       <h3 className="font-headline text-lg md:text-3xl font-black text-[#0F172A] uppercase">Test History</h3>
                       <p className="text-[9px] md:text-[11px] font-bold uppercase tracking-widest text-slate-400">Your recent practice sessions</p>
                     </div>
-                    <Button asChild variant="ghost" className="h-10 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary gap-2">
-                      <Link href="/my-exams">View All <ChevronRight className="h-4 w-4" /></Link>
-                    </Button>
                 </CardHeader>
                 <CardContent className="p-0">
                     <div className="divide-y divide-slate-50">
@@ -162,14 +137,11 @@ export default function StudentDashboard() {
                           Array.from({ length: 3 }).map((_, i) => (
                             <div key={i} className="p-6 md:p-10 flex gap-6 items-center">
                                <Skeleton className="h-14 w-14 rounded-xl" />
-                               <div className="flex-1 space-y-2">
-                                  <Skeleton className="h-5 w-1/3" />
-                                  <Skeleton className="h-3 w-1/4" />
-                               </div>
+                               <div className="flex-1 space-y-2"><Skeleton className="h-5 w-1/3" /><Skeleton className="h-3 w-1/4" /></div>
                             </div>
                           ))
-                      ) : results && results.length > 0 ? (
-                          results.map((r: any) => (
+                      ) : stats.list.length > 0 ? (
+                          stats.list.map((r: any) => (
                             <Link key={r.id} href={`/results/${r.mockId}`} className="p-6 md:p-10 flex items-center justify-between hover:bg-slate-50/50 transition-all group border-l-[4px] border-transparent hover:border-primary">
                                 <div className="flex items-center gap-4 md:gap-8 min-w-0 flex-1">
                                   <div className="h-10 w-10 md:h-14 md:w-14 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
@@ -178,10 +150,7 @@ export default function StudentDashboard() {
                                   <div className="min-w-0 space-y-1.5">
                                       <p className="font-black text-[#0B1528] text-sm md:text-xl lg:text-2xl uppercase truncate leading-none">{r.mockTitle}</p>
                                       <div className="flex items-center gap-4 text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-tight">
-                                        <span className="flex items-center gap-1.5">
-                                          <Calendar className="h-3 w-3 text-slate-300" /> 
-                                          {r.timestamp ? new Date(r.timestamp).toLocaleDateString() : 'N/A'}
-                                        </span>
+                                        <span className="flex items-center gap-1.5"><Calendar className="h-3 w-3 text-slate-300" /> {r.timestamp ? new Date(r.timestamp).toLocaleDateString() : 'N/A'}</span>
                                         <Badge className="bg-emerald-50 text-emerald-600 border-none font-black px-2.5 py-0.5 rounded-lg text-[8px] md:text-[10px]">ACC: {r.accuracy}%</Badge>
                                       </div>
                                   </div>
@@ -190,7 +159,7 @@ export default function StudentDashboard() {
                             </Link>
                           ))
                       ) : (
-                          <div className="p-20 text-center opacity-30 italic text-sm md:text-lg uppercase font-black tracking-widest text-slate-400">No test results found.</div>
+                          <div className="p-20 text-center opacity-30 italic text-sm md:text-lg uppercase font-black tracking-widest text-slate-400">No tests found.</div>
                       )}
                     </div>
                 </CardContent>
@@ -210,29 +179,6 @@ export default function StudentDashboard() {
                       </div>
                     </div>
                 </div>
-              </Card>
-
-              <div className="grid grid-cols-2 gap-4">
-                <DashboardTile icon={<Bookmark className="text-primary h-5 w-5" />} label="REVISION" href="/revision" />
-                <DashboardTile icon={<Trophy className="text-amber-500 h-5 w-5" />} label="RANKINGS" href="/leaderboard" />
-                <DashboardTile icon={<LayoutGrid className="text-blue-500 h-5 w-5" />} label="EXAMS" href="/exams" />
-                <DashboardTile icon={<Activity className="text-emerald-500 h-5 w-5" />} label="PROGRESS" href="/analytics" />
-              </div>
-
-              <Card className="border-none shadow-2xl bg-white p-8 md:p-10 rounded-[2.5rem] text-left space-y-6 border border-slate-100">
-                <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary shadow-inner">
-                      <Award className="h-6 w-6" />
-                    </div>
-                    <div className="space-y-0.5">
-                      <h4 className="text-lg md:text-xl font-black uppercase text-[#0B1528]">Elite Network</h4>
-                      <p className="text-[9px] md:text-[10px] font-bold uppercase text-slate-400">Invite fellow students</p>
-                    </div>
-                </div>
-                <ShareButton 
-                  variant="dark" 
-                  className="w-full h-14 md:h-16 rounded-2xl bg-[#0B1528] hover:bg-black text-white shadow-3xl transition-all active:scale-95 border-none text-[10px] md:text-[11px]" 
-                />
               </Card>
           </div>
         </div>
@@ -255,17 +201,4 @@ function MetricItem({ label, val, icon }: any) {
       </div>
     </Card>
   )
-}
-
-function DashboardTile({ icon, label, href }: any) {
-   return (
-      <Link href={href} className="block active:scale-95 transition-all">
-         <Card className="border-none shadow-lg bg-white p-5 md:p-8 rounded-[1.5rem] md:rounded-[2rem] flex flex-col items-center gap-4 group hover:shadow-2xl border border-slate-100 h-full">
-            <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-primary/5 transition-all">
-               {icon}
-            </div>
-            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-500 text-center leading-tight">{label}</span>
-         </Card>
-      </Link>
-   )
 }
