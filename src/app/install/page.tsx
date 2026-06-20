@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useMemo } from "react"
+import React, { useState, useEffect } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { motion } from "framer-motion"
@@ -10,21 +10,18 @@ import {
   Sparkles, 
   ShieldCheck, 
   Zap, 
-  Monitor, 
   Apple, 
-  ArrowRight,
-  CheckCircle2,
   Share,
-  PlusSquare,
-  Plus
+  PlusSquare
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview High-Fidelity PWA Install Hub v1.0.
- * Features: Multi-device detection, step-by-step iOS guides, and Android direct handshake.
+ * @fileOverview High-Fidelity PWA Install Hub v1.1 (Build Fixed).
+ * FIXED: Imported Badge from standard UI node and added React for cloneElement.
  */
 
 export default function InstallPage() {
@@ -95,7 +92,7 @@ export default function InstallPage() {
                  
                  <div className="relative z-10 space-y-8">
                     <div className="flex items-center gap-4">
-                       <Badge className="bg-primary text-white border-none px-4 py-1.5 rounded-full font-black uppercase text-[10px]">
+                       <Badge className="bg-primary text-white border-none px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest">
                           {device.toUpperCase()} DETECTION ACTIVE
                        </Badge>
                     </div>
@@ -140,7 +137,6 @@ export default function InstallPage() {
                  <BenefitRow icon={<Smartphone />} title="Fullscreen Mode" desc="Zero distractions during mock tests." />
                  <BenefitRow icon={<Zap />} title="Instant Loading" desc="Cached assets for rapid navigation." />
                  <BenefitRow icon={<ShieldCheck />} title="Verified Node" desc="Institutional security on every session." />
-                 <BenefitRow icon={<Target />} title="Quick Access" desc="Launch instantly from your home screen." />
               </div>
            </div>
 
@@ -177,8 +173,4 @@ function BenefitRow({ icon, title, desc }: any) {
          </div>
       </div>
    )
-}
-
-function Badge({ children, className }: any) {
-   return <div className={cn("px-4 py-1.5 rounded-full text-[9px] font-black tracking-widest", className)}>{children}</div>
 }

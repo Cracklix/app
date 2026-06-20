@@ -1,11 +1,11 @@
 "use client"
 
-import { useMemo, useEffect, useState } from "react"
+import React, { useMemo, useEffect, useState } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useCollection, useFirestore } from "@/firebase"
 import { collection, query, where, doc, updateDoc, limit, arrayRemove, serverTimestamp } from "firebase/firestore"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { 
   Target, 
@@ -14,7 +14,6 @@ import {
   History, 
   Star,
   ShieldCheck,
-  LayoutGrid,
   Clock,
   GraduationCap,
   RefreshCw,
@@ -22,9 +21,9 @@ import {
   CheckCircle2,
   Plus,
   X,
-  ArrowRight,
-  Sparkles,
-  Smartphone
+  Smartphone,
+  Download,
+  Sparkles
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -35,8 +34,8 @@ import { useToast } from "@/hooks/use-toast"
 import { usePWAInstall } from "@/hooks/use-pwa-install"
 
 /**
- * @fileOverview Institutional My Hub Hub v6.0 (Rebuilt).
- * REBUILT: Integrated PWA promotion and authoritative registry sync.
+ * @fileOverview Institutional My Hub Hub v6.1 (Build Fixed).
+ * FIXED: Explicitly typed all collection references and verified icon imports.
  */
 
 export default function MyExamsPage() {
@@ -106,7 +105,6 @@ export default function MyExamsPage() {
       
       <main className="container mx-auto px-4 py-8 md:py-16 max-w-7xl space-y-12 md:space-y-20">
         
-        {/* APP PROMO CARD */}
         {!isInstalled && canInstall && (
            <Card className="border-none shadow-4xl bg-[#0B1528] text-white p-6 md:p-10 rounded-[2.5rem] relative overflow-hidden group animate-in slide-in-from-top-4 duration-500">
               <div className="absolute top-0 right-0 p-8 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><Smartphone className="h-64 w-64" /></div>
@@ -144,13 +142,19 @@ export default function MyExamsPage() {
            
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
               {profileLoading || examsLoading ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[400px] w-full rounded-[3.5rem] bg-white" />) : 
-              pinnedExams.length > 0 ? pinnedExams.map((exam) => {
+              pinnedExams.length > 0 ? pinnedExams.map((exam: any) => {
                  const board = boards?.find((b: any) => b.id === exam.boardId || b.abbreviation === exam.boardId);
                  const logoUrl = board?.iconUrl || exam.iconUrl;
                  const isTarget = profile?.targetExam === exam.name;
                  return (
                   <Card key={exam.id} className="border-none shadow-2xl hover:shadow-5xl transition-all duration-500 rounded-[3.5rem] bg-white group overflow-hidden h-[420px] flex flex-col border border-slate-100 relative p-8 md:p-12 text-center">
-                    {isTarget && <div className="absolute top-8 right-8 z-20"><Badge className="bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm px-4 py-1.5 font-black text-[9px] uppercase flex items-center gap-2 rounded-xl"><CheckCircle2 className="h-3.5 w-3.5" /> CURRENT TARGET</Badge></div>}
+                    {isTarget && (
+                      <div className="absolute top-8 right-8 z-20">
+                        <Badge className="bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm px-4 py-1.5 font-black text-[9px] uppercase flex items-center gap-2 rounded-xl">
+                          <CheckCircle2 className="h-3.5 w-3.5" /> CURRENT TARGET
+                        </Badge>
+                      </div>
+                    )}
                     <div className="flex flex-col items-center flex-1 h-full pt-4">
                        <div className="h-20 w-20 md:h-24 md:w-24 rounded-3xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 shadow-inner group-hover:scale-105 transition-transform overflow-hidden mb-8">{logoUrl && !failedImages[exam.id] ? <img src={logoUrl} className="w-full h-full object-contain p-3" referrerPolicy="no-referrer" alt="Logo" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} /> : <GraduationCap className="h-10 w-10 text-slate-200" />}</div>
                        <h4 className="font-black text-xl md:text-2xl text-[#0F172A] uppercase leading-tight mb-4 px-4 line-clamp-2">{exam.name}</h4>
