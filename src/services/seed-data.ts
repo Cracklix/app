@@ -1,8 +1,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v70.8.
- * UPDATED: Restored official logos for Police, PSTCL, PSPCL and Central Govt.
+ * @fileOverview Institutional Punjab-Centric Seeding Node v71.0 (Title Case Update).
+ * TYPOGRAPHY: All titles and descriptions transitioned to Title Case for premium aesthetics.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -13,7 +13,7 @@ export async function seedInitialData(db: Firestore) {
   const categories = [
     {
       id: "punjab-govt",
-      title: "Punjab General Exam",
+      title: "Punjab General Exams",
       description: "Police, PSSSB, PPSC and major state board recruitments.",
       highlight: "STATE LEVEL",
       color: "text-primary",
@@ -23,8 +23,8 @@ export async function seedInitialData(db: Firestore) {
     },
     {
       id: "punjab-teaching",
-      title: "Punjab Teaching Exam",
-      description: "PSTET, CTET, Master Cadre, ETT & Lecturer recruitment nodes.",
+      title: "Punjab Teaching Exams",
+      description: "PSTET, CTET, Master Cadre, ETT and lecturer recruitment nodes.",
       highlight: "EDUCATIONAL",
       color: "text-blue-600",
       bgColor: "bg-blue-50",
@@ -33,7 +33,7 @@ export async function seedInitialData(db: Firestore) {
     },
     {
       id: "punjab-technical",
-      title: "Punjab Technical Exam",
+      title: "Punjab Technical Exams",
       description: "PSPCL, PSTCL, ALM and Technical Board recruitment nodes.",
       highlight: "POWER & TECH",
       color: "text-amber-500",
@@ -43,7 +43,7 @@ export async function seedInitialData(db: Firestore) {
     },
     {
       id: "banking",
-      title: "Punjab Banking Corporation Exam",
+      title: "Punjab Banking Exams",
       description: "State Cooperative Bank, Apex, PADB and Central Bank nodes.",
       highlight: "FINANCE",
       color: "text-emerald-600",
@@ -53,8 +53,8 @@ export async function seedInitialData(db: Firestore) {
     },
     {
       id: "central-govt",
-      title: "Central Govt",
-      description: "SSC, Railways, Army & National exams.",
+      title: "Central Govt Exams",
+      description: "SSC, Railways, Army and National exams.",
       highlight: "NATIONAL",
       color: "text-indigo-600",
       bgColor: "bg-indigo-50",
@@ -67,7 +67,7 @@ export async function seedInitialData(db: Firestore) {
     batch.set(doc(db, 'categories', cat.id), { ...cat, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 2. HUBS (Boards) with Restored Official Logos
+  // 2. HUBS (Boards)
   const boards = [
     { 
       id: 'punjab-police', 
@@ -119,7 +119,7 @@ export async function seedInitialData(db: Firestore) {
   const sampleQs = [
     {
       id: "seed-q-1",
-      englishQuestion: "Which river is known as the 'Backbone of Punjab'?",
+      englishQuestion: "Which river is known as the Backbone of Punjab?",
       punjabiQuestion: "ਪੰਜਾਬ ਦੀ ਰੀੜ੍ਹ ਦੀ ਹੱਡੀ ਕਿਸ ਦਰਿਆ ਨੂੰ ਕਿਹਾ ਜਾਂਦਾ ਹੈ?",
       optionAEnglish: "Sutlej", optionAPunjabi: "ਸਤਲੁਜ",
       optionBEnglish: "Beas", optionBPunjabi: "ਬਿਆਸ",
@@ -156,7 +156,7 @@ export async function seedInitialData(db: Firestore) {
   batch.set(doc(db, 'mocks', mockId), {
     id: mockId,
     title: "Punjab GK Foundation Mock",
-    boardId: "psssb",
+    boardId: "PSSSB",
     boardIds: ["psssb"],
     examIds: ["revenue-patwari"],
     mockType: "FULL",

@@ -25,9 +25,9 @@ import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Login Hub v32.0.
- * TYPOGRAPHY: Removed forced 'uppercase' for premium Title Case aesthetics.
+ * @fileOverview Hardened Login Hub v33.0 (Typography Overhaul).
  * BRAND SYSTEM: Logo centered, height 60px desktop / 50px mobile.
+ * TYPOGRAPHY: Title Case normalization.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -97,7 +97,7 @@ function LoginContent() {
       if (mode === 'login') {
         const creds = await signInWithEmailAndPassword(auth, email, password)
         await updateActiveDevice(creds.user.uid);
-        toast({ title: "Authorized", description: "Welcome to Cracklix" })
+        toast({ title: "Welcome to Cracklix" })
         startTransition(() => { router.replace(returnUrl) })
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
@@ -146,7 +146,7 @@ function LoginContent() {
       }
       
       await updateActiveDevice(userNode.uid);
-      toast({ title: "Registry Synced", description: `Authorized as ${userNode.displayName}` })
+      toast({ title: "Welcome to Cracklix" })
       startTransition(() => { router.replace(returnUrl) })
     } catch (error: any) {
       toast({ variant: "destructive", title: "Sync Error", description: error.message })
@@ -199,17 +199,17 @@ function LoginContent() {
         <Card className="border-slate-100 bg-white/80 backdrop-blur-3xl shadow-5xl rounded-[1.5rem] md:rounded-[3.5rem] overflow-hidden border-2">
           <div className="h-1.5 w-full bg-primary" />
           <CardHeader className="text-center pt-8 md:pt-14 pb-4 px-4 md:px-16">
-            <CardTitle className="text-xl md:text-4xl font-black tracking-tight text-[#0F172A]">
+            <CardTitle className="text-2xl md:text-4xl font-extrabold tracking-tight text-[#0F172A]">
               {mode === 'login' ? "Login" : "Sign Up"}
             </CardTitle>
-            <CardDescription className="text-slate-400 font-bold text-[9px] md:text-[12px] tracking-widest mt-2 md:mt-3 uppercase">Institutional Registry Access</CardDescription>
+            <CardDescription className="text-slate-400 font-bold text-[10px] md:text-[12px] tracking-tight mt-2 md:mt-3">Institutional Registry Access</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 md:space-y-10 pb-10 md:pb-20 px-4 md:px-16 text-left">
             <form onSubmit={handleEmailAuth} className="space-y-4 md:space-y-6">
               {mode === 'register' && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Full Identity</Label>
+                    <Label className="text-[10px] font-bold text-slate-400 ml-1">Full Identity</Label>
                     <Input 
                       value={name} 
                       onChange={(e) => setName(e.target.value)} 
@@ -219,14 +219,14 @@ function LoginContent() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Mobile Node</Label>
+                    <Label className="text-[10px] font-bold text-slate-400 ml-1">Mobile Node</Label>
                     <div className="relative">
-                      <span className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 text-slate-400 font-black text-sm md:text-lg">+91</span>
+                      <span className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm md:text-lg">+91</span>
                       <Input 
                         value={phone} 
                         onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0,10))} 
                         required 
-                        className="h-12 md:h-16 rounded-xl md:rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-sm md:text-lg font-bold pl-16 md:pl-20 px-4 md:px-6 tracking-widest shadow-inner" 
+                        className="h-12 md:h-16 rounded-xl md:rounded-2xl bg-slate-50 border-none text-[#0F172A] placeholder:text-slate-400 focus-visible:ring-primary text-sm md:text-lg font-bold pl-16 md:pl-20 px-4 md:px-6 shadow-inner" 
                         placeholder="10-digit number" 
                       />
                     </div>
@@ -234,7 +234,7 @@ function LoginContent() {
                 </div>
               )}
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Email Address</Label>
+                <Label className="text-[10px] font-bold text-slate-400 ml-1">Email Address</Label>
                 <Input 
                   type="email" 
                   value={email} 
@@ -245,7 +245,7 @@ function LoginContent() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Password</Label>
+                <Label className="text-[10px] font-bold text-slate-400 ml-1">Password</Label>
                 <div className="relative">
                   <Input 
                     type={showPassword ? "text" : "password"} 
@@ -267,7 +267,7 @@ function LoginContent() {
               </div>
               {mode === 'register' && (
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Verify Password</Label>
+                  <Label className="text-[10px] font-bold text-slate-400 ml-1">Verify Password</Label>
                   <div className="relative">
                     <Input 
                       type={showConfirmPassword ? "text" : "password"} 
@@ -283,16 +283,16 @@ function LoginContent() {
                   </div>
                 </div>
               )}
-              <Button type="submit" className="w-full h-14 md:h-20 bg-primary hover:bg-blue-700 text-white font-black uppercase text-base md:text-lg rounded-xl md:rounded-[2.5rem] shadow-4xl shadow-primary/20 border-none transition-all active:scale-95 tracking-widest" disabled={isActuallyLoading}>
+              <Button type="submit" className="w-full h-14 md:h-20 bg-primary hover:bg-blue-700 text-white font-bold text-base md:text-lg rounded-xl md:rounded-[2.5rem] shadow-4xl shadow-primary/20 border-none transition-all active:scale-95 tracking-tight" disabled={isActuallyLoading}>
                 {isActuallyLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (mode === 'login' ? "Login" : "Create Account")}
               </Button>
             </form>
-            <div className="flex items-center gap-4 py-2 md:py-4"><div className="h-px flex-1 bg-slate-100" /><span className="text-[9px] font-bold text-slate-300 tracking-widest uppercase">OR</span><div className="h-px flex-1 bg-slate-100" /></div>
+            <div className="flex items-center gap-4 py-2 md:py-4"><div className="h-px flex-1 bg-slate-100" /><span className="text-[10px] font-bold text-slate-300 tracking-tight">OR</span><div className="h-px flex-1 bg-slate-100" /></div>
             <Button variant="outline" className="w-full h-12 md:h-16 border-slate-100 bg-white text-[#0F172A] gap-4 rounded-xl md:rounded-2xl font-bold text-sm hover:bg-slate-50 tracking-tight shadow-sm" onClick={handleGoogleSignIn} disabled={isActuallyLoading}>
                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="h-4 w-4 md:h-5 md:w-5" alt="G" /> Google Account
             </Button>
             <div className="text-center text-[11px] md:text-[14px] font-bold text-slate-400 tracking-tight mt-4">
-               {mode === 'login' ? (<p>New aspirant? <button onClick={() => setMode('register')} className="text-primary hover:text-blue-700 font-black transition-colors ml-1">Create account</button></p>) : (<p>Already registered? <button onClick={() => mode === 'register' && setMode('login')} className="text-primary hover:text-blue-700 font-black transition-colors ml-1">Login now</button></p>)}
+               {mode === 'login' ? (<p>New aspirant? <button onClick={() => setMode('register')} className="text-primary hover:text-blue-700 font-bold transition-colors ml-1">Create account</button></p>) : (<p>Already registered? <button onClick={() => mode === 'register' && setMode('login')} className="text-primary hover:text-blue-700 font-bold transition-colors ml-1">Login now</button></p>)}
             </div>
           </CardContent>
         </Card>
@@ -304,12 +304,12 @@ function LoginContent() {
             <div className="h-14 w-14 md:h-16 md:w-16 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto text-primary shadow-xl">
               <Loader2 className={cn("h-7 w-7 md:h-8 md:w-8", resetLoading && "animate-spin")} />
             </div>
-            <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tight text-[#0F172A]">Recover Node</DialogTitle>
-            <DialogDescription className="text-slate-400 text-[10px] md:text-[11px] font-bold tracking-widest uppercase leading-relaxed">Enter your email to receive a reset link.</DialogDescription>
+            <DialogTitle className="text-xl md:text-2xl font-bold tracking-tight text-[#0F172A]">Recover Node</DialogTitle>
+            <DialogDescription className="text-slate-400 text-sm font-medium tracking-tight leading-relaxed">Enter your email to receive a reset link.</DialogDescription>
           </DialogHeader>
           <div className="py-6 md:py-8 space-y-6">
             <div className="space-y-2 text-left">
-              <Label className="text-[10px] md:text-[11px] font-black text-slate-400 ml-1 uppercase">Registry Email</Label>
+              <Label className="text-[10px] md:text-[11px] font-bold text-slate-400 ml-1">Registry Email</Label>
               <Input 
                 type="email" 
                 value={resetEmail} 
@@ -319,7 +319,7 @@ function LoginContent() {
               />
             </div>
           </div>
-          <DialogFooter><Button onClick={handleResetPassword} disabled={resetLoading} className="w-full h-14 md:h-16 bg-primary hover:bg-blue-700 text-white font-black uppercase text-sm md:text-lg rounded-xl md:rounded-2xl shadow-4xl shadow-primary/20 transition-all border-none tracking-widest">{resetLoading ? "Transmitting..." : "Send Reset Link"}</Button></DialogFooter>
+          <DialogFooter><Button onClick={handleResetPassword} disabled={resetLoading} className="w-full h-14 md:h-16 bg-primary hover:bg-blue-700 text-white font-bold text-sm md:text-lg rounded-xl md:rounded-2xl shadow-4xl shadow-primary/20 transition-all border-none tracking-tight">{resetLoading ? "Transmitting..." : "Send Reset Link"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

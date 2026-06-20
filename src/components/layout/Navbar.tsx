@@ -36,9 +36,9 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Header v100.0 (Premium Title Case).
- * BRAND SYSTEM: Logo size maximized to 72px desktop / 62px mobile.
- * TYPOGRAPHY: Switched to Title Case for navigation nodes.
+ * @fileOverview Institutional Header v101.0 (Overhaul Refined).
+ * BRAND SYSTEM: Logo height 40px Desktop / 32px Mobile. Header height 80px.
+ * TYPOGRAPHY: Title Case navigation.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -78,23 +78,23 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-50 w-full font-body">
       <nav className="w-full h-20 bg-white border-b border-slate-100 shadow-sm">
-        <div className="w-full max-w-7xl mx-auto px-2 md:px-4 h-full flex items-center justify-between gap-4">
+        <div className="w-full max-w-7xl mx-auto px-4 h-full flex items-center justify-between gap-4">
 
-          {/* LEFT SIDE: Menu Hub + Maximized Logo Node */}
+          {/* LEFT SIDE: Menu Hub + Overhauled Logo Node */}
           <div className="flex items-center shrink-0">
             <button
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open menu"
-              className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0 hover:border-primary/30 z-10"
+              className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0 hover:border-primary/30"
             >
               <Menu className="w-5 h-5 md:w-6 md:h-6" />
             </button>
 
-            {/* BRANDING: Maximized to 72px (height-18 equivalent) with minimal left offset */}
+            {/* BRANDING: 40px desktop / 32px mobile / 16px (ml-4) menu spacing */}
             <Logo
               variant="light"
-              className="ml-1 flex-shrink-0"
-              imgClassName="h-[62px] md:h-[72px]"
+              className="ml-4 flex-shrink-0"
+              imgClassName="h-[32px] md:h-[40px]"
             />
           </div>
 

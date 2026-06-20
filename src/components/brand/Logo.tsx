@@ -17,13 +17,11 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview Master Cracklix Branding Node v3.0.
- * Strictly implements the official brand guidelines:
+ * @fileOverview Master Cracklix Branding Node v4.0.
+ * Strictly implements the official brand system overhaul:
  * - variant="light": Uses cracklix-logo-dark.png (Dark text for Light backgrounds)
  * - variant="dark": Uses cracklix-logo-light.png (Light text for Dark backgrounds)
  * - variant="icon": Uses cracklix-icon.png
- * 
- * MAXIMIZED: Desktop height 72px / Mobile height 62px.
  */
 export default function Logo({
   className = "",
@@ -50,7 +48,6 @@ export default function Logo({
       "relative shrink-0 flex items-center transition-all duration-300",
       align === 'center' && "mx-auto justify-center",
       align === 'right' && "justify-end",
-      isIcon ? "h-10 w-10 md:h-12 md:w-12" : "w-auto",
       className
     )}>
       <Image
@@ -60,8 +57,7 @@ export default function Logo({
         height={isIcon ? 64 : 150}
         priority={priority}
         className={cn(
-          "object-contain w-auto transition-all",
-          !isIcon && (imgClassName || "h-[62px] md:h-[72px]"),
+          "object-contain w-auto transition-all flex-shrink-0",
           imgClassName
         )}
       />

@@ -17,10 +17,20 @@ import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Elite Exam Categories Hub v15.0.
- * TYPOGRAPHY: Switched to Title Case for headings and counts.
- * ACRONYMS: PSSSB, PPSC, etc. remain uppercase.
+ * @fileOverview Elite Exam Categories Hub v16.0 (Typography Overhaul).
+ * TYPOGRAPHY: Responsive heading scale. Title Case normalization.
  */
+
+const ACRONYMS = ["PSSSB", "PPSC", "PUNJAB POLICE", "PSPCL", "PSTCL", "PSTET", "CTET", "MCQ", "MCQS", "PYQ", "PYQS", "GK", "CA"];
+
+function toTitleCase(str: string) {
+  if (!str) return "";
+  return str.split(' ').map(word => {
+    const cleanWord = word.replace(/[^a-zA-Z]/g, '').toUpperCase();
+    if (ACRONYMS.includes(cleanWord)) return cleanWord;
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
 
 const CATEGORY_META = [
   {

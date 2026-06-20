@@ -21,9 +21,8 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Refined Dynamic Hero Hub v34.0.
- * UPDATED: Trust Badge is now dynamic, reflecting the real-time student count.
- * HARDENED: Maintained centered stack hierarchy with student illustration above features.
+ * @fileOverview Refined Dynamic Hero Hub v35.0 (Typography Overhaul).
+ * TYPOGRAPHY: Responsive scale text-3xl to text-6xl. Title Case aesthetic.
  */
 
 export default function Hero() {
@@ -99,19 +98,19 @@ export default function Hero() {
               className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-white border border-slate-100 shadow-xl"
             >
               <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-              <span className="text-[10px] md:text-[13px] font-black text-[#04102B] tracking-wider">
-                {statsLoading ? "10,000+" : `${dynamicUserCount}+`} ASPIRANTS TRUST CRACKLIX
+              <span className="text-[10px] md:text-[13px] font-black text-[#04102B] tracking-wider uppercase">
+                {statsLoading ? "10,000+" : `${dynamicUserCount}+`} Aspirants Trust Cracklix
               </span>
             </motion.div>
 
             <div className="space-y-4">
-              <h1 className="text-4xl md:text-7xl font-black text-[#0F172A] leading-tight tracking-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#0F172A] leading-[1.05]">
                 Crack Punjab <br/>
                 <span className="text-[#2563EB]">Government Exams</span> <br/>
                 With Confidence
               </h1>
 
-              <p className="text-base md:text-xl text-[#64748B] max-w-2xl mx-auto font-medium leading-relaxed">
+              <p className="text-sm md:text-xl text-[#64748B] max-w-2xl mx-auto font-medium leading-relaxed">
                 Practice bilingual mock tests and prepare for Punjab Government Exams with confidence. 
                 Access exam-focused practice, previous papers and performance tracking in one place.
               </p>
@@ -145,7 +144,7 @@ export default function Hero() {
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto pt-4 justify-center">
               <Button
                 asChild
-                className="h-14 md:h-20 px-12 bg-[#2563EB] hover:bg-blue-700 text-white font-black uppercase text-[11px] md:text-sm tracking-[0.2em] rounded-full shadow-xl transition-all active:scale-95 border-none group/btn"
+                className="h-14 md:h-16 px-10 bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-sm tracking-tight rounded-full shadow-xl transition-all active:scale-95 border-none group/btn"
               >
                 <Link href="/mocks" className="flex items-center justify-center gap-3">
                   <span>Start Free Mock Test</span>
@@ -156,7 +155,7 @@ export default function Hero() {
               <Button
                 asChild
                 variant="outline"
-                className="h-14 md:h-20 px-12 border-2 border-slate-200 bg-white text-[#0F172A] font-black uppercase text-[11px] md:text-sm tracking-[0.2em] rounded-full shadow-sm hover:bg-slate-50 transition-all active:scale-95 group/btn2"
+                className="h-14 md:h-16 px-10 border-2 border-slate-200 bg-white text-[#0F172A] font-bold text-sm tracking-tight rounded-full shadow-sm hover:bg-slate-50 transition-all active:scale-95 group/btn2"
               >
                 <Link href="/exams" className="flex items-center justify-center gap-3">
                   <span>Browse Exams</span>

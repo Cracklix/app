@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useEffect } from "react"
+import { useMemo, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
@@ -15,8 +15,20 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Exam List Landing v7.0 (Restored Punjab Icon).
+ * @fileOverview Institutional Exam List Landing v8.0 (Typography Overhaul).
+ * TYPOGRAPHY: Responsive heading scale text-3xl to text-6xl. Title Case normalization.
  */
+
+const ACRONYMS = ["PSSSB", "PPSC", "PUNJAB POLICE", "PSPCL", "PSTCL", "PSTET", "CTET", "MCQ", "MCQS", "PYQ", "PYQS", "GK", "CA"];
+
+function toTitleCase(str: string) {
+  if (!str) return "";
+  return str.split(' ').map(word => {
+    const cleanWord = word.replace(/[^a-zA-Z]/g, '').toUpperCase();
+    if (ACRONYMS.includes(cleanWord)) return cleanWord;
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
 
 const CATEGORY_ICONS: Record<string, any> = {
   "punjab-govt": <img src="https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg" className="h-full w-full object-contain p-2" />,
@@ -61,10 +73,10 @@ export default function ExamsEntryPage() {
              <div className="h-10 w-10 md:h-12 md:w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
                 <Landmark className="h-5 w-5 md:h-6 md:w-6" />
              </div>
-             <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-slate-500">Official Exam List</span>
+             <span className="text-[10px] md:text-xs font-bold text-slate-500 tracking-tight">Official Exam List</span>
           </div>
-          <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-[#0F172A] uppercase tracking-tighter leading-[0.95] break-words antialiased">
-            Exam <br/> <span className="text-primary">List</span>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#0F172A] leading-[1.05] break-words">
+            Choose Your <span className="text-primary">Exam Category</span>
           </h1>
           <p className="text-slate-500 font-medium text-sm md:text-lg lg:text-2xl max-w-3xl leading-relaxed">
             Select a recruitment vertical to browse official centers and specific exam preparation nodes.
@@ -91,8 +103,8 @@ export default function ExamsEntryPage() {
                            </div>
                            
                            <div className="space-y-3 md:space-y-5 flex-1">
-                              <h3 className="font-headline text-2xl md:text-3xl lg:text-4xl font-black text-[#0F172A] uppercase leading-[0.95] group-hover:text-primary transition-colors">
-                                 {cat.title}
+                              <h3 className="text-xl md:text-2xl font-bold text-[#0F172A] leading-tight group-hover:text-primary transition-colors">
+                                 {toTitleCase(cat.title)}
                               </h3>
                               <p className="text-xs md:text-base lg:text-lg font-medium text-slate-400 leading-relaxed">
                                  {cat.description}
@@ -100,8 +112,8 @@ export default function ExamsEntryPage() {
                            </div>
 
                            <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-slate-50">
-                              <Button variant="ghost" className="w-full h-12 md:h-14 rounded-xl md:rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-black uppercase text-[8px] md:text-[9px] tracking-[0.2em] gap-3 border-none">
-                                 OPEN EXAM CENTER <ChevronRight className="h-4 w-4" />
+                              <Button variant="ghost" className="w-full h-12 md:h-14 rounded-xl md:rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-bold text-sm tracking-tight gap-3 border-none">
+                                 Open Exam Center <ChevronRight className="h-4 w-4" />
                               </Button>
                            </div>
                         </CardContent>

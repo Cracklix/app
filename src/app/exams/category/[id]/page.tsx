@@ -15,15 +15,26 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Explorer v10.0 (Restored Punjab Icon).
+ * @fileOverview Institutional Category Explorer v11.0 (Typography Overhaul).
  */
 
+const ACRONYMS = ["PSSSB", "PPSC", "PUNJAB POLICE", "PSPCL", "PSTCL", "PSTET", "CTET", "MCQ", "MCQS", "PYQ", "PYQS", "GK", "CA"];
+
+function toTitleCase(str: string) {
+  if (!str) return "";
+  return str.split(' ').map(word => {
+    const cleanWord = word.replace(/[^a-zA-Z]/g, '').toUpperCase();
+    if (ACRONYMS.includes(cleanWord)) return cleanWord;
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
+
 const CATEGORY_META: Record<string, any> = {
-  "punjab-govt": { title: "Punjab General Exam", icon: <img src="https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg" className="h-full w-full object-contain" /> },
-  "punjab-teaching": { title: "Punjab Teaching Exam", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10" className="h-full w-full object-contain" /> },
-  "punjab-technical": { title: "Punjab Technical Exam", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo0ZK9JI5KMfg9RoNdIwcsNlpx5IcPBWuKZw&s" className="h-full w-full object-contain" /> },
-  "banking": { title: "Punjab Banking Corporation Exam", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7McWqZqOgKy-BakccvR02WQdEQFrwuvmHBG5rYJzuEg&s=10" className="h-full w-full object-contain" /> },
-  "central-govt": { title: "Central Govt", icon: <img src="https://alchetron.com/cdn/government-of-india-973b74d1-e25f-41f2-ba2b-51595702248-resize-750.jpeg" className="h-full w-full object-contain" /> }
+  "punjab-govt": { title: "Punjab General Exams", icon: <img src="https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg" className="h-full w-full object-contain" /> },
+  "punjab-teaching": { title: "Punjab Teaching Exams", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10" className="h-full w-full object-contain" /> },
+  "punjab-technical": { title: "Punjab Technical Exams", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo0ZK9JI5KMfg9RoNdIwcsNlpx5IcPBWuKZw&s" className="h-full w-full object-contain" /> },
+  "banking": { title: "Punjab Banking Exams", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7McWqZqOgKy-BakccvR02WQdEQFrwuvmHBG5rYJzuEg&s=10" className="h-full w-full object-contain" /> },
+  "central-govt": { title: "Central Govt Exams", icon: <img src="https://alchetron.com/cdn/government-of-india-973b74d1-e25f-41f2-ba2b-51595702248-resize-750.jpeg" className="h-full w-full object-contain" /> }
 };
 
 export default function CategoryHubsPage() {
@@ -68,11 +79,11 @@ export default function CategoryHubsPage() {
                         {meta.icon}
                      </div>
                   </div>
-                  <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-slate-500">Registry Nodes</span>
+                  <span className="text-[10px] md:text-xs font-bold text-slate-500 tracking-tight">Registry Nodes</span>
                </div>
             </div>
-            <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-[0.95] break-words antialiased">
-               {meta.title} <br/> <span className="text-primary">EXAMS</span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#0F172A] tracking-tight leading-[1.05] break-words antialiased">
+               {toTitleCase(meta.title)} <br/> <span className="text-primary">Exams</span>
             </h1>
          </div>
       </section>
@@ -108,21 +119,21 @@ export default function CategoryHubsPage() {
                                    </div>
                                 )}
                              </div>
-                             <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-slate-100 text-slate-400">OFFICIAL CENTER</Badge>
+                             <Badge variant="outline" className="text-[8px] font-bold text-slate-400 tracking-tight border-slate-100">OFFICIAL CENTER</Badge>
                           </div>
                           
                           <div className="space-y-2 flex-1 min-w-0">
-                             <h3 className="text-xl md:text-2xl font-black text-[#0F172A] uppercase tracking-tight leading-none group-hover:text-primary transition-colors truncate">{hub.abbreviation} Exams</h3>
-                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest line-clamp-2 min-h-[25px]">{hub.name}</p>
+                             <h3 className="text-lg md:text-xl font-bold text-[#0F172A] tracking-tight group-hover:text-primary transition-colors truncate">{hub.abbreviation} Exams</h3>
+                             <p className="text-[10px] md:text-sm font-semibold text-slate-400 leading-snug line-clamp-2 min-h-[25px]">{toTitleCase(hub.name)}</p>
                           </div>
 
                           <div className="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-slate-50 flex items-center justify-between">
                              <div className="space-y-0.5">
-                                <p className="text-[11px] font-black text-[#0F172A] uppercase leading-none">{examCount}</p>
-                                <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">EXAMS LISTED</p>
+                                <p className="text-sm font-bold text-[#0F172A]">{examCount}</p>
+                                <p className="text-[8px] font-bold text-slate-400 tracking-tight uppercase">EXAMS LISTED</p>
                              </div>
-                             <Button variant="ghost" className="h-9 md:h-10 px-4 md:px-6 rounded-xl bg-slate-900 text-white flex items-center gap-2 font-black uppercase text-[8px] tracking-widest group-hover:bg-primary transition-all border-none">
-                                VIEW <ChevronRight className="h-3 w-3 md:h-4 md:w-4" />
+                             <Button variant="ghost" className="h-9 md:h-10 px-4 md:px-6 rounded-xl bg-slate-900 text-white flex items-center gap-2 font-bold text-xs tracking-tight group-hover:bg-primary transition-all border-none">
+                                View <ChevronRight className="h-3 w-3 md:h-4 md:w-4" />
                              </Button>
                           </div>
                        </Card>
