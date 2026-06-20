@@ -15,7 +15,7 @@ interface AdPlacementProps {
 }
 
 /**
- * @fileOverview Institutional Ad-Node v1.6 (Hardened).
+ * @fileOverview Institutional Ad-Node v1.7 (Hardened).
  * FIXED: Explicit query casting to prevent type resolution failures.
  */
 
@@ -31,13 +31,13 @@ export default function AdPlacement({ placement, className, examId }: AdPlacemen
 
   const isAdFree = useMemo(() => {
     if (!profile || profile.status === 'Free') return false;
-    const activePass = passes?.find(p => p.id === profile.status);
+    const activePass = passes?.find((p: any) => p.id === profile.status);
     return activePass?.adFree === true;
   }, [profile, passes]);
 
   const adsQuery = useMemo(() => {
     if (!db || isAdFree || isSafetyZone) return null;
-    return query(collection(db, 'ads'), where('status', '==', 'ACTIVE')) as unknown as Query<Advertisement>;
+    return query(collection(db, 'ads'), where('status', '==', 'ACTIVE')) as Query<Advertisement>;
   }, [db, isAdFree, isSafetyZone]);
 
   const { data: ads, loading } = useCollection<Advertisement>(adsQuery);

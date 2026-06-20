@@ -19,7 +19,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import StudentAvatar from "@/components/brand/StudentAvatar";
@@ -35,14 +34,13 @@ import { cn } from "@/lib/utils";
 import Logo from "@/components/brand/Logo";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Header v106.0.
+ * @fileOverview Institutional Header v107.0.
  * BRAND SYSTEM: Maximized Logo (72px) shifted to the far left.
- * PROFILE HUB: Elite Dropdown Spec - 320px wide, 28px radius.
+ * PROFILE HUB: Elite Dropdown Spec - 320px wide, 28px radius, Vertical Stack.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -140,52 +138,59 @@ export default function Navbar() {
                   sideOffset={12}
                   className="w-[92vw] max-w-[340px] sm:w-[320px] rounded-[28px] p-6 bg-white border border-[#EEF2F7] shadow-[0_12px_30px_rgba(15,23,42,0.08)] z-[2001]"
                 >
-                  <DropdownMenuItem asChild className="rounded-2xl p-0 focus:bg-transparent cursor-default border-none outline-none">
-                    <div className="w-full space-y-6">
-                       <Link href="/profile" className="flex items-center gap-5 group cursor-pointer transition-all">
-                          <div className="h-16 w-16 rounded-2xl bg-[#EEF4FF] flex items-center justify-center text-[#2563EB] shrink-0 shadow-sm border border-blue-50 group-hover:scale-105 transition-transform">
-                             <User className="h-8 w-8" />
-                          </div>
-                          <div className="min-w-0 flex-1 text-left">
-                            <h3 className="text-xl font-[800] text-[#0F172A] tracking-tight leading-tight truncate">
-                              {profile?.name || "Aspirant"}
-                            </h3>
-                            <p className="text-[13px] font-[700] text-[#94A3B8] uppercase tracking-[0.15em] mt-1">View Profile</p>
-                          </div>
-                       </Link>
+                  <div className="flex flex-col items-center text-center space-y-6">
+                    {/* Avatar Spec: 64px, Blue Theme */}
+                    <div className="h-16 w-16 rounded-2xl bg-[#EEF4FF] flex items-center justify-center text-[#2563EB] shadow-sm border border-blue-50">
+                       <User className="h-8 w-8" />
+                    </div>
 
-                       <div className="p-4 bg-[#DBEAFE]/40 rounded-2xl border border-blue-50/50 flex flex-col gap-1 text-left">
-                          <p className="text-[10px] font-black text-[#2563EB] uppercase tracking-widest leading-none">
+                    {/* Identity spec: 24px/800 */}
+                    <div className="space-y-1">
+                      <h3 className="text-xl md:text-2xl font-[800] text-[#0F172A] tracking-tight leading-tight truncate w-full px-2">
+                        {profile?.name || "Aspirant"}
+                      </h3>
+                      <Link 
+                        href="/profile" 
+                        className="text-[13px] font-[700] text-[#94A3B8] uppercase tracking-[0.15em] hover:text-primary transition-colors flex items-center justify-center gap-1"
+                      >
+                        View Profile <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    {/* Elite Pass Badge Spec */}
+                    <div className="w-full p-4 bg-[#DBEAFE]/40 text-[#2563EB] rounded-2xl border border-blue-50/50 flex flex-col gap-1">
+                       <div className="flex items-center justify-between">
+                          <p className="text-[10px] font-black uppercase tracking-widest leading-none">
                             {profile?.status?.toUpperCase() || "FREE"} PASS
                           </p>
-                          <div className="flex items-center justify-between mt-1">
-                             <p className="text-[12px] font-bold text-slate-500">
-                               {passDaysLeft !== null ? `Expires in ${passDaysLeft} Days` : "Active Subscription"}
-                             </p>
-                             <Gem className="h-3.5 w-3.5 text-[#2563EB] animate-pulse" />
-                          </div>
+                          <Gem className="h-3.5 w-3.5 animate-pulse" />
                        </div>
-
-                       {isAdmin && (
-                         <Button asChild className="w-full h-12 rounded-xl text-sm font-black bg-primary hover:bg-blue-700 text-white shadow-lg border-none transition-all active:scale-95">
-                            <Link href="/admin">
-                               <ShieldCheck className="h-5 w-5 mr-2" />
-                               Admin Control Hub
-                             </Link>
-                         </Button>
-                       )}
-
-                       <div className="pt-2">
-                          <Button
-                             onClick={handleLogout}
-                             className="w-full h-12 justify-between px-6 bg-[#FEF2F2] hover:bg-[#FEE2E2] text-[#EF4444] font-black text-sm rounded-[14px] transition-all active:scale-95 border-none shadow-none group"
-                          >
-                             <span>Log Out</span>
-                             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                          </Button>
-                       </div>
+                       <p className="text-[12px] font-bold text-slate-500 mt-1">
+                         {passDaysLeft !== null ? `${passDaysLeft} Days Remaining` : "Active Subscription"}
+                       </p>
                     </div>
-                  </DropdownMenuItem>
+
+                    {/* Admin Control Node */}
+                    {isAdmin && (
+                      <Button asChild className="w-full h-12 rounded-2xl text-sm font-black bg-[#0F172A] hover:bg-black text-white shadow-lg border-none transition-all active:scale-95">
+                         <Link href="/admin">
+                            <ShieldCheck className="h-5 w-5 mr-2 text-primary" />
+                            Admin Control Hub
+                          </Link>
+                      </Button>
+                    )}
+
+                    {/* Standardized Red Logout Node */}
+                    <div className="w-full pt-2">
+                       <Button
+                          onClick={handleLogout}
+                          className="w-full h-12 justify-between px-6 bg-[#FEF2F2] hover:bg-[#FEE2E2] text-[#EF4444] font-black text-sm rounded-[14px] transition-all active:scale-95 border-none shadow-none group"
+                       >
+                          <span>Log Out</span>
+                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                       </Button>
+                    </div>
+                  </div>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (

@@ -9,7 +9,7 @@ interface ExamCardProps {
 }
 
 /**
- * @fileOverview Institutional Exam Discovery Card v2.5 (Hardened).
+ * @fileOverview Institutional Exam Discovery Card v2.6 (Hardened).
  * FIXED: Aligned property names with strictly typed Exam interface.
  */
 

@@ -13,8 +13,8 @@ import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Elite Global Search Hub v3.6 (Hardened).
- * FIXED: Explicit React element casting for icon rendering.
+ * @fileOverview Elite Global Search Hub v3.7 (Hardened).
+ * FIXED: Explicit React element casting for icon rendering and UMD build fix.
  */
 
 export default function SearchPage() {
@@ -86,7 +86,7 @@ function SearchContent() {
                       className="w-full h-12 md:h-16 pl-14 pr-6 text-sm md:text-xl rounded-2xl border-none shadow-xl bg-white focus:ring-2 focus:ring-primary/20 text-[#0F172A] font-bold outline-none" 
                       placeholder="Search exams, tests, or notes..." 
                     />
-                    {isLoading && <Loader2 className="absolute right-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-100 animate-spin" />}
+                    {isLoading && <Loader2 className="absolute right-6 top-1/2 -translate-y-1/2 h-5 w-5 text-primary animate-spin" />}
                  </div>
               </div>
            </div>
