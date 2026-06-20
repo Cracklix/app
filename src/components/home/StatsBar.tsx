@@ -8,39 +8,35 @@ import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 /**
- * @fileOverview High-Fidelity Trust Stats Bar v1.0 (Restored).
+ * @fileOverview High-Fidelity Trust Stats Bar v1.1 (Restored Original Data).
  */
 
 export default function StatsBar() {
-  const db = useFirestore();
-  const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
-  const { data: stats, loading } = useDoc<any>(statsRef);
-
   const items = [
     { 
       label: "Questions", 
-      val: loading ? "..." : (Math.floor((stats?.totalQuestions || 50000) / 1000) + "K+"), 
+      val: "50,000+", 
       sub: "Verified MCQs",
       icon: <Zap className="h-6 w-6 text-white" />,
       color: "bg-blue-600"
     },
     { 
       label: "Mock Tests", 
-      val: loading ? "..." : (stats?.totalMocks || 500) + "+", 
+      val: "500+", 
       sub: "Latest Pattern",
       icon: <ClipboardList className="h-6 w-6 text-white" />,
       color: "bg-purple-600"
     },
     { 
       label: "Exams", 
-      val: loading ? "..." : (stats?.totalBoards || 50) + "+", 
+      val: "50+", 
       sub: "Authority Hubs",
       icon: <ShieldCheck className="h-6 w-6 text-white" />,
       color: "bg-emerald-600"
     },
     { 
       label: "Aspirants", 
-      val: loading ? "..." : (Math.floor((stats?.totalUsers || 15000) / 1000) + "K+"), 
+      val: "15,000+", 
       sub: "Trust Cracklix",
       icon: <Users className="h-6 w-6 text-white" />,
       color: "bg-orange-500"

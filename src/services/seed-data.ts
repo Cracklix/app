@@ -1,7 +1,7 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v74.0 (High Density Defaults).
+ * @fileOverview Institutional Punjab-Centric Seeding Node v75.0 (Restored Stats Truth).
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -198,12 +198,12 @@ export async function seedInitialData(db: Firestore) {
 
   await batch.commit();
 
-  // 7. FINAL STATS SYNC
+  // 7. FINAL STATS SYNC (RESTORED TO ORIGINAL HIGH DENSITY)
   await setDoc(doc(db, 'settings', 'stats'), {
      totalQuestions: 50000,
      totalMocks: 500,
      totalUsers: 15000,
-     totalBoards: 5,
+     totalBoards: 50,
      totalNotes: 100,
      totalPYQs: 200,
      averageAccuracy: 94,

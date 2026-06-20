@@ -22,8 +22,8 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Restored Hero Hub v12.0.
- * DATA: Restored original high-authority data strings.
+ * @fileOverview Official Restored Hero Hub v13.0.
+ * DATA: Restored original high-authority data strings (50,000+ Qs, 500+ Mocks).
  */
 
 export default function Hero() {
@@ -35,17 +35,8 @@ export default function Hero() {
     setMounted(true);
   }, []);
 
-  const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const settingsRef = useMemo(() => (db ? doc(db, "settings", "global") : null), [db]);
-
-  const { data: stats } = useDoc<any>(statsRef);
   const { data: settings } = useDoc<any>(settingsRef);
-
-  const formatNumber = (num: number | undefined) => {
-    if (num === undefined || num === null) return "0";
-    if (num >= 1000) return (num / 1000).toFixed(1) + "k";
-    return num.toString();
-  };
 
   const trustBadgeContent = useMemo(() => {
     const count = settings?.trustBadgeCount !== undefined && settings.trustBadgeCount > 0 ? settings.trustBadgeCount : 15000;
