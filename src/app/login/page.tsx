@@ -19,7 +19,8 @@ import {
   RefreshCw, 
   ClipboardList,
   Users,
-  FileText
+  FileText,
+  ChevronLeft
 } from "lucide-react"
 import { useAuth, useFirestore, useUser, useDoc } from "@/firebase"
 import { 
@@ -35,12 +36,13 @@ import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { motion } from "framer-motion"
 import { Checkbox } from "@/components/ui/checkbox"
+import Link from "next/link"
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Cracklix Premium Login Hub v70.0.
- * UPDATED: Dynamic Live Stats integration for branding panel.
+ * @fileOverview Cracklix Premium Login Hub v71.0.
+ * FIXED: Mobile bottom cut-off issue resolved by adding safe area padding.
  */
 
 const formatCompact = (num: number) => {
@@ -219,15 +221,29 @@ function LoginContent() {
 
       {/* RIGHT PANEL: AUTH (TOP ALIGNED) */}
       <div className="flex-1 flex flex-col items-center justify-start p-6 md:p-12 lg:p-20 relative bg-slate-50 lg:bg-white overflow-y-auto">
-        <div className="lg:hidden mb-12">
-          <Logo variant="light" align="center" imgClassName="h-[80px]" />
+        
+        {/* MOBILE HEADER EXIT NODE */}
+        <div className="w-full flex items-center justify-between mb-8 lg:hidden">
+           <Link href="/" className="flex items-center gap-2 text-slate-400 font-black uppercase text-[10px] tracking-widest hover:text-primary transition-colors">
+              <ChevronLeft className="h-4 w-4" /> Home
+           </Link>
+           <Logo variant="light" align="center" imgClassName="h-[64px]" />
+           <div className="w-10" /> {/* Spacer */}
         </div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-[500px] pt-12 lg:pt-20">
+        <motion.div 
+           initial={{ opacity: 0, scale: 0.95 }} 
+           animate={{ opacity: 1, scale: 1 }} 
+           className="w-full max-w-[500px] pt-4 lg:pt-20 pb-32" // Added pb-32 for mobile safe area
+        >
           <Card className="border-none shadow-5xl lg:shadow-none bg-white/92 backdrop-blur-[20px] rounded-[32px] p-8 md:p-12 space-y-8">
             <div className="space-y-1.5 text-center lg:text-left">
-               <h2 className="text-3xl md:text-4xl font-[900] tracking-tight text-[#0F172A] leading-none uppercase">Welcome Back</h2>
-               <p className="text-slate-400 font-bold text-[11px] uppercase tracking-[0.2em] mt-2">Access your preparation hub</p>
+               <h2 className="text-3xl md:text-4xl font-[900] tracking-tight text-[#0F172A] leading-none uppercase">
+                 {mode === 'login' ? 'Welcome Back' : 'Create Account'}
+               </h2>
+               <p className="text-slate-400 font-bold text-[11px] uppercase tracking-[0.2em] mt-2">
+                 {mode === 'login' ? 'Access your preparation hub' : 'Join the elite preparation network'}
+               </p>
             </div>
 
             <form onSubmit={handleEmailAuth} className="space-y-6">
@@ -258,6 +274,17 @@ function LoginContent() {
                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">{showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}</button>
                   </div>
                 </div>
+
+                {mode === 'register' && (
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Confirm Password</Label>
+                    <div className="relative group">
+                      <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+                      <Input type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="h-14 rounded-xl bg-slate-50 border-none text-[#0F172A] pl-14 shadow-inner" placeholder="Repeat Key" />
+                    </div>
+                  </div>
+                )}
+
                 {mode === 'login' && (
                   <div className="flex items-center justify-between px-1">
                     <div className="flex items-center space-x-2">
@@ -287,7 +314,13 @@ function LoginContent() {
             <div className="text-center pt-6 border-t border-slate-50">
                <p className="text-[12px] font-bold text-slate-400">
                 {mode === 'login' ? "Don't have an account?" : "Already registered?"}
-                <button onClick={() => setMode(mode === 'login' ? 'register' : 'login')} className="text-primary font-black uppercase tracking-widest ml-2">
+                <button 
+                  onClick={() => {
+                    setMode(mode === 'login' ? 'register' : 'login');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }} 
+                  className="text-primary font-[900] uppercase tracking-widest ml-2 hover:underline"
+                >
                   {mode === 'login' ? 'Create Account' : 'Login Hub'}
                 </button>
                </p>
