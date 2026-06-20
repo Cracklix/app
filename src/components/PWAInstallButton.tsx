@@ -13,8 +13,8 @@ interface PWAInstallButtonProps {
 }
 
 /**
- * @fileOverview Hardened PWA Install Trigger v13.0.
- * LOGIC: Synchronized with PWAManager. Captures direct beforeinstallprompt and custom sync event.
+ * @fileOverview Hardened PWA Install Trigger v14.0.
+ * Listens to global window.deferredPrompt and provides fallbacks for iOS.
  */
 export default function PWAInstallButton({ 
   className, 
@@ -36,7 +36,7 @@ export default function PWAInstallButton({
     const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(ios);
 
-    // Button should be visible if not installed AND (deferredPrompt exists OR it is iOS)
+    // Visible if not installed AND (deferredPrompt exists OR it is iOS)
     const hasPrompt = !!(window as any).deferredPrompt;
     setCanInstall(!isStandalone && (hasPrompt || ios));
   }, []);
@@ -44,28 +44,17 @@ export default function PWAInstallButton({
   useEffect(() => {
     setMounted(true);
 
-    const handlePrompt = (e: any) => {
-      // Prompt event captured at component level if manager missed it or mounted late
-      e.preventDefault();
-      (window as any).deferredPrompt = e;
-      updateState();
-    };
+    const handleCheck = () => updateState();
 
-    // Listen for both native and custom sync event from PWAManager
-    window.addEventListener('beforeinstallprompt', handlePrompt);
-    window.addEventListener('pwa-installable', updateState);
-    
-    window.addEventListener('appinstalled', () => {
-      setIsInstalled(true);
-      setCanInstall(false);
-    });
+    window.addEventListener('pwa-installable', handleCheck);
+    window.addEventListener('appinstalled', handleCheck);
     
     // Initial check
     updateState();
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handlePrompt);
-      window.removeEventListener('pwa-installable', updateState);
+      window.removeEventListener('pwa-installable', handleCheck);
+      window.removeEventListener('appinstalled', handleCheck);
     };
   }, [updateState]);
 
@@ -75,8 +64,8 @@ export default function PWAInstallButton({
     
     if (isIOS) {
        toast({
-         title: "📱 Add to Home Screen",
-         description: "Tap the 'Share' icon in Safari and select 'Add to Home Screen' to install Cracklix.",
+         title: "📱 Install Instructions",
+         description: "Tap the 'Share' icon in your Safari browser and select 'Add to Home Screen'.",
        });
        return;
     }
@@ -84,8 +73,9 @@ export default function PWAInstallButton({
     const prompt = (window as any).deferredPrompt;
     if (!prompt) {
       toast({
-        title: "PWA Hub Ready",
-        description: "Your browser hasn't triggered the install handshake yet. Try reloading or check your settings.",
+        variant: "destructive",
+        title: "Wait",
+        description: "Installation prompt not yet available. Try reloading or using Chrome.",
       });
       return;
     }
@@ -116,7 +106,7 @@ export default function PWAInstallButton({
       )}
     >
       {isIOS ? <Smartphone className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-      {showLabel && (isIOS ? "Install App" : "Install App")}
+      {showLabel && "Install App"}
       <Sparkles className="h-3 w-3 text-primary animate-pulse" />
     </Button>
   );
