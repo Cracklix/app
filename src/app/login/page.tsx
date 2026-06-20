@@ -25,8 +25,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Professional Login Hub v51.0 (Latest Login Wins Policy).
- * SECURITY: Generates a unique activeDeviceId and increments sessionVersion on every login.
+ * @fileOverview Institutional Login Hub v52.0 (Redesigned for Desktop).
+ * FIX: Vertical centering, typography scaling, and panel balance overhaul.
  */
 export default function LoginPage() {
   return (
@@ -68,10 +68,8 @@ function LoginContent() {
   const registerNewSession = async (userId: string) => {
     if (!db) return;
     const sessionId = crypto.randomUUID();
-    // Establish local authority
     localStorage.setItem('cracklix_session_id', sessionId);
     
-    // Update cloud authority and increment version to invalidate old tokens
     await updateDoc(doc(db, 'users', userId), {
       activeDeviceId: sessionId,
       sessionVersion: increment(1),
@@ -205,49 +203,56 @@ function LoginContent() {
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row text-[#0F172A] text-left overflow-hidden">
       
-      <div className="hidden lg:flex flex-1 bg-[#0B1528] text-white p-12 md:p-20 flex-col justify-between relative overflow-hidden">
+      {/* LEFT PANEL: AUTH PANEL BRANDING */}
+      <div className="hidden lg:flex flex-1 bg-[#0B1528] text-white p-12 md:p-20 flex-col justify-center relative overflow-hidden">
+        {/* Ambient Glow */}
         <div className="absolute inset-0 bg-primary/5 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2" />
-        <div className="relative z-10 space-y-12">
-           <Logo variant="dark" imgClassName="h-[120px]" />
-           <div className="space-y-6">
-              <h1 className="text-3xl sm:text-5xl md:text-6xl xl:text-7xl font-extrabold tracking-tight text-white leading-[1.05] break-words uppercase">
-                Crack Punjab <br/> 
-                <span className="text-primary">Mock Test Hub</span>
+        
+        <div className="relative z-10 space-y-16 max-w-xl">
+           <Logo variant="dark" imgClassName="h-[100px] md:h-[130px]" />
+           
+           <div className="space-y-8">
+              <h1 className="text-5xl md:text-7xl xl:text-8xl font-black tracking-tight text-white leading-[0.95] uppercase">
+                Crack <br/> 
+                <span className="text-primary">Punjab Exams</span>
               </h1>
-              <p className="text-sm md:text-xl text-slate-400 font-medium max-w-md leading-relaxed">
-                Prepare for Punjab Government Exams with high-quality mock tests.
+              <p className="text-base md:text-xl text-slate-400 font-medium leading-relaxed max-w-lg">
+                Access Punjab's smartest mock test registry. Practice with verified patterns and AI-driven insights to secure your success.
               </p>
            </div>
-           <div className="space-y-6 pt-10">
-              <BenefitItem text="500+ Practice Tests" />
-              <BenefitItem text="English & Punjabi Support" />
-              <BenefitItem text="Latest Pattern Registry" />
-              <BenefitItem text="Solutions with Logic" />
+
+           <div className="space-y-6 pt-4">
+              <BenefitItem text="500+ Practice Mock Series" />
+              <BenefitItem text="Official Previous Year Papers" />
+              <BenefitItem text="Latest Pattern Registry Nodes" />
            </div>
         </div>
-        <div className="relative z-10 flex items-center gap-4 text-slate-500">
+
+        {/* Floating Security Badge */}
+        <div className="absolute bottom-12 left-12 md:left-20 flex items-center gap-4 text-slate-500 opacity-60">
            <ShieldCheck className="h-6 w-6 text-primary" />
-           <p className="text-[10px] font-black uppercase tracking-[0.3em]">Secure Login Active</p>
+           <p className="text-[10px] font-black uppercase tracking-[0.4em]">Institutional Gateway Secured</p>
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 lg:p-24 relative overflow-y-auto custom-scrollbar">
-        <div className="w-full max-w-[640px] space-y-10">
+      {/* RIGHT PANEL: AUTH FORM HUB */}
+      <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 lg:p-20 relative overflow-y-auto bg-white custom-scrollbar">
+        <div className="w-full max-w-[480px] space-y-12">
           
           <div className="lg:hidden text-center space-y-6 mb-10">
              <Logo variant="light" align="center" imgClassName="h-[80px]" />
           </div>
 
           <div className="space-y-4">
-             <h2 className="text-3xl md:text-5xl font-black tracking-tight text-[#0F172A] leading-[0.9] uppercase">
-                {mode === 'login' ? "Login Hub" : "Create Account"}
+             <h2 className="text-4xl md:text-6xl font-black tracking-tight text-[#0F172A] leading-none uppercase">
+                {mode === 'login' ? "Welcome Back" : "Register"}
              </h2>
-             <p className="text-slate-500 font-bold text-[12px] md:text-[14px] uppercase tracking-widest leading-none">
-                {mode === 'login' ? "Access your preparation hub" : "Register to start practicing"}
+             <p className="text-slate-400 font-bold text-[12px] md:text-[14px] uppercase tracking-[0.25em] leading-none">
+                {mode === 'login' ? "Access your preparation hub" : "Join the elite merit list"}
              </p>
           </div>
 
-          <form onSubmit={handleEmailAuth} className="space-y-6">
+          <form onSubmit={handleEmailAuth} className="space-y-8">
             {mode === 'register' && (
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Full Name</Label>
@@ -299,7 +304,7 @@ function LoginContent() {
               </div>
               {mode === 'register' && (
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Confirm Password</Label>
+                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Repeat Key</Label>
                   <div className="relative">
                     <Input 
                       type={showConfirmPassword ? "text" : "password"} 
@@ -325,13 +330,13 @@ function LoginContent() {
 
             <div className="pt-4 flex flex-col gap-6">
               <Button type="submit" className="w-full h-16 md:h-20 bg-primary hover:bg-blue-700 text-white font-black text-xs md:text-sm uppercase tracking-[0.3em] rounded-[2rem] shadow-4xl shadow-primary/20 border-none transition-all active:scale-95" disabled={isActuallyLoading}>
-                {isActuallyLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (mode === 'login' ? "Login" : "Create Account")}
+                {isActuallyLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : (mode === 'login' ? "CONTINUE TO HUB" : "CREATE MY ACCOUNT")}
               </Button>
 
               <div className="flex items-center gap-4 py-2"><div className="h-px flex-1 bg-slate-100" /><span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">OR</span><div className="h-px flex-1 bg-slate-100" /></div>
 
-              <Button variant="outline" className="w-full h-16 border-2 border-slate-100 bg-white text-[#0F172A] gap-4 rounded-2xl font-black text-xs md:text-sm hover:bg-slate-50 uppercase tracking-widest shadow-sm" onClick={handleGoogleSignIn} disabled={isActuallyLoading}>
-                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="h-5 w-5" alt="G" /> Continue with Google
+              <Button variant="outline" className="w-full h-16 border-2 border-slate-100 bg-white text-[#0F172A] gap-4 rounded-2xl font-black text-xs md:text-sm hover:bg-slate-50 uppercase tracking-widest shadow-sm transition-all" onClick={handleGoogleSignIn} disabled={isActuallyLoading}>
+                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="h-5 w-5" alt="G" /> Google One-Tap
               </Button>
             </div>
           </form>
@@ -352,6 +357,7 @@ function LoginContent() {
         </div>
       </div>
 
+      {/* Reset Dialog */}
       <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
         <DialogContent className="bg-white rounded-[2rem] md:rounded-[3rem] max-w-[400px] p-10 shadow-5xl text-left border-none">
           <DialogHeader className="text-center space-y-4">
@@ -386,11 +392,11 @@ function LoginContent() {
 
 function BenefitItem({ text }: { text: string }) {
    return (
-      <div className="flex items-center gap-4 text-slate-300">
-         <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/20">
-            <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+      <div className="flex items-center gap-4 text-slate-300 group">
+         <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/20 transition-colors group-hover:bg-primary/40">
+            <CheckCircle2 className="h-4 w-4 text-primary" />
          </div>
-         <span className="text-sm font-black uppercase tracking-widest">{text}</span>
+         <span className="text-sm md:text-base font-black uppercase tracking-widest">{text}</span>
       </div>
    )
 }
