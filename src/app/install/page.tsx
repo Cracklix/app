@@ -27,8 +27,8 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview High-Fidelity PWA Install Hub v4.1.
- * FIXED: Reliable standalone detection to prevent false positives for "Already Installed".
+ * @fileOverview High-Fidelity PWA Install Hub v4.2.
+ * FIXED: Reliable standalone detection to prevent false positives.
  */
 
 type DeviceType = "android" | "ios" | "desktop" | "unknown";
@@ -193,12 +193,6 @@ export default function InstallPage() {
                              >
                                 <Download className="h-4 w-4 md:h-6 md:w-6" /> {isInstallable ? 'Install App Now' : 'Manual Install'}
                              </Button>
-                             {!isInstallable && !isIos && (
-                                <div className="p-3 bg-white/5 border border-white/10 rounded-xl flex items-center gap-2">
-                                   <Info className="h-3 w-3 text-primary shrink-0" />
-                                   <p className="text-[9px] text-slate-300 font-bold uppercase tracking-tight">Direct prompt not available. Follow manual steps below.</p>
-                                </div>
-                             )}
                           </div>
                        </div>
                     )}

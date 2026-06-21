@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Hardened Institutional PWA Manager v16.0.
+ * @fileOverview Hardened Institutional PWA Manager v16.1.
  * FIXED: Removed restriction for /install page to allow prompt triggering.
+ * IMPROVED: Logic to differentiate browser sessions from true standalone mode.
  */
 export default function PWAManager() {
   const pathname = usePathname();

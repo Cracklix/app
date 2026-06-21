@@ -80,32 +80,10 @@
   input, textarea, select {
     font-size: 16px !important;
   }
-
-  /* SUPPRESS BROWSER NATIVE PASSWORD REVEAL & AUTOFILL ICONS */
-  input[type="password"]::-ms-reveal,
-  input[type="password"]::-ms-clear,
-  input[type="password"]::-webkit-contacts-auto-fill-button,
-  input[type="password"]::-webkit-credentials-auto-fill-button {
-      display: none !important;
-      visibility: hidden !important;
-      pointer-events: none !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .app-content-wrapper {
-    max-width: 100%;
-    margin: 0 auto;
-    width: 100%;
-  }
 }
 
 .pb-safe {
   padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
-}
-
-.pt-safe {
-  padding-top: env(safe-area-inset-top);
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -133,8 +111,4 @@
 
 .shadow-5xl {
   box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.2);
-}
-
-button, [role="button"] {
-  @apply touch-manipulation;
 }

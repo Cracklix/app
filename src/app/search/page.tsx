@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect, Suspense, cloneElement, isValidElement } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
-import { Search as SearchIcon, Zap, ChevronRight, Sparkles, ShieldCheck, FileText, LayoutGrid, Loader2 } from "lucide-react"
+import { Search as SearchIcon, Zap, ChevronRight, Sparkles, ShieldCheck, FileText, LayoutGrid, Loader2, GraduationCap } from "lucide-react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
@@ -11,10 +11,9 @@ import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection } from "firebase/firestore"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Search Center Hub v3.7 (Production Hardened).
+ * @fileOverview Search Center Hub v3.8 (Build Fixed).
  */
 
 export default function SearchPage() {
@@ -133,7 +132,7 @@ function SearchContent() {
                  </div>
                  <div className="grid grid-cols-1 gap-3">
                     {results.length > 0 ? results.map((res, i) => (
-                      <SearchResultItem key={i} boardId={res.boardId} title={res.title} category={res.type} href={res.href} icon={res.icon} />
+                      <SearchResultItem key={i} title={res.title} category={res.type} href={res.href} icon={res.icon} />
                     )) : !isLoading && (
                       <div className="text-center py-32 bg-white rounded-[3rem] border-2 border-dashed border-slate-100 shadow-inner">
                         <div className="space-y-4 opacity-20 flex flex-col items-center">
@@ -180,7 +179,7 @@ function SearchContent() {
   )
 }
 
-function SearchResultItem({ boardId, title, category, href, icon }: { boardId: string, title: string, category: string, href: string, icon: React.ReactNode }) {
+function SearchResultItem({ title, category, href, icon }: { title: string, category: string, href: string, icon: React.ReactNode }) {
    return (
       <Link href={href} className="block active:scale-[0.99] transition-all">
          <div className="bg-white p-5 md:p-8 rounded-[2rem] shadow-sm hover:shadow-2xl flex items-center justify-between group border border-slate-100 transition-all duration-500">
@@ -223,12 +222,4 @@ function SearchBadge({ label }: { label: string }) {
          {label}
       </Badge>
    )
-}
-
-function GraduationCap(props: any) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
-    </svg>
-  )
 }

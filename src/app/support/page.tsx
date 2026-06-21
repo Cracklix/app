@@ -33,8 +33,6 @@ import Link from "next/link"
  * @file Overview Official Institutional Support Hub v5.2.
  */
 
-const TELEGRAM_GROUP = "https://t.me/cracklixapp";
-
 export default function SupportPage() {
   const { user, profile } = useUser()
   const db = useFirestore()
