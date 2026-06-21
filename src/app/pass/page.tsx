@@ -16,8 +16,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Pass Center v17.0 (Free Pass Aware).
- * FIXED: Removed price > 0 filter to allow ₹0 Free Passes to be visible in the registry.
+ * @fileOverview Institutional Pass Center v18.0.
+ * NORMALIZED: Reduced header scale and pricing card padding.
  */
 
 export default function PassPage() {
@@ -73,9 +73,9 @@ export default function PassPage() {
   }, [profile]);
 
   if (userLoading || !user) return (
-    <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-6">
-       <Zap className="h-10 w-10 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Synchronizing Session...</p>
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
+       <Zap className="h-8 w-8 text-primary animate-pulse" />
+       <p className="text-[10px] font-black uppercase text-slate-300">Synchronizing Session...</p>
     </div>
   );
 
@@ -83,25 +83,25 @@ export default function PassPage() {
     <div className="min-h-screen bg-slate-50 font-body pb-safe text-left overflow-x-hidden">
       <Navbar />
       
-      <main className="container mx-auto px-4 py-12 md:py-24 max-w-7xl space-y-12 md:space-y-24">
+      <main className="container mx-auto px-4 py-10 md:py-16 max-w-7xl space-y-12 md:space-y-20">
         
         {/* MANAGEMENT CARD */}
         {mounted && profile?.passStatus && passStatus !== 'none' && (
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <Card className="max-w-4xl mx-auto border-none bg-white rounded-[3rem] p-8 md:p-12 shadow-5xl text-left overflow-hidden relative">
-                 <div className={cn("absolute top-0 left-0 w-2 h-full transition-colors duration-500", passStatus === 'active' ? 'bg-emerald-500' : 'bg-rose-500')} />
+              <Card className="max-w-4xl mx-auto border-none bg-white rounded-[2rem] p-6 md:p-10 shadow-5xl text-left overflow-hidden relative">
+                 <div className={cn("absolute top-0 left-0 w-1.5 h-full transition-colors duration-500", passStatus === 'active' ? 'bg-emerald-500' : 'bg-rose-500')} />
                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative z-10">
-                    <div className="space-y-6 flex-1 w-full">
+                    <div className="space-y-5 flex-1 w-full">
                        <div className="flex items-center gap-4">
-                          <div className={cn("h-14 w-14 md:h-16 md:w-16 rounded-2xl flex items-center justify-center shadow-inner shrink-0", passStatus === 'active' ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600")}>
-                             <Gem className="h-8 w-8" />
+                          <div className={cn("h-12 w-12 md:h-14 md:w-14 rounded-xl flex items-center justify-center shadow-inner shrink-0", passStatus === 'active' ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600")}>
+                             <Gem className="h-7 w-7" />
                           </div>
                           <div>
-                             <h2 className="text-2xl md:text-3xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-none">
+                             <h2 className="text-xl md:text-2xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-none">
                                {passStatus === 'active' ? 'Active Pass' : 'Pass Expired'}
                              </h2>
-                             <div className="flex items-center gap-3 mt-2">
-                                <Badge className={cn("border-none text-[8px] font-black px-3 py-1 rounded-lg uppercase", passStatus === 'active' ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600")}>
+                             <div className="flex items-center gap-3 mt-1.5">
+                                <Badge className={cn("border-none text-[8px] font-black px-2.5 py-0.5 rounded-lg uppercase", passStatus === 'active' ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600")}>
                                    Tier: {profile.pass?.plan || 'PREMIUM'}
                                 </Badge>
                              </div>
@@ -109,23 +109,23 @@ export default function PassPage() {
                        </div>
 
                        {passStatus === 'active' && timeLeft ? (
-                          <div className="grid grid-cols-4 gap-2 md:gap-4 max-w-md">
+                          <div className="grid grid-cols-4 gap-2 md:gap-3 max-w-sm">
                              <CountdownPill label="Days" val={timeLeft.d} />
                              <CountdownPill label="Hours" val={timeLeft.h} />
                              <CountdownPill label="Mins" val={timeLeft.m} />
                              <CountdownPill label="Secs" val={timeLeft.s} />
                           </div>
                        ) : passStatus === 'expired' ? (
-                          <div className="p-6 bg-rose-50 rounded-2xl border border-rose-100 flex items-center gap-4 text-rose-600">
-                             <AlertCircle className="h-6 w-6 shrink-0" />
-                             <p className="text-sm font-bold uppercase tracking-tight">Your elite access has expired. Renew to continue.</p>
+                          <div className="p-4 bg-rose-50 rounded-xl border border-rose-100 flex items-center gap-3 text-rose-600">
+                             <AlertCircle className="h-5 w-5 shrink-0" />
+                             <p className="text-[11px] font-bold uppercase tracking-tight">Your elite access has expired. Renew to continue.</p>
                           </div>
                        ) : null}
                     </div>
 
                     <div className="shrink-0 w-full md:w-auto">
-                       <Button asChild className="w-full h-16 px-10 bg-primary hover:bg-blue-700 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl border-none transition-all active:scale-95">
-                          <Link href="#plans">Explore Plans <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                       <Button asChild className="w-full h-14 px-8 bg-primary hover:bg-blue-700 text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl border-none transition-all active:scale-95">
+                          <Link href="#plans">Explore Plans <ArrowRight className="ml-2 h-3.5 w-3.5" /></Link>
                        </Button>
                     </div>
                  </div>
@@ -133,45 +133,46 @@ export default function PassPage() {
            </motion.div>
         )}
 
-        <div id="plans" className="text-center space-y-6 md:space-y-10">
+        <div id="plans" className="text-center space-y-6 md:space-y-8">
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[0.9] text-[#0F172A] break-words antialiased">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.1] text-[#0F172A] break-words antialiased">
                  Elite <span className="text-primary">Pass Plans</span>
               </h1>
-              <p className="text-sm md:text-2xl font-medium text-slate-500 max-w-3xl mx-auto mt-6 md:mt-8 leading-tight tracking-tight">
+              <p className="text-sm md:text-lg text-slate-600 font-medium max-w-2xl mx-auto mt-4 leading-relaxed">
                  Access verified mock tests, solved papers, and institutional analytics to secure your government job.
               </p>
            </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-           {passesLoading ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[400px] w-full rounded-[32px] bg-white" />) : passes.map((plan, idx) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+           {passesLoading ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-96 w-full rounded-3xl bg-white" />) : passes.map((plan, idx) => (
              <motion.div key={plan.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}>
-                <Card className="h-full border-none shadow-3xl bg-white rounded-[3rem] overflow-hidden flex flex-col transition-all duration-500 hover:translate-y-[-8px]">
-                   <CardHeader className="p-10 md:p-14 pb-6 text-center space-y-6">
-                      <div className="h-16 w-16 md:h-20 md:w-20 rounded-2xl bg-slate-50 text-primary flex items-center justify-center mx-auto shadow-inner"><Gem className="h-8 w-8 md:h-10 md:w-10 fill-current" /></div>
-                      <CardTitle className="font-black text-xl md:text-3xl uppercase tracking-tight text-[#0F172A]">{plan.name}</CardTitle>
-                      <div className="flex items-baseline justify-center gap-2">
+                <Card className="h-full border-none shadow-3xl bg-white rounded-[2rem] overflow-hidden flex flex-col transition-all duration-500 hover:translate-y-[-6px]">
+                   <CardHeader className="p-8 md:p-10 pb-4 text-center space-y-5">
+                      <div className="h-14 w-14 md:h-16 md:w-16 rounded-xl bg-slate-50 text-primary flex items-center justify-center mx-auto shadow-inner"><Gem className="h-7 w-7 fill-current" /></div>
+                      <CardTitle className="font-black text-lg md:text-2xl uppercase tracking-tight text-[#0F172A]">{plan.name}</CardTitle>
+                      <div className="flex items-baseline justify-center gap-1.5">
                         {plan.price > 0 ? (
                            <>
-                              <span className="text-2xl font-black text-primary">₹</span>
-                              <span className="text-5xl md:text-7xl font-black text-[#0F172A] tracking-tighter tabular-nums">{plan.price}</span>
+                              <span className="text-xl font-black text-primary">₹</span>
+                              <span className="text-4xl md:text-6xl font-black text-[#0F172A] tracking-tighter tabular-nums">{plan.price}</span>
                            </>
                         ) : (
-                           <span className="text-5xl md:text-7xl font-black text-emerald-500 tracking-tighter uppercase">FREE</span>
+                           <span className="text-4xl md:text-6xl font-black text-emerald-500 tracking-tighter uppercase">FREE</span>
                         )}
                       </div>
-                      <p className="text-[10px] font-black uppercase text-slate-400 tracking-[2px]">VALIDITY: {plan.durationDays} DAYS</p>
+                      <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">VALIDITY: {plan.durationDays} DAYS</p>
                    </CardHeader>
-                   <CardContent className="px-10 md:px-14 pb-10 flex-1">
-                      <ul className="space-y-4 md:space-y-5 border-t border-slate-50 pt-8">
+                   <CardContent className="px-8 md:px-10 pb-8 flex-1">
+                      <div className="h-px w-full bg-slate-50 mb-6" />
+                      <ul className="space-y-3.5">
                          {plan.features?.map((feat: string, i: number) => (
-                            <li key={i} className="flex items-start gap-4 text-left"><CheckCircle2 className="h-5 w-5 shrink-0 mt-0.5 text-emerald-500" /><span className="text-sm md:text-base font-bold text-slate-600 leading-snug">{feat}</span></li>
+                            <li key={i} className="flex items-start gap-3.5 text-left"><CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5 text-emerald-500" /><span className="text-xs md:text-sm font-bold text-slate-600 leading-snug">{feat}</span></li>
                          ))}
                       </ul>
                    </CardContent>
-                   <CardFooter className="p-10 md:p-14 pt-0">
-                      <Button asChild className="w-full h-16 md:h-20 rounded-2xl md:rounded-[2.5rem] bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[11px] tracking-[2px] shadow-4xl transition-all active:scale-95 border-none">
+                   <CardFooter className="p-8 md:p-10 pt-0">
+                      <Button asChild className="w-full h-14 md:h-16 rounded-xl md:rounded-2xl bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest shadow-4xl transition-all active:scale-95 border-none">
                          <Link href={`/checkout?plan=${plan.id}`}>
                             {plan.price > 0 ? 'UPGRADE NOW' : 'ACTIVATE FREE'} <ArrowRight className="ml-2 h-4 w-4" />
                          </Link>
@@ -189,9 +190,9 @@ export default function PassPage() {
 
 function CountdownPill({ label, val }: { label: string, val: number }) {
    return (
-      <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center flex-1 shadow-inner">
-         <p className="text-lg md:text-2xl font-black text-[#0F172A] tabular-nums leading-none">{val}</p>
-         <p className="text-[6px] md:text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1.5">{label}</p>
+      <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100 text-center flex-1 shadow-inner">
+         <p className="text-base md:text-xl font-black text-[#0F172A] tabular-nums leading-none">{val}</p>
+         <p className="text-[7px] font-black text-slate-400 uppercase tracking-tight mt-1">{label}</p>
       </div>
    )
 }

@@ -23,8 +23,8 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Official Live Hero Hub v19.0.
- * UPDATED: Stats grid UI matched to high-fidelity screenshot (Pill-shaped nodes).
+ * @fileOverview Official Live Hero Hub v20.0.
+ * NORMALIZED: Reduced heading scale and tightened vertical spacing.
  */
 
 const formatCompact = (num: number) => {
@@ -50,28 +50,28 @@ export default function Hero() {
   const liveStats = useMemo(() => [
     {
       id: "q",
-      icon: <Zap className="h-4 w-4 md:h-5 md:w-5 text-blue-600 fill-current" />,
+      icon: <Zap className="h-4 w-4 text-blue-600 fill-current" />,
       val: statsLoading ? "..." : `${formatCompact(stats?.totalQuestions)}+`,
       label: "QUESTIONS",
       bgColor: "bg-blue-50"
     },
     {
       id: "m",
-      icon: <ClipboardList className="h-4 w-4 md:h-5 md:w-5 text-indigo-600" />,
+      icon: <ClipboardList className="h-4 w-4 text-indigo-600" />,
       val: statsLoading ? "..." : `${formatCompact(stats?.totalMocks)}+`,
       label: "MOCK TESTS",
       bgColor: "bg-indigo-50"
     },
     {
       id: "e",
-      icon: <ShieldCheck className="h-4 w-4 md:h-5 md:w-5 text-emerald-600" />,
+      icon: <ShieldCheck className="h-4 w-4 text-emerald-600" />,
       val: statsLoading ? "..." : `${formatCompact(stats?.totalCategories)}+`,
       label: "CATEGORIES",
       bgColor: "bg-emerald-50"
     },
     {
       id: "u",
-      icon: <Users className="h-4 w-4 md:h-5 md:w-5 text-orange-500" />,
+      icon: <Users className="h-4 w-4 text-orange-500" />,
       val: statsLoading ? "..." : `${formatCompact(stats?.totalUsers)}+`,
       label: "ASPIRANTS",
       bgColor: "bg-orange-50"
@@ -81,25 +81,25 @@ export default function Hero() {
   if (!mounted) return null;
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-blue-50 py-8 md:py-16">
+    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-blue-50 py-10 md:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-8 items-center">
 
           {/* LEFT: Text & Identity Hub */}
-          <div className="text-left space-y-6">
+          <div className="text-left space-y-5">
             <motion.div 
                initial={{ opacity: 0, x: -20 }}
                animate={{ opacity: 1, x: 0 }}
-               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-100 shadow-sm group hover:border-primary/30 transition-all cursor-default"
+               className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-100 shadow-sm group hover:border-primary/30 transition-all cursor-default"
             >
-              <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500 animate-pulse" />
-              <span className="text-[12px] font-black text-slate-700 tracking-tight uppercase">
-                {statsLoading ? "..." : (stats?.totalUsers || 0).toLocaleString()} ASPIRANTS TRUSTING CRACKLIX
+              <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 animate-pulse" />
+              <span className="text-[10px] md:text-[11px] font-black text-slate-700 tracking-tight uppercase">
+                {statsLoading ? "..." : (stats?.totalUsers || 0).toLocaleString()} ASPIRANTS TRUST CRACKLIX
               </span>
             </motion.div>
 
             <div className="space-y-4">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.05]">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-[1.1]">
                 Crack Punjab <br/>
                 <span className="block text-blue-600">
                   Government Exams
@@ -112,11 +112,11 @@ export default function Hero() {
               </p>
 
               <div className="flex flex-wrap gap-2">
-                {["PSSSB", "Punjab Police", "PSTET", "PSPCL", "PPSC"].map(
+                {["PSSSB", "Police", "PSTET", "PSPCL", "PPSC"].map(
                   (item) => (
                     <span
                       key={item}
-                      className="px-3 py-1 rounded-full bg-white border text-[11px] font-bold text-slate-500 hover:bg-slate-50 transition-colors tracking-tight"
+                      className="px-2.5 py-0.5 rounded-full bg-white border text-[10px] font-bold text-slate-500 hover:bg-slate-50 transition-colors tracking-tight"
                     >
                       {item}
                     </span>
@@ -128,22 +128,22 @@ export default function Hero() {
 
           {/* RIGHT: Visual & Features Hub */}
           <div className="flex flex-col items-center">
-            {/* Hero Image */}
+            {/* Hero Image - Scaled Down */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="relative flex justify-center mb-6"
+              className="relative flex justify-center mb-4"
             >
               <img
                 src="/images/hero-student.png"
                 alt="Cracklix Student"
-                className="w-full max-w-[320px] md:max-w-md drop-shadow-2xl"
+                className="w-full max-w-[280px] md:max-w-xs drop-shadow-2xl"
               />
             </motion.div>
 
-            {/* Feature Matrix Cards */}
-            <div className="grid grid-cols-2 gap-3 w-full">
+            {/* Feature Matrix Cards - Tighter Padding */}
+            <div className="grid grid-cols-2 gap-2.5 w-full">
               <FeatureCard 
                 icon={ClipboardList} 
                 label="Mock Tests" 
@@ -175,35 +175,35 @@ export default function Hero() {
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-3 mt-8 w-full justify-center">
-              <Button asChild className="h-12 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-xs tracking-tight gap-2">
-                <Link href="/mocks">Start Free Mock Test <ChevronRight className="h-4 w-4" /></Link>
+            <div className="flex flex-wrap gap-3 mt-6 w-full justify-center">
+              <Button asChild className="h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-xs tracking-tight gap-2">
+                <Link href="/mocks">Start Free Mock Test <ChevronRight className="h-3.5 w-3.5" /></Link>
               </Button>
-              <Button asChild variant="outline" className="h-12 px-6 rounded-xl border-slate-200 bg-white font-bold text-slate-700 text-xs tracking-tight gap-2">
-                <Link href="/pass"><Gem className="h-4 w-4 text-primary" /> {profile?.passStatus === 'active' ? 'Manage Pass' : 'Get Elite Pass'}</Link>
+              <Button asChild variant="outline" className="h-11 px-5 rounded-xl border-slate-200 bg-white font-bold text-slate-700 text-xs tracking-tight gap-2">
+                <Link href="/pass"><Gem className="h-3.5 w-3.5 text-primary" /> {profile?.passStatus === 'active' ? 'Manage Pass' : 'Get Elite Pass'}</Link>
               </Button>
             </div>
           </div>
         </div>
 
-        {/* STATS GRID: Matched to User Screenshot */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-12 md:mt-16">
+        {/* STATS GRID: Normalized Scale */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10 md:mt-12">
           {liveStats.map((stat) => (
             <Card 
               key={stat.id} 
-              className="p-4 md:p-6 rounded-[2rem] md:rounded-[3rem] bg-white border border-slate-100 shadow-sm flex items-center gap-4 group hover:shadow-xl transition-all duration-500 cursor-default"
+              className="p-4 md:p-5 rounded-[2rem] bg-white border border-slate-100 shadow-sm flex items-center gap-4 group hover:shadow-lg transition-all duration-500 cursor-default"
             >
               <div className={cn(
-                "h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 shadow-inner",
+                "h-10 w-10 rounded-full flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 shadow-inner",
                 stat.bgColor
               )}>
                 {stat.icon}
               </div>
               <div className="text-left">
-                <p className="text-xl md:text-2xl font-black text-[#0F172A] leading-none tabular-nums tracking-tight">
+                <p className="text-lg md:text-xl font-black text-[#0F172A] leading-none tabular-nums tracking-tight">
                   {stat.val}
                 </p>
-                <p className="text-[7px] md:text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1.5 leading-none">
+                <p className="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1.5 leading-none">
                   {stat.label}
                 </p>
               </div>
@@ -218,12 +218,12 @@ export default function Hero() {
 function FeatureCard({ icon: Icon, label, sub, color, href }: any) {
   return (
     <Link href={href}>
-      <Card className="p-4 rounded-2xl border border-slate-100 bg-white hover:shadow-lg transition-all duration-300 h-full group">
-        <div className={cn("h-8 w-8 rounded-lg flex items-center justify-center mb-3 shadow-inner bg-slate-50 group-hover:scale-110 transition-transform")}>
-          <Icon className={cn("h-4 w-4", color)} />
+      <Card className="p-3.5 rounded-xl border border-slate-100 bg-white hover:shadow-md transition-all duration-300 h-full group">
+        <div className={cn("h-7 w-7 rounded-lg flex items-center justify-center mb-2.5 shadow-inner bg-slate-50 group-hover:scale-110 transition-transform")}>
+          <Icon className={cn("h-3.5 w-3.5", color)} />
         </div>
-        <p className="font-bold text-slate-900 text-xs leading-tight">{label}</p>
-        <p className="text-[8px] text-slate-400 mt-0.5 uppercase font-bold tracking-widest">{sub}</p>
+        <p className="font-bold text-slate-900 text-[11px] leading-tight">{label}</p>
+        <p className="text-[7px] text-slate-400 mt-0.5 uppercase font-bold tracking-widest">{sub}</p>
       </Card>
     </Link>
   )

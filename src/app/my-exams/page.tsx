@@ -37,8 +37,8 @@ import { usePWAInstall } from "@/hooks/use-pwa-install"
 import { getAuthorityIcon } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional My Hub Hub v9.1 (Logo Sizing Refined).
- * FIXED: Standardized pinned exam icons to 48px for balanced layout hierarchy.
+ * @fileOverview Institutional My Hub Hub v10.0.
+ * NORMALIZED: Reduced header and card scale for better content density.
  */
 
 export default function MyExamsPage() {
@@ -94,7 +94,6 @@ export default function MyExamsPage() {
 
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
-    // Fetch latest 50 and sort client-side for immediate consistency
     return query(collection(db, "results"), where("userId", "==", user.uid), limit(50))
   }, [db, user])
 
@@ -102,7 +101,7 @@ export default function MyExamsPage() {
 
   const recentAttempts = useMemo(() => {
     if (!rawResults || rawResults.length === 0) return []
-    return [...rawResults].sort((a: any, b: any) => {
+    return [...rawResults].sort((a, b) => {
        const timeA = new Date(a.timestamp || 0).getTime();
        const timeB = new Date(b.timestamp || 0).getTime();
        return timeB - timeA;
@@ -128,8 +127,10 @@ export default function MyExamsPage() {
       toast({ title: "Target Locked", description: `Your focus is now set to ${examName}.` });
     } catch (e) {
       toast({ variant: "destructive", title: "Update Failed" });
-    } finally { setSettingTargetId(null); }
+    } finally { anonymizeTargetId(null); }
   };
+
+  const anonymizeTargetId = (id: string | null) => setSettingTargetId(id);
 
   if (userLoading) return <div className="h-screen flex items-center justify-center bg-white"><Zap className="h-10 w-10 text-primary animate-pulse" /></div>
 
@@ -139,140 +140,139 @@ export default function MyExamsPage() {
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body pb-safe text-left">
       <Navbar />
       
-      <main className="container mx-auto px-4 py-8 md:py-16 max-w-7xl space-y-12 md:space-y-20">
+      <main className="container mx-auto px-4 py-8 md:py-12 max-w-7xl space-y-10 md:space-y-16">
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
-           <div className="lg:col-span-8 space-y-12">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 px-2">
-                 <div className="space-y-4">
-                    <h1 className="text-5xl md:text-8xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-none">MY <span className="text-primary">HUB</span></h1>
-                    <p className="text-sm md:text-2xl text-slate-400 font-medium max-w-xl">Your authoritative preparation registry and target exams.</p>
+           <div className="lg:col-span-8 space-y-8">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 px-1">
+                 <div className="space-y-2">
+                    <h1 className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tighter leading-none">MY <span className="text-primary">HUB</span></h1>
+                    <p className="text-sm md:text-base text-slate-600 font-medium max-w-xl">Your authoritative preparation registry.</p>
                  </div>
-                 <Button asChild className="h-16 px-10 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-[2rem] shadow-4xl gap-3 active:scale-95 transition-all border-none">
-                    <Link href="/exams"><Plus className="h-5 w-5 text-primary" /> Add Exams</Link>
+                 <Button asChild className="h-12 px-8 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-xl shadow-xl gap-3 transition-all border-none">
+                    <Link href="/exams"><Plus className="h-4 w-4 text-primary" /> Add Exams</Link>
                  </Button>
               </div>
 
-              <section className="space-y-8">
-                 <div className="flex items-center gap-3 px-3">
-                    <ShieldCheck className="h-5 w-5 text-primary" />
-                    <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500">Active Registry</h3>
+              <section className="space-y-6">
+                 <div className="flex items-center gap-2.5 px-1">
+                    <ShieldCheck className="h-4 w-4 text-primary" />
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Active Registry</h3>
                  </div>
                  
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-10">
-                    {examsLoading ? Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-[360px] w-full rounded-[3.5rem] bg-white" />) : 
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6">
+                    {examsLoading ? Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-[2rem] bg-white" />) : 
                     pinnedExams.length > 0 ? pinnedExams.map((exam: any) => {
                        const board = boards?.find((b: any) => b.id === exam.boardId || b.abbreviation === exam.boardId);
                        const logoUrl = exam.iconUrl || board?.iconUrl;
                        const isTarget = profile?.targetExam === exam.name;
                        return (
-                        <Card key={exam.id} className="border-none shadow-2xl hover:shadow-5xl transition-all duration-500 rounded-[3.5rem] bg-white group overflow-hidden h-[400px] flex flex-col border border-slate-100 relative p-8 md:p-12 text-center">
+                        <Card key={exam.id} className="border border-slate-100 shadow-xl hover:shadow-2xl transition-all duration-500 rounded-[1.5rem] md:rounded-[2rem] bg-white group overflow-hidden h-[340px] flex flex-col p-6 md:p-8 text-center">
                           {isTarget && (
-                            <div className="absolute top-6 right-6 z-20">
-                              <Badge className="bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm px-3 py-1 font-black text-[8px] uppercase flex items-center gap-2 rounded-xl">
-                                <CheckCircle2 className="h-3 w-3" /> TARGET
+                            <div className="absolute top-4 right-4 z-20">
+                              <Badge className="bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm px-2.5 py-0.5 font-black text-[7px] uppercase rounded-lg">
+                                TARGET
                               </Badge>
                             </div>
                           )}
-                          <div className="flex flex-col items-center flex-1 h-full pt-2">
-                             <div className="h-11 w-11 md:h-12 md:w-12 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 shadow-inner group-hover:scale-105 transition-transform overflow-hidden mb-6 relative">
+                          <div className="flex flex-col items-center flex-1 pt-1">
+                             <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 shadow-inner overflow-hidden mb-5 relative">
                                {logoUrl && !failedImages[exam.id] ? (
-                                 <img src={logoUrl} className="w-full h-full object-contain p-2.5" referrerPolicy="no-referrer" alt="Logo" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
+                                 <img src={logoUrl} className="w-full h-full object-contain p-2" referrerPolicy="no-referrer" alt="Logo" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
                                ) : (
-                                 <div className="p-2.5 w-full h-full opacity-40">
+                                 <div className="p-2 w-full h-full opacity-40">
                                    {getAuthorityIcon(board?.id, board?.abbreviation)}
                                  </div>
                                )}
                              </div>
-                             <h4 className="font-black text-xl md:text-2xl text-[#0F172A] uppercase leading-tight mb-2 px-2 line-clamp-2">{exam.name}</h4>
+                             <h4 className="font-black text-lg md:text-xl text-[#0F172A] uppercase leading-tight mb-1.5 line-clamp-2">{exam.name}</h4>
                              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{board?.abbreviation || 'PSSSB'} Hub</p>
                           </div>
                           <div className="space-y-4 pt-6 mt-auto">
                              <div className="grid grid-cols-2 gap-3">
-                                <Button onClick={() => handleSetTarget(exam.name, exam.id)} disabled={settingTargetId === exam.id || isTarget} variant="outline" className={cn("h-12 rounded-xl border-2 font-black uppercase text-[8px] tracking-widest gap-2 shadow-sm", isTarget ? "bg-emerald-50 border-emerald-100 text-emerald-700" : "bg-white border-slate-100 text-[#0F172A] hover:bg-slate-50")}>{settingTargetId === exam.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Target className="h-3 w-3" />}{isTarget ? 'TARGETED' : 'FOCUS'}</Button>
-                                <Button asChild className="h-12 bg-[#0F172A] hover:bg-black text-white rounded-xl font-black uppercase text-[8px] tracking-widest border-none shadow-xl transition-all"><Link href={`/exams/${exam.id}`}>OPEN HUB</Link></Button>
+                                <Button onClick={() => handleSetTarget(exam.name, exam.id)} disabled={settingTargetId === exam.id || isTarget} variant="outline" className={cn("h-10 rounded-xl border-2 font-black uppercase text-[8px] tracking-tight gap-2", isTarget ? "bg-emerald-50 border-emerald-100 text-emerald-700" : "bg-white border-slate-100 text-[#0F172A]")}>{settingTargetId === exam.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Target className="h-3 w-3" />}{isTarget ? 'LOCKED' : 'FOCUS'}</Button>
+                                <Button asChild className="h-10 bg-[#0F172A] hover:bg-black text-white rounded-xl font-black uppercase text-[8px] tracking-tight border-none shadow-lg"><Link href={`/exams/${exam.id}`}>OPEN HUB</Link></Button>
                              </div>
-                             <button onClick={() => handleUnpin(exam.id)} disabled={unpinningId === exam.id} className="w-fit mx-auto flex items-center justify-center gap-2 text-[9px] font-black text-slate-300 hover:text-rose-500 uppercase tracking-widest transition-colors active:scale-90">{unpinningId === exam.id ? <RefreshCw className="h-3 w-3 animate-spin" /> : <X className="h-3 w-3" />}REMOVE FROM HUB</button>
+                             <button onClick={() => handleUnpin(exam.id)} disabled={unpinningId === exam.id} className="w-fit mx-auto flex items-center justify-center gap-2 text-[8px] font-black text-slate-300 hover:text-rose-500 uppercase tracking-widest transition-colors active:scale-90">{unpinningId === exam.id ? <RefreshCw className="h-2.5 w-2.5 animate-spin" /> : <X className="h-2.5 w-2.5" />}REMOVE</button>
                           </div>
                         </Card>
                        )
                     }) : (
-                       <Card className="col-span-full border-2 border-dashed border-slate-200 bg-white/50 py-24 rounded-[4rem] flex flex-col items-center justify-center text-center space-y-8">
-                          <div className="h-20 w-20 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 shadow-inner"><Plus className="h-12 w-12" /></div>
-                          <div className="space-y-3 px-6"><p className="text-2xl font-headline font-black text-[#0F172A] uppercase">Hub Empty</p><p className="text-sm font-medium text-slate-400 uppercase tracking-widest max-w-xs">Select recruitment verticals to build your hub.</p></div>
-                          <Button asChild className="bg-[#0F172A] hover:bg-black rounded-2xl h-16 px-12 font-black uppercase text-[10px] tracking-[0.2em] shadow-4xl border-none"><Link href="/exams">Select Exams</Link></Button>
+                       <Card className="col-span-full border-2 border-dashed border-slate-200 bg-white/50 py-16 rounded-[2.5rem] flex flex-col items-center justify-center text-center space-y-6">
+                          <Plus className="h-8 w-8 text-slate-300" />
+                          <div className="space-y-1"><p className="text-xl font-black text-[#0F172A] uppercase">Hub Empty</p><p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Add exams to customize your dashboard.</p></div>
+                          <Button asChild className="bg-[#0F172A] hover:bg-black rounded-xl h-12 px-10 font-black uppercase text-[10px] tracking-widest border-none"><Link href="/exams">Select Exams</Link></Button>
                        </Card>
                     )}
                  </div>
               </section>
            </div>
 
-           <div className="lg:col-span-4 space-y-10">
-              <Card className="border-none shadow-4xl bg-[#0B1528] text-white p-8 md:p-10 rounded-[2.5rem] relative overflow-hidden group">
-                 <div className="absolute top-0 right-0 p-8 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><Gem className="h-48 w-48" /></div>
-                 <div className="relative z-10 space-y-8 text-left">
-                    <div className="space-y-2">
-                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">ACCOUNT STATUS</p>
-                       <h3 className="text-2xl md:text-4xl font-headline font-black uppercase">{passActive ? 'Elite Active' : 'Basic Tier'}</h3>
+           <div className="lg:col-span-4 space-y-8">
+              <Card className="border-none shadow-4xl bg-[#0B1528] text-white p-8 md:p-10 rounded-[2rem] relative overflow-hidden group">
+                 <div className="absolute top-0 right-0 p-8 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><Gem className="h-32 w-32" /></div>
+                 <div className="relative z-10 space-y-6 text-left">
+                    <div className="space-y-1">
+                       <p className="text-[9px] font-black uppercase tracking-[0.4em] text-primary">ACCOUNT STATUS</p>
+                       <h3 className="text-xl md:text-2xl font-black uppercase">{passActive ? 'Elite Active' : 'Basic Tier'}</h3>
                     </div>
                     
                     {passActive && passTimer ? (
-                       <div className="p-5 bg-primary/10 border border-primary/20 rounded-2xl flex items-center gap-4">
-                          <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary shrink-0"><Clock className="h-6 w-6" /></div>
+                       <div className="p-4 bg-primary/10 border border-primary/20 rounded-xl flex items-center gap-3">
+                          <Clock className="h-5 w-5 text-primary shrink-0" />
                           <div className="min-w-0">
-                             <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">TIME REMAINING</p>
-                             <p className="text-sm font-bold text-white uppercase">{passTimer}</p>
+                             <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">VALIDITY</p>
+                             <p className="text-xs font-bold text-white uppercase">{passTimer}</p>
                           </div>
                        </div>
                     ) : !passActive && (
-                       <div className="p-5 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center gap-4">
-                          <div className="h-10 w-10 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-500 shrink-0"><AlertCircle className="h-6 w-6" /></div>
+                       <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl flex items-center gap-3">
+                          <AlertCircle className="h-5 w-5 text-rose-500 shrink-0" />
                           <div className="min-w-0">
                              <p className="text-[8px] font-black text-rose-400 uppercase tracking-widest">ACCESS LIMITED</p>
-                             <p className="text-sm font-bold text-rose-200 uppercase">Upgrade for Elite Mocks</p>
+                             <p className="text-xs font-bold text-rose-200 uppercase">Upgrade for Elite Mocks</p>
                           </div>
                        </div>
                     )}
 
-                    <Button asChild className="w-full h-16 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-3xl border-none active:scale-95 transition-all">
-                       <Link href="/pass">{passActive ? 'MANAGE PASS' : 'UPGRADE NOW'} <ChevronRight className="h-4 w-4 ml-2" /></Link>
+                    <Button asChild className="w-full h-14 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[10px] tracking-widest rounded-xl shadow-3xl border-none active:scale-95 transition-all">
+                       <Link href="/pass">{passActive ? 'MANAGE PASS' : 'UPGRADE NOW'} <ChevronRight className="h-4 w-4 ml-1" /></Link>
                     </Button>
                  </div>
               </Card>
 
               {!isInstalled && canInstall && (
-                <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl space-y-6 text-left relative overflow-hidden group">
-                   <div className="absolute -bottom-4 -right-4 p-8 opacity-5"><Smartphone className="h-32 w-32" /></div>
-                   <div className="space-y-2">
-                      <h4 className="text-lg font-black text-[#0F172A] uppercase">Install App</h4>
-                      <p className="text-xs text-slate-400 font-medium">Get rapid access to mock tests on your home screen.</p>
+                <div className="bg-white rounded-[2rem] p-7 border border-slate-100 shadow-xl space-y-5 text-left relative overflow-hidden group">
+                   <div className="space-y-1">
+                      <h4 className="text-base font-black text-[#0F172A] uppercase leading-none">Install App</h4>
+                      <p className="text-[11px] text-slate-500 font-medium">Get rapid access to mock tests.</p>
                    </div>
-                   <Button onClick={installApp} className="w-full h-12 bg-slate-50 hover:bg-slate-100 text-[#0F172A] font-black uppercase text-[9px] tracking-widest rounded-xl border-none shadow-sm gap-2">
-                      <Download className="h-4 w-4" /> DOWNLOAD PWA
+                   <Button onClick={installApp} className="w-full h-11 bg-slate-50 hover:bg-slate-100 text-[#0F172A] font-black uppercase text-[9px] tracking-widest rounded-xl border-none shadow-sm gap-2">
+                      <Download className="h-3.5 w-3.5" /> DOWNLOAD PWA
                    </Button>
                 </div>
               )}
            </div>
         </div>
 
-        <section className="space-y-8 pt-8">
-           <div className="flex items-center gap-3 px-3">
-              <History className="h-5 w-5 text-slate-400" />
-              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400">Preparation Logs</h3>
+        <section className="space-y-6 pt-4">
+           <div className="flex items-center gap-2.5 px-1">
+              <History className="h-4 w-4 text-slate-400" />
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Preparation Logs</h3>
            </div>
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {attemptsLoading ? Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-[2.5rem] bg-white" />) : 
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              {attemptsLoading ? Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-2xl bg-white" />) : 
               recentAttempts.length > 0 ? recentAttempts.map((r: any) => (
                  <Link key={r.id} href={`/results/${r.mockId}`}>
-                    <Card className="border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2.5rem] bg-white p-8 md:p-10 flex items-center justify-between group overflow-hidden border border-slate-100">
-                       <div className="flex items-center gap-8 min-w-0 flex-1">
-                          <div className="h-14 w-14 md:h-16 md:w-16 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-primary/5 transition-all"><Zap className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-500" /></div>
-                          <div className="min-w-0 space-y-2"><h4 className="font-black text-xl md:text-2xl text-[#0F172A] uppercase truncate leading-none">{r.mockTitle}</h4><div className="flex items-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-tight"><span className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> {new Date(r.timestamp).toLocaleDateString()}</span><Badge className="bg-emerald-50 text-emerald-600 border-none font-black px-3 py-1 rounded-lg text-[10px]">Score: {r.score}</Badge></div></div>
+                    <Card className="border border-slate-100 shadow-lg hover:shadow-xl transition-all duration-500 rounded-[1.5rem] bg-white p-5 md:p-6 flex items-center justify-between group overflow-hidden">
+                       <div className="flex items-center gap-5 min-w-0 flex-1">
+                          <div className="h-12 w-12 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-primary/5 transition-all"><Zap className="h-5 w-5 text-primary group-hover:scale-110 transition-transform duration-500" /></div>
+                          <div className="min-w-0 space-y-1.5"><h4 className="font-black text-base md:text-lg text-[#0F172A] uppercase truncate leading-none">{r.mockTitle}</h4><div className="flex items-center gap-3 text-[9px] font-bold text-slate-400 uppercase tracking-tight"><span className="flex items-center gap-1.5"><Clock className="h-3 w-3 text-primary" /> {new Date(r.timestamp).toLocaleDateString()}</span><Badge className="bg-emerald-50 text-emerald-600 border-none font-black px-2 py-0.5 rounded text-[9px]">Score: {r.score}</Badge></div></div>
                        </div>
-                       <ChevronRight className="h-6 w-6 text-slate-200 group-hover:text-primary transition-all group-hover:translate-x-2 shrink-0 ml-4" />
+                       <ChevronRight className="h-4 w-4 text-slate-200 group-hover:text-primary transition-all group-hover:translate-x-1 shrink-0 ml-4" />
                     </Card>
                  </Link>
-              )) : <div className="col-span-full py-20 text-center bg-white rounded-[3.5rem] border border-slate-100 shadow-sm opacity-30 italic"><p className="font-black uppercase tracking-[0.4em] text-[10px]">No recent test activity detected.</p></div>}
+              )) : <div className="col-span-full py-16 text-center bg-white rounded-[2.5rem] border border-slate-100 shadow-sm opacity-30 italic"><p className="font-black uppercase tracking-[0.4em] text-[9px]">No recent test activity detected.</p></div>}
            </div>
         </section>
       </main>
