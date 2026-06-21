@@ -30,9 +30,8 @@ import { useToast } from "@/hooks/use-toast"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional Exam Detail Hub v48.0.
- * UI FIX: Enlarged logos by removing padding and using XL sizes.
- * UI FIX: Removed uppercase from primary titles.
+ * @fileOverview Institutional Exam Detail Hub v49.0 (Access Control Hardened).
+ * UPDATED: Integrated existing pass system check for premium test locking.
  */
 
 export default function ExamHubPage() {
@@ -74,6 +73,7 @@ export default function ExamHubPage() {
     } finally { setIsPinning(false); }
   };
 
+  // Hardened Entitlement Check using existing passStatus
   const isPassActive = useMemo(() => {
      if (!user || !profile) return false;
      if (profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN') return true;
@@ -185,8 +185,14 @@ function MockList({ data, results, isPassActive, loading, boards }: any) {
                      </div>
                   </CardHeader>
                   <CardContent className="p-0 mt-8">
-                     <Button onClick={() => router.push(locked ? '/pass' : `/mocks/${mock.id}/instructions`)} className={cn("w-full h-12 rounded-xl font-black text-[11px] tracking-[0.2em] uppercase shadow-lg border-none transition-all active:scale-95", locked ? "bg-amber-500 hover:bg-amber-600" : "bg-[#0F172A] hover:bg-black")}>
-                        {locked ? <><Lock className="h-4 w-4 mr-2" /> Unlock Exam</> : 'Start Exam'}
+                     <Button 
+                        onClick={() => router.push(locked ? '/pass' : `/mocks/${mock.id}/instructions`)} 
+                        className={cn(
+                          "w-full h-14 rounded-full font-black text-[11px] tracking-[0.2em] uppercase shadow-lg border-none transition-all active:scale-95 gap-3", 
+                          locked ? "bg-orange-500 hover:bg-orange-600 text-white" : "bg-[#0F172A] hover:bg-black text-white"
+                        )}
+                      >
+                        {locked ? <><Lock className="h-4 w-4" /> Unlock Test</> : 'Start Test'}
                      </Button>
                   </CardContent>
                </Card>
@@ -215,7 +221,10 @@ function NotesList({ data, isPassActive, loading, type }: any) {
                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">{item.category || type} Node</p>
                      </div>
                   </div>
-                  <Button asChild className="h-11 px-8 bg-[#0F172A] hover:bg-black text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-md shrink-0">
+                  <Button asChild className={cn(
+                    "h-11 px-8 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-md shrink-0 border-none",
+                    isLocked ? "bg-orange-500 hover:bg-orange-600 text-white" : "bg-[#0F172A] hover:bg-black text-white"
+                  )}>
                      <Link href={isLocked ? '/pass' : (item.pdfUrl || '#')} target={isLocked ? '_self' : '_blank'}>
                         {isLocked ? 'UNLOCK' : 'DOWNLOAD'}
                      </Link>

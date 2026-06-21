@@ -16,7 +16,7 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Official Institutional Study Material Hub v1.0.
+ * @fileOverview Official Institutional Study Material Hub v1.1 (Access Control Hardened).
  */
 
 export default function StudyMaterialPage() {
@@ -70,13 +70,13 @@ export default function StudyMaterialPage() {
           <Tabs defaultValue="notes" className="space-y-10">
              <div className="flex justify-start">
                <TabsList className="bg-white border border-slate-100 p-1.5 h-16 rounded-2xl shadow-sm flex w-full md:w-auto overflow-x-auto no-scrollbar justify-start gap-2">
-                  <TabsTrigger value="notes" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full shrink-0 data-[state=active]:bg-[#0F172A] data-[state=active]:text-white">
+                  <TabsTrigger value="notes" className="rounded-xl px-6 md:px-8 font-black uppercase text-[10px] gap-2 h-full shrink-0 data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
                     <FileText className="h-4 w-4" /> Prep Notes
                   </TabsTrigger>
-                  <TabsTrigger value="syllabus" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full shrink-0 data-[state=active]:bg-[#0F172A] data-[state=active]:text-white">
+                  <TabsTrigger value="syllabus" className="rounded-xl px-6 md:px-8 font-black uppercase text-[10px] gap-2 h-full shrink-0 data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
                     <Info className="h-4 w-4" /> Syllabus
                   </TabsTrigger>
-                  <TabsTrigger value="archives" className="rounded-xl px-8 font-black uppercase text-[10px] gap-2 h-full shrink-0 data-[state=active]:bg-[#0F172A] data-[state=active]:text-white">
+                  <TabsTrigger value="archives" className="rounded-xl px-6 md:px-8 font-black uppercase text-[10px] gap-2 h-full shrink-0 data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
                     <FileArchive className="h-4 w-4" /> E-Books
                   </TabsTrigger>
                </TabsList>
@@ -135,10 +135,10 @@ function NotesGrid({ data, loading, profile }: any) {
 }
 
 function DownloadCard({ asset, profile }: { asset: any, profile: any }) {
+   // Use existing passStatus check
    const isPassValid = useMemo(() => {
      if (profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN') return true;
-     if (!profile?.pass?.active) return false;
-     return new Date(profile.pass.expiryDate) > new Date();
+     return profile?.passStatus === 'active';
    }, [profile]);
 
    const isLocked = !asset.isFree && !isPassValid;
@@ -148,22 +148,22 @@ function DownloadCard({ asset, profile }: { asset: any, profile: any }) {
          <CardContent className="p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 md:gap-10 flex-1">
             <div className={cn(
                "h-20 w-20 md:h-24 md:w-24 rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform",
-               asset.isFree ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
+               asset.isFree ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-orange-600"
             )}>
                {isLocked ? <Lock className="h-8 w-8 md:h-10 md:w-10" /> : <FileText className="h-8 w-8 md:h-10 md:w-10" />}
             </div>
             <div className="flex-1 space-y-4 text-left w-full flex flex-col h-full">
                <div className="flex items-center gap-4">
                   <Badge className={cn(
-                     "border-none font-black text-[9px] uppercase tracking-widest px-3 py-1",
-                     asset.isFree ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
+                     "border-none font-black text-[9px] uppercase tracking-widest px-3 py-1 rounded-lg shadow-sm",
+                     asset.isFree ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-orange-600"
                   )}>
                      {asset.subjectId || 'GENERAL'}
                   </Badge>
                   {asset.isFree ? (
                      <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">FREE ACCESS</span>
                   ) : (
-                     <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">ELITE HUB</span>
+                     <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest">ELITE HUB</span>
                   )}
                </div>
                <h3 className="text-xl md:text-2xl font-headline font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors flex-1 uppercase">
@@ -174,7 +174,7 @@ function DownloadCard({ asset, profile }: { asset: any, profile: any }) {
                      <Clock className="h-3.5 w-3.5" /> Registry Verified
                   </p>
                   {isLocked ? (
-                     <Button asChild className="w-full sm:w-auto h-12 px-8 bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest text-[9px] rounded-xl gap-2 shadow-xl border-none">
+                     <Button asChild className="w-full sm:w-auto h-12 px-8 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase tracking-widest text-[9px] rounded-xl gap-2 shadow-xl border-none">
                         <Link href="/pass"><Lock className="h-4 w-4" /> Unlock Hub</Link>
                      </Button>
                   ) : (

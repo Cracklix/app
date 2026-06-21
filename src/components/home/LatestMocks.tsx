@@ -18,9 +18,8 @@ import { cn } from "@/lib/utils"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Dynamic Latest Mock Tests Hub v65.0 (Branding Integrated).
- * AUTO-RESOLUTION: Every exam card inherits parent board branding.
- * UI FIX: Removed uppercase from headings and titles.
+ * @fileOverview Dynamic Latest Mock Tests Hub v66.0 (Access Control Hardened).
+ * UPDATED: Implemented existing pass system checks for Premium locking.
  */
 
 export default function LatestMocks() {
@@ -35,7 +34,12 @@ export default function LatestMocks() {
     return [...rawMocks].sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
   }, [rawMocks])
 
-  const isPassActive = profile?.passStatus === 'active';
+  // Entitlement Check using existing pass system
+  const isPassActive = useMemo(() => {
+    if (!profile) return false;
+    if (profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN') return true;
+    return profile.passStatus === 'active';
+  }, [profile]);
 
   return (
     <section className="py-16 bg-white">
@@ -74,16 +78,19 @@ export default function LatestMocks() {
                         <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {mock.duration} Mins</span>
                      </div>
                      <div className="flex items-center justify-center gap-3 pt-2">
-                        {isPremium && <Badge className="bg-amber-50 text-amber-600 border-none text-[8px] font-black px-3 py-1 rounded-lg uppercase">PREMIUM</Badge>}
+                        {isPremium && <Badge className="bg-orange-50 text-orange-600 border-none text-[8px] font-black px-3 py-1 rounded-lg uppercase">PREMIUM</Badge>}
                         <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 uppercase">
                            <Users className="h-3 w-3" /> {mock.attemptsCount || 450}+ Attempts
                         </div>
                      </div>
                   </CardHeader>
                   <div className="mt-8">
-                     <Button asChild className={cn("w-full h-12 rounded-2xl font-black text-[10px] tracking-[0.2em] uppercase shadow-lg border-none transition-all active:scale-95", locked ? "bg-amber-500 hover:bg-amber-600" : "bg-[#0F172A] hover:bg-black")}>
+                     <Button asChild className={cn(
+                       "w-full h-14 rounded-full font-black text-[11px] tracking-[0.2em] uppercase shadow-lg border-none transition-all active:scale-95 gap-3", 
+                       locked ? "bg-orange-500 hover:bg-orange-600 text-white" : "bg-[#0F172A] hover:bg-black text-white"
+                     )}>
                         <Link href={locked ? '/pass' : `/mocks/${mock.id}`}>
-                           {locked ? <><Lock className="h-3.5 w-3.5 mr-2" /> Unlock Test</> : 'Start Test'}
+                           {locked ? <><Lock className="h-4 w-4" /> Unlock Test</> : 'Start Test'}
                         </Link>
                      </Button>
                   </div>
