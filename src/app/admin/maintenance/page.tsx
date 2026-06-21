@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { 
   Wrench, 
   RefreshCw, 
@@ -26,7 +27,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * @fileOverview Master Admin Maintenance Terminal v2.0 (PWA Optimized).
- * FIXED: Removed uppercase, reduced font scales, and implemented high-density padding.
+ * FIXED: Added missing Input import.
  */
 
 export default function MaintenancePage() {

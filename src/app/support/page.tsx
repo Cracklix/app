@@ -33,7 +33,7 @@ import Link from "next/link"
 
 /**
  * @fileOverview Official Institutional Support Hub v4.5.
- * FIXED: Added missing Link and Loader2 imports to resolve compilation errors.
+ * FIXED: Added missing Link and Loader2 imports.
  */
 
 const TELEGRAM_GROUP = "https://t.me/cracklixapp";

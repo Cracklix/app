@@ -15,8 +15,7 @@ import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
  * @fileOverview Search Center Hub v3.4 (Fixed).
- * FIXED: Explicitly imported React to resolve UMD ReferenceError during build.
- * FIXED: Removed invalid cloneElement call.
+ * FIXED: Resolved React.cloneElement type error by using AuthorityLogo engine directly.
  */
 
 export default function SearchPage() {
