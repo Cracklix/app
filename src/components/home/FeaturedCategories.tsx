@@ -2,36 +2,29 @@
 
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Landmark, ArrowRight, GraduationCap, Zap, Building2, Globe, ShieldCheck, Stethoscope } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AuthorityLogo } from '@/lib/exam-icons';
 
 /**
- * @fileOverview Strictly Whitelisted 6-Category Hub v105.0.
- * ENFORCED: Whitelist filter ensures only the canonical 6 master categories appear.
+ * @fileOverview Strictly Whitelisted 7-Category Hub v106.0.
+ * BRANDING: Uses the official logo engine.
  */
 
 const STRICT_WHITELIST = [
-  "punjab-govt",
-  "punjab-teaching",
-  "punjab-technical",
-  "punjab-banking",
-  "punjab-health",
-  "central-govt"
+  "punjab-government-exams",
+  "punjab-teaching-exams",
+  "punjab-technical-exams",
+  "banking-exams",
+  "medical-health-exams",
+  "judiciary-exams",
+  "central-government-exams"
 ];
-
-const CATEGORY_ICONS: Record<string, any> = {
-  "punjab-govt": <Landmark className="h-6 w-6" />,
-  "punjab-teaching": <GraduationCap className="h-6 w-6" />,
-  "punjab-technical": <Zap className="h-6 w-6" />,
-  "punjab-banking": <Building2 className="h-6 w-6" />,
-  "punjab-health": <Stethoscope className="h-6 w-6" />,
-  "central-govt": <Globe className="h-6 w-6" />
-};
 
 export default function FeaturedCategories() {
   const db = useFirestore();
@@ -62,9 +55,7 @@ export default function FeaturedCategories() {
                  <Link href={`/exams/category/${cat.id}`}>
                     <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2rem] bg-white group overflow-hidden flex flex-col p-8 h-full">
                        <div className="mb-6">
-                          <div className="h-12 w-12 rounded-xl bg-slate-50 flex items-center justify-center shadow-inner text-primary shrink-0 transition-transform group-hover:scale-110">
-                             {CATEGORY_ICONS[cat.id] || <ShieldCheck className="h-6 w-6" />}
-                          </div>
+                          <AuthorityLogo category={cat} size="lg" className="shadow-inner rounded-xl bg-slate-50 p-2" />
                        </div>
                        
                        <div className="space-y-3 flex-1">

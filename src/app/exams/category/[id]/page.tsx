@@ -8,23 +8,13 @@ import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, where } from "firebase/firestore"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Zap, Landmark, GraduationCap, Building2, Globe, ShieldCheck, Scale, Stethoscope } from "lucide-react"
-import { Skeleton } from "@/components/ui/skeleton"
-import { cn } from "@/lib/utils"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Hierarchical Category Hub v50.0.
- * FLOW: Category → Board Selection Hub.
+ * @fileOverview Hierarchical Category Hub v51.0.
+ * BRANDING: Uses official board logos.
  */
-
-const CATEGORY_ICONS: Record<string, any> = {
-  "punjab-govt": <Landmark className="h-8 w-8" />,
-  "punjab-teaching": <GraduationCap className="h-8 w-8" />,
-  "punjab-technical": <Zap className="h-8 w-8" />,
-  "punjab-banking": <Building2 className="h-8 w-8" />,
-  "punjab-health": <Stethoscope className="h-8 w-8" />,
-  "central-govt": <Globe className="h-8 w-8" />
-};
 
 export default function CategoryHubsPage() {
   const params = useParams();
@@ -38,8 +28,8 @@ export default function CategoryHubsPage() {
   const boardsQuery = useMemo(() => (db ? query(collection(db, "boards"), where("categoryId", "==", catId)) : null), [db, catId]);
   const examsQuery = useMemo(() => (db ? query(collection(db, "exams"), where("categoryId", "==", catId)) : null), [db, catId]);
 
-  const { data: boards, loading: boardsLoading } = useCollection<any>(boardsQuery);
-  const { data: rawExams, loading: examsLoading } = useCollection<any>(examsQuery);
+  const { data: boards } = useCollection<any>(boardsQuery);
+  const { data: rawExams } = useCollection<any>(examsQuery);
   
   const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]));
   const { data: pyqs } = useCollection<any>(useMemo(() => (db ? collection(db, "pyqs") : null), [db]));
@@ -79,9 +69,7 @@ export default function CategoryHubsPage() {
                <ChevronLeft className="h-5 w-5" />
             </button>
             <div className="flex items-center gap-6">
-               <div className="h-16 w-16 md:h-20 md:w-20 rounded-[2rem] bg-primary/5 text-primary flex items-center justify-center shrink-0 shadow-inner">
-                  {CATEGORY_ICONS[catId] || <ShieldCheck className="h-8 w-8" />}
-               </div>
+               <AuthorityLogo category={category} size="xl" className="bg-primary/5 rounded-[2rem] p-4 shadow-inner" />
                <div className="space-y-1">
                   <h1 className="text-3xl md:text-5xl font-black text-[#0F172A] leading-tight tracking-tight">
                      {category?.title || "Exam Selection"}
@@ -99,9 +87,7 @@ export default function CategoryHubsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                {boards.map((board) => (
                   <Card key={board.id} onClick={() => router.push(`/exams/hub/${board.id}`)} className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2.5rem] bg-white group overflow-hidden flex flex-col p-10 text-left cursor-pointer h-full">
-                     <div className="h-14 w-14 rounded-2xl bg-slate-50 flex items-center justify-center mb-8 text-primary shadow-inner transition-transform group-hover:scale-110">
-                        <Landmark className="h-8 w-8" />
-                     </div>
+                     <AuthorityLogo board={board} category={category} size="lg" className="bg-slate-50 p-2 rounded-2xl mb-8 group-hover:scale-110 transition-transform" />
                      <h3 className="text-2xl font-black text-[#0F172A] group-hover:text-primary transition-colors leading-tight mb-4">{board.abbreviation}</h3>
                      <p className="text-sm text-slate-500 font-medium mb-10 flex-1 leading-relaxed">{board.name}</p>
                      <div className="mt-auto pt-8 border-t border-slate-50 flex items-center justify-between">
@@ -117,9 +103,7 @@ export default function CategoryHubsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                {activeExams.map((exam) => (
                   <Card key={exam.id} onClick={() => router.push(`/exams/${exam.id}`)} className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col p-10 text-left cursor-pointer">
-                     <div className="h-14 w-14 rounded-2xl bg-slate-50 flex items-center justify-center mb-8 text-primary shadow-inner">
-                        <GraduationCap className="h-8 w-8" />
-                     </div>
+                     <AuthorityLogo category={category} size="lg" className="bg-slate-50 p-2 rounded-2xl mb-8" />
                      <h3 className="text-2xl font-black text-[#0F172A] group-hover:text-primary transition-colors leading-tight mb-6">{exam.name}</h3>
                      <div className="mt-auto space-y-8">
                         <Button className="w-full h-12 rounded-xl bg-[#0F172A] text-white group-hover:bg-primary transition-all font-bold text-[11px] tracking-widest uppercase border-none shadow-md gap-2">

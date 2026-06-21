@@ -1,10 +1,10 @@
 "use client"
 
-import React, { useMemo, useState, useEffect } from "react"
+import React, { useMemo, useState } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useDoc, useCollection, useFirestore, useUser } from "@/firebase"
-import { doc, collection, query, where, limit, orderBy, updateDoc, arrayUnion, arrayRemove, serverTimestamp, getDoc } from "firebase/firestore"
+import { doc, collection, query, where, updateDoc, arrayUnion, arrayRemove, serverTimestamp } from "firebase/firestore"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,33 +13,26 @@ import {
   BookOpen, 
   ShieldCheck, 
   ChevronRight,
-  FileText,
   Zap,
   ChevronLeft,
-  Info,
   Lock,
-  GraduationCap,
   List,
-  Download,
   Layers,
   RefreshCw,
   Star,
-  ArrowRight,
   CheckCircle2
 } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
-import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional Exam detail Hub v46.0.
- * Terminology: "Open Exam".
+ * @fileOverview Institutional Exam detail Hub v47.0.
+ * BRANDING: Shows parent board logo.
  */
-
-const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 export default function ExamHubPage() {
   const params = useParams()
@@ -59,6 +52,7 @@ export default function ExamHubPage() {
   const { data: rawPyqs, loading: pyqsLoading } = useCollection<any>(pyqsQuery)
   const { data: userResults } = useCollection<any>(resultsQuery)
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
+  const { data: categories } = useCollection<any>(useMemo(() => (db ? collection(db, "categories") : null), [db]))
 
   const [isPinning, setIsPinning] = useState(false);
 
@@ -96,9 +90,10 @@ export default function ExamHubPage() {
   }, [rawMocks, rawPyqs, examId])
 
   if (examLoading || userLoading) return <div className="h-screen flex flex-col items-center justify-center bg-white space-y-4"><Zap className="h-8 w-8 text-primary animate-pulse" /><p className="text-[10px] font-black uppercase text-slate-300">Synchronizing...</p></div>;
-  if (!exam) return <div className="h-screen flex flex-col items-center justify-center text-center p-6 space-y-4"><h2 className="text-xl font-black uppercase">Not Found</h2><Button onClick={() => router.push('/exams')}>Return</Button></div>;
+  if (!exam) return null;
 
   const activeBoard = boards?.find((b: any) => b.id === exam.boardId);
+  const activeCategory = categories?.find((c: any) => c.id === exam.categoryId);
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body text-left">
@@ -117,9 +112,12 @@ export default function ExamHubPage() {
                            {isPinned ? 'FOLLOWING' : 'SAVE EXAM'}
                         </button>
                      </div>
-                     <h1 className="text-3xl md:text-6xl font-black text-[#0F172A] leading-tight tracking-tight">
-                        {exam.name}
-                     </h1>
+                     <div className="flex items-center gap-6">
+                        <AuthorityLogo board={activeBoard} category={activeCategory} size="xl" className="shadow-inner rounded-[2rem] bg-slate-50 p-4" />
+                        <h1 className="text-3xl md:text-6xl font-black text-[#0F172A] leading-tight tracking-tight">
+                           {exam.name}
+                        </h1>
+                     </div>
                      <p className="text-sm md:text-xl font-bold text-slate-400 max-w-3xl leading-snug">Prepare with verified official patterns and expert solutions.</p>
                   </div>
                </div>
@@ -167,15 +165,14 @@ function MockList({ data, results, isPassActive, loading, boards }: any) {
    return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
          {data.map((mock: any) => {
-            const result = results?.find((r: any) => r.mockId === mock.id);
             const isPremium = mock.accessLevel === 'PREMIUM';
             const locked = isPremium && !isPassActive;
             const board = boards?.find((b: any) => b.id === (mock.boardIds?.[0] || mock.boardId));
 
             return (
                <Card key={mock.id} className="border border-slate-100 shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2.5rem] bg-white p-10 text-center flex flex-col h-[400px] group relative overflow-hidden">
-                  <div className="h-14 w-14 mx-auto rounded-2xl bg-slate-50 flex items-center justify-center p-2 mb-8 shadow-inner relative overflow-hidden border border-slate-100">
-                     <ShieldCheck className="h-full w-full text-primary" />
+                  <div className="h-14 w-14 mx-auto mb-8">
+                     <AuthorityLogo board={board} size="lg" className="shadow-inner rounded-xl bg-slate-50 p-2" />
                   </div>
                   <CardHeader className="p-0 flex-1 space-y-5">
                      <CardTitle className="font-black text-xl md:text-2xl text-[#0F172A] leading-tight line-clamp-2">
@@ -210,7 +207,7 @@ function NotesList({ data, isPassActive, loading, type }: any) {
                <Card key={item.id} className="border border-slate-100 shadow-xl rounded-[2rem] bg-white p-8 flex items-center justify-between group transition-all hover:shadow-2xl">
                   <div className="flex items-center gap-6 min-w-0">
                      <div className="h-14 w-14 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-blue-50 transition-colors">
-                        {isLocked ? <Lock className="h-6 w-6 text-amber-500" /> : <FileText className={cn("h-6 w-6", type === 'PYQ' ? 'text-emerald-500' : 'text-blue-500')} />}
+                        {isLocked ? <Lock className="h-6 w-6 text-amber-500" /> : <Layers className={cn("h-6 w-6", type === 'PYQ' ? 'text-emerald-500' : 'text-blue-500')} />}
                      </div>
                      <div className="min-w-0">
                         <h3 className="text-lg font-black text-[#0F172A] truncate max-w-[300px] uppercase leading-none">{item.title}</h3>

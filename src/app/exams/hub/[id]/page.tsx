@@ -9,15 +9,14 @@ import { collection, query, where, doc, updateDoc, arrayUnion, arrayRemove, serv
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, GraduationCap, Star, CheckCircle2, RefreshCw, Info, Loader2, BookOpen, Clock, Zap } from "lucide-react"
-import { Skeleton } from "@/components/ui/skeleton"
+import { ChevronLeft, ChevronRight, Star, CheckCircle2, RefreshCw, BookOpen, Clock, Zap } from "lucide-react"
+import { AuthorityLogo } from "@/lib/exam-icons"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Hierarchical Board Hub v65.0.
- * FLOW: Category → Board → Exam Selection.
- * Terminology: "Open Exam".
+ * @fileOverview Hierarchical Board Hub v66.0.
+ * BRANDING: Exams inherit parent board logo.
  */
 
 export default function HubExamsPage() {
@@ -36,7 +35,7 @@ export default function HubExamsPage() {
      return query(collection(db, "exams"), where("boardId", "==", hub.id));
   }, [db, hub]);
 
-  const { data: rawExams, loading: examsLoading } = useCollection<any>(examsQuery);
+  const { data: rawExams } = useCollection<any>(examsQuery);
   const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]));
   const { data: pyqs } = useCollection<any>(useMemo(() => (db ? collection(db, "pyqs") : null), [db]));
 
@@ -64,7 +63,6 @@ export default function HubExamsPage() {
 
   const exams = useMemo(() => {
     if (!rawExams) return [];
-    // Show all exams for a board, but maybe highlight the ones with content
     return rawExams.sort((a: any, b: any) => (b.displayOrder || 0) - (a.displayOrder || 0));
   }, [rawExams]);
 
@@ -81,8 +79,6 @@ export default function HubExamsPage() {
     } finally { setPinningId(null); }
   };
 
-  if (hubLoading) return <div className="h-screen bg-white flex flex-col items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
-
   return (
     <div className="min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
@@ -98,9 +94,7 @@ export default function HubExamsPage() {
       </section>
 
       <main className="container mx-auto px-4 py-16 max-w-7xl">
-         {examsLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[2.5rem] bg-white" />)}</div>
-         ) : exams.length > 0 ? (
+         {exams.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                {exams.map((exam) => {
                   const s = statsMap[exam.id] || { full: 0, subject: 0, sectional: 0, pyq: 0, total: 0 };
@@ -110,9 +104,7 @@ export default function HubExamsPage() {
                   return (
                     <Card key={exam.id} onClick={() => router.push(`/exams/${exam.id}`)} className={cn("border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col p-10 text-left cursor-pointer", !hasContent && "opacity-60 grayscale-[0.5]")}>
                        <div className="flex justify-between items-start mb-8">
-                          <div className="h-14 w-14 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-                             <GraduationCap className="h-7 w-7 text-primary" />
-                          </div>
+                          <AuthorityLogo board={hub} size="lg" className="bg-slate-50 p-2 rounded-2xl group-hover:scale-105 transition-transform shadow-inner" />
                           <button onClick={(e) => handleTogglePin(e, exam.id)} disabled={pinningId === exam.id} className={cn("h-10 w-10 rounded-xl border flex items-center justify-center transition-all", isPinned ? "bg-primary border-primary text-white" : "bg-white border-slate-100 text-slate-300 shadow-sm")}>
                              {pinningId === exam.id ? <RefreshCw className="h-4 w-4 animate-spin" /> : isPinned ? <CheckCircle2 className="h-4 w-4" /> : <Star className="h-4 w-4" />}
                           </button>
@@ -139,7 +131,7 @@ export default function HubExamsPage() {
             </div>
          ) : (
             <div className="py-40 text-center opacity-20 flex flex-col items-center gap-6">
-               <Info className="h-16 w-16" />
+               <Landmark className="h-16 w-16" />
                <p className="font-headline font-black text-3xl uppercase tracking-widest">Awaiting Verification</p>
             </div>
          )}

@@ -1,92 +1,69 @@
-
-import { Shield, GraduationCap, Scale, Zap, Stethoscope, Landmark, BookOpen, Activity, Cpu } from "lucide-react"
+import React from "react"
+import { Shield, GraduationCap, Scale, Zap, Stethoscope, Landmark, BookOpen, Activity, Cpu, Building2, Globe, Settings } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Authority Icon Registry.
- * FIXED: Added high-fidelity SVG fallbacks for failing government domains (Police, PSPCL, PSTCL).
+ * @fileOverview Institutional Branding Engine v5.0.
+ * RULES:
+ * 1. Try Board Logo first.
+ * 2. Fallback to Category Icon.
+ * 3. Never use generic shield/lightning placeholders.
  */
 
-export const getAuthorityIcon = (id: string = "", abbrev: string = "") => {
-  const key = (abbrev || id || "").toLowerCase();
-  
-  if (key.includes('psssb')) return <PsssbIcon />;
-  if (key.includes('police')) return <PoliceIcon />;
-  if (key.includes('ppsc')) return <PpscIcon />;
-  if (key.includes('teaching') || key.includes('cadre') || key.includes('pstet')) return <TeachingIcon />;
-  if (key.includes('pspcl')) return <PspclIcon />;
-  if (key.includes('pstcl')) return <PstclIcon />;
-  if (key.includes('power')) return <PowerIcon />;
-  if (key.includes('court') || key.includes('justice') || key.includes('sssc')) return <JusticeIcon />;
-  if (key.includes('bank')) return <BankIcon />;
-  if (key.includes('army')) return <Shield className="h-full w-full text-green-800" />;
-  if (key.includes('health') || key.includes('med')) return <MedIcon />;
-  
-  return <Activity className="h-full w-full text-slate-300" />;
+interface AuthorityLogoProps {
+  board?: any;
+  category?: any;
+  className?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-export const PsssbIcon = () => (
-  <div className="p-1 w-full h-full flex items-center justify-center">
-    <Landmark className="h-full w-full text-amber-600" />
-  </div>
-)
+export const AuthorityLogo = ({ board, category, className, size = 'md' }: AuthorityLogoProps) => {
+  const logoUrl = board?.iconUrl || board?.logoUrl || category?.iconUrl || category?.logoUrl;
+  
+  const sizeClasses = {
+    sm: "h-6 w-6",
+    md: "h-10 w-10",
+    lg: "h-14 w-14",
+    xl: "h-20 w-20"
+  };
 
-export const PpscIcon = () => (
-  <div className="p-1 w-full h-full flex items-center justify-center">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-full w-full">
-      <path d="M12 3v19M5 8h14M15 13H9M12 8c0-3 3-5 3-5M12 8c0-3-3-5-3-5" />
-    </svg>
-  </div>
-)
+  const containerSize = sizeClasses[size];
 
-export const PoliceIcon = () => (
-  <div className="p-1 w-full h-full flex items-center justify-center">
-    <Shield className="h-full w-full text-[#1E3A8A] fill-[#1E3A8A]/10" />
-  </div>
-)
+  // If we have an official URL, show it
+  if (logoUrl) {
+    return (
+      <div className={cn("relative shrink-0 overflow-hidden flex items-center justify-center", containerSize, className)}>
+        <img 
+          src={logoUrl} 
+          alt={board?.name || category?.title || "Authority"} 
+          className="h-full w-full object-contain"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            // If image fails, hide it and show fallback icon
+            (e.target as any).style.display = 'none';
+          }}
+        />
+      </div>
+    );
+  }
 
-export const TeachingIcon = () => (
-  <div className="p-1 w-full h-full flex items-center justify-center">
-    <div className="relative h-full w-full flex items-center justify-center">
-      <BookOpen className="h-4/5 w-4/5 text-[#F97316]" />
-      <div className="absolute top-1 right-1 h-2 w-2 bg-[#F97316] rounded-full border border-white" />
+  // Fallback to Category/Authority specific high-fidelity icons
+  const iconId = (category?.id || board?.categoryId || "").toLowerCase();
+  
+  const getFallbackIcon = () => {
+    if (iconId.includes('govt')) return <Landmark className="h-full w-full text-amber-600" />;
+    if (iconId.includes('teaching') || iconId.includes('pstet')) return <BookOpen className="h-full w-full text-blue-600" />;
+    if (iconId.includes('technical') || iconId.includes('power')) return <Settings className="h-full w-full text-slate-600" />;
+    if (iconId.includes('bank')) return <Building2 className="h-full w-full text-emerald-700" />;
+    if (iconId.includes('health') || iconId.includes('medical')) return <Stethoscope className="h-full w-full text-rose-600" />;
+    if (iconId.includes('judiciary') || iconId.includes('court')) return <Scale className="h-full w-full text-slate-700" />;
+    if (iconId.includes('central')) return <Globe className="h-full w-full text-blue-800" />;
+    return <Shield className="h-full w-full text-slate-300" />;
+  };
+
+  return (
+    <div className={cn("flex items-center justify-center p-1", containerSize, className)}>
+      {getFallbackIcon()}
     </div>
-  </div>
-)
-
-export const PspclIcon = () => (
-  <div className="p-1 w-full h-full flex items-center justify-center">
-    <Zap className="h-full w-full text-blue-500 fill-blue-500/10" />
-  </div>
-)
-
-export const PstclIcon = () => (
-  <div className="p-1 w-full h-full flex items-center justify-center">
-    <Cpu className="h-full w-full text-emerald-600" />
-  </div>
-)
-
-export const JusticeIcon = () => (
-  <div className="p-1 w-full h-full flex items-center justify-center">
-    <Scale className="h-full w-full text-[#475569]" />
-  </div>
-)
-
-export const PowerIcon = () => (
-  <div className="p-1 w-full h-full flex items-center justify-center">
-    <Zap className="h-full w-full text-[#1E3A8A] fill-[#F97316]" />
-  </div>
-)
-
-export const MedIcon = () => (
-  <div className="p-1 w-full h-full flex items-center justify-center">
-    <div className="bg-[#1E3A8A]/5 rounded-full p-1 h-full w-full flex items-center justify-center">
-      <Stethoscope className="h-full w-full text-[#1E3A8A]" />
-    </div>
-  </div>
-)
-
-export const BankIcon = () => (
-  <div className="p-1 w-full h-full flex items-center justify-center">
-    <Landmark className="h-full w-full text-[#0B1F3A]" />
-  </div>
-)
+  );
+};
