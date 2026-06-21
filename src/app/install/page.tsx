@@ -14,7 +14,6 @@ import {
   Share,
   PlusSquare,
   CheckCircle2,
-  Info,
   MoreVertical,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -27,8 +26,9 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview High-Fidelity PWA Install Hub v4.2.
- * FIXED: Reliable standalone detection to prevent false positives.
+ * @fileOverview High-Fidelity PWA Install Hub v5.0.
+ * FIXED: Reliable standalone detection.
+ * FIXED: Manual instructions now appear immediately if prompt is delayed.
  */
 
 type DeviceType = "android" | "ios" | "desktop" | "unknown";
@@ -37,7 +37,8 @@ export default function InstallPage() {
   const [device, setDevice] = useState<DeviceType>("desktop");
   const [isInstallable, setIsInstallable] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
-  const [showManual, setShowManual] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  
   const { toast } = useToast();
   const router = useRouter();
   const pathname = usePathname();
@@ -48,15 +49,11 @@ export default function InstallPage() {
   const updateState = useCallback(() => {
     if (typeof window === 'undefined') return;
 
-    // Hardened check for standalone mode
     const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
     setIsStandalone(isStandaloneMode);
     
-    // Check if the install prompt event is cached globally
     const hasPrompt = !!(window as any).deferredPrompt;
     setIsInstallable(hasPrompt);
-    
-    console.log('[PWA_INSTALL_AUDIT] Status:', { isStandaloneMode, isInstallable: hasPrompt });
   }, []);
 
   useEffect(() => {
@@ -66,8 +63,7 @@ export default function InstallPage() {
   }, [user, authLoading, router, pathname]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
+    setMounted(true);
     const ua = navigator.userAgent.toLowerCase();
     if (/android/.test(ua)) setDevice("android");
     else if (/iphone|ipad|ipod/.test(ua)) setDevice("ios");
@@ -96,13 +92,12 @@ export default function InstallPage() {
       }
     } else if (isIos) {
        toast({
-         title: "iOS Instructions",
+         title: "iOS Setup",
          description: "Tap Share > Add to Home Screen to install.",
        });
     } else {
-       setShowManual(true);
        toast({
-         title: "Setup Mode",
+         title: "Manual Mode",
          description: "Automated prompt blocked. See manual steps below.",
        });
     }
@@ -111,7 +106,7 @@ export default function InstallPage() {
   if (authLoading || !user) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
        <Zap className="h-10 w-10 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase text-slate-300">Synchronizing Native Hub...</p>
+       <p className="text-[10px] font-black uppercase text-slate-300">Synchronizing native hub...</p>
     </div>
   );
 
@@ -129,12 +124,12 @@ export default function InstallPage() {
            >
               <Zap className="h-7 w-7 md:h-10 md:w-10 fill-current" />
            </motion.div>
-           <div className="space-y-2">
+           <div className="space-y-2 text-center">
               <h1 className="text-2xl md:text-7xl font-black text-[#0F172A] tracking-tighter leading-none">
-                Native <span className="text-primary">Experience</span>
+                Cracklix <span className="text-primary">Native</span>
               </h1>
               <p className="text-[12px] md:text-2xl text-slate-500 font-medium leading-tight">
-                 Install Cracklix on your home screen for zero distractions.
+                 Get the smartest preparation hub on your home screen.
               </p>
            </div>
         </div>
@@ -150,7 +145,7 @@ export default function InstallPage() {
                  <div className="relative z-10 space-y-6 text-left">
                     <div className="flex items-center gap-2">
                        <Badge className="bg-primary text-white border-none px-3 py-1 rounded-full font-black uppercase text-[8px] md:text-[10px] tracking-widest">
-                          {device.toUpperCase()} MODE
+                          {device.toUpperCase()} HUB
                        </Badge>
                        {isStandalone && (
                          <Badge className="bg-emerald-500 text-white border-none px-3 py-1 rounded-full font-black uppercase text-[8px] md:text-[10px] tracking-widest">
@@ -160,55 +155,60 @@ export default function InstallPage() {
                     </div>
 
                     <h2 className="text-xl md:text-5xl font-black tracking-tight">
-                       {isIos ? 'Steps for iPhone' : isStandalone ? 'Ready to Prepare' : 'Install Cracklix'}
+                       {isIos ? 'iPhone Setup' : isStandalone ? 'App Active' : 'Start Installation'}
                     </h2>
 
                     {isIos ? (
                        <div className="space-y-4">
-                          <InstructionStep num={1} icon={<Share className="h-3.5 w-3.5" />} text="Tap 'Share' in Safari toolbar" />
-                          <InstructionStep num={2} icon={<PlusSquare className="h-3.5 w-3.5" />} text="Tap 'Add to Home Screen'" />
-                          <InstructionStep num={3} icon={<Sparkles className="h-3.5 w-3.5" />} text="Launch from home screen" />
+                          <InstructionStep num={1} icon={<Share className="h-3.5 w-3.5" />} text="Tap 'Share' in Safari footer" />
+                          <InstructionStep num={2} icon={<PlusSquare className="h-3.5 w-3.5" />} text="Select 'Add to Home Screen'" />
+                          <InstructionStep num={3} icon={<Sparkles className="h-3.5 w-3.5" />} text="Launch from Home Screen" />
                        </div>
                     ) : isStandalone ? (
                        <div className="space-y-4">
                           <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-start gap-3">
                              <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
-                             <p className="text-emerald-50 text-[11px] md:text-sm font-medium">You are already using the native app. Go to your home screen to launch it anytime.</p>
+                             <p className="text-emerald-50 text-[11px] md:text-sm font-medium">Native mode active. Go to your home screen to launch Cracklix anytime.</p>
                           </div>
                           <Button asChild className="w-full h-12 bg-white text-black hover:bg-slate-100 rounded-full font-black uppercase tracking-widest text-[9px] border-none shadow-xl transition-all">
-                             <Link href="/dashboard">Back to Hub</Link>
+                             <Link href="/dashboard">Enter Hub</Link>
                           </Button>
                        </div>
                     ) : (
                        <div className="space-y-6 text-left">
                           <p className="text-slate-400 text-sm md:text-lg font-medium leading-relaxed">
                              {device === "desktop" 
-                               ? 'Install the desktop app for a cleaner interface and taskbar shortcuts.' 
-                               : 'Get instant notifications and faster access directly on your phone.'}
+                               ? 'Install the desktop app for the best mock test experience.' 
+                               : 'Faster loading and instant recruitment alerts.'}
                           </p>
                           <div className="space-y-3">
                              <Button 
                                 onClick={handleInstall}
-                                className="w-full h-14 md:h-20 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-[0.2em] text-[10px] md:text-[11px] rounded-full shadow-3xl transition-all active:scale-95 border-none gap-3"
+                                className="w-full h-14 md:h-20 bg-primary hover:bg-blue-700 text-white font-black uppercase tracking-[0.2em] text-[10px] md:text-[11px] rounded-full shadow-3xl transition-all active:scale-95 border-none gap-3"
                              >
-                                <Download className="h-4 w-4 md:h-6 md:w-6" /> {isInstallable ? 'Install App Now' : 'Manual Install'}
+                                <Download className="h-4 w-4 md:h-6 md:w-6" /> {isInstallable ? 'Install App' : 'Manual Setup'}
                              </Button>
+                             {!isInstallable && device !== 'desktop' && (
+                                <p className="text-[10px] font-bold text-center text-slate-500 uppercase tracking-widest">
+                                   Wait for prompt or use manual steps below
+                                </p>
+                             )}
                           </div>
                        </div>
                     )}
                  </div>
               </Card>
 
-              {(showManual || (device === 'android' && !isStandalone && !isInstallable)) && (
+              {(!isStandalone && !isIos) && (
                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-4">
-                    <Card className="p-6 md:p-10 rounded-[2.5rem] bg-slate-50 border border-slate-200 space-y-6 text-left">
+                    <Card className="p-6 md:p-10 rounded-[2.5rem] bg-slate-50 border border-slate-200 space-y-6 text-left shadow-inner">
                        <h3 className="text-lg font-black uppercase text-[#0F172A] flex items-center gap-2">
-                          <Smartphone className="h-5 w-5 text-primary" /> Manual Android Setup
+                          <Smartphone className="h-5 w-5 text-primary" /> Manual Android Steps
                        </h3>
                        <div className="space-y-4">
-                          <InstructionStep num={1} icon={<MoreVertical className="h-3.5 w-3.5" />} text="Tap the 3-dots menu in Chrome top-right" color="text-slate-500" />
-                          <InstructionStep num={2} icon={<PlusSquare className="h-3.5 w-3.5" />} text="Select 'Install app' or 'Add to Home screen'" color="text-slate-500" />
-                          <InstructionStep num={3} icon={<CheckCircle2 className="h-3.5 w-3.5" />} text="Confirm and open from your Home Screen" color="text-slate-500" />
+                          <InstructionStep num={1} icon={<MoreVertical className="h-3.5 w-3.5" />} text="Open 3-dots menu in browser" color="text-slate-500" />
+                          <InstructionStep num={2} icon={<PlusSquare className="h-3.5 w-3.5" />} text="Select 'Install app' option" color="text-slate-500" />
+                          <InstructionStep num={3} icon={<CheckCircle2 className="h-3.5 w-3.5" />} text="Launch from Home Screen" color="text-slate-500" />
                        </div>
                     </Card>
                  </motion.div>
@@ -216,11 +216,11 @@ export default function InstallPage() {
            </div>
 
            <div className="lg:col-span-5 space-y-4 md:space-y-8 text-left">
-              <h3 className="text-[9px] font-black uppercase text-slate-400 tracking-[0.4em] ml-1">App Benefits</h3>
+              <h3 className="text-[9px] font-black uppercase text-slate-400 tracking-[0.4em] ml-1">Native Hub Perks</h3>
               <div className="grid grid-cols-1 gap-3">
-                 <BenefitRow icon={<Smartphone />} title="Native UI" desc="Optimized specifically for your screen." />
-                 <BenefitRow icon={<Zap />} title="Low Latency" desc="Offline caching for rapid loading." />
-                 <BenefitRow icon={<ShieldCheck />} title="Verified Hub" desc="Institutional security on every session." />
+                 <BenefitRow icon={<Smartphone />} title="Bilingual Engine" desc="Smooth PA/EN transitions." />
+                 <BenefitRow icon={<Zap />} title="Low Latency" desc="Rapid offline-first caching." />
+                 <BenefitRow icon={<ShieldCheck />} title="Verified Hub" desc="State-grade security nodes." />
               </div>
            </div>
 
@@ -239,7 +239,7 @@ function InstructionStep({ num, icon, text, color = "text-primary" }: any) {
          </div>
          <div className="flex items-center gap-2 text-slate-200">
             <span className={cn("p-1.5 bg-white/10 rounded-lg", color)}>{icon}</span>
-            <span className="text-[11px] md:text-lg font-bold tracking-tight text-current">{text}</span>
+            <span className="text-[11px] md:text-lg font-bold tracking-tight text-current leading-none">{text}</span>
          </div>
       </div>
    );
