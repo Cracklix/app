@@ -18,9 +18,20 @@ import { useToast } from "@/hooks/use-toast"
 import { getAuthorityIcon } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional Exam Explorer v19.1.
- * UPDATED: Simplified terminology for exam listing.
+ * @fileOverview Institutional Exam Explorer v20.0 (Case Refined).
+ * FIXED: Removed forced uppercase from exam titles while preserving acronyms.
  */
+
+const ACRONYMS = ["PSSSB", "PPSC", "CTET", "PSTET", "PSPCL", "PSTCL", "SSAPB"];
+
+function formatTitle(name: string) {
+  if (!name) return "";
+  return name.split(' ').map(word => {
+    const upper = word.toUpperCase();
+    if (ACRONYMS.includes(upper)) return upper;
+    return word;
+  }).join(' ');
+}
 
 export default function HubExamsPage() {
   const params = useParams();
@@ -130,7 +141,7 @@ export default function HubExamsPage() {
       
       <section className="bg-white border-b border-slate-100 py-10 md:py-12 overflow-hidden relative">
          <div className="absolute top-0 right-0 p-12 opacity-[0.01]"><GraduationCap className="h-32 w-32 md:h-48 md:w-48" /></div>
-         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-center-7xl relative z-10">
             <button onClick={() => router.back()} className="h-9 w-9 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-black mb-6 transition-all active:scale-90">
                <ChevronLeft className="h-4 w-4" />
             </button>
@@ -161,8 +172,8 @@ export default function HubExamsPage() {
                      </Badge>
                   </div>
                   <div className="space-y-1">
-                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-black text-[#0F172A] leading-tight tracking-tight break-words antialiased uppercase">
-                      {hub?.abbreviation || hub?.name?.split(' ')[0]}
+                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-black text-[#0F172A] leading-tight tracking-tight break-words antialiased">
+                      {formatTitle(hub?.abbreviation || hub?.name?.split(' ')[0])}
                     </h1>
                     <p className="text-sm md:text-lg font-bold text-slate-500 leading-tight tracking-tight max-w-4xl">
                        {hub?.name}
@@ -225,10 +236,10 @@ export default function HubExamsPage() {
                           </h3>
                           <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2">
                              {stats.full > 0 && <span className="text-[9px] font-bold text-slate-400 uppercase">{stats.full} Mocks</span>}
-                             {stats.subject > 0 && <span className="text-[9px] font-bold text-slate-400 uppercase">{stats.subject} Practice</span>}
-                             {stats.pyq > 0 && <span className="text-[9px] font-bold text-slate-400 uppercase">{stats.pyq} PYQs</span>}
+                             {stats.subject > 0 && <span className="text-[9px] font-bold text-slate-400 uppercase">{stats.subject} Tests</span>}
+                             {stats.pyq > 0 && <span className="text-[9px] font-bold text-slate-400 uppercase">{stats.pyq} Papers</span>}
                              {stats.notes > 0 && <span className="text-[9px] font-bold text-slate-400 uppercase">{stats.notes} Notes</span>}
-                             {!hasContent && <span className="text-[9px] font-bold text-orange-500 uppercase tracking-[0.2em] flex items-center gap-1"><Info className="h-2 w-2" /> No Materials Yet</span>}
+                             {!hasContent && <span className="text-[9px] font-bold text-orange-500 uppercase tracking-widest flex items-center gap-1"><Info className="h-2 w-2" /> No Materials Yet</span>}
                           </div>
                        </div>
 

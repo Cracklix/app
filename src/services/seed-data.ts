@@ -1,9 +1,8 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v82.0 (Strict Authority Mapping).
- * FIXED: Corrected PPSC/Teaching exam mapping to prevent hub contamination.
- * ADDED: Education Recruitment Board (Teaching) authority node.
+ * @fileOverview Institutional Punjab-Centric Seeding Node v83.0 (Strict Authority Mapping).
+ * UPDATED: Explicitly added PSTET Paper 1/2 and normalized Teaching labels.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -87,9 +86,25 @@ export async function seedInitialData(db: Firestore) {
     { 
       id: 'punjab-teaching', 
       abbreviation: 'TEACHING', 
-      name: 'Education Recruitment Board Punjab', 
+      name: 'Teaching Recruitment Exams', 
       categoryId: 'punjab-teaching', 
       displayOrder: 4, 
+      iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10" 
+    },
+    { 
+      id: 'pstet', 
+      abbreviation: 'PSTET', 
+      name: 'PSTET Preparation', 
+      categoryId: 'punjab-teaching', 
+      displayOrder: 5, 
+      iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10" 
+    },
+    { 
+      id: 'ctet', 
+      abbreviation: 'CTET', 
+      name: 'CTET Preparation', 
+      categoryId: 'punjab-teaching', 
+      displayOrder: 6, 
       iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10" 
     },
     { 
@@ -97,7 +112,7 @@ export async function seedInitialData(db: Firestore) {
       abbreviation: 'PSPCL', 
       name: 'Punjab State Power Corporation Limited', 
       categoryId: 'punjab-technical', 
-      displayOrder: 5, 
+      displayOrder: 7, 
       iconUrl: 'https://www.pspcl.in/images/logo.png' 
     },
     { 
@@ -105,7 +120,7 @@ export async function seedInitialData(db: Firestore) {
       abbreviation: 'BANKING', 
       name: 'Punjab State Cooperative Bank', 
       categoryId: 'banking', 
-      displayOrder: 6, 
+      displayOrder: 8, 
       iconUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7McWqZqOgKy-BakccvR02WQdEQFrwuvmHBG5rYJzuEg&s=10' 
     }
   ];
@@ -118,7 +133,9 @@ export async function seedInitialData(db: Firestore) {
   const psssbExams = ["PSSSB Clerk", "PSSSB Clerk IT", "Revenue Patwari", "Excise Inspector", "Junior Draftsman"];
   const policeExams = ["Police Constable", "Police Sub-Inspector", "Intelligence Assistant"];
   const ppscExams = ["Naib Tehsildar", "ADO (Agriculture)", "PPSC Assistant Professor", "Senior Assistant (PPSC)"];
-  const teachingExams = ["PSTET Paper 1", "PSTET Paper 2", "Master Cadre Punjabi", "Master Cadre Maths", "ETT Recruitment"];
+  const teachingExams = ["Master Cadre Punjabi", "Master Cadre Maths", "ETT Recruitment"];
+  const pstetExams = ["PSTET Paper 1", "PSTET Paper 2"];
+  const ctetExams = ["CTET Paper 1", "CTET Paper 2"];
   const techExams = ["PSPCL ALM", "PSPCL JE", "PSPCL LDC"];
   const bankExams = ["Cooperative Bank Clerk", "Bank Manager"];
 
@@ -127,6 +144,8 @@ export async function seedInitialData(db: Firestore) {
     { list: policeExams, board: 'punjab-police', cat: 'punjab-govt' },
     { list: ppscExams, board: 'ppsc', cat: 'punjab-govt' },
     { list: teachingExams, board: 'punjab-teaching', cat: 'punjab-teaching' },
+    { list: pstetExams, board: 'pstet', cat: 'punjab-teaching' },
+    { list: ctetExams, board: 'ctet', cat: 'punjab-teaching' },
     { list: techExams, board: 'pspcl', cat: 'punjab-technical' },
     { list: bankExams, board: 'banking', cat: 'banking' }
   ];
@@ -170,5 +189,5 @@ export async function seedInitialData(db: Firestore) {
 
   await batch.commit();
 
-  console.log('[AUDIT] Initial Registry Synchronized. PPSC and Teaching sections now strictly filtered.');
+  console.log('[AUDIT] Initial Registry Synchronized. PSTET nodes verified.');
 }

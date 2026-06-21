@@ -15,11 +15,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Explorer v14.1 (Logo Size Hardened).
- * FIXED: Standardized board logos to 48px to prevent visual dominance.
+ * @fileOverview Institutional Category Explorer v15.0 (Language Normalized).
+ * FIXED: Replaced Hub/Center terminology with student-friendly language.
+ * FIXED: Removed forced uppercase from board titles.
  */
 
-const ACRONYMS = ["PSSSB", "PPSC", "PUNJAB POLICE", "PSPCL", "PSTCL", "PSTET", "CTET", "MCQ", "MCQS", "PYQ", "PYQS", "GK", "CA"];
+const ACRONYMS = ["PSSSB", "PPSC", "PUNJAB POLICE", "PSPCL", "PSTCL", "PSTET", "CTET", "MCQ", "MCQS", "PYQ", "PYQS", "GK", "CA", "SSAPB"];
 
 function toTitleCase(str: string) {
   if (!str) return "";
@@ -87,7 +88,7 @@ export default function CategoryHubsPage() {
                 {toTitleCase(meta.title)}
               </h1>
               <p className="text-sm md:text-xl font-bold text-slate-400 tracking-tight max-w-3xl leading-tight">
-                Official recruitment centers for the {toTitleCase(meta.title)} category.
+                Official recruitment exams for the {toTitleCase(meta.title)} category.
               </p>
             </div>
          </div>
@@ -116,7 +117,7 @@ export default function CategoryHubsPage() {
                           <div className="flex justify-between items-start mb-6">
                              <div className="h-11 w-11 md:h-12 md:w-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:scale-105 transition-transform">
                                 {hub.iconUrl ? (
-                                   <img src={hub.iconUrl} className="h-full w-full object-contain p-2" alt="Hub Logo" referrerPolicy="no-referrer" />
+                                   <img src={hub.iconUrl} className="h-full w-full object-contain p-2" alt="Logo" referrerPolicy="no-referrer" />
                                 ) : (
                                    <div className="text-primary opacity-40 p-2.5">
                                       {isPolice ? <Shield className="h-full w-full" /> : 
@@ -124,11 +125,13 @@ export default function CategoryHubsPage() {
                                    </div>
                                 )}
                              </div>
-                             <Badge variant="outline" className="text-[8px] font-bold text-slate-400 tracking-tight border-slate-100 uppercase">OFFICIAL CENTER</Badge>
+                             <Badge variant="outline" className="text-[8px] font-bold text-slate-400 tracking-tight border-slate-100 uppercase">OFFICIAL EXAM</Badge>
                           </div>
                           
                           <div className="space-y-1 flex-1 min-w-0">
-                             <h3 className="text-lg md:text-xl font-black text-[#0F172A] tracking-tight group-hover:text-primary transition-colors truncate uppercase">{hub.abbreviation} Exams</h3>
+                             <h3 className="text-lg md:text-xl font-black text-[#0F172A] tracking-tight group-hover:text-primary transition-colors truncate">
+                                {hub.abbreviation} Exams
+                             </h3>
                              <p className="text-[10px] md:text-sm font-semibold text-slate-400 leading-snug line-clamp-1">{toTitleCase(hub.name)}</p>
                           </div>
 
@@ -138,7 +141,7 @@ export default function CategoryHubsPage() {
                                 <p className="text-[8px] font-bold text-slate-400 tracking-tight uppercase">EXAMS LIVE</p>
                              </div>
                              <Button variant="ghost" className="h-9 md:h-10 px-4 md:px-6 rounded-xl bg-slate-900 text-white flex items-center gap-2 font-black text-[10px] tracking-widest group-hover:bg-primary transition-all border-none shadow-md">
-                                VIEW HUB <ChevronRight className="h-3 w-3" />
+                                OPEN EXAM <ChevronRight className="h-3 w-3" />
                              </Button>
                           </div>
                        </Card>
