@@ -12,8 +12,8 @@ import {
 } from 'firebase/firestore';
 
 /**
- * @fileOverview Hardened Manual Payment Actions v3.0 (Queue Enabled).
- * SECURITY: Prevents overwriting active subscriptions by utilizing queuedPasses.
+ * @fileOverview Hardened Testbook-Style Subscription Actions v4.0.
+ * LOGIC: Same plan = extension, Higher plan = immediate upgrade.
  */
 
 export async function activateFreePass(userId: string, planId: string) {
@@ -29,45 +29,41 @@ export async function activateFreePass(userId: string, planId: string) {
     if (!planSnap.exists()) throw new Error("Pass node missing in registry.");
     const planData = planSnap.data();
 
-    if (planData.price > 0) throw new Error("Security Violation: Attempted free activation of paid node.");
+    if (planData.price > 0) throw new Error("Security Violation: Paid plan via free node.");
 
     const now = new Date();
-    const isPassActive = userData.passExpiresAt && new Date(userData.passExpiresAt) > now;
+    const durationDays = planData.durationDays || 30;
+    const currentExpiry = userData.passExpiresAt ? new Date(userData.passExpiresAt) : null;
+    const isPassActive = currentExpiry && currentExpiry > now;
 
-    if (isPassActive) {
-      // PUSH TO QUEUE
-      await updateDoc(userRef, {
-        queuedPasses: arrayUnion({
-          id: `q-${Date.now()}`,
-          name: planData.name,
-          durationDays: planData.durationDays || 30,
-          purchasedAt: now.toISOString(),
-          planId: planData.id
-        }),
-        updatedAt: serverTimestamp()
-      });
-      return { success: true, queued: true };
+    let newExpiryDate: Date;
+
+    if (isPassActive && userData.status === planId) {
+      // SAME PLAN: EXTEND
+      newExpiryDate = new Date(currentExpiry.getTime());
+      newExpiryDate.setDate(newExpiryDate.getDate() + durationDays);
+    } else {
+      // UPGRADE OR FRESH: START NOW
+      newExpiryDate = new Date();
+      newExpiryDate.setDate(now.getDate() + durationDays);
     }
-
-    // INSTANT ACTIVATION
-    const expiryDate = new Date();
-    expiryDate.setDate(now.getDate() + (planData.durationDays || 30));
 
     await updateDoc(userRef, { 
       pass: {
         active: true,
         plan: planData.id?.toUpperCase() || 'FREE_PASS',
         purchaseDate: now.toISOString(),
-        expiryDate: expiryDate.toISOString(),
+        expiryDate: newExpiryDate.toISOString(),
         freePassClaimed: true
       },
       passStatus: 'active',
-      passExpiresAt: expiryDate.toISOString(),
+      passExpiresAt: newExpiryDate.toISOString(),
       status: planData.id,
+      planTier: planData.tier || 0,
       updatedAt: serverTimestamp()
     });
 
-    return { success: true, queued: false };
+    return { success: true };
   } catch (e: any) {
     console.error('Free Pass Activation Error:', e);
     throw new Error('Failed to activate free pass node.');
@@ -128,37 +124,38 @@ export async function approvePaymentRequest(requestId: string, adminId: string) 
     const planData = planSnap.data();
 
     const now = new Date();
-    const isPassActive = userData.passExpiresAt && new Date(userData.passExpiresAt) > now;
+    const durationDays = planData.durationDays || 30;
+    const currentExpiry = userData.passExpiresAt ? new Date(userData.passExpiresAt) : null;
+    const isPassActive = currentExpiry && currentExpiry > now;
+    const currentTier = userData.planTier || 0;
+    const newTier = planData.tier || 1;
 
-    if (isPassActive) {
-      await updateDoc(userRef, {
-        queuedPasses: arrayUnion({
-          id: `q-${Date.now()}`,
-          name: planData.name,
-          durationDays: planData.durationDays || 30,
-          purchasedAt: now.toISOString(),
-          planId: planData.id
-        }),
-        updatedAt: serverTimestamp()
-      });
+    let newExpiryDate: Date;
+
+    if (isPassActive && userData.status === data.planId) {
+      // SAME PLAN: EXTEND
+      newExpiryDate = new Date(currentExpiry.getTime());
+      newExpiryDate.setDate(newExpiryDate.getDate() + durationDays);
     } else {
-      const expiryDate = new Date();
-      expiryDate.setDate(now.getDate() + (planData.durationDays || 30));
-
-      await updateDoc(userRef, { 
-        pass: {
-          active: true,
-          plan: planData.id?.toUpperCase() || 'PREMIUM',
-          purchaseDate: now.toISOString(),
-          expiryDate: expiryDate.toISOString(),
-          freePassClaimed: planData.id === 'free-pass'
-        },
-        passStatus: 'active',
-        passExpiresAt: expiryDate.toISOString(),
-        status: planData.id,
-        updatedAt: serverTimestamp()
-      });
+      // UPGRADE OR FRESH: START NOW
+      newExpiryDate = new Date();
+      newExpiryDate.setDate(now.getDate() + durationDays);
     }
+
+    await updateDoc(userRef, { 
+      pass: {
+        active: true,
+        plan: planData.id?.toUpperCase() || 'PREMIUM',
+        purchaseDate: now.toISOString(),
+        expiryDate: newExpiryDate.toISOString(),
+        freePassClaimed: planData.id === 'free-pass'
+      },
+      passStatus: 'active',
+      passExpiresAt: newExpiryDate.toISOString(),
+      status: planData.id,
+      planTier: newTier,
+      updatedAt: serverTimestamp()
+    });
 
     await updateDoc(reqRef, {
       status: 'APPROVED',

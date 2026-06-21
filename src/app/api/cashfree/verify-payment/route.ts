@@ -4,9 +4,8 @@ import { initializeFirebase } from '@/firebase/app';
 import { doc, updateDoc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 
 /**
- * @fileOverview Hardened Cashfree Verification Hub v5.0.
- * STABILITY: Atomic updates for subscription registry and pass activation.
- * SECURITY: Implements passActivatedAt and passExpiresAt fields for automatic expiry logic.
+ * @fileOverview Hardened Testbook-Style Verification Hub v6.0.
+ * LOGIC: Same plan = extension, Higher tier = upgrade.
  */
 
 export async function POST(req: Request) {
@@ -16,64 +15,76 @@ export async function POST(req: Request) {
     
     const clientId = process.env.CASHFREE_CLIENT_ID;
     const clientSecret = process.env.CASHFREE_CLIENT_SECRET;
-    const env = process.env.CASHFREE_ENV || 'production';
 
     if (!clientId || !clientSecret) {
-      return NextResponse.json({ error: 'Gateway authentication failure.' }, { status: 500 });
+      return NextResponse.json({ error: 'Gateway configuration error.' }, { status: 500 });
     }
 
     Cashfree.XClientId = clientId;
     Cashfree.XClientSecret = clientSecret;
-    const isProd = env === 'production' || clientSecret.startsWith('cf_prod_');
+    const isProd = clientSecret.startsWith('cf_prod_');
     Cashfree.XEnvironment = isProd ? Cashfree.Environment.PRODUCTION : Cashfree.Environment.SANDBOX;
 
     if (!order_id || !userId || !planId) {
       return NextResponse.json({ error: 'Audit parameters missing.' }, { status: 400 });
     }
 
-    // Step 1: Gateway Verification
+    // 1. Fetch Gateway Result
     const response = await Cashfree.PGOrderFetchPayments("2023-08-01", order_id);
     const payments = response.data;
     const successNode = payments?.find(p => p.payment_status === 'SUCCESS');
 
     if (!successNode) {
-      return NextResponse.json({ error: 'Transaction pending or rejected.' }, { status: 400 });
+      return NextResponse.json({ error: 'Transaction not found or failed.' }, { status: 400 });
     }
 
-    // Step 2: Atomic Registry Sync
+    // 2. Fetch Registry Context
     const { firestore: db } = initializeFirebase();
-    const planSnap = await getDoc(doc(db, "passes", planId));
-    const planData = planSnap.data();
+    const userRef = doc(db, 'users', userId);
+    const planRef = doc(db, 'passes', planId);
     
-    if (!planData) {
-      return NextResponse.json({ error: 'Registry error: Pass node archived.' }, { status: 404 });
+    const [userSnap, planSnap] = await Promise.all([getDoc(userRef), getDoc(planRef)]);
+    
+    if (!planSnap.exists()) return NextResponse.json({ error: 'Pass node missing.' }, { status: 404 });
+    const planData = planSnap.data();
+    const userData = userSnap.data() || {};
+
+    const now = new Date();
+    const duration = Number(planData.durationDays) || 30;
+    const currentExpiry = userData.passExpiresAt ? new Date(userData.passExpiresAt) : null;
+    const isPassActive = currentExpiry && currentExpiry > now;
+    
+    let finalExpiry: Date;
+
+    if (isPassActive && userData.status === planId) {
+      // SAME PLAN: EXTEND
+      finalExpiry = new Date(currentExpiry.getTime());
+      finalExpiry.setDate(finalExpiry.getDate() + duration);
+    } else {
+      // UPGRADE OR FRESH: START NOW
+      finalExpiry = new Date();
+      finalExpiry.setDate(now.getDate() + duration);
     }
 
-    const duration = Number(planData.durationDays) || 30;
-    const now = new Date();
-    const expiryDate = new Date();
-    expiryDate.setDate(now.getDate() + duration);
-
-    // Step 3: Pass Activation (Enhanced Structure)
-    const userRef = doc(db, 'users', userId);
+    // 3. Commit Subscription
     await updateDoc(userRef, {
       pass: {
         active: true,
         plan: planData.id?.toUpperCase() || 'ELITE',
         purchaseDate: now.toISOString(),
-        expiryDate: expiryDate.toISOString(),
+        expiryDate: finalExpiry.toISOString(),
         freePassClaimed: planData.id === 'free-pass'
       },
       passStatus: 'active',
       passActivatedAt: now.toISOString(),
-      passExpiresAt: expiryDate.toISOString(),
+      passExpiresAt: finalExpiry.toISOString(),
       status: planData.id,
+      planTier: planData.tier || 1,
       updatedAt: serverTimestamp()
     });
 
-    // Step 4: Ledger Audit Log
-    const paymentRef = doc(db, 'payment_requests', successNode.cf_payment_id!.toString());
-    await setDoc(paymentRef, {
+    // 4. Record Transaction
+    await setDoc(doc(db, 'payment_requests', successNode.cf_payment_id!.toString()), {
       id: successNode.cf_payment_id!.toString(),
       orderId: order_id,
       userId,
@@ -87,10 +98,10 @@ export async function POST(req: Request) {
       updatedAt: serverTimestamp()
     }, { merge: true });
 
-    return NextResponse.json({ success: true, expiry: expiryDate.toISOString() });
+    return NextResponse.json({ success: true, expiry: finalExpiry.toISOString() });
 
   } catch (error: any) {
-    console.error("[VERIFICATION_FAILURE]:", error?.response?.data || error);
-    return NextResponse.json({ error: 'Registry synchronization failed. Contact support with Order ID.' }, { status: 500 });
+    console.error("[CASHFREE_VERIFY_FAILURE]:", error);
+    return NextResponse.json({ error: 'Synchronization failed.' }, { status: 500 });
   }
 }

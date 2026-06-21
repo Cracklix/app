@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ShieldCheck, ArrowLeft, Loader2, QrCode, CreditCard, Clock, Gem, Copy, Zap, Layers } from "lucide-react"
+import { ShieldCheck, ArrowLeft, Loader2, QrCode, CreditCard, Clock, Gem, Copy, Zap, Layers, AlertCircle } from "lucide-react"
 import { useUser, useDoc, useFirestore } from "@/firebase"
 import { useEffect, useState, Suspense, useMemo } from "react"
 import { useToast } from "@/hooks/use-toast"
@@ -18,8 +18,8 @@ import Script from "next/script"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Production Checkout Hub v8.2.
- * FIXED: TS18047 (profile null check) and TS2769 (Date narrowing).
+ * @fileOverview Testbook-Style Checkout Hub v10.0.
+ * LOGIC: Detects upgrades vs extensions and handles gateway handshake hardening.
  */
 
 export default function CheckoutPage() {
@@ -57,23 +57,33 @@ function CheckoutContent() {
     if (!loading && !user) router.push("/login")
   }, [user, loading, router])
 
-  const isAlreadyActive = useMemo(() => {
-     const expiry = profile?.passExpiresAt;
-     if (!expiry) return false;
-     return new Date(expiry) > new Date();
-  }, [profile]);
+  const subscriptionCase = useMemo(() => {
+    if (!profile || !planData) return 'NEW';
+    const currentTier = profile.planTier || 0;
+    const newTier = planData.tier || 0;
+    const currentPlanId = profile.status;
+    const isActive = profile.passExpiresAt && new Date(profile.passExpiresAt) > new Date();
+
+    if (!isActive) return 'NEW';
+    if (currentPlanId === planId) return 'EXTEND';
+    if (newTier > currentTier) return 'UPGRADE';
+    if (newTier < currentTier) return 'LOWER';
+    return 'EXTEND';
+  }, [profile, planData, planId]);
 
   const handlePaymentInitiation = async () => {
     if (!user || !profile || !planData || onlineProcessing) return;
+
+    if (subscriptionCase === 'LOWER') {
+      toast({ variant: "destructive", title: "Action Blocked", description: "You already have a superior pass active." });
+      return;
+    }
     
     if (planData.price === 0) {
       setOnlineProcessing(true);
       try {
-        const res = await activateFreePass(user.uid, planId);
-        toast({ 
-           title: res.queued ? "Pass Queued" : "Pass Activated", 
-           description: res.queued ? "Extension scheduled for after current pass expiry." : "Your free preparation node is now live." 
-        });
+        await activateFreePass(user.uid, planId);
+        toast({ title: "Pass Activated", description: "Your preparation node is now live." });
         router.push("/dashboard");
       } catch (e) {
         toast({ variant: "destructive", title: "Activation Failed" });
@@ -82,62 +92,60 @@ function CheckoutContent() {
       return;
     }
 
-    if (!(window as any).Cashfree) {
-       toast({ variant: "destructive", title: "SDK Error", description: "Payment engine is still loading. Please wait." });
+    setOnlineProcessing(true);
+    
+    // Hardened Handshake: Wait for SDK
+    const getCashfree = () => (window as any).Cashfree;
+    let cf = getCashfree();
+    
+    if (!cf) {
+       // Poll for 3 seconds if not immediate
+       for (let i = 0; i < 30; i++) {
+          await new Promise(r => setTimeout(r, 100));
+          cf = getCashfree();
+          if (cf) break;
+       }
+    }
+
+    if (!cf) {
+       toast({ variant: "destructive", title: "SDK Error", description: "Payment engine failed to initialize. Please reload." });
+       setOnlineProcessing(false);
        return;
     }
 
-    setOnlineProcessing(true);
     try {
       const orderRes = await fetch('/api/cashfree/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          planId, 
-          userId: user.uid,
-          origin: origin 
-        })
+        body: JSON.stringify({ planId, userId: user.uid, origin })
       });
 
       const orderData = await orderRes.json();
       
       if (orderData.error) {
-        toast({ 
-          variant: "destructive", 
-          title: "Gateway Error", 
-          description: orderData.details || orderData.error 
-        });
+        toast({ variant: "destructive", title: "Gateway Error", description: orderData.error });
         setOnlineProcessing(false);
         return;
       }
 
-      const mode = orderData.environment === 'production' ? 'production' : 'sandbox';
-      const cashfreeInstance = (window as any).Cashfree({ mode });
-
+      const cashfreeInstance = cf({ mode: orderData.environment || 'sandbox' });
       await cashfreeInstance.checkout({
          paymentSessionId: orderData.payment_session_id,
          redirectTarget: "_self" 
       });
 
     } catch (e: any) {
-      console.error('[CHECKOUT_FAILURE]', e);
-      toast({ 
-        variant: "destructive", 
-        title: "Transaction Error", 
-        description: "Could not initialize secure payment node." 
-      });
+      toast({ variant: "destructive", title: "Transaction Error", description: "Secure node connection lost." });
       setOnlineProcessing(false);
     }
   };
 
-  const upiId = settings?.upiId || "arshdeepgrewal1122-1@oksbi";
-  const upiLink = `upi://pay?pa=${upiId}&pn=Cracklix&am=${planData?.price || 0}&cu=INR`;
-  const qrUrl = settings?.qrCodeUrl || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`;
-
   if (planLoading) return <div className="h-screen flex items-center justify-center bg-white"><Loader2 className="h-10 w-10 text-primary animate-spin" /></div>
-  if (!planData) return <div className="h-screen flex items-center justify-center text-slate-400 uppercase font-black tracking-widest text-xs">Registry Node Missing</div>
+  if (!planData) return <div className="h-screen flex items-center justify-center text-slate-400 font-black uppercase text-xs">Registry Node Missing</div>
 
-  const isFreePlan = planData.price === 0;
+  const upiId = settings?.upiId || "arshdeepgrewal1122-1@oksbi";
+  const upiLink = `upi://pay?pa=${upiId}&pn=Cracklix&am=${planData.price}&cu=INR`;
+  const qrUrl = settings?.qrCodeUrl || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`;
   const expiryDateStr = profile?.passExpiresAt;
 
   return (
@@ -149,24 +157,46 @@ function CheckoutContent() {
       />
       
       <main className="container mx-auto px-4 md:px-6 py-8 md:py-16 max-w-6xl pb-40">
-        <div className="flex items-center gap-4 md:gap-6 mb-8 md:mb-12">
-           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl h-12 w-12 md:h-14 md:w-14 border border-slate-200 bg-white shadow-sm">
+        <div className="flex items-center gap-4 mb-8 md:mb-12">
+           <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-2xl h-12 w-12 border border-slate-200 bg-white shadow-sm">
              <ArrowLeft className="h-6 w-6 text-[#0F172A]" />
            </Button>
            <div className="text-left">
-              <h1 className="text-2xl md:text-4xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-none">{isFreePlan ? "Claim Pass" : "Checkout"}</h1>
+              <h1 className="text-2xl md:text-4xl font-headline font-black text-[#0F172A] uppercase tracking-tight">Checkout</h1>
               <p className="text-slate-400 font-bold uppercase tracking-widest text-[8px] md:text-[10px] mt-1.5">Institutional Payment Hub</p>
            </div>
         </div>
 
-        {isAlreadyActive && expiryDateStr && (
-           <Card className="mb-8 border-none bg-blue-600 text-white p-6 rounded-[1.5rem] shadow-xl flex items-center gap-6 animate-in slide-in-from-top-4">
-              <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 shadow-inner">
+        {subscriptionCase === 'EXTEND' && expiryDateStr && (
+           <Card className="mb-8 border-none bg-emerald-600 text-white p-6 rounded-[1.5rem] shadow-xl flex items-center gap-6 animate-in slide-in-from-top-4">
+              <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
                  <Clock className="h-6 w-6 text-white" />
               </div>
               <div className="min-w-0 flex-1">
-                 <h4 className="text-sm md:text-lg font-black uppercase tracking-tight">Existing Pass Detected</h4>
-                 <p className="text-[10px] md:text-xs font-medium text-blue-100 mt-1">This new pass will be stored in your subscription queue and activated automatically when your current pass expires on <span className="font-black underline">{new Date(expiryDateStr).toLocaleDateString()}</span>.</p>
+                 <h4 className="text-sm md:text-lg font-black uppercase tracking-tight">Plan Extension</h4>
+                 <p className="text-[10px] md:text-xs font-medium text-emerald-50 mt-1">This will extend your current access by {planData.durationDays} days starting from <span className="font-black underline">{new Date(expiryDateStr).toLocaleDateString()}</span>.</p>
+              </div>
+           </Card>
+        )}
+
+        {subscriptionCase === 'UPGRADE' && (
+           <Card className="mb-8 border-none bg-blue-600 text-white p-6 rounded-[1.5rem] shadow-xl flex items-center gap-6 animate-in slide-in-from-top-4">
+              <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                 <Zap className="h-6 w-6 text-white" />
+              </div>
+              <div className="min-w-0 flex-1">
+                 <h4 className="text-sm md:text-lg font-black uppercase tracking-tight">Instant Upgrade</h4>
+                 <p className="text-[10px] md:text-xs font-medium text-blue-50 mt-1">You are upgrading to a superior pass. The new tier will activate immediately upon verification.</p>
+              </div>
+           </Card>
+        )}
+
+        {subscriptionCase === 'LOWER' && (
+           <Card className="mb-8 border-none bg-rose-50 text-rose-600 p-6 rounded-[1.5rem] shadow-sm flex items-center gap-6 border-2 border-rose-100">
+              <AlertCircle className="h-10 w-10 shrink-0" />
+              <div className="min-w-0 flex-1">
+                 <h4 className="text-sm md:text-lg font-black uppercase tracking-tight">Purchase Blocked</h4>
+                 <p className="text-[10px] md:text-xs font-bold uppercase tracking-tight">A higher-tier pass is already active on your account.</p>
               </div>
            </Card>
         )}
@@ -176,9 +206,9 @@ function CheckoutContent() {
               <Tabs defaultValue="online" className="w-full">
                  <TabsList className="bg-slate-100 border border-slate-200 p-1 h-14 rounded-2xl w-full mb-8 grid grid-cols-2">
                     <TabsTrigger value="online" className="rounded-xl font-black uppercase text-[10px] h-full flex items-center gap-2">
-                       <Zap className="h-3.5 w-3.5" /> {isFreePlan ? "INSTANT CLAIM" : "SECURE ONLINE"}
+                       <Zap className="h-3.5 w-3.5" /> SECURE ONLINE
                     </TabsTrigger>
-                    {!isFreePlan && (
+                    {planData.price > 0 && (
                       <TabsTrigger value="manual" className="rounded-xl font-black uppercase text-[10px] h-full flex items-center gap-2">
                          <QrCode className="h-3.5 w-3.5" /> MANUAL UPI
                       </TabsTrigger>
@@ -186,35 +216,33 @@ function CheckoutContent() {
                  </TabsList>
 
                  <TabsContent value="online" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <Card className="border-none shadow-5xl rounded-[2.5rem] bg-white overflow-hidden group border border-slate-100">
+                    <Card className="border-none shadow-5xl rounded-[2.5rem] bg-white overflow-hidden border border-slate-100">
                        <CardHeader className="p-8 md:p-10 pb-4">
                           <div className="flex items-center gap-4 mb-2">
-                             {isFreePlan ? <ShieldCheck className="h-6 w-6 text-emerald-500" /> : <CreditCard className="h-6 w-6 text-primary" />}
-                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">{isFreePlan ? "No Payment Required" : "Fast Account Activation"}</span>
+                             <CreditCard className="h-6 w-6 text-primary" />
+                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Fast Account Activation</span>
                           </div>
-                          <CardTitle className="font-headline font-black text-xl md:text-2xl uppercase text-[#0F172A]">{isFreePlan ? "Free Activation" : "Payment Gateway"}</CardTitle>
-                          <CardDescription className="text-slate-400 font-medium">{isFreePlan ? "Get instant access to free mocks and patterns." : "Auto-verify via UPI, Cards, or Netbanking for instant access."}</CardDescription>
+                          <CardTitle className="font-headline font-black text-xl md:text-2xl uppercase text-[#0F172A]">Payment Gateway</CardTitle>
+                          <CardDescription className="text-slate-400 font-medium">Verified by Cashfree Security Node.</CardDescription>
                        </CardHeader>
                        <CardContent className="p-8 md:p-10 pt-4">
                           <Button 
                             onClick={handlePaymentInitiation}
-                            disabled={onlineProcessing || (!isFreePlan && !sdkReady)}
-                            className={cn(
-                              "w-full h-16 md:h-20 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-3xl transition-all active:scale-95 border-none gap-4",
-                              isFreePlan ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20" : "bg-primary hover:bg-orange-600 shadow-primary/20"
-                            )}
+                            disabled={onlineProcessing || subscriptionCase === 'LOWER'}
+                            className="w-full h-16 md:h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-3xl transition-all active:scale-95 border-none gap-4"
                           >
-                             {onlineProcessing ? <Loader2 className="h-6 w-6 animate-spin" /> : isAlreadyActive ? <Layers className="h-6 w-6" /> : <ShieldCheck className="h-6 w-6 fill-current" />}
-                             {onlineProcessing ? "AUDITING REGISTRY..." : isAlreadyActive ? "EXTEND MY PREPARATION" : isFreePlan ? "CLAIM MY FREE PASS" : "ACTIVATE PLAN NOW"}
+                             {onlineProcessing ? <Loader2 className="h-6 w-6 animate-spin" /> : <ShieldCheck className="h-6 w-6 fill-current" />}
+                             {onlineProcessing ? "INITIATING NODE..." : 
+                              subscriptionCase === 'EXTEND' ? "EXTEND MY PREPARATION" : 
+                              subscriptionCase === 'UPGRADE' ? "UPGRADE TO ELITE" : "ACTIVATE PLAN NOW"}
                           </Button>
-                          {!isFreePlan && !sdkReady && <p className="text-[8px] font-bold text-center text-slate-300 mt-4 uppercase tracking-widest">Awaiting security handshake...</p>}
                        </CardContent>
                     </Card>
                  </TabsContent>
 
                  <TabsContent value="manual" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                     <Card className="border-none shadow-3xl rounded-[2.5rem] bg-white overflow-hidden border border-slate-100">
-                       <CardHeader className="p-8 md:p-10 bg-slate-50/50 border-b border-slate-100">
+                       <CardHeader className="p-8 md:p-10 bg-slate-50/50 border-b border-slate-100 text-left">
                           <div className="flex items-center gap-4 mb-2">
                              <QrCode className="h-5 w-5 text-slate-400" />
                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Manual Ingestion Node</span>
@@ -246,7 +274,7 @@ function CheckoutContent() {
                              </div>
                              <Button 
                                 onClick={async () => {
-                                   if(utr.length < 12) { toast({variant:"destructive", title:"Invalid UTR", description: "UTR must be exactly 12 digits."}); return; }
+                                   if(utr.length < 12) { toast({variant:"destructive", title:"Invalid UTR"}); return; }
                                    setProcessing(true);
                                    if (!user) return;
                                    try {
@@ -257,11 +285,11 @@ function CheckoutContent() {
                                       toast({variant:"destructive", title:"Sync Error"});
                                    } finally { setProcessing(false); }
                                 }}
-                                disabled={processing}
+                                disabled={processing || subscriptionCase === 'LOWER'}
                                 className="w-full h-16 bg-slate-200 hover:bg-slate-300 text-slate-700 font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all border-none gap-3"
                              >
                                 {processing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
-                                {isAlreadyActive ? "QUEUE FOR AUDIT" : "SUBMIT FOR AUDIT"}
+                                SUBMIT FOR AUDIT
                              </Button>
                           </div>
                        </CardContent>
@@ -271,28 +299,21 @@ function CheckoutContent() {
            </div>
 
            <div className="hidden lg:block lg:col-span-5">
-              <Card className="border-none shadow-5xl rounded-[3.5rem] bg-[#0B1528] text-white p-12 overflow-hidden relative sticky top-32">
+              <Card className="border-none shadow-5xl rounded-[3.5rem] bg-[#0B1528] text-white p-12 overflow-hidden sticky top-32">
                  <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12"><Gem className="h-48 w-48" /></div>
-                 <div className="relative z-10 space-y-10">
-                    <div className="space-y-4 text-center">
-                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Account Level Hub</p>
+                 <div className="relative z-10 space-y-10 text-left">
+                    <div className="space-y-4">
+                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Order Summary</p>
                        <h3 className="text-5xl font-headline font-black uppercase leading-tight">{planData.name}</h3>
                     </div>
                     <div className="space-y-6 pt-10 border-t border-white/5">
                        <div className="flex justify-between items-center text-sm font-bold text-slate-400 uppercase tracking-widest">
-                          <span>Institutional Base Fee</span>
+                          <span>Institutional Fee</span>
                           <span className="text-white font-black">₹{planData.price}</span>
                        </div>
                        <div className="flex justify-between items-center pt-10 border-t border-white/5">
-                          <span className="text-xl font-headline font-black uppercase">Grand Total</span>
+                          <span className="text-xl font-headline font-black uppercase">Total</span>
                           <span className="text-6xl font-black text-primary tracking-tighter tabular-nums">₹{planData.price}</span>
-                       </div>
-                    </div>
-                    
-                    <div className="pt-8 flex flex-col gap-4 text-center border-t border-white/5">
-                       <div className="flex items-center justify-center gap-3 text-slate-500">
-                          <ShieldCheck className="h-4 w-4" />
-                          <span className="text-[8px] font-black uppercase tracking-widest">Secure TLS/SSL Hub Active</span>
                        </div>
                     </div>
                  </div>

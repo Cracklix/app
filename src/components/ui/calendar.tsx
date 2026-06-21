@@ -10,8 +10,8 @@ import { buttonVariants } from "@/components/ui/button"
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
 /**
- * @fileOverview Institutional Calendar Node v17.3 (Type Fixed).
- * FIXED: Chevron component return type and prop signature for react-day-picker v9.
+ * @fileOverview Institutional Calendar Node v18.0 (Hardened Build).
+ * FIXED: TS2322 Element compatibility for Chevron orientation sub-component.
  */
 function Calendar({
   className,
@@ -56,12 +56,13 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Chevron: (props) => {
-          if (props.orientation === "left") return <ChevronLeft className={cn("h-4 w-4", props.className)} />;
-          if (props.orientation === "right") return <ChevronRight className={cn("h-4 w-4", props.className)} />;
-          if (props.orientation === "up") return <ChevronUp className={cn("h-4 w-4", props.className)} />;
-          if (props.orientation === "down") return <ChevronDown className={cn("h-4 w-4", props.className)} />;
-          return <ChevronLeft className={cn("h-4 w-4", props.className)} />;
+        Chevron: ({ orientation, className: chvClassName, ...props }: { orientation?: "left" | "right" | "up" | "down", className?: string }) => {
+          const baseClass = cn("h-4 w-4", chvClassName);
+          if (orientation === "left") return <ChevronLeft className={baseClass} {...props} />;
+          if (orientation === "right") return <ChevronRight className={baseClass} {...props} />;
+          if (orientation === "up") return <ChevronUp className={baseClass} {...props} />;
+          if (orientation === "down") return <ChevronDown className={baseClass} {...props} />;
+          return <ChevronLeft className={baseClass} {...props} />;
         },
       }}
       {...props}

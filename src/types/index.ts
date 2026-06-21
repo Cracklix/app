@@ -223,6 +223,7 @@ export interface UserProfile {
   createdAt: string;
   updatedAt: any;
   status: string; 
+  planTier: number; // 0: Free, 1: Silver, 2: Gold, 3: Elite
   passType: 'FREE' | 'MONTHLY' | 'QUARTERLY' | 'YEARLY';
   passStatus: 'active' | 'expired' | 'none';
   passActivatedAt?: string;

@@ -1,8 +1,8 @@
 import { Firestore, doc, serverTimestamp, writeBatch, collection, getDocs } from 'firebase/firestore';
 
 /**
- * @fileOverview Official Institutional Registry Blueprint v78.1.
- * FIXED: Explicit question ID alignment for Sample Mock series.
+ * @fileOverview Official Institutional Registry Blueprint v79.0.
+ * UPDATED: Added planTier property for Testbook-style logic.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -47,7 +47,14 @@ export async function seedInitialData(db: Firestore) {
     { id: "ssc-cgl", name: "SSC CGL", boardId: "ssc", categoryId: "central-government-exams" }
   ];
 
-  // 4. SAMPLE QUESTIONS (BILINGUAL REGISTRY NODES)
+  // 4. CANONICAL PASSES (TIERED)
+  const passes = [
+    { id: "free-pass", name: "Aspirant Free", price: 0, durationDays: 365, tier: 0, active: true, displayOrder: 1, features: ["Limited Mocks", "Basic Analytics"] },
+    { id: "monthly-pass", name: "Premium Monthly", price: 299, durationDays: 30, tier: 1, active: true, displayOrder: 2, features: ["All Mock Tests", "Bilingual Support", "AIR Rankings"] },
+    { id: "elite-pass", name: "Elite Yearly", price: 999, durationDays: 365, tier: 2, active: true, displayOrder: 3, features: ["Everything in Premium", "Expert Mentorship", "Offline Downloads"] }
+  ];
+
+  // 5. SAMPLE QUESTIONS
   const questions = [
     {
       id: "q1",
@@ -97,35 +104,13 @@ export async function seedInitialData(db: Firestore) {
     }
   ];
 
-  // 5. SAMPLE MOCKS (FORCE ID ALIGNMENT)
-  const sampleMocks = [
-    {
-      id: "sample-mock-1",
-      title: "Punjab General Knowledge - Mock 01",
-      boardId: "psssb",
-      boardIds: ["psssb"],
-      examIds: ["patwari"],
-      mockType: "FULL",
-      accessLevel: "FREE",
-      duration: 15,
-      totalQuestions: 2,
-      totalMarks: 2,
-      negativeMarks: 0.25,
-      positiveMarks: 1,
-      questionIds: ["q1", "q2"],
-      published: true,
-      languageMode: "ENGLISH_PUNJABI",
-      updatedAt: serverTimestamp()
-    }
-  ];
-
   // COMMIT
   for (const cat of categories) batch.set(doc(db, 'categories', cat.id), { ...cat, updatedAt: serverTimestamp() }, { merge: true });
   for (const b of boards) batch.set(doc(db, 'boards', b.id), { ...b, updatedAt: serverTimestamp() }, { merge: true });
   for (const e of exams) batch.set(doc(db, 'exams', e.id), { ...e, displayOrder: 1, updatedAt: serverTimestamp() }, { merge: true });
+  for (const p of passes) batch.set(doc(db, 'passes', p.id), { ...p, updatedAt: serverTimestamp() }, { merge: true });
   for (const q of questions) batch.set(doc(db, 'questions', q.id), q, { merge: true });
-  for (const m of sampleMocks) batch.set(doc(db, 'mocks', m.id), m, { merge: true });
 
   await batch.commit();
-  console.log('[SUCCESS] Institutional Registry Hardened with Sample Nodes.');
+  console.log('[SUCCESS] Institutional Registry Hardened with Tiered Nodes.');
 }
