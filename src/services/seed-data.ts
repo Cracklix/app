@@ -1,193 +1,75 @@
-import { Firestore, doc, setDoc, serverTimestamp, collection, writeBatch } from 'firebase/firestore';
+import { Firestore, doc, setDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v83.0 (Strict Authority Mapping).
- * UPDATED: Explicitly added PSTET Paper 1/2 and normalized Teaching labels.
+ * @fileOverview Canonical Punjab Exam Registry Seeder v90.0.
+ * REBUILT: Strictly aligned with the 8-category ecosystem.
  */
 
 export async function seedInitialData(db: Firestore) {
-  console.log('[AUDIT] Initializing Absolute Punjab Registry Sync...');
+  console.log('[AUDIT] Initializing Canonical Punjab Registry Rebuild...');
   const batch = writeBatch(db);
 
-  // 1. STRATEGIC CATEGORIES
+  // 1. CANONICAL CATEGORIES
   const categories = [
-    {
-      id: "punjab-govt",
-      title: "Punjab General Exams",
-      description: "Police, PSSSB, PPSC and major state board recruitments.",
-      highlight: "STATE LEVEL",
-      color: "text-primary",
-      bgColor: "bg-orange-50",
-      iconUrl: "https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg",
-      displayOrder: 1
-    },
-    {
-      id: "punjab-teaching",
-      title: "Punjab Teaching Exams",
-      description: "PSTET, CTET, Master Cadre, ETT and lecturer recruitment nodes.",
-      highlight: "EDUCATIONAL",
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
-      iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10",
-      displayOrder: 2
-    },
-    {
-      id: "punjab-technical",
-      title: "Punjab Technical Exams",
-      description: "PSPCL, PSTCL, ALM and Technical Board recruitment nodes.",
-      highlight: "POWER & TECH",
-      color: "text-amber-500",
-      bgColor: "bg-amber-50",
-      iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo0ZK9JI5KMfg9RoNdIwcsNlpx5IcPBWuKZw&s",
-      displayOrder: 3
-    },
-    {
-      id: "banking",
-      title: "Punjab Banking Exams",
-      description: "State Cooperative Bank, Apex, PADB and Central Bank nodes.",
-      highlight: "FINANCE",
-      color: "text-emerald-600",
-      bgColor: "bg-emerald-50",
-      iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7McWqZqOgKy-BakccvR02WQdEQFrwuvmHBG5rYJzuEg&s=10",
-      displayOrder: 4
-    }
+    { id: "ppsc", title: "PPSC", description: "Punjab Public Service Commission recruitment exams.", highlight: "CLASS A & B", color: "text-emerald-600", bgColor: "bg-emerald-50", displayOrder: 1 },
+    { id: "psssb", title: "PSSSB", description: "Punjab Subordinate Services Selection Board exams.", highlight: "GROUP B & C", color: "text-primary", bgColor: "bg-orange-50", displayOrder: 2 },
+    { id: "punjab-police", title: "Punjab Police", description: "Police recruitment for Constable, SI and specialized cadres.", highlight: "UNIFORM JOBS", color: "text-blue-800", bgColor: "bg-blue-50", displayOrder: 3 },
+    { id: "pspcl-pstcl", title: "PSPCL & PSTCL", description: "Power department recruitments including ALM and JE.", highlight: "TECHNICAL", color: "text-amber-600", bgColor: "bg-amber-50", displayOrder: 4 },
+    { id: "teaching", title: "Teaching", description: "PSTET, ETT, Master Cadre and school recruitment nodes.", highlight: "EDUCATIONAL", color: "text-rose-600", bgColor: "bg-rose-50", displayOrder: 5 },
+    { id: "banking", title: "Banking", description: "Punjab State Cooperative Bank and finance recruitments.", highlight: "FINANCE", color: "text-indigo-600", bgColor: "bg-indigo-50", displayOrder: 6 },
+    { id: "health", title: "Health", description: "BFUHS and Health Department recruitments.", highlight: "MEDICAL", color: "text-cyan-600", bgColor: "bg-cyan-50", displayOrder: 7 },
+    { id: "courts", title: "Courts", description: "High Court and District Court clerk and staff recruitments.", highlight: "JUDICIAL", color: "text-slate-600", bgColor: "bg-slate-50", displayOrder: 8 }
   ];
 
   for (const cat of categories) {
     batch.set(doc(db, 'categories', cat.id), { ...cat, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 2. BOARDS SILO (Institutional Authority Nodes)
+  // 2. BOARDS (Authority Hubs)
   const boards = [
-    { 
-      id: 'psssb', 
-      abbreviation: 'PSSSB', 
-      name: 'Punjab Subordinate Services Selection Board', 
-      categoryId: 'punjab-govt', 
-      displayOrder: 1, 
-      iconUrl: "https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg" 
-    },
-    { 
-      id: 'ppsc', 
-      abbreviation: 'PPSC', 
-      name: 'Punjab Public Service Commission', 
-      categoryId: 'punjab-govt', 
-      displayOrder: 2, 
-      iconUrl: "https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg" 
-    },
-    { 
-      id: 'punjab-police', 
-      abbreviation: 'POLICE', 
-      name: 'Punjab Police Recruitment Board', 
-      categoryId: 'punjab-govt', 
-      displayOrder: 3, 
-      iconUrl: 'https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png' 
-    },
-    { 
-      id: 'punjab-teaching', 
-      abbreviation: 'TEACHING', 
-      name: 'Teaching Recruitment Exams', 
-      categoryId: 'punjab-teaching', 
-      displayOrder: 4, 
-      iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10" 
-    },
-    { 
-      id: 'pstet', 
-      abbreviation: 'PSTET', 
-      name: 'PSTET Preparation', 
-      categoryId: 'punjab-teaching', 
-      displayOrder: 5, 
-      iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10" 
-    },
-    { 
-      id: 'ctet', 
-      abbreviation: 'CTET', 
-      name: 'CTET Preparation', 
-      categoryId: 'punjab-teaching', 
-      displayOrder: 6, 
-      iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10" 
-    },
-    { 
-      id: 'pspcl', 
-      abbreviation: 'PSPCL', 
-      name: 'Punjab State Power Corporation Limited', 
-      categoryId: 'punjab-technical', 
-      displayOrder: 7, 
-      iconUrl: 'https://www.pspcl.in/images/logo.png' 
-    },
-    { 
-      id: 'banking', 
-      abbreviation: 'BANKING', 
-      name: 'Punjab State Cooperative Bank', 
-      categoryId: 'banking', 
-      displayOrder: 8, 
-      iconUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7McWqZqOgKy-BakccvR02WQdEQFrwuvmHBG5rYJzuEg&s=10' 
-    }
+    { id: 'ppsc', abbreviation: 'PPSC', name: 'Punjab Public Service Commission', categoryId: 'ppsc', displayOrder: 1 },
+    { id: 'psssb', abbreviation: 'PSSSB', name: 'Punjab Subordinate Services Selection Board', categoryId: 'psssb', displayOrder: 2 },
+    { id: 'punjab-police', abbreviation: 'POLICE', name: 'Punjab Police Recruitment', categoryId: 'punjab-police', displayOrder: 3 },
+    { id: 'pspcl-pstcl', abbreviation: 'PSPCL', name: 'Punjab Power Corporation', categoryId: 'pspcl-pstcl', displayOrder: 4 },
+    { id: 'teaching', abbreviation: 'TEACHING', name: 'Education Recruitment Board', categoryId: 'teaching', displayOrder: 5 },
+    { id: 'pstet', abbreviation: 'PSTET', name: 'Punjab State Teacher Eligibility Test', categoryId: 'teaching', displayOrder: 6 },
+    { id: 'ctet', abbreviation: 'CTET', name: 'Central Teacher Eligibility Test', categoryId: 'teaching', displayOrder: 7 },
+    { id: 'banking', abbreviation: 'BANKING', name: 'Punjab Cooperative Bank', categoryId: 'banking', displayOrder: 8 },
+    { id: 'health', abbreviation: 'HEALTH', name: 'Health Recruitment (BFUHS)', categoryId: 'health', displayOrder: 9 },
+    { id: 'courts', abbreviation: 'COURTS', name: 'Punjab Courts Recruitment', categoryId: 'courts', displayOrder: 10 }
   ];
 
   for (const b of boards) {
     batch.set(doc(db, 'boards', b.id), { ...b, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 3. SEEDING INITIAL VERTICALS (Strictly Categorized)
-  const psssbExams = ["PSSSB Clerk", "PSSSB Clerk IT", "Revenue Patwari", "Excise Inspector", "Junior Draftsman"];
-  const policeExams = ["Police Constable", "Police Sub-Inspector", "Intelligence Assistant"];
-  const ppscExams = ["Naib Tehsildar", "ADO (Agriculture)", "PPSC Assistant Professor", "Senior Assistant (PPSC)"];
-  const teachingExams = ["Master Cadre Punjabi", "Master Cadre Maths", "ETT Recruitment"];
-  const pstetExams = ["PSTET Paper 1", "PSTET Paper 2"];
-  const ctetExams = ["CTET Paper 1", "CTET Paper 2"];
-  const techExams = ["PSPCL ALM", "PSPCL JE", "PSPCL LDC"];
-  const bankExams = ["Cooperative Bank Clerk", "Bank Manager"];
-
-  const allExamGroups = [
-    { list: psssbExams, board: 'psssb', cat: 'punjab-govt' },
-    { list: policeExams, board: 'punjab-police', cat: 'punjab-govt' },
-    { list: ppscExams, board: 'ppsc', cat: 'punjab-govt' },
-    { list: teachingExams, board: 'punjab-teaching', cat: 'punjab-teaching' },
-    { list: pstetExams, board: 'pstet', cat: 'punjab-teaching' },
-    { list: ctetExams, board: 'ctet', cat: 'punjab-teaching' },
-    { list: techExams, board: 'pspcl', cat: 'punjab-technical' },
-    { list: bankExams, board: 'banking', cat: 'banking' }
+  // 3. EXAMS (Verticals)
+  const groups = [
+    { cat: 'ppsc', board: 'ppsc', list: ["PCS", "Naib Tehsildar", "Tehsildar", "DSP", "Excise & Taxation Officer", "BDPO", "Assistant Professor", "Veterinary Officer", "Assistant Engineer", "Junior Engineer", "Other PPSC Recruitment"] },
+    { cat: 'psssb', board: 'psssb', list: ["Clerk", "Clerk IT", "Clerk Accounts", "Steno Typist", "Patwari", "Canal Patwari", "VDO / Gram Sevak", "Excise Inspector", "Jail Warder", "Forest Guard", "Veterinary Inspector", "Junior Draftsman", "Laboratory Assistant", "Senior Assistant", "Group C Posts", "Group D Posts"] },
+    { cat: 'punjab-police', board: 'punjab-police', list: ["Constable", "Sub Inspector", "Intelligence Assistant", "Technical Cadre", "Investigation Cadre"] },
+    { cat: 'pspcl-pstcl', board: 'pspcl-pstcl', list: ["Assistant Lineman (ALM)", "ASSA", "LDC / Clerk", "Revenue Accountant", "Internal Auditor", "JE Electrical", "JE Civil", "AE Electrical"] },
+    { cat: 'teaching', board: 'pstet', list: ["PSTET Paper 1", "PSTET Paper 2"] },
+    { cat: 'teaching', board: 'ctet', list: ["CTET Paper 1 And Paper 2"] },
+    { cat: 'teaching', board: 'teaching', list: ["ETT", "Master Cadre", "Lecturer Cadre", "Pre Primary Teacher"] },
+    { cat: 'banking', board: 'banking', list: ["Cooperative Bank Clerk", "Cooperative Bank Manager", "IT Officer", "Steno Typist"] },
+    { cat: 'health', board: 'health', list: ["Staff Nurse", "Pharmacist", "Medical Officer", "Food Safety Officer", "ANM", "MPHW", "Lab Technician", "Radiographer"] },
+    { cat: 'courts', board: 'courts', list: ["High Court Clerk", "High Court Stenographer", "District Court Clerk", "Process Server", "Peon"] }
   ];
 
-  allExamGroups.forEach((group, gIdx) => {
+  groups.forEach((group) => {
     group.list.forEach((name, i) => {
-      const id = name.toLowerCase().replace(/\s+/g, '-');
+      const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       batch.set(doc(db, 'exams', id), {
         id, name,
         boardId: group.board,
         categoryId: group.cat,
-        displayOrder: (gIdx * 10) + i,
-        isTrending: i < 2,
+        displayOrder: i,
         updatedAt: serverTimestamp()
       }, { merge: true });
     });
   });
 
-  // 4. PASS PLANS
-  const passes = [
-    { id: 'free-pass', name: 'Free Elite Trial', price: 0, durationDays: 7, features: ['Unlimited Trial Mocks', 'Bilingual Support', 'Performance Audit', 'Basic Notes'], active: true, displayOrder: 0, type: 'FREE' },
-    { id: 'monthly-pass', name: 'Monthly Elite', price: 299, durationDays: 30, features: ['Unlimited Full Mocks', 'AI Logic Solutions', 'PDF Study Notes', 'Ad-Free Hub'], active: true, displayOrder: 1, type: 'PREMIUM' },
-    { id: 'quarterly-pass', name: 'Quarterly Elite', price: 799, durationDays: 90, features: ['Everything in Monthly', 'PYQ Mega Archive', 'Priority Updates', 'Extended Validity'], active: true, displayOrder: 2, type: 'PREMIUM' },
-    { id: 'yearly-pass', name: 'Yearly Elite', price: 1999, durationDays: 365, features: ['Maximum Savings', 'Full Year Access', 'Selection Batch Entry', 'Founder Mentorship'], active: true, displayOrder: 3, type: 'PREMIUM' }
-  ];
-
-  for (const p of passes) {
-    batch.set(doc(db, 'passes', p.id), { ...p, updatedAt: serverTimestamp() }, { merge: true });
-  }
-
-  // 5. GLOBAL SETTINGS
-  batch.set(doc(db, 'settings', 'global'), {
-    platformName: "Cracklix",
-    announcement: "🔥 Official Punjab Latest Pattern Recruitment Calendar Live.",
-    showAnnouncement: true,
-    trustBadgeCount: 0,
-    trustBadgeText: "Aspirants Trusting Cracklix for Punjab Exams",
-    upiId: "arshdeepgrewal1122-1@oksbi",
-    updatedAt: serverTimestamp()
-  }, { merge: true });
-
   await batch.commit();
-
-  console.log('[AUDIT] Initial Registry Synchronized. PSTET nodes verified.');
+  console.log('[AUDIT] Ecosystem Cleaned and Rebuilt.');
 }
