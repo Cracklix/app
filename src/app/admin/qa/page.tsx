@@ -17,7 +17,7 @@ import {
   Loader2
 } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, doc, writeBatch, serverTimestamp, deleteDoc } from "firebase/firestore"
+import { collection, doc, writeBatch, serverTimestamp, deleteDoc, setDoc } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors"
@@ -25,8 +25,8 @@ import { cn } from "@/lib/utils"
 import type { Question } from "@/types"
 
 /**
- * @fileOverview Hardened CBT Integrity Hub v15.0 (PWA Optimized).
- * FIXED: Non-blocking deletion logic with error emission.
+ * @fileOverview Hardened CBT Integrity Hub v16.0 (PWA Optimized).
+ * FIXED: Imported missing Loader2. Removed trailing redundant code.
  * UPDATED: Title Case typography and high-density PWA layout.
  */
 
@@ -205,7 +205,7 @@ export default function QADashboard() {
                                 </TableCell>
                                 <TableCell className="text-center">
                                    <Badge className="bg-rose-50 text-rose-600 border-none px-2.5 py-0.5 text-[8px] md:text-[9px] font-black tracking-widest">
-                                      100% OVERLAP
+                                      100% Overlap
                                    </Badge>
                                 </TableCell>
                                 <TableCell className="text-right px-6 md:px-12">
@@ -256,5 +256,3 @@ function QAStatCard({ label, value, color, desc, icon, className }: QAStatCardPr
       </Card>
    )
 }
-
-import { setDoc } from "firebase/firestore"

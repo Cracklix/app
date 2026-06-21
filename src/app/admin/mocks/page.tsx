@@ -31,9 +31,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Mock Management Hub v18.0 (Hardened).
- * FIXED: Resolved JSX syntax error (tag mismatch).
- * PWA SYNC: Removed uppercase from headers and refactored to high-density Title Case.
+ * @fileOverview Institutional Mock Management Hub v19.0 (PWA Refined).
+ * FIXED: Balanced JSX nesting and resolved unexpected text token.
+ * UPDATED: Title Case typography and Master Blue Pill standard.
  */
 
 export default function MockManagement() {
@@ -131,12 +131,23 @@ export default function MockManagement() {
             <h3 className="text-sm md:text-2xl font-black text-[#0F172A]">Mock Registry</h3>
             <div className="flex flex-wrap gap-2 w-full md:w-auto">
                <Select value={boardFilter} onValueChange={setBoardFilter}>
-                  <SelectTrigger className="flex-1 md:w-40 rounded-full h-10 md:h-11 bg-white border-slate-200 shadow-sm font-bold text-[10px]"><div className="flex items-center gap-2"><Landmark className="h-3 w-3" /> <SelectValue /></div></SelectTrigger>
-                  <SelectContent><SelectItem value="all">All Boards</SelectItem>{boards?.map((b:any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
+                  <SelectTrigger className="flex-1 md:w-40 rounded-full h-10 md:h-11 bg-white border-slate-200 shadow-sm font-bold text-xs">
+                     <div className="flex items-center gap-2"><Landmark className="h-3 w-3" /> <SelectValue /></div>
+                  </SelectTrigger>
+                  <SelectContent>
+                     <SelectItem value="all">All Boards</SelectItem>
+                     {boards?.map((b:any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}
+                  </SelectContent>
                </Select>
                <Select value={accessFilter} onValueChange={setAccessFilter}>
-                  <SelectTrigger className="flex-1 md:w-40 rounded-full h-10 md:h-11 bg-white border-slate-200 shadow-sm font-bold text-[10px]"><SelectValue placeholder="All Tiers" /></SelectTrigger>
-                  <SelectContent><SelectItem value="all">All Tiers</SelectItem><SelectItem value="FREE">Free Hub</SelectItem><SelectItem value="PREMIUM">Elite Hub</SelectItem></SelectContent>
+                  <SelectTrigger className="flex-1 md:w-40 rounded-full h-10 md:h-11 bg-white border-slate-200 shadow-sm font-bold text-xs">
+                     <SelectValue placeholder="All Tiers" />
+                  </SelectTrigger>
+                  <SelectContent>
+                     <SelectItem value="all">All Tiers</SelectItem>
+                     <SelectItem value="FREE">Free Hub</SelectItem>
+                     <SelectItem value="PREMIUM">Elite Hub</SelectItem>
+                  </SelectContent>
                </Select>
             </div>
         </CardHeader>

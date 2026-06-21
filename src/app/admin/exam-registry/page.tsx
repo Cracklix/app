@@ -17,8 +17,8 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Exam Vertical Registry v13.0 (PWA Optimized).
- * FIXED: Systematically removed all forced uppercase to match student home page aesthetic.
+ * @fileOverview Exam Vertical Registry v14.0 (PWA Optimized).
+ * FIXED: Systematically removed all forced uppercase headers and buttons.
  */
 
 export default function ExamRegistryPage() {
@@ -144,7 +144,7 @@ export default function ExamRegistryPage() {
                     <TableCell className="text-right px-6 md:px-12">
                       <div className="flex justify-end gap-2 md:gap-3 opacity-20 group-hover:opacity-100 transition-all">
                         <button onClick={() => setEditingExam(e)} className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary active:scale-90"><Edit className="h-4 w-4" /></button>
-                        <button onClick={async () => { if (confirm("Purge?")) await deleteDoc(doc(db!, "exams", e.id)) }} className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-rose-500 hover:bg-rose-50 active:scale-90"><Trash2 className="h-4 w-4" /></button>
+                        <button onClick={async () => { if (confirm("Purge?")) await deleteDoc(doc(db!, "exams", e.id)) }} className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-rose-500 hover:bg-rose-50 active:scale-90 transition-all"><Trash2 className="h-4 w-4" /></button>
                       </div>
                     </TableCell>
                   </TableRow>

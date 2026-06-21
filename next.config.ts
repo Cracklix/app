@@ -23,6 +23,13 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
 
   compress: true,
+
+  experimental: {
+    allowedDevOrigins: [
+      "9000-firebase-studio-1780356784378.cluster-cd3bsnf6r5bemwki2bxljme5as.cloudworkstations.dev",
+      "*.cloudworkstations.dev"
+    ]
+  }
 };
 
 export default withPWA(nextConfig);
