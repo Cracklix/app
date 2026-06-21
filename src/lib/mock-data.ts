@@ -1,44 +1,41 @@
-import { Exam, MockTest, Question, CurrentAffair, Notification } from "@/types";
+import { Exam, MockTest, Question, CurrentAffairType, Notification } from "@/types";
 
 export const EXAMS: Exam[] = [
   {
     id: "psssb-patwari",
     name: "Revenue Patwari",
-    title: "Revenue Patwari",
     boardId: "PSSSB",
+    categoryId: "punjab-government-exams",
+    displayOrder: 1,
     description: "Prepare for Revenue Patwari, Canal Patwari and Ziladar recruitment for Punjab Government departments.",
-    categoryId: "Revenue",
     totalMocks: 45,
     activeQuestions: 1200,
     totalQuestions: 120,
-    duration: 120,
-    displayOrder: 1
+    duration: 120
   },
   {
     id: "psssb-clerk",
     name: "Clerk (General/IT/Accounts)",
-    title: "Clerk (General/IT/Accounts)",
     boardId: "PSSSB",
+    categoryId: "punjab-government-exams",
+    displayOrder: 2,
     description: "Multi-departmental clerk recruitment exams with Punjabi qualifying sections.",
-    categoryId: "Clerical",
     totalMocks: 60,
     activeQuestions: 2500,
     totalQuestions: 120,
-    duration: 120,
-    displayOrder: 2
+    duration: 120
   },
   {
     id: "ppsc-pcs",
     name: "Punjab Civil Services (PCS)",
-    title: "Punjab Civil Services (PCS)",
     boardId: "PPSC",
+    categoryId: "punjab-government-exams",
+    displayOrder: 3,
     description: "Higher Class A & B services including Executive, DSP, and Tehsildar posts.",
-    categoryId: "Executive",
     totalMocks: 20,
     activeQuestions: 5000,
     totalQuestions: 100,
-    duration: 120,
-    displayOrder: 3
+    duration: 120
   }
 ];
 
@@ -106,7 +103,7 @@ export const SAMPLE_MOCK: MockTest = {
   accessLevel: "FREE"
 };
 
-export const CURRENT_AFFAIRS: CurrentAffair[] = [
+export const CURRENT_AFFAIRS: any[] = [
   {
     id: "ca1",
     title: "Punjab Cabinet approves new Industrial Policy",

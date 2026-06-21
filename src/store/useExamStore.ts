@@ -6,8 +6,8 @@ import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/fir
 import { initializeFirebase } from '@/firebase/app';
 
 /**
- * @fileOverview Global Test Store v3.8.
- * FIXED: Duplicate property initialization in initExam.
+ * @fileOverview Global Test Store v3.9.
+ * FIXED: String type mismatches and duplicate initialization logic.
  */
 
 interface ExamStore extends AttemptState {
@@ -42,7 +42,7 @@ const initialState: AttemptState = {
   bookmarks: [],
   timeLeft: 0,
   currentIdx: 0,
-  currentSectionId: '',
+  currentSectionId: 'General Hub',
   violations: 0,
   startTime: 0,
   endTime: 0,
@@ -86,7 +86,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const initialTimeLeft = Math.max(0, Math.floor((finalEndTime - now) / 1000));
     const finalBaseMode: LanguageDisplayMode = languageMode || 'ENGLISH_PUNJABI';
 
-    let initialLang: LanguageDisplayMode = (!forceReset && state.language && (state.language as string) !== "") 
+    let initialLang: LanguageDisplayMode = (!forceReset && state.language && (state.language as string) !== "none") 
       ? state.language 
       : finalBaseMode;
     
@@ -106,7 +106,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       bookmarks: forceReset ? [] : (savedState?.bookmarks || []),
       violations: forceReset ? 0 : (savedState?.violations || 0),
       currentIdx: forceReset ? 0 : (savedState?.currentIdx || 0),
-      currentSectionId: questions[forceReset ? 0 : (savedState?.currentIdx || 0)]?.sectionId || '',
+      currentSectionId: questions[forceReset ? 0 : (savedState?.currentIdx || 0)]?.sectionId || 'General Hub',
       isPaused: false, 
       isSubmitting: false, 
       isSyncing: false
@@ -153,7 +153,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const { visited, questions, userId, mockId } = get();
     if (idx < 0 || idx >= questions.length) return;
     const newVisited = Array.from(new Set([...visited, idx]));
-    set({ currentIdx: idx, visited: newVisited, currentSectionId: questions[idx]?.sectionId || '' });
+    set({ currentIdx: idx, visited: newVisited, currentSectionId: questions[idx]?.sectionId || 'General Hub' });
     if (userId && mockId) {
       const { firestore: dbInstance } = initializeFirebase();
       updateDoc(doc(dbInstance, 'attempts', `${userId}_${mockId}`), { 

@@ -21,7 +21,7 @@ import {
 
 /**
  * @fileOverview Production Firestore Service Hub.
- * HARDENED: Unified types for consistent build artifacts.
+ * HARDENED: Unified types and fixed AttemptResult import issues.
  */
 
 export const FirestoreService = {

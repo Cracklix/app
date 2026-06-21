@@ -11,7 +11,7 @@ export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
 /**
  * @fileOverview Institutional Calendar Node v23.0 (Type Hardened).
- * FIXED:滿足 Element return requirement across all orientations.
+ * FIXED: satisfy Element return requirement across all orientations for react-day-picker v9.
  */
 function Calendar({
   className,
