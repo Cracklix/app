@@ -5,7 +5,7 @@ import { useMemo, useState, useEffect } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useCollection, useFirestore } from "@/firebase"
-import { collection, query, where, limit } from "firebase/firestore"
+import { collection, query, where, limit, orderBy } from "firebase/firestore"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -35,7 +35,8 @@ import ShareButton from "@/components/navigation/ShareButton"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v35.0 (Pass Expiry Aware).
+ * @fileOverview Student Dashboard v36.0 (Live Results Hardened).
+ * FIXED: Explicit timestamp sorting to ensure newest attempts appear first.
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading, profileLoading } = useUser() as any;
@@ -86,7 +87,8 @@ export default function StudentDashboard() {
 
   const resultsQuery = useMemo(() => {
     if (!db || !user || !mounted) return null
-    return query(collection(db, "results"), where("userId", "==", user.uid), limit(10))
+    // We fetch a larger set and sort client-side to ensure reliability without index errors
+    return query(collection(db, "results"), where("userId", "==", user.uid), limit(50))
   }, [db, user, mounted])
 
   const { data: rawResults, loading: resultsLoading } = useCollection<any>(resultsQuery)
@@ -94,7 +96,13 @@ export default function StudentDashboard() {
   const stats = useMemo(() => {
     if (!rawResults || rawResults.length === 0) return { total: 0, avgAccuracy: 0, streak: 0, readiness: 0, hours: "0h", list: [] }
     
-    const sorted = [...rawResults].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    // TRUTH SYNC: Strictly sort by timestamp descending
+    const sorted = [...rawResults].sort((a, b) => {
+       const timeA = new Date(a.timestamp || 0).getTime();
+       const timeB = new Date(b.timestamp || 0).getTime();
+       return timeB - timeA;
+    });
+
     const total = sorted.length
     const correct = sorted.reduce((acc: number, r: any) => acc + (r.correctCount || r.score || 0), 0)
     const attempted = sorted.reduce((acc: number, r: any) => acc + (r.attemptedCount || r.totalQuestions || 0), 0)
@@ -107,7 +115,7 @@ export default function StudentDashboard() {
     const uniqueDays = new Set(sorted.filter((r: any) => r.timestamp).map((r: any) => new Date(r.timestamp).toDateString()))
     const readiness = Math.min(100, Math.round((avgAcc * 0.7) + (Math.min(total, 30) * 1)))
 
-    return { total, avgAccuracy: avgAcc, streak: uniqueDays.size, readiness, hours: timeFormatted, list: sorted }
+    return { total, avgAccuracy: avgAcc, streak: uniqueDays.size, readiness, hours: timeFormatted, list: sorted.slice(0, 10) }
   }, [rawResults])
 
   if (!mounted || authLoading || (user && !profile)) return (
@@ -178,7 +186,7 @@ export default function StudentDashboard() {
                 <CardHeader className="p-6 md:p-10 border-b border-slate-50 bg-slate-50/30 flex flex-row items-center justify-between">
                     <div className="space-y-1">
                       <h3 className="font-headline text-lg md:text-3xl font-black text-[#0F172A] uppercase">Test History</h3>
-                      <p className="text-[9px] md:text-[11px] font-bold uppercase tracking-widest text-slate-400">Your recent practice sessions</p>
+                      <p className="text-[9px] md:text-[11px] font-bold uppercase tracking-widest text-slate-400">Real-time performance logs</p>
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -209,7 +217,7 @@ export default function StudentDashboard() {
                             </Link>
                           ))
                       ) : (
-                          <div className="p-20 text-center opacity-30 italic text-sm md:text-lg uppercase font-black tracking-widest text-slate-400">No tests found.</div>
+                          <div className="p-20 text-center opacity-30 italic text-sm md:text-lg uppercase font-black tracking-widest text-slate-400">No activity detected yet. Start a mock test!</div>
                       )}
                     </div>
                 </CardContent>
@@ -241,8 +249,8 @@ export default function StudentDashboard() {
 
 function MetricItem({ label, val, icon }: any) {
   return (
-    <Card className="border-none shadow-xl bg-white p-4 sm:p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] text-left group hover:translate-y-[-4px] transition-all border border-slate-50 min-w-0">
-      <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center mb-4 md:mb-8 group-hover:bg-primary/5 transition-all shadow-inner border border-slate-100 shrink-0">
+    <Card className="border-none shadow-xl bg-white p-4 sm:p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] text-left group hover:translate-y-[-4px] transition-all border border-slate-100 min-w-0">
+      <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center mb-4 md:mb-8 group-hover:bg-primary/5 transition-all shadow-inner border border-slate-50 shrink-0">
         {icon}
       </div>
       <div className="flex flex-col gap-1">

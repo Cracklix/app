@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useMemo, useEffect, useState } from "react"
@@ -37,7 +38,8 @@ import { usePWAInstall } from "@/hooks/use-pwa-install"
 import { getAuthorityIcon } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional My Hub Hub v8.0 (Logo Hardened).
+ * @fileOverview Institutional My Hub Hub v9.0 (Live Sync Hardened).
+ * FIXED: Removed all dummy fallback data from attempt history.
  */
 
 export default function MyExamsPage() {
@@ -93,14 +95,19 @@ export default function MyExamsPage() {
 
   const resultsQuery = useMemo(() => {
     if (!db || !user) return null
-    return query(collection(db, "results"), where("userId", "==", user.uid), limit(10))
+    // Fetch latest 50 and sort client-side for immediate consistency
+    return query(collection(db, "results"), where("userId", "==", user.uid), limit(50))
   }, [db, user])
 
   const { data: rawResults, loading: attemptsLoading } = useCollection<any>(resultsQuery)
 
   const recentAttempts = useMemo(() => {
-    if (!rawResults) return []
-    return [...rawResults].sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    if (!rawResults || rawResults.length === 0) return []
+    return [...rawResults].sort((a: any, b: any) => {
+       const timeA = new Date(a.timestamp || 0).getTime();
+       const timeB = new Date(b.timestamp || 0).getTime();
+       return timeB - timeA;
+    }).slice(0, 10);
   }, [rawResults])
 
   const handleUnpin = async (examId: string) => {

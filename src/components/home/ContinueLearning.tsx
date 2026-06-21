@@ -1,8 +1,9 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
-import { collection, query, where, limit } from 'firebase/firestore';
+import { collection, query, where, limit, orderBy } from 'firebase/firestore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +13,8 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview High-Fidelity "My Exams" Hub v10.3 (Fixed Imports).
+ * @fileOverview High-Fidelity "My Exams" Hub v11.0 (Live Sync).
+ * FIXED: Removed dummy fallback cards and implemented real-time timestamp sorting.
  */
 
 export default function ContinueLearning() {
@@ -27,7 +29,8 @@ export default function ContinueLearning() {
 
   const resultsQuery = useMemo(() => {
     if (!db || !user || !mounted) return null;
-    return query(collection(db, "results"), where("userId", "==", user.uid), limit(2));
+    // We fetch more to allow client-side sorting if index isn't ready
+    return query(collection(db, "results"), where("userId", "==", user.uid), limit(20));
   }, [db, user, mounted]);
 
   const examsQuery = useMemo(() => {
@@ -35,9 +38,18 @@ export default function ContinueLearning() {
     return collection(db, "exams");
   }, [db, mounted]);
 
-  const { data: recentAttempts, loading: resultsLoading } = useCollection<any>(resultsQuery);
+  const { data: rawResults, loading: resultsLoading } = useCollection<any>(resultsQuery);
   const { data: allExams, loading: examsLoading } = useCollection<any>(examsQuery);
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]));
+
+  const recentAttempts = useMemo(() => {
+    if (!rawResults || rawResults.length === 0) return []
+    return [...rawResults].sort((a, b) => {
+       const timeA = new Date(a.timestamp || 0).getTime();
+       const timeB = new Date(b.timestamp || 0).getTime();
+       return timeB - timeA;
+    }).slice(0, 2);
+  }, [rawResults]);
 
   const pinnedExams = useMemo(() => {
     if (!allExams || !profile?.pinnedExams) return [];
@@ -72,25 +84,31 @@ export default function ContinueLearning() {
               <div className="grid grid-cols-1 gap-4 md:gap-6">
                  {resultsLoading ? (
                     Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-40 w-full rounded-[2.5rem] bg-slate-50" />)
-                 ) : recentAttempts?.map((res: any) => (
-                    <Card key={res.id} className="border-none shadow-xl rounded-[2.5rem] bg-[#0B1528] text-white p-6 md:p-8 overflow-hidden relative group text-left border border-white/5">
-                       <div className="absolute bottom-0 right-0 p-8 opacity-[0.03] rotate-12 group-hover:scale-110 transition-transform duration-1000">
-                          <Trophy className="h-32 w-32" />
-                       </div>
-                       <div className="relative z-10 flex flex-row items-center gap-6">
-                          <div className="h-12 w-12 md:h-16 md:w-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform duration-500">
-                             <Zap className="h-6 w-6 md:h-8 md:w-8 text-primary fill-current" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                             <p className="text-primary font-black text-[9px] uppercase tracking-[0.4em] mb-1">SCORE: {res.score}</p>
-                             <h3 className="text-base md:text-xl font-black uppercase text-white truncate">{res.mockTitle}</h3>
-                             <Button asChild className="h-9 mt-4 px-6 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[9px] tracking-widest rounded-xl transition-all active:scale-95 border-none">
-                                <Link href={`/results/${res.id || res.mockId}`}>REVIEW RESULT</Link>
-                             </Button>
-                          </div>
-                       </div>
-                    </Card>
-                 ))}
+                 ) : recentAttempts.length > 0 ? (
+                    recentAttempts.map((res: any) => (
+                      <Card key={res.id} className="border-none shadow-xl rounded-[2.5rem] bg-[#0B1528] text-white p-6 md:p-8 overflow-hidden relative group text-left border border-white/5">
+                        <div className="absolute bottom-0 right-0 p-8 opacity-[0.03] rotate-12 group-hover:scale-110 transition-transform duration-1000">
+                            <Trophy className="h-32 w-32" />
+                        </div>
+                        <div className="relative z-10 flex flex-row items-center gap-6">
+                            <div className="h-12 w-12 md:h-16 md:w-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform duration-500">
+                                <Zap className="h-6 w-6 md:h-8 md:w-8 text-primary fill-current" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-primary font-black text-[9px] uppercase tracking-[0.4em] mb-1">SCORE: {res.score}</p>
+                                <h3 className="text-base md:text-xl font-black uppercase text-white truncate">{res.mockTitle}</h3>
+                                <Button asChild className="h-9 mt-4 px-6 bg-primary hover:bg-orange-600 text-white font-black uppercase text-[9px] tracking-widest rounded-xl transition-all active:scale-95 border-none">
+                                  <Link href={`/results/${res.mockId}`}>REVIEW RESULT</Link>
+                                </Button>
+                            </div>
+                        </div>
+                      </Card>
+                    ))
+                 ) : (
+                    <div className="p-12 text-center bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
+                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">No recent attempts found</p>
+                    </div>
+                 )}
               </div>
            </div>
 
@@ -101,31 +119,37 @@ export default function ContinueLearning() {
               <div className="grid grid-cols-1 gap-4">
                  {examsLoading ? (
                     Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-2xl bg-slate-50" />)
-                 ) : pinnedExams.map((exam: any) => {
-                    const board = boards?.find((b: any) => b.id === exam.boardId || b.abbreviation === exam.boardId);
-                    const logoUrl = board?.iconUrl || exam.iconUrl;
-                    
-                    return (
-                       <Link key={exam.id} href={`/exams/${exam.id}`}>
-                          <div className="flex items-center justify-between p-4 bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:translate-x-1 transition-all group">
-                             <div className="flex items-center gap-4 min-w-0">
-                                <div className="h-11 w-11 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 shadow-inner overflow-hidden">
-                                   {logoUrl && !failedImages[exam.id] ? (
-                                      <img src={logoUrl} className="h-full w-full object-contain p-2" alt="Logo" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
-                                   ) : (
-                                      <GraduationCap className="h-5 w-5 text-slate-300" />
-                                   )}
+                 ) : pinnedExams.length > 0 ? (
+                    pinnedExams.map((exam: any) => {
+                       const board = boards?.find((b: any) => b.id === exam.boardId || b.abbreviation === exam.boardId);
+                       const logoUrl = board?.iconUrl || exam.iconUrl;
+                       
+                       return (
+                          <Link key={exam.id} href={`/exams/${exam.id}`}>
+                             <div className="flex items-center justify-between p-4 bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:translate-x-1 transition-all group">
+                                <div className="flex items-center gap-4 min-w-0">
+                                   <div className="h-11 w-11 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 shadow-inner overflow-hidden">
+                                      {logoUrl && !failedImages[exam.id] ? (
+                                         <img src={logoUrl} className="h-full w-full object-contain p-2" alt="Logo" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
+                                      ) : (
+                                         <GraduationCap className="h-5 w-5 text-slate-300" />
+                                      )}
+                                   </div>
+                                   <div className="min-w-0">
+                                      <h4 className="text-sm font-black text-[#0F172A] uppercase truncate">{exam.name}</h4>
+                                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{board?.abbreviation || 'PSSSB'} Hub</p>
+                                   </div>
                                 </div>
-                                <div className="min-w-0">
-                                   <h4 className="text-sm font-black text-[#0F172A] uppercase truncate">{exam.name}</h4>
-                                   <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{board?.abbreviation || 'PSSSB'} Hub</p>
-                                </div>
+                                <ChevronRight className="h-4 w-4 text-slate-200 group-hover:text-primary transition-all" />
                              </div>
-                             <ChevronRight className="h-4 w-4 text-slate-200 group-hover:text-primary transition-all" />
-                          </div>
-                       </Link>
-                    )
-                 })}
+                          </Link>
+                       )
+                    })
+                 ) : (
+                    <div className="p-8 text-center bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
+                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pin an exam to follow it here</p>
+                    </div>
+                 )}
               </div>
            </div>
         </div>
