@@ -12,14 +12,13 @@ import { ShieldCheck, ArrowLeft, Loader2, QrCode, CreditCard, AlertTriangle, Sma
 import { useUser, useDoc, useFirestore } from "@/firebase"
 import { useEffect, useState, Suspense, useMemo } from "react"
 import { useToast } from "@/hooks/use-toast"
-import { submitManualPayment } from "@/app/actions/payment"
+import { submitManualPayment, activateFreePass } from "@/app/actions/payment"
 import { doc } from "firebase/firestore"
 import Script from "next/script"
 
 /**
- * @fileOverview Hardened Production Checkout Hub v6.0.
- * FIXED: Reliable Cashfree SDK initialization with Script component.
- * FIXED: Origin detection for whitelisting compliance.
+ * @fileOverview Hardened Production Checkout Hub v6.1.
+ * FIXED: Instant activation for plans with price 0.
  */
 
 export default function CheckoutPage() {
@@ -57,9 +56,24 @@ function CheckoutContent() {
     if (!loading && !user) router.push("/login")
   }, [user, loading, router])
 
-  const handleCashfreePayment = async () => {
+  const handlePaymentInitiation = async () => {
     if (!user || !profile || !planData || onlineProcessing) return;
     
+    // 1. Instant Activation for Free Plans
+    if (planData.price === 0) {
+      setOnlineProcessing(true);
+      try {
+        await activateFreePass(user.uid, planId);
+        toast({ title: "Pass Activated", description: "Your free preparation node is now live." });
+        router.push("/dashboard");
+      } catch (e) {
+        toast({ variant: "destructive", title: "Activation Failed" });
+        setOnlineProcessing(false);
+      }
+      return;
+    }
+
+    // 2. Online Gateway Flow
     if (!(window as any).Cashfree) {
        toast({ variant: "destructive", title: "SDK Error", description: "Payment engine is still loading. Please wait." });
        return;
@@ -115,6 +129,8 @@ function CheckoutContent() {
   if (planLoading) return <div className="h-screen flex items-center justify-center bg-white"><Loader2 className="h-10 w-10 text-primary animate-spin" /></div>
   if (!planData) return <div className="h-screen flex items-center justify-center text-slate-400 uppercase font-black tracking-widest text-xs">Registry Node Missing</div>
 
+  const isFreePlan = planData.price === 0;
+
   return (
     <div className="min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
@@ -129,7 +145,7 @@ function CheckoutContent() {
              <ArrowLeft className="h-6 w-6 text-[#0F172A]" />
            </Button>
            <div className="text-left">
-              <h1 className="text-2xl md:text-4xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-none">Checkout</h1>
+              <h1 className="text-2xl md:text-4xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-none">{isFreePlan ? "Claim Pass" : "Checkout"}</h1>
               <p className="text-slate-400 font-bold uppercase tracking-widest text-[8px] md:text-[10px] mt-1.5">Institutional Payment Hub</p>
            </div>
         </div>
@@ -139,33 +155,38 @@ function CheckoutContent() {
               <Tabs defaultValue="online" className="w-full">
                  <TabsList className="bg-slate-100 border border-slate-200 p-1 h-14 rounded-2xl w-full mb-8 grid grid-cols-2">
                     <TabsTrigger value="online" className="rounded-xl font-black uppercase text-[10px] h-full flex items-center gap-2">
-                       <Zap className="h-3.5 w-3.5" /> SECURE ONLINE
+                       <Zap className="h-3.5 w-3.5" /> {isFreePlan ? "INSTANT CLAIM" : "SECURE ONLINE"}
                     </TabsTrigger>
-                    <TabsTrigger value="manual" className="rounded-xl font-black uppercase text-[10px] h-full flex items-center gap-2">
-                       <QrCode className="h-3.5 w-3.5" /> MANUAL UPI
-                    </TabsTrigger>
+                    {!isFreePlan && (
+                      <TabsTrigger value="manual" className="rounded-xl font-black uppercase text-[10px] h-full flex items-center gap-2">
+                         <QrCode className="h-3.5 w-3.5" /> MANUAL UPI
+                      </TabsTrigger>
+                    )}
                  </TabsList>
 
                  <TabsContent value="online" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                     <Card className="border-none shadow-5xl rounded-[2.5rem] bg-white overflow-hidden group border border-slate-100">
                        <CardHeader className="p-8 md:p-10 pb-4">
                           <div className="flex items-center gap-4 mb-2">
-                             <CreditCard className="h-6 w-6 text-primary" />
-                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Fast Account Activation</span>
+                             {isFreePlan ? <ShieldCheck className="h-6 w-6 text-emerald-500" /> : <CreditCard className="h-6 w-6 text-primary" />}
+                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">{isFreePlan ? "No Payment Required" : "Fast Account Activation"}</span>
                           </div>
-                          <CardTitle className="font-headline font-black text-xl md:text-2xl uppercase text-[#0F172A]">Payment Gateway</CardTitle>
-                          <CardDescription className="text-slate-400 font-medium">Auto-verify via UPI, Cards, or Netbanking for instant access.</CardDescription>
+                          <CardTitle className="font-headline font-black text-xl md:text-2xl uppercase text-[#0F172A]">{isFreePlan ? "Free Activation" : "Payment Gateway"}</CardTitle>
+                          <CardDescription className="text-slate-400 font-medium">{isFreePlan ? "Get instant access to free mocks and patterns." : "Auto-verify via UPI, Cards, or Netbanking for instant access."}</CardDescription>
                        </CardHeader>
                        <CardContent className="p-8 md:p-10 pt-4">
                           <Button 
-                            onClick={handleCashfreePayment}
-                            disabled={onlineProcessing || !sdkReady}
-                            className="w-full h-16 md:h-20 bg-primary hover:bg-orange-600 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-3xl shadow-primary/20 transition-all active:scale-95 border-none gap-4"
+                            onClick={handlePaymentInitiation}
+                            disabled={onlineProcessing || (!isFreePlan && !sdkReady)}
+                            className={cn(
+                              "w-full h-16 md:h-20 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl shadow-3xl transition-all active:scale-95 border-none gap-4",
+                              isFreePlan ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20" : "bg-primary hover:bg-orange-600 shadow-primary/20"
+                            )}
                           >
                              {onlineProcessing ? <Loader2 className="h-6 w-6 animate-spin" /> : <ShieldCheck className="h-6 w-6 fill-current" />}
-                             {onlineProcessing ? "INITIALIZING SECURE HUB..." : "ACTIVATE PLAN NOW"}
+                             {onlineProcessing ? "AUDITING REGISTRY..." : isFreePlan ? "CLAIM MY FREE PASS" : "ACTIVATE PLAN NOW"}
                           </Button>
-                          {!sdkReady && <p className="text-[8px] font-bold text-center text-slate-300 mt-4 uppercase tracking-widest">Awaiting security handshake...</p>}
+                          {!isFreePlan && !sdkReady && <p className="text-[8px] font-bold text-center text-slate-300 mt-4 uppercase tracking-widest">Awaiting security handshake...</p>}
                        </CardContent>
                     </Card>
                  </TabsContent>
