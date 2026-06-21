@@ -14,7 +14,8 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 /**
- * @fileOverview Institutional Category Discovery v113.0 (Mobile High-Density).
+ * @fileOverview Institutional Category Discovery v114.0.
+ * UI FIX: Removed 'uppercase' from category titles.
  */
 
 const STRICT_WHITELIST = [
@@ -34,7 +35,6 @@ export default function FeaturedCategories() {
   const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]));
   const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]));
   const { data: pyqs } = useCollection<any>(useMemo(() => (db ? collection(db, "pyqs") : null), [db]));
-  const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]));
 
   const categories = useMemo(() => {
      if (!rawCategories) return [];

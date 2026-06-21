@@ -18,8 +18,8 @@ import { cn } from "@/lib/utils"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Dynamic Latest Mock Tests Hub v66.0 (Access Control Hardened).
- * UPDATED: Implemented existing pass system checks for Premium locking.
+ * @fileOverview Dynamic Latest Mock Tests Hub v67.0.
+ * UI FIX: Removed 'uppercase' from mock titles.
  */
 
 export default function LatestMocks() {
@@ -34,7 +34,6 @@ export default function LatestMocks() {
     return [...rawMocks].sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
   }, [rawMocks])
 
-  // Entitlement Check using existing pass system
   const isPassActive = useMemo(() => {
     if (!profile) return false;
     if (profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN') return true;

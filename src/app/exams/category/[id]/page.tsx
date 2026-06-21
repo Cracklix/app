@@ -12,9 +12,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Hierarchical Category Hub v52.0.
- * UI FIX: Enlarged logos by removing padding and using XL sizes.
- * UI FIX: Removed uppercase from titles.
+ * @fileOverview Hierarchical Category Hub v53.0.
+ * UI FIX: Removed 'uppercase' from page heading, board titles, and exam names.
  */
 
 export default function CategoryHubsPage() {

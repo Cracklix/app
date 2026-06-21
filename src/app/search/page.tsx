@@ -14,9 +14,8 @@ import { cn } from "@/lib/utils"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Search Center Hub v3.1 (Fixed UMD React Error).
- * FIXED: Replaced generic icons with AuthorityLogo resolver for exam results.
- * UI FIX: Removed uppercase from result titles.
+ * @fileOverview Search Center Hub v3.2.
+ * UI FIX: Removed 'uppercase' from search result titles.
  */
 
 export default function SearchPage() {

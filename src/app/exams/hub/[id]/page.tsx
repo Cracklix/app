@@ -15,9 +15,8 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Premium Board Hub v70.0.
- * UI UPGRADE: Large logos and dynamic resource availability chips.
- * UI FIX: Removed uppercase from titles.
+ * @fileOverview Premium Board Hub v71.0.
+ * UI FIX: Removed 'uppercase' from selection heading and exam names.
  */
 
 export default function HubExamsPage() {

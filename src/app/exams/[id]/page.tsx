@@ -30,8 +30,8 @@ import { useToast } from "@/hooks/use-toast"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional Exam Detail Hub v50.0 (Mobile Optimized).
- * UPDATED: Reduced padding and tightened layout for maximum content visibility on mobile.
+ * @fileOverview Institutional Exam Detail Hub v51.0.
+ * UI FIX: Removed 'uppercase' from exam title and card headings.
  */
 
 export default function ExamHubPage() {
@@ -73,7 +73,6 @@ export default function ExamHubPage() {
     } finally { setIsPinning(false); }
   };
 
-  // Hardened Entitlement Check using existing passStatus
   const isPassActive = useMemo(() => {
      if (!user || !profile) return false;
      if (profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN') return true;

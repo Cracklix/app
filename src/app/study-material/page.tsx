@@ -17,7 +17,8 @@ import { useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Official Institutional Study Material Hub v1.1 (Access Control Hardened).
+ * @fileOverview Official Institutional Study Material Hub v1.2.
+ * UI FIX: Removed 'uppercase' from Study Material heading and asset titles.
  */
 
 export default function StudyMaterialPage() {
@@ -65,7 +66,7 @@ export default function StudyMaterialPage() {
                  <Zap className="h-5 w-5 text-primary" />
                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Official Study Assets</span>
               </div>
-              <h1 className="text-4xl md:text-6xl font-headline font-black text-[#0F172A] tracking-tight uppercase leading-[0.9]">
+              <h1 className="text-4xl md:text-6xl font-headline font-black text-[#0F172A] tracking-tight leading-[0.9]">
                 Study <br/> <span className="text-primary">Material</span>
               </h1>
               <p className="text-slate-500 font-medium text-lg max-w-xl">
@@ -151,7 +152,6 @@ function NotesGrid({ data, loading, profile }: any) {
 }
 
 function DownloadCard({ asset, profile }: { asset: any, profile: any }) {
-   // Use existing passStatus check
    const isPassValid = useMemo(() => {
      if (profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN') return true;
      return profile?.passStatus === 'active';
@@ -182,7 +182,7 @@ function DownloadCard({ asset, profile }: { asset: any, profile: any }) {
                      <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest">ELITE HUB</span>
                   )}
                </div>
-               <h3 className="text-xl md:text-2xl font-headline font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors flex-1 uppercase">
+               <h3 className="text-xl md:text-2xl font-headline font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors flex-1">
                   {asset.title}
                </h3>
                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-slate-50 mt-auto">

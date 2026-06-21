@@ -13,7 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Popular Punjab Exams Hub v75.0 (Mobile High-Density).
+ * @fileOverview Popular Punjab Exams Hub v76.0.
+ * UI FIX: Removed 'uppercase' from exam names.
  */
 
 const POPULAR_LIST = [

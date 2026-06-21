@@ -35,8 +35,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 /**
- * @fileOverview Official Current Affairs Center v15.0 (Typography Hardened).
- * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
+ * @fileOverview Official Current Affairs Center v16.0.
+ * UI FIX: Removed 'uppercase' from Study Center heading and item titles.
  */
 
 const HUB_TYPES = [
@@ -178,7 +178,7 @@ export default function CurrentAffairsCenter() {
                                                 <Calendar className="h-3 w-3 text-primary" /> {item.month} {item.year}
                                              </span>
                                           </div>
-                                          <h2 className="text-xl md:text-2xl font-black text-[#0F172A] group-hover:text-primary transition-colors uppercase leading-tight">{item.title}</h2>
+                                          <h2 className="text-xl md:text-2xl font-black text-[#0F172A] group-hover:text-primary transition-colors leading-tight">{item.title}</h2>
                                           <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                                              <Globe className="h-3 w-3" /> Language: {item.language || "Bilingual"}
                                           </div>

@@ -17,8 +17,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional Master Registry v11.0 (Dynamic Stats).
- * NO HARDCODED STATS: Derived from live Firestore aggregation.
+ * @fileOverview Institutional Master Registry v12.0.
+ * UI FIX: Removed 'uppercase' from primary registry headlines and category titles.
  */
 
 const AUTHORIZED_CATEGORY_IDS = [
@@ -77,12 +77,12 @@ export default function MocksDiscoveryPage() {
                     <div className="h-10 w-10 md:h-12 md:w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
                       <Landmark className="h-5 w-5 md:h-6 md:w-6" />
                     </div>
-                    <p className="text-xs md:text-sm font-bold tracking-[0.3em] uppercase text-slate-400">
+                    <p className="text-xs md:sm font-bold tracking-[0.3em] uppercase text-slate-400">
                       Official Exam Registry
                     </p>
                   </div>
                   
-                  <h1 className="text-[32px] sm:text-[42px] md:text-[48px] lg:text-[60px] xl:text-[72px] font-black tracking-tight text-[#0F172A] leading-[0.95] antialiased uppercase">
+                  <h1 className="text-[32px] sm:text-[42px] md:text-[48px] lg:text-[60px] xl:text-[72px] font-black tracking-tight text-[#0F172A] leading-[0.95] antialiased">
                     Master <br/>
                     <span className="text-primary">Registry</span>
                   </h1>
@@ -134,7 +134,7 @@ export default function MocksDiscoveryPage() {
                              </div>
                              
                              <div className="space-y-4 flex-1">
-                                <h3 className="text-[20px] md:text-[28px] font-black leading-tight tracking-tight text-[#0F172A] group-hover:text-primary transition-colors uppercase">
+                                <h3 className="text-[20px] md:text-[28px] font-black leading-tight tracking-tight text-[#0F172A] group-hover:text-primary transition-colors">
                                    {cat.title}
                                 </h3>
                                 <p className="text-sm md:text-base text-slate-400 leading-snug line-clamp-2">
