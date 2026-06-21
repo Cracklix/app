@@ -29,7 +29,8 @@ import {
   MessageCircle,
   Trophy,
   Calendar,
-  HelpCircle
+  HelpCircle,
+  Wrench
 } from "lucide-react";
 
 import {
@@ -84,6 +85,7 @@ const NAV_GROUPS = [
       { label: "Verify UPI", href: "/admin/payments/verify", icon: Gem },
       { label: "Pass Manager", href: "/admin/passes", icon: Gem },
       { label: "Audit Logs", href: "/admin/audit-logs", icon: History },
+      { label: "System Tools", href: "/admin/maintenance", icon: Wrench },
       { label: "Health", href: "/admin/health", icon: HeartPulse },
       { label: "Settings", href: "/admin/settings", icon: Settings },
     ],
