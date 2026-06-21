@@ -17,8 +17,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Free Hub CMS v5.1.
- * ACCESSIBILITY: Added DialogDescription for ARIA compliance.
+ * @fileOverview Institutional Free Hub CMS v6.0 (PWA Overhaul).
+ * FIXED: Removed all uppercase headers and implemented high-density Title Case.
  */
 
 export default function AdminFreeContent() {
@@ -81,83 +81,82 @@ export default function AdminFreeContent() {
   }, [content, searchTerm])
 
   return (
-    <div className="space-y-12 pb-24 text-left">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 px-4">
-        <div>
-           <div className="flex items-center gap-3 mb-2">
-              <Sparkles className="h-6 w-6 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Free Content Master Registry</span>
+    <div className="space-y-6 md:space-y-12 pb-24 text-left animate-in fade-in duration-500">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 px-1">
+        <div className="space-y-1">
+           <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Free Content Master Registry</span>
            </div>
-          <h1 className="text-5xl font-black font-headline text-[#0F172A] uppercase tracking-tight leading-none">Free Hub CMS</h1>
-          <p className="text-slate-500 mt-2 text-lg font-medium">Coordinate Mocks, Notes, and Analysis for the public feed.</p>
+          <h1 className="text-2xl md:text-5xl font-black text-[#0F172A] tracking-tight">Free Hub CMS</h1>
+          <p className="text-slate-500 text-[11px] md:text-lg font-medium">Coordinate mocks, notes, and analysis for the public feed.</p>
         </div>
-        <Button onClick={() => setEditingItem({ title: "", description: "", slug: "", type: "note", link: "", fileUrl: "" })} className="bg-primary hover:bg-orange-600 gap-3 h-16 px-10 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl transition-all active:scale-95">
+        <Button onClick={() => setEditingNote({ title: "", description: "", slug: "", type: "note", link: "", fileUrl: "" })} className="w-full md:w-auto h-11 md:h-14 px-10 bg-primary hover:bg-blue-700 text-white rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl border-none active:scale-95 gap-3">
           <Plus className="h-5 w-5" /> Initialize Free Content
         </Button>
       </div>
 
-      <Card className="border-none shadow-3xl bg-white rounded-[3rem] overflow-hidden mx-4">
-        <CardHeader className="p-10 border-b border-slate-50 bg-slate-50/30">
-           <div className="relative w-full md:w-[45%]">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-              <Input 
-                className="pl-16 h-16 rounded-[1.5rem] bg-white border-none shadow-inner text-lg font-medium text-[#0F172A]" 
-                placeholder="Search free repository..." 
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
-            </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Table>
+      <div className="mx-1 relative group max-w-2xl">
+         <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+         <Input 
+           className="h-14 md:h-16 pl-14 rounded-full bg-white border-slate-50 shadow-inner text-base md:text-lg font-bold" 
+           placeholder="Search free repository..." 
+           value={searchTerm}
+           onChange={e => setSearchTerm(e.target.value)}
+         />
+      </div>
+
+      <Card className="border-none shadow-xl rounded-2xl md:rounded-[3rem] overflow-hidden bg-white mx-1 border border-slate-50">
+        <CardContent className="p-0 text-left overflow-x-auto">
+          <Table className="min-w-[800px]">
             <TableHeader className="bg-slate-50/50">
-              <TableRow className="border-slate-50 h-20">
-                <TableHead className="px-10 text-[10px] font-black uppercase text-slate-500">Asset Identity</TableHead>
-                <TableHead className="text-[10px] font-black uppercase text-slate-500">Hub Type</TableHead>
-                <TableHead className="text-[10px] font-black uppercase text-slate-500">URL / Slug</TableHead>
-                <TableHead className="text-right px-10 text-[10px] font-black uppercase text-slate-500">Audit Actions</TableHead>
+              <TableRow className="border-slate-50 h-14 md:h-20">
+                <TableHead className="px-6 md:px-12 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">Asset Identity</TableHead>
+                <TableHead className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">Hub Type</TableHead>
+                <TableHead className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">URL / Slug</TableHead>
+                <TableHead className="text-right px-6 md:px-12 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">Audit</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}><TableCell colSpan={4} className="px-10 py-8"><Skeleton className="h-14 w-full rounded-2xl bg-slate-50" /></TableCell></TableRow>
+                  <TableRow key={i} className="border-slate-50"><TableCell colSpan={4} className="px-6 py-6 md:px-12 md:py-10"><Skeleton className="h-10 w-full rounded-xl bg-slate-50" /></TableCell></TableRow>
                 ))
               ) : filteredContent.map((item) => (
-                <TableRow key={item.id} className="hover:bg-slate-50 border-slate-50 transition-all group">
-                  <TableCell className="px-10 py-8 text-left">
-                    <div className="flex items-center gap-6">
+                <TableRow key={item.id} className="border-slate-50 hover:bg-slate-50 transition-colors group">
+                  <TableCell className="px-6 md:px-12 py-5 md:py-10">
+                    <div className="flex items-center gap-4 md:gap-6">
                        <div className={cn(
-                         "h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 shadow-inner transition-transform group-hover:scale-105",
+                         "h-10 w-10 md:h-12 md:w-12 rounded-xl flex items-center justify-center shrink-0 shadow-inner transition-transform group-hover:scale-105",
                          item.type === 'mock' ? 'bg-orange-50 text-primary' : 
                          item.type === 'ca' ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600'
                        )}>
-                          {item.type === 'mock' ? <Zap className="h-6 w-6" /> : 
-                           item.type === 'ca' ? <Newspaper className="h-6 w-6" /> : 
-                           item.type === 'pyq' ? <FileStack className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
+                          {item.type === 'mock' ? <Zap className="h-5 w-5" /> : 
+                           item.type === 'ca' ? <Newspaper className="h-5 w-5" /> : 
+                           item.type === 'pyq' ? <FileStack className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
                        </div>
-                       <div>
-                          <p className="font-black text-[#0F172A] text-xl uppercase tracking-tight leading-none">{item.title}</p>
-                          <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase truncate max-w-xs">{item.description}</p>
+                       <div className="min-w-0">
+                          <p className="font-bold text-[#0F172A] text-sm md:text-lg leading-tight truncate">{item.title}</p>
+                          <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1 truncate max-w-[200px]">{item.description}</p>
                        </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-left">
-                    <Badge variant="outline" className="bg-white border-slate-200 text-slate-500 text-[9px] font-black uppercase px-3 py-1 rounded-lg">
-                       {item.type?.toUpperCase()} HUB
+                  <TableCell>
+                    <Badge variant="outline" className="bg-slate-50 border-slate-100 text-slate-500 text-[8px] md:text-[9px] font-black uppercase px-2.5 py-0.5 rounded-md shadow-sm">
+                       {item.type} HUB
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-left">
-                     <code className="text-[10px] font-mono text-primary font-bold">/{item.slug || 'no-slug'}</code>
+                  <TableCell>
+                     <code className="text-[10px] md:text-xs font-mono text-primary font-bold bg-blue-50 px-2 py-0.5 rounded">/{item.slug || 'no-slug'}</code>
                   </TableCell>
-                  <TableCell className="text-right px-10">
-                    <div className="flex justify-end gap-3 opacity-20 group-hover:opacity-100 transition-all">
-                       <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl bg-slate-50 hover:bg-white hover:text-primary shadow-sm" onClick={() => setEditingItem(item)}>
+                  <TableCell className="text-right px-6 md:px-12">
+                    <div className="flex justify-end gap-2 md:gap-3 opacity-20 group-hover:opacity-100 transition-all">
+                       <button onClick={() => setEditingItem(item)} className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary active:scale-90 transition-all">
                         <Edit className="h-5 w-5" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl bg-slate-50 hover:bg-rose-50 hover:text-rose-600 shadow-sm" onClick={() => handleDelete(item.id)}>
+                      </button>
+                      <button onClick={() => handleDelete(item.id)} className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-rose-500 hover:bg-rose-50 active:scale-90 transition-all">
                         <Trash2 className="h-5 w-5" />
-                      </Button>
+                      </button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -168,63 +167,62 @@ export default function AdminFreeContent() {
       </Card>
 
       <Dialog open={!!editingItem} onOpenChange={(open) => !open && setEditingItem(null)}>
-        <DialogContent className="sm:max-w-xl rounded-[3rem] bg-white border-none shadow-4xl p-0 overflow-hidden text-left flex flex-col">
+        <DialogContent className="sm:max-w-xl w-[95vw] max-h-[90vh] rounded-3xl md:rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
           <div className="h-2 w-full bg-[#0F172A] shrink-0" />
-          <DialogHeader className="p-10 pb-0">
-            <DialogTitle className="text-3xl font-black font-headline uppercase text-[#0F172A]">Free Asset Registry</DialogTitle>
-            <DialogDescription className="sr-only">Add or edit public study materials and mock tests.</DialogDescription>
+          <DialogHeader className="p-6 md:p-10 pb-2 md:pb-4 shrink-0">
+            <DialogTitle className="text-xl md:text-3xl font-black uppercase">Free Asset Architect</DialogTitle>
+            <DialogDescription className="text-slate-400 font-bold uppercase text-[9px] tracking-widest mt-1">Configure public study material metadata.</DialogDescription>
           </DialogHeader>
           
-          <div className="p-10 space-y-6 overflow-y-auto">
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Asset Headline</Label>
-              <Input value={editingItem?.title || ""} onChange={e => setEditingItem({...editingItem, title: e.target.value})} className="h-14 rounded-xl border-slate-100 font-black text-lg text-[#0F172A]" />
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-6 md:px-10 pb-6 md:pb-10 space-y-6 md:space-y-8">
+            <div className="space-y-1.5 text-left">
+              <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Asset Headline</Label>
+              <Input value={editingItem?.title || ""} onChange={e => setEditingItem({...editingItem, title: e.target.value})} className="h-12 md:h-14 rounded-xl border-slate-200 bg-slate-50 font-bold" />
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Asset Slug (SEO URL)</Label>
-              <Input value={editingItem?.slug || ""} onChange={e => setEditingItem({...editingItem, slug: e.target.value})} className="h-12 rounded-xl border-slate-100 bg-slate-50 font-mono text-xs text-primary" placeholder="e.g. punjab-gk-mock-1" />
+            <div className="space-y-1.5 text-left">
+              <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Asset Slug (SEO URL)</Label>
+              <Input value={editingItem?.slug || ""} onChange={e => setEditingItem({...editingItem, slug: e.target.value})} className="h-12 md:h-14 rounded-xl border-slate-200 bg-slate-50 font-mono text-xs text-primary" placeholder="e.g. punjab-gk-mock-1" />
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Marketing Abstract (Description)</Label>
-              <Textarea value={editingItem?.description || ""} onChange={e => setEditingItem({...editingItem, description: e.target.value})} className="rounded-xl border-slate-100 bg-slate-50 h-24 font-medium" />
+            <div className="space-y-1.5 text-left">
+              <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Marketing Abstract</Label>
+              <Textarea value={editingItem?.description || ""} onChange={e => setEditingItem({...editingItem, description: e.target.value})} className="min-h-[100px] rounded-xl border-slate-200 bg-slate-50 font-medium resize-none" />
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
-               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">Thematic Type</Label>
-                <select value={editingItem?.type} onChange={e => setEditingItem({...editingItem, type: e.target.value})} className="w-full h-14 bg-slate-50 border-none rounded-xl px-4 font-black uppercase text-[10px] outline-none">
-                  <option value="mock">FREE MOCK</option>
-                  <option value="note">STUDY NOTE</option>
-                  <option value="ca">CURRENT AFFAIRS</option>
-                  <option value="pyq">OFFICIAL PYQ</option>
-                  <option value="pdf">BLUEPRINT PDF</option>
+            <div className="grid grid-cols-2 gap-4 md:gap-6">
+               <div className="space-y-1.5 text-left">
+                <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Thematic Type</Label>
+                <select value={editingItem?.type} onChange={e => setEditingItem({...editingItem, type: e.target.value})} className="w-full h-12 md:h-14 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none shadow-inner">
+                  <option value="mock">Free Mock</option>
+                  <option value="note">Study Note</option>
+                  <option value="ca">Current Affairs</option>
+                  <option value="pyq">Official PYQ</option>
+                  <option value="pdf">Blueprint PDF</option>
                 </select>
               </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-slate-500 ml-1">State Registry</Label>
-                <Input value="PUNJAB" disabled className="h-14 rounded-xl border-none bg-slate-50 font-black uppercase text-[10px] tracking-[0.2em]" />
+              <div className="space-y-1.5 text-left">
+                <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">State Registry</Label>
+                <Input value="Punjab" disabled className="h-12 md:h-14 rounded-xl border-none bg-slate-50 font-bold" />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2">
-                 <LinkIcon className="h-3 w-3" /> Asset Link (Test Path or PDF URL)
+            <div className="space-y-1.5 text-left">
+              <Label className="text-[9px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2">
+                 <LinkIcon className="h-3 w-3" /> Asset Link Node
               </Label>
               <Input 
                 value={editingItem?.link || ""} 
                 onChange={e => setEditingItem({...editingItem, link: e.target.value})} 
-                className="h-14 rounded-xl border-slate-100 bg-slate-50 font-bold text-primary" 
-                placeholder="e.g. /mocks/mock-id-here or https://..." 
+                className="h-12 md:h-14 rounded-xl border-slate-200 bg-slate-50 font-bold text-primary" 
+                placeholder="e.g. /mocks/mock-id-here" 
               />
-              <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest px-1">Tip: Use '/mocks/ID' for internal tests or 'https://' for external files.</p>
             </div>
           </div>
 
-          <DialogFooter className="p-10 pt-0 flex gap-4">
-            <button onClick={() => setEditingItem(null)} className="rounded-xl h-14 px-8 font-black uppercase text-[10px] text-slate-400 hover:text-[#0F172A]">Cancel Draft</button>
-            <Button onClick={handleSave} className="bg-[#0F172A] hover:bg-black h-14 px-10 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 shadow-xl transition-all active:scale-95">
+          <DialogFooter className="p-6 md:p-10 pt-4 bg-slate-50 border-t border-slate-100 flex flex-row gap-4 shrink-0">
+            <Button variant="ghost" onClick={() => setEditingItem(null)} className="h-11 md:h-12 px-6 font-black uppercase text-[10px] text-slate-400">Discard Draft</Button>
+            <Button onClick={handleSave} className="flex-1 bg-primary hover:bg-blue-700 text-white h-11 md:h-12 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl border-none active:scale-95">
               Commit to Registry
             </Button>
           </DialogFooter>
