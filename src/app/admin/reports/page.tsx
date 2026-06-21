@@ -16,8 +16,8 @@ import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/e
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Audit Reports Hub v13.1.
- * FIXED: Added missing Button import and explicitly typed sorting callbacks.
+ * @fileOverview Institutional Audit Reports Hub v14.0 (PWA Optimized).
+ * PWA SYNC: Removed uppercase, reduced font scales, and implemented high-density Title Case.
  */
 
 export default function AdminReports() {
@@ -41,7 +41,7 @@ export default function AdminReports() {
     const docRef = doc(db, "reports", id)
     updateDoc(docRef, { status: 'RESOLVED' })
       .then(() => {
-        toast({ title: "Audit Resolved", description: "Corrected." })
+        toast({ title: "Audit Resolved" })
       })
       .catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
@@ -54,7 +54,7 @@ export default function AdminReports() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!db || !confirm("Permanently delete this audit record?")) return
+    if (!db || !confirm("Permanently purge this audit record?")) return
     const docRef = doc(db, "reports", id)
     deleteDoc(docRef)
       .then(() => {
@@ -70,98 +70,85 @@ export default function AdminReports() {
   }
 
   return (
-    <div className="space-y-12 text-[#0F172A]">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-        <div className="text-left">
-          <div className="flex items-center gap-3 mb-2">
-            <ShieldAlert className="h-6 w-6 text-rose-500" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Quality Assurance Registry</span>
-          </div>
-          <h1 className="text-5xl font-black font-headline text-[#0F172A] uppercase tracking-tight">Audit Queue</h1>
-          <p className="text-slate-500 mt-2 text-lg font-medium">Review student reports regarding MCQ accuracy.</p>
-        </div>
-        <div className="flex gap-4">
-           <div className="px-8 py-4 bg-white border border-slate-100 rounded-[1.5rem] flex items-center gap-6 shadow-xl">
-              <div className="space-y-0.5 text-left">
-                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-left">Pending Audits</span>
-                 <p className="text-4xl font-headline font-black text-rose-600 leading-none">{reports?.filter((r: any) => r.status === 'PENDING').length || 0}</p>
-              </div>
-              <div className="h-10 w-px bg-slate-100" />
-              <Layers className="h-8 w-8 text-slate-200" />
+    <div className="space-y-6 md:space-y-12 text-[#0F172A] text-left animate-in fade-in duration-500">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 px-1">
+        <div className="space-y-1">
+           <div className="flex items-center gap-2 mb-1">
+              <ShieldAlert className="h-4 w-4 text-rose-500" />
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Quality Assurance Registry</span>
            </div>
+          <h1 className="text-2xl md:text-5xl font-black text-[#0F172A] tracking-tight">Audit Queue</h1>
+          <p className="text-slate-500 text-[11px] md:text-lg font-medium">Reviewing {reports?.filter((r: any) => r.status === 'PENDING').length || 0} active student flags.</p>
         </div>
       </div>
 
-      <Card className="border-slate-100 shadow-2xl bg-white rounded-[3rem] overflow-hidden">
-        <CardContent className="p-0 text-left">
-          <Table>
+      <Card className="border-none shadow-xl rounded-2xl md:rounded-[3rem] overflow-hidden bg-white mx-1 border border-slate-50">
+        <CardContent className="p-0 text-left overflow-x-auto">
+          <Table className="min-w-[800px]">
             <TableHeader className="bg-slate-50/50">
-              <TableRow className="border-slate-50 h-20">
-                <TableHead className="px-12 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Aspirant & Issue</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Institutional Comment</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Operational Context</TableHead>
-                <TableHead className="text-right px-12 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Audit Control</TableHead>
+              <TableRow className="border-slate-50 h-14 md:h-20">
+                <TableHead className="px-6 md:px-12 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">Aspirant & Issue</TableHead>
+                <TableHead className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">Institutional Comment</TableHead>
+                <TableHead className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">Registry Context</TableHead>
+                <TableHead className="text-right px-6 md:px-12 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">Audit</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                Array.from({ length: 6 }).map((_, i) => (
-                  <TableRow key={i} className="border-slate-50"><TableCell colSpan={4} className="px-12 py-10"><Skeleton className="h-20 w-full rounded-[2rem] bg-slate-50" /></TableCell></TableRow>
+                Array.from({ length: 5 }).map((_, i) => (
+                  <TableRow key={i} className="border-slate-50"><TableCell colSpan={4} className="px-6 py-6 md:px-12 md:py-10"><Skeleton className="h-10 w-full rounded-xl bg-slate-50" /></TableCell></TableRow>
                 ))
               ) : reports && reports.length > 0 ? (
                 reports.map((r: any) => (
-                  <TableRow key={r.id} className={`hover:bg-slate-50 group border-slate-50 transition-all duration-500 ${r.status === 'RESOLVED' ? 'opacity-40 grayscale-[0.8]' : ''}`}>
-                    <TableCell className="px-12 py-12 text-left">
-                       <div className="space-y-4">
-                          <Badge className={`border-none text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-xl shadow-lg ${
-                            r.type === 'WRONG_ANS' ? 'bg-rose-50 text-rose-600' :
-                            r.type === 'TYPO' ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'
-                          }`}>
-                            {r.type?.replace('_', ' ') || 'Audit Flag'}
+                  <TableRow key={r.id} className={cn("border-slate-50 hover:bg-slate-50 transition-colors group", r.status === 'RESOLVED' && "opacity-40 grayscale")}>
+                    <TableCell className="px-6 md:px-12 py-5 md:py-10">
+                       <div className="space-y-3">
+                          <Badge className={cn(
+                            "border-none text-[8px] md:text-[9px] font-black uppercase px-2.5 py-0.5 rounded shadow-sm",
+                            r.type === 'WRONG_ANS' ? 'bg-rose-50 text-rose-600' : 'bg-blue-50 text-blue-600'
+                          )}>
+                            {r.type?.replace('_', ' ') || 'Audit Node'}
                           </Badge>
-                          <div className="flex items-center gap-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                             <User className="h-4 w-4 text-primary" /> Aspirant NODE: {r.userId?.slice(-6)}
+                          <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
+                             <User className="h-3 w-3" /> Node: {r.userId?.slice(-6)}
                           </div>
                        </div>
                     </TableCell>
-                    <TableCell className="max-w-md py-12 text-left">
-                       <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-inner">
-                          <p className="text-lg font-medium text-slate-600 leading-relaxed italic antialiased text-left">"{r.comment}"</p>
+                    <TableCell className="max-w-xs md:max-w-md">
+                       <div className="bg-slate-50 p-4 md:p-6 rounded-xl md:rounded-2xl border border-slate-100 shadow-inner">
+                          <p className="text-xs md:text-base font-medium text-slate-600 italic leading-relaxed">"{r.comment}"</p>
                        </div>
                     </TableCell>
-                    <TableCell className="py-12 text-left">
-                       <div className="space-y-6">
-                          <Button variant="ghost" asChild className="h-14 px-8 rounded-2xl gap-4 text-[11px] font-black uppercase tracking-[0.2em] text-primary hover:bg-primary/5 transition-all border-2 border-primary/10 shadow-sm">
-                             <Link href={`/admin/questions/add?id=${r.questionId}`}>
-                                <ExternalLink className="h-5 w-5" /> Audit Global Repository
-                             </Link>
+                    <TableCell>
+                       <div className="space-y-4">
+                          <Button variant="ghost" asChild className="h-9 md:h-11 px-4 md:px-6 rounded-full border border-slate-200 bg-white font-black uppercase text-[8px] md:text-[10px] tracking-widest gap-2 shadow-sm">
+                             <Link href={`/admin/questions/add?id=${r.questionId}`}><ExternalLink className="h-3 w-3" /> Audit Registry</Link>
                           </Button>
-                          <div className="flex items-center gap-3 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                             <Clock className="h-4 w-4" /> {new Date(r.timestamp?.seconds * 1000).toLocaleString()}
+                          <div className="flex items-center gap-2 text-[9px] font-bold text-slate-300 tabular-nums">
+                             <Clock className="h-3 w-3" /> {new Date(r.timestamp?.seconds * 1000).toLocaleDateString()}
                           </div>
                        </div>
                     </TableCell>
-                    <TableCell className="text-right px-12 py-12">
-                       <div className="flex justify-end gap-4 opacity-30 group-hover:opacity-100 transition-all duration-700">
+                    <TableCell className="text-right px-6 md:px-12">
+                       <div className="flex justify-end gap-2 md:gap-3 opacity-20 group-hover:opacity-100 transition-all">
                           {r.status === 'PENDING' && (
-                            <Button variant="ghost" size="icon" className="h-14 w-14 rounded-2xl text-emerald-600 hover:bg-emerald-50 shadow-sm" onClick={() => handleResolve(r.id)}>
-                               <CheckCircle2 className="h-7 w-7" />
-                            </Button>
+                            <button onClick={() => handleResolve(r.id)} className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-emerald-600 hover:bg-emerald-50 active:scale-90 transition-all">
+                               <CheckCircle2 className="h-5 w-5" />
+                            </button>
                           )}
-                          <Button variant="ghost" size="icon" className="h-14 w-14 rounded-2xl text-rose-600 hover:bg-rose-50 shadow-sm" onClick={() => handleDelete(r.id)}>
-                             <Trash2 className="h-7 w-7" />
-                          </Button>
+                          <button onClick={() => handleDelete(r.id)} className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-rose-500 hover:bg-rose-50 active:scale-90 transition-all">
+                             <Trash2 className="h-5 w-5" />
+                          </button>
                        </div>
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                   <TableCell colSpan={4} className="h-[450px] text-center">
-                      <div className="flex flex-col items-center justify-center text-slate-300 opacity-20 text-center">
-                         <ShieldAlert className="h-32 w-32 mb-10" />
-                         <p className="font-black font-headline text-3xl uppercase tracking-[0.2em]">Institutional Integrity High</p>
-                         <p className="text-lg font-bold uppercase tracking-[0.3em] mt-4">Zero pending flags.</p>
+                   <TableCell colSpan={4} className="h-60 md:h-80 text-center">
+                      <div className="flex flex-col items-center justify-center opacity-10 space-y-4">
+                         <ShieldAlert className="h-16 w-16 md:h-24 md:w-24 text-slate-400" />
+                         <p className="font-black text-sm md:text-2xl uppercase tracking-widest">Registry Secured</p>
                       </div>
                    </TableCell>
                 </TableRow>
