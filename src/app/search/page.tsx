@@ -13,7 +13,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Search Center Hub v3.8 (Build Fixed).
+ * @fileOverview Search Center Hub v3.9 (Hardened).
  */
 
 export default function SearchPage() {

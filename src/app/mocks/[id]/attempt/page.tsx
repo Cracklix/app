@@ -26,8 +26,9 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened CBT Engine v62.0.
+ * @fileOverview Hardened CBT Engine v63.0.
  * FIXED: SANITY CHECKS FOR QUESTION SYNC FAILURE.
+ * IMPROVED: Explicit ID verification during registry hydration.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -78,8 +79,8 @@ export default function MockAttemptPage() {
         if (isAdmin) {
           hasActivePass = true;
         } else if (profile?.passExpiresAt) {
-          const expiry = new Date(profile.passExpiresAt);
-          if (expiry > new Date() && profile.pass?.active !== false) {
+          const expiryDate = new Date(profile.passExpiresAt);
+          if (!isNaN(expiryDate.getTime()) && expiryDate > new Date() && profile.pass?.active !== false) {
             hasActivePass = true;
           }
         }
@@ -107,7 +108,7 @@ export default function MockAttemptPage() {
         const sortedQs = questionIds.map((id: string) => fetchedQuestions.find((q: any) => q.id === id)).filter(Boolean);
         
         if (sortedQs.length === 0) {
-           throw new Error("Could not sync preparation nodes. Some questions may have been removed from the registry.");
+           throw new Error("Could not sync preparation nodes. Please ensure the Registry is seeded correctly.");
         }
 
         const attemptSnap = await getDoc(doc(db, "attempts", `${user.uid}_${mockId}`));

@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Hardened Institutional PWA Manager v16.1.
- * FIXED: Removed restriction for /install page to allow prompt triggering.
- * IMPROVED: Logic to differentiate browser sessions from true standalone mode.
+ * @fileOverview Hardened Institutional PWA Manager v16.2.
+ * FIXED: Explicit check for standalone display mode to distinguish browser vs app.
+ * IMPROVED: Removed exclusion for /install to ensure prompt triggers as expected.
  */
 export default function PWAManager() {
   const pathname = usePathname();
@@ -20,11 +20,11 @@ export default function PWAManager() {
   const checkStatus = useCallback(() => {
     if (typeof window === 'undefined') return;
     
-    // Hardened detection for standalone vs browser
+    // Hardened detection for standalone vs browser session
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
     setIsInstalled(isStandalone);
 
-    // Only exclude active test sessions and admin panels
+    // Prompt Exclusions: Active Test Session, Admin panel, and manually dismissed.
     const isExcluded = pathname?.includes('/attempt') || pathname?.startsWith('/admin');
     const isDismissed = localStorage.getItem('cracklix_pwa_dismissed') === 'true';
     const hasPrompt = !!(window as any).deferredPrompt;
@@ -32,7 +32,7 @@ export default function PWAManager() {
     const shouldShow = !isStandalone && !isExcluded && !isDismissed && hasPrompt;
     setShowPrompt(shouldShow);
     
-    console.log('[PWA_AUDIT] Status Check:', { isStandalone, isExcluded, isDismissed, hasPrompt, shouldShow });
+    console.log('[PWA_AUDIT] Mode:', isStandalone ? 'Standalone' : 'Browser', '| Installable:', hasPrompt);
   }, [pathname]);
 
   useEffect(() => {
@@ -68,10 +68,7 @@ export default function PWAManager() {
 
   const handleInstallClick = async () => {
     const prompt = (window as any).deferredPrompt;
-    if (!prompt) {
-      console.warn('[PWA_AUDIT] Manual trigger attempted but prompt is null');
-      return;
-    }
+    if (!prompt) return;
 
     try {
       await prompt.prompt();

@@ -18,13 +18,13 @@ import {
   ChevronRight
 } from "lucide-react"
 import { useFirestore } from "@/firebase"
-import { collection, query, where, getDocs, writeBatch, doc, setDoc, serverTimestamp, getCountFromServer, DocumentData, updateDoc } from "firebase/firestore"
+import { collection, query, where, getDocs, writeBatch, doc, setDoc, serverTimestamp, getCountFromServer, DocumentData, updateDoc, increment } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { clearAppCache } from "@/app/actions/maintenance"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Master Admin Maintenance Terminal v3.1.
+ * @fileOverview Master Admin Maintenance Terminal v3.2 (PWA Hardened).
  */
 
 export default function MaintenancePage() {
