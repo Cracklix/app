@@ -20,15 +20,13 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
-import { useRouter, usePathname } from "next/navigation"
-import { useUser } from "@/firebase"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview High-Fidelity PWA Install Hub v8.2.
- * FIXED: Standalone detection hardening to prevent false "Already Installed" messages.
- * FIXED: Prompt exclusion removed to allow one-click installation from this node.
+ * @fileOverview High-Fidelity PWA Install Hub v9.0.
+ * UPDATED: Page is now PUBLICLY ACCESSIBLE to allow shared links to work without login.
  */
 
 type DeviceType = "android" | "ios" | "desktop" | "unknown";
@@ -41,27 +39,18 @@ export default function InstallPage() {
   
   const { toast } = useToast();
   const router = useRouter();
-  const pathname = usePathname();
-  const { user, loading: authLoading } = useUser();
 
   const isIos = device === "ios";
 
   const updateState = useCallback(() => {
     if (typeof window === 'undefined') return;
 
-    // Hardened standalone check with media query stability
     const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
     setIsStandalone(isStandaloneMode);
     
     const hasPrompt = !!(window as any).deferredPrompt;
     setIsInstallable(hasPrompt);
   }, []);
-
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
-    }
-  }, [user, authLoading, router, pathname]);
 
   useEffect(() => {
     setMounted(true);
@@ -73,7 +62,6 @@ export default function InstallPage() {
     updateState();
 
     const handleCheck = () => {
-      console.log('[INSTALL_PAGE] Synchronizing installability state...');
       updateState();
     };
 
@@ -102,18 +90,13 @@ export default function InstallPage() {
        });
     } else {
        toast({
-         title: "Browser Setup",
-         description: "Please use your browser's menu (3 dots) and select 'Install App'.",
+         title: "Manual Setup",
+         description: "Please use your browser's menu and select 'Install App'.",
        });
     }
   };
 
-  if (authLoading || !user) return (
-    <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
-       <Zap className="h-10 w-10 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase text-slate-300">Synchronizing hub...</p>
-    </div>
-  );
+  if (!mounted) return null;
 
   return (
     <div className="min-h-[100dvh] bg-white font-body text-left">

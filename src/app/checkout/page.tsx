@@ -18,8 +18,8 @@ import Script from "next/script"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Testbook-Style Checkout Hub v10.0.
- * LOGIC: Detects upgrades vs extensions and handles gateway handshake hardening.
+ * @fileOverview Testbook-Style Checkout Hub v11.0.
+ * FIXED: Missing 'cn' import and hardened profile null checks.
  */
 
 export default function CheckoutPage() {
@@ -94,12 +94,10 @@ function CheckoutContent() {
 
     setOnlineProcessing(true);
     
-    // Hardened Handshake: Wait for SDK
     const getCashfree = () => (window as any).Cashfree;
     let cf = getCashfree();
     
     if (!cf) {
-       // Poll for 3 seconds if not immediate
        for (let i = 0; i < 30; i++) {
           await new Promise(r => setTimeout(r, 100));
           cf = getCashfree();

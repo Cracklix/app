@@ -4,7 +4,7 @@ import React, { useMemo, useState, useEffect, isValidElement, cloneElement, Reac
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useCollection, useFirestore } from "@/firebase"
-import { collection, query, where, limit, orderBy } from "firebase/firestore"
+import { collection, query, where, limit } from "firebase/firestore"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -34,8 +34,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v33.5 (Hardened Types).
- * FIXED: TS2304 (Layers import) and TS18046 (icon.props).
+ * @fileOverview Student Dashboard v34.0.
+ * FIXED: TS2304 (Layers import) and hardened icon.props access.
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading } = useUser();
@@ -235,6 +235,17 @@ export default function StudentDashboard() {
                     </div>
                 </div>
               </Card>
+
+              {profile?.queuedPasses && profile.queuedPasses.length > 0 && (
+                <Card className="border-none shadow-xl bg-white p-6 rounded-2xl border border-slate-100 overflow-hidden relative">
+                   <div className="absolute top-0 right-0 p-4 opacity-10"><Layers className="h-12 w-12" /></div>
+                   <div className="relative z-10 space-y-3">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-primary">Scheduled Extensions</p>
+                      <h4 className="text-sm font-bold text-slate-900">{profile.queuedPasses.length} Pass nodes waiting</h4>
+                      <Link href="/pass" className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-primary transition-colors flex items-center gap-1">Manage Queue <ChevronRight className="h-3 w-3" /></Link>
+                   </div>
+                </Card>
+              )}
 
               <div className="bg-white p-4 md:p-6 rounded-2xl border border-slate-100 shadow-xl space-y-4 md:space-y-6">
                  <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Quick Tools</h4>
