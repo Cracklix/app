@@ -33,8 +33,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v31.6.
- * FIXED: TS18046 unknown property access on icon node.
+ * @fileOverview Student Dashboard v31.7.
+ * FIXED: TS18046 by explicit casting and isValidElement validation.
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading } = useUser() as any;

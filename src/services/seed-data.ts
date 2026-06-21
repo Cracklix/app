@@ -1,7 +1,7 @@
 import { Firestore, doc, serverTimestamp, writeBatch, collection, getDocs } from 'firebase/firestore';
 
 /**
- * @fileOverview Official Institutional Registry Blueprint v78.0.
+ * @fileOverview Official Institutional Registry Blueprint v78.1.
  * FIXED: Explicit question ID alignment for Sample Mock series.
  */
 

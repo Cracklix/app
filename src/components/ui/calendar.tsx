@@ -10,8 +10,8 @@ import { buttonVariants } from "@/components/ui/button"
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
 /**
- * @fileOverview Production-grade Calendar node v15.6.
- * FIXED: Build blocking type errors for Chevron orientations.
+ * @fileOverview Production-grade Calendar node v15.7.
+ * FIXED: Build blocking type errors for all orientation types.
  */
 function Calendar({
   className,

@@ -12,7 +12,7 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer";
 import QuestionPalette from "@/components/mocks/QuestionPalette";
 import SubjectTabs from "@/components/exam/SubjectTabs";
 import { Button } from "@/components/ui/button";
-import { Loader2, Play, ShieldCheck, CheckCircle2, Zap, LogOut, Cloud, AlertCircle } from "lucide-react";
+import { Loader2, Play, ShieldCheck, CheckCircle2, Zap, LogOut, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,11 +23,11 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened CBT Engine v70.0.
- * FIXED: Endless submission loading and student-friendly UI text.
+ * @fileOverview Hardened CBT Engine v72.0.
+ * FIXED: Endless submission loading with safety timeouts.
+ * FIXED: Graceful recovery for registry mismatch errors.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -108,9 +108,15 @@ export default function MockAttemptPage() {
         
         const sortedQs = questionIds.map((id: string) => fetchedQuestions.find((q: any) => q.id === id)).filter(Boolean);
         
+        // GRACEFUL REGISTRY MISMATCH HANDLER
         if (sortedQs.length === 0) {
            console.error("[CBT_SYNC_FAILURE]: Missing question nodes in registry.", { mockId, questionIds });
-           setInitError("Registry Mismatch: Questions associated with this mock could not be retrieved. Please seed data in Admin Hub.");
+           toast({ 
+             variant: "destructive", 
+             title: "Registry Mismatch", 
+             description: "Questions for this test could not be synced. Please contact support." 
+           });
+           router.push("/mocks");
            return;
         }
 
@@ -178,6 +184,7 @@ export default function MockAttemptPage() {
         await updateDoc(attemptRef, { status: 'COMPLETED', updatedAt: serverTimestamp() });
       };
 
+      // 12 SECOND HARD TIMEOUT PROTECTION
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error("Submission Timeout")), 12000)
       );
@@ -189,9 +196,10 @@ export default function MockAttemptPage() {
       console.error("[SUBMISSION_FAILURE]:", e);
       toast({
         variant: "destructive",
-        title: "Submission Failed",
-        description: e.message === "Submission Timeout" ? "Network timeout. Retrying..." : "Could not save results. Check your connection."
+        title: "Submission Error",
+        description: e.message === "Submission Timeout" ? "Network timeout. Please check your internet and try again." : "Could not save results. Contact management if issue persists."
       });
+    } finally {
       setIsSubmittingFinal(false);
     }
   }, [db, user, profile, isSubmittingFinal, questions, answers, router, mockId, mockTitle, mockData, startTime, toast]);
@@ -313,7 +321,7 @@ export default function MockAttemptPage() {
           <div className="space-y-4">
             <DialogHeader className="sr-only">
                <DialogTitle>Submit Test</DialogTitle>
-               <DialogDescription>Submit and score your test.</DialogDescription>
+               <DialogDescription>Finalizing scores and results.</DialogDescription>
             </DialogHeader>
             <div className="h-10 w-10 bg-primary/20 rounded-xl flex items-center justify-center mx-auto text-primary shadow-lg shadow-primary/10">
               {isSubmittingFinal ? <Loader2 className="h-5 w-5 animate-spin" /> : <ShieldCheck className="h-5 w-5" />}
