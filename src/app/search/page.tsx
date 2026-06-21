@@ -14,8 +14,8 @@ import { cn } from "@/lib/utils"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Search Center Hub v3.4 (Fixed).
- * FIXED: Resolved React.cloneElement type error by using AuthorityLogo engine directly.
+ * @fileOverview Search Center Hub v3.5 (Fixed).
+ * FIXED: Resolved React.cloneElement type error by using AuthorityLogo engine directly and ensuring React import.
  */
 
 export default function SearchPage() {

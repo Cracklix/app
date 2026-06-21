@@ -16,8 +16,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview High-Density Pass Center v22.0 (PWA Optimized).
- * FIXED: Hardened passExpiresAt narrowing to resolve TS2769.
+ * @fileOverview High-Density Pass Center v22.1 (Hardened).
+ * FIXED: Captured passExpiresAt into local constant to resolve TS2769.
  */
 
 export default function PassPage() {

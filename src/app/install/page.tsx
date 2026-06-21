@@ -1,7 +1,6 @@
-
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { motion } from "framer-motion"
@@ -15,7 +14,10 @@ import {
   Share,
   PlusSquare,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  Info,
+  MoreVertical,
+  ExternalLink
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -24,10 +26,12 @@ import { useToast } from "@/hooks/use-toast"
 import { useRouter, usePathname } from "next/navigation"
 import { useUser } from "@/firebase"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview High-Fidelity PWA Install Hub v1.9 (PWA Optimized).
- * FIXED: Reduced scaling and Title Case typography.
+ * @fileOverview High-Fidelity PWA Install Hub v2.0 (Resilient Detection).
+ * FIXED: Hardened standalone detection to prevent incorrect "Already Installed" messages.
+ * ADDED: Manual instructions for Android and deep link support.
  */
 
 type DeviceType = "android" | "ios" | "desktop" | "unknown";
@@ -36,12 +40,24 @@ export default function InstallPage() {
   const [device, setDevice] = useState<DeviceType>("desktop");
   const [isInstallable, setIsInstallable] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [showManual, setShowManual] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
   const pathname = usePathname();
   const { user, loading: authLoading } = useUser();
 
   const isIos = device === "ios";
+
+  const updateState = useCallback(() => {
+    if (typeof window === 'undefined') return;
+
+    // Hardened check for standalone mode
+    const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
+    setIsStandalone(isStandaloneMode);
+    
+    // Check if the install prompt event is cached globally
+    setIsInstallable(!!(window as any).deferredPrompt);
+  }, []);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -57,21 +73,16 @@ export default function InstallPage() {
     else if (/iphone|ipad|ipod/.test(ua)) setDevice("ios");
     else setDevice("desktop");
 
-    const updateState = () => {
-      const standalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone;
-      setIsStandalone(!!standalone);
-      setIsInstallable(!!(window as any).deferredPrompt);
-    };
+    updateState();
 
     window.addEventListener('pwa-installable', updateState);
     window.addEventListener('appinstalled', updateState);
-    updateState();
-
+    
     return () => {
       window.removeEventListener('pwa-installable', updateState);
       window.removeEventListener('appinstalled', updateState);
     };
-  }, []);
+  }, [updateState]);
 
   const handleInstall = async () => {
     const prompt = (window as any).deferredPrompt;
@@ -85,10 +96,10 @@ export default function InstallPage() {
          description: "Tap Share > Add to Home Screen to install.",
        });
     } else {
+       setShowManual(true);
        toast({
-         variant: "destructive",
-         title: "Handshake Pending",
-         description: "Please open this page in Chrome or your native mobile browser.",
+         title: "Setup Node Active",
+         description: "Automated prompt blocked by browser. See manual steps below.",
        });
     }
   };
@@ -150,9 +161,9 @@ export default function InstallPage() {
 
                     {isIos ? (
                        <div className="space-y-4">
-                          <IOSStep num={1} icon={<Share className="h-3.5 w-3.5" />} text="Tap 'Share' in Safari toolbar" />
-                          <IOSStep num={2} icon={<PlusSquare className="h-3.5 w-3.5" />} text="Tap 'Add to Home Screen'" />
-                          <IOSStep num={3} icon={<Sparkles className="h-3.5 w-3.5" />} text="Launch from home screen" />
+                          <InstructionStep num={1} icon={<Share className="h-3.5 w-3.5" />} text="Tap 'Share' in Safari toolbar" />
+                          <InstructionStep num={2} icon={<PlusSquare className="h-3.5 w-3.5" />} text="Tap 'Add to Home Screen'" />
+                          <InstructionStep num={3} icon={<Sparkles className="h-3.5 w-3.5" />} text="Launch from home screen" />
                        </div>
                     ) : isStandalone ? (
                        <div className="space-y-4">
@@ -174,15 +185,14 @@ export default function InstallPage() {
                           <div className="space-y-3">
                              <Button 
                                 onClick={handleInstall}
-                                disabled={!isInstallable && !isIos}
                                 className="w-full h-14 md:h-20 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-[0.2em] text-[10px] md:text-[11px] rounded-full shadow-3xl transition-all active:scale-95 border-none gap-3"
                              >
-                                <Download className="h-4 w-4 md:h-6 md:w-6" /> {isInstallable ? 'Install App Now' : 'Browser Not Ready'}
+                                <Download className="h-4 w-4 md:h-6 md:w-6" /> {isInstallable ? 'Install App Now' : 'Show Instructions'}
                              </Button>
                              {!isInstallable && !isIos && (
-                                <div className="p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl flex items-center gap-2">
-                                   <AlertCircle className="h-3 w-3 text-orange-500 shrink-0" />
-                                   <p className="text-[9px] text-orange-200 font-bold uppercase tracking-tight">Chrome is required for direct installation.</p>
+                                <div className="p-3 bg-white/5 border border-white/10 rounded-xl flex items-center gap-2">
+                                   <Info className="h-3 w-3 text-primary shrink-0" />
+                                   <p className="text-[9px] text-slate-300 font-bold uppercase tracking-tight">Manual setup node active for Chrome & Browser.</p>
                                 </div>
                              )}
                           </div>
@@ -190,6 +200,21 @@ export default function InstallPage() {
                     )}
                  </div>
               </Card>
+
+              {(showManual || (device === 'android' && !isStandalone && !isInstallable)) && (
+                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-4">
+                    <Card className="p-6 md:p-10 rounded-[2.5rem] bg-slate-50 border border-slate-200 space-y-6 text-left">
+                       <h3 className="text-lg font-black uppercase text-[#0F172A] flex items-center gap-2">
+                          <Smartphone className="h-5 w-5 text-primary" /> Manual Android Setup
+                       </h3>
+                       <div className="space-y-4">
+                          <InstructionStep num={1} icon={<MoreVertical className="h-3.5 w-3.5" />} text="Tap the 3-dots menu in Chrome top-right" color="text-slate-500" />
+                          <InstructionStep num={2} icon={<PlusSquare className="h-3.5 w-3.5" />} text="Select 'Install app' or 'Add to Home screen'" color="text-slate-500" />
+                          <InstructionStep num={3} icon={<CheckCircle2 className="h-3.5 w-3.5" />} text="Confirm and open from your Home Screen" color="text-slate-500" />
+                       </div>
+                    </Card>
+                 </motion.div>
+              )}
            </div>
 
            <div className="lg:col-span-5 space-y-4 md:space-y-8 text-left">
@@ -208,15 +233,15 @@ export default function InstallPage() {
   );
 }
 
-function IOSStep({ num, icon, text }: any) {
+function InstructionStep({ num, icon, text, color = "text-primary" }: any) {
    return (
       <div className="flex items-center gap-4 group">
-         <div className="h-8 w-8 md:h-12 md:w-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center font-black text-[10px] md:text-sm text-primary shadow-inner">
+         <div className={cn("h-8 w-8 md:h-12 md:w-12 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center font-black text-[10px] md:text-sm shadow-inner", color)}>
             {num}
          </div>
          <div className="flex items-center gap-2 text-slate-200">
-            <span className="p-1.5 bg-white/10 rounded-lg text-primary">{icon}</span>
-            <span className="text-[11px] md:text-lg font-bold tracking-tight">{text}</span>
+            <span className={cn("p-1.5 bg-white/10 rounded-lg", color)}>{icon}</span>
+            <span className="text-[11px] md:text-lg font-bold tracking-tight text-current">{text}</span>
          </div>
       </div>
    );

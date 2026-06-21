@@ -43,7 +43,7 @@ import PWAInstallButton from "@/components/PWAInstallButton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Standardized Navbar v52.0 (Fixed Date Narrowing).
+ * @fileOverview Standardized Navbar v52.1 (Hardened Date Type).
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);

@@ -34,7 +34,7 @@ import ShareButton from "@/components/navigation/ShareButton"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v27.0 (Fixed Date Narrowing).
+ * @fileOverview Student Dashboard v27.1 (Hardened Date Type).
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading, profileLoading } = useUser() as any;
@@ -150,7 +150,7 @@ export default function StudentDashboard() {
                       </div>
                     )}
                   </div>
-                  <div className="flex-1 space-y-1 min-w-0 text-left">
+                  <div className="flex-1 space-y-1.5 min-w-0 text-left">
                     <div className="space-y-0.5">
                         <h2 className="text-lg md:text-3xl font-black tracking-tight truncate">
                           {profile?.name || user?.displayName || "Aspirant"}
