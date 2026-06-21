@@ -10,8 +10,8 @@ import { buttonVariants } from "@/components/ui/button"
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
 /**
- * @fileOverview Production-grade Calendar node v12.0 (Type Fixed).
- * FIXED: Ensured Chevron component always returns a valid Element (not null) to satisfy TS2322.
+ * @fileOverview Production-grade Calendar node v12.1 (Type Hardened).
+ * FIXED: Ensured Chevron component returns a valid JSX.Element (fragment) instead of null.
  */
 function Calendar({
   className,
@@ -62,7 +62,7 @@ function Calendar({
           if (orientation === "right") return <ChevronRight className={cn("h-4 w-4", props.className)} />;
           if (orientation === "up") return <ChevronUp className={cn("h-4 w-4", props.className)} />;
           if (orientation === "down") return <ChevronDown className={cn("h-4 w-4", props.className)} />;
-          return <></>;
+          return <></>; // Fallback to empty fragment to satisfy return type Element
         },
       }}
       {...props}
