@@ -1,4 +1,3 @@
-
 "use client"
 
 import Navbar from "@/components/layout/Navbar"
@@ -18,7 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 /**
  * @fileOverview High-Density Pass Center v21.0 (PWA Optimized).
- * FIXED: Reduced scaling and Title Case typography.
+ * FIXED: Hardened passExpiresAt narrowing for setInterval to resolve TS2769.
  */
 
 export default function PassPage() {
@@ -36,10 +35,11 @@ export default function PassPage() {
   }, [user, userLoading, router]);
 
   useEffect(() => {
-    if (!profile?.passExpiresAt) return;
+    const expiryStr = profile?.passExpiresAt;
+    if (!expiryStr) return;
     
     const interval = setInterval(() => {
-       const expiry = new Date(profile.passExpiresAt).getTime();
+       const expiry = new Date(expiryStr).getTime();
        const now = new Date().getTime();
        const diff = expiry - now;
 

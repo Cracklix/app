@@ -20,6 +20,7 @@ import { useToast } from "@/hooks/use-toast"
 /**
  * @fileOverview High-Density Category Explorer v29.0.
  * UPDATED: Simplified "Master Registry" to "Exam Hub" and removed uppercase.
+ * FIXED: Added missing GraduationCap import and typed id parameter in filter.
  */
 
 const AUTHORIZED_CATEGORY_IDS = [
@@ -151,11 +152,11 @@ export default function ExamsEntryPage() {
         {/* 2. Categories Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8">
            {catLoading ? (
-             Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-40 md:h-80 w-full rounded-2xl bg-white" />)
+             Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-40 md:h-80 w-full rounded-2xl bg-slate-50" />)
            ) : categories.map((cat) => {
               const catExams = exams?.filter(e => e.categoryId === cat.id) || [];
               const catExamIds = catExams.map(e => e.id);
-              const catMocksCount = mocks?.filter(m => catExamIds.includes(m.examId) || (m.examIds && m.examIds.some(id => catExamIds.includes(id)))).length || 0;
+              const catMocksCount = mocks?.filter(m => catExamIds.includes(m.examId) || (m.examIds && m.examIds.some((id: string) => catExamIds.includes(id)))).length || 0;
               
               return (
                 <Link key={cat.id} href={`/exams/category/${cat.id}`}>

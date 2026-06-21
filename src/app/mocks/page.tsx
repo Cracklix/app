@@ -18,6 +18,7 @@ import { AuthorityLogo } from "@/lib/exam-icons"
 /**
  * @fileOverview High-Density Exam Hub v17.0 (Simplified Language).
  * UPDATED: Simplified "Master Registry" to "Exam Hub".
+ * FIXED: Explicitly typed id in catMocksCount filter.
  */
 
 const AUTHORIZED_CATEGORY_IDS = [
@@ -78,7 +79,7 @@ export default function MocksDiscoveryPage() {
              ) : categories.map((cat) => {
                 const catExams = exams?.filter(e => e.categoryId === cat.id) || [];
                 const catExamIds = catExams.map(e => e.id);
-                const catMocksCount = mocks?.filter(m => catExamIds.includes(m.examId) || (m.examIds && m.examIds.some(id => catExamIds.includes(id)))).length || 0;
+                const catMocksCount = mocks?.filter(m => catExamIds.includes(m.examId) || (m.examIds && m.examIds.some((id: string) => catExamIds.includes(id)))).length || 0;
 
                 return (
                   <Link key={cat.id} href={`/exams/category/${cat.id}`}>
