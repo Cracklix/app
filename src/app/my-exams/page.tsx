@@ -38,8 +38,8 @@ import { usePWAInstall } from "@/hooks/use-pwa-install"
 import { getAuthorityIcon } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional My Exams Page v12.0 (Live Counts).
- * UPDATED: Detailed content breakdown on cards.
+ * @fileOverview Institutional My Exams Page v13.0 (Compact UI).
+ * UPDATED: Replaced Study Notes with Current Affairs and dot-separated breakdown.
  */
 
 export default function MyExamsPage() {
@@ -86,13 +86,11 @@ export default function MyExamsPage() {
   const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db])
   const mocksQuery = useMemo(() => (db ? collection(db, "mocks") : null), [db])
   const pyqsQuery = useMemo(() => (db ? collection(db, "pyqs") : null), [db])
-  const notesQuery = useMemo(() => (db ? collection(db, "notes") : null), [db])
   
   const { data: allExams, loading: examsLoading } = useCollection<any>(examsQuery)
   const { data: boards } = useCollection<any>(boardsQuery)
   const { data: mocks } = useCollection<any>(mocksQuery)
   const { data: pyqs } = useCollection<any>(pyqsQuery)
-  const { data: notes } = useCollection<any>(notesQuery)
 
   const statsMap = useMemo(() => {
     const map: Record<string, any> = {};
@@ -100,7 +98,7 @@ export default function MyExamsPage() {
     (mocks || []).forEach(m => {
        const eids = m.examIds || (m.examId ? [m.examId] : []);
        eids.forEach((eid: string) => {
-          if (!map[eid]) map[eid] = { full: 0, subject: 0, sectional: 0, pyq: 0, notes: 0, total: 0 };
+          if (!map[eid]) map[eid] = { full: 0, subject: 0, sectional: 0, pyq: 0, ca: 0, total: 0 };
           if (m.mockType === 'FULL') map[eid].full++;
           else if (m.mockType === 'SUBJECT') map[eid].subject++;
           else if (m.mockType === 'SECTIONAL') map[eid].sectional++;
@@ -111,22 +109,14 @@ export default function MyExamsPage() {
 
     (pyqs || []).forEach(p => {
        if (p.examId) {
-          if (!map[p.examId]) map[p.examId] = { full: 0, subject: 0, sectional: 0, pyq: 0, notes: 0, total: 0 };
+          if (!map[p.examId]) map[p.examId] = { full: 0, subject: 0, sectional: 0, pyq: 0, ca: 0, total: 0 };
           map[p.examId].pyq++;
           map[p.examId].total++;
        }
     });
 
-    (notes || []).forEach(n => {
-       if (n.examId) {
-          if (!map[n.examId]) map[n.examId] = { full: 0, subject: 0, sectional: 0, pyq: 0, notes: 0, total: 0 };
-          if (n.category === 'NOTES') map[n.examId].notes++;
-          map[n.examId].total++;
-       }
-    });
-
     return map;
-  }, [mocks, pyqs, notes]);
+  }, [mocks, pyqs]);
 
   const pinnedExams = useMemo(() => {
     if (!allExams || !profile?.pinnedExams) return []
@@ -211,7 +201,7 @@ export default function MyExamsPage() {
                     {examsLoading ? Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-[2rem] bg-white" />) : 
                     pinnedExams.length > 0 ? pinnedExams.map((exam: any) => {
                        const board = boards?.find((b: any) => b.id === exam.boardId || b.abbreviation === exam.boardId);
-                       const stats = statsMap[exam.id] || { full: 0, subject: 0, sectional: 0, pyq: 0, notes: 0, total: 0 };
+                       const stats = statsMap[exam.id] || { full: 0, subject: 0, sectional: 0, pyq: 0, ca: 0, total: 0 };
                        const hasContent = stats.total > 0;
                        const logoUrl = exam.iconUrl || board?.iconUrl;
                        const isTarget = profile?.targetExam === exam.name;
@@ -235,19 +225,28 @@ export default function MyExamsPage() {
                                  </div>
                                )}
                              </div>
-                             <h4 className="font-black text-lg md:text-xl text-[#0F172A] uppercase leading-tight mb-4 line-clamp-2">{exam.name}</h4>
+                             <h4 className="font-black text-lg md:text-xl text-[#0F172A] uppercase leading-tight mb-3 line-clamp-2">{exam.name}</h4>
                              
-                             <div className="w-full flex flex-col gap-1.5 mb-6">
+                             <div className="w-full flex flex-col items-center mb-6">
                                 {hasContent ? (
-                                   <>
-                                      <StatLine label="Full Mocks" val={stats.full} />
-                                      <StatLine label="Subject Tests" val={stats.subject} />
-                                      <StatLine label="Sectional Tests" val={stats.sectional} />
-                                      <StatLine label="Official PYQs" val={stats.pyq} />
-                                      <StatLine label="Study Notes" val={stats.notes} />
-                                   </>
+                                   <div className="space-y-1">
+                                      <p className="text-[10px] md:text-xs font-black text-slate-700 uppercase tracking-tight">
+                                         {stats.total} Content Items Available
+                                      </p>
+                                      <div className="flex flex-wrap items-center justify-center gap-1.5 text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+                                         <span>{stats.full} Full Mocks</span>
+                                         <span className="opacity-30">•</span>
+                                         <span>{stats.subject} Subject</span>
+                                         <span className="opacity-30">•</span>
+                                         <span>{stats.sectional} Sectional</span>
+                                         <span className="opacity-30">•</span>
+                                         <span>{stats.pyq} PYQs</span>
+                                         <span className="opacity-30">•</span>
+                                         <span>{stats.ca} CA</span>
+                                      </div>
+                                   </div>
                                 ) : (
-                                   <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest flex items-center justify-center gap-1.5 mt-2 bg-amber-50 py-2 rounded-xl border border-amber-100">
+                                   <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest flex items-center justify-center gap-1.5 mt-2 bg-amber-50 py-2 rounded-xl border border-amber-100 w-full">
                                       <Info className="h-3.5 w-3.5" /> Content Coming Soon
                                    </span>
                                 )}
@@ -347,16 +346,4 @@ export default function MyExamsPage() {
       <Footer />
     </div>
   )
-}
-
-function StatLine({ label, val }: { label: string, val: number }) {
-   return (
-      <p className={cn(
-         "text-[10px] font-bold uppercase tracking-tight flex items-center justify-between px-1", 
-         val > 0 ? "text-slate-600" : "text-slate-300"
-      )}>
-         <span>{label}</span>
-         <span className="tabular-nums">{val}</span>
-      </p>
-   )
 }

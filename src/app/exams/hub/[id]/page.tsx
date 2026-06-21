@@ -18,8 +18,8 @@ import { useToast } from "@/hooks/use-toast"
 import { getAuthorityIcon } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional Exam Explorer v21.0 (Live Counts).
- * UPDATED: Replaced "Nodes" with detailed content breakdown.
+ * @fileOverview Institutional Exam Explorer v22.0 (Premium Layout).
+ * UPDATED: Compact dot-separated statistics for a clean professional look.
  */
 
 const ACRONYMS = ["PSSSB", "PPSC", "CTET", "PSTET", "PSPCL", "PSTCL", "SSAPB"];
@@ -54,7 +54,6 @@ export default function HubExamsPage() {
   const { data: categories } = useCollection<any>(useMemo(() => (db ? collection(db, "categories") : null), [db]));
   const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]));
   const { data: pyqs } = useCollection<any>(useMemo(() => (db ? collection(db, "pyqs") : null), [db]));
-  const { data: notes } = useCollection<any>(useMemo(() => (db ? collection(db, "notes") : null), [db]));
 
   const statsMap = useMemo(() => {
     const map: Record<string, any> = {};
@@ -63,7 +62,7 @@ export default function HubExamsPage() {
     (mocks || []).forEach(m => {
       const eids = m.examIds || (m.examId ? [m.examId] : []);
       eids.forEach((eid: string) => {
-        if (!map[eid]) map[eid] = { full: 0, subject: 0, sectional: 0, pyq: 0, notes: 0, total: 0 };
+        if (!map[eid]) map[eid] = { full: 0, subject: 0, sectional: 0, pyq: 0, ca: 0, total: 0 };
         const type = m.mockType;
         if (type === 'FULL') map[eid].full++;
         else if (type === 'SUBJECT') map[eid].subject++;
@@ -77,24 +76,14 @@ export default function HubExamsPage() {
     (pyqs || []).forEach(p => {
        const eid = p.examId;
        if (eid) {
-          if (!map[eid]) map[eid] = { full: 0, subject: 0, sectional: 0, pyq: 0, notes: 0, total: 0 };
+          if (!map[eid]) map[eid] = { full: 0, subject: 0, sectional: 0, pyq: 0, ca: 0, total: 0 };
           map[eid].pyq++;
           map[eid].total++;
        }
     });
 
-    // 3. Audit Study Materials
-    (notes || []).forEach(n => {
-       const eid = n.examId;
-       if (eid) {
-          if (!map[eid]) map[eid] = { full: 0, subject: 0, sectional: 0, pyq: 0, notes: 0, total: 0 };
-          if (n.category === 'NOTES') map[eid].notes++;
-          map[eid].total++;
-       }
-    });
-
     return map;
-  }, [mocks, pyqs, notes]);
+  }, [mocks, pyqs]);
 
   const handleTogglePin = async (e: React.MouseEvent, examId: string) => {
     e.preventDefault();
@@ -193,7 +182,7 @@ export default function HubExamsPage() {
          ) : exams && exams.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
                {exams.map((exam) => {
-                  const stats = statsMap[exam.id] || { full: 0, subject: 0, sectional: 0, pyq: 0, notes: 0, total: 0 };
+                  const stats = statsMap[exam.id] || { full: 0, subject: 0, sectional: 0, pyq: 0, ca: 0, total: 0 };
                   const hasContent = stats.total > 0;
                   const category = categories?.find((c: any) => c.id === exam.categoryId);
                   const effectiveLogo = exam.iconUrl || hub?.iconUrl || category?.iconUrl;
@@ -235,17 +224,26 @@ export default function HubExamsPage() {
                           <h3 className="text-xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors line-clamp-2">
                              {exam.name}
                           </h3>
-                          <div className="flex flex-col gap-1.5 mt-2">
+                          <div className="mt-2">
                              {hasContent ? (
-                                <>
-                                   <StatLine label="Full Mocks" val={stats.full} />
-                                   <StatLine label="Subject Tests" val={stats.subject} />
-                                   <StatLine label="Sectional Tests" val={stats.sectional} />
-                                   <StatLine label="Official PYQs" val={stats.pyq} />
-                                   <StatLine label="Study Notes" val={stats.notes} />
-                                </>
+                                <div className="space-y-1">
+                                   <p className="text-[10px] md:text-xs font-black text-slate-700 uppercase tracking-tight">
+                                      {stats.total} Content Items Available
+                                   </p>
+                                   <div className="flex flex-wrap items-center gap-1.5 text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+                                      <span>{stats.full} Full Mocks</span>
+                                      <span className="opacity-30">•</span>
+                                      <span>{stats.subject} Subject</span>
+                                      <span className="opacity-30">•</span>
+                                      <span>{stats.sectional} Sectional</span>
+                                      <span className="opacity-30">•</span>
+                                      <span>{stats.pyq} PYQs</span>
+                                      <span className="opacity-30">•</span>
+                                      <span>{stats.ca} CA</span>
+                                   </div>
+                                </div>
                              ) : (
-                                <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest flex items-center gap-1.5 mt-2">
+                                <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest flex items-center gap-1.5 mt-2">
                                    <Info className="h-3.5 w-3.5" /> Content Coming Soon
                                 </span>
                              )}
@@ -275,16 +273,3 @@ export default function HubExamsPage() {
     </div>
   )
 }
-
-function StatLine({ label, val }: { label: string, val: number }) {
-   return (
-      <p className={cn(
-         "text-[10px] font-bold uppercase tracking-tight flex items-center justify-between", 
-         val > 0 ? "text-slate-600" : "text-slate-300"
-      )}>
-         <span>{label}</span>
-         <span className="tabular-nums">{val}</span>
-      </p>
-   )
-}
-
