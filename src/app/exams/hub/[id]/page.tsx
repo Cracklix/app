@@ -18,7 +18,8 @@ import { useToast } from "@/hooks/use-toast"
 import { getAuthorityIcon } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional Hub Explorer v16.0 (Logo Hardened).
+ * @fileOverview Institutional Hub Explorer v16.1 (Logo Size Hardened).
+ * FIXED: Reduced hero logo to 64px and card logos to 40px for balanced hierarchy.
  */
 
 export default function HubExamsPage() {
@@ -91,44 +92,43 @@ export default function HubExamsPage() {
     <div className="min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       
-      <section className="bg-white border-b border-slate-100 py-12 md:py-16 overflow-hidden relative">
-         <div className="absolute top-0 right-0 p-12 opacity-[0.02]"><GraduationCap className="h-32 w-32 md:h-64 md:w-64" /></div>
+      <section className="bg-white border-b border-slate-100 py-10 md:py-12 overflow-hidden relative">
+         <div className="absolute top-0 right-0 p-12 opacity-[0.01]"><GraduationCap className="h-32 w-32 md:h-48 md:w-48" /></div>
          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
-            <button onClick={() => router.back()} className="h-10 w-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-black mb-6 md:mb-10 transition-all active:scale-90">
-               <ChevronLeft className="h-5 w-5" />
+            <button onClick={() => router.back()} className="h-9 w-9 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-black mb-6 transition-all active:scale-90">
+               <ChevronLeft className="h-4 w-4" />
             </button>
             
-            <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 md:gap-12">
-               <div className="h-20 w-20 sm:h-28 sm:w-28 md:h-32 md:w-32 rounded-2xl md:rounded-[2.5rem] bg-slate-50 border-2 md:border-4 border-white shadow-xl flex items-center justify-center overflow-hidden shrink-0 relative">
+            <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 md:gap-10">
+               <div className="h-14 w-14 md:h-16 md:w-16 rounded-2xl bg-slate-50 border-2 border-white shadow-lg flex items-center justify-center overflow-hidden shrink-0 relative">
                   {hub?.iconUrl && !failedImages['hub'] ? (
                     <Image 
                       src={hub.iconUrl} 
                       alt="Logo" 
                       fill
-                      sizes="(max-width: 768px) 100px, 128px"
-                      className="object-contain p-3 md:p-4" 
+                      sizes="64px"
+                      className="object-contain p-2.5" 
                       referrerPolicy="no-referrer" 
                       onError={() => setFailedImages(p => ({...p, 'hub': true}))} 
                     />
                   ) : (
-                    <div className="p-3 md:p-4 w-full h-full opacity-40">
+                    <div className="p-2.5 w-full h-full opacity-40">
                       {getAuthorityIcon(hub?.id, hub?.abbreviation)}
                     </div>
                   )}
                </div>
                
-               <div className="space-y-6 md:space-y-8 text-center lg:text-left min-w-0">
+               <div className="space-y-4 text-center lg:text-left min-w-0">
                   <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
-                     <Badge className="bg-primary text-white border-none font-black px-4 py-1 rounded-xl text-[9px] tracking-widest uppercase">
-                       {hub?.abbreviation} HUB
+                     <Badge className="bg-primary/5 text-primary border-none font-black px-3 py-0.5 rounded-lg text-[8px] tracking-widest uppercase">
+                       {hub?.abbreviation} CENTER
                      </Badge>
-                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">OFFICIAL CENTER</span>
                   </div>
-                  <div className="space-y-4">
-                    <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#0F172A] leading-[0.9] tracking-tight break-words antialiased">
+                  <div className="space-y-2">
+                    <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-[#0F172A] leading-none tracking-tight break-words antialiased uppercase">
                       {hub?.abbreviation || hub?.name?.split(' ')[0]}
                     </h1>
-                    <p className="text-sm md:text-2xl font-bold text-slate-400 leading-tight tracking-tight max-w-4xl">
+                    <p className="text-sm md:text-xl font-bold text-slate-400 leading-tight tracking-tight max-w-4xl">
                        {hub?.name}
                     </p>
                   </div>
@@ -137,10 +137,10 @@ export default function HubExamsPage() {
          </div>
       </section>
 
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16 max-w-7xl">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 max-w-7xl">
          {examsLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-               {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[240px] w-full rounded-[2rem]" />)}
+               {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[200px] w-full rounded-[2rem]" />)}
             </div>
          ) : exams && exams.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
@@ -151,15 +151,15 @@ export default function HubExamsPage() {
                   const isPinned = profile?.pinnedExams?.includes(exam.id);
 
                   return (
-                    <Card key={exam.id} onClick={() => router.push(`/exams/${exam.id}`)} className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-4px] transition-all duration-500 rounded-[2rem] bg-white group overflow-hidden h-full flex flex-col p-6 md:p-10 text-left cursor-pointer">
-                       <div className="flex justify-between items-start mb-6 md:mb-8">
-                          <div className="h-14 w-14 md:h-18 md:w-18 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 shadow-inner relative overflow-hidden">
+                    <Card key={exam.id} onClick={() => router.push(`/exams/${exam.id}`)} className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2rem] bg-white group overflow-hidden h-full flex flex-col p-6 md:p-8 text-left cursor-pointer">
+                       <div className="flex justify-between items-start mb-6">
+                          <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 shadow-inner relative overflow-hidden">
                              {effectiveLogo && !failedImages[exam.id] ? (
                                 <Image 
                                    src={effectiveLogo} 
                                    alt="Logo" 
                                    fill
-                                   sizes="72px"
+                                   sizes="40px"
                                    className="object-contain p-2" 
                                    referrerPolicy="no-referrer" 
                                    onError={() => setFailedImages(p => ({ ...p, [exam.id]: true }))} 
@@ -174,7 +174,7 @@ export default function HubExamsPage() {
                             onClick={(e) => handleTogglePin(e, exam.id)}
                             disabled={pinningId === exam.id}
                             className={cn(
-                              "h-10 w-10 rounded-xl border flex items-center justify-center transition-all active:scale-90 z-20",
+                              "h-9 w-9 rounded-xl border flex items-center justify-center transition-all active:scale-90 z-20",
                               isPinned ? "bg-primary border-primary text-white" : "bg-white border-slate-100 text-slate-300 hover:text-primary hover:border-primary/20"
                             )}
                           >
@@ -183,13 +183,13 @@ export default function HubExamsPage() {
                        </div>
 
                        <div className="space-y-2 flex-1">
-                          <h3 className="text-xl md:text-2xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors line-clamp-2 uppercase">{exam.name}</h3>
-                          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{stats.full + stats.subject + stats.pyq + stats.sectional} TESTS AVAILABLE</p>
+                          <h3 className="text-xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors line-clamp-2 uppercase">{exam.name}</h3>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stats.full + stats.subject + stats.pyq + stats.sectional} PREPARATION NODES</p>
                        </div>
 
                        <div className="mt-6 md:mt-8">
-                          <Button variant="ghost" className="w-full h-12 md:h-14 rounded-xl md:rounded-2xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest gap-2 group-hover:bg-primary transition-all border-none">
-                             VIEW PREPARATION <ChevronRight className="h-4 w-4" />
+                          <Button variant="ghost" className="w-full h-12 rounded-2xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest gap-2 group-hover:bg-primary transition-all border-none shadow-lg">
+                             OPEN HUB <ChevronRight className="h-4 w-4" />
                           </Button>
                        </div>
                     </Card>

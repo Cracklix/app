@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useState } from "react"
@@ -16,8 +15,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Explorer v14.0.
- * TYPOGRAPHY: Reduced visual scale by 35% for section density.
+ * @fileOverview Institutional Category Explorer v14.1 (Logo Size Hardened).
+ * FIXED: Standardized board logos to 48px to prevent visual dominance.
  */
 
 const ACRONYMS = ["PSSSB", "PPSC", "PUNJAB POLICE", "PSPCL", "PSTCL", "PSTET", "CTET", "MCQ", "MCQS", "PYQ", "PYQS", "GK", "CA"];
@@ -69,27 +68,25 @@ export default function CategoryHubsPage() {
     <div className="min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       
-      <section className="bg-white border-b border-slate-100 py-10 md:py-16 text-left relative overflow-hidden">
-         <div className="absolute top-0 right-0 p-12 opacity-[0.02]"><Landmark className="h-48 w-48" /></div>
+      <section className="bg-white border-b border-slate-100 py-10 md:py-14 text-left relative overflow-hidden">
+         <div className="absolute top-0 right-0 p-12 opacity-[0.01]"><Landmark className="h-48 w-48" /></div>
          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
             <div className="flex items-center gap-6 mb-8">
-               <button onClick={() => router.back()} className="h-10 w-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-black transition-all">
-                  <ChevronLeft className="h-5 w-5" />
+               <button onClick={() => router.back()} className="h-9 w-9 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-black transition-all">
+                  <ChevronLeft className="h-4 w-4" />
                </button>
                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary shadow-inner">
-                     <div className="h-full w-full flex items-center justify-center overflow-hidden rounded-md">
-                        {meta.icon}
-                     </div>
+                  <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary shadow-inner overflow-hidden p-1">
+                    {meta.icon}
                   </div>
-                  <span className="text-[10px] md:text-xs font-bold text-slate-500 tracking-tight uppercase">Registry Node</span>
+                  <span className="text-[10px] font-bold text-slate-500 tracking-tight uppercase">Registry Node</span>
                </div>
             </div>
-            <div className="space-y-4">
-              <h1 className="text-[32px] sm:text-[42px] md:text-[48px] lg:text-[60px] xl:text-[72px] font-black text-[#0F172A] leading-[0.95] tracking-tight break-words antialiased">
+            <div className="space-y-3">
+              <h1 className="text-[32px] sm:text-[42px] md:text-[48px] lg:text-[56px] font-black text-[#0F172A] leading-[0.95] tracking-tight break-words antialiased">
                 {toTitleCase(meta.title)}
               </h1>
-              <p className="text-sm md:text-2xl font-bold text-slate-400 tracking-tight max-w-3xl leading-tight">
+              <p className="text-sm md:text-xl font-bold text-slate-400 tracking-tight max-w-3xl leading-tight">
                 Official recruitment centers for the {toTitleCase(meta.title)} category.
               </p>
             </div>
@@ -117,11 +114,11 @@ export default function CategoryHubsPage() {
                     <Link key={hub.id} href={`/exams/hub/${hub.id}`}>
                        <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2rem] bg-white group overflow-hidden h-full flex flex-col p-6 md:p-8 text-left min-h-[180px] md:min-h-[220px]">
                           <div className="flex justify-between items-start mb-6">
-                             <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                             <div className="h-11 w-11 md:h-12 md:w-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:scale-105 transition-transform">
                                 {hub.iconUrl ? (
                                    <img src={hub.iconUrl} className="h-full w-full object-contain p-2" alt="Hub Logo" referrerPolicy="no-referrer" />
                                 ) : (
-                                   <div className="text-primary opacity-40 p-3">
+                                   <div className="text-primary opacity-40 p-2.5">
                                       {isPolice ? <Shield className="h-full w-full" /> : 
                                        <LandmarkIcon className="h-full w-full" />}
                                    </div>
@@ -130,18 +127,18 @@ export default function CategoryHubsPage() {
                              <Badge variant="outline" className="text-[8px] font-bold text-slate-400 tracking-tight border-slate-100 uppercase">OFFICIAL CENTER</Badge>
                           </div>
                           
-                          <div className="space-y-2 flex-1 min-w-0">
-                             <h3 className="text-lg md:text-xl font-bold text-[#0F172A] tracking-tight group-hover:text-primary transition-colors truncate">{hub.abbreviation} Exams</h3>
-                             <p className="text-[10px] md:text-sm font-semibold text-slate-400 leading-snug line-clamp-2">{toTitleCase(hub.name)}</p>
+                          <div className="space-y-1 flex-1 min-w-0">
+                             <h3 className="text-lg md:text-xl font-black text-[#0F172A] tracking-tight group-hover:text-primary transition-colors truncate uppercase">{hub.abbreviation} Exams</h3>
+                             <p className="text-[10px] md:text-sm font-semibold text-slate-400 leading-snug line-clamp-1">{toTitleCase(hub.name)}</p>
                           </div>
 
                           <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between">
                              <div className="space-y-0.5">
-                                <p className="text-sm font-bold text-[#0F172A]">{examCount}</p>
-                                <p className="text-[8px] font-bold text-slate-400 tracking-tight uppercase">EXAMS LISTED</p>
+                                <p className="text-sm font-black text-[#0F172A]">{examCount}</p>
+                                <p className="text-[8px] font-bold text-slate-400 tracking-tight uppercase">EXAMS LIVE</p>
                              </div>
-                             <Button variant="ghost" className="h-9 md:h-10 px-4 md:px-6 rounded-xl bg-slate-900 text-white flex items-center gap-2 font-bold text-xs tracking-tight group-hover:bg-primary transition-all border-none">
-                                View <ChevronRight className="h-3 w-3 md:h-4 md:w-4" />
+                             <Button variant="ghost" className="h-9 md:h-10 px-4 md:px-6 rounded-xl bg-slate-900 text-white flex items-center gap-2 font-black text-[10px] tracking-widest group-hover:bg-primary transition-all border-none shadow-md">
+                                VIEW HUB <ChevronRight className="h-3 w-3" />
                              </Button>
                           </div>
                        </Card>

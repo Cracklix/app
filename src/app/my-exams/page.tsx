@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo, useEffect, useState } from "react"
@@ -38,8 +37,8 @@ import { usePWAInstall } from "@/hooks/use-pwa-install"
 import { getAuthorityIcon } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional My Hub Hub v9.0 (Live Sync Hardened).
- * FIXED: Removed all dummy fallback data from attempt history.
+ * @fileOverview Institutional My Hub Hub v9.1 (Logo Sizing Refined).
+ * FIXED: Standardized pinned exam icons to 48px for balanced layout hierarchy.
  */
 
 export default function MyExamsPage() {
@@ -161,39 +160,39 @@ export default function MyExamsPage() {
                  </div>
                  
                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-10">
-                    {examsLoading ? Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-[400px] w-full rounded-[3.5rem] bg-white" />) : 
+                    {examsLoading ? Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-[360px] w-full rounded-[3.5rem] bg-white" />) : 
                     pinnedExams.length > 0 ? pinnedExams.map((exam: any) => {
                        const board = boards?.find((b: any) => b.id === exam.boardId || b.abbreviation === exam.boardId);
                        const logoUrl = exam.iconUrl || board?.iconUrl;
                        const isTarget = profile?.targetExam === exam.name;
                        return (
-                        <Card key={exam.id} className="border-none shadow-2xl hover:shadow-5xl transition-all duration-500 rounded-[3.5rem] bg-white group overflow-hidden h-[420px] flex flex-col border border-slate-100 relative p-8 md:p-12 text-center">
+                        <Card key={exam.id} className="border-none shadow-2xl hover:shadow-5xl transition-all duration-500 rounded-[3.5rem] bg-white group overflow-hidden h-[400px] flex flex-col border border-slate-100 relative p-8 md:p-12 text-center">
                           {isTarget && (
-                            <div className="absolute top-8 right-8 z-20">
-                              <Badge className="bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm px-4 py-1.5 font-black text-[9px] uppercase flex items-center gap-2 rounded-xl">
-                                <CheckCircle2 className="h-3.5 w-3.5" /> TARGET
+                            <div className="absolute top-6 right-6 z-20">
+                              <Badge className="bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm px-3 py-1 font-black text-[8px] uppercase flex items-center gap-2 rounded-xl">
+                                <CheckCircle2 className="h-3 w-3" /> TARGET
                               </Badge>
                             </div>
                           )}
-                          <div className="flex flex-col items-center flex-1 h-full pt-4">
-                             <div className="h-20 w-20 md:h-24 md:w-24 rounded-3xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 shadow-inner group-hover:scale-105 transition-transform overflow-hidden mb-8 relative">
+                          <div className="flex flex-col items-center flex-1 h-full pt-2">
+                             <div className="h-11 w-11 md:h-12 md:w-12 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 shadow-inner group-hover:scale-105 transition-transform overflow-hidden mb-6 relative">
                                {logoUrl && !failedImages[exam.id] ? (
-                                 <img src={logoUrl} className="w-full h-full object-contain p-3" referrerPolicy="no-referrer" alt="Logo" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
+                                 <img src={logoUrl} className="w-full h-full object-contain p-2.5" referrerPolicy="no-referrer" alt="Logo" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
                                ) : (
-                                 <div className="p-3 md:p-4 w-full h-full opacity-40">
+                                 <div className="p-2.5 w-full h-full opacity-40">
                                    {getAuthorityIcon(board?.id, board?.abbreviation)}
                                  </div>
                                )}
                              </div>
-                             <h4 className="font-black text-xl md:text-2xl text-[#0F172A] uppercase leading-tight mb-4 px-4 line-clamp-2">{exam.name}</h4>
-                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{board?.abbreviation || 'PSSSB'} Hub</p>
+                             <h4 className="font-black text-xl md:text-2xl text-[#0F172A] uppercase leading-tight mb-2 px-2 line-clamp-2">{exam.name}</h4>
+                             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{board?.abbreviation || 'PSSSB'} Hub</p>
                           </div>
-                          <div className="space-y-6 pt-10 mt-auto">
-                             <div className="grid grid-cols-2 gap-4">
-                                <Button onClick={() => handleSetTarget(exam.name, exam.id)} disabled={settingTargetId === exam.id || isTarget} variant="outline" className={cn("h-14 rounded-2xl border-2 font-black uppercase text-[9px] tracking-widest gap-2 shadow-sm", isTarget ? "bg-emerald-50 border-emerald-100 text-emerald-700" : "bg-white border-slate-100 text-[#0F172A] hover:bg-slate-50")}>{settingTargetId === exam.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Target className="h-4 w-4" />}{isTarget ? 'TARGETED' : 'SET TARGET'}</Button>
-                                <Button asChild className="h-14 bg-[#0F172A] hover:bg-black text-white rounded-2xl font-black uppercase text-[9px] tracking-widest border-none shadow-xl transition-all"><Link href={`/exams/${exam.id}`}>OPEN HUB</Link></Button>
+                          <div className="space-y-4 pt-6 mt-auto">
+                             <div className="grid grid-cols-2 gap-3">
+                                <Button onClick={() => handleSetTarget(exam.name, exam.id)} disabled={settingTargetId === exam.id || isTarget} variant="outline" className={cn("h-12 rounded-xl border-2 font-black uppercase text-[8px] tracking-widest gap-2 shadow-sm", isTarget ? "bg-emerald-50 border-emerald-100 text-emerald-700" : "bg-white border-slate-100 text-[#0F172A] hover:bg-slate-50")}>{settingTargetId === exam.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Target className="h-3 w-3" />}{isTarget ? 'TARGETED' : 'FOCUS'}</Button>
+                                <Button asChild className="h-12 bg-[#0F172A] hover:bg-black text-white rounded-xl font-black uppercase text-[8px] tracking-widest border-none shadow-xl transition-all"><Link href={`/exams/${exam.id}`}>OPEN HUB</Link></Button>
                              </div>
-                             <button onClick={() => handleUnpin(exam.id)} disabled={unpinningId === exam.id} className="w-fit mx-auto flex items-center justify-center gap-2 text-[10px] font-black text-slate-300 hover:text-rose-500 uppercase tracking-widest transition-colors active:scale-90">{unpinningId === exam.id ? <RefreshCw className="h-3 w-3 animate-spin" /> : <X className="h-3.5 w-3.5" />}REMOVE</button>
+                             <button onClick={() => handleUnpin(exam.id)} disabled={unpinningId === exam.id} className="w-fit mx-auto flex items-center justify-center gap-2 text-[9px] font-black text-slate-300 hover:text-rose-500 uppercase tracking-widest transition-colors active:scale-90">{unpinningId === exam.id ? <RefreshCw className="h-3 w-3 animate-spin" /> : <X className="h-3 w-3" />}REMOVE FROM HUB</button>
                           </div>
                         </Card>
                        )
@@ -267,7 +266,7 @@ export default function MyExamsPage() {
                  <Link key={r.id} href={`/results/${r.mockId}`}>
                     <Card className="border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2.5rem] bg-white p-8 md:p-10 flex items-center justify-between group overflow-hidden border border-slate-100">
                        <div className="flex items-center gap-8 min-w-0 flex-1">
-                          <div className="h-16 w-16 md:h-20 md:w-20 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-primary/5 transition-all"><Zap className="h-8 w-8 text-primary group-hover:scale-110 transition-transform duration-500" /></div>
+                          <div className="h-14 w-14 md:h-16 md:w-16 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-primary/5 transition-all"><Zap className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-500" /></div>
                           <div className="min-w-0 space-y-2"><h4 className="font-black text-xl md:text-2xl text-[#0F172A] uppercase truncate leading-none">{r.mockTitle}</h4><div className="flex items-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-tight"><span className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> {new Date(r.timestamp).toLocaleDateString()}</span><Badge className="bg-emerald-50 text-emerald-600 border-none font-black px-3 py-1 rounded-lg text-[10px]">Score: {r.score}</Badge></div></div>
                        </div>
                        <ChevronRight className="h-6 w-6 text-slate-200 group-hover:text-primary transition-all group-hover:translate-x-2 shrink-0 ml-4" />

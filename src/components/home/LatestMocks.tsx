@@ -20,7 +20,8 @@ import { cn } from "@/lib/utils"
 import { getAuthorityIcon } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Elite Latest Mock Hub v51.0 (Hardened Expiry).
+ * @fileOverview Elite Latest Mock Hub v51.1 (Logo Size Refined).
+ * FIXED: Reduced mock card logo to 40px for balanced hierarchy.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -78,7 +79,7 @@ export default function LatestMocks() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {loading ? (
-             Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[380px] w-full rounded-[24px] bg-slate-50" />)
+             Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[360px] w-full rounded-[24px] bg-slate-50" />)
           ) : mocks.map((mock, i) => {
             const board = boards?.find((b: any) => b.id === (mock.boardIds?.[0] || mock.boardId));
             const difficulty = mock.difficulty || "Medium";
@@ -95,17 +96,17 @@ export default function LatestMocks() {
                       <Badge className="bg-orange-50 text-[#D97706] border-none text-[7px] font-bold px-2 py-0.5 shadow-sm">🔥 Popular</Badge>
                     )}
                   </div>
-                  <div className="h-[60px] w-[60px] mx-auto rounded-full bg-[#F8FAFC] flex items-center justify-center p-1 shrink-0 shadow-inner group-hover:scale-105 transition-transform duration-500 mb-6 overflow-hidden border border-slate-100 relative">
+                  <div className="h-10 w-10 mx-auto rounded-xl bg-[#F8FAFC] flex items-center justify-center p-1 shrink-0 shadow-inner group-hover:scale-105 transition-transform duration-500 mb-6 overflow-hidden border border-slate-100 relative">
                      {logoUrl && !failedImages[mock.id] ? (
-                       <Image src={logoUrl} alt="Logo" fill sizes="64px" className="object-contain p-3" referrerPolicy="no-referrer" onError={() => setFailedImages(prev => ({...prev, [mock.id]: true}))} />
+                       <Image src={logoUrl} alt="Logo" fill sizes="40px" className="object-contain p-2" referrerPolicy="no-referrer" onError={() => setFailedImages(prev => ({...prev, [mock.id]: true}))} />
                      ) : (
-                       <div className="p-3 w-full h-full opacity-40">
+                       <div className="p-2 w-full h-full opacity-40">
                          {getAuthorityIcon(board?.id, board?.abbreviation)}
                        </div>
                      )}
                   </div>
                   <CardHeader className="p-0 flex-1 space-y-4">
-                     <CardTitle className="font-extrabold text-xl md:text-2xl text-[#04102B] leading-tight tracking-tight line-clamp-2 min-h-[50px]">{mock.title}</CardTitle>
+                     <CardTitle className="font-extrabold text-lg md:text-2xl text-[#04102B] leading-tight tracking-tight line-clamp-2 min-h-[48px] uppercase">{mock.title}</CardTitle>
                      <div className="flex items-center justify-center gap-3 text-[12px] font-bold text-[#64748B] tracking-tight">
                         <span className="flex items-center gap-1.5"><BookOpen className="h-3.5 w-3.5 text-blue-600 opacity-50" /> {mock.totalQuestions} Qs</span>
                         <div className="h-3 w-px bg-slate-100" />
@@ -118,13 +119,13 @@ export default function LatestMocks() {
                   </CardHeader>
                   <CardContent className="p-0 mt-6">
                      {locked ? (
-                       <Button asChild className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl transition-all shadow-md border-none gap-2">
+                       <Button asChild className="w-full h-12 bg-primary hover:bg-blue-700 text-white font-black text-[10px] tracking-widest uppercase rounded-xl transition-all shadow-md border-none gap-2">
                           <Link href="/pass">
                              <Lock className="h-3.5 w-3.5" /> {profile?.passStatus === 'expired' ? 'Renew Elite Pass' : 'Unlock Hub'}
                           </Link>
                        </Button>
                      ) : (
-                       <Button asChild className="w-full h-12 bg-[#04102B] hover:bg-[#2F6BFF] text-white font-bold text-xs rounded-xl transition-all shadow-md border-none group/btn"><Link href={`/mocks/${mock.id}`} className="flex items-center justify-center gap-2">Attempt Now <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-1" /></Link></Button>
+                       <Button asChild className="w-full h-12 bg-[#04102B] hover:bg-[#2F6BFF] text-white font-black text-[10px] tracking-widest uppercase rounded-xl transition-all shadow-md border-none group/btn"><Link href={`/mocks/${mock.id}`} className="flex items-center justify-center gap-2">Attempt Now <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-1" /></Link></Button>
                      )}
                   </CardContent>
                 </Card>

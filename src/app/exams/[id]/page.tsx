@@ -43,8 +43,8 @@ import { useToast } from "@/hooks/use-toast"
 import { getAuthorityIcon } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional Exam Hub v43.0.
- * HARDENED: Premium access validation logic for mock lists.
+ * @fileOverview Institutional Exam Hub v43.1 (Logo Size Refined).
+ * FIXED: Reduced mock card logo to 40px for balanced hierarchy.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -157,51 +157,51 @@ export default function ExamHubPage() {
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       
-      <section className="bg-white border-b border-slate-100 py-12 md:py-16 text-left relative overflow-hidden">
-         <div className="absolute top-0 right-0 p-12 opacity-[0.02]"><GraduationCap className="h-48 w-48" /></div>
+      <section className="bg-white border-b border-slate-100 py-10 md:py-12 text-left relative overflow-hidden">
+         <div className="absolute top-0 right-0 p-12 opacity-[0.01]"><GraduationCap className="h-48 w-48" /></div>
          <div className="container mx-auto px-4 max-w-7xl relative z-10">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-12">
                <div className="flex items-start gap-4 flex-1 min-w-0">
-                  <button onClick={() => router.back()} className="h-10 w-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 shrink-0 hover:bg-slate-50">
-                     <ChevronLeft className="h-5 w-5" />
+                  <button onClick={() => router.back()} className="h-9 w-9 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 shrink-0 hover:bg-slate-50">
+                     <ChevronLeft className="h-4 w-4" />
                   </button>
-                  <div className="min-w-0 space-y-5">
+                  <div className="min-w-0 space-y-4">
                      <div className="flex items-center gap-3">
                         <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase px-2 py-0.5 rounded shadow-sm">
-                           {activeBoard?.abbreviation || 'OFFICIAL'} HUB
+                           {activeBoard?.abbreviation || 'OFFICIAL'} CENTER
                         </Badge>
                         <button 
                            onClick={togglePin} 
                            disabled={isPinning}
                            className={cn(
-                              "flex items-center gap-2 px-4 py-1.5 rounded-full border transition-all active:scale-90 shadow-sm font-black uppercase text-[9px] tracking-widest",
+                              "flex items-center gap-2 px-3 py-1 rounded-full border transition-all active:scale-90 shadow-sm font-black uppercase text-[8px] tracking-widest",
                               isPinned ? "bg-primary border-primary text-white" : "bg-white border-slate-200 text-slate-400 hover:border-primary/40 hover:text-primary"
                            )}
                         >
-                           {isPinning ? <RefreshCw className="h-3 w-3 animate-spin" /> : isPinned ? <CheckCircle2 className="h-3 w-3" /> : <Star className="h-3 w-3" />}
-                           {isPinned ? 'PINNED TO HUB' : 'PIN TO MY HUB'}
+                           {isPinning ? <RefreshCw className="h-2.5 w-2.5 animate-spin" /> : isPinned ? <CheckCircle2 className="h-2.5 w-2.5" /> : <Star className="h-2.5 w-2.5" />}
+                           {isPinned ? 'PINNED' : 'PIN TO HUB'}
                         </button>
                      </div>
-                     <div className="space-y-4">
-                        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#0F172A] leading-[0.9] tracking-tight break-words antialiased">
+                     <div className="space-y-2">
+                        <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-[#0F172A] leading-tight tracking-tight break-words antialiased uppercase">
                            {exam.shortTitle || activeBoard?.abbreviation || exam.name.split(' ')[0]}
                         </h1>
-                        <p className="text-sm md:text-2xl font-bold text-slate-400 leading-tight tracking-tight max-w-3xl">
+                        <p className="text-sm md:text-xl font-bold text-slate-400 leading-tight tracking-tight max-w-3xl">
                            {exam.name}
                         </p>
                      </div>
                   </div>
                </div>
                
-               <div className="flex items-center gap-6 bg-slate-50/50 px-6 py-4 rounded-2xl border border-slate-100 w-full md:w-auto shadow-inner">
-                  <div className="text-center min-w-[70px] space-y-0.5">
+               <div className="flex items-center gap-6 bg-slate-50/50 px-5 py-3 rounded-2xl border border-slate-100 w-full md:w-auto shadow-inner">
+                  <div className="text-center min-w-[60px] space-y-0.5">
                      <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">ACCURACY</p>
-                     <p className="text-xl md:text-4xl font-headline font-black text-primary tabular-nums">{examPerformance.avgAcc}%</p>
+                     <p className="text-xl md:text-3xl font-headline font-black text-primary tabular-nums">{examPerformance.avgAcc}%</p>
                   </div>
-                  <div className="h-8 w-px bg-slate-200" />
-                  <div className="text-center min-w-[70px] space-y-0.5">
+                  <div className="h-6 w-px bg-slate-200" />
+                  <div className="text-center min-w-[60px] space-y-0.5">
                      <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">ATTEMPTS</p>
-                     <p className="text-xl md:text-4xl font-headline font-black text-[#0F172A] tabular-nums">{examPerformance.attempted}</p>
+                     <p className="text-xl md:text-3xl font-headline font-black text-[#0F172A] tabular-nums">{examPerformance.attempted}</p>
                   </div>
                </div>
             </div>
@@ -238,9 +238,9 @@ export default function ExamHubPage() {
                      ) : groupedContent.CA.map((item: any) => (
                         <Link key={item.id} href="/current-affairs">
                            <Card className="border-none shadow-lg rounded-2xl bg-white p-6 flex items-center justify-between group h-full border border-slate-100">
-                              <div className="flex items-center gap-6">
-                                 <div className="h-12 w-12 rounded-xl bg-orange-50 flex items-center justify-center text-primary shrink-0 shadow-inner">
-                                    <Newspaper className="h-6 w-6" />
+                              <div className="flex items-center gap-4">
+                                 <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center text-primary shrink-0 shadow-inner">
+                                    <Newspaper className="h-5 w-5" />
                                  </div>
                                  <div className="space-y-0.5">
                                     <h3 className="text-sm font-black text-[#0F172A] uppercase leading-tight truncate max-w-[160px]">{item.title}</h3>
@@ -281,7 +281,7 @@ function MockList({ data, results, isPassActive, profile, user, loading, boards,
    
    if (loading) return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-         {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[420px] w-full rounded-[32px]" />)}
+         {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[360px] w-full rounded-[32px]" />)}
       </div>
    );
 
@@ -304,54 +304,54 @@ function MockList({ data, results, isPassActive, profile, user, loading, boards,
             const logoUrl = mock.iconUrl || exam?.iconUrl || board?.iconUrl;
 
             return (
-               <Card key={mock.id} className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-4px] transition-all duration-500 rounded-[32px] bg-white p-8 md:p-10 text-center flex flex-col h-[420px] group relative overflow-hidden">
+               <Card key={mock.id} className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-4px] transition-all duration-500 rounded-[32px] bg-white p-8 md:p-10 text-center flex flex-col h-[400px] group relative overflow-hidden">
                   
                   <div className="absolute top-6 right-6 flex flex-col gap-2 items-end">
                     {result && <Badge className="bg-emerald-50 text-emerald-600 border-none text-[8px] font-black uppercase tracking-widest px-3 py-1 shadow-sm">Attempted</Badge>}
                   </div>
 
-                  <div className="h-[70px] w-[70px] mx-auto rounded-full bg-[#F8FAFC] flex items-center justify-center p-1 shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500 mb-8 overflow-hidden border border-slate-100 relative">
+                  <div className="h-10 w-10 mx-auto rounded-xl bg-[#F8FAFC] flex items-center justify-center p-1 shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500 mb-8 overflow-hidden border border-slate-100 relative">
                      {logoUrl && !failedImages[mock.id] ? (
                        <Image 
                          src={logoUrl} 
                          fill
-                         sizes="70px"
-                         className="object-contain p-3" 
+                         sizes="40px"
+                         className="object-contain p-2" 
                          alt="Logo" 
                          referrerPolicy="no-referrer"
                          onError={() => setFailedImages(prev => ({...prev, [mock.id]: true}))}
                        />
                      ) : (
-                       <div className="p-3 w-full h-full opacity-40">
+                       <div className="p-2 w-full h-full opacity-40">
                          {getAuthorityIcon(board?.id, board?.abbreviation)}
                        </div>
                      )}
                   </div>
 
-                  <CardHeader className="p-0 flex-1 space-y-6">
-                     <CardTitle className="font-extrabold text-xl md:text-2xl text-[#04102B] leading-tight tracking-tight line-clamp-2 min-h-[62px]">
+                  <CardHeader className="p-0 flex-1 space-y-5">
+                     <CardTitle className="font-extrabold text-lg md:text-2xl text-[#04102B] leading-tight tracking-tight line-clamp-2 min-h-[54px] uppercase">
                         {mock.title}
                      </CardTitle>
 
-                     <div className="flex items-center justify-center gap-4 text-[14px] font-bold text-[#64748B] tracking-tight">
-                        <span className="flex items-center gap-1.5"><BookOpen className="h-4 w-4 text-primary opacity-50" /> {mock.totalQuestions} Qs</span>
+                     <div className="flex items-center justify-center gap-4 text-[13px] font-bold text-[#64748B] tracking-tight">
+                        <span className="flex items-center gap-1.5"><BookOpen className="h-3.5 w-3.5 text-primary opacity-50" /> {mock.totalQuestions} Qs</span>
                         <div className="h-4 w-px bg-slate-100" />
-                        <span className="flex items-center gap-1.5"><Clock className="h-4 w-4 text-primary opacity-50" /> {mock.duration} Min</span>
+                        <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-primary opacity-50" /> {mock.duration} Min</span>
                      </div>
 
                      <div className="flex items-center justify-center gap-3">
                         <DifficultyBadge level={difficulty} isPremium={isPremium} />
-                        <Badge variant="outline" className="border-slate-100 text-[#94A3B8] text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-widest">{board?.abbreviation || 'PSSSB'}</Badge>
+                        <Badge variant="outline" className="border-slate-100 text-[#94A3B8] text-[8px] font-black px-3 py-1 rounded-lg uppercase tracking-widest">{board?.abbreviation || 'PSSSB'}</Badge>
                      </div>
                   </CardHeader>
 
-                  <CardContent className="p-0 mt-10">
+                  <CardContent className="p-0 mt-8">
                      {locked ? (
-                        <Button onClick={() => router.push('/pass')} className="w-full h-[56px] bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-widest rounded-[18px] transition-all shadow-xl shadow-amber-500/10 active:scale-95 border-none gap-2">
-                           <Lock className="h-4 w-4" /> {profile?.passStatus === 'expired' ? 'Renew Elite Pass' : 'Unlock Premium Pass'}
+                        <Button onClick={() => router.push('/pass')} className="w-full h-14 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-amber-500/10 active:scale-95 border-none gap-2">
+                           <Lock className="h-4 w-4" /> {profile?.passStatus === 'expired' ? 'Renew Elite Pass' : 'Unlock Now'}
                         </Button>
                      ) : (
-                        <Button onClick={() => router.push(user ? `/mocks/${mock.id}/instructions` : `/login?returnUrl=/mocks/${mock.id}`)} className="w-full h-[56px] bg-[#04102B] hover:bg-[#2F6BFF] text-white font-black text-xs uppercase tracking-widest rounded-[18px] transition-all shadow-xl shadow-slate-900/10 active:scale-95 border-none group/btn">
+                        <Button onClick={() => router.push(user ? `/mocks/${mock.id}/instructions` : `/login?returnUrl=/mocks/${mock.id}`)} className="w-full h-14 bg-[#04102B] hover:bg-[#2F6BFF] text-white font-black text-xs uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-slate-900/10 active:scale-95 border-none group/btn">
                            <span className="flex items-center justify-center gap-2">
                              Attempt Now <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
                            </span>
@@ -390,9 +390,9 @@ function NotesList({ data, isPassActive, loading }: any) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
          {data.map((note: any) => (
             <Card key={note.id} className="border-none shadow-lg rounded-2xl bg-white p-6 md:p-8 flex items-center justify-between group border border-slate-100">
-               <div className="flex items-center gap-6 min-w-0">
-                  <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-                     <FileText className="h-6 w-6" />
+               <div className="flex items-center gap-4 min-w-0">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
+                     <FileText className="h-5 w-5" />
                   </div>
                   <div className="min-w-0">
                      <h3 className="text-sm md:text-xl font-black text-[#0F172A] uppercase truncate max-w-[180px]">{note.title}</h3>

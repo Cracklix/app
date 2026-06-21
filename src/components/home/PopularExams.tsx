@@ -21,8 +21,8 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Popular Exams v65.0 (Typography Hardened).
- * FIXED: Removed aggressive uppercase from titles for premium Title Case look.
+ * @fileOverview High-Fidelity Popular Exams v65.1 (Logo Size Refined).
+ * FIXED: Standardized board logos to 48px to prevent visual dominance.
  */
 
 function getBoardFallbackIcon(id: string, abbrev: string) {
@@ -76,16 +76,16 @@ export default function PopularExams() {
 
                return (
                   <Link key={board.id} href={`/exams/hub/${board.id}`}>
-                     <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-4px] transition-all duration-500 rounded-[2rem] bg-white group p-6 md:p-8 text-left h-full min-h-[220px] md:min-h-[280px] flex flex-col relative overflow-hidden">
+                     <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-4px] transition-all duration-500 rounded-[2rem] bg-white group p-6 md:p-8 text-left h-full min-h-[200px] md:min-h-[260px] flex flex-col relative overflow-hidden">
                         <div className="flex items-start gap-4 mb-6">
-                           <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-[#F8FAFC] flex items-center justify-center p-1.5 shrink-0 shadow-inner group-hover:scale-105 transition-transform overflow-hidden border border-slate-100 relative">
+                           <div className="h-11 w-11 md:h-12 md:w-12 rounded-2xl bg-[#F8FAFC] flex items-center justify-center p-1.5 shrink-0 shadow-inner group-hover:scale-105 transition-transform overflow-hidden border border-slate-100 relative">
                               {logoUrl && !failedImages[board.id] ? (
                                 <Image 
                                   src={logoUrl} 
                                   alt={board.abbreviation} 
                                   fill
-                                  sizes="64px"
-                                  className="object-contain p-3.5"
+                                  sizes="48px"
+                                  className="object-contain p-2"
                                   referrerPolicy="no-referrer"
                                   onError={() => setFailedImages(prev => ({ ...prev, [board.id]: true }))} 
                                 />
@@ -94,10 +94,10 @@ export default function PopularExams() {
                               )}
                            </div>
                            <div className="min-w-0 flex-1 space-y-1">
-                              <h3 className="text-base md:text-lg font-bold text-[#04102B] tracking-tight group-hover:text-blue-600 transition-colors leading-tight">
+                              <h3 className="text-base md:text-lg font-black text-[#04102B] tracking-tight group-hover:text-blue-600 transition-colors leading-tight uppercase">
                                  {board.abbreviation} Exams
                               </h3>
-                              <p className="text-[10px] md:text-[11px] font-semibold text-[#94A3B8] leading-snug">
+                              <p className="text-[10px] md:text-[11px] font-semibold text-[#94A3B8] leading-snug truncate">
                                  {board.name}
                               </p>
                            </div>
@@ -111,8 +111,8 @@ export default function PopularExams() {
                         </div>
 
                         <div className="mt-6 pt-4 border-t border-slate-50">
-                           <span className="text-blue-600 font-bold text-[13px] tracking-tight flex items-center gap-2 group-hover:translate-x-1 transition-transform">
-                              Explore Exams <ArrowRight className="h-3.5 w-3.5" />
+                           <span className="text-blue-600 font-black text-[11px] uppercase tracking-widest flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+                              Explore Hub <ArrowRight className="h-3.5 w-3.5" />
                            </span>
                         </div>
                      </Card>
