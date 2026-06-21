@@ -8,22 +8,20 @@ import {
   Users,
   Zap,
   ChevronRight,
-  BookOpen,
-  FileText,
-  BarChart3,
   Star,
   Gem
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import Link from "next/link";
+import Image from "next/image";
 import { useDoc, useFirestore, useUser } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 /**
- * @fileOverview Official Live Hero Hub v21.0 (Normalized).
+ * @fileOverview Official Live Hero Hub v22.0 (Image Restored).
+ * UPDATED: Restored the student hero image on the right side.
  */
 
 const formatCompact = (num: number) => {
@@ -35,9 +33,10 @@ const formatCompact = (num: number) => {
 };
 
 export default function Hero() {
-  const { profile } = useUser();
   const db = useFirestore();
   const [mounted, setMounted] = useState(false);
+
+  const heroImageData = PlaceHolderImages.find(img => img.id === 'hero-student');
 
   useEffect(() => {
     setMounted(true);
@@ -80,12 +79,12 @@ export default function Hero() {
   if (!mounted) return null;
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-blue-50 py-8 md:py-14">
+    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-blue-50 py-10 md:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
           {/* LEFT: Text Hub */}
-          <div className="text-left space-y-4 md:space-y-6">
+          <div className="text-left space-y-6 md:space-y-8">
             <motion.div 
                initial={{ opacity: 0, x: -20 }}
                animate={{ opacity: 1, x: 0 }}
@@ -97,8 +96,8 @@ export default function Hero() {
               </span>
             </motion.div>
 
-            <div className="space-y-4">
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tight text-[#0F172A] leading-[1.05]">
+            <div className="space-y-4 md:space-y-6">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-[#0F172A] leading-[1.05]">
                 Crack Punjab <br/>
                 <span className="block text-primary">
                   Government Exams
@@ -106,7 +105,7 @@ export default function Hero() {
                 With Confidence
               </h1>
 
-              <p className="text-sm md:text-lg text-slate-600 max-w-lg leading-relaxed font-medium">
+              <p className="text-base md:text-xl text-slate-600 max-w-lg leading-relaxed font-medium">
                 Practice with bilingual mock tests, previous papers and exam-focused preparation nodes verified by official patterns.
               </p>
 
@@ -125,65 +124,63 @@ export default function Hero() {
             </div>
 
             <div className="flex flex-wrap gap-4 pt-4">
-              <Button asChild className="h-12 md:h-14 px-8 rounded-xl bg-primary hover:bg-blue-700 shadow-lg text-white font-bold text-xs tracking-tight gap-2">
+              <Button asChild className="h-14 md:h-16 px-10 rounded-2xl bg-primary hover:bg-blue-700 shadow-xl text-white font-black uppercase text-[11px] tracking-widest gap-2 transition-all active:scale-95 border-none">
                 <Link href="/mocks">Start Free Mock Test <ChevronRight className="h-4 w-4" /></Link>
               </Button>
-              <Button asChild variant="outline" className="h-12 md:h-14 px-8 rounded-xl border-slate-200 bg-white font-bold text-slate-700 text-xs tracking-tight gap-2 shadow-sm">
+              <Button asChild variant="outline" className="h-14 md:h-16 px-10 rounded-2xl border-2 border-slate-200 bg-white font-black text-slate-700 uppercase text-[11px] tracking-widest gap-2 shadow-sm transition-all active:scale-95">
                 <Link href="/pass"><Gem className="h-4 w-4 text-primary" /> Elite Pass</Link>
               </Button>
             </div>
           </div>
 
-          {/* RIGHT: Feature Grid */}
-          <div className="relative">
-             <div className="absolute -inset-10 bg-primary/5 blur-[100px] rounded-full pointer-events-none" />
-             <div className="grid grid-cols-2 gap-3 md:gap-4 relative z-10">
-               <FeatureNode icon={ClipboardList} title="Mock Tests" sub={`${formatCompact(stats?.totalMocks)}+ Series`} href="/mocks" color="text-blue-600" />
-               <FeatureNode icon={BookOpen} title="Study Material" sub="Verified PDFs" href="/notes" color="text-indigo-600" />
-               <FeatureNode icon={FileText} title="PYQ Archive" sub="Solved Papers" href="/pyqs" color="text-emerald-600" />
-               <FeatureNode icon={BarChart3} title="Performance" sub="State Rankings" href="/dashboard" color="text-orange-500" />
-             </div>
+          {/* RIGHT: Hero Image Restored */}
+          <div className="relative hidden lg:flex justify-end">
+             <div className="absolute -inset-10 bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: 1, scale: 1 }}
+               transition={{ duration: 0.6 }}
+               className="relative h-[400px] xl:h-[500px] w-full max-w-[550px] z-10"
+             >
+               {heroImageData && (
+                 <Image 
+                   src={heroImageData.imageUrl} 
+                   alt={heroImageData.description}
+                   fill
+                   priority
+                   className="object-contain drop-shadow-3xl"
+                   sizes="550px"
+                   data-ai-hint={heroImageData.imageHint}
+                 />
+               )}
+             </motion.div>
           </div>
         </div>
 
         {/* STATS STRIP: Normalized Scale */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mt-12 md:mt-16">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-12 md:mt-20">
           {liveStats.map((stat) => (
-            <div 
+            <motion.div 
               key={stat.id} 
-              className="p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] bg-white border border-slate-100 shadow-sm flex items-center gap-4 group transition-all"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-5 md:p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm flex items-center gap-4 group transition-all hover:shadow-xl hover:translate-y-[-4px]"
             >
-              <div className={cn("h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center shrink-0 shadow-inner", stat.bgColor)}>
+              <div className={cn("h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center shrink-0 shadow-inner", stat.bgColor)}>
                 {stat.icon}
               </div>
               <div className="text-left min-w-0">
-                <p className="text-lg md:text-2xl font-black text-[#0F172A] leading-none tabular-nums truncate">
+                <p className="text-2xl md:text-3xl font-black text-[#0F172A] leading-none tabular-nums truncate">
                   {stat.val}
                 </p>
-                <p className="text-[7px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1.5 leading-none">
+                <p className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2 leading-none">
                   {stat.label}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
     </section>
   );
-}
-
-function FeatureNode({ icon: Icon, title, sub, href, color }: any) {
-  return (
-    <Link href={href}>
-      <Card className="p-5 md:p-8 rounded-[2rem] border-slate-100 bg-white hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300 h-full group">
-        <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center mb-6 shadow-inner group-hover:scale-110 transition-transform">
-          <Icon className={cn("h-5 w-5", color)} />
-        </div>
-        <div className="space-y-1">
-          <h3 className="font-black text-sm md:text-lg text-[#0F172A] uppercase leading-tight">{title}</h3>
-          <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">{sub}</p>
-        </div>
-      </Card>
-    </Link>
-  )
 }
