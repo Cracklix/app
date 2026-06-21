@@ -30,8 +30,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Support Ticket Management Console v4.0 (PWA Optimized).
- * FIXED: Removed uppercase headers, reduced font scales, and applied high-density padding.
+ * @fileOverview Institutional Support Ticket Management Console v5.0 (PWA Optimized).
+ * FIXED: Removed all uppercase headers and implemented high-density Title Case layout.
  */
 
 export default function AdminSupportManagement() {
@@ -104,7 +104,12 @@ export default function AdminSupportManagement() {
 
       <div className="mx-1 relative group max-w-2xl">
          <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-         <Input className="h-14 md:h-16 pl-14 rounded-2xl md:rounded-full bg-white border-slate-50 shadow-inner text-base md:text-lg font-bold" placeholder="Search student or subject..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+         <Input 
+           className="h-14 md:h-16 pl-14 rounded-full bg-white border-slate-50 shadow-inner text-base md:text-lg font-bold" 
+           placeholder="Search student or subject..." 
+           value={searchTerm} 
+           onChange={e => setSearchTerm(e.target.value)} 
+         />
       </div>
 
       <Card className="border-none shadow-xl rounded-2xl md:rounded-[3rem] overflow-hidden bg-white mx-1 border border-slate-50">
@@ -171,7 +176,7 @@ export default function AdminSupportManagement() {
                    <TableCell colSpan={4} className="h-60 md:h-80 text-center">
                       <div className="flex flex-col items-center justify-center opacity-10 space-y-4">
                          <MessageCircle className="h-16 w-16 text-slate-400" />
-                         <p className="font-black text-sm md:text-2xl uppercase tracking-widest">No Active Tickets</p>
+                         <p className="font-black text-sm md:text-2xl uppercase tracking-widest">No active tickets</p>
                       </div>
                    </TableCell>
                 </TableRow>
@@ -182,14 +187,14 @@ export default function AdminSupportManagement() {
       </Card>
 
       <Dialog open={!!selectedTicket} onOpenChange={o => !o && setSelectedTicket(null)}>
-         <DialogContent className="sm:max-w-2xl w-[95vw] max-h-[90vh] bg-white rounded-3xl md:rounded-[3.5rem] border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
+         <DialogContent className="sm:max-w-2xl w-[95vw] max-h-[90vh] bg-white rounded-3xl md:rounded-[3rem] border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
             <div className="h-2 w-full bg-[#0F172A] shrink-0" />
             <DialogHeader className="p-6 md:p-10 pb-4 shrink-0">
                <div className="flex justify-between items-center">
                   <DialogTitle className="text-xl md:text-3xl font-black font-headline uppercase flex items-center gap-3">
                      <MessageCircle className="h-6 w-6 text-primary" /> Audit Ticket
                   </DialogTitle>
-                  <button onClick={() => setSelectedTicket(null)} className="p-2 rounded-xl hover:bg-slate-50 transition-colors"><X className="h-5 w-5 text-slate-400" /></button>
+                  <button onClick={() => setSelectedTicket(null)} className="p-2 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer"><X className="h-5 w-5 text-slate-400" /></button>
                </div>
                <DialogDescription className="text-slate-400 font-bold uppercase text-[9px] tracking-widest mt-1">Reviewing issue from {selectedTicket?.userName}</DialogDescription>
             </DialogHeader>
@@ -209,7 +214,7 @@ export default function AdminSupportManagement() {
                </div>
             </div>
 
-            <DialogFooter className="p-6 md:p-10 pt-4 bg-slate-50 border-t border-slate-100 flex flex-row gap-4">
+            <DialogFooter className="p-6 md:p-10 pt-4 bg-slate-50 border-t border-slate-100 flex flex-row gap-4 items-center justify-between">
                <Button variant="ghost" onClick={() => setSelectedTicket(null)} className="h-11 md:h-12 px-6 font-black uppercase text-[10px] text-slate-400">Discard</Button>
                <Button onClick={handleReply} disabled={isSyncing} className="flex-1 bg-[#0F172A] hover:bg-black text-white h-11 md:h-12 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl gap-2 active:scale-95 border-none">
                   {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Transmit
