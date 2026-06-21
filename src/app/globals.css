@@ -35,12 +35,26 @@
     
     --radius: 1.25rem; /* 20px - Modern Squared Radius */
 
-    --header-height-mobile: 72px;
+    --header-height-mobile: 64px;
     --header-height-desktop: 88px;
   }
 }
 
 @layer base {
+  html {
+    font-size: 15px;
+  }
+  @media (max-width: 768px) {
+    html {
+      font-size: 14px;
+    }
+  }
+  @media (max-width: 480px) {
+    html {
+      font-size: 13px;
+    }
+  }
+
   * {
     @apply border-border;
   }

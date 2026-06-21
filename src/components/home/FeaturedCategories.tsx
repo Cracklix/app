@@ -14,10 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 /**
- * @fileOverview Institutional Category Discovery v112.0.
- * UPDATED: Real-time data aggregation for Exams, Mocks, and PYQs.
- * NO HARDCODED STATS: All numbers are derived from live database records.
- * UI FIX: Removed uppercase from headings and titles.
+ * @fileOverview Institutional Category Discovery v113.0 (Mobile High-Density).
  */
 
 const STRICT_WHITELIST = [
@@ -33,7 +30,6 @@ const STRICT_WHITELIST = [
 export default function FeaturedCategories() {
   const db = useFirestore();
   
-  // REAL DATA FETCHING
   const { data: rawCategories, loading: catLoading } = useCollection<any>(useMemo(() => (db ? query(collection(db, "categories"), orderBy("displayOrder", "asc")) : null), [db]));
   const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]));
   const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]));
@@ -46,18 +42,17 @@ export default function FeaturedCategories() {
   }, [rawCategories]);
 
   return (
-    <section className="py-16 bg-white border-t border-slate-50">
-      <div className="container mx-auto px-4 max-w-7xl space-y-12 text-left">
-        <div className="space-y-2 px-2">
-           <h2 className="text-3xl md:text-5xl font-black text-[#0F172A] leading-tight tracking-tight">Choose Your Category</h2>
-           <p className="text-slate-500 font-medium text-sm md:text-lg">Select a recruitment vertical to browse verified boards and mock tests.</p>
+    <section className="py-10 md:py-16 bg-white border-t border-slate-50">
+      <div className="container mx-auto px-4 max-w-7xl space-y-8 md:space-y-12 text-left">
+        <div className="space-y-1 px-1">
+           <h2 className="text-2xl md:text-5xl font-black text-[#0F172A] leading-tight tracking-tight">Choose Category</h2>
+           <p className="text-slate-500 font-medium text-[11px] md:text-lg">Select a recruitment vertical to browse verified boards.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
           {catLoading ? (
-            Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-96 w-full rounded-[2.5rem] bg-slate-50" />)
+            Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-64 md:h-96 w-full rounded-[1.5rem] md:rounded-[2.5rem] bg-slate-50" />)
           ) : categories.map((cat, idx) => {
-            // DYNAMIC STATISTICS CALCULATION
             const catExams = exams?.filter(e => e.categoryId === cat.id) || [];
             const catExamIds = catExams.map(e => e.id);
             
@@ -67,48 +62,29 @@ export default function FeaturedCategories() {
             ).length || 0;
             
             const catPyqsCount = pyqs?.filter(p => catExamIds.includes(p.examId)).length || 0;
-            const catBoards = boards?.filter(b => b.categoryId === cat.id) || [];
 
             return (
               <motion.div key={cat.id} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.05 }}>
                  <Link href={`/exams/category/${cat.id}`}>
-                    <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2.5rem] bg-white group overflow-hidden flex flex-col p-8 md:p-10 h-full relative">
-                       <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-1000">
-                          <AuthorityLogo category={cat} size="xl" />
+                    <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] md:rounded-[2.5rem] bg-white group overflow-hidden flex flex-col p-4 md:p-10 h-full relative">
+                       
+                       <div className="mb-4 md:mb-8 flex justify-start">
+                          <AuthorityLogo category={cat} size="md" className="bg-slate-50 rounded-xl md:rounded-2xl shadow-inner group-hover:scale-105 transition-transform" />
                        </div>
                        
-                       <div className="mb-8 flex justify-start">
-                          <AuthorityLogo category={cat} size="lg" className="bg-slate-50 rounded-2xl shadow-inner group-hover:scale-105 transition-transform shadow-inner" />
-                       </div>
-                       
-                       <div className="space-y-4 flex-1">
-                          <h3 className="text-2xl md:text-3xl font-black text-[#0F172A] group-hover:text-primary transition-colors leading-tight">{cat.title}</h3>
-                          <p className="text-sm text-slate-500 font-medium leading-relaxed line-clamp-2">{cat.description}</p>
+                       <div className="space-y-2 md:space-y-4 flex-1">
+                          <h3 className="text-sm md:text-3xl font-black text-[#0F172A] group-hover:text-primary transition-colors leading-tight line-clamp-2">{cat.title}</h3>
                           
-                          {/* REAL-TIME STATS GRID */}
-                          <div className="grid grid-cols-2 gap-3 pt-4">
-                             {catExams.length > 0 && <StatChip label="Exams" val={catExams.length} icon={BookOpen} />}
-                             {catMocksCount > 0 && <StatChip label="Mock Tests" val={catMocksCount} icon={Zap} />}
-                             {catPyqsCount > 0 && <StatChip label="PYQ Papers" val={catPyqsCount} icon={Layers} />}
+                          <div className="flex flex-col gap-1 md:gap-3 pt-2">
+                             <StatChip label="Exams" val={catExams.length} icon={BookOpen} />
+                             {catMocksCount > 0 && <StatChip label="Tests" val={catMocksCount} icon={Zap} />}
+                             {catPyqsCount > 0 && <StatChip label="PYQs" val={catPyqsCount} icon={Layers} className="hidden md:flex" />}
                           </div>
-
-                          {/* DYNAMIC BOARD DISCOVERY */}
-                          {catBoards.length > 0 && (
-                             <div className="pt-6 space-y-2">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Target Boards</p>
-                                <div className="flex flex-wrap gap-2">
-                                   {catBoards.slice(0, 3).map(b => (
-                                      <Badge key={b.id} variant="outline" className="bg-slate-50 border-slate-100 text-slate-500 text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">{b.abbreviation}</Badge>
-                                   ))}
-                                   {catBoards.length > 3 && <span className="text-[9px] font-bold text-slate-300">+{catBoards.length - 3} More</span>}
-                                </div>
-                             </div>
-                          )}
                        </div>
 
-                       <div className="mt-10 pt-6 border-t border-slate-50 flex items-center justify-between">
-                          <Button variant="ghost" className="w-full h-14 rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all font-black text-xs tracking-widest uppercase border-none shadow-xl gap-3 active:scale-95">
-                             Open Selection <ArrowRight className="h-4 w-4" />
+                       <div className="mt-6 md:mt-10 pt-4 border-t border-slate-50">
+                          <Button variant="ghost" className="w-full h-10 md:h-14 rounded-xl md:rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all font-black text-[9px] md:text-xs tracking-widest uppercase border-none shadow-xl gap-2 active:scale-95">
+                             Open <ArrowRight className="h-3 w-3 md:h-4 md:w-4" />
                           </Button>
                        </div>
                     </Card>
@@ -122,13 +98,13 @@ export default function FeaturedCategories() {
   );
 }
 
-function StatChip({ label, val, icon: Icon }: any) {
+function StatChip({ label, val, icon: Icon, className }: any) {
    return (
-      <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 flex flex-col gap-1 items-start">
-         <Icon className="h-3.5 w-3.5 text-primary" />
-         <div className="flex items-baseline gap-1.5">
-            <span className="text-sm font-black text-[#0F172A] tabular-nums">{val}</span>
-            <span className="text-[9px] font-bold text-slate-400 uppercase truncate">{label}</span>
+      <div className={cn("flex items-center gap-1.5 text-[#0F172A] font-bold", className)}>
+         <Icon className="h-3 w-3 md:h-3.5 md:w-3.5 text-primary" />
+         <div className="flex items-baseline gap-1">
+            <span className="text-[11px] md:text-sm font-black tabular-nums">{val}</span>
+            <span className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase truncate">{label}</span>
          </div>
       </div>
    )
