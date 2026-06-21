@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useEffect, useState } from "react"
@@ -7,7 +6,7 @@ import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
-import { ShieldCheck, GraduationCap, Zap, Wallet, Globe, ChevronRight, Landmark } from "lucide-react"
+import { ShieldCheck, Landmark, ChevronRight, Zap } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -16,20 +15,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Exam List Landing v13.0.
- * TYPOGRAPHY: Unified scale for better content density.
+ * @fileOverview Institutional Exam List Landing v14.0 (Normalized).
  */
-
-const ACRONYMS = ["PSSSB", "PPSC", "PUNJAB POLICE", "PSPCL", "PSTCL", "PSTET", "CTET", "MCQ", "MCQS", "PYQ", "PYQS", "GK", "CA"];
-
-function toTitleCase(str: string) {
-  if (!str) return "";
-  return str.split(' ').map(word => {
-    const cleanWord = word.replace(/[^a-zA-Z]/g, '').toUpperCase();
-    if (ACRONYMS.includes(cleanWord)) return cleanWord;
-    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-  }).join(' ');
-}
 
 const CATEGORY_ICONS: Record<string, any> = {
   "punjab-govt": <img src="https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg" className="h-full w-full object-contain p-2" />,
@@ -58,63 +45,60 @@ export default function ExamsEntryPage() {
 
   const loading = catLoading || boardsLoading || authLoading;
 
-  if (authLoading || !user) return (
-    <div className="h-screen w-full flex flex-col items-center justify-center bg-white">
-       <Zap className="h-10 w-10 text-primary animate-pulse" />
-    </div>
-  );
+  if (authLoading || !user) return <div className="h-screen w-full flex items-center justify-center bg-white"><Zap className="h-10 w-10 text-primary animate-pulse" /></div>;
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 max-w-7xl">
-        <div className="text-left mb-10 md:mb-16 space-y-4">
-          <div className="flex items-center gap-4">
-             <div className="h-8 w-8 md:h-10 md:w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-inner">
-                <Landmark className="h-4 w-4 md:h-5 md:w-5" />
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-14 max-w-7xl">
+        <div className="text-left mb-10 md:mb-14 space-y-3">
+          <div className="flex items-center gap-3">
+             <div className="h-8 w-8 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-inner">
+                <Landmark className="h-4 w-4" />
              </div>
-             <span className="text-[10px] md:text-xs font-bold text-slate-500 tracking-tight uppercase">Official Exam List</span>
+             <span className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Official Exam Hubs</span>
           </div>
-          <h1 className="text-[32px] sm:text-[42px] md:text-[48px] lg:text-[60px] xl:text-[72px] font-black tracking-tight text-[#0F172A] leading-[0.95] break-words">
-            Choose Your <span className="text-primary">Exam Category</span>
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tight text-[#0F172A] leading-[1.05]">
+            Choose Your <br/> <span className="text-primary">Exam Category</span>
           </h1>
-          <p className="text-slate-500 font-medium text-sm md:text-lg max-w-3xl leading-relaxed">
-            Select a vertical to browse official centers and specific exam preparation resources.
+          <p className="text-slate-600 font-medium text-sm md:text-lg max-w-2xl leading-relaxed">
+            Select a vertical to browse official recruitment centers and preparation nodes.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
            {loading ? (
-             Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[2.5rem]" />)
+             Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-[2.5rem]" />)
            ) : categories && categories.length > 0 ? (
              categories.map((cat) => {
                 const hubCount = (boards || []).filter((b: any) => b.categoryId === cat.id).length;
                 return (
                   <Link key={cat.id} href={`/exams/category/${cat.id}`}>
-                     <Card className="border-none shadow-xl hover:shadow-4xl hover:translate-y-[-8px] transition-all duration-700 rounded-[2rem] md:rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100">
-                        <CardContent className="p-6 md:p-10 flex flex-col h-full">
-                           <div className="flex justify-between items-start mb-8 md:mb-10">
-                              <div className={cn("h-14 w-14 md:h-18 md:w-18 rounded-2xl flex items-center justify-center transition-all group-hover:shadow-2xl shadow-inner relative overflow-hidden shrink-0 bg-slate-50 text-slate-300")}>
-                                 {CATEGORY_ICONS[cat.id] || <ShieldCheck className="h-8 w-8 md:h-10 md:w-10" />}
+                     <Card className="border-none shadow-xl hover:shadow-4xl hover:translate-y-[-4px] transition-all duration-700 rounded-[2rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100">
+                        <CardContent className="p-6 md:p-8 flex flex-col h-full">
+                           <div className="flex justify-between items-start mb-6 md:mb-8">
+                              <div className={cn("h-12 w-12 md:h-14 md:w-14 rounded-xl flex items-center justify-center transition-all group-hover:shadow-lg shadow-inner relative overflow-hidden shrink-0 bg-slate-50 text-slate-300")}>
+                                 {CATEGORY_ICONS[cat.id] || <ShieldCheck className="h-6 w-6" />}
                               </div>
-                              <Badge className="bg-[#0F172A] text-white border-none text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 md:px-4 md:py-1.5 rounded-xl shadow-lg">
+                              <Badge className="bg-[#0F172A] text-white border-none text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-lg shadow-md">
                                  {cat.highlight || "VERTICAL"}
                               </Badge>
                            </div>
                            
-                           <div className="space-y-3 md:space-y-4 flex-1">
-                              <h3 className="text-[20px] md:text-[24px] lg:text-[28px] font-black leading-tight tracking-tight text-[#0F172A] group-hover:text-primary transition-colors break-words line-clamp-2">
-                                 {toTitleCase(cat.title)}
+                           <div className="space-y-2 flex-1">
+                              <h3 className="text-xl md:text-2xl font-black leading-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2 uppercase">
+                                 {cat.title}
                               </h3>
-                              <p className="text-sm md:text-base lg:text-lg font-medium text-slate-400 leading-snug line-clamp-3">
+                              <p className="text-sm text-slate-600 leading-relaxed line-clamp-3 font-medium">
                                  {cat.description}
                               </p>
                            </div>
 
-                           <div className="mt-8 md:mt-10 pt-6 border-t border-slate-50">
-                              <Button variant="ghost" className="w-full h-12 rounded-xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-bold text-xs md:text-sm tracking-tight gap-3 border-none">
-                                 Open Exam Center <ChevronRight className="h-4 w-4" />
+                           <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
+                              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{hubCount} Official Hubs</span>
+                              <Button variant="ghost" className="h-10 px-6 rounded-xl bg-[#0F172A] text-white group-hover:bg-primary transition-all font-bold text-[10px] tracking-widest uppercase border-none">
+                                 Open Center <ChevronRight className="ml-2 h-3.5 w-3.5" />
                               </Button>
                            </div>
                         </CardContent>
@@ -123,7 +107,7 @@ export default function ExamsEntryPage() {
                 )
              })
            ) : (
-             <div className="col-span-full py-20 text-center opacity-20 italic">No categories deployed. Run admin sync.</div>
+             <div className="col-span-full py-20 text-center opacity-20 italic uppercase font-black tracking-widest">Awaiting Registry...</div>
            )}
         </div>
       </main>

@@ -43,8 +43,9 @@ import { useToast } from "@/hooks/use-toast"
 import { getAuthorityIcon } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional Exam Hub v43.1 (Logo Size Refined).
- * FIXED: Reduced mock card logo to 40px for balanced hierarchy.
+ * @fileOverview Institutional Exam Hub v44.0 (Normalized & Scalable).
+ * FIXED: Standardized typography and spacing.
+ * ENHANCED: Relational mapping for Notes and PYQs.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -61,20 +62,18 @@ export default function ExamHubPage() {
   
   const mocksQuery = useMemo(() => (db ? query(collection(db, "mocks"), where("published", "==", true)) : null), [db]);
   const notesQuery = useMemo(() => (db && examId ? query(collection(db, "notes"), where("examId", "==", examId)) : null), [db, examId]);
+  const pyqsQuery = useMemo(() => (db && examId ? query(collection(db, "pyqs"), where("examId", "==", examId)) : null), [db, examId]);
   const resultsQuery = useMemo(() => (db && user ? query(collection(db, "results"), where("userId", "==", user.uid)) : null), [db, user]);
-  const hubQuery = useMemo(() => (db ? query(collection(db, "current_affairs_hub"), where("status", "==", "PUBLISHED")) : null), [db])
 
   const { data: rawMocks, loading: mocksLoading } = useCollection<any>(mocksQuery)
   const { data: rawNotes, loading: notesLoading } = useCollection<any>(notesQuery)
-  const { data: userResults, loading: resultsLoading } = useCollection<any>(resultsQuery)
+  const { data: rawPyqs, loading: pyqsLoading } = useCollection<any>(pyqsQuery)
+  const { data: userResults } = useCollection<any>(resultsQuery)
   const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
-  const { data: caHub, loading: caLoading } = useCollection<any>(hubQuery);
 
   const [isPinning, setIsPinning] = useState(false);
 
-  const isPinned = useMemo(() => {
-    return profile?.pinnedExams?.includes(examId) || false;
-  }, [profile, examId]);
+  const isPinned = useMemo(() => profile?.pinnedExams?.includes(examId) || false, [profile, examId]);
 
   const togglePin = async () => {
     if (!db || !user || isPinning) return;
@@ -83,73 +82,37 @@ export default function ExamHubPage() {
     try {
       if (isPinned) {
         await updateDoc(userRef, { pinnedExams: arrayRemove(examId), updatedAt: serverTimestamp() });
-        toast({ title: "Removed from Hub", description: "This vertical is no longer in your personal dashboard." });
+        toast({ title: "Hub Updated", description: "Vertical removed from your personal dashboard." });
       } else {
         await updateDoc(userRef, { pinnedExams: arrayUnion(examId), updatedAt: serverTimestamp() });
-        toast({ title: "Pinned to Hub", description: "Successfully added to your personal dashboard." });
+        toast({ title: "Pinned to Hub", description: "Successfully added to your dashboard." });
       }
     } catch (e) {
       toast({ variant: "destructive", title: "Action Failed" });
-    } finally {
-      setIsPinning(false);
-    }
+    } finally { setIsPinning(false); }
   };
 
   const isPassActive = useMemo(() => {
      if (!user || !profile) return false;
      const userEmail = user.email?.toLowerCase();
-     const isFounder = userEmail && SUPER_ADMIN_WHITELIST.includes(userEmail);
-     if (profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN' || isFounder) return true;
+     if (profile.role === 'ADMIN' || (userEmail && SUPER_ADMIN_WHITELIST.includes(userEmail))) return true;
      return profile?.passStatus === 'active';
   }, [user, profile]);
 
   const groupedContent = useMemo(() => {
-    const mocks = (rawMocks || []).filter(m => {
-       const isDirectMatch = m.examId === examId;
-       const isArrayMatch = m.examIds?.includes(examId);
-       return isDirectMatch || isArrayMatch;
-    });
+    const mocks = (rawMocks || []).filter(m => m.examId === examId || m.examIds?.includes(examId));
     return {
       FULL: mocks.filter(m => m.mockType === 'FULL'),
       SUBJECT: mocks.filter(m => m.mockType === 'SUBJECT'),
       SECTIONAL: mocks.filter(m => m.mockType === 'SECTIONAL'),
-      PYQ: mocks.filter(m => m.mockType === 'PYQ'),
+      PYQ: (rawPyqs || []),
       NOTES: (rawNotes || []).filter(n => n.category === 'NOTES'),
-      SYLLABUS: (rawNotes || []).filter(n => n.category === 'SYLLABUS'),
-      CA: (caHub || []).filter(item => {
-         const term = (exam?.name || "").toLowerCase();
-         return item.title?.toLowerCase().includes(term) || item.type === 'DAILY';
-      }).sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)).slice(0, 10)
+      SYLLABUS: (rawNotes || []).filter(n => n.category === 'SYLLABUS')
     }
-  }, [rawMocks, rawNotes, caHub, examId, exam])
+  }, [rawMocks, rawNotes, rawPyqs, examId])
 
-  const examPerformance = useMemo(() => {
-     if (!rawMocks || !userResults) return { attempted: 0, avgAcc: 0, bestScore: 0 };
-     const allAssociatedMocks = [...groupedContent.FULL, ...groupedContent.SUBJECT, ...groupedContent.SECTIONAL, ...groupedContent.PYQ];
-     const mockIds = new Set(allAssociatedMocks.map(m => m.id));
-     const examResults = (userResults || []).filter(r => mockIds.has(r.mockId));
-     if (examResults.length === 0) return { attempted: 0, avgAcc: 0, bestScore: 0 };
-     return {
-        attempted: examResults.length,
-        avgAcc: Math.round(examResults.reduce((acc, r) => acc + (r.accuracy || 0), 0) / examResults.length),
-        bestScore: Math.max(...examResults.map(r => r.score || 0))
-     }
-  }, [userResults, groupedContent, rawMocks]);
-
-  if (examLoading || userLoading) return (
-    <div className="h-screen flex flex-col items-center justify-center bg-white space-y-6">
-       <Zap className="h-10 w-10 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Syncing Hub...</p>
-    </div>
-  );
-
-  if (!exam) return (
-    <div className="h-screen flex flex-col items-center justify-center bg-white p-6 text-center space-y-6">
-       <Info className="h-12 w-12 text-slate-200" />
-       <h2 className="text-xl font-headline font-black uppercase">Not Found</h2>
-       <Button onClick={() => router.push('/exams')} className="h-11 px-8 bg-[#0F172A] text-white rounded-xl font-black uppercase text-[10px]">Return</Button>
-    </div>
-  );
+  if (examLoading || userLoading) return <div className="h-screen flex flex-col items-center justify-center bg-white space-y-4"><Zap className="h-8 w-8 text-primary animate-pulse" /><p className="text-[10px] font-black uppercase text-slate-300">Syncing Registry...</p></div>;
+  if (!exam) return <div className="h-screen flex flex-col items-center justify-center text-center p-6 space-y-4"><h2 className="text-xl font-black uppercase">Not Found</h2><Button onClick={() => router.push('/exams')}>Return</Button></div>;
 
   const activeBoard = boards?.find((b: any) => b.id === exam.boardId || b.abbreviation === exam.boardId);
 
@@ -157,51 +120,23 @@ export default function ExamHubPage() {
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       
-      <section className="bg-white border-b border-slate-100 py-10 md:py-12 text-left relative overflow-hidden">
-         <div className="absolute top-0 right-0 p-12 opacity-[0.01]"><GraduationCap className="h-48 w-48" /></div>
+      <section className="bg-white border-b border-slate-100 py-10 md:py-14 relative overflow-hidden">
          <div className="container mx-auto px-4 max-w-7xl relative z-10">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-12">
                <div className="flex items-start gap-4 flex-1 min-w-0">
-                  <button onClick={() => router.back()} className="h-9 w-9 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 shrink-0 hover:bg-slate-50">
-                     <ChevronLeft className="h-4 w-4" />
-                  </button>
+                  <button onClick={() => router.back()} className="h-9 w-9 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 shrink-0 hover:bg-slate-50"><ChevronLeft className="h-4 w-4" /></button>
                   <div className="min-w-0 space-y-4">
                      <div className="flex items-center gap-3">
-                        <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase px-2 py-0.5 rounded shadow-sm">
-                           {activeBoard?.abbreviation || 'OFFICIAL'} CENTER
-                        </Badge>
-                        <button 
-                           onClick={togglePin} 
-                           disabled={isPinning}
-                           className={cn(
-                              "flex items-center gap-2 px-3 py-1 rounded-full border transition-all active:scale-90 shadow-sm font-black uppercase text-[8px] tracking-widest",
-                              isPinned ? "bg-primary border-primary text-white" : "bg-white border-slate-200 text-slate-400 hover:border-primary/40 hover:text-primary"
-                           )}
-                        >
+                        <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase px-2 py-0.5 rounded shadow-sm">{activeBoard?.abbreviation || 'OFFICIAL'} HUB</Badge>
+                        <button onClick={togglePin} disabled={isPinning} className={cn("flex items-center gap-2 px-3 py-1 rounded-full border transition-all active:scale-90 shadow-sm font-black uppercase text-[8px] tracking-widest", isPinned ? "bg-primary border-primary text-white" : "bg-white border-slate-200 text-slate-400 hover:text-primary")}>
                            {isPinning ? <RefreshCw className="h-2.5 w-2.5 animate-spin" /> : isPinned ? <CheckCircle2 className="h-2.5 w-2.5" /> : <Star className="h-2.5 w-2.5" />}
-                           {isPinned ? 'PINNED' : 'PIN TO HUB'}
+                           {isPinned ? 'FOLLOWING' : 'FOLLOW VERTICAL'}
                         </button>
                      </div>
-                     <div className="space-y-2">
-                        <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-[#0F172A] leading-tight tracking-tight break-words antialiased uppercase">
-                           {exam.shortTitle || activeBoard?.abbreviation || exam.name.split(' ')[0]}
-                        </h1>
-                        <p className="text-sm md:text-xl font-bold text-slate-400 leading-tight tracking-tight max-w-3xl">
-                           {exam.name}
-                        </p>
+                     <div className="space-y-1">
+                        <h1 className="text-3xl md:text-5xl font-black text-[#0F172A] leading-tight tracking-tight uppercase">{exam.name}</h1>
+                        <p className="text-sm md:text-xl font-bold text-slate-400 max-w-3xl leading-snug">Prepare with official patterns and verified study nodes.</p>
                      </div>
-                  </div>
-               </div>
-               
-               <div className="flex items-center gap-6 bg-slate-50/50 px-5 py-3 rounded-2xl border border-slate-100 w-full md:w-auto shadow-inner">
-                  <div className="text-center min-w-[60px] space-y-0.5">
-                     <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">ACCURACY</p>
-                     <p className="text-xl md:text-3xl font-headline font-black text-primary tabular-nums">{examPerformance.avgAcc}%</p>
-                  </div>
-                  <div className="h-6 w-px bg-slate-200" />
-                  <div className="text-center min-w-[60px] space-y-0.5">
-                     <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">ATTEMPTS</p>
-                     <p className="text-xl md:text-3xl font-headline font-black text-[#0F172A] tabular-nums">{examPerformance.attempted}</p>
                   </div>
                </div>
             </div>
@@ -209,56 +144,25 @@ export default function ExamHubPage() {
       </section>
 
       <main className="container mx-auto px-4 py-8 max-w-7xl pb-40">
-         <Tabs defaultValue="FULL" className="space-y-8 md:space-y-12">
-            <div className="bg-white border border-slate-100 rounded-2xl p-1 shadow-md overflow-x-auto no-scrollbar relative">
-               <TabsList className="bg-transparent border-none p-0 flex h-14 w-full justify-start gap-1 overflow-x-auto no-scrollbar">
-                  <DashboardTab value="FULL" label="Full Mock" icon={Zap} />
-                  <DashboardTab value="SUBJECT" label="Subjects" icon={BookOpen} />
+         <Tabs defaultValue="FULL" className="space-y-8 md:space-y-10">
+            <div className="bg-white border border-slate-100 rounded-2xl p-1 shadow-md overflow-x-auto no-scrollbar">
+               <TabsList className="bg-transparent border-none p-0 flex h-12 w-full justify-start gap-1">
+                  <DashboardTab value="FULL" label="Full Length" icon={Zap} />
+                  <DashboardTab value="SUBJECT" label="Subject-Wise" icon={BookOpen} />
                   <DashboardTab value="SECTIONAL" label="Sectional" icon={List} />
-                  <DashboardTab value="CA" label="Current Affairs" icon={Newspaper} />
-                  <DashboardTab value="PYQ" label="PYQ" icon={Layers} />
-                  <DashboardTab value="NOTES" label="Notes" icon={FileText} />
+                  <DashboardTab value="PYQ" label="Official PYQ" icon={Layers} />
+                  <DashboardTab value="NOTES" label="Study Notes" icon={FileText} />
+                  <DashboardTab value="SYLLABUS" label="Syllabus" icon={Info} />
                </TabsList>
             </div>
 
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-               <TabsContent value="FULL" className="m-0">
-                  <MockList data={groupedContent.FULL} results={userResults} isPassActive={isPassActive} profile={profile} user={user} loading={mocksLoading} boards={boards} exam={exam} />
-               </TabsContent>
-               <TabsContent value="SUBJECT" className="m-0">
-                  <MockList data={groupedContent.SUBJECT} results={userResults} isPassActive={isPassActive} profile={profile} user={user} loading={mocksLoading} boards={boards} exam={exam} />
-               </TabsContent>
-               <TabsContent value="SECTIONAL" className="m-0">
-                  <MockList data={groupedContent.SECTIONAL} results={userResults} isPassActive={isPassActive} profile={profile} user={user} loading={mocksLoading} boards={boards} exam={exam} />
-               </TabsContent>
-               <TabsContent value="CA" className="m-0">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                     {caLoading ? (
-                        <Skeleton className="h-40 w-full rounded-2xl" />
-                     ) : groupedContent.CA.map((item: any) => (
-                        <Link key={item.id} href="/current-affairs">
-                           <Card className="border-none shadow-lg rounded-2xl bg-white p-6 flex items-center justify-between group h-full border border-slate-100">
-                              <div className="flex items-center gap-4">
-                                 <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center text-primary shrink-0 shadow-inner">
-                                    <Newspaper className="h-5 w-5" />
-                                 </div>
-                                 <div className="space-y-0.5">
-                                    <h3 className="text-sm font-black text-[#0F172A] uppercase leading-tight truncate max-w-[160px]">{item.title}</h3>
-                                    <p className="text-[9px] font-bold text-slate-400 uppercase">{item.month} Updates</p>
-                                 </div>
-                              </div>
-                              <ChevronRight className="h-4 w-4 text-slate-200 group-hover:text-primary transition-all" />
-                           </Card>
-                        </Link>
-                     ))}
-                  </div>
-               </TabsContent>
-               <TabsContent value="PYQ" className="m-0">
-                  <MockList data={groupedContent.PYQ} results={userResults} isPassActive={isPassActive} profile={profile} user={user} loading={mocksLoading} boards={boards} exam={exam} />
-               </TabsContent>
-               <TabsContent value="NOTES" className="m-0">
-                  <NotesList data={groupedContent.NOTES} isPassActive={isPassActive} loading={notesLoading} />
-               </TabsContent>
+               <TabsContent value="FULL"><MockList data={groupedContent.FULL} results={userResults} isPassActive={isPassActive} loading={mocksLoading} boards={boards} exam={exam} /></TabsContent>
+               <TabsContent value="SUBJECT"><MockList data={groupedContent.SUBJECT} results={userResults} isPassActive={isPassActive} loading={mocksLoading} boards={boards} exam={exam} /></TabsContent>
+               <TabsContent value="SECTIONAL"><MockList data={groupedContent.SECTIONAL} results={userResults} isPassActive={isPassActive} loading={mocksLoading} boards={boards} exam={exam} /></TabsContent>
+               <TabsContent value="PYQ"><NotesList data={groupedContent.PYQ} isPassActive={isPassActive} loading={pyqsLoading} type="PYQ" /></TabsContent>
+               <TabsContent value="NOTES"><NotesList data={groupedContent.NOTES} isPassActive={isPassActive} loading={notesLoading} type="NOTE" /></TabsContent>
+               <TabsContent value="SYLLABUS"><NotesList data={groupedContent.SYLLABUS} isPassActive={isPassActive} loading={notesLoading} type="SYLLABUS" /></TabsContent>
             </div>
          </Tabs>
       </main>
@@ -275,88 +179,40 @@ function DashboardTab({ value, label, icon: Icon }: { value: string, label: stri
    )
 }
 
-function MockList({ data, results, isPassActive, profile, user, loading, boards, exam }: any) {
+function MockList({ data, results, isPassActive, loading, boards, exam }: any) {
    const router = useRouter();
-   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
-   
-   if (loading) return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-         {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[360px] w-full rounded-[32px]" />)}
-      </div>
-   );
-
-   if (data.length === 0) return (
-      <div className="py-24 text-center opacity-20 flex flex-col items-center gap-4">
-         <Zap className="h-10 w-10 text-slate-300" />
-         <p className="font-headline font-black text-lg uppercase tracking-widest">Section Empty</p>
-      </div>
-   );
+   if (loading) return <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[2rem] bg-white" />)}</div>;
+   if (data.length === 0) return <div className="py-24 text-center opacity-20 flex flex-col items-center gap-4"><Zap className="h-10 w-10 text-slate-300" /><p className="font-headline font-black text-lg uppercase tracking-widest">Section Empty</p></div>;
 
    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
          {data.map((mock: any) => {
             const result = results?.find((r: any) => r.mockId === mock.id);
-            const tier = (mock.accessLevel || mock.accessType || 'FREE').trim().toUpperCase();
-            const isPremium = tier === 'PREMIUM';
+            const isPremium = mock.accessLevel === 'PREMIUM';
             const locked = isPremium && !isPassActive;
             const board = boards?.find((b: any) => b.id === (mock.boardIds?.[0] || mock.boardId));
-            const difficulty = mock.difficulty || "Medium";
-            const logoUrl = mock.iconUrl || exam?.iconUrl || board?.iconUrl;
 
             return (
-               <Card key={mock.id} className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-4px] transition-all duration-500 rounded-[32px] bg-white p-8 md:p-10 text-center flex flex-col h-[400px] group relative overflow-hidden">
-                  
-                  <div className="absolute top-6 right-6 flex flex-col gap-2 items-end">
-                    {result && <Badge className="bg-emerald-50 text-emerald-600 border-none text-[8px] font-black uppercase tracking-widest px-3 py-1 shadow-sm">Attempted</Badge>}
+               <Card key={mock.id} className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2rem] bg-white p-6 md:p-8 text-center flex flex-col h-[380px] group relative overflow-hidden">
+                  <div className="h-10 w-10 mx-auto rounded-xl bg-slate-50 flex items-center justify-center p-2 mb-6 shadow-inner relative overflow-hidden border border-slate-100">
+                     {board?.iconUrl ? <img src={board.iconUrl} className="w-full h-full object-contain p-1" alt="Logo" /> : <ShieldCheck className="h-full w-full text-slate-200" />}
                   </div>
-
-                  <div className="h-10 w-10 mx-auto rounded-xl bg-[#F8FAFC] flex items-center justify-center p-1 shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500 mb-8 overflow-hidden border border-slate-100 relative">
-                     {logoUrl && !failedImages[mock.id] ? (
-                       <Image 
-                         src={logoUrl} 
-                         fill
-                         sizes="40px"
-                         className="object-contain p-2" 
-                         alt="Logo" 
-                         referrerPolicy="no-referrer"
-                         onError={() => setFailedImages(prev => ({...prev, [mock.id]: true}))}
-                       />
-                     ) : (
-                       <div className="p-2 w-full h-full opacity-40">
-                         {getAuthorityIcon(board?.id, board?.abbreviation)}
-                       </div>
-                     )}
-                  </div>
-
-                  <CardHeader className="p-0 flex-1 space-y-5">
-                     <CardTitle className="font-extrabold text-lg md:text-2xl text-[#04102B] leading-tight tracking-tight line-clamp-2 min-h-[54px] uppercase">
-                        {mock.title}
-                     </CardTitle>
-
-                     <div className="flex items-center justify-center gap-4 text-[13px] font-bold text-[#64748B] tracking-tight">
-                        <span className="flex items-center gap-1.5"><BookOpen className="h-3.5 w-3.5 text-primary opacity-50" /> {mock.totalQuestions} Qs</span>
-                        <div className="h-4 w-px bg-slate-100" />
-                        <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-primary opacity-50" /> {mock.duration} Min</span>
+                  <CardHeader className="p-0 flex-1 space-y-4">
+                     <CardTitle className="font-black text-lg md:text-xl text-[#0F172A] leading-tight line-clamp-2 uppercase">{mock.title}</CardTitle>
+                     <div className="flex items-center justify-center gap-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                        <span className="flex items-center gap-1.5"><BookOpen className="h-3.5 w-3.5" /> {mock.totalQuestions} Qs</span>
+                        <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {mock.duration}m</span>
                      </div>
-
-                     <div className="flex items-center justify-center gap-3">
-                        <DifficultyBadge level={difficulty} isPremium={isPremium} />
-                        <Badge variant="outline" className="border-slate-100 text-[#94A3B8] text-[8px] font-black px-3 py-1 rounded-lg uppercase tracking-widest">{board?.abbreviation || 'PSSSB'}</Badge>
+                     <div className="flex items-center justify-center gap-2">
+                        {isPremium && <Badge className="bg-amber-50 text-amber-600 border-none text-[8px] font-black px-2 py-0.5 rounded">PREMIUM</Badge>}
+                        <Badge variant="outline" className="border-slate-100 text-slate-400 text-[8px] font-black px-2 py-0.5 rounded uppercase">{board?.abbreviation || 'PSSSB'}</Badge>
+                        {result && <Badge className="bg-emerald-50 text-emerald-600 border-none text-[8px] font-black px-2 py-0.5 rounded">ATTEMPTED</Badge>}
                      </div>
                   </CardHeader>
-
-                  <CardContent className="p-0 mt-8">
-                     {locked ? (
-                        <Button onClick={() => router.push('/pass')} className="w-full h-14 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-amber-500/10 active:scale-95 border-none gap-2">
-                           <Lock className="h-4 w-4" /> {profile?.passStatus === 'expired' ? 'Renew Elite Pass' : 'Unlock Now'}
-                        </Button>
-                     ) : (
-                        <Button onClick={() => router.push(user ? `/mocks/${mock.id}/instructions` : `/login?returnUrl=/mocks/${mock.id}`)} className="w-full h-14 bg-[#04102B] hover:bg-[#2F6BFF] text-white font-black text-xs uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-slate-900/10 active:scale-95 border-none group/btn">
-                           <span className="flex items-center justify-center gap-2">
-                             Attempt Now <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
-                           </span>
-                        </Button>
-                     )}
+                  <CardContent className="p-0 mt-6">
+                     <Button onClick={() => router.push(locked ? '/pass' : `/mocks/${mock.id}`)} className={cn("w-full h-12 rounded-xl font-black text-[10px] tracking-widest uppercase shadow-lg border-none", locked ? "bg-amber-500 hover:bg-amber-600" : "bg-[#0F172A] hover:bg-black")}>
+                        {locked ? <><Lock className="h-3.5 w-3.5 mr-2" /> Unlock Hub</> : 'Attempt Now'}
+                     </Button>
                   </CardContent>
                </Card>
             )
@@ -365,45 +221,33 @@ function MockList({ data, results, isPassActive, profile, user, loading, boards,
    )
 }
 
-function DifficultyBadge({ level, isPremium }: { level: string, isPremium: boolean }) {
-  if (isPremium) return <Badge className="bg-[#EEF2FF] text-[#2F6BFF] border-none text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-widest">PREMIUM</Badge>;
-  if (level === 'Easy') return <Badge className="bg-[#DCFCE7] text-[#16A34A] border-none text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-widest">EASY</Badge>;
-  if (level === 'Hard') return <Badge className="bg-[#FEE2E2] text-[#DC2626] border-none text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-widest">HARD</Badge>;
-  return <Badge className="bg-[#FEF3C7] text-[#D97706] border-none text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-widest">MEDIUM</Badge>;
-}
-
-function NotesList({ data, isPassActive, loading }: any) {
-   if (loading) return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-         {Array.from({ length: 2 }).map((_, i) => <Skeleton className="h-32 w-full rounded-2xl" />)}
-      </div>
-   );
-
-   if (data.length === 0) return (
-      <div className="py-24 text-center opacity-20 flex flex-col items-center gap-4">
-         <FileText className="h-10 w-10 text-slate-300" />
-         <p className="font-headline font-black text-lg uppercase tracking-widest">No Materials Found</p>
-      </div>
-   );
+function NotesList({ data, isPassActive, loading, type }: any) {
+   if (loading) return <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-2xl bg-white" />)}</div>;
+   if (data.length === 0) return <div className="py-24 text-center opacity-20 flex flex-col items-center gap-4"><FileText className="h-10 w-10 text-slate-300" /><p className="font-headline font-black text-lg uppercase tracking-widest">No Materials Node</p></div>;
 
    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-         {data.map((note: any) => (
-            <Card key={note.id} className="border-none shadow-lg rounded-2xl bg-white p-6 md:p-8 flex items-center justify-between group border border-slate-100">
-               <div className="flex items-center gap-4 min-w-0">
-                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-                     <FileText className="h-5 w-5" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+         {data.map((item: any) => {
+            const isLocked = !item.isFree && !isPassActive;
+            return (
+               <Card key={item.id} className="border border-slate-100 shadow-lg rounded-2xl bg-white p-6 flex items-center justify-between group transition-all hover:shadow-xl">
+                  <div className="flex items-center gap-5 min-w-0">
+                     <div className="h-12 w-12 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-blue-50 transition-colors">
+                        {isLocked ? <Lock className="h-5 w-5 text-amber-500" /> : <FileText className={cn("h-5 w-5", type === 'PYQ' ? 'text-emerald-500' : 'text-blue-500')} />}
+                     </div>
+                     <div className="min-w-0">
+                        <h3 className="text-base font-black text-[#0F172A] uppercase truncate max-w-[240px]">{item.title}</h3>
+                        <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1">{item.category || type} Hub</p>
+                     </div>
                   </div>
-                  <div className="min-w-0">
-                     <h3 className="text-sm md:text-xl font-black text-[#0F172A] uppercase truncate max-w-[180px]">{note.title}</h3>
-                     <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{note.category}</p>
-                  </div>
-               </div>
-               <Button asChild className="h-10 md:h-12 px-4 md:px-8 bg-slate-900 text-white rounded-xl font-black uppercase text-[8px] md:text-[9px] tracking-widest shadow-lg shrink-0">
-                  <a href={note.pdfUrl} target="_blank" rel="noopener noreferrer"><Download className="h-3.5 w-3.5 md:mr-2" /> <span className="hidden md:inline">Download</span></a>
-               </Button>
-            </Card>
-         ))}
+                  <Button asChild className="h-10 px-6 bg-[#0F172A] hover:bg-black text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-md shrink-0">
+                     <Link href={isLocked ? '/pass' : (item.pdfUrl || '#')} target={isLocked ? '_self' : '_blank'}>
+                        {isLocked ? 'UNLOCK' : 'DOWNLOAD'}
+                     </Link>
+                  </Button>
+               </Card>
+            )
+         })}
       </div>
    )
 }
