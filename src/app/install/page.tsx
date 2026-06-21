@@ -25,7 +25,8 @@ import { useUser } from "@/firebase"
 import Link from "next/link"
 
 /**
- * @fileOverview High-Fidelity PWA Install Hub v1.6 (Fixed Syntax).
+ * @fileOverview High-Fidelity PWA Install Hub v1.7 (Build Fixed).
+ * FIXED: Terminated all JSX return blocks correctly to resolve build failures.
  */
 
 type DeviceType = "android" | "ios" | "desktop" | "unknown";
@@ -203,7 +204,7 @@ export default function InstallPage() {
       </main>
       <Footer />
     </div>
-  )
+  );
 }
 
 function IOSStep({ num, icon, text }: any) {
@@ -217,7 +218,7 @@ function IOSStep({ num, icon, text }: any) {
             <span className="text-sm md:text-lg font-bold uppercase tracking-tight">{text}</span>
          </div>
       </div>
-   )
+   );
 }
 
 function BenefitRow({ icon, title, desc }: any) {
