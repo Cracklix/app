@@ -43,7 +43,7 @@ import PWAInstallButton from "@/components/PWAInstallButton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Standardized Navbar v52.1 (Hardened Date Type).
+ * @fileOverview Standardized Navbar v52.2 (Hardened Expiry Closure).
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -85,7 +85,7 @@ export default function Navbar() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [profile]);
+  }, [profile?.passExpiresAt]);
 
   const handleLogout = async () => {
     try {
@@ -182,7 +182,7 @@ export default function Navbar() {
                   <div className="flex flex-col items-center text-center space-y-6">
                     <div className="flex flex-col items-center gap-4">
                        <div className="h-14 w-14 md:h-16 md:w-16 rounded-2xl bg-[#EEF4FF] flex items-center justify-center text-[#2563EB] shadow-sm relative">
-                          <User className="h-7 w-7 md:h-8 md:w-8" />
+                          <User className="h-7 v-7 md:h-8 md:w-8" />
                        </div>
                        <div className="space-y-0.5">
                          <h3 className="text-base md:text-xl font-bold text-[#0F172A] tracking-tight truncate max-w-[240px]">

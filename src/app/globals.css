@@ -37,6 +37,9 @@
 
     --header-height-mobile: 56px;
     --header-height-desktop: 88px;
+
+    /* FORCE LIGHT SCHEME - PREVENTS ANDROID DARK MODE INVERSION */
+    color-scheme: light !important;
   }
 }
 
@@ -44,6 +47,7 @@
   html {
     font-size: 14px;
     scroll-behavior: smooth;
+    color-scheme: light !important;
   }
   @media (max-width: 480px) {
     html {
@@ -65,6 +69,7 @@
     
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
+    color-scheme: light !important;
   }
   
   h1 { @apply font-black tracking-tight leading-[0.95]; }

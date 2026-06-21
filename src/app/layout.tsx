@@ -16,8 +16,7 @@ const inter = Inter({
 });
 
 /**
- * @fileOverview Root Layout v52.0 (PWA Optimized).
- * FIXED: Refined PWA icons and display properties to ensure high-fidelity launcher scaling.
+ * @fileOverview Root Layout v52.1 (PWA & Light Mode Optimized).
  */
 export const metadata: Metadata = {
   title: "Cracklix | Punjab's Smart Mock Test Platform",
@@ -26,6 +25,10 @@ export const metadata: Metadata = {
     "Punjab's most trusted government exam preparation platform. PSSSB, PPSC, Punjab Police, Patwari, Clerk and more.",
 
   manifest: "/manifest.json",
+
+  other: {
+    "color-scheme": "light",
+  },
 
   icons: {
     icon: [
@@ -64,7 +67,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-  themeColor: "#1677FF",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({
@@ -73,7 +76,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="light">
       <body
         className={`
           ${inter.variable}
