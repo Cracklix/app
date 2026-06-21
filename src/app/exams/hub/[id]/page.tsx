@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Hierarchical Board Hub v69.1.
- * FIXED: Added missing Landmark icon import to resolve ReferenceError.
+ * @fileOverview Premium Board Hub v70.0.
+ * UI UPGRADE: Large logos and dynamic resource availability chips.
  */
 
 export default function HubExamsPage() {
@@ -100,34 +100,37 @@ export default function HubExamsPage() {
 
       <main className="container mx-auto px-4 py-16 max-w-7xl">
          {exams.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
                {exams.map((exam) => {
                   const s = statsMap[exam.id] || { full: 0, subject: 0, sectional: 0, pyq: 0, total: 0 };
                   const isPinned = profile?.pinnedExams?.includes(exam.id);
                   const hasContent = s.total > 0;
 
                   return (
-                    <Card key={exam.id} onClick={() => router.push(`/exams/${exam.id}`)} className={cn("border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col p-10 text-left cursor-pointer", !hasContent && "opacity-60 grayscale-[0.5]")}>
-                       <div className="flex justify-between items-start mb-8">
-                          <AuthorityLogo board={hub} boardId={hubId} size="lg" className="bg-slate-50 rounded-2xl group-hover:scale-105 transition-transform" />
-                          <button onClick={(e) => handleTogglePin(e, exam.id)} disabled={pinningId === exam.id} className={cn("h-10 w-10 rounded-xl border flex items-center justify-center transition-all", isPinned ? "bg-primary border-primary text-white" : "bg-white border-slate-100 text-slate-300 shadow-sm")}>
-                             {pinningId === exam.id ? <RefreshCw className="h-4 w-4 animate-spin" /> : isPinned ? <CheckCircle2 className="h-4 w-4" /> : <Star className="h-4 w-4" />}
+                    <Card key={exam.id} onClick={() => router.push(`/exams/${exam.id}`)} className={cn("border border-[#E5E7EB] shadow-sm hover:shadow-2xl transition-all duration-500 rounded-[3rem] bg-white group overflow-hidden h-full flex flex-col p-8 md:p-12 text-left cursor-pointer", !hasContent && "opacity-80 grayscale-[0.3]")}>
+                       <div className="flex justify-between items-start mb-8 md:mb-10">
+                          <AuthorityLogo board={hub} boardId={hubId} size="xl" className="bg-slate-50 rounded-[2rem] group-hover:scale-105 transition-transform" />
+                          <button onClick={(e) => handleTogglePin(e, exam.id)} disabled={pinningId === exam.id} className={cn("h-12 w-12 rounded-2xl border flex items-center justify-center transition-all shadow-sm", isPinned ? "bg-primary border-primary text-white" : "bg-white border-slate-100 text-slate-300 hover:text-primary")}>
+                             {pinningId === exam.id ? <RefreshCw className="h-5 w-5 animate-spin" /> : isPinned ? <CheckCircle2 className="h-5 w-5" /> : <Star className="h-5 w-5" />}
                           </button>
                        </div>
-                       <h3 className="text-xl md:text-2xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors mb-6">{exam.name}</h3>
                        
-                       <div className="mt-auto space-y-8">
-                          {hasContent ? (
-                            <div className="flex flex-wrap gap-x-4 gap-y-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                               {s.full > 0 && <span className="flex items-center gap-1.5"><Zap className="h-3 w-3" /> {s.full} Full Mocks</span>}
-                               {s.subject > 0 && <span className="flex items-center gap-1.5"><BookOpen className="h-3 w-3" /> {s.subject} Subject Tests</span>}
-                               {s.pyq > 0 && <span className="flex items-center gap-1.5"><Clock className="h-3 w-3" /> {s.pyq} PYQs</span>}
-                            </div>
-                          ) : (
-                            <Badge variant="outline" className="bg-slate-50 text-slate-400 border-none px-3 py-1 font-black text-[9px] uppercase">Coming Soon</Badge>
-                          )}
-                          <Button className="w-full h-12 rounded-xl bg-[#0F172A] hover:bg-primary text-white font-black uppercase text-[11px] tracking-[0.2em] gap-3 shadow-md border-none transition-all active:scale-95">
-                             Open Exam <ChevronRight className="h-4 w-4" />
+                       <div className="space-y-4 md:space-y-6 flex-1">
+                          <h3 className="text-2xl md:text-3xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors uppercase">{exam.name}</h3>
+                          
+                          <div className="flex flex-wrap gap-2 md:gap-3">
+                             {s.full > 0 && <AvailabilityBadge label="Full Mock Tests" emoji="📚" />}
+                             {s.subject > 0 && <AvailabilityBadge label="Subject Tests" emoji="📖" />}
+                             {s.sectional > 0 && <AvailabilityBadge label="Sectional" emoji="🎯" />}
+                             {s.pyq > 0 && <AvailabilityBadge label="PYQ Papers" emoji="📝" />}
+                             <AvailabilityBadge label="Current Affairs" emoji="📰" />
+                             <AvailabilityBadge label="Live Updates" emoji="⚡" />
+                          </div>
+                       </div>
+                       
+                       <div className="mt-10 md:mt-12">
+                          <Button className="w-full h-14 md:h-16 rounded-2xl bg-[#0F172A] hover:bg-primary text-white font-black uppercase text-[11px] md:text-[13px] tracking-[0.2em] gap-3 shadow-xl border-none transition-all active:scale-95">
+                             Open Exam <ChevronRight className="h-5 w-5" />
                           </Button>
                        </div>
                     </Card>
@@ -144,4 +147,13 @@ export default function HubExamsPage() {
       <Footer />
     </div>
   )
+}
+
+function AvailabilityBadge({ label, emoji }: { label: string, emoji: string }) {
+   return (
+      <Badge variant="outline" className="bg-slate-50 border-slate-100 text-[#0F172A] text-[9px] md:text-[10px] font-black uppercase px-3 py-1.5 rounded-xl whitespace-nowrap flex items-center gap-2">
+         <span className="text-xs md:text-sm">{emoji}</span>
+         {label}
+      </Badge>
+   )
 }
