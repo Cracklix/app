@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-react"
 import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
@@ -10,8 +10,8 @@ import { buttonVariants } from "@/components/ui/button"
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
 /**
- * @fileOverview Production-grade Calendar node v11.0 (Fixed types).
- * FIXED: Corrected Chevron component prop signature for react-day-picker v9 API.
+ * @fileOverview Production-grade Calendar node v12.0 (Type Fixed).
+ * FIXED: Ensured Chevron component always returns a valid Element (not null) to satisfy TS2322.
  */
 function Calendar({
   className,
@@ -58,9 +58,11 @@ function Calendar({
       components={{
         Chevron: (props) => {
           const { orientation } = props;
-          if (orientation === "left") return <ChevronLeft {...props} className={cn("h-4 w-4", props.className)} />;
-          if (orientation === "right") return <ChevronRight {...props} className={cn("h-4 w-4", props.className)} />;
-          return null;
+          if (orientation === "left") return <ChevronLeft className={cn("h-4 w-4", props.className)} />;
+          if (orientation === "right") return <ChevronRight className={cn("h-4 w-4", props.className)} />;
+          if (orientation === "up") return <ChevronUp className={cn("h-4 w-4", props.className)} />;
+          if (orientation === "down") return <ChevronDown className={cn("h-4 w-4", props.className)} />;
+          return <></>;
         },
       }}
       {...props}
