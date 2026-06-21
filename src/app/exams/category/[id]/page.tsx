@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
@@ -9,154 +9,147 @@ import { collection, query, where } from "firebase/firestore"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Landmark, GraduationCap, ShieldCheck, Zap, Globe, Wallet, Info, Shield, Landmark as LandmarkIcon } from "lucide-react"
+import { ChevronLeft, ChevronRight, Landmark, Info, Zap, BookOpen } from "lucide-react"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Category Explorer v15.0 (Language Normalized).
- * FIXED: Replaced Hub/Center terminology with student-friendly language.
- * FIXED: Removed forced uppercase from board titles.
+ * @fileOverview Institutional Category Explorer v16.0 (Hierarchy Rebuilt).
+ * UPDATED: Title Case normalization and dynamic sub-structure detection.
  */
-
-const ACRONYMS = ["PSSSB", "PPSC", "PUNJAB POLICE", "PSPCL", "PSTCL", "PSTET", "CTET", "MCQ", "MCQS", "PYQ", "PYQS", "GK", "CA", "SSAPB"];
-
-function toTitleCase(str: string) {
-  if (!str) return "";
-  return str.split(' ').map(word => {
-    const cleanWord = word.replace(/[^a-zA-Z]/g, '').toUpperCase();
-    if (ACRONYMS.includes(cleanWord)) return cleanWord;
-    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-  }).join(' ');
-}
-
-const CATEGORY_META: Record<string, any> = {
-  "punjab-govt": { title: "Punjab General Exams", icon: <img src="https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg" className="h-full w-full object-contain" /> },
-  "punjab-teaching": { title: "Punjab Teaching Exams", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10" className="h-full w-full object-contain" /> },
-  "punjab-technical": { title: "Punjab Technical Exams", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo0ZK9JI5KMfg9RoNdIwcsNlpx5IcPBWuKZw&s" className="h-full w-full object-contain" /> },
-  "banking": { title: "Punjab Banking Exams", icon: <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7McWqZqOgKy-BakccvR02WQdEQFrwuvmHBG5rYJzuEg&s=10" className="h-full w-full object-contain" /> },
-  "central-govt": { title: "Central Govt Exams", icon: <img src="https://alchetron.com/cdn/government-of-india-973b74d1-e25f-41f2-ba2b-51595702248-resize-750.jpeg" className="h-full w-full object-contain" /> }
-};
 
 export default function CategoryHubsPage() {
   const params = useParams();
   const router = useRouter();
   const db = useFirestore();
   const catId = params.id as string;
-  const meta = CATEGORY_META[catId] || { title: "Exam List", icon: <Landmark className="h-full w-full" /> };
 
-  const boardsQuery = useMemo(() => (db ? collection(db, "boards") : null), [db]);
-  const examsQuery = useMemo(() => (db ? collection(db, "exams") : null), [db]);
+  const { data: categories } = useCollection<any>(useMemo(() => (db ? collection(db, "categories") : null), [db]));
+  const category = categories?.find(c => c.id === catId);
+
+  const boardsQuery = useMemo(() => (db ? query(collection(db, "boards"), where("categoryId", "==", catId)) : null), [db, catId]);
+  const examsQuery = useMemo(() => (db ? query(collection(db, "exams"), where("categoryId", "==", catId)) : null), [db, catId]);
 
   const { data: boards, loading: boardsLoading } = useCollection<any>(boardsQuery);
-  const { data: allExams } = useCollection<any>(examsQuery);
+  const { data: exams, loading: examsLoading } = useCollection<any>(examsQuery);
+  const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]));
+  const { data: pyqs } = useCollection<any>(useMemo(() => (db ? collection(db, "pyqs") : null), [db]));
 
-  const categoryHubs = useMemo(() => {
-     if (!boards) return [];
-     const hubMap = new Map();
-     boards.forEach((b: any) => {
-        if (b.categoryId === catId) {
-           const abbrev = (b.abbreviation || "").toUpperCase();
-           const key = b.id || abbrev;
-           if (!hubMap.has(key)) hubMap.set(key, b);
-        }
-     });
-     return Array.from(hubMap.values()).sort((a, b) => (a.abbreviation || "").localeCompare(b.abbreviation || ""));
-  }, [boards, catId]);
+  const statsMap = useMemo(() => {
+    const map: Record<string, any> = {};
+    (mocks || []).forEach(m => {
+      const eids = m.examIds || (m.examId ? [m.examId] : []);
+      eids.forEach((eid: string) => {
+        if (!map[eid]) map[eid] = { full: 0, subject: 0, sectional: 0, pyq: 0, total: 0 };
+        if (m.mockType === 'FULL') map[eid].full++;
+        else if (m.mockType === 'SUBJECT') map[eid].subject++;
+        else if (m.mockType === 'SECTIONAL') map[eid].sectional++;
+        map[eid].total++;
+      });
+    });
+    (pyqs || []).forEach(p => {
+       if (p.examId) {
+          if (!map[p.examId]) map[p.examId] = { full: 0, subject: 0, sectional: 0, pyq: 0, total: 0 };
+          map[p.examId].pyq++;
+          map[p.examId].total++;
+       }
+    });
+    return map;
+  }, [mocks, pyqs]);
+
+  // If a category has sub-boards (General, Technical, Health, Central), show Board Cards.
+  // Otherwise (Teaching, Police, Courts), show Exam Cards directly.
+  const hasBoards = boards && boards.length > 0;
 
   return (
     <div className="min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       
-      <section className="bg-white border-b border-slate-100 py-10 md:py-14 text-left relative overflow-hidden">
-         <div className="absolute top-0 right-0 p-12 opacity-[0.01]"><Landmark className="h-48 w-48" /></div>
-         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
-            <div className="flex items-center gap-6 mb-8">
-               <button onClick={() => router.back()} className="h-9 w-9 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-black transition-all">
-                  <ChevronLeft className="h-4 w-4" />
-               </button>
-               <div className="flex items-center gap-3">
-                  <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary shadow-inner overflow-hidden p-1">
-                    {meta.icon}
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-500 tracking-tight uppercase">Registry Node</span>
-               </div>
-            </div>
-            <div className="space-y-3">
-              <h1 className="text-[32px] sm:text-[42px] md:text-[48px] lg:text-[56px] font-black text-[#0F172A] leading-[0.95] tracking-tight break-words antialiased">
-                {toTitleCase(meta.title)}
-              </h1>
-              <p className="text-sm md:text-xl font-bold text-slate-400 tracking-tight max-w-3xl leading-tight">
-                Official recruitment exams for the {toTitleCase(meta.title)} category.
-              </p>
+      <section className="bg-white border-b border-slate-100 py-8 md:py-12 relative overflow-hidden">
+         <div className="container mx-auto px-4 max-w-7xl relative z-10">
+            <button onClick={() => router.back()} className="h-9 w-9 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-black mb-6 transition-all">
+               <ChevronLeft className="h-4 w-4" />
+            </button>
+            <div className="space-y-2">
+               <Badge className="bg-primary/5 text-primary border-none px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-tight">Category Registry</Badge>
+               <h1 className="text-3xl md:text-5xl font-black text-[#0F172A] leading-tight tracking-tight">
+                  {category?.title || "Exam List"}
+               </h1>
+               <p className="text-sm md:text-xl font-bold text-slate-400 tracking-tight max-w-3xl leading-tight">
+                  {category?.description || "Select a vertical to start your preparation."}
+               </p>
             </div>
          </div>
       </section>
 
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 max-w-7xl">
-         {boardsLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-               {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-[2rem]" />)}
+      <main className="container mx-auto px-4 py-8 md:py-12 max-w-7xl">
+         {hasBoards ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+               {boardsLoading ? <SkeletonGrid /> : boards.map(hub => (
+                  <Link key={hub.id} href={`/exams/hub/${hub.id}`}>
+                     <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2rem] bg-white group p-6 md:p-8 flex flex-col h-full">
+                        <div className="flex justify-between items-start mb-6">
+                           <div className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                              <Landmark className="h-6 w-6 text-primary" />
+                           </div>
+                           <Badge variant="outline" className="text-[8px] font-bold text-slate-400 border-slate-100 uppercase">{hub.abbreviation}</Badge>
+                        </div>
+                        <h3 className="text-xl md:text-2xl font-black text-[#0F172A] group-hover:text-primary transition-colors mb-2">{hub.abbreviation} Exams</h3>
+                        <p className="text-sm font-bold text-slate-400 leading-snug line-clamp-2 mb-6">{hub.name}</p>
+                        <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">
+                           <span className="text-[10px] font-black uppercase tracking-widest text-primary">Open Exam</span>
+                           <ChevronRight className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" />
+                        </div>
+                     </Card>
+                  </Link>
+               ))}
             </div>
-         ) : categoryHubs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-               {categoryHubs.map((hub) => {
-                  const examCount = (allExams || []).filter((e: any) => 
-                     e.boardId?.toLowerCase() === hub.id?.toLowerCase() ||
-                     e.boardId?.toLowerCase() === hub.abbreviation?.toLowerCase()
-                  ).length;
-
-                  const id = hub.id?.toLowerCase();
-                  const abbrev = hub.abbreviation?.toLowerCase();
-                  const isPolice = id.includes('police') || abbrev === 'police';
-                  
+         ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+               {examsLoading ? <SkeletonGrid /> : exams.filter(e => (statsMap[e.id]?.total || 0) > 0).map(exam => {
+                  const s = statsMap[exam.id] || { full: 0, subject: 0, sectional: 0, pyq: 0, total: 0 };
                   return (
-                    <Link key={hub.id} href={`/exams/hub/${hub.id}`}>
-                       <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2rem] bg-white group overflow-hidden h-full flex flex-col p-6 md:p-8 text-left min-h-[180px] md:min-h-[220px]">
-                          <div className="flex justify-between items-start mb-6">
-                             <div className="h-11 w-11 md:h-12 md:w-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-                                {hub.iconUrl ? (
-                                   <img src={hub.iconUrl} className="h-full w-full object-contain p-2" alt="Logo" referrerPolicy="no-referrer" />
-                                ) : (
-                                   <div className="text-primary opacity-40 p-2.5">
-                                      {isPolice ? <Shield className="h-full w-full" /> : 
-                                       <LandmarkIcon className="h-full w-full" />}
-                                   </div>
-                                )}
-                             </div>
-                             <Badge variant="outline" className="text-[8px] font-bold text-slate-400 tracking-tight border-slate-100 uppercase">OFFICIAL EXAM</Badge>
-                          </div>
-                          
-                          <div className="space-y-1 flex-1 min-w-0">
-                             <h3 className="text-lg md:text-xl font-black text-[#0F172A] tracking-tight group-hover:text-primary transition-colors truncate">
-                                {hub.abbreviation} Exams
-                             </h3>
-                             <p className="text-[10px] md:text-sm font-semibold text-slate-400 leading-snug line-clamp-1">{toTitleCase(hub.name)}</p>
-                          </div>
-
-                          <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between">
-                             <div className="space-y-0.5">
-                                <p className="text-sm font-black text-[#0F172A]">{examCount}</p>
-                                <p className="text-[8px] font-bold text-slate-400 tracking-tight uppercase">EXAMS LIVE</p>
-                             </div>
-                             <Button variant="ghost" className="h-9 md:h-10 px-4 md:px-6 rounded-xl bg-slate-900 text-white flex items-center gap-2 font-black text-[10px] tracking-widest group-hover:bg-primary transition-all border-none shadow-md">
-                                OPEN EXAM <ChevronRight className="h-3 w-3" />
-                             </Button>
-                          </div>
-                       </Card>
-                    </Link>
+                    <Card key={exam.id} onClick={() => router.push(`/exams/${exam.id}`)} className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] bg-white group p-6 md:p-8 flex flex-col h-full cursor-pointer">
+                       <h3 className="text-xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors mb-4">{exam.name}</h3>
+                       <div className="space-y-1.5 mb-8">
+                          <StatItem label="Full Mocks" val={s.full} />
+                          <StatItem label="Subject Tests" val={s.subject} />
+                          <StatItem label="Sectional Tests" val={s.sectional} />
+                          <StatItem label="Official PYQs" val={s.pyq} />
+                       </div>
+                       <Button className="mt-auto w-full h-11 rounded-xl bg-[#0F172A] hover:bg-primary text-white font-black uppercase text-[10px] tracking-widest gap-2 shadow-md border-none">Open Exam <ChevronRight className="h-3.5 w-3.5" /></Button>
+                    </Card>
                   )
                })}
             </div>
-         ) : (
+         )}
+
+         {(!boardsLoading && !examsLoading && boards?.length === 0 && exams?.length === 0) && (
             <div className="py-40 text-center opacity-20 flex flex-col items-center">
                <Info className="h-20 w-20 mb-6" />
-               <p className="font-headline font-black text-2xl uppercase tracking-widest">Awaiting Exams Deployment</p>
+               <p className="font-headline font-black text-2xl uppercase tracking-widest">Awaiting Verification</p>
             </div>
          )}
       </main>
       <Footer />
     </div>
   )
+}
+
+function StatItem({ label, val }: { label: string, val: number }) {
+   return (
+      <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-tight">
+         <span className="text-slate-400">{label}</span>
+         <span className={cn(val > 0 ? "text-[#0F172A]" : "text-slate-200")}>{val}</span>
+      </div>
+   )
+}
+
+function SkeletonGrid() {
+   return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
+         {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-[2rem]" />)}
+      </div>
+   )
 }

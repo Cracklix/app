@@ -1,24 +1,25 @@
-import { Firestore, doc, setDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { Firestore, doc, serverTimestamp, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Canonical Punjab Exam Registry Seeder v90.0.
- * REBUILT: Strictly aligned with the 8-category ecosystem.
+ * @fileOverview Canonical Punjab Exam Registry Rebuild v100.0.
+ * REBUILT: 8-Category Clean Architecture.
+ * STRICT: Title Case names and official board mappings.
  */
 
 export async function seedInitialData(db: Firestore) {
-  console.log('[AUDIT] Initializing Canonical Punjab Registry Rebuild...');
+  console.log('[AUDIT] Initializing COMPLETE EXAM ECOSYSTEM REBUILD...');
   const batch = writeBatch(db);
 
-  // 1. CANONICAL CATEGORIES
+  // 1. CANONICAL CATEGORIES (8 ONLY)
   const categories = [
-    { id: "ppsc", title: "PPSC", description: "Punjab Public Service Commission recruitment exams.", highlight: "CLASS A & B", color: "text-emerald-600", bgColor: "bg-emerald-50", displayOrder: 1 },
-    { id: "psssb", title: "PSSSB", description: "Punjab Subordinate Services Selection Board exams.", highlight: "GROUP B & C", color: "text-primary", bgColor: "bg-orange-50", displayOrder: 2 },
-    { id: "punjab-police", title: "Punjab Police", description: "Police recruitment for Constable, SI and specialized cadres.", highlight: "UNIFORM JOBS", color: "text-blue-800", bgColor: "bg-blue-50", displayOrder: 3 },
-    { id: "pspcl-pstcl", title: "PSPCL & PSTCL", description: "Power department recruitments including ALM and JE.", highlight: "TECHNICAL", color: "text-amber-600", bgColor: "bg-amber-50", displayOrder: 4 },
-    { id: "teaching", title: "Teaching", description: "PSTET, ETT, Master Cadre and school recruitment nodes.", highlight: "EDUCATIONAL", color: "text-rose-600", bgColor: "bg-rose-50", displayOrder: 5 },
-    { id: "banking", title: "Banking", description: "Punjab State Cooperative Bank and finance recruitments.", highlight: "FINANCE", color: "text-indigo-600", bgColor: "bg-indigo-50", displayOrder: 6 },
-    { id: "health", title: "Health", description: "BFUHS and Health Department recruitments.", highlight: "MEDICAL", color: "text-cyan-600", bgColor: "bg-cyan-50", displayOrder: 7 },
-    { id: "courts", title: "Courts", description: "High Court and District Court clerk and staff recruitments.", highlight: "JUDICIAL", color: "text-slate-600", bgColor: "bg-slate-50", displayOrder: 8 }
+    { id: "punjab-general", title: "Punjab General Exams", description: "PPSC and PSSSB official recruitment examinations.", displayOrder: 1 },
+    { id: "punjab-teaching", title: "Punjab Teaching Exams", description: "PSTET, ETT, Master Cadre and Teaching recruitments.", displayOrder: 2 },
+    { id: "punjab-technical", title: "Punjab Technical Exams", description: "Technical recruitments for PSPCL, PSTCL and Power departments.", displayOrder: 3 },
+    { id: "punjab-banking", title: "Punjab Banking Exams", description: "Punjab State Cooperative Bank and banking recruitments.", displayOrder: 4 },
+    { id: "punjab-police", title: "Punjab Police Exams", description: "Uniform job recruitments for Constable and SI cadres.", displayOrder: 5 },
+    { id: "punjab-health", title: "Punjab Health Exams", description: "Medical and Health recruitments under BFUHS.", displayOrder: 6 },
+    { id: "punjab-courts", title: "Punjab Courts Exams", description: "Clerk and staff recruitments for High Court and District Courts.", displayOrder: 7 },
+    { id: "central-govt", title: "Central Government Exams", description: "SSC, Railway, Banking, Defence and UPSC examinations.", displayOrder: 8 }
   ];
 
   for (const cat of categories) {
@@ -27,16 +28,21 @@ export async function seedInitialData(db: Firestore) {
 
   // 2. BOARDS (Authority Hubs)
   const boards = [
-    { id: 'ppsc', abbreviation: 'PPSC', name: 'Punjab Public Service Commission', categoryId: 'ppsc', displayOrder: 1 },
-    { id: 'psssb', abbreviation: 'PSSSB', name: 'Punjab Subordinate Services Selection Board', categoryId: 'psssb', displayOrder: 2 },
-    { id: 'punjab-police', abbreviation: 'POLICE', name: 'Punjab Police Recruitment', categoryId: 'punjab-police', displayOrder: 3 },
-    { id: 'pspcl-pstcl', abbreviation: 'PSPCL', name: 'Punjab Power Corporation', categoryId: 'pspcl-pstcl', displayOrder: 4 },
-    { id: 'teaching', abbreviation: 'TEACHING', name: 'Education Recruitment Board', categoryId: 'teaching', displayOrder: 5 },
-    { id: 'pstet', abbreviation: 'PSTET', name: 'Punjab State Teacher Eligibility Test', categoryId: 'teaching', displayOrder: 6 },
-    { id: 'ctet', abbreviation: 'CTET', name: 'Central Teacher Eligibility Test', categoryId: 'teaching', displayOrder: 7 },
-    { id: 'banking', abbreviation: 'BANKING', name: 'Punjab Cooperative Bank', categoryId: 'banking', displayOrder: 8 },
-    { id: 'health', abbreviation: 'HEALTH', name: 'Health Recruitment (BFUHS)', categoryId: 'health', displayOrder: 9 },
-    { id: 'courts', abbreviation: 'COURTS', name: 'Punjab Courts Recruitment', categoryId: 'courts', displayOrder: 10 }
+    // General
+    { id: 'ppsc', abbreviation: 'PPSC', name: 'Punjab Public Service Commission', categoryId: 'punjab-general', displayOrder: 1 },
+    { id: 'psssb', abbreviation: 'PSSSB', name: 'Punjab Subordinate Services Selection Board', categoryId: 'punjab-general', displayOrder: 2 },
+    // Technical
+    { id: 'pspcl-pstcl', abbreviation: 'PSPCL & PSTCL', name: 'Punjab Power Corporation', categoryId: 'punjab-technical', displayOrder: 3 },
+    // Banking
+    { id: 'pscb', abbreviation: 'PSCB', name: 'Punjab State Cooperative Bank', categoryId: 'punjab-banking', displayOrder: 4 },
+    // Health
+    { id: 'bfuhs', abbreviation: 'BFUHS', name: 'Health Recruitment (BFUHS)', categoryId: 'punjab-health', displayOrder: 5 },
+    // Central
+    { id: 'ssc', abbreviation: 'SSC', name: 'Staff Selection Commission', categoryId: 'central-govt', displayOrder: 6 },
+    { id: 'railway', abbreviation: 'Railway', name: 'Railway Recruitment Board', categoryId: 'central-govt', displayOrder: 7 },
+    { id: 'banking-central', abbreviation: 'Banking', name: 'Central Banking Exams', categoryId: 'central-govt', displayOrder: 8 },
+    { id: 'defence', abbreviation: 'Defence', name: 'Defence Services', categoryId: 'central-govt', displayOrder: 9 },
+    { id: 'upsc', abbreviation: 'UPSC', name: 'Union Public Service Commission', categoryId: 'central-govt', displayOrder: 10 }
   ];
 
   for (const b of boards) {
@@ -44,26 +50,29 @@ export async function seedInitialData(db: Firestore) {
   }
 
   // 3. EXAMS (Verticals)
-  const groups = [
-    { cat: 'ppsc', board: 'ppsc', list: ["PCS", "Naib Tehsildar", "Tehsildar", "DSP", "Excise & Taxation Officer", "BDPO", "Assistant Professor", "Veterinary Officer", "Assistant Engineer", "Junior Engineer", "Other PPSC Recruitment"] },
-    { cat: 'psssb', board: 'psssb', list: ["Clerk", "Clerk IT", "Clerk Accounts", "Steno Typist", "Patwari", "Canal Patwari", "VDO / Gram Sevak", "Excise Inspector", "Jail Warder", "Forest Guard", "Veterinary Inspector", "Junior Draftsman", "Laboratory Assistant", "Senior Assistant", "Group C Posts", "Group D Posts"] },
-    { cat: 'punjab-police', board: 'punjab-police', list: ["Constable", "Sub Inspector", "Intelligence Assistant", "Technical Cadre", "Investigation Cadre"] },
-    { cat: 'pspcl-pstcl', board: 'pspcl-pstcl', list: ["Assistant Lineman (ALM)", "ASSA", "LDC / Clerk", "Revenue Accountant", "Internal Auditor", "JE Electrical", "JE Civil", "AE Electrical"] },
-    { cat: 'teaching', board: 'pstet', list: ["PSTET Paper 1", "PSTET Paper 2"] },
-    { cat: 'teaching', board: 'ctet', list: ["CTET Paper 1 And Paper 2"] },
-    { cat: 'teaching', board: 'teaching', list: ["ETT", "Master Cadre", "Lecturer Cadre", "Pre Primary Teacher"] },
-    { cat: 'banking', board: 'banking', list: ["Cooperative Bank Clerk", "Cooperative Bank Manager", "IT Officer", "Steno Typist"] },
-    { cat: 'health', board: 'health', list: ["Staff Nurse", "Pharmacist", "Medical Officer", "Food Safety Officer", "ANM", "MPHW", "Lab Technician", "Radiographer"] },
-    { cat: 'courts', board: 'courts', list: ["High Court Clerk", "High Court Stenographer", "District Court Clerk", "Process Server", "Peon"] }
+  const examMappings = [
+    { cat: 'punjab-general', board: 'ppsc', list: ["PCS", "DSP", "Naib Tehsildar", "Tehsildar", "BDPO", "Excise & Taxation Officer", "Assistant Professor", "Veterinary Officer", "Assistant Engineer", "Junior Engineer"] },
+    { cat: 'punjab-general', board: 'psssb', list: ["Clerk", "Clerk IT", "Clerk Accounts", "Steno Typist", "Patwari", "Canal Patwari", "VDO / Gram Sevak", "Excise Inspector", "Jail Warder", "Forest Guard", "Veterinary Inspector", "Junior Draftsman", "Laboratory Assistant", "Senior Assistant", "Group C Posts", "Group D Posts"] },
+    { cat: 'punjab-teaching', board: null, list: ["PSTET Paper 1", "PSTET Paper 2", "ETT", "Master Cadre", "Lecturer Cadre", "Pre Primary Teacher", "CTET"] },
+    { cat: 'punjab-technical', board: 'pspcl-pstcl', list: ["Assistant Lineman (ALM)", "ASSA", "LDC", "Revenue Accountant", "Internal Auditor", "JE Electrical", "JE Civil", "AE Electrical"] },
+    { cat: 'punjab-banking', board: 'pscb', list: ["Cooperative Bank Clerk", "Manager", "IT Officer", "Steno Typist"] },
+    { cat: 'punjab-police', board: null, list: ["Constable", "Sub Inspector", "Intelligence Assistant", "Technical Cadre", "Investigation Cadre"] },
+    { cat: 'punjab-health', board: 'bfuhs', list: ["Staff Nurse", "Pharmacist", "Medical Officer", "Food Safety Officer", "Emergency Medical Officer", "ANM", "MPHW", "Lab Technician", "Radiographer"] },
+    { cat: 'punjab-courts', board: null, list: ["High Court Clerk", "High Court Stenographer", "District Court Clerk", "Process Server", "Peon"] },
+    { cat: 'central-govt', board: 'ssc', list: ["SSC CGL", "SSC CHSL", "SSC MTS", "SSC GD", "SSC CPO"] },
+    { cat: 'central-govt', board: 'railway', list: ["RRB NTPC", "RRB Group D", "RRB ALP", "RRB JE"] },
+    { cat: 'central-govt', board: 'banking-central', list: ["IBPS PO", "IBPS Clerk", "SBI PO", "SBI Clerk"] },
+    { cat: 'central-govt', board: 'defence', list: ["NDA", "CDS", "AFCAT", "Agniveer"] },
+    { cat: 'central-govt', board: 'upsc', list: ["Civil Services", "CAPF", "EPFO"] }
   ];
 
-  groups.forEach((group) => {
-    group.list.forEach((name, i) => {
+  examMappings.forEach((mapping) => {
+    mapping.list.forEach((name, i) => {
       const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       batch.set(doc(db, 'exams', id), {
         id, name,
-        boardId: group.board,
-        categoryId: group.cat,
+        boardId: mapping.board,
+        categoryId: mapping.cat,
         displayOrder: i,
         updatedAt: serverTimestamp()
       }, { merge: true });
@@ -71,5 +80,5 @@ export async function seedInitialData(db: Firestore) {
   });
 
   await batch.commit();
-  console.log('[AUDIT] Ecosystem Cleaned and Rebuilt.');
+  console.log('[AUDIT] Entire Exam Ecosystem Rebuilt Successfully.');
 }

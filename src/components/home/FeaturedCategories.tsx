@@ -1,32 +1,24 @@
 "use client"
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Landmark, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Canonical Punjab Categories Hub v28.0.
+ * @fileOverview Canonical Punjab Categories Hub v29.0.
+ * REBUILT: 8-Category strictly aligned architecture.
  */
 
 export default function FeaturedCategories() {
   const db = useFirestore();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const catQuery = useMemo(() => (db ? query(collection(db, "categories"), orderBy("displayOrder", "asc")) : null), [db]);
   const { data: categories, loading: catLoading } = useCollection<any>(catQuery);
-
-  if (!mounted) return null;
 
   return (
     <section className="py-12 bg-white">
@@ -35,7 +27,7 @@ export default function FeaturedCategories() {
           <div className="space-y-2">
              <div className="flex items-center gap-3">
                 <Landmark className="h-4 w-4 text-primary" />
-                <span className="text-[10px] font-bold text-slate-400 tracking-tight uppercase">Exam Categories</span>
+                <span className="text-[10px] font-bold text-slate-400 tracking-tight uppercase">Choose Your Exam</span>
              </div>
              <h2 className="text-3xl md:text-5xl font-black text-[#0F172A] leading-tight">Explore Categories</h2>
           </div>
@@ -44,7 +36,7 @@ export default function FeaturedCategories() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {catLoading ? (
-            Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-2xl bg-slate-50" />)
+            Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-48 w-full rounded-2xl bg-slate-50" />)
           ) : categories?.map((cat, idx) => (
             <motion.div key={cat.id} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.05 }}>
                <Link href={`/exams/category/${cat.id}`}>
