@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, isValidElement } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { motion } from "framer-motion";
@@ -27,9 +27,8 @@ import { cn } from "@/lib/utils";
 import PWAInstallButton from "@/components/PWAInstallButton";
 
 /**
- * @fileOverview Public PWA Install Hub v12.0.
- * ACCESSIBLE: Publicly accessible without login.
- * HARDENED: Reliable detection and direct trigger logic.
+ * @fileOverview Public PWA Install Hub v12.1 (Build Fixed).
+ * FIXED: Added missing isValidElement import.
  */
 export default function InstallPage() {
   const [device, setDevice] = useState<"android" | "ios" | "desktop" | "unknown">("desktop");

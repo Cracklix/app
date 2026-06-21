@@ -12,11 +12,12 @@ import { useAuth, useFirestore, useUser } from "@/firebase"
 import { doc, setDoc, serverTimestamp } from "firebase/firestore"
 import Logo from "@/components/brand/Logo"
 import { useToast } from "@/hooks/use-toast"
-import { Phone, User as UserIcon, GraduationCap, Calendar, MapPin, ChevronLeft } from "lucide-react"
+import { Phone, User as UserIcon, GraduationCap, Calendar, MapPin, ChevronLeft, Loader2 } from "lucide-react"
 import { Gender } from "@/types"
 
 /**
- * @file Overview Student Profile Setup v14.0 (Optional Mode).
+ * @file Overview Student Profile Setup v14.1 (Build Fixed).
+ * FIXED: Added missing Loader2 import.
  */
 export default function ProfileSetup() {
   const router = useRouter()
