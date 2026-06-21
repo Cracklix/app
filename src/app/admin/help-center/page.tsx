@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -18,8 +18,9 @@ import { HelpArticle } from "@/types"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Knowledge Base Hub Management v6.0 (Index Fix).
- * FIXED: Client-side sorting implemented to prevent index requirements.
+ * @fileOverview Knowledge Base Hub Management v7.0 (PWA Optimized).
+ * FIXED: Removed Huge ALL CAPS headers and reduced font scales.
+ * FIXED: Implemented High-Density padding and Title Case.
  */
 
 export default function HelpCenterManagement() {
@@ -79,59 +80,64 @@ export default function HelpCenterManagement() {
   }, [articles, searchTerm])
 
   return (
-    <div className="space-y-12 text-left">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-        <div>
-           <div className="flex items-center gap-3 mb-2">
-              <HelpCircle className="h-6 w-6 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Knowledge Base Hub</span>
+    <div className="space-y-6 md:space-y-12 text-[#0F172A] text-left animate-in fade-in duration-500">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 px-1">
+        <div className="space-y-1">
+           <div className="flex items-center gap-2 mb-1">
+              <HelpCircle className="h-4 w-4 text-primary" />
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Knowledge Base Hub</span>
            </div>
-          <h1 className="text-5xl font-black font-headline text-primary uppercase tracking-tight">Help Center</h1>
-          <p className="text-slate-500 mt-2 text-lg font-medium">Manage support articles, tutorials and global FAQs.</p>
+          <h1 className="text-2xl md:text-5xl font-black tracking-tight">Help Center</h1>
+          <p className="text-slate-500 text-[11px] md:text-lg font-medium">Manage support articles, tutorials and global FAQs.</p>
         </div>
-        <button onClick={() => setEditingArticle({ title: "", category: "FAQ", content: "", published: true, displayOrder: (articles?.length || 0) + 1 })} className="bg-[#0F172A] hover:bg-black text-white h-16 px-12 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl flex items-center justify-center gap-3 border-none">
-          <Plus className="h-5 w-5" /> Add Knowledge Node
-        </button>
+        <Button 
+          onClick={() => setEditingArticle({ title: "", category: "FAQ", content: "", published: true, displayOrder: (articles?.length || 0) + 1 })} 
+          className="w-full md:w-auto bg-primary hover:bg-blue-700 h-11 md:h-14 px-8 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl border-none active:scale-95 gap-2"
+        >
+          <Plus className="h-4 w-4" /> Add Knowledge Node
+        </Button>
       </div>
 
-      <Card className="border-none shadow-3xl bg-white rounded-[3rem] overflow-hidden">
-        <CardHeader className="p-10 border-b border-slate-50 bg-slate-50/30">
-           <div className="relative w-full md:w-[45%]">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-              <Input className="pl-16 h-16 rounded-[1.5rem] bg-white border-none shadow-inner" placeholder="Search knowledge base..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-           </div>
-        </CardHeader>
+      <div className="relative group px-1">
+         <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+         <Input 
+           className="h-14 md:h-16 pl-14 rounded-2xl md:rounded-full bg-white border-slate-50 shadow-inner text-base md:text-lg font-bold" 
+           placeholder="Search knowledge base..." 
+           value={searchTerm} 
+           onChange={e => setSearchTerm(e.target.value)} 
+         />
+      </div>
+
+      <Card className="border-none shadow-xl rounded-2xl md:rounded-[3rem] overflow-hidden bg-white mx-1 border border-slate-50">
         <CardContent className="p-0">
           <Table>
             <TableHeader className="bg-slate-50/50">
-              <TableRow className="border-slate-100 h-20">
-                <TableHead className="px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Article Identity</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Category</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">Sort Order</TableHead>
-                <TableHead className="text-right px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Control</TableHead>
+              <TableRow className="border-slate-100 h-14 md:h-20">
+                <TableHead className="px-6 md:px-12 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">Article Identity</TableHead>
+                <TableHead className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">Category</TableHead>
+                <TableHead className="text-right px-6 md:px-12 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">Control</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={4} className="p-10"><Skeleton className="h-14 w-full rounded-2xl" /></TableCell></TableRow>)
+                Array.from({ length: 4 }).map((_, i) => <TableRow key={i} className="border-slate-50"><TableCell colSpan={3} className="px-6 py-6 md:px-12 md:py-8"><Skeleton className="h-10 w-full rounded-xl bg-slate-50" /></TableCell></TableRow>)
               ) : filteredArticles.map((a) => (
-                <TableRow key={a.id} className="hover:bg-slate-50 group border-slate-50 transition-all">
-                  <TableCell className="px-10 py-8 text-left">
-                     <div className="flex items-center gap-6">
-                        <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 shadow-inner">
+                <TableRow key={a.id} className="hover:bg-slate-50 border-slate-50 transition-colors group">
+                  <TableCell className="px-6 md:px-12 py-5 md:py-8 text-left">
+                     <div className="flex items-center gap-4 md:gap-6">
+                        <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 shadow-inner transition-transform group-hover:scale-105">
                            <BookOpen className="h-5 w-5 text-blue-600" />
                         </div>
-                        <p className="font-black text-[#0F172A] text-lg uppercase leading-none">{a.title}</p>
+                        <p className="font-bold text-[#0F172A] text-sm md:text-lg leading-tight truncate max-w-[200px] md:max-w-md">{a.title}</p>
                      </div>
                   </TableCell>
                   <TableCell>
-                     <Badge className="bg-slate-100 text-slate-500 border-none font-black text-[9px] px-3 py-1 uppercase">{a.category}</Badge>
+                     <Badge className="bg-slate-100 text-slate-500 border-none font-black text-[8px] md:text-[9px] px-2.5 py-0.5 rounded uppercase tracking-widest">{a.category}</Badge>
                   </TableCell>
-                  <TableCell className="text-center font-bold">{a.displayOrder}</TableCell>
-                  <TableCell className="text-right px-10">
-                     <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100">
-                        <Button variant="ghost" size="icon" onClick={() => setEditingArticle(a)}><Edit className="h-5 w-5" /></Button>
-                        <Button variant="ghost" size="icon" className="hover:text-rose-600" onClick={() => handleDelete(a.id)}><Trash2 className="h-5 w-5" /></Button>
+                  <TableCell className="text-right px-6 md:px-12">
+                     <div className="flex justify-end gap-2 md:gap-3 opacity-20 group-hover:opacity-100 transition-all">
+                        <button onClick={() => setEditingArticle(a)} className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary active:scale-90"><Edit className="h-5 w-5" /></button>
+                        <button onClick={() => handleDelete(a.id)} className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-rose-500 hover:bg-rose-50 active:scale-90"><Trash2 className="h-5 w-5" /></button>
                      </div>
                   </TableCell>
                 </TableRow>
@@ -142,19 +148,19 @@ export default function HelpCenterManagement() {
       </Card>
 
       <Dialog open={!!editingArticle} onOpenChange={o => !o && setEditingArticle(null)}>
-         <DialogContent className="sm:max-w-2xl rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left">
-            <div className="h-2 w-full bg-[#0F172A]" />
-            <DialogHeader className="p-10 pb-4">
-               <DialogTitle className="text-2xl font-black font-headline uppercase flex items-center gap-4">
-                  <Layers className="h-8 w-8 text-primary" /> Knowledge Node Architect
+         <DialogContent className="sm:max-w-2xl w-[95vw] max-h-[95vh] rounded-3xl md:rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
+            <div className="h-2 w-full bg-[#0F172A] shrink-0" />
+            <DialogHeader className="p-6 md:p-10 pb-2 md:pb-4 shrink-0">
+               <DialogTitle className="text-xl md:text-3xl font-black uppercase flex items-center gap-3">
+                  <Layers className="h-6 w-6 text-primary" /> Knowledge Node Architect
                </DialogTitle>
-               <DialogDescription>Modify help article or FAQ content.</DialogDescription>
+               <DialogDescription className="text-slate-400 font-bold uppercase text-[9px] tracking-widest mt-1">Modify help article or FAQ content.</DialogDescription>
             </DialogHeader>
-            <div className="p-10 space-y-6">
-               <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                     <Label className="text-[10px] font-black uppercase text-slate-500">Category</Label>
-                     <select value={editingArticle?.category || "FAQ"} onChange={e => setEditingArticle({...editingArticle, category: e.target.value})} className="w-full h-12 bg-slate-50 rounded-xl px-4 font-bold text-sm">
+            <div className="px-6 md:px-10 pb-6 md:pb-10 space-y-6 md:space-y-8 overflow-y-auto custom-scrollbar flex-1">
+               <div className="grid grid-cols-2 gap-4 md:gap-6">
+                  <div className="space-y-1.5 text-left">
+                     <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Category</Label>
+                     <select value={editingArticle?.category || "FAQ"} onChange={e => setEditingArticle({...editingArticle, category: e.target.value})} className="w-full h-12 md:h-14 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none shadow-inner">
                         <option value="FAQ">General FAQ</option>
                         <option value="PAYMENTS">Payments Hub</option>
                         <option value="PASS">Elite Pass</option>
@@ -163,23 +169,24 @@ export default function HelpCenterManagement() {
                         <option value="ACCOUNT">Account Hub</option>
                      </select>
                   </div>
-                  <div className="space-y-2">
-                     <Label className="text-[10px] font-black uppercase text-slate-500">Display Order</Label>
-                     <Input type="number" value={editingArticle?.displayOrder || ""} onChange={e => setEditingArticle({...editingArticle, displayOrder: e.target.value})} />
+                  <div className="space-y-1.5 text-left">
+                     <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Display Order</Label>
+                     <Input type="number" value={editingArticle?.displayOrder || ""} onChange={e => setEditingArticle({...editingArticle, displayOrder: e.target.value})} className="h-12 md:h-14 rounded-xl border-slate-200 bg-slate-50 font-bold" />
                   </div>
                </div>
-               <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-500">Article Headline</Label>
-                  <Input value={editingArticle?.title || ""} onChange={e => setEditingArticle({...editingArticle, title: e.target.value})} placeholder="e.g. How to activate Quarterly Pass?" />
+               <div className="space-y-1.5 text-left">
+                  <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Article Headline</Label>
+                  <Input value={editingArticle?.title || ""} onChange={e => setEditingArticle({...editingArticle, title: e.target.value})} className="h-12 md:h-14 rounded-xl border-slate-200 bg-slate-50 font-bold" placeholder="e.g. How to activate Quarterly Pass?" />
                </div>
-               <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-500">Response / content</Label>
-                  <Textarea value={editingArticle?.content || ""} onChange={e => setEditingArticle({...editingArticle, content: e.target.value})} className="min-h-[200px]" placeholder="Type help content here..." />
+               <div className="space-y-1.5 text-left">
+                  <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Response / content</Label>
+                  <Textarea value={editingArticle?.content || ""} onChange={e => setEditingArticle({...editingArticle, content: e.target.value})} className="min-h-[200px] rounded-xl border-slate-200 bg-slate-50 font-medium leading-relaxed" placeholder="Type help content here..." />
                </div>
             </div>
-            <DialogFooter className="p-10 pt-0">
-               <Button onClick={handleSave} disabled={isSaving} className="w-full h-16 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl transition-all">
-                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Authorize Node"}
+            <DialogFooter className="p-6 md:p-10 pt-4 bg-slate-50 border-t border-slate-100 flex flex-row gap-4">
+               <Button variant="ghost" onClick={() => setEditingArticle(null)} className="h-11 md:h-12 px-6 font-black uppercase text-[10px] text-slate-400">Discard</Button>
+               <Button onClick={handleSave} disabled={isSaving} className="flex-1 bg-primary hover:bg-blue-700 text-white h-11 md:h-12 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl gap-2 active:scale-95 border-none">
+                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Commit Node
                </Button>
             </DialogFooter>
          </DialogContent>
