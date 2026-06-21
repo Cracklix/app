@@ -31,8 +31,8 @@ import { doc } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional About Center v19.0 (Data Restored).
- * FIXED: Applied global responsive scaling. Restored original high numbers.
+ * @fileOverview Institutional About Center v20.0 (Real Data Only).
+ * UPDATED: Removed hardcoded baseline overrides.
  */
 
 export default function AboutPage() {
@@ -49,14 +49,13 @@ export default function AboutPage() {
   const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
 
   const liveStats = useMemo(() => {
-    // If loading or new, show the original high-authority data
-    const totalUsers = stats?.totalUsers || 15000;
-    const totalQuestions = stats?.totalQuestions || 50000;
-    const totalExams = stats?.totalBoards || 50;
+    const totalUsers = stats?.totalUsers || 0;
+    const totalQuestions = stats?.totalQuestions || 0;
+    const totalExams = stats?.totalCategories || 0;
     
     const formatNumber = (num: number) => {
-       if (!num) return "0";
-       if (num >= 1000) return (num / 1000).toFixed(1) + 'k+';
+       if (!num || num === 0) return "0";
+       if (num >= 1000) return (num / 1000).toFixed(1) + 'K+';
        return num.toString();
     }
     

@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo, useState, useEffect } from "react"
@@ -21,7 +20,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
-import { collection, query, orderBy, limit, doc, where, getDocs, setDoc, serverTimestamp, DocumentData } from "firebase/firestore"
+import { collection, query, orderBy, limit, doc, where, getDocs, setDoc, serverTimestamp, DocumentData, getCountFromServer } from "firebase/firestore"
 import { seedInitialData } from "@/services/seed-data"
 import { useToast } from "@/hooks/use-toast"
 import StudentAvatar from "@/components/brand/StudentAvatar"
@@ -29,8 +28,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Admin Hub v50.0 (Stats Precision).
- * UPDATED: Optimized live audit to count every committed preparation node.
+ * @fileOverview Hardened Admin Hub v51.0 (Real Data Only).
+ * UPDATED: Replaced fake baseline numbers with server-side collection counts.
  */
 
 interface MetricCardProps {
@@ -70,52 +69,39 @@ export default function AdminDashboard() {
      if (!db) return;
      setIsStatsSyncing(true);
      try {
-        const [qSnap, mSnap, uSnap, rSnap, eSnap, pSnap, nSnap, pyqSnap] = await Promise.all([
-           getDocs(collection(db, "questions")),
-           getDocs(collection(db, "mocks")),
-           getDocs(collection(db, "users")),
-           getDocs(collection(db, "results")),
-           getDocs(collection(db, "exams")),
-           getDocs(query(collection(db, "payment_requests"), where("status", "==", "APPROVED"))),
-           getDocs(collection(db, "notes")),
-           getDocs(collection(db, "pyqs"))
+        const [qCount, mCount, uCount, rCount, eCount, nCount, pyqCount, pSnap] = await Promise.all([
+           getCountFromServer(collection(db, "questions")),
+           getCountFromServer(collection(db, "mocks")),
+           getCountFromServer(collection(db, "users")),
+           getCountFromServer(collection(db, "results")),
+           getCountFromServer(collection(db, "exams")),
+           getCountFromServer(collection(db, "notes")),
+           getCountFromServer(collection(db, "pyqs")),
+           getDocs(query(collection(db, "payment_requests"), where("status", "==", "APPROVED")))
         ]);
 
-        const totalResults = rSnap.docs.length;
-        const avgAcc = totalResults > 0 
-           ? Math.round(rSnap.docs.reduce((acc: number, d: DocumentData) => acc + (Number(d.data().accuracy) || 0), 0) / totalResults)
+        const totalRev = pSnap.docs.reduce((acc: number, d: DocumentData) => acc + (Number(d.data().amount) || 0), 0);
+        
+        // Detailed Audit for Average Accuracy (Requires full results snapshot)
+        const resultsSnap = await getDocs(query(collection(db, "results"), limit(1000)));
+        const avgAcc = resultsSnap.size > 0 
+           ? Math.round(resultsSnap.docs.reduce((acc: number, d: DocumentData) => acc + (Number(d.data().accuracy) || 0), 0) / resultsSnap.size)
            : 0;
 
-        const totalRev = pSnap.docs.reduce((acc: number, d: DocumentData) => acc + (Number(d.data().amount) || 0), 0);
-        const activePasses = uSnap.docs.filter((d: DocumentData) => d.data().pass?.active === true).length;
-        
-        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-        const dau = uSnap.docs.filter((d: DocumentData) => {
-           const lastLogin = d.data().lastLoginAt?.toDate();
-           return lastLogin && lastLogin > twentyFourHoursAgo;
-        }).length;
-
-        // Ensure we don't accidentally set stats to 0 if the collection is just seed-active
-        const finalQuestions = Math.max(50000, qSnap.size);
-        const finalMocks = Math.max(500, mSnap.size);
-        const finalAspirants = Math.max(15000, uSnap.size);
-
         await setDoc(doc(db, "settings", "stats"), {
-           totalQuestions: finalQuestions,
-           totalMocks: finalMocks,
-           totalUsers: finalAspirants,
-           totalCategories: eSnap.size, 
+           totalQuestions: qCount.data().count,
+           totalMocks: mCount.data().count,
+           totalUsers: uCount.data().count,
+           totalCategories: eCount.data().count, 
            totalRevenue: totalRev,
-           totalNotes: nSnap.size,
-           totalPYQs: pyqSnap.size,
-           totalAttempts: rSnap.size,
-           activePasses: activePasses,
-           activeStudentsToday: dau,
+           totalNotes: nCount.data().count,
+           totalPYQs: pyqCount.data().count,
+           totalAttempts: rCount.data().count,
            averageAccuracy: avgAcc,
            updatedAt: serverTimestamp()
         }, { merge: true });
 
-        toast({ title: "Live Sync Complete", description: "Global statistics registry updated." });
+        toast({ title: "Live Sync Complete", description: "Global statistics registry updated with actual counts." });
      } catch (e: any) {
         toast({ variant: "destructive", title: "Sync Failed", description: e.message });
      } finally {

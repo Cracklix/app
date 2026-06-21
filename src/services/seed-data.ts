@@ -1,7 +1,7 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v78.0 (Restored Stats Truth).
+ * @fileOverview Institutional Punjab-Centric Seeding Node v79.0 (Real Data Only).
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -68,7 +68,7 @@ export async function seedInitialData(db: Firestore) {
     batch.set(doc(db, 'boards', b.id), { ...b, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 3. SEEDING 71 VERTICALS (RESTORED LIST)
+  // 3. SEEDING INITIAL VERTICALS
   const examNames = [
     "PSSSB Clerk", "PSSSB Clerk IT", "PSSSB Clerk Accounts", "Revenue Patwari", "Excise Inspector", "Senior Assistant", "Junior Draftsman",
     "Police Constable", "Police Sub-Inspector", "Police Head Constable", "Police Intelligence", "PSTET Paper 1", "PSTET Paper 2", "Master Cadre Punjabi",
@@ -103,7 +103,7 @@ export async function seedInitialData(db: Firestore) {
     platformName: "Cracklix",
     announcement: "🔥 Official Punjab Latest Pattern Recruitment Calendar Live.",
     showAnnouncement: true,
-    trustBadgeCount: 15000,
+    trustBadgeCount: 0,
     trustBadgeText: "Aspirants Trusting Cracklix for Punjab Exams",
     upiId: "arshdeepgrewal1122-1@oksbi",
     updatedAt: serverTimestamp()
@@ -111,18 +111,5 @@ export async function seedInitialData(db: Firestore) {
 
   await batch.commit();
 
-  // 6. FINAL STATS SYNC (FORCE OVERWRITE LOW NUMBERS)
-  await setDoc(doc(db, 'settings', 'stats'), {
-     totalQuestions: 50000,
-     totalMocks: 500,
-     totalUsers: 15000,
-     totalCategories: 71,
-     totalBoards: 12,
-     totalNotes: 100,
-     totalPYQs: 200,
-     averageAccuracy: 94,
-     updatedAt: serverTimestamp()
-  }, { merge: true });
-
-  console.log('[AUDIT] Full Punjab Registry Synchronized with High Density Nodes.');
+  console.log('[AUDIT] Initial Registry Synchronized. Please use Admin Hub to sync live counts.');
 }
