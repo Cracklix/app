@@ -1,124 +1,76 @@
 'use client';
 
-import React, { useMemo, useState, useEffect } from "react"
+import React, { useMemo } from "react"
+import { motion } from "framer-motion"
 import { 
   ChevronRight, 
   Landmark, 
-  BookOpen, 
-  Zap, 
   ShieldCheck, 
+  Zap, 
   GraduationCap, 
-  Activity,
-  ArrowRight,
-  Scale
+  HeartPulse, 
+  Scale, 
+  Globe,
+  ArrowRight
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
-import { useCollection, useFirestore } from "@/firebase";
-import { collection, query, orderBy, limit } from "firebase/firestore";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { useCollection, useFirestore } from "@/firebase";
+import { collection, limit } from "firebase/firestore";
 
 /**
- * @fileOverview Popular Punjab Exams v66.1.
- * UPDATED: Simplified exam viewing language.
+ * @fileOverview Popular Punjab Exams Hub v70.0.
+ * FIXED: Strictly shows only the requested popular exams.
  */
 
-function getBoardFallbackIcon(id: string, abbrev: string) {
-  const key = (abbrev || id || "").toLowerCase();
-  if (key.includes('psssb')) return <Landmark className="h-full w-full text-amber-600" />;
-  if (key.includes('police')) return <ShieldCheck className="h-full w-full text-blue-800" />;
-  if (key.includes('ppsc')) return <Landmark className="h-full w-full text-emerald-700" />;
-  if (key.includes('teaching') || key.includes('cadre') || key.includes('pstet')) return <GraduationCap className="h-full w-full text-orange-500" />;
-  if (key.includes('pspcl') || key.includes('pstcl') || key.includes('power')) return <Zap className="h-full w-full text-blue-500" />;
-  if (key.includes('court') || key.includes('justice') || key.includes('sssc')) return <Scale className="h-full w-full text-slate-600" />;
-  return <Activity className="h-full w-full text-slate-300" />;
-}
+const POPULAR_LIST = [
+  { name: "PCS", id: "pcs" },
+  { name: "Punjab Police Constable", id: "constable" },
+  { name: "Patwari", id: "patwari" },
+  { name: "Clerk", id: "clerk" },
+  { name: "PSTET", id: "pstet-paper-1" },
+  { name: "ALM", id: "assistant-lineman--alm-" },
+  { name: "Staff Nurse", id: "staff-nurse" },
+  { name: "SSC CGL", id: "ssc-cgl" }
+];
 
 export default function PopularExams() {
   const db = useFirestore();
-  const [mounted, setMounted] = useState(false);
-  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const boardsQuery = useMemo(() => (db ? query(collection(db, "boards"), orderBy("displayOrder", "asc"), limit(8)) : null), [db]);
-  const { data: boards, loading } = useCollection<any>(boardsQuery);
-  
-  const examsQuery = useMemo(() => (db ? query(collection(db, "exams"), limit(12)) : null), [db]);
-  const { data: allExams } = useCollection<any>(examsQuery);
-
-  if (!mounted) return null;
+  const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]));
 
   return (
-    <section className="py-12 md:py-20 bg-white">
-      <div className="container mx-auto px-4 max-w-7xl">
-         
-         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-4 text-left">
+    <section className="py-16 bg-slate-50/50">
+      <div className="container mx-auto px-4 max-w-7xl text-left">
+         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
             <div className="space-y-1">
-               <h2 className="text-3xl md:text-5xl font-extrabold text-[#04102B] tracking-tight leading-none">Popular Punjab Exams</h2>
-               <p className="text-[#94A3B8] font-bold text-[10px] md:text-xs tracking-tight uppercase">Most Targeted Recruitment Exams</p>
+               <h2 className="text-3xl md:text-5xl font-black text-[#04102B] tracking-tight leading-none">Popular Exams</h2>
+               <p className="text-[#94A3B8] font-bold text-xs tracking-tight uppercase">Most Targeted Preparation Hubs</p>
             </div>
-            <Link href="/exams" className="flex items-center gap-2 text-blue-600 font-bold text-sm hover:underline tracking-tight group">
+            <Link href="/exams" className="text-primary font-bold text-sm hover:underline flex items-center gap-2 group">
                View All Exams <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
          </div>
 
-         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-            {loading ? (
-               Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[200px] w-full rounded-[2rem]" />)
-            ) : boards?.map((board) => {
-               const examCount = allExams?.filter(e => e.boardId === board.id || e.boardId === board.abbreviation).length || 0;
-               const logoUrl = board.iconUrl;
-
-               return (
-                  <Link key={board.id} href={`/exams/hub/${board.id}`}>
-                     <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-4px] transition-all duration-500 rounded-[2rem] bg-white group p-6 md:p-8 text-left h-full min-h-[200px] md:min-h-[260px] flex flex-col relative overflow-hidden">
-                        <div className="flex items-start gap-4 mb-6">
-                           <div className="h-11 w-11 md:h-12 md:w-12 rounded-2xl bg-[#F8FAFC] flex items-center justify-center p-1.5 shrink-0 shadow-inner group-hover:scale-105 transition-transform overflow-hidden border border-slate-100 relative">
-                              {logoUrl && !failedImages[board.id] ? (
-                                <Image 
-                                  src={logoUrl} 
-                                  alt={board.abbreviation} 
-                                  fill
-                                  sizes="48px"
-                                  className="object-contain p-2"
-                                  referrerPolicy="no-referrer"
-                                  onError={() => setFailedImages(prev => ({ ...prev, [board.id]: true }))} 
-                                />
-                              ) : (
-                                <div className="p-1 w-full h-full opacity-40">{getBoardFallbackIcon(board.id, board.abbreviation)}</div>
-                              )}
-                           </div>
-                           <div className="min-w-0 flex-1 space-y-1">
-                              <h3 className="text-base md:text-lg font-black text-[#04102B] tracking-tight group-hover:text-blue-600 transition-colors leading-tight">
-                                 {board.abbreviation} Exams
-                              </h3>
-                              <p className="text-[10px] md:text-[11px] font-semibold text-[#94A3B8] leading-snug truncate">
-                                 {board.name}
-                              </p>
-                           </div>
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {POPULAR_LIST.map((p, idx) => (
+               <motion.div key={p.id} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} viewport={{ once: true }}>
+                  <Link href={`/exams/${p.id}`}>
+                     <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2rem] bg-white p-6 md:p-8 text-left h-full group">
+                        <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center mb-6 shadow-inner group-hover:scale-105 transition-transform text-primary">
+                           <Zap className="h-5 w-5" />
                         </div>
-
-                        <div className="flex items-center gap-6 mt-auto">
-                           <div className="flex items-center gap-2">
-                              <BookOpen className="h-3.5 w-3.5 text-blue-600" />
-                              <span className="text-[11px] font-bold text-[#64748B]">{examCount} Previews</span>
-                           </div>
-                        </div>
-
-                        <div className="mt-6 pt-4 border-t border-slate-50">
-                           <span className="text-blue-600 font-black text-[11px] uppercase tracking-widest flex items-center gap-2 group-hover:translate-x-1 transition-transform">
-                              View Exam <ArrowRight className="h-3.5 w-3.5" />
+                        <h3 className="text-lg font-black text-[#04102B] leading-tight group-hover:text-primary transition-colors mb-6">
+                           {p.name}
+                        </h3>
+                        <div className="mt-auto pt-4 border-t border-slate-50 flex items-center justify-between">
+                           <span className="text-primary font-black text-[10px] uppercase tracking-widest flex items-center gap-2">
+                              Open Exam <ArrowRight className="h-3.5 w-3.5" />
                            </span>
                         </div>
                      </Card>
                   </Link>
-               )
-            })}
+               </motion.div>
+            ))}
          </div>
       </div>
     </section>

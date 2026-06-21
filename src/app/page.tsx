@@ -1,22 +1,22 @@
 import React from "react";
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/home/Hero";
-import Features from "@/components/home/Features";
-import GlobalSearch from "@/components/home/GlobalSearch";
-import FeaturedCategories from "@/components/home/FeaturedCategories";
+import PopularExams from "@/components/home/PopularExams";
 import LatestMocks from "@/components/home/LatestMocks";
+import FeaturedCategories from "@/components/home/FeaturedCategories";
+import Features from "@/components/home/Features";
 import ContinueLearning from "@/components/home/ContinueLearning";
 import CurrentAffairsPreview from "@/components/home/CurrentAffairsPreview";
 import MeritPreview from "@/components/home/MeritPreview";
 import AppPreview from "@/components/home/AppPreview";
 import MeetFounder from "@/components/home/MeetFounder";
 import Footer from "@/components/layout/Footer";
+import GlobalSearch from "@/components/home/GlobalSearch";
 
 /**
- * @fileOverview Official Home Page v190.0 (Clean Architecture).
- * UPDATED: Removed PopularExams to strictly enforce the 8-Category Discover flow.
+ * @fileOverview Official Home Page v200.0.
+ * RESTORED: Fixed section order - Hero -> Popular -> Latest Mocks -> Categories.
  */
-
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-white font-body pb-safe text-left">
@@ -25,33 +25,36 @@ export default function HomePage() {
       {/* 1. Hero Section */}
       <Hero />
 
-      {/* 2. Global Search */}
+      {/* 2. Global Search Hook */}
       <div className="relative z-40 py-8 md:py-12 bg-white">
         <GlobalSearch />
       </div>
 
-      {/* 3. Exam Categories (The only top-level discovery point) */}
-      <FeaturedCategories />
+      {/* 3. Popular Exams (Restored) */}
+      <PopularExams />
 
-      {/* 4. Latest Mock Tests */}
+      {/* 4. Latest Mock Tests (Restored) */}
       <LatestMocks />
 
-      {/* 5. Preparation Hub */}
+      {/* 5. Exam Categories (7 Canonical Nodes) */}
+      <FeaturedCategories />
+
+      {/* 6. Preparation Hub */}
       <Features />
 
-      {/* 6. Personal Progress */}
+      {/* 7. Personal Progress */}
       <ContinueLearning />
 
-      {/* 7. Knowledge Hub */}
+      {/* 8. Study Material */}
       <CurrentAffairsPreview />
 
-      {/* 8. Merit Rankings */}
+      {/* 9. Merit Rankings */}
       <MeritPreview />
 
-      {/* 9. Mobile App */}
+      {/* 10. Mobile App */}
       <AppPreview />
 
-      {/* 10. Leadership Section */}
+      {/* 11. Founder Section */}
       <MeetFounder />
       
       <Footer />
