@@ -5,12 +5,11 @@ import { Button } from '@/components/ui/button';
 import { useFirestore } from '@/firebase';
 
 /**
- * @file Overview High-Fidelity Tactical Action Bar v2.1 (Absolute Minimum).
- * UPDATED: Replaced orange button with Primary Blue.
+ * @file Overview Institutional CBT Tactical Action Bar v3.0.
+ * UPDATED: Professional wording and high-density mobile layout.
  */
 export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const currentIdx = useExamStore(s => s.currentIdx);
-  const questions = useExamStore(s => s.questions);
   const clearAnswer = useExamStore(s => s.clearAnswer);
   const markForReview = useExamStore(s => s.markForReview);
   const saveAndNext = useExamStore(s => s.saveAndNext);
@@ -18,29 +17,31 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const db = useFirestore();
   
   return (
-    <div className="w-full grid grid-cols-3 gap-1 md:gap-4 pt-2 pb-4 bg-white/80 backdrop-blur-sm sticky bottom-0 z-40">
-      <Button 
-        variant="outline" 
-        onClick={() => markForReview(currentIdx, db)}
-        className="h-9 md:h-12 rounded-md font-black uppercase text-[6px] md:text-[9px] tracking-tighter border-slate-200 text-[#334155] bg-white active:scale-95 shadow-sm"
-      >
-        Mark Node
-      </Button>
+    <div className="w-full bg-white md:bg-transparent border-t border-slate-100 md:border-t-0 p-3 md:p-0 fixed bottom-0 left-0 right-0 md:static z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] md:shadow-none">
+      <div className="max-w-4xl mx-auto grid grid-cols-3 gap-2 md:gap-4">
+        <Button 
+          variant="outline" 
+          onClick={() => markForReview(currentIdx, db)}
+          className="h-14 md:h-16 rounded-2xl font-black uppercase text-[8px] md:text-[11px] tracking-tight border-slate-200 text-[#334155] bg-white active:scale-95 shadow-sm px-1 leading-tight"
+        >
+          Mark for <br className="md:hidden" /> Review
+        </Button>
 
-      <Button 
-        variant="outline" 
-        onClick={() => clearAnswer(currentIdx, db)}
-        className="h-9 md:h-12 rounded-md font-black uppercase text-[6px] md:text-[9px] tracking-tighter border-slate-200 text-[#334155] bg-white active:scale-95 shadow-sm"
-      >
-        Clear
-      </Button>
+        <Button 
+          variant="outline" 
+          onClick={() => clearAnswer(currentIdx, db)}
+          className="h-14 md:h-16 rounded-2xl font-black uppercase text-[8px] md:text-[11px] tracking-widest border-slate-200 text-[#334155] bg-white active:scale-95 shadow-sm"
+        >
+          Clear
+        </Button>
 
-      <Button 
-        onClick={() => saveAndNext(db)}
-        className="h-9 md:h-12 bg-primary hover:bg-blue-700 text-white rounded-md font-black uppercase text-[6px] md:text-[9px] tracking-tighter shadow-xl border-none active:scale-95"
-      >
-        Save & Next
-      </Button>
+        <Button 
+          onClick={() => saveAndNext(db)}
+          className="h-14 md:h-16 bg-primary hover:bg-blue-700 text-white rounded-2xl font-black uppercase text-[8px] md:text-[11px] tracking-widest shadow-xl border-none active:scale-95"
+        >
+          Save & Next
+        </Button>
+      </div>
     </div>
   );
 }
