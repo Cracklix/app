@@ -27,10 +27,6 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
-/**
- * @fileOverview Hardened Admin Hub v53.0 (Unified Design System).
- */
-
 interface MetricCardProps {
   label: string;
   value: string | number;
@@ -58,9 +54,6 @@ export default function AdminDashboard() {
   const recentUsersQuery = useMemo(() => (db ? query(collection(db, "users"), orderBy("createdAt", "desc"), limit(5)) : null), [db]);
   const { data: recentUsers } = useCollection<any>(recentUsersQuery);
 
-  const recentResultsQuery = useMemo(() => (db ? query(collection(db, "results"), orderBy("timestamp", "desc"), limit(5)) : null), [db]);
-  const { data: recentResults } = useCollection<any>(recentResultsQuery);
-
   const pendingReqQuery = useMemo(() => (db ? query(collection(db, "payment_requests"), where("status", "==", "PENDING"), limit(10)) : null), [db]);
   const { data: pendingNodes } = useCollection<any>(pendingReqQuery);
 
@@ -81,11 +74,6 @@ export default function AdminDashboard() {
 
         const totalRev = pSnap.docs.reduce((acc: number, d: DocumentData) => acc + (Number(d.data().amount) || 0), 0);
         
-        const resultsSnap = await getDocs(query(collection(db, "results"), limit(1000)));
-        const avgAcc = resultsSnap.size > 0 
-           ? Math.round(resultsSnap.docs.reduce((acc: number, d: DocumentData) => acc + (Number(d.data().accuracy) || 0), 0) / resultsSnap.size)
-           : 0;
-
         await setDoc(doc(db, "settings", "stats"), {
            totalQuestions: qCount.data().count,
            totalMocks: mCount.data().count,
@@ -95,7 +83,6 @@ export default function AdminDashboard() {
            totalNotes: nCount.data().count,
            totalPYQs: pyqCount.data().count,
            totalAttempts: rCount.data().count,
-           averageAccuracy: avgAcc,
            updatedAt: serverTimestamp()
         }, { merge: true });
 
@@ -130,18 +117,18 @@ export default function AdminDashboard() {
            <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-100 shrink-0">
                  <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                 <span className="text-[9px] font-black uppercase text-emerald-600 tracking-widest">Live</span>
+                 <span className="text-[9px] font-bold uppercase text-emerald-600">Live</span>
               </div>
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Platform Governance</span>
            </div>
-          <h1 className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-none">Admin Hub</h1>
-          <p className="text-slate-400 text-sm md:text-lg font-medium">Authoritative control node.</p>
+          <h1 className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] tracking-tight leading-none">Admin Hub</h1>
+          <p className="text-slate-400 text-sm md:text-lg font-medium">Authoritative control node for Cracklix ecosystem.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto shrink-0">
            <Button onClick={handleSyncLiveStats} disabled={isStatsSyncing} className="gap-2">
               {isStatsSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />} Sync Stats
            </Button>
-           <Button onClick={handlePushToRegistry} disabled={isSyncing} variant="emerald" className="gap-2">
+           <Button onClick={handlePushToRegistry} disabled={isSyncing} className="bg-[#0F172A] hover:bg-black text-white gap-2">
               {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />} Seed Registry
            </Button>
         </div>
@@ -156,7 +143,7 @@ export default function AdminDashboard() {
            href="/admin/payments"
          />
          <MetricCard 
-           label="Pass Holders" 
+           label="Active Pass Holders" 
            value={stats?.activePasses || 0} 
            subLabel="Live Subscriptions" 
            icon={<CreditCard className="text-primary" />} 
@@ -175,9 +162,9 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
          <Card className="lg:col-span-8 border-none shadow-2xl bg-white rounded-[2rem] overflow-hidden border border-slate-100 min-w-0">
             <CardHeader className="p-6 md:p-8 border-b border-slate-50 bg-slate-50/30">
-               <CardTitle className="text-xl font-headline font-black uppercase text-[#0F172A]">Activity Stream</CardTitle>
+               <CardTitle className="text-xl font-headline font-black text-[#0F172A]">Activity Stream</CardTitle>
             </CardHeader>
-            <CardContent className="p-6 md:p-8 space-y-8 md:space-y-10">
+            <CardContent className="p-6 md:p-8 space-y-8">
                <div className="space-y-6">
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><Users className="h-4 w-4" /> New Registrations</h4>
                   <div className="grid grid-cols-1 gap-3">
@@ -186,7 +173,7 @@ export default function AdminDashboard() {
                            <div className="flex items-center gap-3 md:gap-4 min-w-0">
                               <StudentAvatar profile={u} className="h-10 w-10 rounded-xl shrink-0" />
                               <div className="min-w-0">
-                                 <p className="font-bold text-sm text-[#0F172A] uppercase truncate">{u.name}</p>
+                                 <p className="font-bold text-sm text-[#0F172A] truncate">{u.name}</p>
                                  <p className="text-[9px] text-slate-400 font-bold uppercase truncate">{u.email}</p>
                               </div>
                            </div>
@@ -203,10 +190,10 @@ export default function AdminDashboard() {
          <div className="lg:col-span-4 space-y-8">
             <Card className="border-none shadow-3xl bg-[#0F172A] text-white p-8 md:p-10 rounded-[2.5rem] relative overflow-hidden">
                <div className="absolute top-0 right-0 p-8 opacity-5 rotate-12"><ShieldCheck className="h-64 w-64" /></div>
-               <div className="relative z-10 space-y-8 md:space-y-10">
+               <div className="relative z-10 space-y-8">
                   <div className="space-y-2 text-left">
-                     <h3 className="text-2xl font-headline font-black uppercase tracking-tight">Quick Launch</h3>
-                     <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Operations Control</p>
+                     <h3 className="text-2xl font-headline font-black tracking-tight">Quick Launch</h3>
+                     <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Operational Tools</p>
                   </div>
                   <div className="grid grid-cols-1 gap-3">
                      <QuickLink label="Mock Builder" href="/admin/mocks/builder" />

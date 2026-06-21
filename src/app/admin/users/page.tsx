@@ -30,9 +30,6 @@ import { useToast } from "@/hooks/use-toast"
 import StudentAvatar from "@/components/brand/StudentAvatar"
 import { cn } from "@/lib/utils"
 
-/**
- * @fileOverview Institutional Student Hub v21.1 (Strictly Typed).
- */
 export default function AspirantsManagement() {
   const db = useFirestore()
   const { user: admin } = useUser()
@@ -93,56 +90,42 @@ export default function AspirantsManagement() {
           type: 'MANUAL_GRANT'
        })
 
-       toast({ title: "Pass Hub Updated", description: `Aspirant upgraded to ${selectedPass.name} for ${days} days.` })
+       toast({ title: "Pass Activated", description: `${grantDialogUser.name} upgraded successfully.` })
        setGrantDialogUser(null)
     } catch (e: any) {
-       toast({ variant: "destructive", title: "Grant Failed" })
+       toast({ variant: "destructive", title: "Update Failed" })
     } finally {
        setIsProcessing(false)
     }
   }
 
-  const handleDeactivate = async (userId: string) => {
-     if (!db) return
-     if (!confirm("Deactivate active pass for this student?")) return
-     try {
-        await updateDoc(doc(db, "users", userId), {
-           'pass.active': false,
-           updatedAt: serverTimestamp()
-        })
-        toast({ title: "Pass Deactivated" })
-     } catch (e) {
-        toast({ variant: "destructive", title: "Action Failed" })
-     }
-  }
-
   return (
     <div className="space-y-12 text-[#0F172A] text-left">
-      <div className="flex justify-between items-center">
-        <div>
-           <div className="flex items-center gap-3 mb-2">
+      <div className="flex justify-between items-center px-4">
+        <div className="space-y-2">
+           <div className="flex items-center gap-3">
               <ShieldCheck className="h-6 w-6 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Student Registry Hub</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Aspirant Registry Hub</span>
            </div>
-          <h1 className="text-5xl font-headline font-black text-primary uppercase tracking-tight">Student Hub</h1>
-          <p className="text-slate-600 mt-1 font-medium">Monitoring {aspirants?.length || 0} student profiles and preparation nodes.</p>
+          <h1 className="text-5xl font-headline font-black text-primary tracking-tight">Student Hub</h1>
+          <p className="text-slate-600 font-medium">Monitoring {aspirants?.length || 0} student preparation profiles.</p>
         </div>
       </div>
 
-      <Card className="border-none shadow-3xl rounded-[3rem] overflow-hidden bg-white">
+      <Card className="border-none shadow-3xl rounded-[3rem] overflow-hidden bg-white mx-4">
         <CardHeader className="p-10 border-b border-slate-50 bg-slate-50/30">
           <div className="relative w-full md:w-[45%]">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-            <Input className="pl-14 h-16 rounded-[1.5rem] bg-white border-none shadow-inner" placeholder="Search students..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+            <Input className="pl-14 h-14 rounded-full bg-white border-none shadow-inner font-medium" placeholder="Search identity..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
           </div>
         </CardHeader>
         <CardContent className="p-0 text-left">
           <Table>
             <TableHeader className="bg-slate-50/50">
               <TableRow className="border-slate-100 h-20">
-                <TableHead className="px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Aspirant Identity</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Status & Expiry</TableHead>
-                <TableHead className="text-right px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Audit Actions</TableHead>
+                <TableHead className="px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Student Identity</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500">Registry Status</TableHead>
+                <TableHead className="text-right px-10 text-[10px] font-black uppercase tracking-widest text-slate-500">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -157,15 +140,15 @@ export default function AspirantsManagement() {
                       <div className="flex items-center gap-6">
                         <StudentAvatar profile={aspirant} className="h-14 w-14 rounded-2xl" />
                         <div>
-                          <p className="font-black text-[#0F172A] text-lg uppercase leading-none">{aspirant.name}</p>
+                          <p className="font-black text-[#0F172A] text-lg leading-none">{aspirant.name}</p>
                           <p className="text-xs font-bold text-slate-400 mt-2 lowercase">{aspirant.email}</p>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                        <div className="space-y-1">
-                          <Badge className={cn("border-none px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm", isActive ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500")}>
-                             {isActive ? (pass.plan || 'ACTIVE') : 'NO ACTIVE PASS'}
+                          <Badge className={cn("border-none px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest", isActive ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500")}>
+                             {isActive ? (pass.plan || 'ELITE') : 'FREE HUB'}
                           </Badge>
                           {isActive && <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">EXP: {new Date(pass.expiryDate).toLocaleDateString()}</p>}
                        </div>
@@ -173,19 +156,14 @@ export default function AspirantsManagement() {
                     <TableCell className="text-right px-10">
                       <DropdownMenu>
                          <DropdownMenuTrigger asChild>
-                            <button className="h-12 w-12 rounded-2xl hover:bg-white shadow-sm flex items-center justify-center opacity-30 group-hover:opacity-100 transition-all"><MoreVertical className="h-6 w-6" /></button>
+                            <button className="h-11 w-11 rounded-xl hover:bg-white shadow-sm flex items-center justify-center opacity-30 group-hover:opacity-100 transition-all"><MoreVertical className="h-5 w-5" /></button>
                          </DropdownMenuTrigger>
-                         <DropdownMenuContent align="end" className="w-64 bg-[#0F172A] border-white/10 text-white rounded-[2.5rem] p-4 shadow-5xl">
-                            <DropdownMenuItem onClick={() => setGrantDialogUser(aspirant)} className="rounded-xl px-4 py-3 gap-3 focus:bg-primary/20 text-primary">
-                               <Gem className="h-4 w-4" /> Grant / Edit Pass
+                         <DropdownMenuContent align="end" className="w-64 bg-[#0F172A] border-white/10 text-white rounded-[2.5rem] p-4 shadow-5xl z-[2001]">
+                            <DropdownMenuItem onClick={() => setGrantDialogUser(aspirant)} className="rounded-xl px-4 py-3 gap-3 focus:bg-blue-600 text-blue-400 focus:text-white">
+                               <Gem className="h-4 w-4" /> Grant Elite Pass
                             </DropdownMenuItem>
-                            {isActive && (
-                               <DropdownMenuItem onClick={() => handleDeactivate(aspirant.id)} className="rounded-xl px-4 py-3 gap-3 focus:bg-amber-500/20 text-amber-400">
-                                  <X className="h-4 w-4" /> Deactivate Pass
-                               </DropdownMenuItem>
-                            )}
                             <DropdownMenuSeparator className="bg-white/5 my-2" />
-                            <DropdownMenuItem onClick={async () => { if(confirm("Permanently delete this student?")) await deleteDoc(doc(db!, "users", aspirant.id)) }} className="rounded-xl px-4 py-3 gap-3 text-rose-500">
+                            <DropdownMenuItem onClick={async () => { if(confirm("Permanently delete profile?")) await deleteDoc(doc(db!, "users", aspirant.id)) }} className="rounded-xl px-4 py-3 gap-3 text-rose-500 focus:bg-rose-600 focus:text-white">
                                <Trash2 className="h-4 w-4" /> Delete Profile
                             </DropdownMenuItem>
                          </DropdownMenuContent>
@@ -202,31 +180,25 @@ export default function AspirantsManagement() {
       <Dialog open={!!grantDialogUser} onOpenChange={o => !o && !isProcessing && setGrantDialogUser(null)}>
          <DialogContent className="bg-[#0F172A] text-white border-white/10 rounded-[3rem] max-w-md p-10 shadow-5xl text-left">
             <DialogHeader className="text-center space-y-4">
-               <DialogTitle className="text-2xl font-headline font-black uppercase text-primary">Aspirant Pass Architect</DialogTitle>
-               <DialogDescription className="text-slate-400 text-sm">Modify subscription node for {grantDialogUser?.name}.</DialogDescription>
+               <DialogTitle className="text-2xl font-headline font-black uppercase text-primary">Aspirant Pass Registry</DialogTitle>
+               <DialogDescription className="text-slate-400 text-sm">Update node status for {grantDialogUser?.name}.</DialogDescription>
             </DialogHeader>
             <div className="py-8 space-y-6">
                <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-500">Select Pass Registry</Label>
+                  <Label className="text-[10px] font-black uppercase text-slate-500">Plan Selection</Label>
                   <select value={grantPlanId} onChange={e => setGrantPlanId(e.target.value)} className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-4 outline-none font-bold text-white">
-                     <option value="" disabled className="bg-[#0F172A]">Select Plan</option>
-                     {passes?.map((p: any) => <option key={p.id} value={p.id} className="bg-[#0F172A]">{p.name} (₹{p.price})</option>)}
+                     <option value="" disabled className="bg-[#0F172A]">Select Pass</option>
+                     {passes?.map((p: any) => <option key={p.id} value={p.id} className="bg-[#0F172A]">{p.name}</option>)}
                   </select>
                </div>
                <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase text-slate-500">Grant Duration (Days)</Label>
-                  <Input type="number" value={grantDuration} onChange={e => setGrantDuration(e.target.value)} className="h-14 bg-white/5 border border-white/10 rounded-2xl font-black text-xl text-center" />
-               </div>
-               <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-4">
-                  <AlertCircle className="h-4 w-4 text-primary mt-1 shrink-0" />
-                  <p className="text-[9px] font-bold text-slate-400 uppercase leading-relaxed">
-                     Activating a pass will immediately grant unrestricted access to all premium mocks. Existing pass (if any) will be replaced.
-                  </p>
+                  <Label className="text-[10px] font-black uppercase text-slate-500">Grant Days</Label>
+                  <Input type="number" value={grantDuration} onChange={e => setGrantDuration(e.target.value)} className="h-14 bg-white/5 border-white/10 rounded-2xl font-black text-xl text-center" />
                </div>
             </div>
             <DialogFooter>
-               <Button onClick={handleGrantPass} disabled={isProcessing} className="w-full bg-primary hover:bg-orange-600 h-14 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-2xl">
-                  {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : "Authorize & Sync"}
+               <Button onClick={handleGrantPass} disabled={isProcessing} className="w-full bg-blue-600 hover:bg-blue-700 h-14 rounded-xl font-black uppercase tracking-widest text-[10px]">
+                  {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify & Commit"}
                </Button>
             </DialogFooter>
          </DialogContent>

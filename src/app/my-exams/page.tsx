@@ -16,8 +16,7 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Institutional My Exams Hub v15.0 (Restructured).
- * STRICT: Content-only visibility. Simplified language.
+ * @fileOverview Institutional My Exams Hub v16.0 (High Density).
  */
 
 export default function MyExamsPage() {
@@ -75,47 +74,58 @@ export default function MyExamsPage() {
     } finally { setUnpinningId(null); }
   };
 
-  if (userLoading) return <div className="h-screen flex items-center justify-center bg-white"><Zap className="h-10 w-10 text-primary animate-spin" /></div>
+  if (userLoading) return <div className="h-screen flex items-center justify-center bg-white"><Zap className="h-10 w-10 text-primary animate-pulse" /></div>
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body pb-safe text-left">
       <Navbar />
-      <main className="container mx-auto px-4 py-12 max-w-7xl space-y-12">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-           <div className="space-y-1">
+      <main className="container mx-auto px-4 py-8 md:py-12 max-w-7xl space-y-8 md:space-y-12">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-1">
+           <div className="space-y-1 text-center md:text-left">
               <h1 className="text-3xl md:text-5xl font-black text-[#0F172A] leading-none">My Exams</h1>
-              <p className="text-sm md:text-lg text-slate-600 font-medium">Your personalized preparation list.</p>
+              <p className="text-[11px] md:text-lg text-slate-500 font-medium">Your personalized recruitment preparation hub.</p>
            </div>
-           <Button asChild className="h-12 px-8 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] tracking-widest rounded-xl shadow-xl gap-3"><Link href="/exams"><Plus className="h-4 w-4" /> Add Exams</Link></Button>
+           <Button asChild className="w-full md:w-auto h-11 px-8 bg-blue-600 hover:bg-blue-700 text-white shadow-xl gap-3"><Link href="/exams"><Plus className="h-4 w-4" /> Add Exams</Link></Button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
            {examsLoading ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-[2rem] bg-white" />) : 
            pinnedExams.length > 0 ? pinnedExams.map((exam: any) => {
               const s = statsMap[exam.id] || { full: 0, subject: 0, sectional: 0, pyq: 0, total: 0 };
               return (
-               <Card key={exam.id} className="border border-[#E5E7EB] shadow-xl hover:shadow-2xl transition-all duration-500 rounded-[2rem] bg-white p-8 flex flex-col relative">
-                  <div className="flex justify-between items-start mb-6">
-                     <div className="h-12 w-12 rounded-xl bg-slate-50 flex items-center justify-center shadow-inner"><GraduationCap className="h-6 w-6 text-primary" /></div>
-                     <button onClick={() => handleUnpin(exam.id)} disabled={unpinningId === exam.id} className="text-slate-300 hover:text-rose-500 transition-colors">
+               <Card key={exam.id} className="border border-slate-100 shadow-xl hover:shadow-2xl transition-all duration-500 rounded-2xl md:rounded-[2rem] bg-white p-6 md:p-8 flex flex-col relative">
+                  <div className="flex justify-between items-start mb-4 md:mb-6">
+                     <div className="h-10 w-10 md:h-12 rounded-xl bg-slate-50 flex items-center justify-center shadow-inner"><GraduationCap className="h-5 w-5 md:h-6 text-primary" /></div>
+                     <button onClick={() => handleUnpin(exam.id)} disabled={unpinningId === exam.id} className="text-slate-300 hover:text-rose-500 transition-colors p-2">
                         {unpinningId === exam.id ? <RefreshCw className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />}
                      </button>
                   </div>
-                  <h4 className="font-black text-xl text-[#0F172A] leading-tight mb-6 flex-1">{exam.name}</h4>
-                  <div className="space-y-1.5 mb-8">
-                      <div className="flex justify-between text-[10px] font-bold uppercase text-slate-400"><span>Full Mocks</span><span className={s.full > 0 ? "text-[#0F172A]" : "text-slate-200"}>{s.full}</span></div>
-                      <div className="flex justify-between text-[10px] font-bold uppercase text-slate-400"><span>Subject Tests</span><span className={s.subject > 0 ? "text-[#0F172A]" : "text-slate-200"}>{s.subject}</span></div>
-                      <div className="flex justify-between text-[10px] font-bold uppercase text-slate-400"><span>Official PYQs</span><span className={s.pyq > 0 ? "text-[#0F172A]" : "text-slate-200"}>{s.pyq}</span></div>
+                  <h4 className="font-black text-lg md:text-xl text-[#0F172A] leading-tight mb-6 flex-1">{exam.name}</h4>
+                  <div className="space-y-2 mb-6 md:mb-8">
+                      <StatRow label="Full Length Mocks" val={s.full} />
+                      <StatRow label="Subject-wise Tests" val={s.subject} />
+                      <StatRow label="Official Papers" val={s.pyq} />
                   </div>
-                  <Button onClick={() => router.push(`/exams/${exam.id}`)} className="w-full h-11 bg-[#0F172A] hover:bg-primary text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-md border-none">Open Exam <ChevronRight className="h-3.5 w-3.5" /></Button>
+                  <Button onClick={() => router.push(`/exams/${exam.id}`)} className="w-full h-11 bg-slate-900 hover:bg-black text-white rounded-xl shadow-md border-none">Open Exam Hub <ChevronRight className="h-3.5 w-3.5" /></Button>
                </Card>
               )
            }) : (
-              <Card className="col-span-full py-20 text-center border-2 border-dashed border-slate-200 bg-white/50 rounded-[2.5rem] opacity-30 italic font-black uppercase tracking-widest">Select exams to build your list.</Card>
+              <div className="col-span-full py-24 text-center border-2 border-dashed border-slate-200 bg-white/50 rounded-[2.5rem] opacity-30 italic font-black uppercase text-xs tracking-widest">
+                 Start following exams to build your hub.
+              </div>
            )}
         </div>
       </main>
       <Footer />
     </div>
   )
+}
+
+function StatRow({ label, val }: { label: string, val: number }) {
+   return (
+      <div className="flex justify-between items-center text-[10px] md:text-xs font-bold text-slate-400">
+         <span>{label}</span>
+         <span className={cn("font-black tabular-nums", val > 0 ? "text-[#0F172A]" : "text-slate-200")}>{val}</span>
+      </div>
+   )
 }

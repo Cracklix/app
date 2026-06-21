@@ -60,7 +60,7 @@ const NAV_GROUPS = [
   },
 
   {
-    label: "Content CMS",
+    label: "Content Hub",
     items: [
       { label: "Content Pulse", href: "/admin/qa", icon: Activity },
       { label: "Mock Builder", href: "/admin/mocks/builder", icon: PenSquare },
@@ -71,7 +71,7 @@ const NAV_GROUPS = [
       { label: "Exam Calendar", href: "/admin/calendar", icon: Calendar },
       { label: "Success Stories", href: "/admin/success-stories", icon: Trophy },
       { label: "Help Center", href: "/admin/help-center", icon: HelpCircle },
-      { label: "Free CMS", href: "/admin/free-content", icon: FileCode2 },
+      { label: "Free Hub CMS", href: "/admin/free-content", icon: FileCode2 },
     ],
   },
 
@@ -86,8 +86,8 @@ const NAV_GROUPS = [
       { label: "Pass Manager", href: "/admin/passes", icon: Gem },
       { label: "Audit Logs", href: "/admin/audit-logs", icon: History },
       { label: "System Tools", href: "/admin/maintenance", icon: Wrench },
-      { label: "Health", href: "/admin/health", icon: HeartPulse },
-      { label: "Settings", href: "/admin/settings", icon: Settings },
+      { label: "Platform Health", href: "/admin/health", icon: HeartPulse },
+      { label: "Global Settings", href: "/admin/settings", icon: Settings },
     ],
   },
 ];
@@ -107,7 +107,7 @@ export default function SidebarNav({
 
               {/* GROUP TITLE */}
               {isOpen ? (
-                <p className="mb-2.5 px-4 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                <p className="mb-2.5 px-4 text-[10px] font-bold tracking-[0.1em] text-slate-500">
                   {group.label}
                 </p>
               ) : (
@@ -138,7 +138,7 @@ export default function SidebarNav({
                           : "justify-center",
 
                         isActive
-                          ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
+                          ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
                           : "text-slate-400 hover:bg-white/5 hover:text-white"
                       )}
                     >
