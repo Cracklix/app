@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useCollection, useFirestore, useUser } from "@/firebase"
@@ -33,11 +33,14 @@ const AUTHORIZED_CATEGORY_IDS = [
 export default function ExamsEntryPage() {
   const db = useFirestore();
   const router = useRouter();
+  const pathname = usePathname();
   const { user, loading: authLoading } = useUser();
   
   useEffect(() => {
-    if (!authLoading && !user) router.push(`/login?returnUrl=/exams`);
-  }, [user, authLoading, router]);
+    if (!authLoading && !user) {
+      router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+    }
+  }, [user, authLoading, router, pathname]);
 
   const { data: rawCategories, loading: catLoading } = useCollection<any>(useMemo(() => (db ? query(collection(db, "categories"), orderBy("displayOrder", "asc")) : null), [db]));
   const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]));
@@ -49,7 +52,12 @@ export default function ExamsEntryPage() {
     return rawCategories.filter(c => AUTHORIZED_CATEGORY_IDS.includes(c.id));
   }, [rawCategories]);
 
-  if (authLoading || !user) return <div className="h-screen w-full flex items-center justify-center bg-white"><Zap className="h-10 w-10 text-primary animate-pulse" /></div>;
+  if (authLoading || !user) return (
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
+       <Zap className="h-10 w-10 text-primary animate-pulse" />
+       <p className="text-[10px] font-black uppercase text-slate-300">Authenticating Hub...</p>
+    </div>
+  );
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body text-left">

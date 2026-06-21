@@ -84,6 +84,15 @@ function LoginContent() {
   const returnUrl = searchParams.get("returnUrl") || "/dashboard"
 
   useEffect(() => {
+    if (searchParams.get("returnUrl")) {
+      toast({
+        title: "Login Required",
+        description: "Please login to access the preparation hub.",
+      });
+    }
+  }, [searchParams, toast]);
+
+  useEffect(() => {
     if (!authLoading && user) {
       if (profile && (!profile.phone || !profile.targetExam)) {
         router.replace('/profile-setup');

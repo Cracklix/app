@@ -20,6 +20,8 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
+import { useRouter, usePathname } from "next/navigation"
+import { useUser } from "@/firebase"
 import Link from "next/link"
 
 /**
@@ -34,8 +36,17 @@ export default function InstallPage() {
   const [isInstallable, setIsInstallable] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user, loading: authLoading } = useUser();
 
   const isIos = device === "ios";
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+    }
+  }, [user, authLoading, router, pathname]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -80,6 +91,13 @@ export default function InstallPage() {
        });
     }
   };
+
+  if (authLoading || !user) return (
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
+       <Zap className="h-10 w-10 text-primary animate-pulse" />
+       <p className="text-[10px] font-black uppercase text-slate-300">Synchronizing Native Hub...</p>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-white font-body text-left">
@@ -214,5 +232,4 @@ function BenefitRow({ icon, title, desc }: any) {
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{desc}</p>
          </div>
       </div>
-   )
 }

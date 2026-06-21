@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -13,6 +13,7 @@ import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
+import { useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
@@ -21,8 +22,16 @@ import { cn } from "@/lib/utils"
 
 export default function StudyMaterialPage() {
   const db = useFirestore()
-  const { profile } = useUser()
+  const router = useRouter()
+  const pathname = usePathname()
+  const { user, profile, loading: authLoading } = useUser()
   const [searchTerm, setSearchTerm] = useState("")
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+    }
+  }, [user, authLoading, router, pathname]);
 
   const notesQuery = useMemo(() => (db ? query(collection(db, "notes"), orderBy("updatedAt", "desc")) : null), [db])
   const { data: notes, loading } = useCollection<any>(notesQuery)
@@ -36,6 +45,13 @@ export default function StudyMaterialPage() {
       EBOOK: base.filter((n: any) => n.category === 'E-BOOK'),
     }
   }, [notes, searchTerm])
+
+  if (authLoading || !user) return (
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
+       <Zap className="h-10 w-10 text-primary animate-pulse" />
+       <p className="text-[10px] font-black uppercase text-slate-300">Synchronizing Session...</p>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-slate-50/30">

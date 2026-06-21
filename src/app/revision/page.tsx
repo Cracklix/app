@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useCollection, useFirestore, useUser } from "@/firebase"
@@ -27,6 +27,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
+import { useRouter, usePathname } from "next/navigation"
 
 /**
  * @fileOverview Official Revision & Study Hub (AI Cleaned).
@@ -34,8 +35,16 @@ import Link from "next/link"
 
 export default function RevisionHub() {
   const db = useFirestore()
-  const { user } = useUser()
+  const router = useRouter()
+  const pathname = usePathname()
+  const { user, loading: authLoading } = useUser()
   const [searchTerm, setSearchTerm] = useState("")
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+    }
+  }, [user, authLoading, router, pathname]);
 
   const bookmarkQuery = useMemo(() => (db && user ? query(collection(db, "bookmarks"), where("userId", "==", user.uid)) : null), [db, user])
   const { data: bookmarks, loading: bLoading } = useCollection<any>(bookmarkQuery)
@@ -45,7 +54,7 @@ export default function RevisionHub() {
 
   const results = useMemo(() => {
     if (!rawResults) return []
-    return [...rawResults].sort((a: any, b: any) => {
+    return [...rawResults].sort((a, b) => {
       const tA = new Date(a.timestamp || 0).getTime()
       const tB = new Date(b.timestamp || 0).getTime()
       return tB - tA
@@ -71,6 +80,13 @@ export default function RevisionHub() {
     if (!bookmarks) return []
     return bookmarks.filter(b => b.questionText?.toLowerCase().includes(searchTerm.toLowerCase()))
   }, [bookmarks, searchTerm])
+
+  if (authLoading || !user) return (
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
+       <Zap className="h-10 w-10 text-primary animate-pulse" />
+       <p className="text-[10px] font-black uppercase text-slate-300">Synchronizing Progress...</p>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-slate-50/30">

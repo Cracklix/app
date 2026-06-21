@@ -7,9 +7,9 @@ import { Search as SearchIcon, Zap, ChevronRight, Sparkles, ShieldCheck, FileTex
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { useCollection, useFirestore } from "@/firebase"
+import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection } from "firebase/firestore"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
@@ -30,7 +30,16 @@ export default function SearchPage() {
 function SearchContent() {
   const db = useFirestore()
   const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const { user, loading: authLoading } = useUser()
   const [query, setQuery] = useState("")
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+    }
+  }, [user, authLoading, router, pathname]);
 
   useEffect(() => {
     const q = searchParams.get("q")
@@ -79,6 +88,13 @@ function SearchContent() {
 
     return [...examMatches, ...mockMatches, ...notesMatches]
   }, [query, exams, mocks, notes])
+
+  if (authLoading || !user) return (
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
+       <Zap className="h-10 w-10 text-primary animate-pulse" />
+       <p className="text-[10px] font-black uppercase text-slate-300">Securing Hub...</p>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-slate-50/30 font-body">
