@@ -1,7 +1,6 @@
-
 "use client"
 
-import React, { useMemo, useState, useEffect } from "react"
+import React, { useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -11,15 +10,11 @@ import {
   ShieldCheck, 
   Zap, 
   Loader2, 
-  Activity, 
   RefreshCw, 
-  Target, 
   DollarSign, 
-  CreditCard, 
   AlertCircle,
   ChevronRight,
-  Gem,
-  LayoutGrid
+  Gem
 } from "lucide-react"
 import Link from "next/link"
 import { useCollection, useFirestore, useDoc } from "@/firebase"
@@ -31,9 +26,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * Admin Dashboard v24.0 (High Density PWA)
- * Clean white theme synchronized with the homepage.
- * PWA SYNC: Removed uppercase, reduced font scales, standardized buttons.
+ * Admin Dashboard v25.0 (High Density PWA)
+ * PWA SYNC: Removed uppercase, reduced font scales, standardized buttons to pills.
  */
 
 export default function AdminDashboard() {
@@ -101,23 +95,23 @@ export default function AdminDashboard() {
   const hasPending = (pendingNodes?.length || 0) > 0;
 
   return (
-    <div className="space-y-6 md:space-y-12 text-left animate-in fade-in duration-500">
+    <div className="space-y-6 md:space-y-10 text-left animate-in fade-in duration-500">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 px-1">
         <div className="space-y-1">
-           <div className="flex items-center gap-3">
+           <div className="flex items-center gap-2">
               <div className="px-2 py-0.5 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center gap-1.5 shadow-sm">
-                 <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                 <span className="text-[9px] font-black uppercase text-emerald-600">Governance Active</span>
+                 <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                 <span className="text-[8px] font-black uppercase text-emerald-600">Governance Active</span>
               </div>
            </div>
           <h1 className="text-2xl md:text-5xl font-black text-[#0F172A] tracking-tight">Admin Hub</h1>
-          <p className="text-slate-500 text-[11px] md:text-lg font-medium leading-tight">Coordinate preparation nodes and student session integrity.</p>
+          <p className="text-slate-500 text-[11px] md:text-lg font-medium">Coordinate preparation nodes and session integrity.</p>
         </div>
         <div className="flex gap-3 w-full sm:w-auto shrink-0">
-           <Button onClick={handleSyncLiveStats} disabled={isStatsSyncing} variant="outline" className="flex-1 sm:flex-none h-11 rounded-xl border-slate-200">
+           <Button onClick={handleSyncLiveStats} disabled={isStatsSyncing} variant="outline" className="flex-1 sm:flex-none h-11 rounded-full border-slate-200 font-black uppercase text-[10px]">
               {isStatsSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />} Sync
            </Button>
-           <Button onClick={handlePushToRegistry} disabled={isSyncing} className="flex-1 sm:flex-none h-11 px-8 bg-primary hover:bg-blue-700 text-white shadow-xl transition-all border-none">
+           <Button onClick={handlePushToRegistry} disabled={isSyncing} className="flex-1 sm:flex-none h-11 px-8 bg-primary hover:bg-blue-700 text-white shadow-xl rounded-full border-none font-black uppercase text-[10px]">
               {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />} Seed
            </Button>
         </div>
@@ -130,13 +124,13 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
-         <Card className="lg:col-span-8 border-none shadow-3xl bg-white rounded-2xl md:rounded-[2.5rem] overflow-hidden border border-slate-50">
-            <CardHeader className="p-5 md:p-10 border-b border-slate-50 bg-slate-50/30">
-               <CardTitle className="text-base md:text-xl font-black text-[#0F172A] tracking-tight">Recent Registrations</CardTitle>
+         <Card className="lg:col-span-8 border-none shadow-xl bg-white rounded-2xl md:rounded-[2.5rem] overflow-hidden border border-slate-50">
+            <CardHeader className="p-5 md:p-8 border-b border-slate-50 bg-slate-50/30">
+               <CardTitle className="text-sm md:text-xl font-black text-[#0F172A] tracking-tight">Recent Registrations</CardTitle>
             </CardHeader>
-            <CardContent className="p-4 md:p-10 space-y-3 md:space-y-4">
+            <CardContent className="p-4 md:p-8 space-y-3">
                {recentUsers?.map((u: any) => (
-                  <div key={u.id} className="flex items-center justify-between p-4 md:p-5 bg-slate-50/50 rounded-xl md:rounded-2xl border border-slate-100 group hover:bg-white hover:shadow-xl transition-all duration-300">
+                  <div key={u.id} className="flex items-center justify-between p-3 md:p-5 bg-slate-50/50 rounded-xl md:rounded-2xl border border-slate-100 group hover:bg-white hover:shadow-lg transition-all duration-300">
                      <div className="flex items-center gap-3 md:gap-5 min-w-0">
                         <StudentAvatar profile={u} className="h-10 w-10 md:h-12 md:w-12 rounded-lg md:rounded-xl bg-slate-100" />
                         <div className="min-w-0 text-left">
@@ -156,9 +150,9 @@ export default function AdminDashboard() {
          </Card>
 
          <div className="lg:col-span-4 space-y-6 md:space-y-8">
-            <Card className="border-none shadow-3xl bg-[#0F172A] text-white p-6 md:p-10 rounded-2xl md:rounded-[2.5rem] relative overflow-hidden group">
+            <Card className="border-none shadow-xl bg-[#0F172A] text-white p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] relative overflow-hidden group">
                <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 group-hover:scale-110 transition-transform"><ShieldCheck className="h-44 w-44 md:h-64 md:w-64" /></div>
-               <div className="relative z-10 space-y-6 md:space-y-10 text-left">
+               <div className="relative z-10 space-y-6 md:space-y-8 text-left">
                   <div className="space-y-1">
                      <h3 className="text-xl md:text-2xl font-black tracking-tight">Quick Tools</h3>
                      <p className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-500">Operational Shortcuts</p>
@@ -181,17 +175,17 @@ function AdminMetricCard({ label, value, sub, icon, href, highlight }: any) {
   return (
     <Link href={href} className="block group">
       <Card className={cn(
-        "border-none shadow-xl bg-white p-6 md:p-10 rounded-2xl md:rounded-[2.5rem] transition-all duration-500 text-left",
-        "group-hover:translate-y-[-4px] group-hover:shadow-3xl border border-slate-50",
+        "border-none shadow-xl bg-white p-5 md:p-8 rounded-2xl md:rounded-[2rem] transition-all duration-500 text-left",
+        "group-hover:translate-y-[-4px] border border-slate-50",
         highlight && "ring-2 ring-rose-500/20 bg-rose-50/5"
       )}>
          <div className="flex items-center gap-4 md:gap-6">
-            <div className="h-12 w-12 md:h-16 md:w-16 rounded-xl md:rounded-2xl bg-slate-50 flex items-center justify-center border border-slate-50 shadow-inner shrink-0 group-hover:scale-110 transition-transform">
+            <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-slate-50 flex items-center justify-center border border-slate-50 shadow-inner shrink-0 group-hover:scale-110 transition-transform">
                {icon}
             </div>
             <div className="min-w-0 flex-1">
                <p className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1 truncate">{label}</p>
-               <div className="text-xl md:text-4xl font-black text-[#0F172A] leading-none tabular-nums truncate">{value}</div>
+               <div className="text-lg md:text-3xl font-black text-[#0F172A] leading-none tabular-nums truncate">{value}</div>
                <p className="text-[7px] md:text-[8px] font-bold text-slate-300 uppercase mt-2 truncate">{sub}</p>
             </div>
          </div>

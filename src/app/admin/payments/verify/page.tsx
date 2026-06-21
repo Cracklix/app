@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useState } from "react"
@@ -14,8 +13,8 @@ import { approvePaymentRequest } from "@/app/actions/payment"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Administrative Manual UPI Verification Hub v3.0.
- * PWA SYNC: Removed uppercase, reduced font scales, and tightened mobile padding.
+ * @fileOverview Administrative Manual UPI Verification Hub v4.0.
+ * PWA SYNC: Removed uppercase, reduced font scales to Title Case, and implemented pill button system.
  */
 
 export default function VerifyPaymentsPage() {
@@ -62,15 +61,15 @@ export default function VerifyPaymentsPage() {
   return (
     <div className="space-y-6 md:space-y-10 pb-20 text-[#0F172A] text-left animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 px-1">
-        <div className="space-y-1">
+        <div className="space-y-1.5">
            <div className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-emerald-500" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">M-Payment Audit Queue</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Manual Ingestion Node</span>
            </div>
           <h1 className="text-2xl md:text-5xl font-black tracking-tight text-[#0F172A]">Manual Verification</h1>
-          <p className="text-slate-500 text-[11px] md:text-lg font-medium max-w-2xl leading-tight">Audit and authorize manual UPI/QR transaction requests for pass activation.</p>
+          <p className="text-slate-500 text-[11px] md:text-lg font-medium max-w-2xl leading-tight">Audit and authorize manual UPI transaction requests for elite pass activation.</p>
         </div>
-        <div className="px-5 py-3 md:px-8 md:py-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center gap-4 md:gap-6 shadow-sm shrink-0">
+        <div className="px-5 py-3 md:px-8 md:py-4 bg-emerald-50 rounded-[1.5rem] border border-emerald-100 flex items-center gap-4 md:gap-8 shadow-sm shrink-0">
            <div className="space-y-0.5 text-left">
               <p className="text-[8px] md:text-[9px] font-black text-emerald-600 uppercase tracking-widest">Pending Nodes</p>
               <p className="text-xl md:text-3xl font-black text-emerald-700 leading-none tabular-nums">{requests?.length || 0}</p>
@@ -79,14 +78,14 @@ export default function VerifyPaymentsPage() {
         </div>
       </div>
 
-      <Card className="border-none shadow-3xl bg-white rounded-2xl md:rounded-[3rem] overflow-hidden border border-slate-50">
-        <CardHeader className="p-5 md:p-10 border-b border-slate-50 bg-slate-50/30">
-           <CardTitle className="text-base md:text-2xl font-black text-[#0F172A]">Approval Ledger</CardTitle>
+      <Card className="border-none shadow-xl bg-white rounded-2xl md:rounded-[2.5rem] overflow-hidden border border-slate-50 mx-1">
+        <CardHeader className="p-5 md:p-8 border-b border-slate-50 bg-slate-50/30">
+           <CardTitle className="text-sm md:text-2xl font-black text-[#0F172A]">Approval Ledger</CardTitle>
         </CardHeader>
         <CardContent className="p-0 text-left">
           <Table>
             <TableHeader className="bg-slate-50/50">
-              <TableRow className="border-slate-50 h-14 md:h-20">
+              <TableRow className="border-slate-50 h-14 md:h-18">
                 <TableHead className="px-5 md:px-12 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">Aspirant Node</TableHead>
                 <TableHead className="hidden md:table-cell text-[10px] font-black uppercase tracking-widest text-slate-400">UTR / Transaction ID</TableHead>
                 <TableHead className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Amount</TableHead>
@@ -96,7 +95,7 @@ export default function VerifyPaymentsPage() {
             <TableBody>
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i} className="border-slate-50"><TableCell colSpan={4} className="px-5 py-6 md:px-12 md:py-8"><Skeleton className="h-12 w-full rounded-xl bg-slate-50" /></TableCell></TableRow>
+                  <TableRow key={i} className="border-slate-50"><TableCell colSpan={4} className="px-5 py-6 md:px-12 md:py-8"><Skeleton className="h-10 w-full rounded-xl bg-slate-50" /></TableCell></TableRow>
                 ))
               ) : requests && requests.length > 0 ? (
                 requests.map((req: any) => (
@@ -108,32 +107,32 @@ export default function VerifyPaymentsPage() {
                           </div>
                           <div className="min-w-0">
                              <p className="font-bold text-[#0F172A] text-sm md:text-lg leading-tight truncate">{req.userName}</p>
-                             <p className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 truncate">{req.planName} Hub</p>
+                             <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 truncate">{req.planName} Hub</p>
                           </div>
                        </div>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
-                       <code className="text-xs font-mono font-bold text-[#0F172A] bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+                       <code className="text-[10px] md:text-xs font-mono font-bold text-[#0F172A] bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
                          {req.transactionId}
                        </code>
                     </TableCell>
                     <TableCell className="text-center">
-                       <span className="font-black text-sm md:text-2xl text-[#0F172A] tabular-nums">₹{req.amount}</span>
+                       <span className="font-black text-sm md:text-2xl text-emerald-600 tabular-nums">₹{req.amount}</span>
                     </TableCell>
                     <TableCell className="text-right px-5 md:px-12">
                        <div className="flex justify-end gap-2 md:gap-3">
                           <Button 
                             onClick={() => handleApprove(req.id)}
                             disabled={processingId === req.id}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[8px] md:text-[10px] tracking-widest h-9 md:h-12 px-4 md:px-8 rounded-full shadow-lg gap-2 md:gap-3 transition-all active:scale-95 border-none"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-[8px] md:text-[10px] tracking-widest h-9 md:h-11 px-4 md:px-8 rounded-full shadow-lg border-none transition-all active:scale-95"
                           >
                              {processingId === req.id ? <Loader2 className="h-3 w-3 md:h-4 md:w-4 animate-spin" /> : <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4" />}
-                             <span className="hidden xs:inline">Verify</span>
+                             <span className="hidden sm:inline">Verify</span>
                           </Button>
                           <Button 
                             variant="ghost" 
                             onClick={() => handleReject(req.id)}
-                            className="h-9 w-9 md:h-12 md:w-12 rounded-full text-rose-500 hover:bg-rose-50 p-0"
+                            className="h-9 w-9 md:h-11 md:w-11 rounded-full text-rose-500 hover:bg-rose-50 p-0"
                           >
                              <XCircle className="h-5 w-5" />
                           </Button>
