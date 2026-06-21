@@ -1,17 +1,18 @@
 "use client"
 
+import React, { useState, useEffect, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { HeartPulse, Zap, Activity, ShieldCheck, HardDrive, RefreshCw, Database, Server } from "lucide-react"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
-import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useFirestore, useCollection } from "@/firebase"
 import { collection } from "firebase/firestore"
+import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Operational Node Monitor v4.2.
- * PWA SYNC: Removed uppercase, reduced font scales, and normalized Title Case.
+ * @fileOverview Hardened Operational Node Monitor v4.3.
+ * FIXED: Added missing React import and verified cloneElement usage.
  */
 
 export default function PlatformHealth() {

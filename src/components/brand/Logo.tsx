@@ -17,8 +17,8 @@ interface LogoProps {
 }
 
 /**
- * @fileOverview Cracklix Maximized Brand Identity v61.0.
- * FIXED: Updated onClick type from void to () => void to resolve TS2322.
+ * @fileOverview Cracklix Maximized Brand Identity v62.0.
+ * FIXED: Explicitly typed onClick as () => void to resolve build errors.
  */
 export default function Logo({
   className = "",

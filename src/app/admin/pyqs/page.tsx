@@ -16,8 +16,8 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional PYQ Archive CMS v19.0 (PWA Hardened).
- * FIXED: Renamed editingNote typo to editingPYQ to resolve build error.
+ * @fileOverview Institutional PYQ Archive CMS v20.0 (Fixed).
+ * FIXED: Resolved 'editingNote' typo to 'editingPYQ'.
  */
 
 export default function AdminPYQManagement() {
