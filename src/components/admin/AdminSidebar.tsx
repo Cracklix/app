@@ -16,15 +16,8 @@ interface AdminSidebarProps {
 }
 
 /**
- * Cracklix Admin Sidebar v1.0
- *
- * Desktop:
- * Expanded: 280px
- * Collapsed: 88px
- *
- * Mobile:
- * Width: 85vw
- * Max Width: 320px
+ * Cracklix Admin Sidebar v2.0 (PWA Optimized)
+ * Matches the white/clean high-density feel of the homepage.
  */
 
 export default function AdminSidebar({
@@ -42,7 +35,7 @@ export default function AdminSidebar({
       <div
         onClick={onCloseMobile}
         className={cn(
-          "fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm transition-all duration-300 lg:hidden",
+          "fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm transition-all duration-300 lg:hidden",
           isOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
@@ -52,7 +45,7 @@ export default function AdminSidebar({
       {/* SIDEBAR */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-[110] flex h-screen flex-col overflow-hidden border-r border-slate-800 bg-slate-900 text-white transition-all duration-300 ease-in-out",
+          "fixed left-0 top-0 z-[110] flex h-screen flex-col overflow-hidden border-r border-slate-100 bg-white transition-all duration-300 ease-in-out shadow-2xl shadow-slate-200/50",
 
           // Desktop
           "lg:translate-x-0",
@@ -67,7 +60,7 @@ export default function AdminSidebar({
             : "-translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="relative flex h-full flex-col bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950">
+        <div className="relative flex h-full flex-col bg-white">
 
           {/* HEADER */}
           <SidebarHeader

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -12,8 +11,7 @@ interface SidebarHeaderProps {
 }
 
 /**
- * Cracklix Admin Sidebar Header v28.0.
- * FIXED: Maximized logo height (86px) to fill the 88px header space for authoritative branding.
+ * Cracklix Admin Sidebar Header v30.0 (High Density).
  */
 export default function SidebarHeader({
   isOpen,
@@ -22,18 +20,18 @@ export default function SidebarHeader({
   return (
     <div
       className={cn(
-        "h-[88px] border-b border-white/5 px-4 shrink-0 flex items-center transition-all duration-300",
+        "h-[72px] md:h-[88px] border-b border-slate-50 px-4 shrink-0 flex items-center transition-all duration-300",
         isOpen ? "justify-between gap-2" : "justify-center p-0"
       )}
     >
       <Logo
         href="/admin"
-        variant="dark"
+        variant="light"
         iconOnly={!isOpen}
         align={isOpen ? "left" : "center"}
-        className="transition-all duration-300 h-full"
+        className="transition-all duration-300"
         imgClassName={cn(
-          isOpen ? "h-[86px]" : "h-14" // Maximized size when expanded
+          isOpen ? "h-[64px] md:h-[82px]" : "h-11 md:h-14"
         )}
       />
 

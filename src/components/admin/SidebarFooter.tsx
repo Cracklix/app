@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { cn } from "@/lib/utils";
-import { LogOut } from "lucide-react";
+import { LogOut, ShieldCheck } from "lucide-react";
 import StudentAvatar from '@/components/brand/StudentAvatar';
 
 interface SidebarFooterProps {
@@ -11,13 +11,16 @@ interface SidebarFooterProps {
   handleLogout: () => void;
 }
 
+/**
+ * Admin Sidebar Footer (PWA Optimized)
+ */
 export default function SidebarFooter({
   isOpen,
   profile,
   handleLogout,
 }: SidebarFooterProps) {
   return (
-    <div className="mt-auto border-t border-white/5 bg-slate-950/40 p-4">
+    <div className="mt-auto border-t border-slate-50 bg-slate-50/50 p-4">
 
       {/* PROFILE */}
       <div
@@ -28,7 +31,7 @@ export default function SidebarFooter({
       >
         <StudentAvatar
           profile={profile}
-          className="h-11 w-11 rounded-2xl border border-white/10 bg-white/5 shrink-0"
+          className="h-11 w-11 rounded-xl border border-slate-200 shadow-sm shrink-0"
           iconClassName="w-5 h-5"
         />
 
@@ -40,37 +43,38 @@ export default function SidebarFooter({
               : "opacity-0 max-w-0 pointer-events-none"
           )}
         >
-          <p className="truncate text-sm font-bold text-white">
-            {profile?.name || "ADMIN"}
+          <p className="truncate text-sm font-black text-[#0F172A]">
+            {profile?.name || "Admin"}
           </p>
 
-          <p className="truncate text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-            {profile?.role || "SUPER_ADMIN"}
+          <p className="truncate text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+            <ShieldCheck className="h-2.5 w-2.5 text-primary" />
+            {profile?.role?.replace('_', ' ') || "SUPER ADMIN"}
           </p>
         </div>
       </div>
 
-      {/* LOGOUT */}
+      {/* LOGOUT - TITLE CASE PILL */}
       <button
         onClick={handleLogout}
         className={cn(
-          "mt-4 flex h-12 w-full items-center justify-center rounded-2xl transition-all duration-200 active:scale-95",
+          "mt-4 flex h-11 w-full items-center justify-center rounded-xl transition-all duration-200 active:scale-95",
           isOpen
-            ? "gap-3 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white"
-            : "text-slate-500 hover:text-red-400"
+            ? "gap-3 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-sm"
+            : "text-slate-400 hover:text-rose-600"
         )}
       >
-        <LogOut className="h-5 w-5 shrink-0" />
+        <LogOut className="h-4 w-4 shrink-0" />
 
         <span
           className={cn(
-            "overflow-hidden whitespace-nowrap text-[12px] font-bold uppercase tracking-widest transition-all duration-300",
+            "overflow-hidden whitespace-nowrap text-[11px] font-black uppercase tracking-widest transition-all duration-300",
             isOpen
               ? "max-w-[120px] opacity-100"
               : "max-w-0 opacity-0"
           )}
         >
-          Log Out
+          Sign Out
         </span>
       </button>
 

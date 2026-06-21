@@ -10,11 +10,7 @@ interface SidebarToggleProps {
 }
 
 /**
- * Cracklix Admin Sidebar Toggle v1.0
- *
- * Size: 40px × 40px
- * Icon: 20px
- * Radius: 16px
+ * Cracklix Admin Sidebar Toggle v2.0
  */
 
 export default function SidebarToggle({
@@ -31,20 +27,18 @@ export default function SidebarToggle({
           : 'Expand Sidebar'
       }
       className={cn(
-        "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl",
-        "border border-blue-500/20",
-        "bg-blue-500/10 text-blue-500",
+        "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
+        "border border-slate-100 bg-slate-50 text-slate-400 shadow-sm",
         "transition-all duration-200",
-        "hover:bg-blue-600 hover:text-white hover:border-blue-600",
-        "active:scale-95",
-        "focus:outline-none focus:ring-2 focus:ring-blue-500/30",
+        "hover:bg-primary hover:text-white hover:border-primary",
+        "active:scale-90",
         !isOpen && "mx-auto"
       )}
     >
       {isOpen ? (
-        <PanelLeft className="h-5 w-5" />
+        <PanelLeft className="h-4 w-4" />
       ) : (
-        <PanelRight className="h-5 w-5" />
+        <PanelRight className="h-4 w-4" />
       )}
     </button>
   );

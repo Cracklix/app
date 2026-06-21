@@ -98,16 +98,16 @@ export default function SidebarNav({
 }: SidebarNavProps) {
   return (
     <TooltipProvider delayDuration={0}>
-      <nav className="flex-1 overflow-y-auto px-4 py-5 no-scrollbar">
+      <nav className="flex-1 overflow-y-auto px-3 py-4 no-scrollbar">
 
         <div className="space-y-6">
 
           {NAV_GROUPS.map((group) => (
             <div key={group.label}>
 
-              {/* GROUP TITLE */}
+              {/* GROUP TITLE - TITLE CASE */}
               {isOpen ? (
-                <p className="mb-2.5 px-4 text-[10px] font-bold tracking-[0.1em] text-slate-500">
+                <p className="mb-2 px-4 text-[9px] font-black tracking-widest text-slate-400 uppercase">
                   {group.label}
                 </p>
               ) : (
@@ -115,7 +115,7 @@ export default function SidebarNav({
               )}
 
               {/* ITEMS */}
-              <div className="space-y-0.5">
+              <div className="space-y-1">
 
                 {group.items.map((item) => {
                   const Icon = item.icon;
@@ -138,8 +138,8 @@ export default function SidebarNav({
                           : "justify-center",
 
                         isActive
-                          ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                          : "text-slate-400 hover:bg-white/5 hover:text-white"
+                          ? "bg-primary text-white shadow-lg shadow-primary/20"
+                          : "text-slate-500 hover:bg-slate-50 hover:text-primary"
                       )}
                     >
                       <Icon
@@ -147,13 +147,13 @@ export default function SidebarNav({
                           "h-4 w-4 shrink-0",
                           isActive
                             ? "text-white"
-                            : "group-hover:text-white"
+                            : "group-hover:text-primary transition-colors"
                         )}
                       />
 
                       <span
                         className={cn(
-                          "truncate text-[13px] font-semibold transition-all duration-300",
+                          "truncate text-[13px] font-bold transition-all duration-300",
 
                           isOpen
                             ? "max-w-[150px] opacity-100"
@@ -182,7 +182,7 @@ export default function SidebarNav({
                       <TooltipContent
                         side="right"
                         sideOffset={16}
-                        className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-[11px] font-semibold text-white"
+                        className="rounded-xl border border-slate-100 bg-white px-3 py-2 text-[11px] font-black text-[#0F172A] shadow-xl uppercase tracking-widest"
                       >
                         {item.label}
                       </TooltipContent>
