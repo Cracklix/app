@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from "react"
@@ -16,10 +15,10 @@ import Image from "next/image"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { getAuthorityIcon } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional Hub Explorer v16.0 (Interaction Hardened).
- * FIXED: Isolated pinning toggle to prevent Link/Card click conflicts.
+ * @fileOverview Institutional Hub Explorer v16.0 (Logo Hardened).
  */
 
 export default function HubExamsPage() {
@@ -88,13 +87,11 @@ export default function HubExamsPage() {
 
   if (hubLoading) return <div className="h-screen bg-white flex flex-col items-center justify-center space-y-6"><Zap className="h-10 w-10 text-primary animate-pulse" /><p className="text-[10px] font-black uppercase text-slate-300 tracking-widest">Loading Registry...</p></div>;
 
-  const isCourtHub = hub?.name?.toLowerCase().includes('court') || hub?.id?.toLowerCase().includes('court') || hub?.abbreviation?.toLowerCase().includes('sssc');
-
   return (
     <div className="min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       
-      <section className="bg-white border-b border-slate-100 py-10 md:py-20 overflow-hidden relative">
+      <section className="bg-white border-b border-slate-100 py-12 md:py-16 overflow-hidden relative">
          <div className="absolute top-0 right-0 p-12 opacity-[0.02]"><GraduationCap className="h-32 w-32 md:h-64 md:w-64" /></div>
          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
             <button onClick={() => router.back()} className="h-10 w-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-black mb-6 md:mb-10 transition-all active:scale-90">
@@ -114,13 +111,8 @@ export default function HubExamsPage() {
                       onError={() => setFailedImages(p => ({...p, 'hub': true}))} 
                     />
                   ) : (
-                    <div className="text-primary opacity-40">
-                      {isCourtHub ? (
-                        <Scale className="h-10 w-10 md:h-16 md:w-16 text-slate-600" />
-                      ) : hub?.categoryId === 'punjab-govt' ? (
-                        hub.id.toLowerCase().includes('police') ? <ShieldCheck className="h-10 w-10 md:h-16 md:w-16" /> : 
-                        <Landmark className="h-10 w-10 md:h-16 md:w-16" />
-                      ) : <Landmark className="h-10 w-10 md:h-16 md:w-16" />}
+                    <div className="p-3 md:p-4 w-full h-full opacity-40">
+                      {getAuthorityIcon(hub?.id, hub?.abbreviation)}
                     </div>
                   )}
                </div>
@@ -162,9 +154,7 @@ export default function HubExamsPage() {
                     <Card key={exam.id} onClick={() => router.push(`/exams/${exam.id}`)} className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-4px] transition-all duration-500 rounded-[2rem] bg-white group overflow-hidden h-full flex flex-col p-6 md:p-10 text-left cursor-pointer">
                        <div className="flex justify-between items-start mb-6 md:mb-8">
                           <div className="h-14 w-14 md:h-18 md:w-18 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 shadow-inner relative overflow-hidden">
-                             {isCourtHub ? (
-                               <Scale className="h-6 w-6 md:h-10 md:w-10 text-slate-600 opacity-40" />
-                             ) : effectiveLogo && !failedImages[exam.id] ? (
+                             {effectiveLogo && !failedImages[exam.id] ? (
                                 <Image 
                                    src={effectiveLogo} 
                                    alt="Logo" 
@@ -175,7 +165,9 @@ export default function HubExamsPage() {
                                    onError={() => setFailedImages(p => ({ ...p, [exam.id]: true }))} 
                                 />
                              ) : (
-                               <Landmark className="h-6 w-6 md:h-10 md:w-10 text-primary opacity-20" />
+                               <div className="p-2 w-full h-full opacity-20">
+                                 {getAuthorityIcon(hub?.id, hub?.abbreviation)}
+                               </div>
                              )}
                           </div>
                           <button 

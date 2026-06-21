@@ -17,9 +17,10 @@ import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection, query, where, limit } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { getAuthorityIcon } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Elite Latest Mock Hub v50.0 (Spacing Purge).
+ * @fileOverview Elite Latest Mock Hub v50.0 (Logo & Spacing Hardened).
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -83,6 +84,7 @@ export default function LatestMocks() {
             const tier = (mock.accessLevel || 'FREE').toUpperCase();
             const isPremium = tier === 'PREMIUM';
             const locked = isPremium && !isPassActive;
+            const logoUrl = mock.iconUrl || board?.iconUrl;
             
             return (
               <motion.div key={mock.id} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} viewport={{ once: true }}>
@@ -93,9 +95,13 @@ export default function LatestMocks() {
                     )}
                   </div>
                   <div className="h-[60px] w-[60px] mx-auto rounded-full bg-[#F8FAFC] flex items-center justify-center p-1 shrink-0 shadow-inner group-hover:scale-105 transition-transform duration-500 mb-6 overflow-hidden border border-slate-100 relative">
-                     {board?.iconUrl && !failedImages[board.id] ? (
-                       <Image src={board.iconUrl} alt={board.abbreviation} fill sizes="64px" className="object-contain p-3" referrerPolicy="no-referrer" onError={() => setFailedImages(prev => ({...prev, [board.id]: true}))} />
-                     ) : ( <Zap className="h-6 w-6 text-blue-600 fill-current opacity-40" /> )}
+                     {logoUrl && !failedImages[mock.id] ? (
+                       <Image src={logoUrl} alt="Logo" fill sizes="64px" className="object-contain p-3" referrerPolicy="no-referrer" onError={() => setFailedImages(prev => ({...prev, [mock.id]: true}))} />
+                     ) : (
+                       <div className="p-3 w-full h-full opacity-40">
+                         {getAuthorityIcon(board?.id, board?.abbreviation)}
+                       </div>
+                     )}
                   </div>
                   <CardHeader className="p-0 flex-1 space-y-4">
                      <CardTitle className="font-extrabold text-xl md:text-2xl text-[#04102B] leading-tight tracking-tight line-clamp-2 min-h-[50px]">{mock.title}</CardTitle>

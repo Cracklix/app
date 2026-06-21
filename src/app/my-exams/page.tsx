@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo, useEffect, useState } from "react"
@@ -35,9 +34,10 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { usePWAInstall } from "@/hooks/use-pwa-install"
+import { getAuthorityIcon } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional My Hub Hub v8.0 (Countdown Integration).
+ * @fileOverview Institutional My Hub Hub v8.0 (Logo Hardened).
  */
 
 export default function MyExamsPage() {
@@ -157,7 +157,7 @@ export default function MyExamsPage() {
                     {examsLoading ? Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-[400px] w-full rounded-[3.5rem] bg-white" />) : 
                     pinnedExams.length > 0 ? pinnedExams.map((exam: any) => {
                        const board = boards?.find((b: any) => b.id === exam.boardId || b.abbreviation === exam.boardId);
-                       const logoUrl = board?.iconUrl || exam.iconUrl;
+                       const logoUrl = exam.iconUrl || board?.iconUrl;
                        const isTarget = profile?.targetExam === exam.name;
                        return (
                         <Card key={exam.id} className="border-none shadow-2xl hover:shadow-5xl transition-all duration-500 rounded-[3.5rem] bg-white group overflow-hidden h-[420px] flex flex-col border border-slate-100 relative p-8 md:p-12 text-center">
@@ -169,7 +169,15 @@ export default function MyExamsPage() {
                             </div>
                           )}
                           <div className="flex flex-col items-center flex-1 h-full pt-4">
-                             <div className="h-20 w-20 md:h-24 md:w-24 rounded-3xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 shadow-inner group-hover:scale-105 transition-transform overflow-hidden mb-8">{logoUrl && !failedImages[exam.id] ? <img src={logoUrl} className="w-full h-full object-contain p-3" referrerPolicy="no-referrer" alt="Logo" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} /> : <GraduationCap className="h-10 w-10 text-slate-200" />}</div>
+                             <div className="h-20 w-20 md:h-24 md:w-24 rounded-3xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 shadow-inner group-hover:scale-105 transition-transform overflow-hidden mb-8 relative">
+                               {logoUrl && !failedImages[exam.id] ? (
+                                 <img src={logoUrl} className="w-full h-full object-contain p-3" referrerPolicy="no-referrer" alt="Logo" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
+                               ) : (
+                                 <div className="p-3 md:p-4 w-full h-full opacity-40">
+                                   {getAuthorityIcon(board?.id, board?.abbreviation)}
+                                 </div>
+                               )}
+                             </div>
                              <h4 className="font-black text-xl md:text-2xl text-[#0F172A] uppercase leading-tight mb-4 px-4 line-clamp-2">{exam.name}</h4>
                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{board?.abbreviation || 'PSSSB'} Hub</p>
                           </div>

@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo, useState, useEffect } from "react"
@@ -35,13 +34,15 @@ import {
 } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { getAuthorityIcon } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional Exam Hub v41.0 (Live Pass Tracking).
+ * @fileOverview Institutional Exam Hub v42.0 (Logo & Spacing Hardened).
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -154,7 +155,7 @@ export default function ExamHubPage() {
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       
-      <section className="bg-white border-b border-slate-100 py-10 md:py-20 text-left relative overflow-hidden">
+      <section className="bg-white border-b border-slate-100 py-12 md:py-16 text-left relative overflow-hidden">
          <div className="absolute top-0 right-0 p-12 opacity-[0.02]"><GraduationCap className="h-48 w-48" /></div>
          <div className="container mx-auto px-4 max-w-7xl relative z-10">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-12">
@@ -282,8 +283,6 @@ function MockList({ data, results, isPassActive, user, loading, boards, exam }: 
       </div>
    );
 
-   const isCourtExam = exam?.name?.toLowerCase().includes('court') || exam?.id?.toLowerCase().includes('court');
-
    if (data.length === 0) return (
       <div className="py-24 text-center opacity-20 flex flex-col items-center gap-4">
          <Zap className="h-10 w-10 text-slate-300" />
@@ -300,6 +299,7 @@ function MockList({ data, results, isPassActive, user, loading, boards, exam }: 
             const locked = isPremium && !isPassActive;
             const board = boards?.find((b: any) => b.id === (mock.boardIds?.[0] || mock.boardId));
             const difficulty = mock.difficulty || "Medium";
+            const logoUrl = mock.iconUrl || exam?.iconUrl || board?.iconUrl;
 
             return (
                <Card key={mock.id} className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-4px] transition-all duration-500 rounded-[32px] bg-white p-8 md:p-10 text-center flex flex-col h-[420px] group relative overflow-hidden">
@@ -308,19 +308,21 @@ function MockList({ data, results, isPassActive, user, loading, boards, exam }: 
                     {result && <Badge className="bg-emerald-50 text-emerald-600 border-none text-[8px] font-black uppercase tracking-widest px-3 py-1 shadow-sm">Attempted</Badge>}
                   </div>
 
-                  <div className="h-[70px] w-[70px] mx-auto rounded-full bg-[#F8FAFC] flex items-center justify-center p-3.5 shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500 mb-8 overflow-hidden border border-slate-100 relative">
-                     {isCourtExam ? (
-                        <Scale className="h-8 w-8 text-slate-600" />
-                     ) : board?.iconUrl && !failedImages[board.id] ? (
+                  <div className="h-[70px] w-[70px] mx-auto rounded-full bg-[#F8FAFC] flex items-center justify-center p-1 shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500 mb-8 overflow-hidden border border-slate-100 relative">
+                     {logoUrl && !failedImages[mock.id] ? (
                        <Image 
-                         src={board.iconUrl} 
-                         className="h-full w-full object-contain" 
+                         src={logoUrl} 
+                         fill
+                         sizes="70px"
+                         className="object-contain p-3" 
                          alt="Logo" 
                          referrerPolicy="no-referrer"
-                         onError={() => setFailedImages(prev => ({...prev, [board.id]: true}))}
+                         onError={() => setFailedImages(prev => ({...prev, [mock.id]: true}))}
                        />
                      ) : (
-                       <Zap className="h-8 w-8 text-primary fill-current opacity-40" />
+                       <div className="p-3 w-full h-full opacity-40">
+                         {getAuthorityIcon(board?.id, board?.abbreviation)}
+                       </div>
                      )}
                   </div>
 

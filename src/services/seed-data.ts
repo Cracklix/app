@@ -1,7 +1,7 @@
 import { Firestore, doc, setDoc, serverTimestamp, collection, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Institutional Punjab-Centric Seeding Node v79.0 (Real Data Only).
+ * @fileOverview Institutional Punjab-Centric Seeding Node v79.0 (Logo Hardened).
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -56,12 +56,40 @@ export async function seedInitialData(db: Firestore) {
     batch.set(doc(db, 'categories', cat.id), { ...cat, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 2. BOARDS SILO
+  // 2. BOARDS SILO (WITH OFFICIAL LOGOS)
   const boards = [
-    { id: 'psssb', abbreviation: 'PSSSB', name: 'Punjab Subordinate Services Selection Board', categoryId: 'punjab-govt', displayOrder: 1, iconUrl: "https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg" },
-    { id: 'ppsc', abbreviation: 'PPSC', name: 'Punjab Public Service Commission', categoryId: 'punjab-govt', displayOrder: 2, iconUrl: "https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg" },
-    { id: 'punjab-police', abbreviation: 'POLICE', name: 'Punjab Police Recruitment Board', categoryId: 'punjab-govt', displayOrder: 3, iconUrl: 'https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png' },
-    { id: 'pspcl', abbreviation: 'PSPCL', name: 'Punjab State Power Corporation Limited', categoryId: 'punjab-technical', displayOrder: 4, iconUrl: 'https://www.pspcl.in/images/logo.png' }
+    { 
+      id: 'psssb', 
+      abbreviation: 'PSSSB', 
+      name: 'Punjab Subordinate Services Selection Board', 
+      categoryId: 'punjab-govt', 
+      displayOrder: 1, 
+      iconUrl: "https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg" 
+    },
+    { 
+      id: 'ppsc', 
+      abbreviation: 'PPSC', 
+      name: 'Punjab Public Service Commission', 
+      categoryId: 'punjab-govt', 
+      displayOrder: 2, 
+      iconUrl: "https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg" 
+    },
+    { 
+      id: 'punjab-police', 
+      abbreviation: 'POLICE', 
+      name: 'Punjab Police Recruitment Board', 
+      categoryId: 'punjab-govt', 
+      displayOrder: 3, 
+      iconUrl: 'https://www.punjabpolice.gov.in/media/images/Logo_of_Punjab_Police_India.original.png' 
+    },
+    { 
+      id: 'pspcl', 
+      abbreviation: 'PSPCL', 
+      name: 'Punjab State Power Corporation Limited', 
+      categoryId: 'punjab-technical', 
+      displayOrder: 4, 
+      iconUrl: 'https://www.pspcl.in/images/logo.png' 
+    }
   ];
 
   for (const b of boards) {

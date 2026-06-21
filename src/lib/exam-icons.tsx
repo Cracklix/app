@@ -1,4 +1,22 @@
-import { Shield, GraduationCap, Scale, Zap, Stethoscope, Landmark, BookOpen } from "lucide-react"
+import { Shield, GraduationCap, Scale, Zap, Stethoscope, Landmark, BookOpen, Activity } from "lucide-react"
+
+/**
+ * @fileOverview Institutional Authority Icon Registry.
+ * Provides high-fidelity fallbacks for missing authority logos.
+ */
+
+export const getAuthorityIcon = (id: string = "", abbrev: string = "") => {
+  const key = (abbrev || id || "").toLowerCase();
+  if (key.includes('psssb')) return <Landmark className="h-full w-full text-amber-600" />;
+  if (key.includes('police')) return <Shield className="h-full w-full text-blue-800" />;
+  if (key.includes('ppsc')) return <Landmark className="h-full w-full text-emerald-700" />;
+  if (key.includes('teaching') || key.includes('cadre') || key.includes('pstet')) return <GraduationCap className="h-full w-full text-orange-500" />;
+  if (key.includes('pspcl') || key.includes('pstcl') || key.includes('power')) return <Zap className="h-full w-full text-blue-500" />;
+  if (key.includes('court') || key.includes('justice') || key.includes('sssc')) return <Scale className="h-full w-full text-slate-600" />;
+  if (key.includes('bank')) return <Landmark className="h-full w-full text-[#0B1F3A]" />;
+  if (key.includes('army')) return <Shield className="h-full w-full text-green-800" />;
+  return <Activity className="h-full w-full text-slate-300" />;
+}
 
 export const PsssbIcon = () => (
   <div className="h-16 w-16 rounded-full bg-white border border-[#E2E8F0] p-2 flex items-center justify-center shadow-sm">
