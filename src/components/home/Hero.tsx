@@ -23,8 +23,8 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Compact Hero Hub v29.0.
- * UPDATED: Tagline refactored to "Crack Punjab Govt Exam with Confidence".
+ * @fileOverview Official Compact Hero Hub v30.0.
+ * UPDATED: Removed uppercase transformation for professional Title Case consistency.
  */
 
 export default function Hero() {
@@ -60,7 +60,7 @@ export default function Hero() {
             </motion.div>
 
             <div className="space-y-1.5 md:space-y-4">
-              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.05] uppercase">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.05]">
                 Crack Punjab Govt Exam <br/>
                 <span className="block text-primary">with Confidence</span>
               </h1>
@@ -119,7 +119,7 @@ function QuickAction({ icon: Icon, label, href, color }: any) {
         <div className={cn("h-8 w-8 md:h-12 md:w-12 rounded-lg md:rounded-xl flex items-center justify-center shrink-0 shadow-lg text-white group-hover:scale-110 transition-transform", color)}>
           <Icon className="h-4 w-4 md:h-6 md:w-6" />
         </div>
-        <span className="text-[10px] md:text-sm font-bold text-slate-800 leading-tight uppercase tracking-tight">{label}</span>
+        <span className="text-[10px] md:text-sm font-bold text-slate-800 leading-tight tracking-tight">{label}</span>
       </Card>
     </Link>
   )
