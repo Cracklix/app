@@ -19,8 +19,8 @@ import { cn } from "@/lib/utils";
 import { AuthorityLogo } from "@/lib/exam-icons";
 
 /**
- * @fileOverview Official High-Density PWA Hero v40.0.
- * UPDATED: Quick Actions are now fully clickable high-fidelity buttons with hover animations.
+ * @fileOverview Official High-Density PWA Hero v42.0.
+ * UPDATED: Quick Actions converted to fully clickable high-fidelity cards.
  */
 
 export default function Hero() {
@@ -87,24 +87,24 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* QUICK ACTIONS: BRANDED FULL-CLICK BUTTONS */}
+        {/* QUICK ACTIONS: CLICKABLE CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mt-10 md:mt-20">
-          <QuickAction 
+          <QuickActionCard 
             boardId="mock-test"
             label="Mock Tests" 
             href="/mocks" 
           />
-          <QuickAction 
+          <QuickActionCard 
             boardId="study-material"
             label="Study Material" 
             href="/notes" 
           />
-          <QuickAction 
+          <QuickActionCard 
             boardId="pyq"
             label="PYQ Papers" 
             href="/pyqs" 
           />
-          <QuickAction 
+          <QuickActionCard 
             boardId="current-affairs"
             label="Current Affairs" 
             href="/current-affairs" 
@@ -125,13 +125,13 @@ export default function Hero() {
   );
 }
 
-function QuickAction({ boardId, label, href }: { boardId: string, label: string, href: string }) {
+function QuickActionCard({ boardId, label, href }: { boardId: string, label: string, href: string }) {
   return (
     <Link href={href} className="block group">
       <div className="
         bg-white
-        rounded-3xl
-        p-4 md:p-6
+        rounded-[2rem]
+        p-5 md:p-8
         flex
         items-center
         gap-4 md:gap-6
@@ -148,7 +148,7 @@ function QuickAction({ boardId, label, href }: { boardId: string, label: string,
       ">
         <div className="
           h-12 w-12 md:h-20 md:w-20
-          rounded-2xl md:rounded-[2rem]
+          rounded-2xl md:rounded-[2.5rem]
           bg-slate-50
           shadow-inner
           flex
@@ -170,16 +170,12 @@ function QuickAction({ boardId, label, href }: { boardId: string, label: string,
           <p className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Institutional Hub</p>
         </div>
         
-        <ChevronRight className="h-4 w-4 md:h-5 md:w-5 text-slate-200 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+        <div className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-200 group-hover:bg-primary/5 group-hover:text-primary transition-all">
+           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 transition-transform group-hover:translate-x-0.5">
+             <path d="m9 18 6-6-6-6"/>
+           </svg>
+        </div>
       </div>
     </Link>
-  )
-}
-
-function ChevronRight({ className }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="m9 18 6-6-6-6"/>
-    </svg>
   )
 }

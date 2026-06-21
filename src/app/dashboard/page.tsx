@@ -34,8 +34,8 @@ import ShareButton from "@/components/navigation/ShareButton"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v27.2.
- * FIXED: TS2769 by ensuring optional passExpiresAt is correctly narrowed.
+ * @fileOverview Student Dashboard v28.0.
+ * FIXED: Corrected icon.props casting to resolve unknown property error.
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading, profileLoading } = useUser() as any;
@@ -258,7 +258,9 @@ function MetricItem({ label, val, icon }: any) {
   return (
     <Card className="border-none shadow-lg bg-white p-4 md:p-6 rounded-2xl text-left group hover:translate-y-[-2px] transition-all border border-slate-100 min-w-0">
       <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl bg-slate-50 flex items-center justify-center mb-3 md:mb-4 group-hover:bg-primary/5 transition-all shadow-inner shrink-0">
-        {React.isValidElement(icon) && React.cloneElement(icon as React.ReactElement<any>, { className: cn("h-4 w-4 md:h-5 md:w-5", icon.props.className) })}
+        {React.isValidElement(icon) && React.cloneElement(icon as React.ReactElement<any>, { 
+          className: cn("h-4 w-4 md:h-5 md:w-5", (icon as React.ReactElement<any>).props.className) 
+        })}
       </div>
       <div className="flex flex-col">
         <div className="text-lg md:text-2xl font-black text-[#0F172A] leading-none tabular-nums truncate">{val}</div>
