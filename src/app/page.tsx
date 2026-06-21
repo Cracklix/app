@@ -4,7 +4,6 @@ import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
 import GlobalSearch from "@/components/home/GlobalSearch";
 import FeaturedCategories from "@/components/home/FeaturedCategories";
-import PopularExams from "@/components/home/PopularExams";
 import LatestMocks from "@/components/home/LatestMocks";
 import ContinueLearning from "@/components/home/ContinueLearning";
 import CurrentAffairsPreview from "@/components/home/CurrentAffairsPreview";
@@ -14,8 +13,8 @@ import MeetFounder from "@/components/home/MeetFounder";
 import Footer from "@/components/layout/Footer";
 
 /**
- * @fileOverview Official Home Page v184.0.
- * RELOCATED: Features hub (Quick Access) moved below Latest Mocks for better discovery flow.
+ * @fileOverview Official Home Page v190.0 (Clean Architecture).
+ * UPDATED: Removed PopularExams to strictly enforce the 8-Category Discover flow.
  */
 
 export default function HomePage() {
@@ -31,31 +30,28 @@ export default function HomePage() {
         <GlobalSearch />
       </div>
 
-      {/* 3. Exam Categories */}
+      {/* 3. Exam Categories (The only top-level discovery point) */}
       <FeaturedCategories />
 
-      {/* 4. Popular Exams */}
-      <PopularExams />
-
-      {/* 5. Latest Mock Tests */}
+      {/* 4. Latest Mock Tests */}
       <LatestMocks />
 
-      {/* 6. Preparation Hub (Mock Tests, Study Material, PYQs, Analytics) */}
+      {/* 5. Preparation Hub */}
       <Features />
 
-      {/* 7. Personal Progress */}
+      {/* 6. Personal Progress */}
       <ContinueLearning />
 
-      {/* 8. Knowledge Hub */}
+      {/* 7. Knowledge Hub */}
       <CurrentAffairsPreview />
 
-      {/* 9. Merit Rankings */}
+      {/* 8. Merit Rankings */}
       <MeritPreview />
 
-      {/* 10. Mobile App */}
+      {/* 9. Mobile App */}
       <AppPreview />
 
-      {/* 11. Leadership Section */}
+      {/* 10. Leadership Section */}
       <MeetFounder />
       
       <Footer />

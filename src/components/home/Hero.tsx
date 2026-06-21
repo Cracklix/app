@@ -20,11 +20,10 @@ import Link from "next/link";
 import { useDoc, useFirestore, useUser } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * @fileOverview Official Live Hero Hub v18.0 (Hardened Stats).
- * UPDATED: Optimized stat mapping to resolve 0+ Categories bug.
+ * @fileOverview Official Live Hero Hub v19.0.
+ * NORMALIZED: Stats and labels follow Title Case.
  */
 
 const formatCompact = (num: number) => {
@@ -48,30 +47,10 @@ export default function Hero() {
   const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
 
   const liveStats = useMemo(() => [
-    {
-      id: "q",
-      icon: <Zap className="h-5 w-5 text-blue-600" />,
-      val: statsLoading ? "..." : `${formatCompact(stats?.totalQuestions)}+`,
-      label: "QUESTIONS"
-    },
-    {
-      id: "m",
-      icon: <ClipboardList className="h-5 w-5 text-indigo-600" />,
-      val: statsLoading ? "..." : `${formatCompact(stats?.totalMocks)}+`,
-      label: "MOCK TESTS"
-    },
-    {
-      id: "e",
-      icon: <ShieldCheck className="h-5 w-5 text-emerald-600" />,
-      val: statsLoading ? "..." : `${formatCompact(stats?.totalCategories)}+`,
-      label: "CATEGORIES"
-    },
-    {
-      id: "u",
-      icon: <Users className="h-5 w-5 text-orange-500" />,
-      val: statsLoading ? "..." : `${formatCompact(stats?.totalUsers)}+`,
-      label: "ASPIRANTS"
-    }
+    { id: "q", icon: <Zap className="h-5 w-5 text-blue-600" />, val: statsLoading ? "..." : `${formatCompact(stats?.totalQuestions)}+`, label: "Questions" },
+    { id: "m", icon: <ClipboardList className="h-5 w-5 text-indigo-600" />, val: statsLoading ? "..." : `${formatCompact(stats?.totalMocks)}+`, label: "Mock Tests" },
+    { id: "e", icon: <ShieldCheck className="h-5 w-5 text-emerald-600" />, val: statsLoading ? "..." : `${formatCompact(stats?.totalCategories)}+`, label: "Categories" },
+    { id: "u", icon: <Users className="h-5 w-5 text-orange-500" />, val: statsLoading ? "..." : `${formatCompact(stats?.totalUsers)}+`, label: "Aspirants" }
   ], [stats, statsLoading]);
 
   if (!mounted) return null;
@@ -81,7 +60,6 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-8 items-center">
 
-          {/* LEFT: Text & Identity Hub */}
           <div className="text-left space-y-6">
             <motion.div 
                initial={{ opacity: 0, x: -20 }}
@@ -90,87 +68,43 @@ export default function Hero() {
             >
               <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500 animate-pulse" />
               <span className="text-[12px] font-black text-slate-700 tracking-tight uppercase">
-                {statsLoading ? "..." : (stats?.totalUsers || 0).toLocaleString()} ASPIRANTS TRUSTING CRACKLIX
+                {statsLoading ? "..." : (stats?.totalUsers || 0).toLocaleString()} Aspirants Trusting Cracklix
               </span>
             </motion.div>
 
             <div className="space-y-4">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.05]">
                 Crack Punjab <br/>
-                <span className="block text-blue-600">
-                  Government Exams
-                </span>
+                <span className="block text-blue-600">Government Exams</span>
                 With Confidence
               </h1>
 
               <p className="text-sm sm:text-base text-slate-600 max-w-lg leading-relaxed font-medium">
-                Practice with bilingual mock tests, previous papers and exam-focused preparation for PSSSB, Punjab Police, PSTET, PSPCL and more.
+                Practice with bilingual mock tests, previous papers and exam-focused preparation verified by official patterns.
               </p>
 
               <div className="flex flex-wrap gap-2">
-                {["PSSSB", "Punjab Police", "PSTET", "PSPCL", "PPSC"].map(
-                  (item) => (
-                    <span
-                      key={item}
-                      className="px-3 py-1 rounded-full bg-white border text-[11px] font-bold text-slate-500 hover:bg-slate-50 transition-colors tracking-tight"
-                    >
-                      {item}
-                    </span>
-                  )
-                )}
+                {["PSSSB", "Punjab Police", "PSTET", "PSPCL", "PPSC"].map((item) => (
+                  <span key={item} className="px-3 py-1 rounded-full bg-white border text-[11px] font-bold text-slate-500 hover:bg-slate-50 transition-colors tracking-tight">
+                    {item}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* RIGHT: Visual & Features Hub */}
           <div className="flex flex-col items-center">
-            {/* Hero Image */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="relative flex justify-center mb-6"
-            >
-              <img
-                src="/images/hero-student.png"
-                alt="Cracklix Student"
-                className="w-full max-w-[320px] md:max-w-md drop-shadow-2xl"
-              />
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="relative flex justify-center mb-6">
+              <img src="/images/hero-student.png" alt="Cracklix Student" className="w-full max-w-[320px] md:max-w-md drop-shadow-2xl" />
             </motion.div>
 
-            {/* Feature Matrix Cards */}
             <div className="grid grid-cols-2 gap-3 w-full">
-              <FeatureCard 
-                icon={ClipboardList} 
-                label="Mock Tests" 
-                sub={statsLoading ? "..." : `${formatCompact(stats?.totalMocks)}+ SERIES`} 
-                color="text-blue-600" 
-                href="/mocks" 
-              />
-              <FeatureCard 
-                icon={BookOpen} 
-                label="Study Material" 
-                sub={statsLoading ? "..." : `${formatCompact(stats?.totalNotes)}+ NOTES`} 
-                color="text-indigo-600" 
-                href="/notes" 
-              />
-              <FeatureCard 
-                icon={FileText} 
-                label="Previous Papers" 
-                sub={statsLoading ? "..." : `${formatCompact(stats?.totalPYQs)}+ SOLVED`} 
-                color="text-emerald-600" 
-                href="/pyqs" 
-              />
-              <FeatureCard 
-                icon={BarChart3} 
-                label="Analytics" 
-                sub="STATE MERIT" 
-                color="text-orange-500" 
-                href="/dashboard" 
-              />
+              <FeatureCard icon={ClipboardList} label="Mock Tests" sub="Premium Series" color="text-blue-600" href="/mocks" />
+              <FeatureCard icon={BookOpen} label="Study Material" sub="Verified Notes" color="text-indigo-600" href="/notes" />
+              <FeatureCard icon={FileText} label="Previous Papers" sub="Solved Official" color="text-emerald-600" href="/pyqs" />
+              <FeatureCard icon={BarChart3} label="Analytics" sub="State Merit" color="text-orange-500" href="/dashboard" />
             </div>
 
-            {/* CTA Buttons */}
             <div className="flex flex-wrap gap-3 mt-8 w-full justify-center">
               <Button asChild className="h-12 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-xs tracking-tight gap-2">
                 <Link href="/mocks">Start Free Mock Test <ChevronRight className="h-4 w-4" /></Link>
@@ -182,7 +116,6 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* STATS: Bottom Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-10">
           {liveStats.map((stat) => (
             <Card key={stat.id} className="p-4 rounded-2xl bg-white border border-slate-100 shadow-md group hover:shadow-xl transition-all">
