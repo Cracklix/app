@@ -22,7 +22,8 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official High-Density Hero Hub v25.0.
+ * @fileOverview Official High-Density Hero Hub v26.0 (PWA Optimized).
+ * FIXED: Reduced vertical footprint and element scales for mobile viewports.
  */
 
 const formatCompact = (num: number) => {
@@ -58,6 +59,7 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-4 md:gap-8 items-center">
 
+          {/* 1. CONTENT BLOCK */}
           <div className="text-left space-y-2 md:space-y-6">
             <motion.div 
                initial={{ opacity: 0, x: -20 }}
@@ -70,7 +72,7 @@ export default function Hero() {
               </span>
             </motion.div>
 
-            <div className="space-y-1.5 md:space-y-4">
+            <div className="space-y-1 md:space-y-4">
               <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.05]">
                 Crack Punjab <br/>
                 <span className="block text-blue-600">Government Exams</span>
@@ -80,40 +82,38 @@ export default function Hero() {
               <p className="text-[10px] sm:text-base text-slate-600 max-w-lg leading-relaxed font-medium">
                 Practice with bilingual mock tests, previous papers and exam-focused preparation.
               </p>
-
-              <div className="flex flex-wrap gap-1 md:gap-1.5 pt-1">
-                {["PSSSB", "Punjab Police", "PSTET"].map((item) => (
-                  <span key={item} className="px-2 py-0.5 rounded-full bg-white border text-[8px] md:text-[10px] font-bold text-slate-400 tracking-tight">
-                    {item}
-                  </span>
-                ))}
-              </div>
             </div>
           </div>
 
-          <div className="flex flex-col items-center">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="relative flex justify-center mb-2 md:mb-6">
-              <img src="/images/hero-student.png" alt="Cracklix Student" className="w-full max-w-[140px] md:max-w-md drop-shadow-2xl" />
+          {/* 2. VISUALS & QUICK TOOLS */}
+          <div className="flex flex-col items-center mt-2 md:mt-0">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="relative flex justify-center mb-2 md:mb-6">
+              <img 
+                src="/images/hero-student.png" 
+                alt="Cracklix Student" 
+                className="w-full max-w-[110px] md:max-w-md drop-shadow-2xl h-auto object-contain" 
+              />
             </motion.div>
 
-            <div className="grid grid-cols-2 gap-1.5 md:gap-3 w-full max-w-sm md:max-w-none">
+            <div className="grid grid-cols-2 gap-2 md:gap-3 w-full max-w-sm md:max-w-none">
               <FeatureCard icon={ClipboardList} label="Mock Tests" sub="Premium" color="text-blue-600" href="/mocks" />
               <FeatureCard icon={BookOpen} label="Study Material" sub="Verified" color="text-indigo-600" href="/notes" />
               <FeatureCard icon={FileText} label="PYQ Papers" sub="Solved" color="text-emerald-600" href="/pyqs" />
               <FeatureCard icon={BarChart3} label="Analytics" sub="Merit" color="text-orange-500" href="/dashboard" />
             </div>
 
-            <div className="flex flex-wrap gap-2 mt-4 md:mt-8 w-full justify-center">
-              <Button asChild className="h-10 md:h-12 px-4 md:px-6 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-[10px] md:text-xs tracking-tight gap-2">
+            <div className="flex gap-2 mt-3 md:mt-8 w-full justify-center">
+              <Button asChild className="flex-1 md:flex-none h-11 md:h-12 px-4 md:px-6 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-[10px] md:text-xs tracking-tight gap-2 border-none">
                 <Link href="/mocks">Start Free Mock <ChevronRight className="h-4 w-4" /></Link>
               </Button>
-              <Button asChild variant="outline" className="h-10 md:h-12 px-4 md:px-6 rounded-xl border-slate-200 bg-white font-bold text-slate-700 text-[10px] md:text-xs tracking-tight gap-2">
+              <Button asChild variant="outline" className="flex-1 md:flex-none h-11 md:h-12 px-4 md:px-6 rounded-xl border-slate-200 bg-white font-bold text-slate-700 text-[10px] md:text-xs tracking-tight gap-2">
                 <Link href="/pass"><Gem className="h-4 w-4 text-primary" /> {profile?.passStatus === 'active' ? 'Manage' : 'Get Pass'}</Link>
               </Button>
             </div>
           </div>
         </div>
 
+        {/* 3. DYNAMIC STATS STRIP */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4 md:mt-10">
           {liveStats.map((stat) => (
             <Card key={stat.id} className="p-2 md:p-4 rounded-xl md:rounded-2xl bg-white border border-slate-100 shadow-md group hover:shadow-xl transition-all">
@@ -136,13 +136,17 @@ export default function Hero() {
 
 function FeatureCard({ icon: Icon, label, sub, color, href }: any) {
   return (
-    <Link href={href}>
-      <Card className="p-2 md:p-4 rounded-xl md:rounded-2xl border border-slate-100 bg-white hover:shadow-lg transition-all duration-300 h-full group">
-        <div className={cn("h-6 w-6 md:h-8 md:w-8 rounded-lg flex items-center justify-center mb-1.5 md:mb-3 shadow-inner bg-slate-50 group-hover:scale-110 transition-transform")}>
-          <Icon className={cn("h-3 w-3 md:h-4 md:w-4", color)} />
+    <Link href={href} className="block h-full">
+      <Card className="px-3 py-2 rounded-xl border border-slate-100 bg-white hover:shadow-lg transition-all duration-300 h-[74px] md:h-auto group flex flex-col justify-center">
+        <div className="flex items-center gap-2.5 md:block">
+            <div className={cn("h-7 w-7 md:h-8 md:w-8 rounded-lg flex items-center justify-center mb-0 md:mb-3 shadow-inner bg-slate-50 group-hover:scale-110 transition-transform shrink-0")}>
+              <Icon className={cn("h-4 w-4 md:h-4 md:w-4", color)} />
+            </div>
+            <div className="min-w-0">
+                <p className="font-semibold text-slate-900 text-[13px] md:text-xs leading-tight text-left truncate">{label}</p>
+                <p className="text-[9px] md:text-[8px] text-slate-400 mt-0.5 uppercase font-bold tracking-widest text-left truncate">{sub}</p>
+            </div>
         </div>
-        <p className="font-bold text-slate-900 text-[9px] md:text-xs leading-tight text-left">{label}</p>
-        <p className="text-[6px] md:text-[8px] text-slate-400 mt-0.5 uppercase font-bold tracking-widest text-left">{sub}</p>
       </Card>
     </Link>
   )
