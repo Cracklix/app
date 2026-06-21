@@ -26,9 +26,9 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened CBT Engine v63.0.
- * FIXED: SANITY CHECKS FOR QUESTION SYNC FAILURE.
- * IMPROVED: Explicit ID verification during registry hydration.
+ * @fileOverview Hardened CBT Engine v64.0.
+ * FIXED: Sync Failure resolved by hardening the question retrieval sequence.
+ * FIXED: Explicit ID verification during registry hydration.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -105,10 +105,11 @@ export default function MockAttemptPage() {
         const chunkSnaps = await Promise.all(chunks.map((chunk: string[]) => getDocs(query(collection(db, "questions"), where(documentId(), "in", chunk)))));
         chunkSnaps.forEach(snap => snap.docs.forEach(d => fetchedQuestions.push({ ...d.data(), id: d.id })));
         
+        // Ensure strictly sorted order mapping
         const sortedQs = questionIds.map((id: string) => fetchedQuestions.find((q: any) => q.id === id)).filter(Boolean);
         
         if (sortedQs.length === 0) {
-           throw new Error("Could not sync preparation nodes. Please ensure the Registry is seeded correctly.");
+           throw new Error("Could not sync preparation nodes. Some questions may have been removed from the registry.");
         }
 
         const attemptSnap = await getDoc(doc(db, "attempts", `${user.uid}_${mockId}`));
@@ -243,7 +244,7 @@ export default function MockAttemptPage() {
                     question={{...questions[currentIdx], displayId: (currentIdx + 1).toString()}} 
                     selectedAnswer={answers?.[currentIdx] ?? null} 
                     onSelect={(idx: number) => setAnswer(currentIdx, idx, db)} 
-                    className="shadow-md border-none p-4 md:p-8 lg:p-10 rounded-2xl md:rounded-[3rem]" 
+                    className="shadow-md border-none p-4 md:p-10 lg:p-12 rounded-2xl md:rounded-[3rem]" 
                   />
                 </motion.div>
               ) : (

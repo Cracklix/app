@@ -1,7 +1,7 @@
 import { Firestore, doc, serverTimestamp, writeBatch, collection, getDocs } from 'firebase/firestore';
 
 /**
- * @fileOverview Official Institutional Registry Blueprint v72.0.
+ * @fileOverview Official Institutional Registry Blueprint v73.0.
  * STRICT: Implements the final deca-verified tree provided by the user.
  * SEED: Populates the global bank with sample questions for immediate verification.
  */
@@ -48,7 +48,7 @@ export async function seedInitialData(db: Firestore) {
     { id: "ssc-cgl", name: "SSC CGL", boardId: "ssc", categoryId: "central-government-exams" }
   ];
 
-  // 4. SAMPLE QUESTIONS
+  // 4. SAMPLE QUESTIONS (BILINGUAL REGISTRY NODES)
   const questions = [
     {
       id: "q1",
@@ -65,6 +65,7 @@ export async function seedInitialData(db: Firestore) {
       correctAnswer: 'B',
       difficulty: "Easy",
       englishExplanation: "Gurmukhi script is used for writing the Punjabi language.",
+      punjabiExplanation: "ਪੰਜਾਬੀ ਭਾਸ਼ਾ ਲਿਖਣ ਲਈ ਗੁਰਮੁਖੀ ਲਿਪੀ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।",
       subjectId: "punjabi",
       boardId: "psssb",
       status: "USED",
@@ -87,6 +88,7 @@ export async function seedInitialData(db: Firestore) {
       correctAnswer: 'B',
       difficulty: "Medium",
       englishExplanation: "Mandi Gobindgarh is famous for its steel industry.",
+      punjabiExplanation: "ਮੰਡੀ ਗੋਬਿੰਦਗੜ੍ਹ ਆਪਣੇ ਸਟੀਲ ਉਦਯੋਗ ਲਈ ਮਸ਼ਹੂਰ ਹੈ।",
       subjectId: "punjab-gk",
       boardId: "psssb",
       status: "USED",

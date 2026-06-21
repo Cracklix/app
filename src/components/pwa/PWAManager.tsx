@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Hardened Institutional PWA Manager v17.0.
- * FIXED: Removed /install exclusion to ensure shared links can trigger installation.
- * FIXED: Accurate browser vs standalone mode detection.
+ * @fileOverview Hardened Institutional PWA Manager v18.0.
+ * FIXED: Removed /install exclusion to ensure prompt works on the setup page.
+ * FIXED: Reliable standalone detection with hydration guard.
  */
 export default function PWAManager() {
   const pathname = usePathname();
@@ -40,7 +40,7 @@ export default function PWAManager() {
     setMounted(true);
 
     const handlePrompt = (e: any) => {
-      console.log('[PWA_AUDIT] beforeinstallprompt event captured in registry');
+      console.log('[PWA_AUDIT] beforeinstallprompt event captured');
       e.preventDefault();
       (window as any).deferredPrompt = e;
       window.dispatchEvent(new CustomEvent('pwa-installable'));
@@ -48,7 +48,7 @@ export default function PWAManager() {
     };
 
     const handleAppInstalled = () => {
-      console.log('[PWA_AUDIT] App successfully integrated into device registry');
+      console.log('[PWA_AUDIT] App successfully integrated into device');
       setIsInstalled(true);
       setShowPrompt(false);
       (window as any).deferredPrompt = null;
@@ -59,7 +59,7 @@ export default function PWAManager() {
     window.addEventListener('pwa-installable', checkStatus);
     
     // Delayed initial check to allow hydration stability
-    const timer = setTimeout(checkStatus, 500);
+    const timer = setTimeout(checkStatus, 1000);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handlePrompt);
@@ -72,7 +72,7 @@ export default function PWAManager() {
   const handleInstallClick = async () => {
     const prompt = (window as any).deferredPrompt;
     if (!prompt) {
-       console.warn('[PWA_AUDIT] Prompt request denied: Not yet available in browser context.');
+       console.warn('[PWA_AUDIT] Prompt request denied: Not yet available.');
        return;
     }
 

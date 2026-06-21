@@ -16,8 +16,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview High-Density Pass Center v22.5.
- * FIXED: TS2769 by capturing passExpiresAt locally before Date initialization.
+ * @fileOverview High-Density Pass Center v23.0.
+ * FIXED: TS2769 by capturing passExpiresAt into a local constant.
  */
 
 export default function PassPage() {

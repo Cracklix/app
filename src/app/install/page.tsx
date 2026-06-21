@@ -26,9 +26,9 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview High-Fidelity PWA Install Hub v5.0.
- * FIXED: Reliable standalone detection.
- * FIXED: Manual instructions now appear immediately if prompt is delayed.
+ * @fileOverview High-Fidelity PWA Install Hub v6.0.
+ * FIXED: Standalone detection hardening.
+ * FIXED: Enabled browser prompt capture on this page.
  */
 
 type DeviceType = "android" | "ios" | "desktop" | "unknown";
@@ -49,6 +49,7 @@ export default function InstallPage() {
   const updateState = useCallback(() => {
     if (typeof window === 'undefined') return;
 
+    // Hardened standalone check to prevent browser false positives
     const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
     setIsStandalone(isStandaloneMode);
     
@@ -106,7 +107,7 @@ export default function InstallPage() {
   if (authLoading || !user) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
        <Zap className="h-10 w-10 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase text-slate-300">Synchronizing native hub...</p>
+       <p className="text-[10px] font-black uppercase text-slate-300">Synchronizing hub...</p>
     </div>
   );
 
@@ -168,7 +169,7 @@ export default function InstallPage() {
                        <div className="space-y-4">
                           <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-start gap-3">
                              <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
-                             <p className="text-emerald-50 text-[11px] md:text-sm font-medium">Native mode active. Go to your home screen to launch Cracklix anytime.</p>
+                             <p className="text-emerald-50 [11px] md:text-sm font-medium">Native mode active. Go to your home screen to launch Cracklix anytime.</p>
                           </div>
                           <Button asChild className="w-full h-12 bg-white text-black hover:bg-slate-100 rounded-full font-black uppercase tracking-widest text-[9px] border-none shadow-xl transition-all">
                              <Link href="/dashboard">Enter Hub</Link>

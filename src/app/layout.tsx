@@ -17,7 +17,8 @@ const inter = Inter({
 });
 
 /**
- * @fileOverview Root Layout v52.3 (Production Hardened).
+ * @fileOverview Root Layout v52.4 (Production Hardened).
+ * UPDATED: Explicit color-scheme enforcement to prevent dark-mode inversion.
  */
 export const metadata: Metadata = {
   title: "Cracklix | Punjab's Smart Mock Test Platform",
@@ -34,14 +35,14 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/icons/icon-512x512.png",
-        type: "image/png",
-        sizes: "512x512",
-      },
-      {
         url: "/icons/icon-192x192.png",
         type: "image/png",
         sizes: "192x192",
+      },
+      {
+        url: "/icons/icon-512x512.png",
+        type: "image/png",
+        sizes: "512x512",
       },
     ],
     shortcut: "/icons/icon-192x192.png",
@@ -78,6 +79,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className="light">
+      <head>
+         <meta name="color-scheme" content="light" />
+      </head>
       <body
         className={`
           ${inter.variable}

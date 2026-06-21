@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo, useState, useEffect } from "react"
+import React, { useMemo, useState, useEffect, isValidElement, cloneElement, ReactElement } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useCollection, useFirestore } from "@/firebase"
@@ -33,10 +33,12 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v29.1 (Type Fixed).
+ * @fileOverview Student Dashboard v30.0 (Type Fixed).
+ * FIXED: Explicit casting for React.cloneElement to prevent unknown property errors.
+ * FIXED: Date narrowing to prevent build failure.
  */
 export default function StudentDashboard() {
-  const { user, profile, loading: authLoading, profileLoading } = useUser() as any;
+  const { user, profile, loading: authLoading } = useUser() as any;
   const db = useFirestore()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
@@ -139,16 +141,12 @@ export default function StudentDashboard() {
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[80px] rounded-full pointer-events-none" />
                 <div className="relative z-10 flex flex-row items-center gap-4 md:gap-10">
                   <div className="relative shrink-0">
-                    {profileLoading && !profile ? (
-                      <Skeleton className="h-14 w-14 md:h-28 md:w-28 rounded-xl md:rounded-3xl bg-white/5" />
-                    ) : (
-                      <div className="relative">
-                        <StudentAvatar profile={profile} className="h-14 w-14 md:h-28 md:w-28 border-[2px] md:border-[3px] border-white/10 rounded-xl md:rounded-3xl shadow-5xl bg-[#0F172A]" />
-                        <div className="absolute -bottom-1 -right-1 bg-emerald-500 h-4 w-4 md:h-8 md:w-8 rounded-lg border border-[#0B1528] flex items-center justify-center text-white shadow-xl">
-                            <ShieldCheck className="h-2 w-2 md:h-4 md:w-4" />
-                        </div>
+                    <div className="relative">
+                      <StudentAvatar profile={profile} className="h-14 w-14 md:h-28 md:w-28 border-[2px] md:border-[3px] border-white/10 rounded-xl md:rounded-3xl shadow-5xl bg-[#0F172A]" />
+                      <div className="absolute -bottom-1 -right-1 bg-emerald-500 h-4 w-4 md:h-8 md:w-8 rounded-lg border border-[#0B1528] flex items-center justify-center text-white shadow-xl">
+                          <ShieldCheck className="h-2 w-2 md:h-4 md:w-4" />
                       </div>
-                    )}
+                    </div>
                   </div>
                   <div className="flex-1 space-y-1.5 min-w-0 text-left">
                     <div className="space-y-0.5">
@@ -256,7 +254,7 @@ function MetricItem({ label, val, icon }: any) {
   return (
     <Card className="border-none shadow-lg bg-white p-4 md:p-6 rounded-2xl text-left group hover:translate-y-[-2px] transition-all border border-slate-100 min-w-0">
       <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl bg-slate-50 flex items-center justify-center mb-3 md:mb-4 group-hover:bg-primary/5 transition-all shadow-inner shrink-0">
-        {React.isValidElement(icon) && React.cloneElement(icon as React.ReactElement<any>, { 
+        {isValidElement(icon) && cloneElement(icon as ReactElement<any>, { 
           className: cn("h-4 w-4 md:h-5 md:w-5", (icon as any).props.className) 
         })}
       </div>
