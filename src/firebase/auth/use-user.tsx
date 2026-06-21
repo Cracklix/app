@@ -1,16 +1,15 @@
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth, useFirestore } from '../provider';
 import { UserProfile } from '@/types';
 import { getDeviceId } from '@/lib/device';
 
 /**
- * @fileOverview Hardened Auth & Profile Hub v10.0 (Countdown Aware).
- * SECURITY: Real-time pass status derivation with expiry detection.
+ * @fileOverview Hardened Auth & Profile Hub v11.0 (Subscription Queue Aware).
+ * SECURITY: Real-time pass status derivation with auto-activation from queue.
  */
 export function useUser() {
   const auth = useAuth();
@@ -65,22 +64,46 @@ export function useUser() {
       return;
     }
 
-    const unsubscribeProfile = onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
+    const unsubscribeProfile = onSnapshot(doc(db, 'users', user.uid), async (docSnap) => {
       try {
         if (docSnap.exists()) {
           const data = docSnap.data();
+          const now = new Date();
           
-          // REAL-TIME PASS AUDIT
           let passStatus: 'active' | 'expired' | 'none' = data.passStatus || 'none';
           let passActive = false;
 
+          // 1. PRIMARY PASS AUDIT
           if (data.passExpiresAt) {
              const expiryDate = new Date(data.passExpiresAt);
-             const now = new Date();
-             
              if (now > expiryDate) {
                 passStatus = 'expired';
                 passActive = false;
+                
+                // 2. QUEUE CHECK & AUTO-ACTIVATION
+                if (data.queuedPasses && data.queuedPasses.length > 0) {
+                   const nextPass = data.queuedPasses[0];
+                   const remainingQueue = data.queuedPasses.slice(1);
+                   
+                   const newExpiry = new Date();
+                   newExpiry.setDate(newExpiry.getDate() + nextPass.durationDays);
+
+                   await updateDoc(doc(db, 'users', user.uid), {
+                      pass: {
+                         active: true,
+                         plan: nextPass.planId.toUpperCase(),
+                         purchaseDate: now.toISOString(),
+                         expiryDate: newExpiry.toISOString(),
+                         freePassClaimed: nextPass.planId === 'free-pass'
+                      },
+                      passStatus: 'active',
+                      passExpiresAt: newExpiry.toISOString(),
+                      status: nextPass.planId,
+                      queuedPasses: remainingQueue,
+                      updatedAt: serverTimestamp()
+                   });
+                   return; // Re-fire on next snapshot
+                }
              } else {
                 passStatus = 'active';
                 passActive = true;

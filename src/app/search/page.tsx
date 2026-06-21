@@ -13,8 +13,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Global Search Center v5.0.
- * FIXED: Explicit React imports and cloneElement hardening.
+ * @fileOverview Global Search Center v6.0.
+ * FIXED: Explicit React imports and cloneElement hardening for production stability.
  */
 
 export default function SearchPage() {
@@ -109,7 +109,7 @@ function SearchContent() {
                  <p className="text-slate-400 font-bold uppercase text-[9px] md:text-[11px] tracking-[0.4em]">Instant Access to the Registry</p>
               </div>
               
-              <div className="relative max-w-2xl mx-auto group">
+              <div className="relative max-w-[700px] mx-auto group">
                  <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-600/20 rounded-2xl blur lg opacity-0 group-focus-within:opacity-15 transition duration-1000"></div>
                  <div className="relative">
                     <SearchIcon className={cn("absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 transition-colors", isLoading ? "text-primary animate-pulse" : "text-slate-300")} />

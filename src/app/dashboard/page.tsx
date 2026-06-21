@@ -33,11 +33,11 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v32.0 (Hardened Types).
- * FIXED: TS18046 icon.props by using proper casting and guards.
+ * @fileOverview Student Dashboard v33.0 (Queue & Expiry Aware).
+ * FIXED: Pass countdown and auto-activation support.
  */
 export default function StudentDashboard() {
-  const { user, profile, loading: authLoading } = useUser() as any;
+  const { user, profile, loading: authLoading } = useUser();
   const db = useFirestore()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
@@ -59,7 +59,10 @@ export default function StudentDashboard() {
 
   useEffect(() => {
     const expiryStr = profile?.passExpiresAt;
-    if (!expiryStr) return;
+    if (!expiryStr) {
+       setPassCountdown("");
+       return;
+    }
     
     const expiryDate = new Date(expiryStr);
     if (isNaN(expiryDate.getTime())) return;
@@ -231,6 +234,17 @@ export default function StudentDashboard() {
                     </div>
                 </div>
               </Card>
+
+              {profile?.queuedPasses && profile.queuedPasses.length > 0 && (
+                 <Card className="border-none shadow-xl bg-emerald-500 text-white p-6 rounded-2xl relative overflow-hidden animate-in zoom-in-95">
+                    <div className="absolute top-0 right-0 p-4 opacity-10"><Layers className="h-12 w-12" /></div>
+                    <div className="relative z-10 text-left">
+                       <p className="text-[9px] font-black uppercase tracking-widest text-emerald-100">Extension Queue</p>
+                       <p className="text-lg font-black mt-1">{profile.queuedPasses.length} Extension{profile.queuedPasses.length > 1 ? 's' : ''} Scheduled</p>
+                       <p className="text-[8px] font-medium text-emerald-100 mt-2 uppercase tracking-tight">Activating after {passCountdown}</p>
+                    </div>
+                 </Card>
+              )}
 
               <div className="bg-white p-4 md:p-6 rounded-2xl border border-slate-100 shadow-xl space-y-4 md:space-y-6">
                  <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Quick Tools</h4>

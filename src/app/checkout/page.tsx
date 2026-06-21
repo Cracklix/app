@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ShieldCheck, ArrowLeft, Loader2, QrCode, CreditCard, AlertTriangle, Smartphone, Gem, Copy, Zap } from "lucide-react"
+import { ShieldCheck, ArrowLeft, Loader2, QrCode, CreditCard, Clock, Gem, Copy, Zap, Layers } from "lucide-react"
 import { useUser, useDoc, useFirestore } from "@/firebase"
 import { useEffect, useState, Suspense, useMemo } from "react"
 import { useToast } from "@/hooks/use-toast"
@@ -18,8 +18,8 @@ import Script from "next/script"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Production Checkout Hub v6.5.
- * FIXED: Added missing 'cn' utility import (TS2304).
+ * @fileOverview Hardened Production Checkout Hub v7.0.
+ * UPDATED: Subscription Queue Awareness. Detects existing active passes.
  */
 
 export default function CheckoutPage() {
@@ -57,14 +57,22 @@ function CheckoutContent() {
     if (!loading && !user) router.push("/login")
   }, [user, loading, router])
 
+  const isAlreadyActive = useMemo(() => {
+     if (!profile?.passExpiresAt) return false;
+     return new Date(profile.passExpiresAt) > new Date();
+  }, [profile]);
+
   const handlePaymentInitiation = async () => {
     if (!user || !profile || !planData || onlineProcessing) return;
     
     if (planData.price === 0) {
       setOnlineProcessing(true);
       try {
-        await activateFreePass(user.uid, planId);
-        toast({ title: "Pass Activated", description: "Your free preparation node is now live." });
+        const res = await activateFreePass(user.uid, planId);
+        toast({ 
+           title: res.queued ? "Pass Queued" : "Pass Activated", 
+           description: res.queued ? "Extension scheduled for after current pass expiry." : "Your free preparation node is now live." 
+        });
         router.push("/dashboard");
       } catch (e) {
         toast({ variant: "destructive", title: "Activation Failed" });
@@ -149,6 +157,18 @@ function CheckoutContent() {
            </div>
         </div>
 
+        {isAlreadyActive && (
+           <Card className="mb-8 border-none bg-blue-600 text-white p-6 rounded-[1.5rem] shadow-xl flex items-center gap-6 animate-in slide-in-from-top-4">
+              <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 shadow-inner">
+                 <Clock className="h-6 w-6 text-white" />
+              </div>
+              <div className="min-w-0">
+                 <h4 className="text-sm md:text-lg font-black uppercase tracking-tight">Existing Pass Detected</h4>
+                 <p className="text-[10px] md:text-xs font-medium text-blue-100 mt-1">This new pass will be stored in your subscription queue and activated automatically when your current pass expires on <span className="font-black underline">{new Date(profile.passExpiresAt).toLocaleDateString()}</span>.</p>
+              </div>
+           </Card>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16">
            <div className="lg:col-span-7 space-y-8">
               <Tabs defaultValue="online" className="w-full">
@@ -182,8 +202,8 @@ function CheckoutContent() {
                               isFreePlan ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20" : "bg-primary hover:bg-orange-600 shadow-primary/20"
                             )}
                           >
-                             {onlineProcessing ? <Loader2 className="h-6 w-6 animate-spin" /> : <ShieldCheck className="h-6 w-6 fill-current" />}
-                             {onlineProcessing ? "AUDITING REGISTRY..." : isFreePlan ? "CLAIM MY FREE PASS" : "ACTIVATE PLAN NOW"}
+                             {onlineProcessing ? <Loader2 className="h-6 w-6 animate-spin" /> : isAlreadyActive ? <Layers className="h-6 w-6" /> : <ShieldCheck className="h-6 w-6 fill-current" />}
+                             {onlineProcessing ? "AUDITING REGISTRY..." : isAlreadyActive ? "EXTEND MY PREPARATION" : isFreePlan ? "CLAIM MY FREE PASS" : "ACTIVATE PLAN NOW"}
                           </Button>
                           {!isFreePlan && !sdkReady && <p className="text-[8px] font-bold text-center text-slate-300 mt-4 uppercase tracking-widest">Awaiting security handshake...</p>}
                        </CardContent>
@@ -238,7 +258,7 @@ function CheckoutContent() {
                                 className="w-full h-16 bg-slate-200 hover:bg-slate-300 text-slate-700 font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all border-none gap-3"
                              >
                                 {processing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
-                                Submit Transaction for Audit
+                                {isAlreadyActive ? "QUEUE FOR AUDIT" : "SUBMIT FOR AUDIT"}
                              </Button>
                           </div>
                        </CardContent>

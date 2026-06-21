@@ -201,6 +201,14 @@ export interface Question {
   updatedAt: any;
 }
 
+export interface QueuedPass {
+  id: string;
+  name: string;
+  durationDays: number;
+  purchasedAt: string;
+  planId: string;
+}
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -230,6 +238,7 @@ export interface UserProfile {
   activeBrowser?: string;
   activePlatform?: string;
   lastLoginAt?: any;
+  queuedPasses?: QueuedPass[];
   pass?: {
     active: boolean;
     plan: 'FREE_PASS' | 'MONTHLY' | 'QUARTERLY' | 'YEARLY' | string;

@@ -5,7 +5,7 @@ import Footer from "@/components/layout/Footer"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, Zap, ArrowRight, Gem, AlertCircle } from "lucide-react"
+import { CheckCircle2, Zap, ArrowRight, Gem, AlertCircle, Clock, Layers, Calendar } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { useUser, useFirestore, useCollection } from "@/firebase"
@@ -16,8 +16,8 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview High-Density Pass Center v23.0.
- * FIXED: TS2769 by capturing passExpiresAt into a local constant.
+ * @fileOverview High-Density Pass Center v24.0.
+ * UPDATED: Added Subscription Queue visibility. Aspirants can now see their extension schedule.
  */
 
 export default function PassPage() {
@@ -86,7 +86,7 @@ export default function PassPage() {
         
         {/* COMPACT MANAGEMENT CARD */}
         {mounted && profile?.passStatus && passStatus !== 'none' && (
-           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
+           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
               <Card className="max-w-4xl mx-auto border border-slate-100 bg-white rounded-2xl md:rounded-[2rem] p-3 md:p-10 shadow-xl text-left overflow-hidden relative">
                  <div className={cn("absolute top-0 left-0 w-1.5 h-full", passStatus === 'active' ? 'bg-emerald-500' : 'bg-rose-500')} />
                  <div className="flex flex-col md:flex-row justify-between items-center gap-3 relative z-10">
@@ -121,10 +121,36 @@ export default function PassPage() {
                     </div>
 
                     <Button asChild className="w-full md:w-auto h-11 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black uppercase text-[9px] md:text-[10px] tracking-widest shadow-xl border-none">
-                       <Link href="#plans">Get Pass <ArrowRight className="ml-2 h-3 w-3" /></Link>
+                       <Link href="#plans">Extend <ArrowRight className="ml-2 h-3 w-3" /></Link>
                     </Button>
                  </div>
               </Card>
+
+              {/* SUBSCRIPTION QUEUE VISIBILITY */}
+              {profile.queuedPasses && profile.queuedPasses.length > 0 && (
+                 <div className="max-w-4xl mx-auto space-y-4">
+                    <div className="flex items-center gap-3 px-2">
+                       <Layers className="h-4 w-4 text-primary" />
+                       <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Scheduled Extensions</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       {profile.queuedPasses.map((q, i) => (
+                          <div key={q.id} className="bg-white border border-slate-100 p-4 rounded-2xl shadow-lg flex items-center justify-between group">
+                             <div className="flex items-center gap-4">
+                                <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-inner">
+                                   <Zap className="h-5 w-5" />
+                                </div>
+                                <div>
+                                   <p className="text-xs font-black text-[#0F172A] uppercase">{q.name}</p>
+                                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">{q.durationDays} Days Duration</p>
+                                </div>
+                             </div>
+                             <Badge variant="outline" className="border-slate-100 text-slate-300 text-[7px] font-black uppercase px-2 py-1">Queued #{i+1}</Badge>
+                          </div>
+                       ))}
+                    </div>
+                 </div>
+              )}
            </motion.div>
         )}
 
@@ -155,7 +181,9 @@ export default function PassPage() {
                    </CardContent>
                    <CardFooter className="p-3 md:p-10 pt-0">
                       <Button asChild className="w-full h-11 md:h-16 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-[9px] md:text-[10px] tracking-widest shadow-lg border-none active:scale-95">
-                         <Link href={`/checkout?plan=${plan.id}`}>Activate <ArrowRight className="ml-2 h-3 w-3" /></Link>
+                         <Link href={`/checkout?plan=${plan.id}`}>
+                           {passStatus === 'active' ? 'Extend Preparation' : 'Activate Plan'} <ArrowRight className="ml-2 h-3 w-3" />
+                         </Link>
                       </Button>
                    </CardFooter>
                 </Card>
