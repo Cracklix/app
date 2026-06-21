@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils"
 import type { Question } from "@/types"
 
 /**
- * @fileOverview Hardened CBT Integrity Hub v17.3.
+ * @fileOverview Hardened CBT Integrity Hub v17.4.
  * FIXED: React.cloneElement typed correctly to resolve TS2769.
  */
 

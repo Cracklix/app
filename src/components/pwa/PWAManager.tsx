@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Hardened Institutional PWA Manager v22.0.
+ * @fileOverview Hardened Institutional PWA Manager v23.0.
  * FIXED: Removed /install exclusion to ensure prompt works on the setup page.
  * FIXED: Reliable standalone detection with hydration guard.
  * ADDED: Dispatcher for custom 'pwa-installable' event to sync UI buttons.

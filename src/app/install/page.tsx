@@ -26,9 +26,9 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview High-Fidelity PWA Install Hub v8.0.
+ * @fileOverview High-Fidelity PWA Install Hub v8.2.
  * FIXED: Standalone detection hardening to prevent false "Already Installed" messages.
- * FIXED: Removed automatic prompt blocking on this path.
+ * FIXED: Prompt exclusion removed to allow one-click installation from this node.
  */
 
 type DeviceType = "android" | "ios" | "desktop" | "unknown";
@@ -72,7 +72,11 @@ export default function InstallPage() {
 
     updateState();
 
-    const handleCheck = () => updateState();
+    const handleCheck = () => {
+      console.log('[INSTALL_PAGE] Synchronizing installability state...');
+      updateState();
+    };
+
     window.addEventListener('pwa-installable', handleCheck);
     window.addEventListener('appinstalled', handleCheck);
     

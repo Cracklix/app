@@ -13,7 +13,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Search Center Hub v4.0 (Hardened).
+ * @fileOverview Search Center Hub v4.1 (Hardened).
  * FIXED: Explicit React import and type-safe cloneElement.
  */
 
@@ -110,7 +110,7 @@ function SearchContent() {
               </div>
               
               <div className="relative max-w-2xl mx-auto group">
-                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-blue-600 rounded-2xl blur lg opacity-0 group-focus-within:opacity-15 transition duration-1000"></div>
+                 <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-600/20 rounded-2xl blur lg opacity-0 group-focus-within:opacity-15 transition duration-1000"></div>
                  <div className="relative">
                     <SearchIcon className={cn("absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 transition-colors", isLoading ? "text-primary animate-pulse" : "text-slate-300")} />
                     <input 
@@ -193,7 +193,7 @@ function SearchResultItem({ title, category, href, icon }: { title: string, cate
                   <div className="flex items-center gap-3">
                      <Badge className="bg-slate-100 text-slate-500 border-none text-[8px] md:text-[9px] font-black uppercase px-2 py-0.5 rounded shadow-sm">{category}</Badge>
                      <div className="h-1 w-1 rounded-full bg-slate-200" />
-                     <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] text-primary">Verified Node</span>
+                     <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary">Verified Node</span>
                   </div>
                </div>
             </div>

@@ -26,7 +26,7 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened CBT Engine v64.0.
+ * @fileOverview Hardened CBT Engine v65.0.
  * FIXED: Sync Failure resolved by hardening the question retrieval sequence.
  * FIXED: Explicit ID verification during registry hydration.
  */
@@ -102,14 +102,17 @@ export default function MockAttemptPage() {
         const chunks = [];
         for (let i = 0; i < questionIds.length; i += 30) { chunks.push(questionIds.slice(i, i + 30)); }
         
-        const chunkSnaps = await Promise.all(chunks.map((chunk: string[]) => getDocs(query(collection(db, "questions"), where(documentId(), "in", chunk)))));
-        chunkSnaps.forEach(snap => snap.docs.forEach(d => fetchedQuestions.push({ ...d.data(), id: d.id })));
+        // Hardened fetch with mapping
+        for (const chunk of chunks) {
+           const chunkSnap = await getDocs(query(collection(db, "questions"), where(documentId(), "in", chunk)));
+           chunkSnap.docs.forEach(d => fetchedQuestions.push({ ...d.data(), id: d.id }));
+        }
         
         // Ensure strictly sorted order mapping
         const sortedQs = questionIds.map((id: string) => fetchedQuestions.find((q: any) => q.id === id)).filter(Boolean);
         
         if (sortedQs.length === 0) {
-           throw new Error("Could not sync preparation nodes. Some questions may have been removed from the registry.");
+           throw new Error("Could not sync preparation nodes. Please ensure you have seeded the initial data in the Admin Dashboard.");
         }
 
         const attemptSnap = await getDoc(doc(db, "attempts", `${user.uid}_${mockId}`));

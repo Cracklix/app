@@ -11,7 +11,7 @@ import { collection } from "firebase/firestore"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Operational Node Monitor v4.8.
+ * @fileOverview Hardened Operational Node Monitor v4.9.
  * FIXED: React.cloneElement correctly typed for production deployment.
  */
 

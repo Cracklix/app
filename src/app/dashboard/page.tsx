@@ -33,7 +33,7 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v31.0 (Hardened).
+ * @fileOverview Student Dashboard v31.1 (Hardened).
  * FIXED: Explicit casting for React.cloneElement to prevent unknown property errors.
  * FIXED: Date narrowing to prevent build failure on optional passExpiresAt.
  */
@@ -130,7 +130,7 @@ export default function StudentDashboard() {
   const isActive = profile?.passStatus === 'active';
 
   return (
-    <div className="min-h-[100dvh] bg-slate-50/50 pb-safe text-left">
+    <div className="min-h-[100dvh] bg-slate-50/50 font-body pb-safe text-left">
       <Navbar />
       
       <main className="container mx-auto px-3 md:px-8 py-4 md:py-10 max-w-7xl space-y-4 md:space-y-8">

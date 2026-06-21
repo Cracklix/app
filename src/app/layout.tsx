@@ -17,7 +17,7 @@ const inter = Inter({
 });
 
 /**
- * @fileOverview Root Layout v52.4 (Production Hardened).
+ * @fileOverview Root Layout v52.5 (Hardened).
  * UPDATED: Explicit color-scheme enforcement to prevent dark-mode inversion.
  */
 export const metadata: Metadata = {
