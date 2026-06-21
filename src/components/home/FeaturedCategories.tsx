@@ -11,27 +11,25 @@ import { collection, query, orderBy } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Strict 7-Category Discovery Hub v60.0.
- * ENFORCED: Whitelist filter ensures only the 7 authorized categories are visible.
+ * @fileOverview Authorized 6-Category Discovery Hub v70.0.
+ * ENFORCED: Whitelist filter ensures only the 6 canonical categories are displayed.
  */
 
 const ALLOWED_CATEGORY_IDS = [
+  "ppsc",
   "punjab-government-exams",
   "punjab-teaching-exams",
-  "punjab-technical-exams",
   "banking-exams",
-  "medical-health-exams",
-  "judiciary-exams",
+  "punjab-technical-exams",
   "central-government-exams"
 ];
 
 const CATEGORY_ICONS: Record<string, any> = {
-  "Punjab Government Exams": <Landmark className="h-6 w-6" />,
+  "PPSC": <Landmark className="h-6 w-6" />,
+  "Punjab Government Exams": <Shield className="h-6 w-6" />,
   "Punjab Teaching Exams": <GraduationCap className="h-6 w-6" />,
-  "Punjab Technical Exams": <Zap className="h-6 w-6" />,
   "Banking Exams": <Building2 className="h-6 w-6" />,
-  "Medical & Health Exams": <HeartPulse className="h-6 w-6" />,
-  "Judiciary Exams": <Scale className="h-6 w-6" />,
+  "Punjab Technical Exams": <Zap className="h-6 w-6" />,
   "Central Government Exams": <Globe className="h-6 w-6" />
 };
 
@@ -41,7 +39,6 @@ export default function FeaturedCategories() {
   const { data: rawCategories, loading: catLoading } = useCollection<any>(catQuery);
   const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]));
 
-  // STRICT WHITELIST FILTER
   const categories = useMemo(() => {
      if (!rawCategories) return [];
      return rawCategories.filter(c => ALLOWED_CATEGORY_IDS.includes(c.id));
@@ -55,11 +52,11 @@ export default function FeaturedCategories() {
            <p className="text-slate-500 font-medium text-sm md:text-lg">Select a category to start your preparation journey.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
           {catLoading ? (
             Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-[2.5rem] bg-slate-50" />)
           ) : categories.map((cat, idx) => {
-            const examCount = exams?.filter(e => e.categoryId === cat.id).length || 0;
+            const categoryExams = exams?.filter(e => e.categoryId === cat.id) || [];
             return (
               <motion.div key={cat.id} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.05 }}>
                  <Link href={`/exams/category/${cat.id}`}>
@@ -71,16 +68,16 @@ export default function FeaturedCategories() {
                        </div>
                        
                        <div className="space-y-2 flex-1">
-                          <h3 className="text-xl font-black text-[#0F172A] group-hover:text-primary transition-colors leading-tight">{cat.title}</h3>
-                          <p className="text-[13px] text-slate-500 font-medium leading-relaxed line-clamp-3">{cat.description}</p>
+                          <h3 className="text-2xl font-black text-[#0F172A] group-hover:text-primary transition-colors leading-tight">{cat.title}</h3>
+                          <p className="text-[14px] text-slate-500 font-medium leading-relaxed line-clamp-3">{cat.description}</p>
                        </div>
 
                        <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
                           <div className="flex flex-col">
-                             <span className="text-[9px] font-black text-[#0F172A] uppercase leading-none">{examCount}</span>
-                             <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1">Exams Live</span>
+                             <span className="text-[10px] font-black text-[#0F172A] uppercase leading-none">{categoryExams.length}</span>
+                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Exams Live</span>
                           </div>
-                          <Button variant="ghost" className="h-10 px-6 rounded-xl bg-[#0F172A] text-white group-hover:bg-primary transition-all font-bold text-[10px] tracking-widest uppercase border-none shadow-md">
+                          <Button variant="ghost" className="h-11 px-6 rounded-xl bg-[#0F172A] text-white group-hover:bg-primary transition-all font-bold text-[11px] tracking-widest uppercase border-none shadow-md">
                              View Exams <ArrowRight className="ml-2 h-3.5 w-3.5" />
                           </Button>
                        </div>
@@ -94,3 +91,5 @@ export default function FeaturedCategories() {
     </section>
   );
 }
+
+import { Shield } from 'lucide-react';

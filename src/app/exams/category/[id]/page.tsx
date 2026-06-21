@@ -14,17 +14,16 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Flattened Exam Explorer v30.0.
- * UPDATED: Enforced strict visibility - hidden if totalContent === 0.
+ * @fileOverview Balanced Category Hub v40.0.
+ * UPDATED: Enforces direct board/exam lists with strict Title Case.
  */
 
 const CATEGORY_ICONS: Record<string, any> = {
+  "PPSC": <Landmark className="h-8 w-8" />,
   "Punjab Government Exams": <Landmark className="h-8 w-8" />,
   "Punjab Teaching Exams": <GraduationCap className="h-8 w-8" />,
-  "Punjab Technical Exams": <Zap className="h-8 w-8" />,
   "Banking Exams": <Building2 className="h-8 w-8" />,
-  "Medical & Health Exams": <HeartPulse className="h-8 w-8" />,
-  "Judiciary Exams": <Scale className="h-8 w-8" />,
+  "Punjab Technical Exams": <Zap className="h-8 w-8" />,
   "Central Government Exams": <Globe className="h-8 w-8" />
 };
 
@@ -37,9 +36,11 @@ export default function CategoryHubsPage() {
   const { data: categories } = useCollection<any>(useMemo(() => (db ? collection(db, "categories") : null), [db]));
   const category = categories?.find(c => c.id === catId);
 
+  const boardsQuery = useMemo(() => (db ? query(collection(db, "boards"), where("categoryId", "==", catId)) : null), [db, catId]);
   const examsQuery = useMemo(() => (db ? query(collection(db, "exams"), where("categoryId", "==", catId)) : null), [db, catId]);
+
+  const { data: boards, loading: boardsLoading } = useCollection<any>(boardsQuery);
   const { data: rawExams, loading: examsLoading } = useCollection<any>(examsQuery);
-  
   const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]));
   const { data: pyqs } = useCollection<any>(useMemo(() => (db ? collection(db, "pyqs") : null), [db]));
 
@@ -65,7 +66,7 @@ export default function CategoryHubsPage() {
     return map;
   }, [mocks, pyqs]);
 
-  // CONTENT-FIRST VISIBILITY: Hide exams with 0 content
+  // CONTENT-ONLY VISIBILITY: Hide exams with 0 content
   const exams = useMemo(() => {
     if (!rawExams) return [];
     return rawExams.filter((e: any) => (statsMap[e.id]?.total || 0) > 0);
@@ -89,7 +90,7 @@ export default function CategoryHubsPage() {
                      {category?.title || "Exam Category"}
                   </h1>
                   <p className="text-sm md:text-xl font-bold text-slate-400 tracking-tight max-w-3xl">
-                     {category?.description || "Select an exam to begin preparation."}
+                     {category?.description || "Select an exam vertical to begin your preparation."}
                   </p>
                </div>
             </div>
@@ -97,9 +98,31 @@ export default function CategoryHubsPage() {
       </section>
 
       <main className="container mx-auto px-4 py-16 max-w-7xl">
-         {examsLoading ? (
+         {(boardsLoading || examsLoading) ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-72 w-full rounded-[2.5rem]" />)}
+            </div>
+         ) : boards && boards.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+               {boards.map((board) => {
+                  const boardExamsCount = exams.filter(e => e.boardId === board.id).length;
+                  if (boardExamsCount === 0) return null;
+                  return (
+                    <Card key={board.id} onClick={() => router.push(`/exams/hub/${board.id}`)} className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2.5rem] bg-white group overflow-hidden flex flex-col p-8 text-left cursor-pointer h-full">
+                       <div className="h-12 w-12 rounded-xl bg-slate-50 flex items-center justify-center mb-6 text-primary shadow-inner transition-transform group-hover:scale-110">
+                          <Landmark className="h-6 w-6" />
+                       </div>
+                       <h3 className="text-2xl font-black text-[#0F172A] group-hover:text-primary transition-colors leading-tight mb-4">{board.abbreviation} Hub</h3>
+                       <p className="text-[14px] text-slate-500 font-medium mb-8 flex-1">{board.name}</p>
+                       <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">
+                          <span className="text-[10px] font-black text-primary uppercase">{boardExamsCount} Verticals Live</span>
+                          <Button variant="ghost" className="h-10 px-6 rounded-xl bg-[#0F172A] text-white group-hover:bg-primary transition-all font-bold text-[10px] tracking-widest uppercase border-none shadow-md">
+                             Open Hub <ChevronRight className="ml-2 h-4 w-4" />
+                          </Button>
+                       </div>
+                    </Card>
+                  )
+               })}
             </div>
          ) : exams.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -110,17 +133,11 @@ export default function CategoryHubsPage() {
                        <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center mb-6 text-primary shadow-inner">
                           <Zap className="h-5 w-5" />
                        </div>
-                       <h3 className="text-xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors mb-6">{exam.name}</h3>
-                       <div className="space-y-4 mb-8">
-                          <p className="text-xs font-black text-primary leading-none uppercase">{s.total} Tests Available</p>
-                          <div className="flex flex-wrap gap-x-2 gap-y-1 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
-                             {s.full > 0 && <span>{s.full} Full Mocks • </span>}
-                             {s.subject > 0 && <span>{s.subject} Subject Tests • </span>}
-                             {s.sectional > 0 && <span>{s.sectional} Sectional • </span>}
-                             {s.pyq > 0 && <span>{s.pyq} PYQs</span>}
-                          </div>
-                       </div>
-                       <Button className="mt-auto w-full h-12 rounded-2xl bg-[#0F172A] hover:bg-primary text-white font-black uppercase text-[10px] tracking-[0.2em] shadow-lg border-none">
+                       <h3 className="text-xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors mb-4">{exam.name}</h3>
+                       <p className="text-[11px] font-black text-primary uppercase mb-6">
+                          {s.full} Full Mocks • {s.subject} Subject • {s.pyq} PYQs
+                       </p>
+                       <Button className="mt-auto w-full h-11 rounded-xl bg-[#0F172A] hover:bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-lg border-none">
                           Open Exam <ChevronRight className="ml-2 h-4 w-4" />
                        </Button>
                     </Card>
@@ -130,8 +147,8 @@ export default function CategoryHubsPage() {
          ) : (
             <div className="py-40 text-center opacity-20 flex flex-col items-center gap-6">
                <Info className="h-16 w-16" />
-               <p className="font-black text-2xl uppercase tracking-widest">No Active Exams</p>
-               <p className="text-sm font-bold max-w-xs">Content is being verified for this category node.</p>
+               <p className="font-black text-2xl uppercase tracking-widest">Awaiting Verification</p>
+               <p className="text-sm font-bold max-w-xs">Official content is being audited for this category.</p>
             </div>
          )}
       </main>
