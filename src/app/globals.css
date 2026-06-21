@@ -35,7 +35,7 @@
     
     --radius: 1.25rem; /* 20px - Modern Squared Radius */
 
-    --header-height-mobile: 56px;
+    --header-height-mobile: 64px;
     --header-height-desktop: 88px;
   }
 }
@@ -64,8 +64,7 @@
     -webkit-text-size-adjust: 100%;
     
     /* PWA SAFE AREA HARDENING */
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
+    /* Padding is handled by specific layout containers to prevent browser UI overlap issues */
   }
   
   h1 { @apply font-black tracking-tight leading-[0.95]; }
@@ -80,6 +79,10 @@
 
 .pb-safe {
   padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
 }
 
 .custom-scrollbar::-webkit-scrollbar {

@@ -43,8 +43,8 @@ import PWAInstallButton from "@/components/PWAInstallButton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Standardized Navbar v58.0.
- * UPDATED: Optimized logo sizing for maximum brand presence.
+ * @fileOverview Standardized Navbar v60.0.
+ * UPDATED: Precise safe-area padding for standalone PWA mode.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -104,19 +104,13 @@ export default function Navbar() {
     (user?.email &&
       SUPER_ADMIN_WHITELIST.includes(user.email.toLowerCase()));
 
-  const passLabel = useMemo(() => {
-    if (!profile?.pass?.plan) return 'Free Pass';
-    const plan = profile.pass.plan;
-    return plan.charAt(0).toUpperCase() + plan.slice(1).toLowerCase().replace('_pass', '');
-  }, [profile]);
-
   if (!mounted) {
     return <nav className="w-full border-b border-slate-100 bg-white h-[64px] md:h-[88px]" />;
   }
 
   return (
-    <div className="sticky top-0 z-50 w-full font-body">
-      <nav className="w-full h-[64px] md:h-[88px] bg-white border-b border-slate-100 shadow-sm transition-all duration-300">
+    <div className="sticky top-0 z-50 w-full font-body pt-safe bg-white border-b border-slate-100">
+      <nav className="w-full h-[64px] md:h-[88px] transition-all duration-300">
         <div className="w-full max-w-7xl mx-auto px-3 md:px-4 h-full flex items-center justify-between gap-1 md:gap-2">
 
           <div className="flex items-center shrink-0 h-full">
@@ -131,7 +125,7 @@ export default function Navbar() {
             <Logo
               variant="light"
               className="flex-shrink-0"
-              imgClassName="h-[56px] md:h-[72px]"
+              imgClassName="h-[44px] md:h-[56px]"
             />
           </div>
 
@@ -184,7 +178,7 @@ export default function Navbar() {
                   <div className="flex flex-col items-center text-center space-y-6">
                     <div className="flex flex-col items-center gap-4">
                        <div className="h-14 w-14 md:h-16 md:w-16 rounded-2xl bg-[#EEF4FF] flex items-center justify-center text-[#2563EB] shadow-sm relative">
-                          <User className="h-7 v-7 md:h-8 md:w-8" />
+                          <User className="h-7 w-7 md:h-8 md:w-8" />
                        </div>
                        <div className="space-y-0.5">
                          <h3 className="text-base md:text-xl font-bold text-[#0F172A] tracking-tight truncate max-w-[240px]">

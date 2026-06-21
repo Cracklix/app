@@ -14,8 +14,8 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Refined Admin Layout v9.0.
- * UPDATED: Increased Logo scale for maximum brand visibility in dashboard.
+ * @fileOverview Refined Admin Layout v10.0.
+ * UPDATED: Integrated pt-safe for standalone PWA compliance.
  */
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -86,31 +86,33 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         "flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out w-full min-w-0 overflow-x-hidden",
         isSidebarOpen ? "lg:pl-[280px]" : "lg:pl-[88px]"
       )}>
-        <header className="h-[64px] md:h-[88px] border-b border-slate-50 flex items-center px-3 md:px-10 justify-between bg-white/80 backdrop-blur-xl sticky top-0 z-40 shrink-0">
-          <div className="flex items-center gap-2 md:gap-4 h-full">
-            <button 
-              onClick={() => setIsSidebarOpen(true)}
-              className="lg:hidden bg-white border border-slate-200 text-slate-700 h-9 w-9 rounded-lg shadow-sm flex items-center justify-center active:scale-95 transition-all"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
+        <header className="pt-safe border-b border-slate-50 bg-white/80 backdrop-blur-xl sticky top-0 z-40 shrink-0">
+          <div className="h-[64px] md:h-[88px] flex items-center px-3 md:px-10 justify-between">
+            <div className="flex items-center gap-2 md:gap-4 h-full">
+              <button 
+                onClick={() => setIsSidebarOpen(true)}
+                className="lg:hidden bg-white border border-slate-200 text-slate-700 h-9 w-9 rounded-lg shadow-sm flex items-center justify-center active:scale-95 transition-all"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
 
-            <Logo
-              variant="light"
-              className="shrink-0 -ml-2"
-              imgClassName="h-[64px] md:h-[82px]"
-            />
-          </div>
-          
-          <div className="flex items-center gap-3 md:gap-6">
-             <Button asChild variant="outline" className="hidden sm:flex h-10 px-5 rounded-full border-slate-200 font-bold text-xs tracking-tight gap-2 hover:bg-slate-50 transition-all active:scale-95 shadow-sm">
-                <Link href="/">View Site</Link>
-             </Button>
-             <div className="flex items-center gap-3 md:gap-4 pl-3 md:pl-4 border-l border-slate-100 h-8 md:h-10">
-                <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm md:text-lg shadow-lg">
-                  {profile?.name?.[0] || 'A'}
-                </div>
-             </div>
+              <Logo
+                variant="light"
+                className="shrink-0 -ml-2"
+                imgClassName="h-[44px] md:h-[60px]"
+              />
+            </div>
+            
+            <div className="flex items-center gap-3 md:gap-6">
+               <Button asChild variant="outline" className="hidden sm:flex h-10 px-5 rounded-full border-slate-200 font-bold text-xs tracking-tight gap-2 hover:bg-slate-50 transition-all active:scale-95 shadow-sm">
+                  <Link href="/">View Site</Link>
+               </Button>
+               <div className="flex items-center gap-3 md:gap-4 pl-3 md:pl-4 border-l border-slate-100 h-8 md:h-10">
+                  <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm md:text-lg shadow-lg">
+                    {profile?.name?.[0] || 'A'}
+                  </div>
+               </div>
+            </div>
           </div>
         </header>
 
