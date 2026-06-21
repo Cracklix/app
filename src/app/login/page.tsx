@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, Suspense, useEffect, useMemo } from "react"
@@ -32,7 +31,7 @@ import {
   sendPasswordResetEmail,
   updateProfile
 } from "firebase/auth"
-import { doc, setDoc, getDoc, serverTimestamp, updateDoc, increment } from "firebase/firestore"
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { motion } from "framer-motion"
@@ -113,20 +112,7 @@ function LoginContent() {
     setLoading(true)
     try {
       if (mode === 'login') {
-        const credentials = await signInWithEmailAndPassword(auth, email, password)
-        
-        // Atomic Session Handshake
-        const sessionId = crypto.randomUUID();
-        localStorage.setItem('cracklix_session_id', sessionId);
-        
-        const userRef = doc(db!, 'users', credentials.user.uid);
-        await updateDoc(userRef, { 
-          activeDeviceId: sessionId, 
-          sessionVersion: increment(1), 
-          lastLoginAt: serverTimestamp(), 
-          updatedAt: serverTimestamp() 
-        });
-
+        await signInWithEmailAndPassword(auth, email, password)
         router.replace(returnUrl)
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
@@ -134,22 +120,19 @@ function LoginContent() {
         await updateProfile(userNode, { displayName: name })
         
         const isSuperAdmin = email && SUPER_ADMIN_WHITELIST.includes(email.toLowerCase());
-        const sessionId = crypto.randomUUID();
-        localStorage.setItem('cracklix_session_id', sessionId);
         
-        // 1. Create User Node
         await setDoc(doc(db!, 'users', userNode.uid), {
-          id: userNode.uid, name, email, role: isSuperAdmin ? 'SUPER_ADMIN' : 'STUDENT',
-          state: "Punjab", createdAt: new Date().toISOString(), updatedAt: serverTimestamp(),
-          status: 'Free', passType: 'FREE', activeDeviceId: sessionId, sessionVersion: 1,
-          lastLoginAt: serverTimestamp(), pinnedExams: [], verified: true
+          id: userNode.uid,
+          name,
+          email,
+          role: isSuperAdmin ? 'SUPER_ADMIN' : 'STUDENT',
+          state: "Punjab",
+          createdAt: new Date().toISOString(),
+          updatedAt: serverTimestamp(),
+          status: 'Free',
+          passType: 'FREE',
+          pinnedExams: []
         })
-
-        // 2. Atomic Stat Increment
-        await updateDoc(doc(db!, 'settings', 'stats'), {
-           totalUsers: increment(1),
-           updatedAt: serverTimestamp()
-        }).catch(() => {});
 
         toast({ title: "Account Created" })
         router.replace('/profile-setup')
@@ -182,32 +165,21 @@ function LoginContent() {
       const userSnap = await getDoc(userRef)
       const isSuperAdmin = SUPER_ADMIN_WHITELIST.includes(userNode.email.toLowerCase());
       
-      // Atomic Session Handshake
-      const sessionId = crypto.randomUUID();
-      localStorage.setItem('cracklix_session_id', sessionId);
-      
       if (!userSnap.exists()) {
         await setDoc(userRef, {
-          id: userNode.uid, name: userNode.displayName || "Aspirant", email: userNode.email,
-          role: isSuperAdmin ? 'SUPER_ADMIN' : 'STUDENT', state: "Punjab", createdAt: new Date().toISOString(),
-          updatedAt: serverTimestamp(), status: 'Free', passType: 'FREE', activeDeviceId: sessionId,
-          sessionVersion: 1, lastLoginAt: serverTimestamp(), pinnedExams: [], verified: true
+          id: userNode.uid,
+          name: userNode.displayName || "Aspirant",
+          email: userNode.email,
+          role: isSuperAdmin ? 'SUPER_ADMIN' : 'STUDENT',
+          state: "Punjab",
+          createdAt: new Date().toISOString(),
+          updatedAt: serverTimestamp(),
+          status: 'Free',
+          passType: 'FREE',
+          pinnedExams: []
         })
-        
-        // Atomic Stat Increment
-        await updateDoc(doc(db!, 'settings', 'stats'), {
-           totalUsers: increment(1),
-           updatedAt: serverTimestamp()
-        }).catch(() => {});
-
         router.replace('/profile-setup')
       } else {
-        await updateDoc(userRef, { 
-          activeDeviceId: sessionId, 
-          sessionVersion: increment(1), 
-          lastLoginAt: serverTimestamp(), 
-          updatedAt: serverTimestamp() 
-        });
         router.replace(returnUrl)
       }
     } catch (error: any) {

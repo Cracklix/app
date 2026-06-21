@@ -17,8 +17,7 @@ const inter = Inter({
 });
 
 /**
- * @fileOverview Root Layout v52.5 (Hardened).
- * UPDATED: Explicit color-scheme enforcement to prevent dark-mode inversion.
+ * @fileOverview Root Layout v52.0 (PWA Hardened).
  */
 export const metadata: Metadata = {
   title: "Cracklix | Punjab's Smart Mock Test Platform",
@@ -27,10 +26,6 @@ export const metadata: Metadata = {
     "Punjab's most trusted government exam preparation platform. PSSSB, PPSC, Punjab Police, Patwari, Clerk and more.",
 
   manifest: "/manifest.json",
-
-  other: {
-    "color-scheme": "light",
-  },
 
   icons: {
     icon: [
@@ -78,10 +73,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="light">
-      <head>
-         <meta name="color-scheme" content="light" />
-      </head>
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`
           ${inter.variable}

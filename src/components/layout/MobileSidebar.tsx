@@ -26,7 +26,6 @@ import Logo from "@/components/brand/Logo";
 import { Skeleton } from "@/components/ui/skeleton";
 import ShareButton from "@/components/navigation/ShareButton";
 import { Button } from "@/components/ui/button";
-import PWAInstallButton from "@/components/PWAInstallButton";
 
 /**
  * @fileOverview Mobile Sidebar v45.0 (High Density).
@@ -74,6 +73,7 @@ export default function MobileSidebar({
   return (
     <div className="flex h-full flex-col bg-white font-body overflow-hidden text-left">
 
+      {/* HEADER: LOGO & CLOSE */}
       <div className="h-[64px] px-3 shrink-0 bg-white border-b border-slate-50 flex items-center justify-between">
          <Logo
            variant="light"
@@ -89,8 +89,10 @@ export default function MobileSidebar({
           </button>
       </div>
 
+      {/* CONTENT AREA */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
 
+        {/* USER PROFILE CARD */}
         <div className="px-2 py-3">
           <Link
             href="/profile"
@@ -124,13 +126,7 @@ export default function MobileSidebar({
           </Link>
         </div>
 
-        <div className="px-2 mb-4">
-           <PWAInstallButton 
-             variant="dark"
-             className="w-full h-10 rounded-lg"
-           />
-        </div>
-
+        {/* NAVIGATION LIST */}
         <div className="px-2">
           <p className="mb-1.5 px-4 text-[9px] font-black text-slate-400 tracking-widest uppercase">
             Discovery Hub
@@ -170,6 +166,7 @@ export default function MobileSidebar({
           </div>
         </div>
 
+        {/* SHARE APP PROMO */}
         <div className="px-2 py-4">
            <div className="bg-[#0B1528] rounded-[1.25rem] p-3 space-y-2 border border-white/5 shadow-xl relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-3 opacity-5 rotate-12 group-hover:scale-110 transition-transform"><Award className="h-10 w-10" /></div>
@@ -184,6 +181,7 @@ export default function MobileSidebar({
         </div>
       </div>
 
+      {/* FOOTER: SIGNOUT */}
       <div className="border-t border-slate-100 bg-white p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] shrink-0">
         <Button
           variant="ghost"
