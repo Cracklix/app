@@ -1,8 +1,9 @@
 import { Firestore, doc, serverTimestamp, writeBatch } from 'firebase/firestore';
 
 /**
- * @fileOverview Massive Hierarchical Registry Seeder v10.0.
- * Rebuilds the entire ecosystem: Category -> Board -> Exam.
+ * @fileOverview Massive Hierarchical Registry Seeder v12.0.
+ * REBUILT: Strict 6-Category Hierarchy (Category -> Board -> Exam).
+ * ENFORCED: Title Case and Clean Terminology.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -11,85 +12,87 @@ export async function seedInitialData(db: Firestore) {
 
   // 1. THE 6 CANONICAL CATEGORIES
   const categories = [
-    { id: "punjab-government-exams", title: "Punjab Government Exams", description: "Recruitments through PPSC, PSSSB, Police and State Courts.", displayOrder: 1 },
-    { id: "punjab-teaching-exams", title: "Punjab Teaching Exams", description: "Teacher recruitment through ERB, PSTET and CTET.", displayOrder: 2 },
-    { id: "punjab-technical-exams", title: "Punjab Technical Exams", description: "Technical and Engineering posts in PSPCL, PSTCL and Departments.", displayOrder: 3 },
-    { id: "punjab-banking-exams", title: "Punjab Banking Exams", description: "Jobs in Punjab State Cooperative Banks and regional rural banks.", displayOrder: 4 },
-    { id: "punjab-health-exams", title: "Punjab Health Exams", description: "Medical and Health department recruitments through BFUHS.", displayOrder: 5 },
-    { id: "central-government-exams", title: "Central Government Exams", description: "National recruitments through SSC, Railway, UPSC and Defence.", displayOrder: 6 }
+    { id: "punjab-govt", title: "Punjab Government Exams", description: "Jobs through PPSC, PSSSB, Punjab Police and state boards.", displayOrder: 1 },
+    { id: "punjab-teaching", title: "Punjab Teaching Exams", description: "Teacher recruitment through ERB, PSTET and CTET.", displayOrder: 2 },
+    { id: "punjab-technical", title: "Punjab Technical Exams", description: "Technical posts in PSPCL, PSTCL and Health (BFUHS).", displayOrder: 3 },
+    { id: "banking-exams", title: "Banking Exams", description: "Recruitments for Punjab Cooperative and Central Banks.", displayOrder: 4 },
+    { id: "judiciary-exams", title: "Judiciary Exams", description: "Staff and clerk recruitments for High Court and District Courts.", displayOrder: 5 },
+    { id: "central-govt", title: "Central Government Exams", description: "National recruitments through SSC, Railway, UPSC and Defence.", displayOrder: 6 }
   ];
 
   for (const cat of categories) {
     batch.set(doc(db, 'categories', cat.id), { ...cat, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 2. AUTHORITY BOARDS (Nesting Nodes)
+  // 2. AUTHORITY BOARDS (Authority Nodes)
   const boards = [
-    // Punjab Govt
-    { id: "ppsc", abbreviation: "PPSC", name: "Punjab Public Service Commission", categoryId: "punjab-government-exams", displayOrder: 1 },
-    { id: "psssb", abbreviation: "PSSSB", name: "Punjab Subordinate Services Selection Board", categoryId: "punjab-government-exams", displayOrder: 2 },
-    { id: "punjab-police", abbreviation: "Punjab Police", name: "State Police Recruitment", categoryId: "punjab-government-exams", displayOrder: 3 },
-    { id: "punjab-courts", abbreviation: "Punjab Courts", name: "High Court & District Courts", categoryId: "punjab-government-exams", displayOrder: 4 },
+    // Punjab Govt Category
+    { id: "ppsc", abbreviation: "PPSC", name: "Punjab Public Service Commission", categoryId: "punjab-govt", displayOrder: 1 },
+    { id: "psssb", abbreviation: "PSSSB", name: "Punjab Subordinate Services Selection Board", categoryId: "punjab-govt", displayOrder: 2 },
+    { id: "punjab-police", abbreviation: "Punjab Police", name: "State Police Recruitment", categoryId: "punjab-govt", displayOrder: 3 },
 
-    // Teaching
-    { id: "erb", abbreviation: "ERB", name: "Education Recruitment Board", categoryId: "punjab-teaching-exams", displayOrder: 1 },
-    { id: "pstet", abbreviation: "PSTET", name: "Punjab State Teacher Eligibility Test", categoryId: "punjab-teaching-exams", displayOrder: 2 },
-    { id: "ctet", abbreviation: "CTET", name: "Central Teacher Eligibility Test", categoryId: "punjab-teaching-exams", displayOrder: 3 },
-
-    // Technical
-    { id: "pspcl", abbreviation: "PSPCL", name: "Punjab State Power Corporation Ltd", categoryId: "punjab-technical-exams", displayOrder: 1 },
-    { id: "pstcl", abbreviation: "PSTCL", name: "Punjab State Transmission Corporation Ltd", categoryId: "punjab-technical-exams", displayOrder: 2 },
-    { id: "eng-rec", abbreviation: "Engineering", name: "Technical Engineering Recruitment", categoryId: "punjab-technical-exams", displayOrder: 3 },
-
-    // Banking
-    { id: "pscb", abbreviation: "PSCB", name: "Punjab State Cooperative Bank", categoryId: "punjab-banking-exams", displayOrder: 1 },
-    { id: "coop-banks", abbreviation: "Cooperative", name: "District Cooperative Banks", categoryId: "punjab-banking-exams", displayOrder: 2 },
-
-    // Health
-    { id: "bfuhs", abbreviation: "BFUHS", name: "Baba Farid University of Health Sciences", categoryId: "punjab-health-exams", displayOrder: 1 },
-
-    // Central
-    { id: "ssc", abbreviation: "SSC", name: "Staff Selection Commission", categoryId: "central-government-exams", displayOrder: 1 },
-    { id: "railway", abbreviation: "Railway", name: "RRB Recruitment", categoryId: "central-government-exams", displayOrder: 2 },
-    { id: "bank-central", abbreviation: "Banking", name: "SBI, IBPS & RBI Hub", categoryId: "central-government-exams", displayOrder: 3 },
-    { id: "defence", abbreviation: "Defence", name: "Army, Navy, Air Force & CAPF", categoryId: "central-government-exams", displayOrder: 4 },
-    { id: "central-others", abbreviation: "Other", name: "NTA, CUET & UGC NET", categoryId: "central-government-exams", displayOrder: 5 }
+    // Technical Category
+    { id: "pspcl", abbreviation: "PSPCL", name: "Punjab State Power Corporation Ltd", categoryId: "punjab-technical", displayOrder: 1 },
+    { id: "pstcl", abbreviation: "PSTCL", name: "Punjab State Transmission Corporation Ltd", categoryId: "punjab-technical", displayOrder: 2 },
+    { id: "bfuhs", abbreviation: "BFUHS", name: "Medical and Health Recruitment", categoryId: "punjab-technical", displayOrder: 3 }
   ];
 
   for (const board of boards) {
     batch.set(doc(db, 'boards', board.id), { ...board, updatedAt: serverTimestamp() }, { merge: true });
   }
 
-  // 3. MASSIVE EXAM VERTICAL REGISTRY
-  const examMap: Record<string, string[]> = {
-    "ppsc": ["PCS", "DSP", "Tehsildar", "Naib Tehsildar", "Excise & Taxation Officer", "BDPO", "Assistant Professor", "Veterinary Officer", "Junior Engineer (JE)", "Assistant Engineer (AE)", "Senior Assistant"],
-    "psssb": ["Clerk", "Clerk IT", "Clerk Accounts", "CCDEO", "Steno Typist", "Junior Scale Stenographer", "Patwari", "Canal Patwari", "Gram Sevak / VDO", "Excise Inspector", "Jail Warder", "Matron", "Veterinary Inspector", "Forest Guard", "Forester", "Junior Draftsman", "Horticulture Supervisor", "Laboratory Assistant", "Dairy Inspector", "Senior Assistant"],
-    "punjab-police": ["Constable", "Sub Inspector", "Intelligence Assistant", "Constable Technical Support", "Cyber Crime Technical Staff"],
-    "punjab-courts": ["High Court Clerk", "High Court Stenographer", "Senior Assistant", "District Court Clerk", "Process Server", "Peon", "Mali", "Safai Sewak"],
-    "erb": ["Master Cadre Maths", "Master Cadre Science", "Master Cadre English", "Master Cadre Punjabi", "Master Cadre Hindi", "Master Cadre SST", "Master Cadre Physical Education", "ETT Teacher", "Lecturer Cadre", "Pre Primary Teacher"],
-    "pstet": ["PSTET Paper 1", "PSTET Paper 2"],
-    "ctet": ["CTET Paper 1", "CTET Paper 2"],
-    "pspcl": ["Assistant Lineman (ALM)", "Assistant Sub Station Attendant (ASSA)", "Junior Engineer Electrical", "Revenue Accountant", "Internal Auditor", "LDC", "Typist"],
-    "pstcl": ["JE Electrical", "ALM", "ASSA", "Clerk"],
-    "eng-rec": ["JE Civil", "JE Mechanical", "JE Electrical", "AE Civil", "AE Mechanical", "AE Electrical"],
-    "pscb": ["Clerk", "Clerk Cum DEO", "Steno Typist", "IT Officer", "Manager", "Senior Manager"],
-    "coop-banks": ["Clerk", "Assistant Manager", "Field Officer"],
-    "bfuhs": ["Staff Nurse", "Nursing Officer", "Pharmacist", "Medical Officer", "Food Safety Officer", "Emergency Medical Officer", "Lab Technician", "Radiographer", "MPHW", "ANM"],
-    "ssc": ["SSC CGL", "SSC CHSL", "SSC MTS", "SSC CPO", "SSC GD", "SSC JE", "SSC Stenographer"],
-    "railway": ["RRB NTPC", "RRB Group D", "RRB JE", "RRB ALP", "RPF Constable", "RPF SI"],
-    "bank-central": ["SBI Clerk", "SBI PO", "IBPS Clerk", "IBPS PO", "IBPS RRB", "RBI Assistant", "RBI Grade B"],
-    "defence": ["NDA", "CDS", "AFCAT", "Agniveer Army", "Agniveer Air Force", "Agniveer Navy", "CAPF AC"],
-    "central-others": ["CUET", "UGC NET", "NTA Exams"]
+  // 3. EXAM VERTICAL REGISTRY
+  const examMap: Record<string, { boardId?: string, categoryId: string, names: string[] }> = {
+    "ppsc": {
+      categoryId: "punjab-govt",
+      names: ["PCS", "Naib Tehsildar", "Tehsildar", "DSP", "ETO", "BDPO", "Assistant Professor", "JE Civil", "JE Mechanical", "JE Electrical", "Other PPSC Exams"]
+    },
+    "psssb": {
+      categoryId: "punjab-govt",
+      names: ["Clerk", "Clerk IT", "Clerk Accounts", "CCDEO", "Patwari", "Canal Patwari", "VDO", "Excise Inspector", "Jail Warder", "Forest Guard", "Veterinary Inspector", "Other PSSSB Exams"]
+    },
+    "punjab-police": {
+      categoryId: "punjab-govt",
+      names: ["Constable", "Sub Inspector", "Intelligence Assistant", "Technical Cadre"]
+    },
+    "punjab-teaching": {
+      categoryId: "punjab-teaching",
+      names: ["PSTET Paper 1", "PSTET Paper 2", "Master Cadre", "Lecturer Cadre", "ETT", "Pre Primary Teacher", "CTET"]
+    },
+    "pspcl": {
+      categoryId: "punjab-technical",
+      names: ["ALM", "ASSA", "LDC", "Revenue Accountant", "JE Electrical"]
+    },
+    "pstcl": {
+      categoryId: "punjab-technical",
+      names: ["JE Electrical", "Clerk", "Technical Posts"]
+    },
+    "bfuhs": {
+      categoryId: "punjab-technical",
+      names: ["Staff Nurse", "Pharmacist", "Medical Officer", "Food Safety Officer", "Lab Technician", "Radiographer"]
+    },
+    "banking-exams": {
+      categoryId: "banking-exams",
+      names: ["PSCB Clerk", "PSCB Manager", "IT Officer", "Steno Typist", "DCCB Recruitment"]
+    },
+    "judiciary-exams": {
+      categoryId: "judiciary-exams",
+      names: ["High Court Clerk", "High Court Stenographer", "District Court Clerk", "Process Server", "Peon", "Other Court Posts"]
+    },
+    "central-govt": {
+      categoryId: "central-govt",
+      names: ["SSC CGL", "SSC CHSL", "SSC MTS", "SSC GD", "SSC JE", "RRB NTPC", "RRB Group D", "RRB JE", "IBPS Clerk", "IBPS PO", "SBI Clerk", "SBI PO", "NDA", "CDS", "AFCAT", "CAPF", "CRPF", "BSF", "CISF", "Indian Army"]
+    }
   };
 
-  Object.entries(examMap).forEach(([boardId, names]) => {
-    names.forEach((name, i) => {
-      const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      batch.set(doc(db, 'exams', id), {
-        id, 
+  Object.entries(examMap).forEach(([idOrBoard, data]) => {
+    data.names.forEach((name, i) => {
+      const examId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      batch.set(doc(db, 'exams', examId), {
+        id: examId, 
         name,
-        boardId,
-        categoryId: boards.find(b => b.id === boardId)?.categoryId || "others",
+        boardId: boards.find(b => b.id === idOrBoard) ? idOrBoard : null,
+        categoryId: data.categoryId,
         displayOrder: i,
         updatedAt: serverTimestamp()
       }, { merge: true });

@@ -11,26 +11,26 @@ import { collection, query, orderBy } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Strictly Whitelisted 6-Category Hub v100.0.
+ * @fileOverview Strictly Whitelisted 6-Category Hub v101.0.
  * ENFORCED: Whitelist filter ensures only the specific 6 categories appear in Title Case.
  */
 
 const STRICT_WHITELIST = [
-  "punjab-government-exams",
-  "punjab-teaching-exams",
-  "punjab-technical-exams",
-  "punjab-banking-exams",
-  "punjab-health-exams",
-  "central-government-exams"
+  "punjab-govt",
+  "punjab-teaching",
+  "punjab-technical",
+  "banking-exams",
+  "judiciary-exams",
+  "central-govt"
 ];
 
 const CATEGORY_ICONS: Record<string, any> = {
-  "punjab-government-exams": <Landmark className="h-6 w-6" />,
-  "punjab-teaching-exams": <GraduationCap className="h-6 w-6" />,
-  "punjab-technical-exams": <Zap className="h-6 w-6" />,
-  "punjab-banking-exams": <Building2 className="h-6 w-6" />,
-  "punjab-health-exams": <HeartPulse className="h-6 w-6" />,
-  "central-government-exams": <Globe className="h-6 w-6" />
+  "punjab-govt": <Landmark className="h-6 w-6" />,
+  "punjab-teaching": <GraduationCap className="h-6 w-6" />,
+  "punjab-technical": <Zap className="h-6 w-6" />,
+  "banking-exams": <Building2 className="h-6 w-6" />,
+  "judiciary-exams": <Scale className="h-6 w-6" />,
+  "central-govt": <Globe className="h-6 w-6" />
 };
 
 export default function FeaturedCategories() {
@@ -49,7 +49,7 @@ export default function FeaturedCategories() {
       <div className="container mx-auto px-4 max-w-7xl space-y-12 text-left">
         <div className="space-y-2">
            <h2 className="text-3xl md:text-5xl font-black text-[#0F172A] leading-tight tracking-tight">Choose Your Exam</h2>
-           <p className="text-slate-500 font-medium text-sm md:text-lg">Select a category to browse official recruitment boards and exams.</p>
+           <p className="text-slate-500 font-medium text-sm md:text-lg">Select a category to view relevant exams and boards.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -75,7 +75,7 @@ export default function FeaturedCategories() {
                        <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
                           <div className="flex flex-col">
                              <span className="text-sm font-black text-[#0F172A]">{examsCount}</span>
-                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Exams Available</span>
+                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Available Exams</span>
                           </div>
                           <Button variant="ghost" className="h-11 px-8 rounded-xl bg-[#0F172A] text-white group-hover:bg-primary transition-all font-bold text-[11px] tracking-widest uppercase border-none shadow-md gap-2">
                              View Exams <ArrowRight className="h-4 w-4" />

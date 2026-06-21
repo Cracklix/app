@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
@@ -24,8 +23,8 @@ import { cn } from "@/lib/utils"
 import type { Category, Board, Exam } from "@/types"
 
 /**
- * @fileOverview Punjab Registry Architect v16.0.
- * TYPOGRAPHY: Normalized Title Case for category and hub headings.
+ * @fileOverview Punjab Registry Architect v17.0.
+ * TYPOGRAPHY: Strict Title Case hierarchy enforcement.
  */
 
 interface ExtendedBoard extends Board {
@@ -61,20 +60,20 @@ export default function ArchitectureManager() {
         <div>
            <div className="flex items-center gap-3 mb-2">
               <Box className="h-6 w-6 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Punjab Registry Architect</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Hierarchy Governance</span>
            </div>
-          <h1 className="text-5xl font-black font-headline text-primary uppercase tracking-tight">Punjab Tree</h1>
-          <p className="text-slate-500 mt-2 text-lg font-medium">Manage the structural discovery hierarchy for all Punjab preparation nodes.</p>
+          <h1 className="text-5xl font-black font-headline text-primary uppercase tracking-tight">Ecosystem Tree</h1>
+          <p className="text-slate-500 mt-2 text-lg font-medium">Manage the strictly nested hierarchy of Categories, Boards, and Exam verticals.</p>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="px-4 space-y-10">
          <TabsList className="bg-slate-100 p-1.5 h-16 rounded-2xl shadow-sm inline-flex gap-2">
             <TabsTrigger value="overview" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
-               <Layers className="h-4 w-4 mr-2" /> Overview
+               <Layers className="h-4 w-4 mr-2" /> Tree View
             </TabsTrigger>
             <TabsTrigger value="categories" className="rounded-xl px-8 font-black uppercase text-[10px] h-full data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
-               Manage Categories
+               Manage Folders
             </TabsTrigger>
          </TabsList>
 
@@ -92,11 +91,11 @@ export default function ArchitectureManager() {
                            </div>
                            <div className="text-left">
                               <h3 className="text-2xl font-bold font-headline text-[#0F172A]">{cat.title}</h3>
-                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{cat.hubs.length} Hubs Assigned</p>
+                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{cat.hubs.length} Boards Assigned</p>
                            </div>
                         </div>
                         <Button asChild variant="outline" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest gap-2">
-                           <Link href="/admin/categories"><Edit className="h-3 w-3" /> Edit Node</Link>
+                           <Link href="/admin/categories"><Edit className="h-3 w-3" /> Edit Folder</Link>
                         </Button>
                      </CardHeader>
                      <CardContent className="p-10">
@@ -105,7 +104,7 @@ export default function ArchitectureManager() {
                               <div key={hub.id} className="space-y-4 bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100">
                                  <div className="flex items-center justify-between">
                                     <h4 className="font-bold text-sm uppercase text-[#0F172A] flex items-center gap-2">
-                                       <Landmark className="h-3.5 w-3.5 text-primary" /> {hub.abbreviation} Hub
+                                       <Landmark className="h-3.5 w-3.5 text-primary" /> {hub.abbreviation}
                                     </h4>
                                     <Badge className="bg-white border-slate-200 text-slate-400 text-[7px] font-black uppercase px-2">{hub.exams.length} Verticals</Badge>
                                  </div>
@@ -117,19 +116,23 @@ export default function ArchitectureManager() {
                                              <Button asChild size="icon" variant="ghost" className="h-6 w-6 rounded-lg hover:bg-primary/10">
                                                 <Link href={`/admin/architecture/linking/${exam.id}`} title="Link Content"><LinkIcon className="h-3 w-3 text-primary" /></Link>
                                              </Button>
-                                             <Button asChild size="icon" variant="ghost" className="h-6 w-6 rounded-lg hover:bg-blue-50">
-                                                <Link href={`/admin/exam-registry`}><Edit className="h-3 w-3 text-blue-500" /></Link>
-                                             </Button>
                                           </div>
                                        </div>
                                     ))}
                                  </div>
-                                 <Button asChild variant="ghost" className="w-full h-8 text-[7px] font-black uppercase text-slate-400 hover:text-primary tracking-widest gap-2">
-                                    <Link href="/admin/exam-registry">+ New Vertical</Link>
-                                 </Button>
                               </div>
                            )) : (
-                              <div className="col-span-full py-10 text-center opacity-20 italic font-black uppercase text-[10px]">No Hubs Assigned.</div>
+                              <div className="col-span-full py-10 text-center">
+                                 <p className="text-[10px] font-black uppercase text-slate-300 tracking-widest">No boards found. Checking for direct exams...</p>
+                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-6">
+                                    {(exams || []).filter((e: any) => e.categoryId === cat.id).map((exam: any) => (
+                                       <div key={exam.id} className="p-3 bg-white rounded-xl border border-slate-100 text-left flex items-center justify-between">
+                                          <span className="text-[10px] font-bold text-slate-500">{exam.name}</span>
+                                          <Button asChild size="icon" variant="ghost" className="h-6 w-6 rounded-lg"><Link href={`/admin/architecture/linking/${exam.id}`}><LinkIcon className="h-3 w-3 text-primary" /></Link></Button>
+                                       </div>
+                                    ))}
+                                 </div>
+                              </div>
                            )}
                         </div>
                      </CardContent>
@@ -141,10 +144,10 @@ export default function ArchitectureManager() {
          <TabsContent value="categories">
             <div className="bg-white rounded-[3rem] p-12 text-center border-2 border-dashed border-slate-100">
                <Info className="h-10 w-10 mx-auto mb-4 text-slate-300" />
-               <h3 className="font-headline font-black text-xl uppercase mb-2">Category Registry</h3>
-               <p className="text-slate-400 text-sm mb-8">Direct management for top-level Punjab verticals.</p>
+               <h3 className="font-headline font-black text-xl uppercase mb-2">Registry Folders</h3>
+               <p className="text-slate-400 text-sm mb-8">Manage the 6 canonical top-level ecosystem folders.</p>
                <Button asChild className="h-14 px-10 rounded-2xl bg-[#0F172A] hover:bg-black font-black uppercase text-[10px] tracking-widest">
-                  <Link href="/admin/categories">Launch Category Manager</Link>
+                  <Link href="/admin/categories">Open Folder Manager</Link>
                </Button>
             </div>
          </TabsContent>

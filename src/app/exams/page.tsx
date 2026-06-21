@@ -15,18 +15,17 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Strict Category Explorer v18.0.
- * ENFORCED: Whitelist filter ensures only the 7 authorized categories are listed.
+ * @fileOverview Strict Category Explorer v19.0.
+ * ENFORCED: Whitelist filter ensures only the 6 authorized categories are listed.
  */
 
 const AUTHORIZED_CATEGORY_IDS = [
-  "punjab-government-exams",
-  "punjab-teaching-exams",
-  "punjab-technical-exams",
+  "punjab-govt",
+  "punjab-teaching",
+  "punjab-technical",
   "banking-exams",
-  "medical-health-exams",
   "judiciary-exams",
-  "central-government-exams"
+  "central-govt"
 ];
 
 export default function ExamsEntryPage() {
@@ -44,7 +43,6 @@ export default function ExamsEntryPage() {
 
   const categories = useMemo(() => {
     if (!rawCategories) return [];
-    // Only allow the 7 specific categories
     return rawCategories.filter(c => AUTHORIZED_CATEGORY_IDS.includes(c.id));
   }, [rawCategories]);
 
@@ -57,10 +55,10 @@ export default function ExamsEntryPage() {
         <div className="text-left mb-12 space-y-3">
           <div className="flex items-center gap-3">
              <div className="h-8 w-8 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-inner"><Landmark className="h-4 w-4" /></div>
-             <span className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Exam Categories</span>
+             <span className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Exam Selection</span>
           </div>
-          <h1 className="text-3xl md:text-6xl font-black text-[#0F172A] leading-tight">Choose Your Category</h1>
-          <p className="text-slate-600 font-medium text-sm md:text-lg max-w-2xl">Select an official category to explore verified mock tests and study materials.</p>
+          <h1 className="text-3xl md:text-6xl font-black text-[#0F172A] leading-tight">Choose Your Exam</h1>
+          <p className="text-slate-600 font-medium text-sm md:text-lg max-w-2xl">Select an official category to explore verified exams and boards.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

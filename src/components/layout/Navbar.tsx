@@ -43,8 +43,8 @@ import PWAInstallButton from "@/components/PWAInstallButton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Standardized Navbar v49.1.
- * UPDATED: Simplified terminology for Material and Dashboard.
+ * @fileOverview Standardized Navbar v50.1.
+ * UPDATED: Simplified terminology for View Exams and Home.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -134,7 +134,7 @@ export default function Navbar() {
 
           <div className="hidden lg:flex items-center justify-center gap-8 flex-1">
             <NavLink href="/" label="Home" active={pathname === '/'} />
-            <NavLink href="/mocks" label="Practice" active={pathname === '/mocks'} />
+            <NavLink href="/exams" label="View Exams" active={pathname === '/exams'} />
             <NavLink href="/pyqs" label="Previous Papers" active={pathname === '/pyqs'} />
             <NavLink href="/current-affairs" label="Study Material" active={pathname === '/current-affairs'} />
           </div>
