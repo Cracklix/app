@@ -3,16 +3,11 @@
 import React, { useMemo, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  ClipboardList,
-  ShieldCheck,
-  Users,
   Zap,
-  ChevronRight,
   BookOpen,
   FileText,
   BarChart3,
   Star,
-  Gem,
   ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,8 +18,8 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Compact Hero Hub v30.0.
- * UPDATED: Removed uppercase transformation for professional Title Case consistency.
+ * @fileOverview Official Compact Hero Hub v31.0.
+ * RE-ORDERED: CTA buttons moved below quick action cards.
  */
 
 export default function Hero() {
@@ -46,7 +41,7 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-4 md:gap-8 items-center">
 
-          {/* 1. CONTENT BLOCK - COMPACT MOBILE */}
+          {/* 1. CONTENT BLOCK */}
           <div className="text-left space-y-3 md:space-y-6">
             <motion.div 
                initial={{ opacity: 0, x: -20 }}
@@ -69,18 +64,9 @@ export default function Hero() {
                 Mock Tests, PYQs, Current Affairs and Study Material in one place.
               </p>
             </div>
-
-            <div className="flex gap-2 md:gap-4 pt-1 md:pt-4">
-              <Button asChild className="flex-1 md:flex-none h-11 md:h-14">
-                <Link href="/mocks">Start Free Mock <ArrowRight className="ml-2 h-4 w-4" /></Link>
-              </Button>
-              <Button asChild variant="outline" className="flex-1 md:flex-none h-11 md:h-14">
-                <Link href="/exams">Explore Exams</Link>
-              </Button>
-            </div>
           </div>
 
-          {/* 2. ILLUSTRATION - SHRUNK FOR PWA */}
+          {/* 2. ILLUSTRATION */}
           <div className="hidden lg:flex flex-col items-center">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="relative">
               <img 
@@ -106,6 +92,16 @@ export default function Hero() {
           <QuickAction icon={BookOpen} label="Study Material" href="/notes" color="bg-indigo-600" />
           <QuickAction icon={FileText} label="PYQ Papers" href="/pyqs" color="bg-emerald-600" />
           <QuickAction icon={BarChart3} label="Current Affairs" href="/current-affairs" color="bg-orange-500" />
+        </div>
+
+        {/* CTAs MOVED BELOW CARDS */}
+        <div className="flex flex-row gap-2 md:gap-4 mt-6 md:mt-10 justify-center lg:justify-start">
+          <Button asChild className="flex-1 md:flex-none h-11 md:h-14 rounded-full font-black uppercase text-[10px] md:text-xs tracking-widest px-6 md:px-10">
+            <Link href="/mocks" className="flex items-center gap-2">Start Free Mock <ArrowRight className="h-4 w-4" /></Link>
+          </Button>
+          <Button asChild variant="outline" className="flex-1 md:flex-none h-11 md:h-14 rounded-full font-black uppercase text-[10px] md:text-xs tracking-widest px-6 md:px-10">
+            <Link href="/exams">Explore Exams</Link>
+          </Button>
         </div>
       </div>
     </section>
