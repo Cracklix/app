@@ -17,8 +17,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Free Hub CMS v6.0 (PWA Overhaul).
- * FIXED: Removed all uppercase headers and implemented high-density Title Case.
+ * @fileOverview Institutional Free Hub CMS v7.0 (PWA Unified).
+ * FIXED: Removed all uppercase headers and implemented high-density Title Case as per student homepage.
  */
 
 export default function AdminFreeContent() {
@@ -59,7 +59,7 @@ export default function AdminFreeContent() {
 
     try {
       await setDoc(docRef, payload, { merge: true })
-      toast({ title: "Registry Synced", description: "Content successfully updated in Free Hub." })
+      toast({ title: "Registry Synced", description: "Content successfully updated." })
       setEditingItem(null)
     } catch (e: any) {
       toast({ variant: "destructive", title: "Save Failed", description: e.message })
@@ -67,7 +67,7 @@ export default function AdminFreeContent() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Permanently purge this item from Free Hub?")) return
+    if (!confirm("Permanently purge this item?")) return
     await deleteDoc(doc(db!, "free_content", id))
     toast({ title: "Removed", description: "Item purged from cloud registry." })
   }
@@ -81,17 +81,17 @@ export default function AdminFreeContent() {
   }, [content, searchTerm])
 
   return (
-    <div className="space-y-6 md:space-y-12 pb-24 text-left animate-in fade-in duration-500">
+    <div className="space-y-6 md:space-y-10 pb-24 text-left animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 px-1">
         <div className="space-y-1">
            <div className="flex items-center gap-2 mb-1">
               <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Free Content Master Registry</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Free Content Registry</span>
            </div>
           <h1 className="text-2xl md:text-5xl font-black text-[#0F172A] tracking-tight">Free Hub CMS</h1>
           <p className="text-slate-500 text-[11px] md:text-lg font-medium">Coordinate mocks, notes, and analysis for the public feed.</p>
         </div>
-        <Button onClick={() => setEditingNote({ title: "", description: "", slug: "", type: "note", link: "", fileUrl: "" })} className="w-full md:w-auto h-11 md:h-14 px-10 bg-primary hover:bg-blue-700 text-white rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl border-none active:scale-95 gap-3">
+        <Button onClick={() => setEditingItem({ title: "", description: "", slug: "", type: "note", link: "", fileUrl: "" })} className="w-full md:w-auto h-11 md:h-14 px-10 bg-primary hover:bg-blue-700 text-white rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl border-none active:scale-95 gap-3">
           <Plus className="h-5 w-5" /> Initialize Free Content
         </Button>
       </div>
@@ -170,7 +170,7 @@ export default function AdminFreeContent() {
         <DialogContent className="sm:max-w-xl w-[95vw] max-h-[90vh] rounded-3xl md:rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
           <div className="h-2 w-full bg-[#0F172A] shrink-0" />
           <DialogHeader className="p-6 md:p-10 pb-2 md:pb-4 shrink-0">
-            <DialogTitle className="text-xl md:text-3xl font-black uppercase">Free Asset Architect</DialogTitle>
+            <DialogTitle className="text-xl md:text-3xl font-black uppercase">Asset Architect</DialogTitle>
             <DialogDescription className="text-slate-400 font-bold uppercase text-[9px] tracking-widest mt-1">Configure public study material metadata.</DialogDescription>
           </DialogHeader>
           
