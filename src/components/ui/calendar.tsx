@@ -10,8 +10,8 @@ import { buttonVariants } from "@/components/ui/button"
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
 /**
- * @fileOverview Institutional Calendar Node v17.1 (Hardened API).
- * FIXED: react-day-picker v9 orientation compliance for left, right, up, down.
+ * @fileOverview Institutional Calendar Node v17.2 (Hardened react-day-picker v9).
+ * FIXED: Orientation handling for all 4 directions as required by new API.
  */
 function Calendar({
   className,
@@ -61,7 +61,7 @@ function Calendar({
           if (orientation === "right") return <ChevronRight className={cn("h-4 w-4", chvClassName)} />;
           if (orientation === "up") return <ChevronUp className={cn("h-4 w-4", chvClassName)} />;
           if (orientation === "down") return <ChevronDown className={cn("h-4 w-4", chvClassName)} />;
-          return <React.Fragment />;
+          return null;
         },
       }}
       {...props}

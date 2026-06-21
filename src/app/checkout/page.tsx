@@ -18,7 +18,7 @@ import Script from "next/script"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Production Checkout Hub v7.1.
+ * @fileOverview Hardened Production Checkout Hub v8.0.
  * FIXED: TS18047 (profile null check) and TS2769 (Date narrowing).
  */
 
@@ -58,8 +58,9 @@ function CheckoutContent() {
   }, [user, loading, router])
 
   const isAlreadyActive = useMemo(() => {
-     if (!profile?.passExpiresAt) return false;
-     return new Date(profile.passExpiresAt) > new Date();
+     const expiry = profile?.passExpiresAt;
+     if (!expiry) return false;
+     return new Date(expiry) > new Date();
   }, [profile]);
 
   const handlePaymentInitiation = async () => {
@@ -106,7 +107,7 @@ function CheckoutContent() {
           title: "Gateway Error", 
           description: orderData.details || orderData.error 
         });
-        setOnlineProcessing(onlineProcessing);
+        setOnlineProcessing(false);
         return;
       }
 
@@ -137,6 +138,7 @@ function CheckoutContent() {
   if (!planData) return <div className="h-screen flex items-center justify-center text-slate-400 uppercase font-black tracking-widest text-xs">Registry Node Missing</div>
 
   const isFreePlan = planData.price === 0;
+  const expiryDateStr = profile?.passExpiresAt;
 
   return (
     <div className="min-h-screen bg-slate-50/50 font-body text-left">
@@ -157,14 +159,14 @@ function CheckoutContent() {
            </div>
         </div>
 
-        {isAlreadyActive && profile && profile.passExpiresAt && (
+        {isAlreadyActive && expiryDateStr && (
            <Card className="mb-8 border-none bg-blue-600 text-white p-6 rounded-[1.5rem] shadow-xl flex items-center gap-6 animate-in slide-in-from-top-4">
               <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 shadow-inner">
                  <Clock className="h-6 w-6 text-white" />
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                  <h4 className="text-sm md:text-lg font-black uppercase tracking-tight">Existing Pass Detected</h4>
-                 <p className="text-[10px] md:text-xs font-medium text-blue-100 mt-1">This new pass will be stored in your subscription queue and activated automatically when your current pass expires on <span className="font-black underline">{new Date(profile.passExpiresAt).toLocaleDateString()}</span>.</p>
+                 <p className="text-[10px] md:text-xs font-medium text-blue-100 mt-1">This new pass will be stored in your subscription queue and activated automatically when your current pass expires on <span className="font-black underline">{new Date(expiryDateStr).toLocaleDateString()}</span>.</p>
               </div>
            </Card>
         )}
@@ -246,8 +248,9 @@ function CheckoutContent() {
                                 onClick={async () => {
                                    if(utr.length < 12) { toast({variant:"destructive", title:"Invalid UTR", description: "UTR must be exactly 12 digits."}); return; }
                                    setProcessing(true);
+                                   if (!user) return;
                                    try {
-                                      await submitManualPayment({ userId: user!.uid, userEmail: user!.email!, userName: profile?.name || "Student", planId, transactionId: utr });
+                                      await submitManualPayment({ userId: user.uid, userEmail: user.email || "", userName: profile?.name || "Student", planId, transactionId: utr });
                                       toast({title:"Submitted", description:"Management will review your activation shortly."});
                                       router.push("/dashboard");
                                    } catch(e) {

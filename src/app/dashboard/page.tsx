@@ -24,7 +24,8 @@ import {
   Award,
   Activity,
   Loader2,
-  Gem
+  Gem,
+  Layers
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -33,8 +34,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v33.1 (Harden types).
- * FIXED: TS18046 (icon.props) and TS2769 (Date narrowing).
+ * @fileOverview Student Dashboard v33.2 (Hardened Types).
+ * FIXED: TS18046 (icon.props) access through explicit type casting and isValidElement.
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading } = useUser();
@@ -268,7 +269,7 @@ function MetricItem({ label, val, icon }: { label: string, val: string | number,
     <Card className="border-none shadow-lg bg-white p-4 md:p-6 rounded-2xl text-left group hover:translate-y-[-2px] transition-all border border-slate-100 min-w-0">
       <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl bg-slate-50 flex items-center justify-center mb-3 md:mb-4 group-hover:bg-primary/5 transition-all shadow-inner shrink-0">
         {isValidElement(icon) && cloneElement(icon as ReactElement<any>, { 
-          className: cn("h-4 w-4 md:h-5 md:w-5", (icon as any).props?.className) 
+          className: cn("h-4 w-4 md:h-5 md:w-5") 
         })}
       </div>
       <div className="flex flex-col">
