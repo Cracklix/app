@@ -26,8 +26,8 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Hardened CBT Engine v69.0.
- * FIXED: Registry mismatch detection and graceful redirection.
+ * @fileOverview Hardened CBT Engine v70.0.
+ * FIXED: Endless submission loading and student-friendly UI text.
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -108,15 +108,9 @@ export default function MockAttemptPage() {
         
         const sortedQs = questionIds.map((id: string) => fetchedQuestions.find((q: any) => q.id === id)).filter(Boolean);
         
-        // GRACEFUL REGISTRY MISMATCH HANDLER
         if (sortedQs.length === 0) {
            console.error("[CBT_SYNC_FAILURE]: Missing question nodes in registry.", { mockId, questionIds });
-           toast({ 
-             variant: "destructive", 
-             title: "Registry Mismatch", 
-             description: "Questions are currently unavailable for this mock test." 
-           });
-           router.replace("/mocks");
+           setInitError("Registry Mismatch: Questions associated with this mock could not be retrieved. Please seed data in Admin Hub.");
            return;
         }
 
@@ -177,17 +171,30 @@ export default function MockAttemptPage() {
         accessLevel: (mockData.accessLevel || 'FREE').toUpperCase() 
       };
 
-      const resultRef = doc(db, "results", `${user.uid}_${mockId}`);
-      const attemptRef = doc(db, "attempts", `${user.uid}_${mockId}`);
+      const submissionPromise = async () => {
+        const resultRef = doc(db, "results", `${user.uid}_${mockId}`);
+        const attemptRef = doc(db, "attempts", `${user.uid}_${mockId}`);
+        await setDoc(resultRef, resultPayload, { merge: true });
+        await updateDoc(attemptRef, { status: 'COMPLETED', updatedAt: serverTimestamp() });
+      };
 
-      await setDoc(resultRef, resultPayload, { merge: true });
-      await updateDoc(attemptRef, { status: 'COMPLETED', updatedAt: serverTimestamp() });
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Submission Timeout")), 12000)
+      );
+
+      await Promise.race([submissionPromise(), timeoutPromise]);
       
       router.replace(`/results/${mockId}`);
-    } catch (e) {
+    } catch (e: any) {
+      console.error("[SUBMISSION_FAILURE]:", e);
+      toast({
+        variant: "destructive",
+        title: "Submission Failed",
+        description: e.message === "Submission Timeout" ? "Network timeout. Retrying..." : "Could not save results. Check your connection."
+      });
       setIsSubmittingFinal(false);
     }
-  }, [db, user, profile, isSubmittingFinal, questions, answers, router, mockId, mockTitle, mockData, startTime]);
+  }, [db, user, profile, isSubmittingFinal, questions, answers, router, mockId, mockTitle, mockData, startTime, toast]);
 
   useEffect(() => {
      if (!isInitializing && !initError && timeLeft === 0 && !isSubmittingFinal) {
@@ -206,10 +213,10 @@ export default function MockAttemptPage() {
     <div className="h-screen w-full flex flex-col items-center justify-center bg-white p-10 text-center space-y-8">
        <AlertCircle className="h-16 w-16 text-rose-500" />
        <div className="space-y-2">
-          <h2 className="text-2xl font-black text-[#0F172A] uppercase">CBT Sync Failure</h2>
-          <p className="text-slate-500 font-medium max-w-xs mx-auto">{initError}</p>
+          <h2 className="text-2xl font-black text-[#0F172A] uppercase leading-tight">Sync Failure</h2>
+          <p className="text-slate-500 font-medium max-w-sm mx-auto">{initError}</p>
        </div>
-       <Button onClick={() => router.replace('/mocks')} className="h-14 px-10 bg-[#0F172A] text-white rounded-2xl font-black uppercase text-[10px]">Return to Hub</Button>
+       <Button onClick={() => router.replace('/dashboard')} className="h-14 px-10 bg-[#0F172A] text-white rounded-2xl font-black uppercase text-[10px]">Return to Dashboard</Button>
     </div>
   );
 
@@ -302,21 +309,26 @@ export default function MockAttemptPage() {
       </Dialog>
 
       <Dialog open={showSubmitModal} onOpenChange={showSubmitModal && !isSubmittingFinal ? setShowSubmitModal : undefined}>
-        <DialogContent className="max-w-[240px] rounded-[1.2rem] p-4 md:p-6 bg-[#0B1528] text-white text-center border-none shadow-5xl z-[1300]">
-          <div className="space-y-3">
+        <DialogContent className="max-w-[280px] rounded-[1.5rem] p-6 bg-[#0B1528] text-white text-center border-none shadow-5xl z-[1300]">
+          <div className="space-y-4">
             <DialogHeader className="sr-only">
-               <DialogTitle>Final Submission</DialogTitle>
+               <DialogTitle>Submit Test</DialogTitle>
                <DialogDescription>Submit and score your test.</DialogDescription>
             </DialogHeader>
-            <div className="h-8 w-8 bg-primary/20 rounded-lg flex items-center justify-center mx-auto text-primary shadow-lg shadow-primary/10">
-              <ShieldCheck className="h-4 w-4" />
+            <div className="h-10 w-10 bg-primary/20 rounded-xl flex items-center justify-center mx-auto text-primary shadow-lg shadow-primary/10">
+              {isSubmittingFinal ? <Loader2 className="h-5 w-5 animate-spin" /> : <ShieldCheck className="h-5 w-5" />}
             </div>
-            <h2 className="text-sm font-black uppercase text-white tracking-tight leading-none">Final Submission</h2>
-            <div className="flex flex-col gap-1.5 pt-1">
-              <Button onClick={handleSubmitFinal} disabled={isSubmittingFinal} className="w-full h-8 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[7px] tracking-widest rounded-lg border-none shadow-xl">
-                {isSubmittingFinal ? <Loader2 className="h-3 w-3 animate-spin" /> : "Finish & Score Test"}
+            <div className="space-y-2">
+               <h2 className="text-lg font-black uppercase text-white tracking-tight leading-none">Submit Test</h2>
+               <p className="text-[10px] font-medium text-slate-400 leading-relaxed">
+                  Are you sure you want to submit? Once submitted, you cannot change your answers.
+               </p>
+            </div>
+            <div className="flex flex-col gap-2 pt-2">
+              <Button onClick={handleSubmitFinal} disabled={isSubmittingFinal} className="w-full h-10 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[9px] tracking-widest rounded-xl border-none shadow-xl">
+                {isSubmittingFinal ? "Processing..." : "Submit Test"}
               </Button>
-              <button onClick={() => setShowSubmitModal(false)} disabled={isSubmittingFinal} className="h-4 text-slate-500 font-bold uppercase text-[6px] tracking-widest hover:text-white transition-colors cursor-pointer">Back to Questions</button>
+              <button onClick={() => setShowSubmitModal(false)} disabled={isSubmittingFinal} className="h-6 text-slate-500 font-bold uppercase text-[7px] tracking-widest hover:text-white transition-colors cursor-pointer">Continue Test</button>
             </div>
           </div>
         </DialogContent>

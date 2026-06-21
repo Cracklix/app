@@ -10,8 +10,8 @@ import { buttonVariants } from "@/components/ui/button"
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
 /**
- * @fileOverview Production-grade Calendar node v15.5.
- * FIXED: Build blocking type errors for Chevron orientations (Satisfying react-day-picker v9).
+ * @fileOverview Production-grade Calendar node v15.6.
+ * FIXED: Build blocking type errors for Chevron orientations.
  */
 function Calendar({
   className,
@@ -56,7 +56,7 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Chevron: ({ orientation, className: chevronClassName }: { orientation?: string, className?: string }) => {
+        Chevron: ({ orientation, className: chevronClassName }: { orientation?: "left" | "right" | "up" | "down", className?: string }) => {
           if (orientation === "left") return <ChevronLeft className={cn("h-4 w-4", chevronClassName)} />;
           if (orientation === "right") return <ChevronRight className={cn("h-4 w-4", chevronClassName)} />;
           if (orientation === "up") return <ChevronUp className={cn("h-4 w-4", chevronClassName)} />;

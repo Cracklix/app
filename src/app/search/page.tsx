@@ -13,7 +13,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Search Center Hub v4.5 (Production Stabilized).
+ * @fileOverview Search Center Hub v4.6 (Production Stabilized).
  * FIXED: Explicitly typed cloneElement to resolve TS2769.
  */
 

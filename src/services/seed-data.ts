@@ -1,8 +1,8 @@
 import { Firestore, doc, serverTimestamp, writeBatch, collection, getDocs } from 'firebase/firestore';
 
 /**
- * @fileOverview Official Institutional Registry Blueprint v77.0.
- * FIXED: Reliable ID mapping for questions to ensure CBT engine synchronization.
+ * @fileOverview Official Institutional Registry Blueprint v78.0.
+ * FIXED: Explicit question ID alignment for Sample Mock series.
  */
 
 export async function seedInitialData(db: Firestore) {
@@ -97,7 +97,7 @@ export async function seedInitialData(db: Firestore) {
     }
   ];
 
-  // 5. SAMPLE MOCKS
+  // 5. SAMPLE MOCKS (FORCE ID ALIGNMENT)
   const sampleMocks = [
     {
       id: "sample-mock-1",

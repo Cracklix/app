@@ -6,7 +6,7 @@ import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/fir
 import { initializeFirebase } from '@/firebase/app';
 
 /**
- * @fileOverview Global Test Store v3.6.
+ * @fileOverview Global Test Store v3.7.
  * FIXED: Duplicate property in object literal.
  */
 

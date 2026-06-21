@@ -33,7 +33,7 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v31.5.
+ * @fileOverview Student Dashboard v31.6.
  * FIXED: TS18046 unknown property access on icon node.
  */
 export default function StudentDashboard() {
