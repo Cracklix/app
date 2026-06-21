@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useCollection, useFirestore, useUser } from "@/firebase"
-import { collection, query, limit } from "firebase/firestore"
+import { collection, query, limit, orderBy } from "firebase/firestore"
 import { Trophy, ShieldCheck, Search, Activity, Zap, Loader2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 
 /**
- * @fileOverview Institutional Merit Hub v15.0 (Typography Hardened).
- * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
+ * @fileOverview Institutional Merit Hub v16.0 (Real Data Sorted).
+ * FIXED: Implemented orderBy for server-side score precedence.
  */
 
 export default function LeaderboardPage() {
@@ -31,7 +31,7 @@ export default function LeaderboardPage() {
     }
   }, [user, authLoading, router]);
 
-  const meritQuery = useMemo(() => (db ? query(collection(db, "results"), limit(500)) : null), [db])
+  const meritQuery = useMemo(() => (db ? query(collection(db, "results"), orderBy("score", "desc"), limit(500)) : null), [db])
   const usersQuery = useMemo(() => (db ? query(collection(db, "users"), limit(500)) : null), [db])
 
   const { data: results, loading: resultsLoading } = useCollection<any>(meritQuery)
@@ -40,10 +40,11 @@ export default function LeaderboardPage() {
   const meritList = useMemo(() => {
     if (!results) return []
     const lowerSearch = searchTerm.toLowerCase();
-    const sortedResults = [...results].sort((a: any, b: any) => (b.score || 0) - (a.score || 0));
+    
+    // Sort logic already handled by query, but we filter unique students here
     const uniqueRankers = new Map();
     
-    sortedResults.forEach((r: any) => {
+    results.forEach((r: any) => {
       if (!uniqueRankers.has(r.userId)) {
         const userProfile = users?.find((u: any) => u.id === r.userId);
         const name = userProfile?.name || 
@@ -67,7 +68,7 @@ export default function LeaderboardPage() {
         }
       }
     });
-    return Array.from(uniqueRankers.values());
+    return Array.from(uniqueRankers.values()).sort((a, b) => b.score - a.score);
   }, [results, users, searchTerm]);
 
   const podium = useMemo(() => meritList.slice(0, 3), [meritList]);
@@ -86,7 +87,7 @@ export default function LeaderboardPage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
                <div className="space-y-6 text-left">
                   <div className="flex items-center gap-4"><div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner"><ShieldCheck className="h-7 w-7" /></div><span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-500">Live Merit Hub</span></div>
-                  <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-[#0F172A] tracking-tight leading-[0.9] break-words antialiased">Hall of <br/> <span className="text-primary">Rankers</span></h1>
+                  <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-[#0F172A] tracking-tight leading-[0.9] break-words antialiased uppercase">Hall of <br/> <span className="text-primary">Rankers</span></h1>
                   <p className="text-slate-500 font-medium text-lg md:text-xl max-w-xl leading-tight tracking-tight">Real-time rankings based on official mock results across Punjab.</p>
                </div>
                <div className="relative w-full md:w-96 group">

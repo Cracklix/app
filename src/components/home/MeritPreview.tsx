@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { useCollection, useFirestore, useDoc } from '@/firebase';
-import { collection, query, limit, doc } from 'firebase/firestore';
+import { collection, query, limit, doc, orderBy } from 'firebase/firestore';
 import { Trophy, Medal, Activity, ChevronRight, Users, MapPin } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,8 +13,8 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview Balanced Punjab Merit Preview v3.3.
- * FIXED: Corrected reference error where 'r' was used instead of 'res' in mapper.
+ * @fileOverview Balanced Punjab Merit Preview v4.0.
+ * UPDATED: Implemented server-side ordering for real-time topper accuracy.
  */
 export default function MeritPreview() {
   const db = useFirestore();
@@ -24,20 +24,26 @@ export default function MeritPreview() {
 
   const resultsQuery = useMemo(() => {
     if (!db) return null;
-    return query(collection(db, "results"), limit(5));
+    // Get more results to ensure we can find top unique users after filtering
+    return query(collection(db, "results"), orderBy("score", "desc"), limit(50));
   }, [db]);
 
   const { data: results, loading: resultsLoading } = useCollection<any>(resultsQuery);
 
   const topRankers = useMemo(() => {
     if (!results) return [];
-    const map = new Map();
-    [...results].sort((a, b) => (b.score || 0) - (a.score || 0)).forEach(res => {
-      if (!map.has(res.userId) || map.get(res.userId).score < res.score) {
-        map.set(res.userId, res);
+    const uniqueMap = new Map();
+    
+    results.forEach(res => {
+      // Logic: Only keep the best result per student in the preview
+      if (!uniqueMap.has(res.userId) || uniqueMap.get(res.userId).score < res.score) {
+        uniqueMap.set(res.userId, res);
       }
     });
-    return Array.from(map.values()).sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, 5);
+    
+    return Array.from(uniqueMap.values())
+      .sort((a, b) => (b.score || 0) - (a.score || 0))
+      .slice(0, 5);
   }, [results]);
 
   const liveAspirantCount = useMemo(() => {
@@ -55,7 +61,7 @@ export default function MeritPreview() {
               <div className="space-y-6 max-w-xl">
                  <div className="flex items-center gap-3">
                     <Trophy className="h-5 w-5 text-blue-600" />
-                    <span className="text-[10px] font-bold text-slate-400 tracking-tight">Punjab Merit Index</span>
+                    <span className="text-[10px] font-bold text-slate-400 tracking-tight uppercase">Punjab Merit Index</span>
                  </div>
                  <h2 className="text-3xl md:text-6xl font-extrabold text-[#0F172A] leading-tight tracking-tight">Hall of <span className="text-blue-600">Rankers</span></h2>
                  <p className="text-slate-500 font-medium text-base md:text-lg leading-relaxed">
@@ -71,14 +77,14 @@ export default function MeritPreview() {
                     <p className="text-3xl md:text-4xl font-extrabold text-[#0F172A] tabular-nums">
                        {statsLoading ? "..." : liveAspirantCount}
                     </p>
-                    <p className="text-[9px] md:text-[10px] font-bold text-slate-400 tracking-tight mt-2">Aspirant Nodes</p>
+                    <p className="text-[9px] md:text-[10px] font-bold text-slate-400 tracking-tight mt-2 uppercase">Aspirant Nodes</p>
                  </div>
                  <div className="p-6 md:p-8 bg-blue-50/50 rounded-[2rem] border border-blue-100 shadow-inner group transition-all">
                     <div className="h-10 w-10 rounded-xl bg-white border border-blue-100 flex items-center justify-center mb-4 text-blue-600">
                        <MapPin className="h-5 w-5" />
                     </div>
                     <p className="text-3xl md:text-4xl font-extrabold text-blue-600 tabular-nums">23</p>
-                    <p className="text-[9px] md:text-[10px] font-bold text-slate-400 tracking-tight mt-2">Districts Covered</p>
+                    <p className="text-[9px] md:text-[10px] font-bold text-slate-400 tracking-tight mt-2 uppercase">Districts Covered</p>
                  </div>
               </div>
 
@@ -93,9 +99,9 @@ export default function MeritPreview() {
                  <div className="bg-[#0B1528] p-6 md:p-8 flex items-center justify-between text-white">
                     <div className="flex items-center gap-3">
                        <Medal className="h-5 w-5 text-blue-600" />
-                       <h3 className="font-bold text-sm tracking-tight">Live Topper Hub</h3>
+                       <h3 className="font-bold text-sm tracking-tight uppercase">Live Topper Hub</h3>
                     </div>
-                    <Badge className="bg-white/10 text-blue-600 border-none text-[8px] font-bold px-2">Updated: Real-time</Badge>
+                    <Badge className="bg-white/10 text-blue-600 border-none text-[8px] font-bold px-2 uppercase">Updated: Real-time</Badge>
                  </div>
                  <CardContent className="p-0">
                     <div className="divide-y divide-slate-50">
@@ -109,8 +115,8 @@ export default function MeritPreview() {
                                   <span className={cn("font-black text-sm md:text-xl w-6", idx === 0 ? "text-amber-400" : "text-slate-300")}>#{idx + 1}</span>
                                   <StudentAvatar profile={{ name, gender: res.gender }} className="h-10 w-10 md:h-12 md:w-12 rounded-xl shadow-md" />
                                   <div className="min-w-0">
-                                     <p className="font-bold text-sm md:text-lg text-[#0F172A] truncate">{name}</p>
-                                     <p className="text-[8px] font-bold text-slate-400 truncate max-w-[150px]">{res.mockTitle}</p>
+                                     <p className="font-bold text-sm md:text-lg text-[#0F172A] truncate uppercase">{name}</p>
+                                     <p className="text-[8px] font-bold text-slate-400 truncate max-w-[150px] uppercase">{res.mockTitle}</p>
                                   </div>
                                </div>
                                <Badge className="bg-emerald-50 text-emerald-600 border-none font-bold text-[9px] md:text-[11px] px-3 py-1 rounded-lg tabular-nums shadow-sm">{res.accuracy}%</Badge>
