@@ -9,7 +9,8 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview High-Fidelity Single-Line Stats Bar v5.0.
+ * @fileOverview High-Fidelity Single-Line Stats Bar v6.0.
+ * OPTIMIZED: Background synced to Hero (bg-blue-50) for seamless flow.
  * OPTIMIZED: Forced single horizontal line (grid-cols-4) with micro-scaling for PWA mobile.
  */
 
@@ -57,7 +58,7 @@ export default function StatsBar() {
   ], [stats]);
 
   return (
-    <section className="bg-white pt-0 pb-6 md:py-16">
+    <section className="bg-blue-50 pt-0 pb-6 md:pb-16">
       <div className="container mx-auto px-2 md:px-4 max-w-7xl">
         <div className="grid grid-cols-4 gap-1.5 md:gap-8">
           {items.map((item, i) => (
