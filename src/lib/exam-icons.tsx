@@ -3,8 +3,8 @@ import { Shield, GraduationCap, Scale, Zap, Stethoscope, Landmark, BookOpen, Act
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Branding Engine v19.0.
- * RESOLVER: Maps new canonical board/category IDs to official high-fidelity assets.
+ * @fileOverview Institutional Branding Engine v20.0.
+ * UPDATED: Responsive logo scaling and full visibility guard.
  */
 
 const CANONICAL_BOARD_LOGOS: Record<string, string> = {
@@ -56,21 +56,21 @@ export const AuthorityLogo = ({ board, category, boardId, categoryId, className,
     category?.logoUrl;
   
   const sizeClasses = {
-    sm: "h-8 w-8",
-    md: "h-12 w-12",
-    lg: "h-20 w-20",
-    xl: "h-28 w-28"
+    sm: "h-8 w-8 md:h-10 md:w-10",
+    md: "h-10 w-10 md:h-14 md:w-14",
+    lg: "h-16 w-16 md:h-24 md:w-24",
+    xl: "h-20 w-20 md:h-32 md:w-32"
   };
 
   const containerSize = sizeClasses[size];
 
   if (logoUrl) {
     return (
-      <div className={cn("relative shrink-0 overflow-hidden flex items-center justify-center bg-white rounded-2xl", containerSize, className)}>
+      <div className={cn("relative shrink-0 overflow-hidden flex items-center justify-center bg-white rounded-xl md:rounded-2xl p-1.5 shadow-inner", containerSize, className)}>
         <img 
           src={logoUrl} 
           alt="Official Authority Logo" 
-          className="h-full w-full object-contain animate-in fade-in duration-500 scale-[1.8]"
+          className="h-full w-full object-contain animate-in fade-in duration-500"
           referrerPolicy="no-referrer"
           onError={(e) => { (e.target as any).style.display = 'none'; }}
         />

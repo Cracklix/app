@@ -18,8 +18,8 @@ import { cn } from "@/lib/utils"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview High-Density Mock Grid v75.1.
- * ALIGNMENT: Standardized side margins to match Hero section.
+ * @fileOverview High-Density Mock Grid v76.0.
+ * UPDATED: Responsive logo sizing and Title Case normalization.
  */
 
 export default function LatestMocks() {
@@ -81,7 +81,7 @@ export default function LatestMocks() {
                      </div>
 
                      <div className="flex items-center gap-1.5 pt-0.5">
-                        {isPremium && <Badge className="bg-orange-50 text-orange-600 border-none text-[6px] md:text-[8px] font-black px-1.5 py-0.5 rounded uppercase">PREMIUM</Badge>}
+                        {isPremium && <Badge className="bg-orange-50 text-orange-600 border-none text-[6px] md:text-[8px] font-black px-1.5 py-0.5 rounded uppercase">Premium</Badge>}
                      </div>
                   </CardHeader>
 

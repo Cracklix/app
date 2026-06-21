@@ -12,8 +12,8 @@ import { AuthorityLogo } from "@/lib/exam-icons";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview High-Density Popular Exams Grid v78.1.
- * ALIGNMENT: Standardized side margins to match Hero section.
+ * @fileOverview High-Density Popular Exams Grid v79.0.
+ * UPDATED: Responsive logo sizing and Title Case normalization.
  */
 
 const POPULAR_LIST = [
@@ -34,7 +34,7 @@ export default function PopularExams() {
          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 md:mb-16 gap-1 px-1">
             <div className="space-y-0.5">
                <h2 className="text-xl md:text-5xl font-black text-[#04102B] tracking-tight leading-none">Popular Exams</h2>
-               <p className="text-[#94A3B8] font-bold text-[10px] md:text-sm tracking-tight uppercase">Top Target Hubs</p>
+               <p className="text-[#94A3B8] font-bold text-[10px] md:text-sm tracking-tight">Top Target Hubs</p>
             </div>
             <Link href="/exams" className="text-primary font-black uppercase text-[9px] md:text-xs tracking-widest hover:underline flex items-center gap-2 group">
                View All <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
@@ -47,7 +47,7 @@ export default function PopularExams() {
                   <Link href={`/exams/${p.id}`}>
                      <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-xl md:rounded-[2.5rem] bg-white p-3 md:p-10 text-left h-full group flex flex-col">
                         <div className="mb-3 md:mb-8 flex justify-start md:justify-center">
-                           <AuthorityLogo boardId={p.boardId} size="sm" className="md:w-16 md:h-16 bg-slate-50 rounded-lg md:rounded-2xl shadow-inner group-hover:scale-105 transition-transform" />
+                           <AuthorityLogo boardId={p.boardId} size="sm" className="bg-slate-50 rounded-lg md:rounded-2xl shadow-inner group-hover:scale-105 transition-transform" />
                         </div>
                         
                         <div className="flex-1 space-y-1 md:space-y-5">

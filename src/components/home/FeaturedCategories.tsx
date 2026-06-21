@@ -14,8 +14,8 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 /**
- * @fileOverview High-Density Category Explorer v124.1.
- * ALIGNMENT: Standardized side margins to match Hero section.
+ * @fileOverview High-Density Category Explorer v125.0.
+ * UPDATED: Responsive logo sizing and Title Case normalization.
  */
 
 const STRICT_WHITELIST = [
@@ -68,10 +68,10 @@ export default function FeaturedCategories() {
                        
                        <div className="space-y-2 mb-3">
                           <div className="h-10 w-10 md:h-16 md:w-16 bg-slate-50 rounded-xl flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform overflow-hidden">
-                             <AuthorityLogo category={cat} size="md" className="scale-125" />
+                             <AuthorityLogo category={cat} size="md" />
                           </div>
-                          <Badge className="bg-primary/5 text-primary border-none font-black text-[7px] md:text-[9px] uppercase px-2 py-0.5 rounded shadow-sm w-fit">
-                             {boardLabel} HUB
+                          <Badge className="bg-primary/5 text-primary border-none font-black text-[7px] md:text-[9px] px-2 py-0.5 rounded shadow-sm w-fit">
+                             {boardLabel} Hub
                           </Badge>
                        </div>
                        
@@ -83,7 +83,7 @@ export default function FeaturedCategories() {
                        </div>
 
                        <div className="mt-6 md:mt-10 pt-4 border-t border-slate-50">
-                          <Button variant="ghost" className="w-full h-8 md:h-12 rounded-lg md:rounded-xl bg-[#0F172A] text-white group-hover:bg-primary transition-all font-black text-[8px] md:text-[10px] tracking-widest uppercase border-none gap-2 shadow-md">
+                          <Button variant="ghost" className="w-full h-8 md:h-12 rounded-lg md:rounded-xl bg-[#0F172A] text-white group-hover:bg-primary transition-all font-black text-[8px] md:text-[10px] tracking-widest gap-2 shadow-md">
                              Open Hub <ArrowRight className="h-3 w-3" />
                           </Button>
                        </div>
