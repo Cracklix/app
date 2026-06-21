@@ -28,8 +28,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Admin Hub v51.0 (Real Data Only).
- * UPDATED: Replaced fake baseline numbers with server-side collection counts.
+ * @fileOverview Hardened Admin Hub v52.0 (Real Data Aggregation).
+ * UPDATED: Recalculate function now performs a strict count of the entire registry.
  */
 
 interface MetricCardProps {
@@ -69,6 +69,7 @@ export default function AdminDashboard() {
      if (!db) return;
      setIsStatsSyncing(true);
      try {
+        // PERFORM ACTUAL DOCUMENT COUNTS
         const [qCount, mCount, uCount, rCount, eCount, nCount, pyqCount, pSnap] = await Promise.all([
            getCountFromServer(collection(db, "questions")),
            getCountFromServer(collection(db, "mocks")),
@@ -88,11 +89,12 @@ export default function AdminDashboard() {
            ? Math.round(resultsSnap.docs.reduce((acc: number, d: DocumentData) => acc + (Number(d.data().accuracy) || 0), 0) / resultsSnap.size)
            : 0;
 
+        // UPDATE CENTRAL REGISTRY
         await setDoc(doc(db, "settings", "stats"), {
            totalQuestions: qCount.data().count,
            totalMocks: mCount.data().count,
            totalUsers: uCount.data().count,
-           totalCategories: eCount.data().count, 
+           totalCategories: eCount.data().count, // Maps to the "Categories" label in user UI
            totalRevenue: totalRev,
            totalNotes: nCount.data().count,
            totalPYQs: pyqCount.data().count,
@@ -101,9 +103,9 @@ export default function AdminDashboard() {
            updatedAt: serverTimestamp()
         }, { merge: true });
 
-        toast({ title: "Live Sync Complete", description: "Global statistics registry updated with actual counts." });
+        toast({ title: "Audit Complete", description: "Global statistics synchronized with actual database counts." });
      } catch (e: any) {
-        toast({ variant: "destructive", title: "Sync Failed", description: e.message });
+        toast({ variant: "destructive", title: "Audit Failed", description: e.message });
      } finally {
         setIsStatsSyncing(false);
      }
@@ -115,6 +117,7 @@ export default function AdminDashboard() {
     try {
       await seedInitialData(db)
       toast({ title: "Registry Seeding Complete" })
+      await handleSyncLiveStats() // Refresh stats after seeding
     } catch (e: any) {
       toast({ variant: "destructive", title: "Seeding Failed" })
     } finally {
@@ -139,10 +142,10 @@ export default function AdminDashboard() {
           <p className="text-slate-400 text-sm md:text-lg font-medium">Authoritative control node for Cracklix operations.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto shrink-0">
-           <button onClick={handleSyncLiveStats} disabled={isStatsSyncing} className="h-11 bg-primary hover:bg-primary/90 text-white rounded-xl font-black shadow-lg uppercase tracking-widest text-[10px] px-6 flex items-center justify-center gap-2">
+           <button onClick={handleSyncLiveStats} disabled={isStatsSyncing} className="h-11 bg-primary hover:bg-primary/90 text-white rounded-xl font-black shadow-lg uppercase tracking-widest text-[10px] px-6 flex items-center justify-center gap-2 transition-all active:scale-95">
               {isStatsSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />} Recalculate Live Stats
            </button>
-           <button onClick={handlePushToRegistry} disabled={isSyncing} className="h-11 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black shadow-lg uppercase tracking-widest text-[10px] px-6 flex items-center justify-center gap-2">
+           <button onClick={handlePushToRegistry} disabled={isSyncing} className="h-11 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black shadow-lg uppercase tracking-widest text-[10px] px-6 flex items-center justify-center gap-2 transition-all active:scale-95">
               {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />} Initialize Registry
            </button>
         </div>

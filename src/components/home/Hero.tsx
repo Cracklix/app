@@ -22,15 +22,13 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official Live Hero Hub v19.0.
- * NORMALIZED: Stats and labels follow Title Case.
- * UI FIX: Removed uppercase from primary headline.
+ * @fileOverview Official Live Hero Hub v20.0 (Data Synchronized).
+ * UPDATED: Stats logic synchronized with official screenshot requirements.
  */
 
 const formatCompact = (num: number) => {
   if (num === undefined || num === null) return "...";
   if (num === 0) return "0";
-  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
   if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
   return num.toString();
 };
@@ -48,10 +46,10 @@ export default function Hero() {
   const { data: stats, loading: statsLoading } = useDoc<any>(statsRef);
 
   const liveStats = useMemo(() => [
-    { id: "q", icon: <Zap className="h-5 w-5 text-blue-600" />, val: statsLoading ? "..." : `${formatCompact(stats?.totalQuestions)}+`, label: "Questions" },
-    { id: "m", icon: <ClipboardList className="h-5 w-5 text-indigo-600" />, val: statsLoading ? "..." : `${formatCompact(stats?.totalMocks)}+`, label: "Mock Tests" },
-    { id: "e", icon: <ShieldCheck className="h-5 w-5 text-emerald-600" />, val: statsLoading ? "..." : `${formatCompact(stats?.totalCategories)}+`, label: "Categories" },
-    { id: "u", icon: <Users className="h-5 w-5 text-orange-500" />, val: statsLoading ? "..." : `${formatCompact(stats?.totalUsers)}+`, label: "Aspirants" }
+    { id: "q", icon: <Zap className="h-5 w-5 text-blue-600" />, val: statsLoading ? "..." : `${formatCompact(stats?.totalQuestions)}+`, label: "QUESTIONS" },
+    { id: "m", icon: <ClipboardList className="h-5 w-5 text-indigo-600" />, val: statsLoading ? "..." : `${formatCompact(stats?.totalMocks)}+`, label: "MOCK TESTS" },
+    { id: "e", icon: <ShieldCheck className="h-5 w-5 text-emerald-600" />, val: statsLoading ? "..." : `${formatCompact(stats?.totalCategories)}+`, label: "CATEGORIES" },
+    { id: "u", icon: <Users className="h-5 w-5 text-orange-500" />, val: statsLoading ? "..." : `${formatCompact(stats?.totalUsers)}+`, label: "ASPIRANTS" }
   ], [stats, statsLoading]);
 
   if (!mounted) return null;

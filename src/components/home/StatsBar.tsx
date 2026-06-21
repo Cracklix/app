@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo } from 'react';
@@ -10,12 +9,14 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview High-Fidelity Live Stats Bar v2.0.
+ * @fileOverview High-Fidelity Live Stats Bar v3.0.
  * UPDATED: Fully dynamic engine powered by synchronized registry node.
+ * LABELS: Optimized to match user screenshot requirements.
  */
 
 const formatCompact = (num: number) => {
-  if (!num) return "0";
+  if (num === undefined || num === null) return "...";
+  if (num === 0) return "0";
   if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
   return num.toString();
 };
@@ -27,30 +28,26 @@ export default function StatsBar() {
 
   const items = useMemo(() => [
     { 
-      label: "Questions", 
+      label: "QUESTIONS", 
       val: formatCompact(stats?.totalQuestions) + "+", 
-      sub: "Verified MCQs",
       icon: <Zap className="h-6 w-6 text-white" />,
       color: "bg-blue-600"
     },
     { 
-      label: "Mock Tests", 
+      label: "MOCK TESTS", 
       val: formatCompact(stats?.totalMocks) + "+", 
-      sub: "Latest Pattern",
       icon: <ClipboardList className="h-6 w-6 text-white" />,
       color: "bg-purple-600"
     },
     { 
-      label: "Exam Hubs", 
+      label: "CATEGORIES", 
       val: formatCompact(stats?.totalCategories) + "+", 
-      sub: "Authority Hubs",
       icon: <ShieldCheck className="h-6 w-6 text-white" />,
       color: "bg-emerald-600"
     },
     { 
-      label: "Aspirants", 
+      label: "ASPIRANTS", 
       val: formatCompact(stats?.totalUsers) + "+", 
-      sub: "Trust Cracklix",
       icon: <Users className="h-6 w-6 text-white" />,
       color: "bg-orange-500"
     }
@@ -66,15 +63,14 @@ export default function StatsBar() {
                 {item.icon}
               </div>
               <div className="text-left space-y-0.5">
-                <div className="flex items-baseline gap-2">
+                <div className="flex flex-col">
                   {loading ? (
                     <Skeleton className="h-10 w-24" />
                   ) : (
-                    <span className="text-2xl md:text-4xl font-black text-[#0F172A] tabular-nums tracking-tighter">{item.val}</span>
+                    <span className="text-3xl md:text-5xl font-black text-[#0F172A] tabular-nums tracking-tighter leading-none">{item.val}</span>
                   )}
-                  <span className="text-[10px] font-black text-[#0F172A] uppercase tracking-tight">{item.label}</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">{item.label}</span>
                 </div>
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{item.sub}</p>
               </div>
             </Card>
           ))}

@@ -25,8 +25,7 @@ import { useUser } from "@/firebase"
 import Link from "next/link"
 
 /**
- * @fileOverview High-Fidelity PWA Install Hub v1.5 (Build Fixed).
- * FIXED: Resolved TS2367 type overlap error using boolean flags to prevent narrowing conflicts.
+ * @fileOverview High-Fidelity PWA Install Hub v1.6 (Fixed Syntax).
  */
 
 type DeviceType = "android" | "ios" | "desktop" | "unknown";
@@ -232,4 +231,5 @@ function BenefitRow({ icon, title, desc }: any) {
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{desc}</p>
          </div>
       </div>
+   );
 }
