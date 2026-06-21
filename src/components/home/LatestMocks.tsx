@@ -18,7 +18,8 @@ import { cn } from "@/lib/utils"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Dynamic Latest Mock Tests Hub v68.0 (Mobile Compressed).
+ * @fileOverview High-Density Latest Mock Tests Hub v70.0.
+ * FIXED: Removed excessive white space and matched Popular Exams layout.
  */
 
 export default function LatestMocks() {
@@ -40,21 +41,21 @@ export default function LatestMocks() {
   }, [profile]);
 
   return (
-    <section className="py-8 md:py-16 bg-white">
+    <section className="py-6 md:py-16 bg-white">
       <div className="container mx-auto px-4 max-w-7xl">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 md:mb-12 gap-2 text-left">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 md:mb-12 gap-2 text-left px-1">
            <div className="space-y-0.5">
               <h2 className="text-xl md:text-4xl font-black text-[#0F172A] tracking-tight leading-none">Latest Mock Tests</h2>
-              <p className="text-slate-500 font-medium text-[10px] md:text-lg">Freshly updated tests according to latest patterns.</p>
+              <p className="text-slate-500 font-medium text-[10px] md:text-lg">Freshly updated series for all exams.</p>
            </div>
-           <Link href="/mocks" className="bg-slate-50 px-4 py-1.5 md:px-6 md:py-2.5 rounded-lg md:rounded-xl text-primary font-bold text-[9px] md:text-xs tracking-tight hover:bg-primary hover:text-white transition-all flex items-center gap-2 shadow-sm">
-              Explore All <ArrowRight className="h-3 w-3" />
+           <Link href="/mocks" className="text-primary font-black uppercase text-[9px] md:text-xs tracking-widest hover:underline flex items-center gap-2 group">
+              View All <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
            </Link>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
           {loading ? (
-             Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-64 md:h-80 w-full rounded-2xl md:rounded-[2.5rem] bg-white" />)
+             Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-48 md:h-80 w-full rounded-xl md:rounded-[2.5rem] bg-slate-50" />)
           ) : mocks.length > 0 ? mocks.map((mock, i) => {
             const tier = (mock.accessLevel || 'FREE').toUpperCase();
             const isPremium = tier === 'PREMIUM';
@@ -63,32 +64,37 @@ export default function LatestMocks() {
             
             return (
               <motion.div key={mock.id} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} viewport={{ once: true }}>
-                <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-2xl md:rounded-[2.5rem] bg-white p-4 md:p-8 text-center flex flex-col h-auto min-h-[300px] md:h-[400px] group relative overflow-hidden">
-                  <div className="mb-4 md:mb-6 flex justify-center">
-                     <AuthorityLogo boardId={boardId} size="md" className="md:w-20 md:h-20 bg-slate-50 rounded-xl group-hover:scale-105 transition-transform" />
+                <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-xl md:rounded-[2.5rem] bg-white p-3 md:p-8 text-left md:text-center flex flex-col h-full group relative overflow-hidden">
+                  
+                  <div className="mb-4 md:mb-8 flex justify-start md:justify-center">
+                     <AuthorityLogo boardId={boardId} size="sm" className="md:w-16 md:h-16 bg-slate-50 rounded-lg md:rounded-2xl shadow-inner group-hover:scale-105 transition-transform" />
                   </div>
-                  <CardHeader className="p-0 flex-1 space-y-2 md:space-y-4 text-left md:text-center">
-                     <CardTitle className="font-black text-base md:text-2xl text-[#0F172A] leading-tight tracking-tight line-clamp-2">
+
+                  <CardHeader className="p-0 flex-1 space-y-1.5 md:space-y-4">
+                     <CardTitle className="font-black text-sm md:text-2xl text-[#0F172A] leading-tight tracking-tight line-clamp-2">
                         {mock.title}
                      </CardTitle>
-                     <div className="flex flex-wrap items-center justify-start md:justify-center gap-3 md:gap-4 text-[8px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                        <span className="flex items-center gap-1"><BookOpen className="h-3 w-3" /> {mock.totalQuestions} Qs</span>
-                        <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {mock.duration}m</span>
+                     
+                     <div className="flex flex-wrap items-center gap-2 md:gap-4 text-[7px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                        <span className="flex items-center gap-1"><BookOpen className="h-2.5 w-2.5 md:h-4 md:w-4" /> {mock.totalQuestions} Qs</span>
+                        <span className="flex items-center gap-1"><Clock className="h-2.5 w-2.5 md:h-4 md:w-4" /> {mock.duration}m</span>
                      </div>
-                     <div className="flex items-center justify-start md:justify-center gap-2 pt-1 md:pt-2">
-                        {isPremium && <Badge className="bg-orange-50 text-orange-600 border-none text-[7px] md:text-[8px] font-black px-2 py-0.5 rounded uppercase">PREMIUM</Badge>}
-                        <div className="flex items-center gap-1 text-[8px] md:text-[9px] font-black text-slate-400 uppercase">
-                           <Users className="h-2.5 w-2.5" /> {mock.attemptsCount || 450}+
+
+                     <div className="flex items-center gap-1.5 pt-1">
+                        {isPremium && <Badge className="bg-orange-50 text-orange-600 border-none text-[6px] md:text-[8px] font-black px-1.5 py-0.5 rounded uppercase">PREMIUM</Badge>}
+                        <div className="flex items-center gap-1 text-[7px] md:text-[9px] font-black text-slate-400 uppercase tracking-tighter">
+                           <Users className="h-2 w-2 md:h-3 md:w-3" /> {mock.attemptsCount || 450}+ Attempts
                         </div>
                      </div>
                   </CardHeader>
-                  <div className="mt-4 md:mt-8">
+
+                  <div className="mt-4 md:mt-8 pt-3 border-t border-slate-50">
                      <Button asChild className={cn(
-                       "w-full h-10 md:h-14 rounded-full font-black text-[9px] md:text-[11px] tracking-[0.2em] uppercase shadow-lg border-none transition-all active:scale-95 gap-2", 
+                       "w-full h-8 md:h-14 rounded-lg md:rounded-2xl font-black text-[8px] md:text-[11px] tracking-[0.2em] uppercase shadow-md border-none transition-all active:scale-95 gap-2", 
                        locked ? "bg-orange-500 hover:bg-orange-600 text-white" : "bg-[#0F172A] hover:bg-black text-white"
                      )}>
                         <Link href={locked ? '/pass' : `/mocks/${mock.id}`}>
-                           {locked ? <><Lock className="h-3 w-3" /> UNLOCK</> : 'Start Test'}
+                           {locked ? <><Lock className="h-2.5 w-2.5 md:h-4 md:w-4" /> UNLOCK</> : 'Start Test'}
                         </Link>
                      </Button>
                   </div>
@@ -103,5 +109,24 @@ export default function LatestMocks() {
         </div>
       </div>
     </section>
+  )
+}
+
+function ChevronRight(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m9 18 6-6-6-6" />
+    </svg>
   )
 }
