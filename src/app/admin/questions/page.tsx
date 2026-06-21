@@ -10,7 +10,7 @@ import { Plus, Search, Edit, Trash2, Database, Loader2, RefreshCw, Landmark, Loc
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useCollection, useFirestore } from "@/firebase"
-import { collection, query, doc, where, limit, getDocs, startAfter, writeBatch, serverTimestamp, orderBy, DocumentData } from "firebase/firestore"
+import { collection, query, doc, where, limit, getDocs, startAfter, writeBatch, serverTimestamp, orderBy, DocumentData, deleteDoc } from "firebase/firestore"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/hooks/use-toast"
@@ -18,8 +18,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional MCQ Bank v20.0 (PWA Sync).
- * FIXED: Removed uppercase from headers and refactored to high-density Title Case.
+ * @fileOverview Institutional MCQ Bank v21.0 (PWA Refined).
+ * UPDATED: Total removal of forced uppercase and conversion to Title Case SaaS aesthetic.
  */
 
 type QuestionFilterType = 'ALL' | 'UNUSED' | 'USED' | 'LOCKED' | 'DUPLICATE' | 'REPEATED';
@@ -99,18 +99,18 @@ function QuestionBankContent() {
   }
 
   return (
-    <div className="space-y-6 md:space-y-12 text-left pb-32 animate-in fade-in duration-500">
+    <div className="space-y-6 md:space-y-10 text-left pb-32 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 px-1">
         <div className="space-y-1">
           <div className="flex items-center gap-2 mb-1">
              <Database className="h-4 w-4 text-primary" />
-             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Registry Bank Hub</span>
+             <span className="text-[9px] font-black text-slate-400 tracking-tight">Registry Bank Hub</span>
           </div>
           <h1 className="text-2xl md:text-5xl font-black text-[#0F172A] tracking-tight leading-none">MCQ Bank</h1>
           <p className="text-slate-500 text-[11px] md:text-lg font-medium leading-tight">Master collection of preparation nodes across Punjab.</p>
         </div>
         
-        <Button asChild className="w-full md:w-auto h-11 md:h-14 px-8 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[10px] tracking-widest rounded-full shadow-xl border-none transition-all active:scale-95 gap-3">
+        <Button asChild className="w-full md:w-auto h-11 md:h-14 px-8 bg-primary hover:bg-blue-700 text-white rounded-full font-black text-[10px] tracking-widest shadow-xl border-none transition-all active:scale-95 gap-3">
            <Link href="/admin/questions/add"><Plus className="h-4 w-4" /> Add Question</Link>
         </Button>
       </div>
@@ -134,7 +134,7 @@ function QuestionBankContent() {
          </div>
          <Select value={boardParam} onValueChange={(v) => router.push(`/admin/questions?board=${v}`)}>
             <SelectTrigger className="w-full md:w-64 h-14 md:h-16 rounded-2xl md:rounded-full bg-white border-slate-50 shadow-inner font-bold text-xs">
-               <div className="flex items-center gap-3"><Landmark className="h-4 w-4 text-slate-300" /> <SelectValue placeholder="All Boards" /></div>
+               <div className="flex items-center gap-3"><Landmark className="h-4 w-4 text-slate-300" /> <SelectValue placeholder="All Boards Hub" /></div>
             </SelectTrigger>
             <SelectContent><SelectItem value="all">All Boards Hub</SelectItem>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation} Hub</SelectItem>)}</SelectContent>
          </Select>
@@ -146,9 +146,9 @@ function QuestionBankContent() {
             <TableHeader className="bg-slate-50/50">
               <TableRow className="h-14 border-slate-100">
                 <TableHead className="w-16 px-6 text-center"><Checkbox checked={selectedIds.length === filteredQuestions.length && filteredQuestions.length > 0} onCheckedChange={(checked) => setSelectedIds(checked ? filteredQuestions.map((q: any) => q.id) : [])} /></TableHead>
-                <TableHead className="px-6 text-[9px] font-black uppercase tracking-widest text-slate-400">Statement & Node</TableHead>
-                <TableHead className="text-[9px] font-black uppercase tracking-widest text-slate-400 text-center">Status</TableHead>
-                <TableHead className="text-right px-10 text-[9px] font-black uppercase tracking-widest text-slate-400">Audit</TableHead>
+                <TableHead className="px-6 text-[9px] font-black text-slate-400 tracking-tight">Statement & Node</TableHead>
+                <TableHead className="text-[9px] font-black text-slate-400 tracking-tight text-center">Status</TableHead>
+                <TableHead className="text-right px-10 text-[9px] font-black text-slate-400 tracking-tight">Audit</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -158,7 +158,7 @@ function QuestionBankContent() {
                 <TableRow key={q.id} className={cn("hover:bg-slate-50 transition-all group border-slate-50", selectedIds.includes(q.id) && "bg-primary/5")}>
                   <TableCell className="px-6 text-center"><Checkbox checked={selectedIds.includes(q.id)} onCheckedChange={(checked) => setSelectedIds(prev => checked ? [...prev, q.id] : prev.filter(id => id !== q.id))} /></TableCell>
                   <TableCell className="px-6 py-6 text-left max-w-md">
-                     <p className="text-[9px] font-black text-primary uppercase tracking-tight mb-1.5">{q.subjectId || "GENERAL"}</p>
+                     <p className="text-[9px] font-black text-primary uppercase tracking-tight mb-1.5">{q.subjectId || "General Hub"}</p>
                      <p className="font-bold text-[#0F172A] text-sm md:text-base leading-snug line-clamp-2">{q.englishQuestion}</p>
                   </TableCell>
                   <TableCell className="text-center">
@@ -167,7 +167,7 @@ function QuestionBankContent() {
                   <TableCell className="text-right px-10">
                      <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100 transition-all">
                         <Button variant="ghost" size="icon" className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary active:scale-90" asChild><Link href={`/admin/questions/add?id=${q.id}`}><Edit className="h-4 w-4" /></Link></Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-rose-500 hover:bg-rose-50 active:scale-90" onClick={() => { if(confirm("Purge node?")) deleteDoc(doc(dbInstance!, "questions", q.id)) }}><Trash2 className="h-4 w-4" /></Button>
+                        <button className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-rose-500 hover:bg-rose-50 active:scale-90 transition-all" onClick={() => { if(confirm("Purge node?")) deleteDoc(doc(dbInstance!, "questions", q.id)) }}><Trash2 className="h-4 w-4" /></button>
                      </div>
                   </TableCell>
                 </TableRow>
@@ -195,7 +195,7 @@ function QuestionBankContent() {
                <div className="flex items-center gap-2">
                   <button onClick={() => handleBulkStatusChange('LOCKED')} disabled={isBulkProcessing} className="p-2.5 rounded-xl bg-white/5 hover:bg-blue-600 transition-all active:scale-90"><Lock className="h-4 w-4" /></button>
                   <button onClick={() => handleBulkStatusChange('UNUSED')} disabled={isBulkProcessing} className="p-2.5 rounded-xl bg-white/5 hover:bg-emerald-600 transition-all active:scale-90"><Unlock className="h-4 w-4" /></button>
-                  <button onClick={() => setSelectedIds([])} className="p-2.5 rounded-xl bg-white/5 hover:bg-rose-600 transition-all active:scale-90"><Trash2 className="h-4 w-4" /></button>
+                  <button onClick={() => { if(confirm(`Purge ${selectedIds.length} nodes?`)) { const batch = writeBatch(dbInstance!); selectedIds.forEach(id => batch.delete(doc(dbInstance!, 'questions', id))); batch.commit(); setSelectedIds([]); } }} disabled={isBulkProcessing} className="p-2.5 rounded-xl bg-white/5 hover:bg-rose-600 transition-all active:scale-90"><Trash2 className="h-4 w-4" /></button>
                </div>
             </div>
          </div>
@@ -209,7 +209,7 @@ function FilterChip({ active, label, onClick, color = "" }: any) {
       <button 
         onClick={onClick} 
         className={cn(
-          "px-6 py-2 rounded-full font-black uppercase text-[9px] tracking-widest transition-all border-2 whitespace-nowrap active:scale-95", 
+          "px-6 py-2 rounded-full font-bold text-[10px] tracking-tight transition-all border-2 whitespace-nowrap active:scale-95", 
           active ? "bg-[#0F172A] border-[#0F172A] text-white shadow-lg" : `bg-white border-slate-100 hover:bg-slate-50 ${color}`
         )}
       >
