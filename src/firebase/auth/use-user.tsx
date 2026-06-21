@@ -9,8 +9,8 @@ import { UserProfile } from '@/types';
 import { getDeviceId } from '@/lib/device';
 
 /**
- * @fileOverview Hardened Auth & Profile Hub v9.0 (Takeover Aware).
- * SECURITY: Exposes currentDeviceId and handles real-time session tracking.
+ * @fileOverview Hardened Auth & Profile Hub v10.0 (Countdown Aware).
+ * SECURITY: Real-time pass status derivation with expiry detection.
  */
 export function useUser() {
   const auth = useAuth();
@@ -70,8 +70,8 @@ export function useUser() {
         if (docSnap.exists()) {
           const data = docSnap.data();
           
-          // REAL-TIME EXPIRY & SESSION AUDIT
-          let passStatus = data.passStatus || 'none';
+          // REAL-TIME PASS AUDIT
+          let passStatus: 'active' | 'expired' | 'none' = data.passStatus || 'none';
           let passActive = false;
 
           if (data.passExpiresAt) {
@@ -81,7 +81,7 @@ export function useUser() {
              if (now > expiryDate) {
                 passStatus = 'expired';
                 passActive = false;
-             } else if (data.pass?.active !== false) {
+             } else {
                 passStatus = 'active';
                 passActive = true;
              }

@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useMemo, useState, useEffect } from "react"
@@ -40,8 +41,7 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Institutional Exam Hub v40.1 (Build Fixed).
- * FIXED: Added missing 'CheckCircle2' import to resolve build failure.
+ * @fileOverview Institutional Exam Hub v41.0 (Live Pass Tracking).
  */
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
@@ -97,11 +97,7 @@ export default function ExamHubPage() {
      const userEmail = user.email?.toLowerCase();
      const isFounder = userEmail && SUPER_ADMIN_WHITELIST.includes(userEmail);
      if (profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN' || isFounder) return true;
-     if (profile.pass?.active === true) {
-        const expiry = new Date(profile.pass.expiryDate);
-        return expiry > new Date();
-     }
-     return false;
+     return profile?.passStatus === 'active';
   }, [user, profile]);
 
   const groupedContent = useMemo(() => {
@@ -316,7 +312,7 @@ function MockList({ data, results, isPassActive, user, loading, boards, exam }: 
                      {isCourtExam ? (
                         <Scale className="h-8 w-8 text-slate-600" />
                      ) : board?.iconUrl && !failedImages[board.id] ? (
-                       <img 
+                       <Image 
                          src={board.iconUrl} 
                          className="h-full w-full object-contain" 
                          alt="Logo" 

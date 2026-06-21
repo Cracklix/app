@@ -7,8 +7,8 @@ import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/fir
 import { initializeFirebase } from '@/firebase/app';
 
 /**
- * @fileOverview Global Test Store v3.0.
- * FIXED: Object literal duplicate property and LanguageDisplayMode initialization.
+ * @fileOverview Global Test Store v3.1.
+ * FIXED: Object literal duplicate property and type mismatches.
  */
 
 interface ExamStore extends AttemptState {

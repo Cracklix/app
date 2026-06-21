@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from "react"
@@ -17,7 +18,8 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Institutional Hub Explorer v15.0 (Pinning Added).
+ * @fileOverview Institutional Hub Explorer v16.0 (Interaction Hardened).
+ * FIXED: Isolated pinning toggle to prevent Link/Card click conflicts.
  */
 
 export default function HubExamsPage() {
@@ -61,6 +63,7 @@ export default function HubExamsPage() {
   const handleTogglePin = async (e: React.MouseEvent, examId: string) => {
     e.preventDefault();
     e.stopPropagation();
+    
     if (!db || !user || pinningId) return;
     
     setPinningId(examId);
@@ -76,13 +79,14 @@ export default function HubExamsPage() {
         toast({ title: "Pinned to Hub" });
       }
     } catch (err) {
+      console.error("[PINNING_FAILURE]:", err);
       toast({ variant: "destructive", title: "Action Failed" });
     } finally {
       setPinningId(null);
     }
   };
 
-  if (hubLoading) return <div className="h-screen bg-white flex items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
+  if (hubLoading) return <div className="h-screen bg-white flex flex-col items-center justify-center space-y-6"><Zap className="h-10 w-10 text-primary animate-pulse" /><p className="text-[10px] font-black uppercase text-slate-300 tracking-widest">Loading Registry...</p></div>;
 
   const isCourtHub = hub?.name?.toLowerCase().includes('court') || hub?.id?.toLowerCase().includes('court') || hub?.abbreviation?.toLowerCase().includes('sssc');
 
@@ -155,50 +159,48 @@ export default function HubExamsPage() {
                   const isPinned = profile?.pinnedExams?.includes(exam.id);
 
                   return (
-                    <Link key={exam.id} href={`/exams/${exam.id}`}>
-                       <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-4px] transition-all duration-500 rounded-[2rem] bg-white group overflow-hidden h-full flex flex-col p-6 md:p-10 text-left">
-                          <div className="flex justify-between items-start mb-6 md:mb-8">
-                             <div className="h-14 w-14 md:h-18 md:w-18 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 shadow-inner relative overflow-hidden">
-                                {isCourtHub ? (
-                                  <Scale className="h-6 w-6 md:h-10 md:w-10 text-slate-600 opacity-40" />
-                                ) : effectiveLogo && !failedImages[exam.id] ? (
-                                   <Image 
-                                      src={effectiveLogo} 
-                                      alt="Logo" 
-                                      fill
-                                      sizes="72px"
-                                      className="object-contain p-2" 
-                                      referrerPolicy="no-referrer" 
-                                      onError={() => setFailedImages(p => ({ ...p, [exam.id]: true }))} 
-                                   />
-                                ) : (
-                                  <Landmark className="h-6 w-6 md:h-10 md:w-10 text-primary opacity-20" />
-                                )}
-                             </div>
-                             <button 
-                               onClick={(e) => handleTogglePin(e, exam.id)}
-                               disabled={pinningId === exam.id}
-                               className={cn(
-                                 "h-10 w-10 rounded-xl border flex items-center justify-center transition-all active:scale-90",
-                                 isPinned ? "bg-primary border-primary text-white" : "bg-white border-slate-100 text-slate-300 hover:text-primary hover:border-primary/20"
-                               )}
-                             >
-                                {pinningId === exam.id ? <RefreshCw className="h-4 w-4 animate-spin" /> : isPinned ? <CheckCircle2 className="h-4 w-4" /> : <Star className="h-4 w-4" />}
-                             </button>
+                    <Card key={exam.id} onClick={() => router.push(`/exams/${exam.id}`)} className="border border-[#E5E7EB] shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:translate-y-[-4px] transition-all duration-500 rounded-[2rem] bg-white group overflow-hidden h-full flex flex-col p-6 md:p-10 text-left cursor-pointer">
+                       <div className="flex justify-between items-start mb-6 md:mb-8">
+                          <div className="h-14 w-14 md:h-18 md:w-18 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 shadow-inner relative overflow-hidden">
+                             {isCourtHub ? (
+                               <Scale className="h-6 w-6 md:h-10 md:w-10 text-slate-600 opacity-40" />
+                             ) : effectiveLogo && !failedImages[exam.id] ? (
+                                <Image 
+                                   src={effectiveLogo} 
+                                   alt="Logo" 
+                                   fill
+                                   sizes="72px"
+                                   className="object-contain p-2" 
+                                   referrerPolicy="no-referrer" 
+                                   onError={() => setFailedImages(p => ({ ...p, [exam.id]: true }))} 
+                                />
+                             ) : (
+                               <Landmark className="h-6 w-6 md:h-10 md:w-10 text-primary opacity-20" />
+                             )}
                           </div>
+                          <button 
+                            onClick={(e) => handleTogglePin(e, exam.id)}
+                            disabled={pinningId === exam.id}
+                            className={cn(
+                              "h-10 w-10 rounded-xl border flex items-center justify-center transition-all active:scale-90 z-20",
+                              isPinned ? "bg-primary border-primary text-white" : "bg-white border-slate-100 text-slate-300 hover:text-primary hover:border-primary/20"
+                            )}
+                          >
+                             {pinningId === exam.id ? <RefreshCw className="h-4 w-4 animate-spin" /> : isPinned ? <CheckCircle2 className="h-4 w-4" /> : <Star className="h-4 w-4" />}
+                          </button>
+                       </div>
 
-                          <div className="space-y-2 flex-1">
-                             <h3 className="text-xl md:text-2xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors line-clamp-2 uppercase">{exam.name}</h3>
-                             <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{stats.full + stats.subject + stats.pyq + stats.sectional} TESTS AVAILABLE</p>
-                          </div>
+                       <div className="space-y-2 flex-1">
+                          <h3 className="text-xl md:text-2xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors line-clamp-2 uppercase">{exam.name}</h3>
+                          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{stats.full + stats.subject + stats.pyq + stats.sectional} TESTS AVAILABLE</p>
+                       </div>
 
-                          <div className="mt-6 md:mt-8">
-                             <Button variant="ghost" className="w-full h-12 md:h-14 rounded-xl md:rounded-2xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest gap-2 group-hover:bg-primary transition-all border-none">
-                                VIEW PREPARATION <ChevronRight className="h-4 w-4" />
-                             </Button>
-                          </div>
-                       </Card>
-                    </Link>
+                       <div className="mt-6 md:mt-8">
+                          <Button variant="ghost" className="w-full h-12 md:h-14 rounded-xl md:rounded-2xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest gap-2 group-hover:bg-primary transition-all border-none">
+                             VIEW PREPARATION <ChevronRight className="h-4 w-4" />
+                          </Button>
+                       </div>
+                    </Card>
                   )
                })}
             </div>

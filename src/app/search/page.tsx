@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useMemo, useEffect, Suspense, cloneElement, isValidElement } from "react"
@@ -13,8 +14,7 @@ import { useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Search Center Hub v2.4 (Build Fixed).
- * FIXED: Resolved 'React' UMD global error by using direct cloneElement and any cast.
+ * @fileOverview Search Center Hub v2.5 (Standardized Imports).
  */
 
 export default function SearchPage() {

@@ -1,3 +1,4 @@
+
 "use client"
 
 import Navbar from "@/components/layout/Navbar"
@@ -16,7 +17,7 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Institutional Pass Center v15.3 (AI Cleaned).
+ * @fileOverview Institutional Pass Center v16.0 (Live Countdown).
  */
 
 export default function PassPage() {
@@ -34,11 +35,10 @@ export default function PassPage() {
   }, [user, userLoading, router]);
 
   useEffect(() => {
-    const expiresAt = profile?.passExpiresAt;
-    if (!expiresAt) return;
+    if (!profile?.passExpiresAt) return;
     
     const interval = setInterval(() => {
-       const expiry = new Date(expiresAt).getTime();
+       const expiry = new Date(profile.passExpiresAt).getTime();
        const now = new Date().getTime();
        const diff = expiry - now;
 
@@ -73,7 +73,10 @@ export default function PassPage() {
   }, [profile]);
 
   if (userLoading || !user) return (
-    <div className="h-screen w-full flex flex-col items-center justify-center bg-[#04102B]"><Zap className="h-10 w-10 text-primary animate-pulse" /></div>
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-6">
+       <Zap className="h-10 w-10 text-primary animate-pulse" />
+       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Synchronizing Session...</p>
+    </div>
   );
 
   return (
@@ -86,41 +89,43 @@ export default function PassPage() {
         {mounted && profile?.passStatus && passStatus !== 'none' && (
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Card className="max-w-4xl mx-auto border-none bg-white rounded-[3rem] p-8 md:p-12 shadow-5xl text-left overflow-hidden relative">
-                 <div className={cn("absolute top-0 left-0 w-2 h-full", passStatus === 'active' ? 'bg-emerald-500' : 'bg-rose-500')} />
+                 <div className={cn("absolute top-0 left-0 w-2 h-full transition-colors duration-500", passStatus === 'active' ? 'bg-emerald-500' : 'bg-rose-500')} />
                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative z-10">
-                    <div className="space-y-6">
+                    <div className="space-y-6 flex-1 w-full">
                        <div className="flex items-center gap-4">
-                          <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center shadow-inner", passStatus === 'active' ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600")}>
-                             <ShieldCheck className="h-8 w-8" />
+                          <div className={cn("h-14 w-14 md:h-16 md:w-16 rounded-2xl flex items-center justify-center shadow-inner shrink-0", passStatus === 'active' ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600")}>
+                             <Gem className="h-8 w-8" />
                           </div>
                           <div>
-                             <h2 className="text-2xl md:text-3xl font-headline font-black text-[#0F172A] uppercase tracking-tight">Active Pass Hub</h2>
-                             <div className="flex items-center gap-3">
+                             <h2 className="text-2xl md:text-3xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-none">
+                               {passStatus === 'active' ? 'Active Pass' : 'Pass Expired'}
+                             </h2>
+                             <div className="flex items-center gap-3 mt-2">
                                 <Badge className={cn("border-none text-[8px] font-black px-3 py-1 rounded-lg uppercase", passStatus === 'active' ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600")}>
-                                   Status: {passStatus.toUpperCase()}
+                                   Tier: {profile.pass?.plan || 'PREMIUM'}
                                 </Badge>
                              </div>
                           </div>
                        </div>
 
-                       {passStatus === 'active' ? (
-                          <div className="grid grid-cols-2 xs:grid-cols-4 gap-4">
-                             <CountdownPill label="Days" val={timeLeft?.d || 0} />
-                             <CountdownPill label="Hours" val={timeLeft?.h || 0} />
-                             <CountdownPill label="Mins" val={timeLeft?.m || 0} />
-                             <CountdownPill label="Secs" val={timeLeft?.s || 0} />
+                       {passStatus === 'active' && timeLeft ? (
+                          <div className="grid grid-cols-4 gap-2 md:gap-4 max-w-md">
+                             <CountdownPill label="Days" val={timeLeft.d} />
+                             <CountdownPill label="Hours" val={timeLeft.h} />
+                             <CountdownPill label="Mins" val={timeLeft.m} />
+                             <CountdownPill label="Secs" val={timeLeft.s} />
                           </div>
-                       ) : (
+                       ) : passStatus === 'expired' ? (
                           <div className="p-6 bg-rose-50 rounded-2xl border border-rose-100 flex items-center gap-4 text-rose-600">
                              <AlertCircle className="h-6 w-6 shrink-0" />
                              <p className="text-sm font-bold uppercase tracking-tight">Your elite access has expired. Renew to continue.</p>
                           </div>
-                       )}
+                       ) : null}
                     </div>
 
                     <div className="shrink-0 w-full md:w-auto">
                        <Button asChild className="w-full h-16 px-10 bg-primary hover:bg-blue-700 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl border-none transition-all active:scale-95">
-                          <Link href="#plans">Renew Pass <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                          <Link href="#plans">Explore Plans <ArrowRight className="ml-2 h-4 w-4" /></Link>
                        </Button>
                     </div>
                  </div>
@@ -131,10 +136,10 @@ export default function PassPage() {
         <div id="plans" className="text-center space-y-6 md:space-y-10">
            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[0.9] text-[#0F172A] break-words antialiased">
-                 Master <span className="text-primary">Pass Plans</span>
+                 Elite <span className="text-primary">Pass Plans</span>
               </h1>
               <p className="text-sm md:text-2xl font-medium text-slate-500 max-w-3xl mx-auto mt-6 md:mt-8 leading-tight tracking-tight">
-                 Unlock all premium mock tests, solved papers, and institutional analytics to secure your success.
+                 Access verified mock tests, solved papers, and institutional analytics to secure your government job.
               </p>
            </motion.div>
         </div>
@@ -173,9 +178,9 @@ export default function PassPage() {
 
 function CountdownPill({ label, val }: { label: string, val: number }) {
    return (
-      <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center min-w-[70px] shadow-inner">
-         <p className="text-xl md:text-2xl font-black text-[#0F172A] tabular-nums leading-none">{val}</p>
-         <p className="text-[7px] md:text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1.5">{label}</p>
+      <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center flex-1 shadow-inner">
+         <p className="text-lg md:text-2xl font-black text-[#0F172A] tabular-nums leading-none">{val}</p>
+         <p className="text-[6px] md:text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1.5">{label}</p>
       </div>
    )
 }

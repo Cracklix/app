@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo, useState, useEffect } from "react"
@@ -23,7 +24,8 @@ import {
   Calendar,
   Award,
   Activity,
-  Loader2
+  Loader2,
+  Gem
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -33,14 +35,14 @@ import ShareButton from "@/components/navigation/ShareButton"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v34.0 (Onboarding Protected).
- * FIXED: Redirects incomplete profiles to /profile-setup.
+ * @fileOverview Student Dashboard v35.0 (Pass Expiry Aware).
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading, profileLoading } = useUser() as any;
   const db = useFirestore()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
+  const [passCountdown, setPassCountdown] = useState("");
 
   useEffect(() => {
     setMounted(true)
@@ -51,13 +53,37 @@ export default function StudentDashboard() {
       if (!user) {
         router.push("/login");
       } else if (profile && (!profile.phone || !profile.targetExam)) {
-        // Force completion of profile if missing mandatory fields
         router.push("/profile-setup");
       }
     }
   }, [user, profile, authLoading, router, mounted])
 
-  // Optimize: Fetch results once and derive all metrics
+  useEffect(() => {
+    if (!profile?.passExpiresAt) return;
+    
+    const interval = setInterval(() => {
+      const expiry = new Date(profile.passExpiresAt).getTime();
+      const now = new Date().getTime();
+      const diff = expiry - now;
+
+      if (diff <= 0) {
+        setPassCountdown("Expired");
+        clearInterval(interval);
+        return;
+      }
+
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      
+      if (d > 0) setPassCountdown(`${d} Days Left`);
+      else if (h > 0) setPassCountdown(`${h}h ${m}m Left`);
+      else setPassCountdown(`${m}m left`);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [profile]);
+
   const resultsQuery = useMemo(() => {
     if (!db || !user || !mounted) return null
     return query(collection(db, "results"), where("userId", "==", user.uid), limit(10))
@@ -87,11 +113,14 @@ export default function StudentDashboard() {
   if (!mounted || authLoading || (user && !profile)) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-6">
        <Zap className="h-10 w-10 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Synchronizing Session...</p>
+       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Synchronizing Hub...</p>
     </div>
   );
 
   if (!user) return null;
+
+  const isActive = profile?.passStatus === 'active';
+  const isUrgent = isActive && passCountdown && parseInt(passCountdown) < 7;
 
   return (
     <div className="min-h-screen bg-slate-50/50 pb-safe text-left">
@@ -117,14 +146,18 @@ export default function StudentDashboard() {
                     )}
                   </div>
                   <div className="flex-1 space-y-4 text-center md:text-left min-w-0">
-                    <div className="space-y-1.5">
+                    <div className="space-y-3">
                         <h2 className="text-2xl md:text-5xl lg:text-6xl font-headline font-black tracking-tight uppercase truncate">
                           {profile?.name || user?.displayName || "Aspirant"}
                         </h2>
                         <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
-                          <Badge className="bg-primary text-white border-none text-[8px] md:text-[10px] font-black uppercase px-4 py-1 rounded-full shadow-2xl">
-                            {(profile?.status || 'Free').toUpperCase()} PASS
-                          </Badge>
+                          <div className={cn(
+                            "flex items-center gap-2 px-4 py-1.5 rounded-full font-black uppercase text-[8px] md:text-[10px] tracking-widest shadow-2xl transition-all",
+                            isActive ? (isUrgent ? "bg-rose-500 text-white animate-pulse" : "bg-primary text-white") : "bg-white/10 text-slate-400"
+                          )}>
+                             <Gem className="h-3.5 w-3.5" />
+                             {isActive ? (passCountdown || 'ACTIVE') : 'FREE PASS'}
+                          </div>
                           <div className="text-slate-400 font-bold uppercase tracking-widest text-[9px] md:text-[11px] flex items-center gap-2">
                             <Target className="h-4 w-4 text-primary" /> {profile?.targetExam || 'Punjab Exams'}
                           </div>

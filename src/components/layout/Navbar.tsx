@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -14,7 +15,7 @@ import {
   Settings,
   HelpCircle,
   CreditCard,
-  AlertCircle
+  Clock
 } from "lucide-react";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -43,22 +44,47 @@ import PWAInstallButton from "@/components/PWAInstallButton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Standardized Navbar Hub v48.0 (Typography Cleaned).
- * FIXED: Removed 'uppercase' from links and dropdown menus.
+ * @fileOverview Standardized Navbar Hub v49.0 (Live Pass Countdown).
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [timeLeft, setTimeLeft] = useState("");
 
   const { user, profile, loading } = useUser();
   const auth = useAuth();
-
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!profile?.passExpiresAt) return;
+    
+    const interval = setInterval(() => {
+      const expiry = new Date(profile.passExpiresAt).getTime();
+      const now = new Date().getTime();
+      const diff = expiry - now;
+
+      if (diff <= 0) {
+        setTimeLeft("Expired");
+        clearInterval(interval);
+        return;
+      }
+
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      
+      if (d > 0) setTimeLeft(`${d}d ${h}h left`);
+      else if (h > 0) setTimeLeft(`${h}h ${m}m left`);
+      else setTimeLeft(`${m}m left`);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [profile]);
 
   const handleLogout = async () => {
     try {
@@ -75,17 +101,10 @@ export default function Navbar() {
     (user?.email &&
       SUPER_ADMIN_WHITELIST.includes(user.email.toLowerCase()));
 
-  const passStatus = useMemo(() => {
-    if (!profile?.passExpiresAt) return { label: 'Free Pass', days: 0, active: false };
-    const expiry = new Date(profile.passExpiresAt);
-    const now = new Date();
-    const diff = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    const active = diff > 0;
-    return {
-      label: active ? (profile.pass?.plan || 'Elite').charAt(0).toUpperCase() + (profile.pass?.plan || 'Elite').slice(1).toLowerCase() : 'Pass Expired',
-      days: active ? diff : 0,
-      active
-    };
+  const passLabel = useMemo(() => {
+    if (!profile?.pass?.plan) return 'Free Pass';
+    const plan = profile.pass.plan;
+    return plan.charAt(0).toUpperCase() + plan.slice(1).toLowerCase().replace('_pass', '');
   }, [profile]);
 
   if (!mounted) {
@@ -121,6 +140,13 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
+            {profile?.passStatus === 'active' && timeLeft && (
+               <div className="hidden sm:flex flex-col items-end mr-2">
+                  <span className="text-[8px] font-black uppercase text-emerald-600 tracking-widest leading-none">PREMIUM ACTIVE</span>
+                  <span className="text-[10px] font-bold text-slate-400 mt-1 leading-none">{timeLeft}</span>
+               </div>
+            )}
+
             <PWAInstallButton 
               variant="outline"
               className="hidden md:flex h-10 px-4 text-[9px] rounded-xl border-slate-200"
@@ -176,6 +202,24 @@ export default function Navbar() {
 
                     <div className="h-px w-full bg-slate-100" />
 
+                    <div className={cn(
+                      "w-full p-4 rounded-2xl border transition-all flex flex-col items-center text-center",
+                      profile?.passStatus === 'active' ? "bg-emerald-50 border-emerald-100 text-emerald-700" : "bg-slate-50 text-slate-400 border-slate-100"
+                    )}>
+                       <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest leading-none mb-2">
+                          <Gem className="h-3 w-3" />
+                          <span>{passLabel}</span>
+                       </div>
+                       {profile?.passStatus === 'active' && timeLeft ? (
+                          <div className="flex items-center gap-2 text-[11px] font-bold">
+                             <Clock className="h-3.5 w-3.5" />
+                             <span>{timeLeft}</span>
+                          </div>
+                       ) : (
+                          <p className="text-[9px] font-bold opacity-70">Prepare with Cracklix</p>
+                       )}
+                    </div>
+
                     <div className="w-full space-y-1 text-left">
                        <ProfileMenuItem href="/dashboard" icon={ShieldCheck} label="Dashboard" />
                        <ProfileMenuItem href="/pass" icon={CreditCard} label="My Pass" />
@@ -183,21 +227,6 @@ export default function Navbar() {
                        <ProfileMenuItem href="/help" icon={HelpCircle} label="Help Center" />
                        {isAdmin && (
                          <ProfileMenuItem href="/admin" icon={ShieldCheck} label="Admin Center" highlight />
-                       )}
-                    </div>
-
-                    <div className={cn(
-                      "w-full p-4 rounded-2xl border transition-all",
-                      passStatus.active ? "bg-[#DBEAFE] text-[#2563EB] border-blue-100" : "bg-slate-50 text-slate-400 border-slate-100"
-                    )}>
-                       <div className="flex items-center justify-between text-[11px] font-bold tracking-tight leading-none">
-                          <span>{passStatus.label}</span>
-                          <Gem className="h-3.5 w-3.5" />
-                       </div>
-                       {passStatus.active && (
-                         <p className="text-[10px] font-bold opacity-70 mt-1.5 text-left">
-                           {passStatus.days} Days Remaining
-                         </p>
                        )}
                     </div>
 
