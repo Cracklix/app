@@ -22,8 +22,7 @@ import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Official High-Density Hero Hub v26.0 (PWA Optimized).
- * FIXED: Reduced vertical footprint and element scales for mobile viewports.
+ * @fileOverview Official High-Density Hero Hub v27.0 (Unified Design System).
  */
 
 const formatCompact = (num: number) => {
@@ -103,10 +102,10 @@ export default function Hero() {
             </div>
 
             <div className="flex gap-2 mt-3 md:mt-8 w-full justify-center">
-              <Button asChild className="flex-1 md:flex-none h-11 md:h-12 px-4 md:px-6 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-lg text-white font-bold text-[10px] md:text-xs tracking-tight gap-2 border-none">
+              <Button asChild className="flex-1 md:flex-none">
                 <Link href="/mocks">Start Free Mock <ChevronRight className="h-4 w-4" /></Link>
               </Button>
-              <Button asChild variant="outline" className="flex-1 md:flex-none h-11 md:h-12 px-4 md:px-6 rounded-xl border-slate-200 bg-white font-bold text-slate-700 text-[10px] md:text-xs tracking-tight gap-2">
+              <Button asChild variant="outline" className="flex-1 md:flex-none">
                 <Link href="/pass"><Gem className="h-4 w-4 text-primary" /> {profile?.passStatus === 'active' ? 'Manage' : 'Get Pass'}</Link>
               </Button>
             </div>

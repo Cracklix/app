@@ -18,8 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Paginated Question Bank Hub v37.4 (Hardened).
- * FIXED: Removed 'uppercase' from Exam vertical labels in the table view.
+ * @fileOverview Paginated Question Bank Hub v38.0 (Unified Design System).
  */
 
 type QuestionFilterType = 'ALL' | 'UNUSED' | 'USED' | 'LOCKED' | 'DUPLICATE' | 'REPEATED';
@@ -147,18 +146,18 @@ function QuestionBankContent() {
           <h1 className="text-2xl md:text-5xl font-black font-headline text-[#0F172A] uppercase tracking-tight leading-none truncate max-w-[280px] sm:max-w-none">{activeBoard?.name || "Global Bank"}</h1>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-          <Button asChild className="bg-[#0F172A] hover:bg-black text-white gap-3 font-black h-14 md:h-16 px-10 rounded-2xl uppercase tracking-widest text-[11px] w-full sm:w-auto order-first sm:order-last border-none shadow-2xl transition-all active:scale-95"><Link href="/admin/questions/add"><Plus className="h-5 w-5" /> Add Question</Link></Button>
+          <Button asChild className="w-full sm:w-auto"><Link href="/admin/questions/add"><Plus className="h-5 w-5" /> Add Question</Link></Button>
           <div className="flex gap-3 w-full">
              <Select value={boardParam} onValueChange={(v) => router.push(`/admin/questions?board=${v}`)}>
-                <SelectTrigger className="h-14 rounded-xl bg-white border-slate-200 shadow-sm flex-1 sm:w-56 font-black uppercase text-[10px] tracking-widest"><div className="flex items-center gap-3 truncate"><Landmark className="h-4 w-4 shrink-0 text-slate-400" /> <SelectValue placeholder="All Boards" /></div></SelectTrigger>
+                <SelectTrigger className="h-11 md:h-12 rounded-full bg-white border-slate-200 shadow-sm flex-1 sm:w-56 font-black uppercase text-[10px] tracking-widest"><div className="flex items-center gap-3 truncate"><Landmark className="h-4 w-4 shrink-0 text-slate-400" /> <SelectValue placeholder="All Boards" /></div></SelectTrigger>
                 <SelectContent className="max-h-80"><SelectItem value="all">All Boards</SelectItem>{boards?.map((b: any) => <SelectItem key={b.id} value={b.id}>{b.abbreviation}</SelectItem>)}</SelectContent>
              </Select>
-             <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className={cn("h-14 w-14 rounded-xl bg-white border-slate-200 shadow-sm sm:hidden transition-all", showFilters && "bg-slate-900 text-white border-slate-900")}><Filter className="h-5 w-5" /></Button>
+             <Button variant="outline" size="icon" onClick={() => setShowFilters(!showFilters)} className={cn("sm:hidden transition-all", showFilters && "bg-slate-900 text-white border-slate-900")}><Filter className="h-5 w-5" /></Button>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 md:gap-4 bg-white p-3 rounded-2xl border border-slate-100 shadow-sm overflow-x-auto no-scrollbar scroll-smooth snap-x">
+      <div className="flex items-center gap-2 md:gap-4 bg-white p-3 rounded-full border border-slate-100 shadow-sm overflow-x-auto no-scrollbar scroll-smooth snap-x">
          <FilterChip active={activeTab === 'ALL'} label="ALL NODES" onClick={() => setActiveTab('ALL')} />
          <FilterChip active={activeTab === 'UNUSED'} label="UNUSED" onClick={() => setActiveTab('UNUSED')} color="text-blue-500" />
          <FilterChip active={activeTab === 'USED'} label="USED" onClick={() => setActiveTab('USED')} color="text-emerald-500" />
@@ -169,10 +168,10 @@ function QuestionBankContent() {
       <Card className="border-none shadow-3xl rounded-[2rem] md:rounded-[4rem] overflow-hidden bg-white">
         <CardHeader className={cn("p-6 md:p-10 border-b border-slate-50 bg-slate-50/30", !showFilters && "hidden md:block")}>
           <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
-            <div className="relative w-full lg:w-[40%]"><Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" /><Input className="pl-14 h-14 rounded-2xl bg-white border-none shadow-inner text-sm md:text-base font-medium" placeholder="Search statements..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
+            <div className="relative w-full lg:w-[40%]"><Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" /><Input className="pl-14 h-11 md:h-12 rounded-full bg-white border-none shadow-inner text-sm md:text-base font-medium" placeholder="Search statements..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
-              <Select value={subjectFilter} onValueChange={setSubjectFilter}><SelectTrigger className="w-full sm:w-56 rounded-xl h-12 bg-white border-none shadow-sm font-bold text-xs"><SelectValue placeholder="Subject Hub" /></SelectTrigger><SelectContent className="max-h-80 overflow-y-auto"><SelectItem value="all">All Subjects</SelectItem>{subjects?.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select>
-              <Select value={difficultyFilter} onValueChange={setDifficultyFilter}><SelectTrigger className="w-full sm:w-44 rounded-xl h-12 bg-white border-none shadow-sm font-bold text-xs"><SelectValue placeholder="Difficulty" /></SelectTrigger><SelectContent><SelectItem value="all">All Levels</SelectItem><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent></Select>
+              <Select value={subjectFilter} onValueChange={setSubjectFilter}><SelectTrigger className="w-full sm:w-56 rounded-full h-11 md:h-12 bg-white border-none shadow-sm font-bold text-xs"><SelectValue placeholder="Subject Hub" /></SelectTrigger><SelectContent className="max-h-80 overflow-y-auto"><SelectItem value="all">All Subjects</SelectItem>{subjects?.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select>
+              <Select value={difficultyFilter} onValueChange={setDifficultyFilter}><SelectTrigger className="w-full sm:w-44 rounded-full h-11 md:h-12 bg-white border-none shadow-sm font-bold text-xs"><SelectValue placeholder="Difficulty" /></SelectTrigger><SelectContent><SelectItem value="all">All Levels</SelectItem><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent></Select>
             </div>
           </div>
         </CardHeader>
@@ -197,8 +196,8 @@ function QuestionBankContent() {
                     <TableCell><LifecycleBadge status={q.status || 'UNUSED'} /></TableCell>
                     <TableCell className="text-right px-10">
                       <div className="flex justify-end gap-3 opacity-20 group-hover:opacity-100 transition-all">
-                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl bg-white shadow-sm border border-slate-100 hover:text-primary hover:border-primary" asChild><Link href={`/admin/questions/add?id=${q.id}`}><Edit className="h-5 w-5" /></Link></Button>
-                        <Button variant="ghost" size="icon" className="h-12 w-12 rounded-xl bg-white shadow-sm border border-slate-100 hover:text-rose-600 hover:border-rose-200" onClick={() => { if(confirm("Purge node?")) { deleteDoc(doc(dbInstance, "questions", q.id)); setQuestions(prev => prev.filter((p: any) => p.id !== q.id)); } }}><Trash2 className="h-5 w-5" /></Button>
+                        <Button variant="ghost" size="icon" className="bg-white shadow-sm border border-slate-100" asChild><Link href={`/admin/questions/add?id=${q.id}`}><Edit className="h-5 w-5" /></Link></Button>
+                        <Button variant="ghost" size="icon" className="bg-white shadow-sm border border-slate-100 hover:text-rose-600 hover:border-rose-200" onClick={() => { if(confirm("Purge node?")) { deleteDoc(doc(dbInstance, "questions", q.id)); setQuestions(prev => prev.filter((p: any) => p.id !== q.id)); } }}><Trash2 className="h-5 w-5" /></Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -211,8 +210,8 @@ function QuestionBankContent() {
       
       {hasMore && (
         <div className="flex justify-center mt-10">
-          <Button onClick={() => fetchQuestions(lastDoc)} disabled={loading} className="rounded-2xl h-16 px-16 bg-white border border-slate-200 text-[#0F172A] font-black uppercase text-[11px] tracking-[0.2em] gap-4 shadow-3xl hover:bg-slate-50 transition-all active:scale-95">
-            {loading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : <RefreshCw className="h-6 w-6 text-primary" />} Sync Next Bank
+          <Button variant="outline" onClick={() => fetchQuestions(lastDoc)} disabled={loading} className="gap-4">
+            {loading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : <RefreshCw className="h-6 w-6 text-primary" />} Load More
           </Button>
         </div>
       )}
@@ -220,8 +219,8 @@ function QuestionBankContent() {
       {selectedIds.length > 0 && (
          <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-12 duration-500">
             <div className="bg-[#0F172A] text-white px-8 md:px-12 py-5 md:py-8 rounded-full shadow-5xl flex flex-col md:flex-row items-center gap-6 md:gap-16 border border-white/10 ring-8 ring-primary/5">
-               <div className="flex items-center gap-5"><div className="h-12 w-12 md:h-16 md:w-16 bg-primary/20 rounded-2xl flex items-center justify-center text-primary font-black shadow-inner text-xl">{selectedIds.length}</div><p className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-300">Nodes Selected</p></div>
-               <div className="h-12 w-px bg-white/10 hidden md:block" /><div className="flex flex-wrap items-center justify-center gap-3 md:gap-6"><BulkActionBtn icon={<Lock className="h-4 w-4" />} label="Lock" onClick={() => handleBulkStatusChange('LOCKED')} disabled={isBulkProcessing} /><BulkActionBtn icon={<Unlock className="h-4 w-4" />} label="Unlock" onClick={() => handleBulkStatusChange('UNUSED')} disabled={isBulkProcessing} /><BulkActionBtn icon={<CheckCircle2 className="h-4 w-4" />} label="Mark Used" onClick={() => handleBulkStatusChange('USED')} disabled={isBulkProcessing} /><Button onClick={() => setSelectedIds([])} variant="ghost" className="text-slate-500 hover:text-white h-12 px-6 rounded-xl font-black uppercase text-[10px] tracking-widest">Cancel</Button></div>
+               <div className="flex items-center gap-5"><div className="h-12 w-12 md:h-16 md:w-16 bg-blue-600/20 rounded-2xl flex items-center justify-center text-blue-400 font-black shadow-inner text-xl">{selectedIds.length}</div><p className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-300">Nodes Selected</p></div>
+               <div className="h-12 w-px bg-white/10 hidden md:block" /><div className="flex flex-wrap items-center justify-center gap-3 md:gap-6"><BulkActionBtn icon={<Lock className="h-4 w-4" />} label="Lock" onClick={() => handleBulkStatusChange('LOCKED')} disabled={isBulkProcessing} /><BulkActionBtn icon={<Unlock className="h-4 w-4" />} label="Unlock" onClick={() => handleBulkStatusChange('UNUSED')} disabled={isBulkProcessing} /><BulkActionBtn icon={<CheckCircle2 className="h-4 w-4" />} label="Mark Used" onClick={() => handleBulkStatusChange('USED')} disabled={isBulkProcessing} /><Button onClick={() => setSelectedIds([])} variant="ghost" className="text-slate-500 hover:text-white">Cancel</Button></div>
             </div>
          </div>
       )}
@@ -230,14 +229,14 @@ function QuestionBankContent() {
 }
 
 function FilterChip({ active, label, onClick, color = "text-slate-400" }: FilterChipProps) {
-   return (<button onClick={onClick} className={cn("px-6 py-3 rounded-xl font-black uppercase text-[10px] md:text-xs tracking-widest transition-all border-2 whitespace-nowrap snap-center", active ? "bg-[#0F172A] border-[#0F172A] text-white shadow-2xl scale-105" : "bg-white border-slate-50 hover:border-slate-100 " + color)}>{label}</button>)
+   return (<button onClick={onClick} className={cn("px-6 py-2.5 rounded-full font-black uppercase text-[10px] md:text-xs tracking-widest transition-all border-2 whitespace-nowrap snap-center", active ? "bg-[#0F172A] border-[#0F172A] text-white shadow-2xl scale-105" : "bg-white border-slate-50 hover:border-slate-100 " + color)}>{label}</button>)
 }
 
 function LifecycleBadge({ status }: { status: string }) {
    const styles: Record<string, string> = { 'UNUSED': 'bg-blue-50 text-blue-600', 'USED': 'bg-emerald-50 text-emerald-600', 'LOCKED': 'bg-amber-50 text-amber-600', 'REPEATED': 'bg-indigo-50 text-indigo-600', 'DUPLICATE': 'bg-rose-50 text-rose-600' };
-   return (<Badge className={cn("border-none px-4 py-1.5 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm", styles[status] || styles.UNUSED)}>{status}</Badge>)
+   return (<Badge className={cn("border-none px-4 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-sm", styles[status] || styles.UNUSED)}>{status}</Badge>)
 }
 
 function BulkActionBtn({ icon, label, onClick, disabled }: BulkActionBtnProps) {
-   return (<Button onClick={onClick} disabled={disabled} variant="outline" className="bg-white/5 border-white/10 hover:bg-primary hover:border-primary text-white h-12 md:h-14 px-6 md:px-10 rounded-2xl font-black uppercase text-[10px] md:text-[11px] tracking-widest gap-3 transition-all active:scale-95 shadow-xl">{icon} {label}</Button>)
+   return (<Button onClick={onClick} disabled={disabled} variant="ghost" className="bg-white/5 border-white/10 hover:bg-blue-600 text-white gap-3">{icon} {label}</Button>)
 }

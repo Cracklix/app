@@ -28,8 +28,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Hardened Admin Hub v52.0 (Real Data Aggregation).
- * UPDATED: Recalculate function now performs a strict count of the entire registry.
+ * @fileOverview Hardened Admin Hub v53.0 (Unified Design System).
  */
 
 interface MetricCardProps {
@@ -69,7 +68,6 @@ export default function AdminDashboard() {
      if (!db) return;
      setIsStatsSyncing(true);
      try {
-        // PERFORM ACTUAL DOCUMENT COUNTS
         const [qCount, mCount, uCount, rCount, eCount, nCount, pyqCount, pSnap] = await Promise.all([
            getCountFromServer(collection(db, "questions")),
            getCountFromServer(collection(db, "mocks")),
@@ -83,18 +81,16 @@ export default function AdminDashboard() {
 
         const totalRev = pSnap.docs.reduce((acc: number, d: DocumentData) => acc + (Number(d.data().amount) || 0), 0);
         
-        // Detailed Audit for Average Accuracy (Requires full results snapshot)
         const resultsSnap = await getDocs(query(collection(db, "results"), limit(1000)));
         const avgAcc = resultsSnap.size > 0 
            ? Math.round(resultsSnap.docs.reduce((acc: number, d: DocumentData) => acc + (Number(d.data().accuracy) || 0), 0) / resultsSnap.size)
            : 0;
 
-        // UPDATE CENTRAL REGISTRY
         await setDoc(doc(db, "settings", "stats"), {
            totalQuestions: qCount.data().count,
            totalMocks: mCount.data().count,
            totalUsers: uCount.data().count,
-           totalCategories: eCount.data().count, // Maps to the "Categories" label in user UI
+           totalCategories: eCount.data().count,
            totalRevenue: totalRev,
            totalNotes: nCount.data().count,
            totalPYQs: pyqCount.data().count,
@@ -103,7 +99,7 @@ export default function AdminDashboard() {
            updatedAt: serverTimestamp()
         }, { merge: true });
 
-        toast({ title: "Audit Complete", description: "Global statistics synchronized with actual database counts." });
+        toast({ title: "Audit Complete", description: "Statistics synchronized." });
      } catch (e: any) {
         toast({ variant: "destructive", title: "Audit Failed", description: e.message });
      } finally {
@@ -117,7 +113,7 @@ export default function AdminDashboard() {
     try {
       await seedInitialData(db)
       toast({ title: "Registry Seeding Complete" })
-      await handleSyncLiveStats() // Refresh stats after seeding
+      await handleSyncLiveStats()
     } catch (e: any) {
       toast({ variant: "destructive", title: "Seeding Failed" })
     } finally {
@@ -139,15 +135,15 @@ export default function AdminDashboard() {
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Platform Governance</span>
            </div>
           <h1 className="text-3xl md:text-5xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-none">Admin Hub</h1>
-          <p className="text-slate-400 text-sm md:text-lg font-medium">Authoritative control node for Cracklix operations.</p>
+          <p className="text-slate-400 text-sm md:text-lg font-medium">Authoritative control node.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto shrink-0">
-           <button onClick={handleSyncLiveStats} disabled={isStatsSyncing} className="h-11 bg-primary hover:bg-primary/90 text-white rounded-xl font-black shadow-lg uppercase tracking-widest text-[10px] px-6 flex items-center justify-center gap-2 transition-all active:scale-95">
-              {isStatsSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />} Recalculate Live Stats
-           </button>
-           <button onClick={handlePushToRegistry} disabled={isSyncing} className="h-11 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black shadow-lg uppercase tracking-widest text-[10px] px-6 flex items-center justify-center gap-2 transition-all active:scale-95">
-              {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />} Initialize Registry
-           </button>
+           <Button onClick={handleSyncLiveStats} disabled={isStatsSyncing} className="gap-2">
+              {isStatsSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />} Sync Stats
+           </Button>
+           <Button onClick={handlePushToRegistry} disabled={isSyncing} variant="emerald" className="gap-2">
+              {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />} Seed Registry
+           </Button>
         </div>
       </div>
 
@@ -180,7 +176,6 @@ export default function AdminDashboard() {
          <Card className="lg:col-span-8 border-none shadow-2xl bg-white rounded-[2rem] overflow-hidden border border-slate-100 min-w-0">
             <CardHeader className="p-6 md:p-8 border-b border-slate-50 bg-slate-50/30">
                <CardTitle className="text-xl font-headline font-black uppercase text-[#0F172A]">Activity Stream</CardTitle>
-               <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Live operational ledger.</CardDescription>
             </CardHeader>
             <CardContent className="p-6 md:p-8 space-y-8 md:space-y-10">
                <div className="space-y-6">
@@ -198,24 +193,6 @@ export default function AdminDashboard() {
                            <Badge variant="outline" className="text-[8px] font-black uppercase border-slate-200 shrink-0">
                               {u.pass?.active ? (u.pass.plan || 'ELITE') : 'FREE'}
                            </Badge>
-                        </div>
-                     ))}
-                  </div>
-               </div>
-               
-               <div className="space-y-6">
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><Activity className="h-4 w-4" /> Latest Test Sessions</h4>
-                  <div className="grid grid-cols-1 gap-3">
-                     {recentResults?.map((r: any) => (
-                        <div key={r.id} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm min-w-0 gap-4">
-                           <div className="flex items-center gap-3 md:gap-4 min-w-0">
-                              <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0"><Zap className="h-5 w-5" /></div>
-                              <div className="min-w-0">
-                                 <p className="font-bold text-sm text-[#0F172A] uppercase truncate">{r.mockTitle}</p>
-                                 <p className="text-[9px] text-slate-400 font-bold uppercase truncate">{r.userName}</p>
-                              </div>
-                           </div>
-                           <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[9px] shrink-0">{r.accuracy}%</Badge>
                         </div>
                      ))}
                   </div>
@@ -272,10 +249,10 @@ function QuickLink({ label, href, highlight }: QuickLinkProps) {
    return (
       <Link href={href} className="group">
          <div className={cn(
-           "flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-all",
+           "flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-full hover:bg-white/10 transition-all",
            highlight && "border-rose-500/30 bg-rose-50/5"
          )}>
-            <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
+            <span className="text-[10px] font-black uppercase tracking-widest ml-2">{label}</span>
             <ChevronRight className={cn("h-4 w-4 transition-transform group-hover:translate-x-1", highlight ? "text-rose-50" : "text-primary")} />
          </div>
       </Link>
