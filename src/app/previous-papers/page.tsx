@@ -1,6 +1,7 @@
+
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,25 +9,34 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { FileStack, Download, Eye, Search, Sparkles, ChevronRight, FileText } from "lucide-react"
-import { useCollection, useFirestore } from "@/firebase"
+import { FileStack, Download, Eye, Search, Sparkles, ChevronRight, FileText, Zap } from "lucide-react"
+import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Previous Papers Hub v2.0 (Typography Hardened).
- * FIXED: Applied global responsive scaling text-3xl sm:text-5xl lg:text-7xl with leading-[0.9].
+ * @fileOverview Institutional Previous Papers Hub v2.1 (Auth Locked).
  */
 
 export default function PreviousPapersPage() {
   const db = useFirestore()
+  const router = useRouter()
+  const pathname = usePathname()
+  const { user, loading: authLoading } = useUser()
   const [searchTerm, setSearchTerm] = useState("")
 
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+    }
+  }, [user, authLoading, router, pathname]);
+
   const pyqQuery = useMemo(() => {
-    if (!db) return null
+    if (!db || !user) return null
     return query(collection(db, "pyqs"), orderBy("year", "desc"))
-  }, [db])
+  }, [db, user])
 
   const { data: pyqs, loading } = useCollection<any>(pyqQuery)
 
@@ -45,6 +55,13 @@ export default function PreviousPapersPage() {
     })
     return groups
   }, [pyqs, searchTerm])
+
+  if (authLoading || !user) return (
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
+       <Zap className="h-10 w-10 text-primary animate-pulse" />
+       <p className="text-[10px] font-black uppercase text-slate-300">Securing Archive...</p>
+    </div>
+  );
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body">

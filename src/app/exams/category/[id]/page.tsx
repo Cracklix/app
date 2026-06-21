@@ -1,43 +1,50 @@
 
 "use client"
 
-import { useMemo, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useMemo, useState, useEffect } from "react"
+import { useParams, useRouter, usePathname } from "next/navigation"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection, query, where, doc, updateDoc, arrayUnion, arrayRemove, serverTimestamp } from "firebase/firestore"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Star, CheckCircle2, RefreshCw } from "lucide-react"
+import { ChevronLeft, ChevronRight, Star, CheckCircle2, RefreshCw, Zap } from "lucide-react"
 import { AuthorityLogo } from "@/lib/exam-icons"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Hierarchical Category Hub v55.0 (Pinning Enabled).
+ * @fileOverview Hierarchical Category Hub v56.0 (Auth Locked).
  */
 
 export default function CategoryHubsPage() {
   const params = useParams();
   const router = useRouter();
+  const pathname = usePathname();
   const db = useFirestore();
-  const { user, profile } = useUser();
+  const { user, profile, loading: authLoading } = useUser();
   const { toast } = useToast();
   const catId = params.id as string;
   const [pinningId, setPinningId] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+    }
+  }, [user, authLoading, router, pathname]);
+
   const { data: categories } = useCollection<any>(useMemo(() => (db ? collection(db, "categories") : null), [db]));
   const category = categories?.find(c => c.id === catId);
 
-  const boardsQuery = useMemo(() => (db ? query(collection(db, "boards"), where("categoryId", "==", catId)) : null), [db, catId]);
-  const examsQuery = useMemo(() => (db ? query(collection(db, "exams"), where("categoryId", "==", catId)) : null), [db, catId]);
+  const boardsQuery = useMemo(() => (db && user ? query(collection(db, "boards"), where("categoryId", "==", catId)) : null), [db, catId, user]);
+  const examsQuery = useMemo(() => (db && user ? query(collection(db, "exams"), where("categoryId", "==", catId)) : null), [db, catId, user]);
 
   const { data: boards } = useCollection<any>(boardsQuery);
   const { data: rawExams } = useCollection<any>(examsQuery);
   
-  const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]));
-  const { data: pyqs } = useCollection<any>(useMemo(() => (db ? collection(db, "pyqs") : null), [db]));
+  const { data: mocks } = useCollection<any>(useMemo(() => (db && user ? collection(db, "mocks") : null), [db, user]));
+  const { data: pyqs } = useCollection<any>(useMemo(() => (db && user ? collection(db, "pyqs") : null), [db, user]));
 
   const statsMap = useMemo(() => {
     const map: Record<string, any> = {};
@@ -75,7 +82,12 @@ export default function CategoryHubsPage() {
     } finally { setPinningId(null); }
   };
 
-  const hasBoards = boards && boards.length > 0;
+  if (authLoading || !user) return (
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
+       <Zap className="h-10 w-10 text-primary animate-pulse" />
+       <p className="text-[10px] font-black uppercase text-slate-300">Authorizing Access...</p>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-slate-50/50 font-body text-left">
@@ -101,7 +113,7 @@ export default function CategoryHubsPage() {
       </section>
 
       <main className="container mx-auto px-4 py-8 md:py-16 max-w-7xl">
-         {hasBoards ? (
+         {boards && boards.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                {boards.map((board) => (
                   <Card key={board.id} onClick={() => router.push(`/exams/hub/${board.id}`)} className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-2xl md:rounded-[2.5rem] bg-white group overflow-hidden flex flex-col p-6 md:p-10 text-left cursor-pointer h-full">

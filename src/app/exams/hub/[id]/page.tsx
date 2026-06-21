@@ -1,7 +1,8 @@
+
 "use client"
 
-import { useMemo, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useMemo, useState, useEffect } from "react"
+import { useParams, useRouter, usePathname } from "next/navigation"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useDoc, useCollection, useFirestore, useUser } from "@/firebase"
@@ -15,29 +16,35 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * @fileOverview Premium Board Hub v72.0.
- * OPTIMIZATION: Reduced header padding and logo size for PWA density.
+ * @fileOverview Premium Board Hub v73.0 (Auth Locked).
  */
 
 export default function HubExamsPage() {
   const params = useParams();
   const router = useRouter();
+  const pathname = usePathname();
   const db = useFirestore();
-  const { user, profile } = useUser();
+  const { user, profile, loading: authLoading } = useUser();
   const { toast } = useToast();
   const hubId = params.id as string;
   const [pinningId, setPinningId] = useState<string | null>(null);
 
-  const { data: hub, loading: hubLoading } = useDoc<any>(useMemo(() => (db ? doc(db, "boards", hubId) : null), [db, hubId]));
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+    }
+  }, [user, authLoading, router, pathname]);
+
+  const { data: hub, loading: hubLoading } = useDoc<any>(useMemo(() => (db && user ? doc(db, "boards", hubId) : null), [db, hubId, user]));
   
   const examsQuery = useMemo(() => {
-     if (!db || !hub) return null;
+     if (!db || !hub || !user) return null;
      return query(collection(db, "exams"), where("boardId", "==", hub.id));
-  }, [db, hub]);
+  }, [db, hub, user]);
 
   const { data: rawExams } = useCollection<any>(examsQuery);
-  const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]));
-  const { data: pyqs } = useCollection<any>(useMemo(() => (db ? collection(db, "pyqs") : null), [db]));
+  const { data: mocks } = useCollection<any>(useMemo(() => (db && user ? collection(db, "mocks") : null), [db, user]));
+  const { data: pyqs } = useCollection<any>(useMemo(() => (db && user ? collection(db, "pyqs") : null), [db, user]));
 
   const statsMap = useMemo(() => {
     const map: Record<string, any> = {};
@@ -78,6 +85,13 @@ export default function HubExamsPage() {
       toast({ title: isPinned ? "Removed from list" : "Added to list" });
     } finally { setPinningId(null); }
   };
+
+  if (authLoading || !user) return (
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
+       <Zap className="h-10 w-10 text-primary animate-pulse" />
+       <p className="text-[10px] font-black uppercase text-slate-300">Synchronizing Vault...</p>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-slate-50/50 font-body text-left">
