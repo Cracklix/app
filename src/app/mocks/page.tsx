@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useEffect, useState } from "react"
@@ -7,7 +6,7 @@ import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
-import { ShieldCheck, Landmark, ChevronRight, Zap } from "lucide-react"
+import { ShieldCheck, Landmark, ChevronRight, Zap, BookOpen, Layers } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -15,19 +14,22 @@ import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
+import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional Master Registry v10.0.
- * TYPOGRAPHY: Fixed oversized headings and card titles for better content density.
+ * @fileOverview Institutional Master Registry v11.0 (Dynamic Stats).
+ * NO HARDCODED STATS: Derived from live Firestore aggregation.
  */
 
-const CATEGORY_ICONS: Record<string, any> = {
-  "punjab-govt": <img src="https://sssb.punjab.gov.in/wp-content/themes/ssbtheme/images/punjab-gov.svg" className="h-full w-full object-contain p-2" />,
-  "punjab-teaching": <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbNnoge6pNWx1HZYrUJKM58qWk1dDw85xvKPBoG-O4ew&s=10" className="h-full w-full object-contain p-2" />,
-  "punjab-technical": <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo0ZK9JI5KMfg9RoNdIwcsNlpx5IcPBWuKZw&s" className="h-full w-full object-contain p-2" />,
-  "banking": <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7McWqZqOgKy-BakccvR02WQdEQFrwuvmHBG5rYJzuEg&s=10" className="h-full w-full object-contain p-2" />,
-  "central-govt": <img src="https://alchetron.com/cdn/government-of-india-973b74d1-e25f-41f2-ba2b-51595702248-resize-750.jpeg" className="h-full w-full object-contain p-2" />
-};
+const AUTHORIZED_CATEGORY_IDS = [
+  "punjab-government-exams",
+  "punjab-teaching-exams",
+  "punjab-technical-exams",
+  "banking-exams",
+  "punjab-health-exams",
+  "judiciary-exams",
+  "high-court-exams"
+];
 
 export default function MocksDiscoveryPage() {
   const db = useFirestore();
@@ -42,8 +44,15 @@ export default function MocksDiscoveryPage() {
     }
   }, [user, authLoading, router]);
 
-  const catQuery = useMemo(() => (db ? query(collection(db, "categories"), orderBy("displayOrder", "asc")) : null), [db]);
-  const { data: categories, loading } = useCollection<any>(catQuery);
+  const { data: rawCategories, loading: catLoading } = useCollection<any>(useMemo(() => (db ? query(collection(db, "categories"), orderBy("displayOrder", "asc")) : null), [db]));
+  const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]));
+  const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]));
+  const { data: pyqs } = useCollection<any>(useMemo(() => (db ? collection(db, "pyqs") : null), [db]));
+
+  const categories = useMemo(() => {
+    if (!rawCategories) return [];
+    return rawCategories.filter(c => AUTHORIZED_CATEGORY_IDS.includes(c.id));
+  }, [rawCategories]);
 
   if (!mounted || authLoading || !user) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-white">
@@ -73,13 +82,13 @@ export default function MocksDiscoveryPage() {
                     </p>
                   </div>
                   
-                  <h1 className="text-[32px] sm:text-[42px] md:text-[48px] lg:text-[60px] xl:text-[72px] font-black tracking-tight text-[#0F172A] leading-[0.95] antialiased">
+                  <h1 className="text-[32px] sm:text-[42px] md:text-[48px] lg:text-[60px] xl:text-[72px] font-black tracking-tight text-[#0F172A] leading-[0.95] antialiased uppercase">
                     Master <br/>
                     <span className="text-primary">Registry</span>
                   </h1>
 
                   <p className="text-slate-500 font-medium text-base md:text-xl lg:text-2xl max-w-2xl leading-tight">
-                    Select a recruitment vertical to browse official hubs and exam preparation resources.
+                    Select a recruitment category to browse verified authority boards and mock tests.
                   </p>
                 </div>
               </div>
@@ -103,43 +112,54 @@ export default function MocksDiscoveryPage() {
 
         {/* CONTENT AREA */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 max-w-7xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-             {loading ? (
-               Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[2.5rem]" />)
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+             {catLoading ? (
+               Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-96 w-full rounded-[2.5rem] bg-white" />)
              ) : categories && categories.length > 0 ? (
-               categories.map((cat) => (
-                  <Link key={cat.id} href={`/exams/category/${cat.id}`}>
-                     <Card className="border-none shadow-xl hover:shadow-4xl hover:translate-y-[-8px] transition-all duration-700 rounded-[2rem] md:rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100">
-                        <CardContent className="p-6 md:p-10 flex flex-col h-full">
-                           <div className="flex justify-between items-start mb-8">
-                              <div className={cn("h-14 w-14 md:h-18 md:w-18 rounded-2xl flex items-center justify-center transition-all group-hover:shadow-2xl shadow-inner relative overflow-hidden shrink-0 bg-slate-50 text-slate-300")}>
-                                 {CATEGORY_ICONS[cat.id] || <ShieldCheck className="h-8 w-8" />}
-                              </div>
-                              <Badge className="bg-[#0F172A] text-white border-none text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 md:px-4 md:py-1.5 rounded-xl shadow-lg">
-                                 {cat.highlight || "VERTICAL"}
-                              </Badge>
-                           </div>
-                           
-                           <div className="space-y-4 flex-1">
-                              <h3 className="text-[20px] md:text-[24px] lg:text-[28px] font-black leading-tight tracking-tight text-[#0F172A] group-hover:text-primary transition-colors break-words line-clamp-2">
-                                 {cat.title}
-                              </h3>
-                              <p className="text-sm md:text-base text-slate-400 leading-snug line-clamp-3">
-                                 {cat.description}
-                              </p>
-                           </div>
+               categories.map((cat) => {
+                  const catExams = exams?.filter(e => e.categoryId === cat.id) || [];
+                  const catExamIds = catExams.map(e => e.id);
+                  const catMocksCount = mocks?.filter(m => catExamIds.includes(m.examId) || (m.examIds && m.examIds.some(id => catExamIds.includes(id)))).length || 0;
+                  const catPyqsCount = pyqs?.filter(p => catExamIds.includes(p.examId)).length || 0;
 
-                           <div className="mt-8 md:mt-10 pt-6 border-t border-slate-50">
-                              <Button variant="ghost" className="w-full h-12 md:h-14 rounded-xl md:rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-bold text-xs md:text-sm tracking-tight gap-3 border-none">
-                                 Open Category Hub <ChevronRight className="h-4 w-4" />
-                              </Button>
-                           </div>
-                        </CardContent>
-                     </Card>
-                  </Link>
-               ))
+                  return (
+                    <Link key={cat.id} href={`/exams/category/${cat.id}`}>
+                       <Card className="border-none shadow-xl hover:shadow-4xl hover:translate-y-[-8px] transition-all duration-700 rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col border border-slate-100">
+                          <CardContent className="p-8 md:p-12 flex flex-col h-full">
+                             <div className="flex justify-between items-start mb-8">
+                                <AuthorityLogo category={cat} size="lg" className="bg-slate-50 rounded-2xl group-hover:scale-105 transition-transform shadow-inner" />
+                                <Badge className="bg-[#0F172A] text-white border-none text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 md:px-4 md:py-1.5 rounded-xl shadow-lg">
+                                   AUTHORIZED
+                                </Badge>
+                             </div>
+                             
+                             <div className="space-y-4 flex-1">
+                                <h3 className="text-[20px] md:text-[28px] font-black leading-tight tracking-tight text-[#0F172A] group-hover:text-primary transition-colors uppercase">
+                                   {cat.title}
+                                </h3>
+                                <p className="text-sm md:text-base text-slate-400 leading-snug line-clamp-2">
+                                   {cat.description}
+                                </p>
+
+                                <div className="flex flex-wrap gap-4 pt-4">
+                                   <MetricBlock label="Exams" val={catExams.length} icon={BookOpen} />
+                                   {catMocksCount > 0 && <MetricBlock label="Tests" val={catMocksCount} icon={Zap} />}
+                                   {catPyqsCount > 0 && <MetricBlock label="PYQs" val={catPyqsCount} icon={Layers} />}
+                                </div>
+                             </div>
+
+                             <div className="mt-10 pt-6 border-t border-slate-50">
+                                <Button variant="ghost" className="w-full h-14 rounded-2xl bg-[#0F172A] text-white group-hover:bg-primary transition-all shadow-xl font-black text-xs tracking-widest uppercase gap-3 border-none">
+                                   View Exams <ChevronRight className="h-4 w-4" />
+                                </Button>
+                             </div>
+                          </CardContent>
+                       </Card>
+                    </Link>
+                  )
+               })
              ) : (
-               <div className="col-span-full py-20 text-center opacity-20 italic font-black uppercase tracking-widest text-sm">No categories deployed. Run admin sync.</div>
+               <div className="col-span-full py-20 text-center opacity-20 italic font-black uppercase tracking-widest text-sm">No categories deployed.</div>
              )}
           </div>
         </section>
@@ -147,4 +167,16 @@ export default function MocksDiscoveryPage() {
       <Footer />
     </div>
   )
+}
+
+function MetricBlock({ label, val, icon: Icon }: any) {
+   return (
+      <div className="flex items-center gap-2">
+         <Icon className="h-3.5 w-3.5 text-primary opacity-40" />
+         <div className="flex items-baseline gap-1">
+            <span className="text-sm font-black text-[#0F172A] tabular-nums">{val}</span>
+            <span className="text-[9px] font-bold text-slate-400 uppercase">{label}</span>
+         </div>
+      </div>
+   )
 }

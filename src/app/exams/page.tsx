@@ -6,17 +6,18 @@ import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useCollection, useFirestore, useUser } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
-import { Landmark, ChevronRight, Zap, ShieldCheck } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Landmark, ChevronRight, Zap, ShieldCheck, BookOpen, Layers } from "lucide-react"
+import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
+import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Strict Category Explorer v22.0.
- * ENFORCED: Whitelist filter ensures only the 7 authorized categories are listed.
+ * @fileOverview Strict Category Explorer v23.0 (Data Hardened).
+ * NO HARDCODED STATS: Derived from live Firestore aggregation.
  */
 
 const AUTHORIZED_CATEGORY_IDS = [
@@ -38,9 +39,10 @@ export default function ExamsEntryPage() {
     if (!authLoading && !user) router.push(`/login?returnUrl=/exams`);
   }, [user, authLoading, router]);
 
-  const catQuery = useMemo(() => (db ? query(collection(db, "categories"), orderBy("displayOrder", "asc")) : null), [db]);
-  const { data: rawCategories, loading: catLoading } = useCollection<any>(catQuery);
+  const { data: rawCategories, loading: catLoading } = useCollection<any>(useMemo(() => (db ? query(collection(db, "categories"), orderBy("displayOrder", "asc")) : null), [db]));
   const { data: exams } = useCollection<any>(useMemo(() => (db ? collection(db, "exams") : null), [db]));
+  const { data: mocks } = useCollection<any>(useMemo(() => (db ? collection(db, "mocks") : null), [db]));
+  const { data: pyqs } = useCollection<any>(useMemo(() => (db ? collection(db, "pyqs") : null), [db]));
 
   const categories = useMemo(() => {
     if (!rawCategories) return [];
@@ -53,42 +55,60 @@ export default function ExamsEntryPage() {
     <div className="flex flex-col min-h-screen bg-slate-50/50 font-body text-left">
       <Navbar />
       <main className="container mx-auto px-4 py-12 max-w-7xl">
-        <div className="text-left mb-12 space-y-3">
+        <div className="text-left mb-12 space-y-3 px-2">
           <div className="flex items-center gap-3">
              <div className="h-8 w-8 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-inner"><Landmark className="h-4 w-4" /></div>
              <span className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Exam Selection</span>
           </div>
-          <h1 className="text-3xl md:text-6xl font-black text-[#0F172A] leading-tight">Choose Your Exam</h1>
-          <p className="text-slate-600 font-medium text-sm md:text-lg max-w-2xl">Select an official category to explore verified exams and boards.</p>
+          <h1 className="text-3xl md:text-6xl font-black text-[#0F172A] leading-tight uppercase tracking-tight">Choose Your Exam</h1>
+          <p className="text-slate-600 font-medium text-sm md:text-lg max-w-2xl">Select an official category to explore verified exams and authority boards.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
            {catLoading ? (
-             Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-[2rem]" />)
-           ) : categories.map((cat) => (
-             <Link key={cat.id} href={`/exams/category/${cat.id}`}>
-                <Card className="border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2rem] bg-white group overflow-hidden h-full flex flex-col p-6">
-                   <div className="flex justify-between items-start mb-6">
-                      <div className="h-12 w-12 rounded-xl bg-slate-50 flex items-center justify-center text-primary shadow-inner">
-                         <ShieldCheck className="h-6 w-6" />
-                      </div>
-                      <Badge className="bg-[#0F172A] text-white border-none text-[8px] font-black uppercase px-3 py-1 rounded-lg">AUTHORIZED</Badge>
-                   </div>
-                   <h3 className="text-xl font-black text-[#0F172A] group-hover:text-primary transition-colors uppercase leading-tight mb-3">{cat.title}</h3>
-                   <p className="text-sm text-slate-600 font-medium leading-relaxed line-clamp-3">{cat.description}</p>
-                   <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
-                      <div className="flex flex-col">
-                        <span className="text-xs font-black text-[#0F172A]">{exams?.filter(e => e.categoryId === cat.id).length || 0}</span>
-                        <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1">Exams</span>
-                      </div>
-                      <Button variant="ghost" className="h-10 px-6 rounded-xl bg-[#0F172A] text-white group-hover:bg-primary transition-all font-bold text-[10px] tracking-widest uppercase border-none shadow-md">View Exams <ChevronRight className="ml-2 h-3.5 w-3.5" /></Button>
-                   </div>
-                </Card>
-             </Link>
-           ))}
+             Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-80 w-full rounded-[2rem] bg-slate-50" />)
+           ) : categories.map((cat) => {
+              const catExams = exams?.filter(e => e.categoryId === cat.id) || [];
+              const catExamIds = catExams.map(e => e.id);
+              const catMocksCount = mocks?.filter(m => catExamIds.includes(m.examId) || (m.examIds && m.examIds.some(id => catExamIds.includes(id)))).length || 0;
+              const catPyqsCount = pyqs?.filter(p => catExamIds.includes(p.examId)).length || 0;
+
+              return (
+                <Link key={cat.id} href={`/exams/category/${cat.id}`}>
+                    <Card className="border-none shadow-xl hover:shadow-4xl transition-all duration-500 rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col p-8">
+                       <div className="flex justify-between items-start mb-8">
+                          <AuthorityLogo category={cat} size="lg" className="bg-slate-50 rounded-2xl group-hover:scale-105 transition-transform" />
+                          <Badge className="bg-[#0F172A] text-white border-none text-[8px] font-black uppercase px-3 py-1 rounded-lg">VERIFIED</Badge>
+                       </div>
+                       <h3 className="text-xl md:text-2xl font-black text-[#0F172A] group-hover:text-primary transition-colors uppercase leading-tight mb-4">{cat.title}</h3>
+                       
+                       <div className="space-y-2 mt-2 flex-1">
+                          <MiniStat label="Exams" count={catExams.length} icon={BookOpen} />
+                          {catMocksCount > 0 && <MiniStat label="Tests" count={catMocksCount} icon={Zap} />}
+                          {catPyqsCount > 0 && <MiniStat label="Papers" count={catPyqsCount} icon={Layers} />}
+                       </div>
+
+                       <div className="mt-10 pt-6 border-t border-slate-50 flex items-center justify-between">
+                          <span className="text-[10px] font-black text-primary uppercase tracking-widest">Explore</span>
+                          <Button variant="ghost" className="h-10 px-6 rounded-xl bg-[#0F172A] text-white group-hover:bg-primary transition-all font-bold text-[10px] tracking-widest uppercase border-none shadow-md">View Exams <ChevronRight className="ml-2 h-3.5 w-3.5" /></Button>
+                       </div>
+                    </Card>
+                </Link>
+              )
+           })}
         </div>
       </main>
       <Footer />
     </div>
   )
+}
+
+function MiniStat({ label, count, icon: Icon }: any) {
+   return (
+      <div className="flex items-center gap-3 text-slate-500 font-bold text-xs uppercase">
+         <Icon className="h-3.5 w-3.5 text-primary opacity-50" />
+         <span className="text-[#0F172A] font-black tabular-nums">{count}</span>
+         <span className="text-[9px] tracking-tight">{label}</span>
+      </div>
+   )
 }
