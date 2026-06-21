@@ -3,11 +3,11 @@ import { Shield, GraduationCap, Scale, Zap, Stethoscope, Landmark, BookOpen, Act
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Branding Engine v5.0.
+ * @fileOverview Institutional Branding Engine v6.0.
  * RULES:
- * 1. Try Board Logo first.
+ * 1. Prioritize official Board Logo (Local or Cloud).
  * 2. Fallback to Category Icon.
- * 3. Never use generic shield/lightning placeholders.
+ * 3. Never use generic placeholders unless critical failure.
  */
 
 interface AuthorityLogoProps {
@@ -29,17 +29,15 @@ export const AuthorityLogo = ({ board, category, className, size = 'md' }: Autho
 
   const containerSize = sizeClasses[size];
 
-  // If we have an official URL, show it
   if (logoUrl) {
     return (
       <div className={cn("relative shrink-0 overflow-hidden flex items-center justify-center", containerSize, className)}>
         <img 
           src={logoUrl} 
           alt={board?.name || category?.title || "Authority"} 
-          className="h-full w-full object-contain"
+          className="h-full w-full object-contain animate-in fade-in duration-500"
           referrerPolicy="no-referrer"
           onError={(e) => {
-            // If image fails, hide it and show fallback icon
             (e.target as any).style.display = 'none';
           }}
         />
@@ -47,7 +45,6 @@ export const AuthorityLogo = ({ board, category, className, size = 'md' }: Autho
     );
   }
 
-  // Fallback to Category/Authority specific high-fidelity icons
   const iconId = (category?.id || board?.categoryId || "").toLowerCase();
   
   const getFallbackIcon = () => {

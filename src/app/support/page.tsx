@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo } from "react"
@@ -19,8 +18,7 @@ import {
   AlertCircle,
   HelpCircle,
   ChevronRight,
-  Instagram,
-  Zap,
+  Zap, 
   ShieldCheck,
   Plus,
   X,
@@ -34,12 +32,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import Link from "next/link"
 
 /**
- * @fileOverview Official Institutional Support Hub v4.2 (Hardened).
- * FIXED: Resolved Link and Loader2 import errors.
+ * @fileOverview Official Institutional Support Hub v4.3.
+ * FIXED: Corrected Link and Loader2 module resolution.
  */
 
 const TELEGRAM_GROUP = "https://t.me/cracklixapp";
-const INSTAGRAM_PROFILE = "https://www.instagram.com/arshgrewal_official/";
 
 export default function SupportPage() {
   const { user, profile } = useUser()

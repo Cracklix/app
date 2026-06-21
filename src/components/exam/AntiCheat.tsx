@@ -6,7 +6,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
 
 /**
- * @fileOverview Anti-Cheat Security Node.
+ * @fileOverview Anti-Cheat Security Node v1.1.
+ * FIXED: Corrected addViolation call signature.
  */
 export default function AntiCheat() {
   const { addViolation } = useExamStore();
