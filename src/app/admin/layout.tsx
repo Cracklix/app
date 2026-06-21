@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from "react";
@@ -14,8 +15,8 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Refined Admin Layout v5.1 (Production Hardened).
- * FIXED: Unified responsive padding to ensure high-density text never clips.
+ * @fileOverview Refined Admin Layout v6.0 (PWA Optimized).
+ * PWA SYNC: Reduced header height, tightened density, professional Title Case.
  */
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -63,7 +64,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!mounted || loading) return (
     <div className="h-screen w-full bg-[#0F172A] flex flex-col items-center justify-center space-y-6 text-center">
-       <ShieldCheck className="h-12 w-12 text-blue-600 animate-pulse" />
+       <ShieldCheck className="h-10 w-10 md:h-12 md:w-12 text-blue-600 animate-pulse" />
        <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-500">Securing Registry Center...</p>
     </div>
   );
@@ -86,35 +87,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         "flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out w-full min-w-0 overflow-x-hidden",
         isSidebarOpen ? "lg:pl-[280px]" : "lg:pl-[88px]"
       )}>
-        <header className="h-20 border-b border-slate-100 flex items-center px-4 md:px-10 justify-between bg-white/80 backdrop-blur-xl sticky top-0 z-40 shrink-0">
-          <div className="flex items-center gap-4">
+        <header className="h-[64px] md:h-20 border-b border-slate-50 flex items-center px-3 md:px-10 justify-between bg-white/80 backdrop-blur-xl sticky top-0 z-40 shrink-0">
+          <div className="flex items-center gap-2 md:gap-4 h-full">
             <button 
               onClick={() => setIsSidebarOpen(true)}
-              className="lg:hidden bg-white border border-slate-200 text-slate-700 h-11 w-11 rounded-xl shadow-sm flex items-center justify-center active:scale-95 transition-all"
+              className="lg:hidden bg-white border border-slate-200 text-slate-700 h-9 w-9 md:h-11 md:w-11 rounded-lg md:rounded-xl shadow-sm flex items-center justify-center active:scale-95 transition-all"
             >
               <Menu className="w-5 h-5" />
             </button>
 
             <Logo
               variant="light"
-              className="shrink-0 -ml-4"
-              imgClassName="h-[78px]"
+              className="shrink-0 -ml-2 md:-ml-4"
+              imgClassName="h-[54px] md:h-[78px]"
             />
           </div>
           
-          <div className="flex items-center gap-6">
-             <Button asChild variant="outline" className="hidden sm:flex h-11 px-6 rounded-xl border-slate-200 font-bold text-sm tracking-tight gap-2 hover:bg-slate-50 transition-all active:scale-95">
+          <div className="flex items-center gap-3 md:gap-6">
+             <Button asChild variant="outline" className="hidden sm:flex h-10 px-5 rounded-xl border-slate-200 font-bold text-xs tracking-tight gap-2 hover:bg-slate-50 transition-all active:scale-95 shadow-sm">
                 <Link href="/">View Site</Link>
              </Button>
-             <div className="flex items-center gap-4 pl-4 border-l border-slate-100">
-                <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-lg shadow-lg">
+             <div className="flex items-center gap-3 md:gap-4 pl-3 md:pl-4 border-l border-slate-100 h-8 md:h-10">
+                <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm md:text-lg shadow-lg">
                   {profile?.name?.[0] || 'A'}
                 </div>
              </div>
           </div>
         </header>
 
-        <main className="flex-1 p-4 md:p-10 lg:p-14 w-full max-w-full overflow-x-hidden">
+        <main className="flex-1 p-3 md:p-10 lg:p-14 w-full max-w-full overflow-x-hidden">
            <div className="max-w-7xl mx-auto w-full">
               {children}
            </div>
