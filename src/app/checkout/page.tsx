@@ -18,7 +18,8 @@ import Script from "next/script"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Testbook-Style Checkout Hub v15.0.
+ * @fileOverview Testbook-Style Checkout Hub v16.0 (Type Hardened).
+ * FIXED: Narrowed profile null checks and Date constructor inputs.
  */
 
 export default function CheckoutPage() {
@@ -145,7 +146,7 @@ function CheckoutContent() {
   const upiLink = `upi://pay?pa=${upiId}&pn=Cracklix&am=${planData.price}&cu=INR`;
   const qrUrl = settings?.qrCodeUrl || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`;
   
-  const profileExpiry = profile?.passExpiresAt;
+  const expiryDateStr = profile?.passExpiresAt;
 
   return (
     <div className="min-h-screen bg-slate-50/50 font-body text-left">
@@ -166,14 +167,14 @@ function CheckoutContent() {
            </div>
         </div>
 
-        {subscriptionCase === 'EXTEND' && profileExpiry && (
+        {subscriptionCase === 'EXTEND' && expiryDateStr && (
            <Card className="mb-8 border-none bg-emerald-600 text-white p-6 rounded-[1.5rem] shadow-xl flex items-center gap-6 animate-in slide-in-from-top-4">
               <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
                  <Clock className="h-6 w-6 text-white" />
               </div>
               <div className="min-w-0 flex-1">
                  <h4 className="text-sm md:text-lg font-black uppercase tracking-tight">Plan Extension</h4>
-                 <p className="text-[10px] md:text-xs font-medium text-emerald-50 mt-1">This will extend your current access by {planData.durationDays} days starting from <span className="font-black underline">{new Date(profileExpiry).toLocaleDateString()}</span>.</p>
+                 <p className="text-[10px] md:text-xs font-medium text-emerald-50 mt-1">This will extend your current access by {planData.durationDays} days starting from <span className="font-black underline">{new Date(expiryDateStr).toLocaleDateString()}</span>.</p>
               </div>
            </Card>
         )}

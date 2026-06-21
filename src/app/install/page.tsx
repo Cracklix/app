@@ -1,7 +1,6 @@
-
 'use client';
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { motion } from "framer-motion";
@@ -17,7 +16,8 @@ import {
   CheckCircle2,
   MoreVertical,
   ChevronRight,
-  Info
+  Info,
+  Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -27,14 +27,15 @@ import { cn } from "@/lib/utils";
 import PWAInstallButton from "@/components/PWAInstallButton";
 
 /**
- * @fileOverview Public PWA Install Hub v11.0.
- * ACCESSIBLE: Publicly accessible without login to allow shared growth.
- * HARDENED: Direct install trigger and manual fallbacks.
+ * @fileOverview Public PWA Install Hub v12.0.
+ * ACCESSIBLE: Publicly accessible without login.
+ * HARDENED: Reliable detection and direct trigger logic.
  */
 export default function InstallPage() {
   const [device, setDevice] = useState<"android" | "ios" | "desktop" | "unknown">("desktop");
   const [isStandalone, setIsStandalone] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isTriggering, setIsTriggering] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -46,6 +47,31 @@ export default function InstallPage() {
     const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
     setIsStandalone(isStandaloneMode);
   }, []);
+
+  const handleAutoTrigger = useCallback(async () => {
+    if (typeof window === 'undefined') return;
+    const prompt = (window as any).deferredPrompt;
+    if (prompt && !isTriggering) {
+      console.log('[INSTALL_HUB] Auto-triggering native prompt');
+      setIsTriggering(true);
+      try {
+        prompt.prompt();
+        const { outcome } = await prompt.userChoice;
+        console.log(`[INSTALL_HUB] User Choice: ${outcome}`);
+      } catch (err) {
+        console.error('[INSTALL_HUB] Prompt failed:', err);
+      } finally {
+        setIsTriggering(false);
+      }
+    }
+  }, [isTriggering]);
+
+  useEffect(() => {
+    if (mounted) {
+      const timer = setTimeout(handleAutoTrigger, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [mounted, handleAutoTrigger]);
 
   if (!mounted) return null;
 
@@ -182,7 +208,7 @@ function BenefitRow({ icon, title, desc }: any) {
    return (
       <div className="p-4 md:p-8 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-4 md:gap-6 group hover:bg-white hover:shadow-xl transition-all">
          <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-primary shadow-inner group-hover:scale-110 transition-transform shrink-0">
-            {React.cloneElement(icon, { className: "h-5 w-5" })}
+            {isValidElement(icon) && React.cloneElement(icon as React.ReactElement<any>, { className: "h-5 w-5" })}
          </div>
          <div className="text-left min-w-0">
             <h4 className="font-black text-xs md:text-sm uppercase text-[#0F172A] tracking-tight">{title}</h4>

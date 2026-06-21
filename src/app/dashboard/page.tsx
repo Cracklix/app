@@ -24,7 +24,8 @@ import {
   Activity,
   Gem,
   Layers,
-  AlertCircle
+  AlertCircle,
+  User as UserIcon
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -33,7 +34,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v39.0 (Setup Blocker Removed).
+ * @fileOverview Student Dashboard v40.0 (Type Hardened).
+ * FIXED: Missing Layers import and icon.props unknown type error.
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading } = useUser();
@@ -135,7 +137,6 @@ export default function StudentDashboard() {
       
       <main className="container mx-auto px-3 md:px-8 py-4 md:py-10 max-w-7xl space-y-4 md:space-y-8">
         
-        {/* OPTIONAL PROFILE REMINDER */}
         {isProfileIncomplete && (
            <Card className="border-none bg-blue-600 text-white p-4 md:p-6 rounded-2xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 animate-in slide-in-from-top-2">
               <div className="flex items-center gap-4 text-center md:text-left">

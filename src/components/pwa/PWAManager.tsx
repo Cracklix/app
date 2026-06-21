@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -8,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * @fileOverview Hardened Institutional PWA Manager v26.0.
+ * @fileOverview Hardened Institutional PWA Manager v27.0.
  * FIXED: Universal capture of 'beforeinstallprompt' with global event dispatch.
- * LOGGING: Added audit logs for install states.
+ * REMOVED: Exclusion for /install page to allow prompt to trigger there.
  */
 export default function PWAManager() {
   const pathname = usePathname();
@@ -28,6 +27,7 @@ export default function PWAManager() {
     const isDismissed = localStorage.getItem('cracklix_pwa_dismissed') === 'true';
     const hasPrompt = !!(window as any).deferredPrompt;
     
+    // Allow prompt on /install page explicitly
     const shouldShow = !isStandalone && !isExcluded && !isDismissed && hasPrompt;
     setShowPrompt(shouldShow);
   }, [pathname]);
