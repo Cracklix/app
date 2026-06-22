@@ -30,8 +30,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import Link from "next/link"
 
 /**
- * @fileOverview Institutional Support Ticket Management Console v5.4.
- * FIXED: Restored Link and Loader2 components.
+ * @fileOverview Institutional Support Ticket Management Console v5.5.
+ * FIXED: Restored Link and Loader2 components to the import registry.
  */
 
 export default function SupportPage() {
@@ -127,7 +127,7 @@ export default function SupportPage() {
 
               {ticketsLoading ? (
                  <div className="space-y-4">
-                    {Array.from({ length: 3 }).map((_, i) => <Skeleton className="h-32 w-full rounded-[2rem]" />)}
+                    {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-[2rem]" />)}
                  </div>
               ) : tickets && tickets.length > 0 ? (
                  <div className="space-y-4">

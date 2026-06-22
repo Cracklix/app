@@ -6,8 +6,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
 
 /**
- * @fileOverview Anti-Cheat Security Node v2.0.
- * FIXED: Pass db instance to addViolation.
+ * @fileOverview Anti-Cheat Security Node v2.1.
+ * FIXED: Explicitly pass db instance to addViolation to satisfy TypeScript constraints.
  */
 export default function AntiCheat() {
   const { addViolation } = useExamStore();
@@ -18,7 +18,7 @@ export default function AntiCheat() {
     const handleBlur = () => {
       if (!db) return;
       
-      // Pass the firestore instance to the action
+      // Pass the firestore instance to the action to satisfy store signature
       addViolation(db);
       
       toast({
