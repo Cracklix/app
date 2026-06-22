@@ -51,10 +51,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
-/**
- * @fileOverview Student Profile Center v34.2 (Certified).
- * FIXED: Full Account Purge (Auth + Firestore) for Play Store compliance.
- */
 export default function ProfilePage() {
   const { user, profile, loading, profileLoading } = useUser()
   const db = useFirestore()
@@ -187,7 +183,7 @@ export default function ProfilePage() {
                     ) : (
                       <div className="relative">
                         <StudentAvatar profile={profile} className="h-16 w-16 md:h-44 md:w-44 border-[2px] md:border-[4px] border-white/10 rounded-2xl md:rounded-[3rem] bg-[#0F172A]" />
-                        <div className="absolute -bottom-1 -right-1 bg-emerald-500 h-5 w-5 md:h-12 md:w-12 rounded-lg border-[2px] md:border-[4px] border-[#0B1528] flex items-center justify-center shadow-xl">
+                        <div className="absolute -bottom-1 -right-1 bg-emerald-500 h-5 w-5 md:h-12 md:w-12 rounded-lg border-[2px] md:border-[4px] border-[#0B1528] flex items-center justify-center text-white shadow-xl">
                           <ShieldCheck className="h-3 w-3 md:h-6 md:w-6 text-white" />
                         </div>
                       </div>

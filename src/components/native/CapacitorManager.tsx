@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -8,8 +7,8 @@ import { Browser } from '@capacitor/browser';
 import { StatusBar, Style } from '@capacitor/status-bar';
 
 /**
- * @fileOverview Global Native App Bridge v1.8 (Certified Build).
- * FIXED: Wrapped native plugins in platform guards to prevent web crashes.
+ * @fileOverview Global Native App Bridge v1.9.
+ * FIXED: Wrapped all native plugins in isNativePlatform checks to prevent web crashes.
  */
 export default function CapacitorManager() {
   useEffect(() => {
@@ -18,7 +17,7 @@ export default function CapacitorManager() {
     }
 
     // Hardware Back Button Handling
-    App.addListener('backButton', ({ canGoBack }) => {
+    const backListener = App.addListener('backButton', ({ canGoBack }) => {
       if (!canGoBack) {
         App.exitApp();
       } else {
@@ -26,7 +25,7 @@ export default function CapacitorManager() {
       }
     });
 
-    // Status Bar Node Configuration
+    // Status Bar Configuration
     try {
       StatusBar.setStyle({ style: Style.Dark });
       StatusBar.setBackgroundColor({ color: '#0B1528' });
@@ -35,7 +34,7 @@ export default function CapacitorManager() {
     }
 
     // Deep Link Listener
-    App.addListener('appUrlOpen', (data) => {
+    const urlListener = App.addListener('appUrlOpen', (data) => {
       const slug = data.url.split('.app').pop();
       if (slug) window.location.href = slug;
     });
@@ -60,7 +59,12 @@ export default function CapacitorManager() {
     };
 
     document.addEventListener('click', handleLinkClick);
-    return () => document.removeEventListener('click', handleLinkClick);
+    
+    return () => {
+      document.removeEventListener('click', handleLinkClick);
+      backListener.remove();
+      urlListener.remove();
+    };
   }, []);
 
   return null;

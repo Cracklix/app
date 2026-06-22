@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useSearchParams, useRouter } from "next/navigation"
@@ -18,11 +17,6 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 import { cn } from "@/lib/utils"
 import { Capacitor } from "@capacitor/core"
-
-/**
- * @fileOverview Testbook-Style Checkout Hub v16.7 (Certified).
- * FIXED: Target deployed Vercel API for APK environments to bypass static export constraints.
- */
 
 export default function CheckoutPage() {
   return (

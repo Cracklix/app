@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo } from "react"
@@ -29,11 +28,6 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import Link from "next/link"
-
-/**
- * @fileOverview Official Institutional Support Hub v7.8 (Certified).
- * FIXED: Restored missing Link and Loader2 imports to satisfy production build.
- */
 
 export default function SupportPage() {
   const { user, profile } = useUser()
@@ -128,7 +122,7 @@ export default function SupportPage() {
 
               {ticketsLoading ? (
                  <div className="space-y-4">
-                    {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-[2rem]" />)}
+                    {Array.from({ length: 3 }).map((_, i) => <Skeleton className="h-32 w-full rounded-[2rem]" />)}
                  </div>
               ) : tickets && tickets.length > 0 ? (
                  <div className="space-y-4">

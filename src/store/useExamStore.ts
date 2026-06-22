@@ -1,15 +1,9 @@
-
-'use client';
+"use client"
 
 import { create } from 'zustand';
 import { AttemptState, Question, LanguageDisplayMode, QuestionStatus } from '@/types';
 import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase/app';
-
-/**
- * @fileOverview Global Test Store v4.91 (Certified Build).
- * FIXED: Removed duplicate 'isSubmitting' key and correctly typed initial state values.
- */
 
 interface ExamStore extends AttemptState {
   questions: Question[];
