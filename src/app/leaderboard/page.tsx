@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 
 /**
- * @fileOverview Institutional Merit Hub v16.0 (Real Data Sorted).
- * FIXED: Implemented orderBy for server-side score precedence.
+ * @fileOverview Institutional Merit Hub v16.1 (Hydration Hardened).
+ * FIXED: Added mounting guard to prevent hydration errors from client-side sorting.
  */
 
 export default function LeaderboardPage() {
@@ -24,24 +24,25 @@ export default function LeaderboardPage() {
   const { user, loading: authLoading } = useUser()
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
+  const [mounted, setMounted] = useState(false)
   
   useEffect(() => {
+    setMounted(true)
     if (!authLoading && !user) {
       router.push(`/login?returnUrl=${encodeURIComponent('/leaderboard')}`);
     }
   }, [user, authLoading, router]);
 
-  const meritQuery = useMemo(() => (db ? query(collection(db, "results"), orderBy("score", "desc"), limit(500)) : null), [db])
-  const usersQuery = useMemo(() => (db ? query(collection(db, "users"), limit(500)) : null), [db])
+  const meritQuery = useMemo(() => (db && mounted ? query(collection(db, "results"), orderBy("score", "desc"), limit(500)) : null), [db, mounted])
+  const usersQuery = useMemo(() => (db && mounted ? query(collection(db, "users"), limit(500)) : null), [db, mounted])
 
   const { data: results, loading: resultsLoading } = useCollection<any>(meritQuery)
   const { data: users, loading: usersLoading } = useCollection<any>(usersQuery)
 
   const meritList = useMemo(() => {
-    if (!results) return []
+    if (!results || !mounted) return []
     const lowerSearch = searchTerm.toLowerCase();
     
-    // Sort logic already handled by query, but we filter unique students here
     const uniqueRankers = new Map();
     
     results.forEach((r: any) => {
@@ -69,9 +70,11 @@ export default function LeaderboardPage() {
       }
     });
     return Array.from(uniqueRankers.values()).sort((a, b) => b.score - a.score);
-  }, [results, users, searchTerm]);
+  }, [results, users, searchTerm, mounted]);
 
   const podium = useMemo(() => meritList.slice(0, 3), [meritList]);
+
+  if (!mounted) return <div className="min-h-screen bg-white" />;
 
   return (
     <div className="min-h-screen bg-slate-50/30 font-body text-left">
@@ -123,7 +126,7 @@ export default function LeaderboardPage() {
          </main>
       )}
 
-      {!authLoading && <Footer />}
+      <Footer />
     </div>
   )
 }

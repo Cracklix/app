@@ -2,14 +2,14 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { doc, onSnapshot, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, onSnapshot, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { useAuth, useFirestore } from '../provider';
 import { UserProfile } from '@/types';
 import { getDeviceId } from '@/lib/device';
 
 /**
- * @fileOverview Hardened Auth & Profile Hub v11.0 (Subscription Queue Aware).
- * SECURITY: Real-time pass status derivation with auto-activation from queue.
+ * @fileOverview Hardened Auth & Profile Hub v11.1 (Rapid Queue Sync).
+ * SECURITY: Real-time pass status derivation with rapid auto-activation from queue.
  */
 export function useUser() {
   const auth = useAuth();
@@ -80,7 +80,7 @@ export function useUser() {
                 passStatus = 'expired';
                 passActive = false;
                 
-                // 2. QUEUE CHECK & AUTO-ACTIVATION
+                // 2. RAPID QUEUE ACTIVATION (Eliminates flicker)
                 if (data.queuedPasses && data.queuedPasses.length > 0) {
                    const nextPass = data.queuedPasses[0];
                    const remainingQueue = data.queuedPasses.slice(1);
@@ -102,7 +102,7 @@ export function useUser() {
                       queuedPasses: remainingQueue,
                       updatedAt: serverTimestamp()
                    });
-                   return; // Re-fire on next snapshot
+                   return; // Re-fire on next snapshot immediately
                 }
              } else {
                 passStatus = 'active';

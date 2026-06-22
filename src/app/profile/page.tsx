@@ -3,8 +3,9 @@
 import React, { useMemo, useState, useEffect } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
-import { useUser, useCollection, useFirestore } from "@/firebase"
+import { useUser, useCollection, useFirestore, useAuth } from "@/firebase"
 import { collection, query, where, doc, updateDoc, serverTimestamp, deleteDoc } from "firebase/firestore"
+import { deleteUser } from "firebase/auth"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -51,12 +52,13 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Profile Center v32.0 (APK Compliant).
- * FIXED: Added Account Deletion node for Play Store Data Safety compliance.
+ * @fileOverview Student Profile Center v33.0 (Compliance Hardened).
+ * FIXED: Full Account Purge (Auth + Firestore) for Play Store compliance.
  */
 export default function ProfilePage() {
   const { user, profile, loading, profileLoading, currentDeviceId } = useUser()
   const db = useFirestore()
+  const auth = useAuth()
   const router = useRouter()
   const { toast } = useToast()
 
@@ -161,11 +163,25 @@ export default function ProfilePage() {
      if (deleteConfirm !== 'DELETE' || !user || !db) return;
      setIsSaving(true);
      try {
+        // 1. Purge Firestore Record
         await deleteDoc(doc(db, 'users', user.uid));
+        
+        // 2. Purge Firebase Auth Record (Mandatory for Compliance)
+        await deleteUser(user);
+        
         toast({ title: "Account Purged", description: "All data nodes have been deleted." });
         router.push('/login');
-     } catch (e) {
-        toast({ variant: "destructive", title: "Deletion Failed" });
+     } catch (e: any) {
+        console.error("[PURGE_FAILURE]:", e);
+        if (e.code === 'auth/requires-recent-login') {
+           toast({ 
+             variant: "destructive", 
+             title: "Security Barrier", 
+             description: "For your protection, please re-login and try deleting again immediately." 
+           });
+        } else {
+           toast({ variant: "destructive", title: "Deletion Failed", description: "Could not authorize account purge." });
+        }
      } finally {
         setIsSaving(false);
      }
@@ -265,7 +281,7 @@ export default function ProfilePage() {
                     <StatsCard icon={Trophy} label="Rank" value={resultsLoading ? "..." : stats.rank} color="text-emerald-500" bgColor="bg-emerald-50" className="hidden sm:flex" />
                  </div>
 
-                 <Card className="border-none shadow-3xl rounded-2xl md:rounded-[3.5rem] bg-white p-5 md:p-14 space-y-6 md:space-y-12 text-left border border-slate-100">
+                 <Card className="border-none shadow-3xl rounded-2xl md:rounded-[3rem] bg-white p-5 md:p-14 space-y-6 md:space-y-12 text-left border border-slate-100">
                     <div className="flex items-center justify-between border-b border-slate-50 pb-4 md:pb-10"><h3 className="font-headline font-black text-lg md:text-3xl uppercase flex items-center gap-3 md:gap-6 text-[#0F172A]"><UserIcon className="h-5 w-5 md:h-8 md:w-8 text-primary" /> Profile Details</h3></div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-6 md:gap-y-12">
                       <ProfileDataNode icon={Calendar} label="Date of Birth" value={profile?.dob ? new Date(profile.dob).toLocaleDateString('en-GB') : "Not Added"} />
@@ -349,7 +365,7 @@ export default function ProfilePage() {
                <div className="space-y-2">
                   <DialogTitle className="text-2xl font-black uppercase text-rose-600">Delete Account</DialogTitle>
                   <DialogDescription className="text-slate-500 text-sm leading-relaxed">
-                     This action is permanent. All your mock attempts, results, and elite pass access will be purged. Type <strong>DELETE</strong> to authorize.
+                     This action is permanent and cannot be undone. All your mock attempts, results, and elite pass access will be purged. Type <strong>DELETE</strong> to authorize.
                   </DialogDescription>
                </div>
                <Input 
@@ -379,7 +395,7 @@ function HeaderInfo({ icon, text }: { icon: React.ReactNode, text: string }) {
    return (<div className="flex items-center gap-2 text-white/60 font-bold text-[9px] md:text-[12px] tracking-tight"><span className="shrink-0">{icon}</span><span className="truncate max-w-[120px] md:max-w-[320px]">{text || 'Not Added'}</span></div>)
 }
 function StatsCard({ icon: Icon, label, value, color, bgColor, className }: { icon: LucideIcon, label: string, value: string | number, color: string, bgColor: string, className?: string }) {
-   return (<Card className={cn("border-none shadow-xl rounded-2xl md:rounded-[3rem] p-4 md:p-12 bg-white group hover:translate-y-[-4px] transition-all duration-500", className)}><div className="flex flex-col gap-3 md:gap-8"><div className={cn("h-8 w-8 md:h-16 md:w-16 rounded-xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 shadow-inner", bgColor)}><Icon className={cn("h-4 w-4 md:h-8 md:w-8", color)} /></div><div className="space-y-0.5 text-left"><p className="text-[7px] md:text-[11px] font-black uppercase tracking-widest text-slate-400">{label}</p><p className={cn("text-base md:text-5xl font-headline font-black leading-none tabular-nums", color)}>{value}</p></div></div></Card>)
+   return (<Card className={cn("border-none shadow-xl rounded-2xl md:rounded-[3rem] p-4 md:p-12 bg-white group hover:translate-y-[-4px] transition-all duration-500", className)}><div className="flex flex-col gap-3 md:gap-8"><div className={cn("h-8 w-8 md:h-16 md:w-16 rounded-xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 shadow-inner", bgColor)}><Icon className={cn("h-4 w-4 md:h-8 md:w-8", color)} /></div><div className="space-y-0.5 text-left"><p className="text-[7px] md:text-11px font-black uppercase tracking-widest text-slate-400">{label}</p><p className={cn("text-base md:text-5xl font-headline font-black leading-none tabular-nums", color)}>{value}</p></div></div></Card>)
 }
 function ProfileDataNode({ icon: Icon, label, value, colSpan = 1 }: { icon: LucideIcon, label: string, value: string, colSpan?: number }) {
    return (<div className={cn("flex items-start gap-4 md:gap-8", colSpan > 1 ? "md:col-span-2" : "")}><div className="h-10 w-10 md:h-16 md:w-16 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-primary/5 transition-colors"><Icon className="h-4 w-4 md:h-7 md:w-7 text-slate-400" /></div><div className="min-w-0 space-y-0.5 text-left"><p className="text-[8px] md:text-[11px] font-black uppercase tracking-widest text-slate-400">{label}</p><p className="text-[11px] md:text-xl font-bold text-[#0F172A] leading-relaxed break-words tracking-tight">{value}</p></div></div>)

@@ -20,7 +20,8 @@ import {
   ClipboardList,
   Users,
   FileText,
-  ChevronLeft
+  ChevronLeft,
+  AlertCircle
 } from "lucide-react"
 import { useAuth, useFirestore, useUser, useDoc } from "@/firebase"
 import { 
@@ -37,11 +38,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { motion } from "framer-motion"
 import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
+import { Capacitor } from "@capacitor/core"
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Cracklix Premium Login Hub v80.0 (Logo Scaled).
+ * @fileOverview Cracklix Premium Login Hub v81.0 (APK Safety).
+ * FIXED: Guarded Google Sign-In for native environments to prevent WebView hangs.
  */
 
 const formatCompact = (num: number) => {
@@ -149,6 +152,17 @@ function LoginContent() {
 
   const handleGoogleSignIn = async () => {
     if (loading) return;
+
+    // NATIVE GUARD: signInWithPopup is unsupported in many Android WebViews.
+    if (Capacitor.isNativePlatform()) {
+       toast({
+         title: "📱 Mobile Login",
+         description: "Please use your Email and Password to login on the Android app.",
+         variant: "destructive"
+       });
+       return;
+    }
+
     setLoading(true)
     try {
       const provider = new GoogleAuthProvider()
