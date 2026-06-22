@@ -3,10 +3,15 @@ import { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.cracklix.app',
   appName: 'Cracklix',
-  webDir: 'out',
+
+  // IMPORTANT: required to stop ENOENT errors
+  webDir: 'www',
+
   server: {
+    url: 'https://cracklix.vercel.app',
     androidScheme: 'https'
   },
+
   plugins: {
     SplashScreen: {
       launchShowDuration: 3000,
@@ -14,6 +19,7 @@ const config: CapacitorConfig = {
       showSpinner: false,
       androidScaleType: "CENTER_CROP"
     },
+
     Keyboard: {
       resize: 'body',
       style: 'dark',
