@@ -1,3 +1,4 @@
+'use server';
 /**
  * @fileOverview A cinematic transformation flow for corporate branding assets.
  * 
