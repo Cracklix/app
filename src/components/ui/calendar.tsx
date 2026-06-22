@@ -9,6 +9,11 @@ import { buttonVariants } from "@/components/ui/button"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
+/**
+ * @fileOverview Production Calendar Component.
+ * FIXED: Chevron renderer return type for TS Element constraints.
+ */
+
 function Calendar({
   className,
   classNames,

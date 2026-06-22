@@ -2,6 +2,7 @@ import AttemptClient from "@/components/mocks/AttemptClient";
 
 /**
  * @fileOverview Official Mock Attempt Server Entry.
+ * FIXED: dynamicParams: true is incompatible with output: export.
  */
 
 export const dynamicParams = false;

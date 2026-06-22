@@ -1,16 +1,19 @@
 import LinkerContent from "@/components/admin/LinkerContent";
 
 /**
- * @fileOverview Content Linking Engine v1.3.
+ * @fileOverview Content Linking Engine v1.4.
+ * FIXED: dynamicParams: true is incompatible with output: export.
  */
 
-export const dynamicParams = true;
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
+  // Pre-rendering core exam nodes for the admin architecture hub
   return [
     { examId: 'pcs' },
     { examId: 'patwari' },
-    { examId: 'constable' }
+    { examId: 'constable' },
+    { examId: 'clerk' }
   ];
 }
 

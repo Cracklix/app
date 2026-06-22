@@ -29,6 +29,11 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import Link from "next/link"
 
+/**
+ * @fileOverview Institutional Support Ticket Management Console v5.1 (Build Restored).
+ * FIXED: Restored missing Link and Loader2 imports.
+ */
+
 export default function SupportPage() {
   const { user, profile } = useUser()
   const db = useFirestore()
