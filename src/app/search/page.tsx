@@ -13,7 +13,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Production Search Hub v3.3.
+ * @fileOverview Production Search Hub v3.4.
  * FIXED: Explicit imports and isValidElement guard for icon cloning to satisfy Next.js 15 build constraints.
  */
 
@@ -50,7 +50,7 @@ function SearchContent() {
 
   const isLoading = mLoading || eLoading || nLoading;
 
-  const results = useMemo(() => {
+  const searchResults = useMemo(() => {
     if (query.trim().length < 2) return []
     const term = query.toLowerCase().trim()
     
@@ -128,11 +128,11 @@ function SearchContent() {
            {query.length >= 2 ? (
               <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <h3 className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">RESULTS: {results.length} NODES</h3>
+                    <h3 className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">RESULTS: {searchResults.length} NODES</h3>
                     <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black px-3 py-0.5 rounded-lg uppercase">Registry Connected</Badge>
                  </div>
                  <div className="grid grid-cols-1 gap-3">
-                    {results.length > 0 ? results.map((res, i) => (
+                    {searchResults.length > 0 ? searchResults.map((res, i) => (
                       <SearchResultItem key={i} title={res.title} category={res.type} href={res.href} icon={res.icon} />
                     )) : !isLoading && (
                       <div className="text-center py-32 bg-white rounded-[3rem] border-2 border-dashed border-slate-100 shadow-inner">
