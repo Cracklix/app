@@ -1,7 +1,7 @@
-
 'use client';
 
 import { useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
 import { Share } from '@capacitor/share';
 import { Browser } from '@capacitor/browser';
@@ -10,11 +10,12 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 /**
  * @fileOverview Global Native App Bridge.
  * Intercepts web behaviors to provide a high-fidelity Android experience.
+ * FIXED: Replaced window check with Capacitor.isNativePlatform() to prevent "StatusBar not implemented on web" errors.
  */
 export default function CapacitorManager() {
   useEffect(() => {
-    // 1. Device Handshake
-    if (typeof window === 'undefined' || !(window as any).Capacitor) return;
+    // 1. Device Handshake - Strict Native Container Check
+    if (!Capacitor.isNativePlatform()) return;
 
     console.log('[NATIVE_BRIDGE] Initializing Android Environment');
 
@@ -30,6 +31,8 @@ export default function CapacitorManager() {
       } catch (err) {
         if (originalShare) return originalShare(data);
       }
+      // Added return to satisfy TypeScript async expectations
+      return undefined;
     };
 
     // 3. Hardware Back Button Handling
