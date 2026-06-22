@@ -1,3 +1,4 @@
+
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
@@ -8,6 +9,7 @@ import { FirebaseClientProvider } from "@/firebase/client-provider";
 import MobileNav from "@/components/layout/MobileNav";
 import PWAManager from "@/components/pwa/PWAManager";
 import NetworkStatus from "@/components/pwa/NetworkStatus";
+import CapacitorManager from "@/components/native/CapacitorManager";
 
 import { Toaster } from "@/components/ui/toaster";
 
@@ -17,7 +19,7 @@ const inter = Inter({
 });
 
 /**
- * @fileOverview Root Layout v52.0 (PWA Hardened).
+ * @fileOverview Root Layout v53.0 (Native Enabled).
  */
 export const metadata: Metadata = {
   title: "Cracklix | Punjab's Smart Mock Test Platform",
@@ -92,7 +94,8 @@ export default function RootLayout({
           {/* Mobile Bottom Navigation */}
           <MobileNav />
 
-          {/* PWA & Network Management */}
+          {/* Native & PWA Management */}
+          <CapacitorManager />
           <PWAManager />
           <NetworkStatus />
 
