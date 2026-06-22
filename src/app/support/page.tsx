@@ -31,7 +31,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import Link from "next/link"
 
 /**
- * @fileOverview Institutional Support Ticket Management Console v6.0.
+ * @fileOverview Institutional Support Ticket Management Console v6.1.
+ * FIXED: Restored missing Link and Loader2 imports.
  */
 
 export default function SupportPage() {

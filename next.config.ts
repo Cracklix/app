@@ -25,8 +25,7 @@ const nextConfig: NextConfig = {
   compress: true,
 
   experimental: {
-    // Suppress workstation cross-origin warnings in dev server
-    allowedDevOrigins: ["*.cloudworkstations.dev", "localhost:9002"]
+    // Note: allowedDevOrigins is removed as it currently causes TS2353 in ExperimentalConfig types
   },
 
   webpack: (config, { isServer }) => {
