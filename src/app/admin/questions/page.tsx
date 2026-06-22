@@ -17,11 +17,6 @@ import { useToast } from "@/hooks/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 
-/**
- * @fileOverview Institutional MCQ Bank v21.2 (ESLint Hardened).
- * FIXED: prefer-const for constraints variable.
- */
-
 type QuestionFilterType = 'ALL' | 'UNUSED' | 'USED' | 'LOCKED' | 'DUPLICATE' | 'REPEATED';
 
 export default function QuestionBank() {

@@ -10,11 +10,6 @@ interface MathTextProps {
   className?: string;
 }
 
-/**
- * @fileOverview Precision High-Contrast Renderer v18.2 (ESLint Hardened).
- * Supports Markdown Tables and KaTeX.
- * FIXED: prefer-const violations.
- */
 export default function MathText({ text, className }: MathTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 

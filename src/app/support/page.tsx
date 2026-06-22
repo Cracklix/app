@@ -29,11 +29,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import Link from "next/link"
 
-/**
- * @fileOverview Institutional Support Hub v6.1.
- * FIXED: Restored missing imports for Link and Loader2.
- */
-
 export default function SupportPage() {
   const { user, profile } = useUser()
   const db = useFirestore()
@@ -211,7 +206,7 @@ export default function SupportPage() {
                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                      <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Issue Type</Label>
-                     <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} className="w-full h-12 md:h-14 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none shadow-inner">
+                     <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value as any})} className="w-full h-12 md:h-14 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none shadow-inner">
                         <option value="PAYMENT">Payment Issue</option>
                         <option value="PASS">Pass Activation</option>
                         <option value="MOCK_TEST">Mock Test Error</option>
@@ -221,7 +216,7 @@ export default function SupportPage() {
                   </div>
                   <div className="space-y-2">
                      <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">Priority</Label>
-                     <select value={formData.priority} onChange={e => setFormData({...formData, priority: e.target.value})} className="w-full h-12 md:h-14 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none shadow-inner">
+                     <select value={formData.priority} onChange={e => setFormData({...formData, priority: e.target.value as any})} className="w-full h-12 md:h-14 bg-slate-50 border-none rounded-xl px-4 font-bold text-sm outline-none shadow-inner">
                         <option value="LOW">Low</option>
                         <option value="MEDIUM">Medium</option>
                         <option value="HIGH">High</option>

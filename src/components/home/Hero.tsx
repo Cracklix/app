@@ -4,29 +4,18 @@ import React, { useMemo, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Zap,
-  BookOpen,
-  FileText,
-  BarChart3,
   Star,
   ArrowRight,
   ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import { useDoc, useFirestore, useUser } from "@/firebase";
 import { doc } from "firebase/firestore";
-import { cn } from "@/lib/utils";
 import { AuthorityLogo } from "@/lib/exam-icons";
 import Image from "next/image"
 
-/**
- * @fileOverview Official High-Density PWA Hero v51.2 (Optimized).
- * FIXED: Replaced native img tags with next/image.
- */
-
 export default function Hero() {
-  const { profile } = useUser();
   const db = useFirestore();
   const [mounted, setMounted] = useState(false);
 
@@ -44,7 +33,6 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
 
-          {/* 1. CONTENT BLOCK */}
           <div className="text-left space-y-4 md:space-y-8">
             <motion.div 
                initial={{ opacity: 0, x: -20 }}
@@ -69,7 +57,6 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* 2. ILLUSTRATION */}
           <div className="hidden lg:flex flex-col items-center">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="relative">
               <Image 
@@ -94,7 +81,6 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* QUICK ACTIONS: CLICKABLE CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mt-10 md:mt-20">
           <QuickActionCard 
             boardId="mock-test"
@@ -118,7 +104,6 @@ export default function Hero() {
           />
         </div>
 
-        {/* CTAs */}
         <div className="flex flex-row gap-3 md:gap-5 mt-8 md:mt-12 justify-center lg:justify-start">
           <Button asChild className="flex-1 md:flex-none h-14 md:h-18 rounded-full font-black text-xs md:text-sm tracking-widest px-6 md:px-14 shadow-xl active:scale-95 transition-all border-none">
             <Link href="/mocks" className="flex items-center gap-2">Start Free Mock <ArrowRight className="h-4 w-4" /></Link>
@@ -135,48 +120,16 @@ export default function Hero() {
 function QuickActionCard({ boardId, label, href }: { boardId: string, label: string, href: string }) {
   return (
     <Link href={href} className="block group h-full">
-      <div className="
-        bg-white
-        rounded-[2rem]
-        p-4 md:p-6
-        flex
-        items-center
-        gap-3 md:gap-4
-        shadow-md
-        hover:shadow-xl
-        hover:-translate-y-1
-        transition-all
-        duration-500
-        cursor-pointer
-        border
-        border-slate-100
-        active:scale-[0.98]
-        h-full
-      ">
-        <div className="
-          h-10 w-10 md:h-16 md:w-16
-          rounded-2xl md:rounded-[2.5rem]
-          bg-slate-50
-          shadow-inner
-          flex
-          items-center
-          justify-center
-          shrink-0
-          group-hover:scale-110
-          transition-transform
-          duration-500
-          overflow-hidden
-        ">
+      <div className="bg-white rounded-[2rem] p-4 md:p-6 flex items-center gap-3 md:gap-4 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-500 cursor-pointer border border-slate-100 active:scale-[0.98] h-full">
+        <div className="h-10 w-10 md:h-16 md:w-16 rounded-2xl md:rounded-[2.5rem] bg-slate-50 shadow-inner flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500 overflow-hidden">
           <AuthorityLogo boardId={boardId} size="md" className="bg-transparent shadow-none p-0" />
         </div>
-
         <div className="text-left flex-1 min-w-0">
           <h3 className="text-xs md:text-lg font-[900] text-[#0F172A] leading-tight group-hover:text-primary transition-colors uppercase tracking-tight">
             {label}
           </h3>
           <p className="text-[7px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Institutional Hub</p>
         </div>
-        
         <div className="h-6 w-6 md:h-8 md:w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-200 group-hover:bg-primary/5 group-hover:text-primary transition-all shrink-0">
            <ChevronRight className="h-3 w-3 md:h-4 md:w-4 transition-transform group-hover:translate-x-0.5" />
         </div>

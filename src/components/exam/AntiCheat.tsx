@@ -5,10 +5,6 @@ import { useExamStore } from '@/store/useExamStore';
 import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
 
-/**
- * @fileOverview Anti-Cheat Security Node v2.5.
- * FIXED: Explicitly passing Firestore instance to violation tracker.
- */
 export default function AntiCheat() {
   const { addViolation } = useExamStore();
   const { toast } = useToast();

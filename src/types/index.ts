@@ -210,6 +210,25 @@ export interface QueuedPass {
   planId: string;
 }
 
+export interface AttemptResult {
+  userId: string;
+  userName: string;
+  userEmail: string;
+  mockId: string;
+  mockTitle: string;
+  score: number;
+  correctCount: number;
+  wrongCount: number;
+  attemptedCount: number;
+  totalQuestions: number;
+  accuracy: number;
+  timeTaken: number;
+  answers: Record<number, number | null>;
+  timestamp: string;
+  createdAt: any;
+  accessLevel: string;
+}
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -224,7 +243,7 @@ export interface UserProfile {
   createdAt: string;
   updatedAt: any;
   status: string; 
-  planTier: number; // 0: Free, 1: Silver, 2: Gold, 3: Elite
+  planTier: number; 
   passType: 'FREE' | 'MONTHLY' | 'QUARTERLY' | 'YEARLY';
   passStatus: 'active' | 'expired' | 'none';
   passActivatedAt?: string;
@@ -336,22 +355,3 @@ export interface AttemptState {
   startTime: number;
   endTime: number;
 }
-
-export type AttemptResult = {
-  userId: string;
-  userName: string;
-  userEmail: string;
-  mockId: string;
-  mockTitle: string;
-  score: number;
-  correctCount: number;
-  wrongCount: number;
-  attemptedCount: number;
-  totalQuestions: number;
-  accuracy: number;
-  timeTaken: number;
-  answers: Record<number, number | null>;
-  timestamp: string;
-  createdAt: any;
-  accessLevel: string;
-};
