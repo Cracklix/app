@@ -6,8 +6,8 @@ import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/fir
 import { initializeFirebase } from '@/firebase/app';
 
 /**
- * @fileOverview Global Test Store v4.1 (Production Hardened).
- * FIXED: Removed duplicate property key 'isSubmitting' and sanitized empty string assignments.
+ * @fileOverview Global Test Store v4.2 (Production Hardened).
+ * FIXED: Removed duplicate property key 'isSubmitting' and sanitized type assignments.
  */
 
 interface ExamStore extends AttemptState {
@@ -86,7 +86,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const initialTimeLeft = Math.max(0, Math.floor((finalEndTime - now) / 1000));
     const finalBaseMode: LanguageDisplayMode = languageMode || 'ENGLISH_PUNJABI';
 
-    let initialLang: LanguageDisplayMode = (!forceReset && state.language && (state.language as string) !== "") 
+    let initialLang: LanguageDisplayMode = (!forceReset && state.language) 
       ? state.language 
       : finalBaseMode;
     

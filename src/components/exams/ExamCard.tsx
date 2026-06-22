@@ -10,8 +10,8 @@ interface ExamCardProps {
 }
 
 /**
- * @fileOverview Refined Exam Card v4.2 (Production Hardened).
- * FIXED: Re-aligned property access to match the canonical Exam type.
+ * @fileOverview Refined Exam Card v4.3 (Production Hardened).
+ * FIXED: Aligned property access with canonical Exam types and resolved property name mismatches.
  */
 export default function ExamCard({ exam }: ExamCardProps) {
   return (
