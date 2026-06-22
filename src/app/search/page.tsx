@@ -13,8 +13,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Production Search Hub v4.1.
- * FIXED: Resolved TS2769 overload error and hardened cloneElement typing.
+ * @fileOverview Production Search Hub v4.3.
+ * FIXED: Explicitly imported React and hardened cloneElement logic for production builds.
  */
 
 export default function SearchPage() {

@@ -1,14 +1,13 @@
-
 "use client";
 
-import { useState, useMemo } from "react"
+import React, { useState, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Trash2, Edit, Save, Trophy, Search, Loader2, X, Image as ImageIcon, GraduationCap } from "lucide-react"
+import { Plus, Trash2, Edit, Save, Trophy, Search, Loader2, X, GraduationCap } from "lucide-react"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, doc, setDoc, deleteDoc, serverTimestamp, orderBy } from "firebase/firestore"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
@@ -20,8 +19,8 @@ import { cn } from "@/lib/utils"
 import Image from "next/image"
 
 /**
- * @fileOverview Institutional Success Hub CMS v11.0 (PWA Hardened).
- * FIXED: Removed syntax error. Standardized to Title Case and Primary Blue.
+ * @fileOverview Institutional Success Hub CMS v11.1 (PWA Hardened).
+ * FIXED: Replaced legacy img tags with next/image and resolved lint errors.
  */
 
 export default function SuccessStoryManagement() {

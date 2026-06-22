@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional MCQ Bank v21.1 (ESLint Hardened).
+ * @fileOverview Institutional MCQ Bank v21.2 (ESLint Hardened).
  * FIXED: prefer-const for constraints variable.
  */
 

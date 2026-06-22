@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -14,8 +13,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 
 /**
- * @fileOverview High-Fidelity "My Exams" Hub v12.1.
- * ALIGNMENT: Standardized side margins to match Hero section.
+ * @fileOverview High-Fidelity "My Exams" Hub v12.2.
+ * FIXED: Replaced legacy img tags with next/image and resolved lint errors.
  */
 
 export default function ContinueLearning() {
@@ -132,7 +131,13 @@ export default function ContinueLearning() {
                                 <div className="flex items-center gap-4 min-w-0">
                                    <div className="relative h-11 w-11 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 shadow-inner overflow-hidden">
                                       {logoUrl && !failedImages[exam.id] ? (
-                                         <Image src={logoUrl} alt={exam.name} fill className="object-contain p-2" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
+                                         <Image 
+                                           src={logoUrl} 
+                                           alt={exam.name} 
+                                           fill 
+                                           className="object-contain p-2" 
+                                           onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} 
+                                         />
                                       ) : (
                                          <GraduationCap className="h-5 w-5 text-slate-300" />
                                       )}

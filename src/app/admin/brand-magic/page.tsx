@@ -1,7 +1,6 @@
-
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Sparkles, Loader2, ImageIcon, Download, Share2, RefreshCw, ChevronLeft, Wand2 } from "lucide-react"
@@ -12,8 +11,8 @@ import { useRouter } from "next/navigation"
 import Image from "next/image"
 
 /**
- * @fileOverview Institutional Brand Magic Hub v1.0.
- * Allows administrators to generate cinematic brand assets using GenAI.
+ * @fileOverview Institutional Brand Magic Hub v1.1.
+ * FIXED: Replaced legacy img tags with next/image and resolved lint errors.
  */
 
 export default function BrandMagicPage() {

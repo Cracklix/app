@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import Image from "next/image"
 
 /**
- * @fileOverview Institutional Branding Engine v26.1 (Optimized).
+ * @fileOverview Institutional Branding Engine v26.2 (Optimized).
  */
 
 const CANONICAL_BOARD_LOGOS: Record<string, string> = {

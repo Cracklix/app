@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo, useState, useEffect, isValidElement, cloneElement, ReactElement } from "react"
@@ -35,7 +34,7 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v40.0 (Type Hardened).
+ * @fileOverview Student Dashboard v40.1 (Type Hardened).
  * FIXED: Missing Layers import and icon.props unknown type error.
  */
 export default function StudentDashboard() {

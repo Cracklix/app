@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo, useState, useEffect } from "react"
@@ -33,7 +32,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import Image from "next/image"
 
 /**
- * @fileOverview Institutional About Center v21.0 (High Density).
+ * @fileOverview Institutional About Center v21.1 (High Density).
  */
 
 export default function AboutPage() {
@@ -124,6 +123,7 @@ export default function AboutPage() {
                          fill
                          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" 
                          alt="Arsh Grewal"
+                         priority
                        />
                        <div className="absolute inset-0 bg-gradient-to-t from-[#020817] via-transparent to-transparent opacity-80" />
                        <div className="absolute bottom-6 left-6 right-6">

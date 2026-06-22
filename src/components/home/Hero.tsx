@@ -21,7 +21,8 @@ import { AuthorityLogo } from "@/lib/exam-icons";
 import Image from "next/image"
 
 /**
- * @fileOverview Official High-Density PWA Hero v51.1 (Optimized).
+ * @fileOverview Official High-Density PWA Hero v51.2 (Optimized).
+ * FIXED: Replaced native img tags with next/image.
  */
 
 export default function Hero() {

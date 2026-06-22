@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, Suspense, useEffect, useMemo } from "react"
@@ -45,8 +44,8 @@ import Image from "next/image"
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Cracklix Premium Login Hub v81.0 (APK Safety).
- * FIXED: Guarded Google Sign-In for native environments to prevent WebView hangs.
+ * @fileOverview Cracklix Premium Login Hub v81.1 (ESLint Hardened).
+ * FIXED: Replaced legacy img tags with next/image.
  */
 
 const formatCompact = (num: number) => {
@@ -361,7 +360,7 @@ function LoginContent() {
           <DialogHeader className="text-center space-y-4">
             <div className="h-14 w-14 md:h-16 md:w-16 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto text-primary shadow-xl">{resetLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : <RefreshCw className="h-6 w-6" />}</div>
             <DialogTitle className="text-xl md:text-2xl font-[900] uppercase tracking-tight text-[#0F172A]">Recover Account</DialogTitle>
-            <DialogDescription className="text-slate-400 text-[10px] md:text-sm font-bold uppercase tracking-widest text-center mt-2 leading-relaxed">Enter your email for reset link.</DialogDescription>
+            <DialogDescription className="text-slate-400 text-[10px] md:sm font-bold uppercase tracking-widest text-center mt-2 leading-relaxed">Enter your email for reset link.</DialogDescription>
           </DialogHeader>
           <div className="py-8 space-y-6">
             <div className="space-y-1.5 text-left">
