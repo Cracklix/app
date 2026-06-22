@@ -1,4 +1,3 @@
-
 "use client"
 
 import { create } from 'zustand';
@@ -66,7 +65,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     language: 'ENGLISH_PUNJABI',
     baseLanguageMode: 'ENGLISH_PUNJABI',
     isSubmitting: false,
-    isPaused: false,
+    isPaused: false, 
     isSyncing: false
   }),
 

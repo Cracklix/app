@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -9,11 +8,6 @@ import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
-
-/**
- * @fileOverview Production Calendar Component v9.3.
- * FIXED: Typed props to resolve implicit any errors.
- */
 
 function Calendar({
   className,
@@ -58,12 +52,10 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Chevron: ({ orientation }: { orientation?: "left" | "right" }) => {
-          return orientation === "left" ? (
-            <ChevronLeft className="h-4 w-4" />
-          ) : (
-            <ChevronRight className="h-4 w-4" />
-          );
+        Chevron: ({ orientation }) => {
+          if (orientation === "left") return <ChevronLeft className="h-4 w-4" />;
+          if (orientation === "right") return <ChevronRight className="h-4 w-4" />;
+          return null;
         },
       }}
       {...props}
