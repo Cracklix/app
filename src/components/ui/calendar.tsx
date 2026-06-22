@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -52,7 +53,7 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Chevron: ({ className, orientation }: { className?: string; orientation?: "left" | "right" | "up" | "down" }) => {
+        Chevron: ({ className, orientation, ...rest }: { className?: string; orientation?: "left" | "right" | "up" | "down"; [key: string]: any }) => {
           if (orientation === "left") return <ChevronLeft className={cn("h-4 w-4", className)} />;
           if (orientation === "right") return <ChevronRight className={cn("h-4 w-4", className)} />;
           return <></>;

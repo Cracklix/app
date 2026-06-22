@@ -24,9 +24,14 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
 
+  experimental: {
+    // Suppress workstation cross-origin warnings in dev server
+    allowedDevOrigins: ["*.cloudworkstations.dev", "localhost:9002"]
+  },
+
   webpack: (config, { isServer }) => {
     if (!isServer) {
-      // Fallback for Node.js modules in client-side bundle
+      // Hardened fallbacks for Node.js modules in client bundle
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
@@ -45,13 +50,15 @@ const nextConfig: NextConfig = {
         perf_hooks: false,
       };
 
-      // Exclude Genkit and Opentelemetry from client bundle
+      // Explicitly exclude Genkit and Opentelemetry from client-side compilation
       config.externals = [
         ...(Array.isArray(config.externals) ? config.externals : [config.externals].filter(Boolean)),
         {
           '@opentelemetry/context-async-hooks': 'commonjs @opentelemetry/context-async-hooks',
           'genkit': 'commonjs genkit',
           '@genkit-ai/google-genai': 'commonjs @genkit-ai/google-genai',
+          '@genkit-ai/core': 'commonjs @genkit-ai/core',
+          '@genkit-ai/ai': 'commonjs @genkit-ai/ai'
         },
       ];
     }
