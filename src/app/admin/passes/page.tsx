@@ -16,9 +16,9 @@ import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Pass Architect v5.5 (Validity Config Added).
- * UPDATED: Added Validity (Days) input to dialog for dynamic duration control.
- * FIXED: Null guard for editingPass properties during render cycles.
+ * @fileOverview Institutional Pass Architect v5.6 (Mobile Scaling Fix).
+ * FIXED: Footer buttons now stack on mobile to prevent clipping.
+ * FIXED: Grid layouts optimized for small viewport ergonomics.
  */
 export default function PassManagement() {
   const db = useFirestore()
@@ -106,7 +106,7 @@ export default function PassManagement() {
         {loading ? (
           Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-2xl md:rounded-[3rem] bg-white" />)
         ) : passes.map((p: any) => (
-          <Card key={p.id} className="border-none shadow-xl rounded-2xl md:rounded-[2.5rem] bg-white overflow-hidden flex flex-col group hover:translate-y-[-4px] transition-all border border-slate-50">
+          <Card key={p.id} className="border-none shadow-xl rounded-2xl md:rounded-[2.5rem] bg-white overflow-hidden flex flex-col group hover:translate-y-[-4px] transition-all border border-slate-100">
              <CardHeader className="p-5 md:p-10 pb-3 md:pb-6 text-center space-y-4">
                 <div className={cn("h-12 w-12 md:h-16 rounded-xl flex items-center justify-center mx-auto shadow-inner", p.active ? "bg-amber-50 text-amber-500" : "bg-slate-50 text-slate-300")}>
                    <Gem className="h-6 w-6 md:h-8 md:w-8" />
@@ -138,14 +138,14 @@ export default function PassManagement() {
       </div>
 
       <Dialog open={!!editingPass} onOpenChange={o => !o && !isSaving && setEditingPass(null)}>
-        <DialogContent className="sm:max-w-4xl w-[95vw] max-h-[95vh] rounded-3xl md:rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
+        <DialogContent className="sm:max-w-4xl w-[95vw] max-h-[90vh] rounded-3xl md:rounded-[3rem] bg-white border-none shadow-5xl p-0 overflow-hidden text-left flex flex-col">
           <div className="h-2 w-full bg-[#0F172A] shrink-0" />
-          <DialogHeader className="p-6 md:p-10 pb-2 md:pb-4 shrink-0">
+          <DialogHeader className="p-5 md:p-10 pb-2 md:pb-4 shrink-0">
              <DialogTitle className="text-xl md:text-3xl font-black uppercase">Tier Configuration</DialogTitle>
              <DialogDescription className="text-slate-400 font-bold uppercase text-[9px] tracking-widest mt-1">Map mock tests and boards to this subscription node.</DialogDescription>
           </DialogHeader>
           
-          <div className="flex-1 overflow-y-auto custom-scrollbar px-6 md:px-10 pb-6 md:pb-10 space-y-10">
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-5 md:px-10 pb-6 md:pb-10 space-y-8 md:space-y-10">
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
                 <div className="space-y-6">
                    <div className="space-y-4">
@@ -188,7 +188,7 @@ export default function PassManagement() {
                 <div className="space-y-6">
                    <div className="space-y-4">
                       <Label className="text-[9px] font-black uppercase text-slate-500 ml-1 flex items-center gap-2"><Landmark className="h-3 w-3" /> Grant Category Hubs</Label>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                          {boards?.map((b: any) => {
                             const isAllowed = editingPass?.allowedCategories?.includes(b.id)
                             return (
@@ -203,7 +203,7 @@ export default function PassManagement() {
 
                    <div className="space-y-4 pt-6 border-t border-slate-100">
                       <p className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em]">Institutional Config</p>
-                      <div className="flex items-center justify-between p-5 bg-slate-50 rounded-2xl shadow-inner border border-slate-100">
+                      <div className="flex items-center justify-between p-4 md:p-5 bg-slate-50 rounded-2xl shadow-inner border border-slate-100">
                          <div className="space-y-0.5">
                             <p className="text-[10px] font-black text-[#0F172A]">System Activation</p>
                             <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Enable purchase flow</p>
@@ -215,9 +215,9 @@ export default function PassManagement() {
              </div>
           </div>
           
-          <div className="p-6 md:p-10 pt-4 bg-slate-50 flex gap-4 border-t border-slate-100 shrink-0">
-             <Button variant="ghost" onClick={() => setEditingPass(null)} className="h-11 md:h-12 px-6 font-black uppercase text-[10px] text-slate-400">Discard Audit</Button>
-             <Button onClick={handleSave} disabled={isSaving} className="flex-1 bg-primary hover:bg-blue-700 text-white h-11 md:h-12 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl border-none active:scale-95 gap-2">
+          <div className="p-5 md:p-10 pt-4 bg-slate-50 flex flex-col sm:flex-row gap-3 md:gap-4 border-t border-slate-100 shrink-0">
+             <Button variant="ghost" onClick={() => setEditingPass(null)} className="w-full sm:w-auto h-11 md:h-12 px-6 font-black uppercase text-[10px] text-slate-400">Discard Audit</Button>
+             <Button onClick={handleSave} disabled={isSaving} className="flex-1 h-11 md:h-12 bg-primary hover:bg-blue-700 text-white rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl border-none active:scale-95 gap-2">
                 {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Commit Access Rules
              </Button>
           </div>
