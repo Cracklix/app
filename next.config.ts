@@ -22,6 +22,30 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "i.ibb.co",
+      },
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+      },
+      {
+        protocol: "https",
+        hostname: "**.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "sssb.punjab.gov.in",
+      },
+      {
+        protocol: "https",
+        hostname: "joinindianarmy.nic.in",
+      },
+      {
+        protocol: "https",
+        hostname: "punjabpolice.gov.in",
+      },
+      {
+        protocol: "https",
         hostname: "**",
       },
     ],

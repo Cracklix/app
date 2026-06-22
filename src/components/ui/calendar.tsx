@@ -52,9 +52,9 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Chevron: ({ orientation, className: chevronClassName }: { className?: string; orientation?: "left" | "right" | "up" | "down" }) => {
-          if (orientation === "left") return <ChevronLeft className={cn("h-4 w-4", chevronClassName)} />;
-          if (orientation === "right") return <ChevronRight className={cn("h-4 w-4", chevronClassName)} />;
+        Chevron: ({ orientation }: { orientation?: "left" | "right" | "up" | "down" }) => {
+          if (orientation === "left") return <ChevronLeft className="h-4 w-4" />;
+          if (orientation === "right") return <ChevronRight className="h-4 w-4" />;
           return <React.Fragment />;
         },
       }}

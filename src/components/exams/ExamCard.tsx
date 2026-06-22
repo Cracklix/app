@@ -11,7 +11,7 @@ interface ExamCardProps {
 }
 
 export default function ExamCard({ exam }: ExamCardProps) {
-  const examName = exam.name || exam.title || "Official Vertical";
+  const examName = exam.name || "Official Vertical";
   
   return (
     <Link href={`/exams/${exam.id}`}>
