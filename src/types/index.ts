@@ -154,6 +154,7 @@ export interface MockTest {
   totalMarks: number;
   negativeMarks: number;
   positiveMarks: number;
+  customPenalty?: number;
   questionIds: string[];
   sections: ExamSection[];
   published: boolean;
