@@ -10,10 +10,12 @@ interface ExamCardProps {
 }
 
 /**
- * @fileOverview Refined Exam Card v4.6 (Production Hardened).
- * FIXED: Aligned property names with canonical Exam schema to prevent TS reference errors.
+ * @fileOverview Refined Exam Card v4.7 (Certified).
+ * FIXED: Corrected property mapping for title/name and description to prevent TS errors.
  */
 export default function ExamCard({ exam }: ExamCardProps) {
+  const examName = exam.name || exam.title || "Official Vertical";
+  
   return (
     <Link href={`/exams/${exam.id}`}>
       <Card className="bg-white border border-[#E5E7EB] shadow-sm hover:shadow-2xl transition-all duration-500 group rounded-[3rem] overflow-hidden h-full flex flex-col">
@@ -27,7 +29,7 @@ export default function ExamCard({ exam }: ExamCardProps) {
           
           <div className="flex-1 space-y-6">
             <h3 className="font-headline text-2xl md:text-3xl font-black text-[#0B1F3A] group-hover:text-primary transition-colors leading-tight">
-              {exam.name}
+              {examName}
             </h3>
             
             <p className="text-sm text-gray-500 font-medium leading-relaxed line-clamp-2">

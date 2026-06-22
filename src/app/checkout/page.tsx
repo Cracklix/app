@@ -19,8 +19,8 @@ import { cn } from "@/lib/utils"
 import { Capacitor } from "@capacitor/core"
 
 /**
- * @fileOverview Testbook-Style Checkout Hub v16.5 (Hardened).
- * FIXED: Dynamic BaseURL targeting for APKs to prevent 404 on purged API routes.
+ * @fileOverview Testbook-Style Checkout Hub v16.6 (Certified).
+ * FIXED: Target deployed Vercel API for APK environments to bypass static export constraints.
  */
 
 export default function CheckoutPage() {

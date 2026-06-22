@@ -6,8 +6,8 @@ import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/fir
 import { initializeFirebase } from '@/firebase/app';
 
 /**
- * @fileOverview Global Test Store v4.7 (Hardened).
- * FIXED: Removed duplicate property key 'isSubmitting' and sanitized initial strings.
+ * @fileOverview Global Test Store v4.8 (Certified).
+ * FIXED: Removed duplicate 'isSubmitting' key and standardized Language types.
  */
 
 interface ExamStore extends AttemptState {
@@ -54,8 +54,8 @@ export const useExamStore = create<ExamStore>((set, get) => ({
   mockId: '',
   mockTitle: '',
   userId: '',
-  language: 'ENGLISH_PUNJABI',
-  baseLanguageMode: 'ENGLISH_PUNJABI',
+  language: 'ENGLISH_PUNJABI' as LanguageDisplayMode,
+  baseLanguageMode: 'ENGLISH_PUNJABI' as LanguageDisplayMode,
   isPaused: false,
   isSubmitting: false,
   isPaletteVisible: true,
@@ -86,7 +86,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const initialTimeLeft = Math.max(0, Math.floor((finalEndTime - now) / 1000));
     const finalBaseMode: LanguageDisplayMode = languageMode || 'ENGLISH_PUNJABI';
 
-    let initialLang: LanguageDisplayMode = (!forceReset && state.language) 
+    const initialLang: LanguageDisplayMode = (!forceReset && state.language) 
       ? state.language 
       : finalBaseMode;
     
@@ -108,7 +108,8 @@ export const useExamStore = create<ExamStore>((set, get) => ({
       currentIdx: forceReset ? 0 : (savedState?.currentIdx || 0),
       currentSectionId: questions[forceReset ? 0 : (savedState?.currentIdx || 0)]?.sectionId || 'General Hub',
       isPaused: false, 
-      isSyncing: false
+      isSyncing: false,
+      isSubmitting: false
     });
 
     if (userId && mockId && (forceReset || !savedState)) {

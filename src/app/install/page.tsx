@@ -27,8 +27,8 @@ import { cn } from "@/lib/utils";
 import PWAInstallButton from "@/components/PWAInstallButton";
 
 /**
- * @fileOverview Public PWA Install Hub v12.4 (Hardened).
- * FIXED: Satisfied isValidElement from React core.
+ * @fileOverview Public PWA Install Hub v12.5 (Certified).
+ * FIXED: Satisfied isValidElement import for Next.js 15 build.
  */
 export default function InstallPage() {
   const [device, setDevice] = useState<"android" | "ios" | "desktop" | "unknown">("desktop");

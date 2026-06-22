@@ -5,7 +5,7 @@ import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useUser, useCollection, useFirestore, useAuth } from "@/firebase"
 import { collection, query, where, doc, updateDoc, serverTimestamp, deleteDoc } from "firebase/firestore"
-import { deleteUser, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth"
+import { deleteUser } from "firebase/auth"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -52,7 +52,7 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Profile Center v34.0 (Compliance Hardened).
+ * @fileOverview Student Profile Center v34.1 (Certified).
  * FIXED: Full Account Purge (Auth + Firestore) for Play Store compliance.
  */
 export default function ProfilePage() {
@@ -357,5 +357,5 @@ function StatsCard({ icon: Icon, label, value, color, bgColor, className }: { ic
    return (<Card className={cn("border-none shadow-xl rounded-2xl md:rounded-[3rem] p-4 md:p-12 bg-white group hover:translate-y-[-4px] transition-all duration-500", className)}><div className="flex flex-col gap-3 md:gap-8"><div className={cn("h-8 w-8 md:h-16 md:w-16 rounded-xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 shadow-inner", bgColor)}><Icon className={cn("h-4 w-4 md:h-8 md:w-8", color)} /></div><div className="space-y-0.5 text-left"><p className="text-[7px] md:text-11px font-black uppercase tracking-widest text-slate-400">{label}</p><p className={cn("text-base md:text-5xl font-headline font-black leading-none tabular-nums", color)}>{value}</p></div></div></Card>)
 }
 function ProfileDataNode({ icon: Icon, label, value, colSpan = 1 }: { icon: LucideIcon, label: string, value: string, colSpan?: number }) {
-   return (<div className={cn("flex items-start gap-4 md:gap-8", colSpan > 1 ? "md:col-span-2" : "")}><div className="h-10 w-10 md:h-16 md:w-16 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-primary/5 transition-colors"><Icon className="h-4 w-4 md:h-7 md:w-7 text-slate-400" /></div><div className="min-w-0 space-y-0.5 text-left"><p className="text-[8px] md:text-[11px] font-black uppercase tracking-widest text-slate-400">{label}</p><p className="text-[11px] md:text-xl font-bold text-[#0F172A] leading-relaxed break-words tracking-tight">{value}</p></div></div>)
+   return (<div className={cn("flex items-start gap-4 md:gap-8", colSpan > 1 ? "md:col-span-2" : "")}><div className="h-10 w-10 md:h-16 md:w-16 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-primary/5 transition-colors"><Icon className="h-4 w-4 md:h-7 md:w-7 text-slate-400" /></div><div className="min-w-0 space-y-0.5 text-left"><p className="text-[8px] md:text-11px font-black uppercase tracking-widest text-slate-400">{label}</p><p className="text-[11px] md:text-xl font-bold text-[#0F172A] leading-relaxed break-words tracking-tight">{value}</p></div></div>)
 }

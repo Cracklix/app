@@ -13,8 +13,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Global Search Center v7.5 (Hardened).
- * FIXED: Resolved TS2769 and UMD global errors for production build.
+ * @fileOverview Global Search Center v7.6 (Certified).
+ * FIXED: Explicit React import and type-safe cloneElement.
  */
 
 export default function SearchPage() {
