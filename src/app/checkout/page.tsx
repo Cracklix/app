@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useSearchParams, useRouter } from "next/navigation"
@@ -17,6 +18,7 @@ import { doc } from "firebase/firestore"
 import Script from "next/script"
 import { cn } from "@/lib/utils"
 import { Capacitor } from "@capacitor/core"
+import Image from "next/image"
 
 export default function CheckoutPage() {
   return (
@@ -64,7 +66,7 @@ function CheckoutContent() {
 
     setOnlineProcessing(true);
     const getCashfree = () => (window as any).Cashfree;
-    let cf = getCashfree();
+    const cf = getCashfree();
     
     if (!cf) {
        toast({ variant: "destructive", title: "SDK Error", description: "Payment engine failed to initialize. Please check your connection." });
@@ -152,7 +154,7 @@ function CheckoutContent() {
                  <TabsContent value="manual">
                     <Card className="border-none shadow-3xl rounded-[2.5rem] bg-white p-8 md:p-10 space-y-10">
                        <div className="flex flex-col items-center gap-8">
-                          <img src={qrUrl} alt="QR" className="h-44 w-44 md:h-52 md:w-52 object-contain" />
+                          <Image src={qrUrl} alt="QR Code for UPI Payment" width={200} height={200} className="h-44 w-44 md:h-52 md:w-52 object-contain" />
                           <div className="w-full p-4 bg-slate-900 rounded-xl flex items-center justify-between shadow-2xl">
                              <p className="text-[13px] md:text-base font-black text-white truncate">{upiId}</p>
                              <Button size="icon" variant="ghost" onClick={() => { navigator.clipboard.writeText(upiId); toast({title:"Copied"}); }} className="text-primary hover:bg-white/5"><Copy className="h-4 w-4" /></Button>

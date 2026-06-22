@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -21,6 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import type { Category, Board, Exam } from "@/types"
+import Image from "next/image"
 
 /**
  * @fileOverview Punjab Registry Architect v17.0.
@@ -87,7 +89,7 @@ export default function ArchitectureManager() {
                      <CardHeader className="p-10 pb-6 border-b border-slate-50 bg-slate-50/30 flex flex-row items-center justify-between">
                         <div className="flex items-center gap-6">
                            <div className="h-14 w-14 rounded-2xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
-                              {cat.iconUrl ? <img src={cat.iconUrl} className="h-full w-full object-contain p-2" alt="Icon" /> : <Layers className="h-6 w-6 text-slate-300" />}
+                              {cat.iconUrl ? <Image src={cat.iconUrl} width={56} height={56} className="h-full w-full object-contain p-2" alt={cat.title} /> : <Layers className="h-6 w-6 text-slate-300" />}
                            </div>
                            <div className="text-left">
                               <h3 className="text-2xl font-bold font-headline text-[#0F172A]">{cat.title}</h3>

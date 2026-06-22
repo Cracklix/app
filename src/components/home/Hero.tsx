@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useEffect, useState } from "react";
@@ -18,6 +19,7 @@ import { useDoc, useFirestore, useUser } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 import { AuthorityLogo } from "@/lib/exam-icons";
+import Image from "next/image"
 
 /**
  * @fileOverview Official High-Density PWA Hero v51.0.
@@ -71,18 +73,23 @@ export default function Hero() {
           {/* 2. ILLUSTRATION */}
           <div className="hidden lg:flex flex-col items-center">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="relative">
-              <img 
+              <Image 
                 src="/images/hero-student.png" 
                 alt="Cracklix Student" 
+                width={600}
+                height={600}
                 className="w-full max-w-xl drop-shadow-2xl h-auto object-contain" 
+                priority
               />
             </motion.div>
           </div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="lg:hidden flex justify-center mt-4">
-            <img 
+            <Image 
               src="/images/hero-student.png" 
               alt="Cracklix Student" 
+              width={300}
+              height={300}
               className="h-[140px] w-auto drop-shadow-xl" 
             />
           </motion.div>

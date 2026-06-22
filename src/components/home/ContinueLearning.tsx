@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -10,6 +11,7 @@ import { Zap, Trophy, Target, Star, GraduationCap, ChevronRight } from 'lucide-r
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import Image from 'next/image';
 
 /**
  * @fileOverview High-Fidelity "My Exams" Hub v12.1.
@@ -128,9 +130,9 @@ export default function ContinueLearning() {
                           <Link key={exam.id} href={`/exams/${exam.id}`}>
                              <div className="flex items-center justify-between p-4 bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:translate-x-1 transition-all group">
                                 <div className="flex items-center gap-4 min-w-0">
-                                   <div className="h-11 w-11 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 shadow-inner overflow-hidden">
+                                   <div className="relative h-11 w-11 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 shadow-inner overflow-hidden">
                                       {logoUrl && !failedImages[exam.id] ? (
-                                         <img src={logoUrl} className="h-full w-full object-contain p-2" alt="Logo" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
+                                         <Image src={logoUrl} alt={exam.name} fill className="object-contain p-2" onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} />
                                       ) : (
                                          <GraduationCap className="h-5 w-5 text-slate-300" />
                                       )}

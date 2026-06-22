@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -8,6 +9,7 @@ import { transformLogo } from "@/ai/flows/transform-logo-flow"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 /**
  * @fileOverview Institutional Brand Magic Hub v1.0.
@@ -74,7 +76,9 @@ export default function BrandMagicPage() {
                        preview ? "border-primary/20" : "border-slate-200 hover:border-primary/40"
                      )}>
                         {preview ? (
-                           <img src={preview} className="w-full h-full object-contain p-10" />
+                           <div className="relative w-full h-full p-10">
+                              <Image src={preview} alt="Logo Preview" fill className="object-contain" />
+                           </div>
                         ) : (
                            <div className="text-center space-y-4">
                               <div className="h-16 w-16 bg-white rounded-2xl flex items-center justify-center mx-auto shadow-xl">
@@ -128,7 +132,7 @@ export default function BrandMagicPage() {
                   <div className="w-full aspect-square rounded-[3.5rem] bg-black/40 border-2 border-white/5 flex flex-col items-center justify-center transition-all overflow-hidden relative group shadow-5xl">
                      {result ? (
                         <>
-                           <img src={result} className="w-full h-full object-cover" />
+                           <Image src={result} alt="Transformed Result" fill className="object-cover" />
                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-6">
                               <Button asChild className="h-16 px-10 rounded-2xl bg-white text-[#0F172A] hover:bg-slate-100 font-black uppercase text-[10px] tracking-widest gap-3">
                                  <a href={result} download="cracklix-magic.png">

@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useMemo, useState, useRef } from "react"
@@ -36,6 +37,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 /**
  * @fileOverview Master Registry Hub v17.9.
@@ -201,8 +203,8 @@ export default function MasterRegistryPage() {
                         <TableRow key={b.id} className="hover:bg-slate-50 group border-slate-50 transition-all">
                            <TableCell className="px-10 py-8">
                               <div className="flex items-center gap-6">
-                                 <div className="h-12 w-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
-                                    {b.iconUrl ? <img src={b.iconUrl} className="h-full w-full object-contain p-2" alt="Hub" /> : <Landmark className="h-6 w-6 text-slate-300" />}
+                                 <div className="relative h-12 w-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                                    {b.iconUrl ? <Image src={b.iconUrl} alt={b.abbreviation} fill className="object-contain p-2" /> : <Landmark className="h-6 w-6 text-slate-300" />}
                                  </div>
                                  <div>
                                     <p className="font-black text-[#0F172A] text-xl uppercase leading-none">{b.abbreviation}</p>
@@ -336,9 +338,9 @@ export default function MasterRegistryPage() {
             {editingBoard && (
                <div className="p-10 space-y-8">
                   <div className="flex flex-col items-center gap-6">
-                     <div className="h-32 w-32 rounded-[2rem] bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden group shadow-inner">
+                     <div className="relative h-32 w-32 rounded-[2rem] bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden group shadow-inner">
                         {isUploading ? <Loader2 className="h-6 w-6 text-primary animate-spin" /> : 
-                         editingBoard?.iconUrl ? <img src={editingBoard.iconUrl} className="h-full w-full object-contain p-4" alt="Hub Logo" /> : <ImageIcon className="h-10 w-10 text-slate-300" />}
+                         editingBoard?.iconUrl ? <Image src={editingBoard.iconUrl} alt="Hub Logo" fill className="object-contain p-4" /> : <ImageIcon className="h-10 w-10 text-slate-300" />}
                      </div>
                      <Button variant="outline" className="h-11 px-8 rounded-xl font-black uppercase text-[9px] gap-2 border-slate-200" onClick={() => fileInputRef.current?.click()}>
                         <Upload className="h-4 w-4" /> {isUploading ? 'Syncing...' : 'Upload Logo'}

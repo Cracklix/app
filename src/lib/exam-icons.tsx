@@ -1,6 +1,8 @@
+
 import React from "react"
 import { Shield, GraduationCap, Scale, Zap, Stethoscope, Landmark, BookOpen, Activity, Cpu, Building2, Globe, Settings, FileText, FileStack } from "lucide-react"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 /**
  * @fileOverview Institutional Branding Engine v26.0.
@@ -73,12 +75,12 @@ export const AuthorityLogo = ({ board, category, boardId, categoryId, className,
   if (logoUrl) {
     return (
       <div className={cn("relative shrink-0 overflow-hidden flex items-center justify-center bg-white rounded-xl md:rounded-2xl p-1 shadow-inner", containerSize, className)}>
-        <img 
+        <Image 
           src={logoUrl} 
           alt="Official Authority Logo" 
-          className="h-full w-full object-contain animate-in fade-in duration-500"
+          fill
+          className="object-contain animate-in fade-in duration-500"
           referrerPolicy="no-referrer"
-          onError={(e) => { (e.target as any).style.display = 'none'; }}
         />
       </div>
     );

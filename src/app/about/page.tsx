@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useMemo, useState, useEffect } from "react"
@@ -29,6 +30,7 @@ import { cn } from "@/lib/utils"
 import { useFirestore, useDoc } from "@/firebase"
 import { doc } from "firebase/firestore"
 import { Skeleton } from "@/components/ui/skeleton"
+import Image from "next/image"
 
 /**
  * @fileOverview Institutional About Center v21.0 (High Density).
@@ -117,8 +119,9 @@ export default function AboutPage() {
                     className="lg:col-span-5 relative"
                  >
                     <div className="relative aspect-[4/5] rounded-[2rem] md:rounded-[3.5rem] overflow-hidden border border-white/10 shadow-5xl group bg-[#0B1528] max-w-[280px] md:max-w-none mx-auto">
-                       <img 
+                       <Image 
                          src={founderImg} 
+                         fill
                          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" 
                          alt="Arsh Grewal"
                        />

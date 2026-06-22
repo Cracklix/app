@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, Suspense, useEffect, useMemo } from "react"
@@ -39,6 +40,7 @@ import { motion } from "framer-motion"
 import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
 import { Capacitor } from "@capacitor/core"
+import Image from "next/image"
 
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
@@ -331,7 +333,7 @@ function LoginContent() {
                   <div className="h-px flex-1 bg-slate-100" />
                 </div>
                 <Button variant="outline" className="w-full h-14 border-2 border-slate-100 text-[#0F172A] gap-3 rounded-full font-black text-[10px] md:text-[11px] hover:bg-slate-50 uppercase tracking-widest shadow-sm" onClick={handleGoogleSignIn} disabled={loading}>
-                   <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="h-5 w-5" alt="G" /> Google Login
+                   <Image src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width={20} height={20} className="h-5 w-5" alt="Google Logo" /> Google Login
                 </Button>
               </div>
             </form>

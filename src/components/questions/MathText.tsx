@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useRef } from 'react';
@@ -40,7 +41,7 @@ export default function MathText({ text, className }: MathTextProps) {
         const trimmed = line.trim();
         if (!trimmed) return '<div class="h-2"></div>';
 
-        let processed = trimmed
+        const processed = trimmed
           .replace(/×/g, '\\times')
           .replace(/÷/g, '\\div')
           .replace(/²/g, '^2')

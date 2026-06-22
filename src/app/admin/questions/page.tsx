@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useMemo, useState, useEffect, useCallback, Suspense } from "react"
@@ -55,7 +56,7 @@ function QuestionBankContent() {
     if (!dbInstance) return
     setLoading(true)
     try {
-      let constraints: any[] = [limit(50)]
+      const constraints: any[] = [limit(50)]
       if (activeTab !== 'ALL') {
         if (activeTab === 'REPEATED') constraints.push(where("usedCount", ">", 1))
         else constraints.push(where("status", "==", activeTab))

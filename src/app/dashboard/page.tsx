@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useMemo, useState, useEffect, isValidElement, cloneElement, ReactElement } from "react"
@@ -110,7 +111,7 @@ export default function StudentDashboard() {
     const avgAcc = attempted > 0 ? Math.round((correct / attempted) * 100) : 0
     
     const totalSeconds = sorted.reduce((acc: number, r: any) => acc + (r.timeTaken || 0), 0)
-    let timeFormatted = totalSeconds >= 3600 ? `${(totalSeconds / 3600).toFixed(1)}h` : 
+    const timeFormatted = totalSeconds >= 3600 ? `${(totalSeconds / 3600).toFixed(1)}h` : 
                        totalSeconds >= 60 ? `${Math.floor(totalSeconds / 60)}m` : `${totalSeconds}s`;
     
     const uniqueDays = new Set(sorted.filter((r: any) => r.timestamp).map((r: any) => new Date(r.timestamp).toDateString()))

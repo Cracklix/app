@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react"
@@ -16,6 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { SuccessStory } from "@/types"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 /**
  * @fileOverview Institutional Success Hub CMS v11.0 (PWA Hardened).
@@ -118,8 +120,8 @@ export default function SuccessStoryManagement() {
                 <TableRow key={s.id} className="hover:bg-slate-50 border-slate-50 transition-colors group">
                   <TableCell className="px-6 md:px-12 py-5 md:py-8 text-left">
                      <div className="flex items-center gap-4 md:gap-6">
-                        <div className="h-10 w-10 md:h-14 md:w-14 rounded-xl overflow-hidden bg-slate-50 shadow-inner group-hover:scale-105 transition-transform border border-slate-100">
-                           <img src={s.imageUrl} className="h-full w-full object-cover" />
+                        <div className="relative h-10 w-10 md:h-14 md:w-14 rounded-xl overflow-hidden bg-slate-50 shadow-inner group-hover:scale-105 transition-transform border border-slate-100">
+                           <Image src={s.imageUrl} alt={s.name} fill className="object-cover" />
                         </div>
                         <div>
                            <p className="font-bold text-[#0F172A] text-sm md:text-lg leading-tight truncate">{s.name}</p>
