@@ -8,7 +8,7 @@ import { Browser } from '@capacitor/browser';
 import { StatusBar, Style } from '@capacitor/status-bar';
 
 /**
- * @fileOverview Global Native App Bridge v1.2 (Hardened).
+ * @fileOverview Global Native App Bridge v1.3 (Hardened).
  * Intercepts web behaviors to provide a high-fidelity Android experience.
  * FIXED: Wrapped native APIs in isNativePlatform guard to prevent web crashes.
  */
@@ -47,8 +47,12 @@ export default function CapacitorManager() {
     });
 
     // 4. Status Bar Node Configuration
-    StatusBar.setStyle({ style: Style.Dark });
-    StatusBar.setBackgroundColor({ color: '#0B1528' });
+    try {
+      StatusBar.setStyle({ style: Style.Dark });
+      StatusBar.setBackgroundColor({ color: '#0B1528' });
+    } catch (e) {
+      console.warn('[NATIVE_BRIDGE] StatusBar plugin fail');
+    }
 
     // 5. Deep Link Listener
     App.addListener('appUrlOpen', (data) => {
