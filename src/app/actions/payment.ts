@@ -1,4 +1,4 @@
-'use server';
+'use client';
 
 import { initializeFirebase } from '@/firebase/app';
 import { 
@@ -7,13 +7,12 @@ import {
   addDoc, 
   serverTimestamp,
   updateDoc,
-  getDoc,
-  arrayUnion
+  getDoc
 } from 'firebase/firestore';
 
 /**
- * @fileOverview Hardened Testbook-Style Subscription Actions v4.0.
- * LOGIC: Same plan = extension, Higher plan = immediate upgrade.
+ * @fileOverview Hardened Testbook-Style Subscription Actions v5.0.
+ * CONVERTED: From Server Actions to Client Functions for 'output: export' compatibility.
  */
 
 export async function activateFreePass(userId: string, planId: string) {
@@ -39,11 +38,9 @@ export async function activateFreePass(userId: string, planId: string) {
     let newExpiryDate: Date;
 
     if (isPassActive && userData.status === planId) {
-      // SAME PLAN: EXTEND
       newExpiryDate = new Date(currentExpiry.getTime());
       newExpiryDate.setDate(newExpiryDate.getDate() + durationDays);
     } else {
-      // UPGRADE OR FRESH: START NOW
       newExpiryDate = new Date();
       newExpiryDate.setDate(now.getDate() + durationDays);
     }
@@ -127,17 +124,14 @@ export async function approvePaymentRequest(requestId: string, adminId: string) 
     const durationDays = planData.durationDays || 30;
     const currentExpiry = userData.passExpiresAt ? new Date(userData.passExpiresAt) : null;
     const isPassActive = currentExpiry && currentExpiry > now;
-    const currentTier = userData.planTier || 0;
     const newTier = planData.tier || 1;
 
     let newExpiryDate: Date;
 
     if (isPassActive && userData.status === data.planId) {
-      // SAME PLAN: EXTEND
       newExpiryDate = new Date(currentExpiry.getTime());
       newExpiryDate.setDate(newExpiryDate.getDate() + durationDays);
     } else {
-      // UPGRADE OR FRESH: START NOW
       newExpiryDate = new Date();
       newExpiryDate.setDate(now.getDate() + durationDays);
     }

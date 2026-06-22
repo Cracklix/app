@@ -8,6 +8,7 @@ import ExamHubClient from "@/components/exams/ExamHubClient";
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
+  // Pre-rendering core exam nodes for the static registry
   return [
     { id: 'pcs' },
     { id: 'patwari' },
