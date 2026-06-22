@@ -28,12 +28,15 @@ import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
-const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
+export const dynamicParams = false;
 
-/**
- * @fileOverview Institutional Exam Hub v38.0.
- * HARDENED: Strict Pass Expiry Audit for Premium Mocks.
- */
+export async function generateStaticParams() {
+  return [
+    { id: 'mock-punjab-1' }
+  ];
+}
+
+const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 export default function MockOverviewPage() {
   const params = useParams()
@@ -71,7 +74,6 @@ export default function MockOverviewPage() {
       const isFounder = userEmail && SUPER_ADMIN_WHITELIST.includes(userEmail);
       const isAdmin = profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || isFounder;
       
-      // --- CORE EXPIRY AUDIT ---
       let hasActivePass = false;
       if (isAdmin) {
          hasActivePass = true;
@@ -211,6 +213,15 @@ function FeatureNode({ icon: Icon, title, desc }: any) {
          <h3 className="text-xl font-black text-[#0F172A] uppercase leading-tight">{title}</h3>
          <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest leading-relaxed">{desc}</p>
       </div>
+    </div>
+  );
+}
+
+function ValuePropWrapper({ text }: { text: string }) {
+  return (
+    <div className="flex items-center gap-3">
+      <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
+      <span className="text-[11px] md:text-sm font-bold text-[#0F172A] uppercase tracking-tight">{text}</span>
     </div>
   );
 }

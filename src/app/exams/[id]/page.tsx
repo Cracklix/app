@@ -29,10 +29,15 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
-/**
- * @fileOverview Institutional Exam Detail Hub v53.0.
- * OPTIMIZATION: Reduced header height and tightened spacing for mobile PWA.
- */
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  return [
+    { id: 'pcs' },
+    { id: 'patwari' },
+    { id: 'constable' }
+  ];
+}
 
 export default function ExamHubPage() {
   const params = useParams()
@@ -107,7 +112,7 @@ export default function ExamHubPage() {
                   <div className="min-w-0 space-y-1.5 md:space-y-6">
                      <div className="flex items-center gap-2 md:gap-4">
                         <Badge className="bg-primary/10 text-primary border-none text-[8px] md:text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded shadow-sm">{activeBoard?.abbreviation || 'OFFICIAL'} HUB</Badge>
-                        <button onClick={togglePin} disabled={isPinning} className={cn("flex items-center gap-1 px-2 md:px-4 py-1 rounded-lg md:rounded-xl border transition-all active:scale-95 shadow-sm font-black uppercase text-[7px] md:text-[9px] tracking-widest", isPinned ? "bg-primary border-primary text-white" : "bg-white border-slate-200 text-slate-400 hover:text-primary")}>
+                        <button onClick={togglePin} disabled={isPinning} className={cn("flex items-center gap-1 px-2 md:px-4 py-1 rounded-lg md:rounded-xl border transition-all active:scale-95 shadow-sm font-black uppercase text-[7px] md:text-[9px] tracking-widest", isPinned ? "bg-primary border-primary text-white" : "bg-white border-slate-200 text-slate-300 hover:text-primary")}>
                            {isPinning ? <RefreshCw className="h-2.5 w-2.5 animate-spin" /> : isPinned ? <CheckCircle2 className="h-2.5 w-2.5" /> : <Star className="h-2.5 w-2.5" />}
                            {isPinned ? 'FOLLOWING' : 'SAVE'}
                         </button>
@@ -187,7 +192,7 @@ function MockList({ data, results, isPassActive, loading, boards }: any) {
                         onClick={() => router.push(locked ? '/pass' : `/mocks/${mock.id}/instructions`)} 
                         className={cn(
                           "w-full h-9 md:h-14 rounded-full font-black text-[8px] md:text-[11px] tracking-widest uppercase shadow-md border-none transition-all active:scale-95 flex items-center justify-center gap-2 md:gap-3", 
-                          locked ? "bg-orange-500 text-white" : "bg-[#0F172A] text-white"
+                          locked ? "bg-orange-50 text-white" : "bg-[#0F172A] text-white"
                         )}
                       >
                         {locked ? <><Lock className="h-2.5 w-2.5 md:h-4 md:w-4" /> UNLOCK</> : 'Start'}
@@ -221,7 +226,7 @@ function NotesList({ data, isPassActive, loading, type }: any) {
                   </div>
                   <button onClick={() => window.open(isLocked ? '/pass' : (item.pdfUrl || '#'), isLocked ? '_self' : '_blank')} className={cn(
                     "h-9 md:h-11 px-5 md:px-8 rounded-full font-black uppercase text-[9px] md:text-[10px] tracking-widest shadow-md shrink-0 border-none transition-all active:scale-95",
-                    isLocked ? "bg-orange-500 text-white" : "bg-[#0F172A] text-white"
+                    isLocked ? "bg-orange-50 text-white" : "bg-[#0F172A] text-white"
                   )}>
                      {isLocked ? 'UNLOCK' : 'GET'}
                   </button>
