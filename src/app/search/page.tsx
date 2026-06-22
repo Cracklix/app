@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useMemo, useEffect, Suspense, cloneElement, isValidElement, ReactElement } from "react"
@@ -13,7 +14,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Production Search Hub v3.0.
+ * @fileOverview Production Search Hub v3.1.
  * FIXED: Resolved React UMD module errors and variable scope issues.
  */
 
