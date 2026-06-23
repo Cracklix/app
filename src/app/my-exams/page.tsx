@@ -14,9 +14,10 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional My Exams Hub v17.0 (Unified PWA).
+ * @fileOverview Institutional My Exams Hub v17.1 (AuthorityLogo Integrated).
  */
 
 export default function MyExamsPage() {
@@ -37,6 +38,7 @@ export default function MyExamsPage() {
   const { data: allExams, loading: examsLoading } = useCollection<any>(examsQuery)
   const { data: mocks } = useCollection<any>(mocksQuery)
   const { data: pyqs } = useCollection<any>(pyqsQuery)
+  const { data: boards } = useCollection<any>(useMemo(() => (db ? collection(db, "boards") : null), [db]))
 
   const statsMap = useMemo(() => {
     const map: Record<string, any> = {};
@@ -94,10 +96,14 @@ export default function MyExamsPage() {
            {examsLoading ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-72 w-full rounded-[2.5rem] bg-white" />) : 
            pinnedExams.length > 0 ? pinnedExams.map((exam: any) => {
               const s = statsMap[exam.id] || { full: 0, subject: 0, sectional: 0, pyq: 0, total: 0 };
+              const board = boards?.find((b: any) => b.id === exam.boardId || b.abbreviation === exam.boardId);
+              
               return (
                <Card key={exam.id} className="border border-slate-100 shadow-xl hover:shadow-2xl transition-all duration-500 rounded-[2.5rem] bg-white p-6 md:p-10 flex flex-col relative group">
                   <div className="flex justify-between items-start mb-6 md:mb-10">
-                     <div className="h-12 w-12 md:h-16 rounded-2xl bg-slate-50 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform"><GraduationCap className="h-6 w-6 md:h-8 text-primary" /></div>
+                     <div className="shrink-0 group-hover:scale-105 transition-transform">
+                        <AuthorityLogo board={board} boardId={exam.boardId} size="md" className="h-12 w-12 md:h-16 rounded-2xl bg-slate-50 shadow-inner" />
+                     </div>
                      <button onClick={() => handleUnpin(exam.id)} disabled={unpinningId === exam.id} className="text-slate-300 hover:text-rose-500 transition-colors p-2 active:scale-90">
                         {unpinningId === exam.id ? <RefreshCw className="h-5 w-5 animate-spin" /> : <X className="h-5 w-5" />}
                      </button>

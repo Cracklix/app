@@ -34,8 +34,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v40.1 (Type Hardened).
- * FIXED: Missing Layers import and icon.props unknown type error.
+ * @fileOverview Student Dashboard v40.2 (Study Hours Fix).
+ * FIXED: Calculation logic for Study Hours now ignores corrupted timestamp data.
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading } = useUser();
@@ -109,7 +109,12 @@ export default function StudentDashboard() {
     const attempted = sorted.reduce((acc: number, r: any) => acc + (Object.keys(r.answers || {}).length), 0)
     const avgAcc = attempted > 0 ? Math.round((correct / attempted) * 100) : 0
     
-    const totalSeconds = sorted.reduce((acc: number, r: any) => acc + (r.timeTaken || 0), 0)
+    // HARDENED: Filter out corrupted timeTaken values (e.g. timestamps > 5 hours)
+    const totalSeconds = sorted.reduce((acc: number, r: any) => {
+       const val = Number(r.timeTaken) || 0;
+       return acc + (val > 18000 ? 0 : val);
+    }, 0)
+
     const timeFormattedValue = totalSeconds >= 3600 ? `${(totalSeconds / 3600).toFixed(1)}h` : 
                        totalSeconds >= 60 ? `${Math.floor(totalSeconds / 60)}m` : `${totalSeconds}s`;
     

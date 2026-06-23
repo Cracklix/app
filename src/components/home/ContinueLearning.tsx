@@ -10,18 +10,17 @@ import { Zap, Trophy, Target, Star, GraduationCap, ChevronRight } from 'lucide-r
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import Image from 'next/image';
+import { AuthorityLogo } from '@/lib/exam-icons';
 
 /**
- * @fileOverview High-Fidelity "My Exams" Hub v12.2.
- * FIXED: Replaced legacy img tags with next/image and resolved lint errors.
+ * @fileOverview High-Fidelity "My Exams" Hub v12.3.
+ * FIXED: Replaced manual logo logic with AuthorityLogo component for consistent rendering.
  */
 
 export default function ContinueLearning() {
   const { user, profile } = useUser();
   const db = useFirestore();
   const [mounted, setMounted] = useState(false);
-  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     setMounted(true);
@@ -123,24 +122,13 @@ export default function ContinueLearning() {
                  ) : pinnedExams.length > 0 ? (
                     pinnedExams.map((exam: any) => {
                        const board = boards?.find((b: any) => b.id === exam.boardId || b.abbreviation === exam.boardId);
-                       const logoUrl = board?.iconUrl || exam.iconUrl;
                        
                        return (
                           <Link key={exam.id} href={`/exams/${exam.id}`}>
                              <div className="flex items-center justify-between p-4 bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:translate-x-1 transition-all group">
                                 <div className="flex items-center gap-4 min-w-0">
-                                   <div className="relative h-11 w-11 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100 shadow-inner overflow-hidden">
-                                      {logoUrl && !failedImages[exam.id] ? (
-                                         <Image 
-                                           src={logoUrl} 
-                                           alt={exam.name} 
-                                           fill 
-                                           className="object-contain p-2" 
-                                           onError={() => setFailedImages(p => ({...p, [exam.id]: true}))} 
-                                         />
-                                      ) : (
-                                         <GraduationCap className="h-5 w-5 text-slate-300" />
-                                      )}
+                                   <div className="shrink-0 group-hover:scale-105 transition-transform">
+                                      <AuthorityLogo board={board} boardId={exam.boardId} size="sm" className="h-11 w-11 rounded-xl bg-slate-50" />
                                    </div>
                                    <div className="min-w-0">
                                       <h4 className="text-sm font-bold text-[#0F172A] truncate">{exam.name}</h4>
