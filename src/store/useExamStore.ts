@@ -85,7 +85,7 @@ export const useExamStore = create<ExamStore>((set, get) => ({
     const finalBaseMode: LanguageDisplayMode = languageMode || 'ENGLISH_PUNJABI';
 
     const initialLang: LanguageDisplayMode = (!forceReset && state.language) 
-      ? state.language 
+      ? (state.language as LanguageDisplayMode)
       : finalBaseMode;
     
     set({
