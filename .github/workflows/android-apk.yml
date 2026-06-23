@@ -68,11 +68,39 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android --deployment
 
+      - name: Setup Debug Keystore
+        run: |
+          mkdir -p ~/.android
+          if [ ! -f ~/.android/debug.keystore ]; then
+            keytool -genkeypair \
+              -v \
+              -keystore ~/.android/debug.keystore \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          fi
+
       - name: Build Android App
         working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
+
+      - name: Sign APK
+        run: |
+          APK_PATH=$(find android/app/build -name "*.apk" | head -n 1)
+          echo "Signing APK: $APK_PATH"
+          jarsigner -verbose \
+            -sigalg SHA256withRSA \
+            -digestalg SHA-256 \
+            -keystore ~/.android/debug.keystore \
+            -storepass android \
+            "$APK_PATH" \
+            androiddebugkey
 
       - name: Locate APKs
         run: |
@@ -83,7 +111,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cracklix-debug-apk
-          path: android/app/build/outputs/apk/debug/*.apk
+          path: android/app/build/outputs/apk/**/*.apk
           if-no-files-found: warn
 
       - name: Create Build Summary
