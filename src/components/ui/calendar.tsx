@@ -61,7 +61,7 @@ function Calendar({
         Chevron: ({ orientation, className: chevronClassName }) => {
           if (orientation === "left") return <ChevronLeft className={cn("h-4 w-4", chevronClassName)} />;
           if (orientation === "right") return <ChevronRight className={cn("h-4 w-4", chevronClassName)} />;
-          return <div className="h-4 w-4" />;
+          return <span className={cn("h-4 w-4", chevronClassName)} />;
         },
       }}
       {...props}

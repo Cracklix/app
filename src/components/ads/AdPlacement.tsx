@@ -15,7 +15,7 @@ interface AdPlacementProps {
 }
 
 /**
- * @fileOverview Institutional Ad-Node v1.16.
+ * @fileOverview Institutional Ad-Node v1.17.
  * FIXED: Resolved TypeScript query assignment error by explicitly typing the collection reference.
  */
 
@@ -31,20 +31,20 @@ export default function AdPlacement({ placement, className, examId }: AdPlacemen
 
   const isAdFree = useMemo(() => {
     if (!profile || profile.status === 'Free') return false;
-    const activePass = passes?.find((p: any) => p.id === profile.status);
+    const activePass = (passes as any[])?.find((p: any) => p.id === profile.status);
     return activePass?.adFree === true;
   }, [profile, passes]);
 
   const adsQuery = useMemo(() => {
     if (!db || isAdFree || isSafetyZone) return null;
-    return query(collection(db, 'ads'), where('status', '==', 'ACTIVE')) as unknown as Query<Advertisement, DocumentData>;
+    return query(collection(db, 'ads'), where('status', '==', 'ACTIVE')) as Query<Advertisement, DocumentData>;
   }, [db, isAdFree, isSafetyZone]);
 
   const { data: ads, loading } = useCollection<Advertisement>(adsQuery);
 
   const activeAd = useMemo(() => {
     if (!ads) return null;
-    const candidates = ads.filter(ad => {
+    const candidates = (ads as Advertisement[]).filter(ad => {
       const hasPlacement = ad.placements.includes(placement);
       if (!hasPlacement) return false;
       if (examId && ad.targeting?.examIds && ad.targeting.examIds.length > 0) {

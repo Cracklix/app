@@ -11,7 +11,7 @@ interface ExamCardProps {
 }
 
 /**
- * @fileOverview Exam Vertical Card v1.5.
+ * @fileOverview Exam Vertical Card v1.6.
  * FIXED: Resolved TypeScript property errors by correctly mapping categoryId and descriptive fields.
  */
 export default function ExamCard({ exam }: ExamCardProps) {
