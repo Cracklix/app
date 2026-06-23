@@ -34,7 +34,7 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v42.2 (Study Hours & Icon Sync).
+ * @fileOverview Student Dashboard v42.3 (Lag & Blanking Hardened).
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading } = useUser();
@@ -111,6 +111,7 @@ export default function StudentDashboard() {
     // Study Hours Fix: Sum test durations, ignore large values (corruption)
     const totalSeconds = sorted.reduce((acc: number, r: any) => {
        const val = Number(r.timeTaken) || 0;
+       // Any value above 6 hours (21600s) for a single test is likely a corrupted timestamp
        return acc + (val > 21600 ? 0 : val);
     }, 0)
 

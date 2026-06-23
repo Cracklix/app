@@ -9,6 +9,9 @@ const withPWA = require("next-pwa")({
 });
 
 const nextConfig: NextConfig = {
+  // Static export is mandatory for high-performance Capacitor/Android builds
+  output: 'export',
+  
   reactStrictMode: true,
 
   eslint: {
@@ -20,6 +23,8 @@ const nextConfig: NextConfig = {
   },
 
   images: {
+    // Static export does not support default Next.js image optimization
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

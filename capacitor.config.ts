@@ -1,19 +1,26 @@
-const config = {
+import { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
   appId: 'com.cracklix.app',
   appName: 'Cracklix',
   webDir: 'www',
 
   server: {
     url: 'https://cracklix.vercel.app',
-    androidScheme: 'https'
+    androidScheme: 'https',
+    allowMixedContent: true
   },
 
   plugins: {
     SplashScreen: {
       launchShowDuration: 3000,
-      backgroundColor: "#0B1528",
+      launchAutoHide: true,
+      backgroundColor: "#FFFFFF",
+      androidSplashResourceName: "splash",
+      androidScaleType: "CENTER_CROP",
       showSpinner: false,
-      androidScaleType: "CENTER_CROP"
+      splashFullScreen: true,
+      splashImmersive: true
     },
 
     Keyboard: {
