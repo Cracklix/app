@@ -5,11 +5,6 @@ import { AttemptState, Question, LanguageDisplayMode, QuestionStatus } from '@/t
 import { doc, updateDoc, serverTimestamp, setDoc, Firestore } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase/app';
 
-/**
- * @fileOverview Hardened Exam State Hub v2.2.
- * FIXED: Removed duplicate property keys for production stability and resolved language type conflicts.
- */
-
 interface ExamStore extends AttemptState {
   questions: Question[];
   mockId: string;

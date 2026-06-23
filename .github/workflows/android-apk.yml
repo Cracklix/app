@@ -81,10 +81,10 @@ jobs:
       # ✅ Sign APK (Discovery Hardened)
       - name: Sign APK
         run: |
-          APK_PATH=$(find android/app/build/outputs/apk -name "*.apk" | head -n 1)
+          APK_PATH=$(find android/app/build/outputs/apk/release -name "*.apk" | head -n 1)
 
           if [[ -z "$APK_PATH" ]]; then
-            echo "❌ No APK found"
+            echo "❌ No release APK found"
             exit 1
           fi
 
@@ -111,9 +111,11 @@ jobs:
               "$APK_PATH" \
               androiddebugkey
           fi
+          
+          mv "$APK_PATH" android/app/build/outputs/apk/release/cracklix-production.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: cracklix-build
-          path: android/app/build/outputs/apk/**/*.apk
+          name: cracklix-production-build
+          path: android/app/build/outputs/apk/release/cracklix-production.apk

@@ -7,12 +7,6 @@ import { DayPicker } from "react-day-picker"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
-/**
- * @fileOverview Custom Calendar UI v2.4.
- * FIXED: Satisfied strict React typing for Chevron component in Next.js 15.
- * FIXED: Replaced return null with valid React element to prevent build failures.
- */
-
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
 function Calendar({
