@@ -49,14 +49,15 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      # ✅ Keystore Setup (FIXED for KEYSTORE_BASE64)
       - name: Setup Keystore
         run: |
           if [[ -n "${{ secrets.KEYSTORE_BASE64 }}" ]]; then
-            echo "Decoding Release Keystore..."
+            echo "🔐 Decoding release keystore..."
             printf '%s' "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > release.keystore
             echo "KEYSTORE_TYPE=RELEASE" >> $GITHUB_ENV
           else
-            echo "No Release Keystore secret found. Generating temporary debug keystore..."
+            echo "⚠️ No keystore found, using debug..."
             mkdir -p ~/.android
             keytool -genkeypair -v \
               -keystore ~/.android/debug.keystore \
@@ -70,47 +71,66 @@ jobs:
             echo "KEYSTORE_TYPE=DEBUG" >> $GITHUB_ENV
           fi
 
-      - name: Verify Keystore Integrity
+      # ✅ Verify
+      - name: Verify Keystore
         run: |
           if [[ "$KEYSTORE_TYPE" == "RELEASE" ]]; then
             ls -la release.keystore
-            keytool -list -v -keystore release.keystore -storepass "${{ secrets.KEYSTORE_PASSWORD }}" | grep Alias
+            keytool -list -v \
+              -keystore release.keystore \
+              -storepass "${{ secrets.KEYSTORE_PASSWORD }}" | head -n 20
           else
             ls -la ~/.android/debug.keystore
-            keytool -list -v -keystore ~/.android/debug.keystore -storepass android | grep Alias
+            keytool -list -v \
+              -keystore ~/.android/debug.keystore \
+              -storepass android | head -n 20
           fi
 
+      # ✅ Build Release APK
       - name: Build Android App
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleRelease --no-daemon
 
-      - name: Sign APK (Jarsigner)
+      # ✅ Sign APK
+      - name: Sign APK
         run: |
           APK_PATH=$(find android/app/build/outputs/apk -name "*.apk" | head -n 1)
+
           if [[ -z "$APK_PATH" ]]; then
-            echo "Error: No APK found to sign"
+            echo "❌ No APK found"
             exit 1
           fi
-          echo "Discovered APK: $APK_PATH"
-          
+
+          echo "📦 APK found: $APK_PATH"
+
           if [[ "$KEYSTORE_TYPE" == "RELEASE" ]]; then
-            echo "Signing with Release Keystore..."
-            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+            echo "🔐 Signing RELEASE APK..."
+
+            jarsigner -verbose \
+              -sigalg SHA256withRSA \
+              -digestalg SHA-256 \
               -keystore release.keystore \
               -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
               -keypass "${{ secrets.KEY_PASSWORD }}" \
-              "$APK_PATH" "${{ secrets.KEY_ALIAS }}"
+              "$APK_PATH" \
+              "${{ secrets.KEY_ALIAS }}"
+
           else
-            echo "Signing with Debug Keystore..."
-            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+            echo "🔐 Signing DEBUG APK..."
+
+            jarsigner -verbose \
+              -sigalg SHA256withRSA \
+              -digestalg SHA-256 \
               -keystore ~/.android/debug.keystore \
               -storepass android \
               -keypass android \
-              "$APK_PATH" androiddebugkey
+              "$APK_PATH" \
+              androiddebugkey
           fi
 
+      # ✅ Upload
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
