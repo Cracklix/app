@@ -17,7 +17,8 @@ import { useToast } from "@/hooks/use-toast"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Institutional My Exams Hub v17.1 (AuthorityLogo Integrated).
+ * @fileOverview Institutional My Exams Hub v17.2 (Authority Icons Restored).
+ * FIXED: Replaced manual icon logic with official AuthorityLogo component.
  */
 
 export default function MyExamsPage() {
@@ -84,7 +85,7 @@ export default function MyExamsPage() {
       <main className="container mx-auto px-4 py-8 md:py-16 max-w-7xl space-y-10 md:space-y-14">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 px-1">
            <div className="space-y-1.5 text-center md:text-left">
-              <h1 className="text-3xl md:text-5xl font-black text-[#0F172A] leading-tight tracking-tight">My Exams</h1>
+              <h1 className="text-3xl md:text-5xl font-black text-[#0F172A] leading-tight tracking-tight uppercase">My Exams</h1>
               <p className="text-[11px] md:text-lg text-slate-500 font-medium">Manage your personalized recruitment preparation verticals.</p>
            </div>
            <Button asChild className="w-full md:w-auto h-12 md:h-14 px-10 bg-blue-600 hover:bg-blue-700 text-white shadow-xl rounded-full gap-3 border-none font-black uppercase text-[10px] tracking-widest">
@@ -108,7 +109,7 @@ export default function MyExamsPage() {
                         {unpinningId === exam.id ? <RefreshCw className="h-5 w-5 animate-spin" /> : <X className="h-5 w-5" />}
                      </button>
                   </div>
-                  <h4 className="font-black text-xl md:text-2xl text-[#0F172A] leading-tight mb-8 flex-1 group-hover:text-primary transition-colors">{exam.name}</h4>
+                  <h4 className="font-black text-xl md:text-2xl text-[#0F172A] leading-tight mb-8 flex-1 group-hover:text-primary transition-colors uppercase">{exam.name}</h4>
                   <div className="space-y-3 mb-8 md:mb-12 border-t border-slate-50 pt-6">
                       <StatRow label="Full Length Mocks" val={s.full} />
                       <StatRow label="Subject-wise Tests" val={s.subject} />

@@ -34,8 +34,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v40.2 (Study Hours Fix).
- * FIXED: Calculation logic for Study Hours now ignores corrupted timestamp data.
+ * @fileOverview Student Dashboard v41.0 (Hardened Logic).
+ * FIXED: Study Hours logic correctly handles durations and filters out corruption.
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading } = useUser();
@@ -109,10 +109,12 @@ export default function StudentDashboard() {
     const attempted = sorted.reduce((acc: number, r: any) => acc + (Object.keys(r.answers || {}).length), 0)
     const avgAcc = attempted > 0 ? Math.round((correct / attempted) * 100) : 0
     
-    // HARDENED: Filter out corrupted timeTaken values (e.g. timestamps > 5 hours)
+    // HARDENED: Study Hours - Correctly sum actual test durations, ignoring corrupt Unix timestamps
     const totalSeconds = sorted.reduce((acc: number, r: any) => {
        const val = Number(r.timeTaken) || 0;
-       return acc + (val > 18000 ? 0 : val);
+       // Heuristic: If timeTaken looks like a timestamp (extremely large), it's corrupted.
+       // Average test is < 3 hours (10800s). We filter anything > 6 hours.
+       return acc + (val > 21600 ? 0 : val);
     }, 0)
 
     const timeFormattedValue = totalSeconds >= 3600 ? `${(totalSeconds / 3600).toFixed(1)}h` : 
@@ -306,7 +308,7 @@ function QuickToolLink({ href, label, icon: Icon }: any) {
       <Link href={href} className="flex items-center justify-between p-3 md:p-4 rounded-xl border border-slate-50 bg-slate-50/50 hover:bg-slate-100 transition-all active:scale-[0.98] group">
          <div className="flex items-center gap-3">
             <Icon className="h-4 w-4 text-primary" />
-            <span className="text-xs md:text-sm font-bold text-[#0F172A]">{label}</span>
+            <span className="text-xs md:sm font-bold text-[#0F172A]">{label}</span>
          </div>
          <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-primary transition-all" />
       </Link>

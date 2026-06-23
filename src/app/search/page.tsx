@@ -13,8 +13,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Global Search Hub v2.9.1.
- * FIXED: React cloneElement type safety and import requirements for production build.
+ * @fileOverview Global Search Hub v2.9.2 (Hardened).
+ * FIXED: Explicitly import React and use typed ReactElement for dynamic component rendering.
  */
 
 export default function SearchPage() {
@@ -31,7 +31,7 @@ function SearchContent() {
   const router = useRouter()
   const pathname = usePathname()
   const { user, loading: authLoading } = useUser()
-  const [query, setQuery] = useState("")
+  const [queryStr, setQuery] = useState("")
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -55,8 +55,8 @@ function SearchContent() {
   const isLoading = mLoading || eLoading || nLoading;
 
   const searchResults = useMemo(() => {
-    if (query.trim().length < 2) return []
-    const term = query.toLowerCase().trim()
+    if (queryStr.trim().length < 2) return []
+    const term = queryStr.toLowerCase().trim()
     
     const examMatches = (exams || []).filter((e: any) => 
       e.name?.toLowerCase().includes(term) || 
@@ -92,7 +92,7 @@ function SearchContent() {
     }))
 
     return [...examMatches, ...mockMatches, ...notesMatches]
-  }, [query, exams, mocks, notes])
+  }, [queryStr, exams, mocks, notes])
 
   if (authLoading || !user) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
@@ -118,7 +118,7 @@ function SearchContent() {
                  <div className="relative">
                     <SearchIcon className={cn("absolute left-4 md:left-6 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 transition-colors", isLoading ? "text-primary animate-pulse" : "text-slate-300")} />
                     <input 
-                      value={query}
+                      value={queryStr}
                       onChange={e => setQuery(e.target.value)}
                       autoFocus
                       className="w-full h-14 md:h-18 pl-12 md:pl-16 pr-14 text-sm md:text-2xl rounded-2xl md:rounded-[2.5rem] border-none shadow-2xl bg-white focus:ring-4 focus:ring-primary/5 text-[#0F172A] font-bold outline-none placeholder:text-slate-200" 
@@ -129,7 +129,7 @@ function SearchContent() {
               </div>
            </div>
 
-           {query.length >= 2 ? (
+           {queryStr.length >= 2 ? (
               <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                     <h3 className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">RESULTS: {searchResults.length} NODES</h3>
