@@ -58,11 +58,21 @@ jobs:
           if [[ -n "${{ secrets.KEYSTORE_BASE64 }}" ]]; then
             echo "Decoding Keystore from Secrets..."
             echo "${{ secrets.KEYSTORE_BASE64 }}" | tr -d '\n ' | base64 -d > ~/.android/release.keystore
-            echo "Validating Keystore..."
-            keytool -list -keystore ~/.android/release.keystore -storepass "${{ secrets.STORE_PASSWORD }}" || echo "Failed to validate release keystore"
+            echo "Validating Release Keystore..."
+            keytool -list -keystore ~/.android/release.keystore -storepass "${{ secrets.STORE_PASSWORD }}" || echo "Warning: Could not list release keystore content"
           else
             echo "No Release Keystore secret found. Generating temporary debug keystore..."
-            keytool -genkeypair -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+            keytool -genkeypair -v \
+              -keystore ~/.android/debug.keystore \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+            echo "Verifying debug keystore..."
+            ls -la ~/.android/debug.keystore
           fi
 
       - name: Build Android App
@@ -74,13 +84,26 @@ jobs:
       - name: Sign APK (Jarsigner fallback)
         run: |
           APK_PATH=$(find android/app/build/outputs/apk -name "*.apk" | head -n 1)
+          if [[ -z "$APK_PATH" ]]; then
+            echo "Error: No APK found to sign"
+            exit 1
+          fi
           echo "Discovered APK: $APK_PATH"
+          
           if [[ -f ~/.android/release.keystore ]]; then
             echo "Signing with Release Keystore..."
-            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore ~/.android/release.keystore -storepass "${{ secrets.STORE_PASSWORD }}" -keypass "${{ secrets.KEY_PASSWORD }}" "$APK_PATH" "${{ secrets.KEY_ALIAS }}"
+            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+              -keystore ~/.android/release.keystore \
+              -storepass "${{ secrets.STORE_PASSWORD }}" \
+              -keypass "${{ secrets.KEY_PASSWORD }}" \
+              "$APK_PATH" "${{ secrets.KEY_ALIAS }}"
           else
             echo "Signing with Debug Keystore..."
-            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore ~/.android/debug.keystore -storepass android -keypass android "$APK_PATH" androiddebugkey
+            jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+              -keystore ~/.android/debug.keystore \
+              -storepass android \
+              -keypass android \
+              "$APK_PATH" androiddebugkey
           fi
 
       - name: Upload APK

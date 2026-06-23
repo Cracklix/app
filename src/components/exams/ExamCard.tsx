@@ -11,7 +11,7 @@ interface ExamCardProps {
 }
 
 export default function ExamCard({ exam }: ExamCardProps) {
-  const examName = exam.name || "Official Vertical";
+  const examName = exam.name || exam.title || "Official Vertical";
   
   return (
     <Link href={`/exams/${exam.id}`}>
@@ -34,8 +34,8 @@ export default function ExamCard({ exam }: ExamCardProps) {
             </p>
 
             <div className="flex flex-wrap gap-2.5">
-               <AvailabilityBadge label="Mock Tests" emoji="📚" />
-               <AvailabilityBadge label="PYQ Papers" emoji="📝" />
+               <AvailabilityBadge label={`${exam.totalMocks || 0} Mocks`} emoji="📚" />
+               <AvailabilityBadge label={`${exam.activeQuestions || 0} Questions`} emoji="📝" />
                <AvailabilityBadge label="Bilingual" emoji="🌐" />
             </div>
           </div>
