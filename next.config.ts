@@ -10,7 +10,6 @@ const withPWA = require("next-pwa")({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // Hardened CI: Disable blocking on lint/types during build as CI handles this separately
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -23,10 +22,14 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "i.ibb.co",
+        port: "",
+        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "picsum.photos",
+        port: "",
+        pathname: "/**",
       },
       {
         protocol: "https",
@@ -56,7 +59,6 @@ const nextConfig: NextConfig = {
 
   webpack: (config, { isServer }) => {
     if (!isServer) {
-      // Hardened fallbacks for Node.js modules in client bundle
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
@@ -75,7 +77,6 @@ const nextConfig: NextConfig = {
         perf_hooks: false,
       };
 
-      // Explicitly exclude Genkit and Opentelemetry from client-side compilation
       config.externals = [
         ...(Array.isArray(config.externals) ? config.externals : [config.externals].filter(Boolean)),
         {
