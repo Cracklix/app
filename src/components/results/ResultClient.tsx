@@ -1,7 +1,8 @@
+
 "use client"
 
 import React, { useState, useMemo, useEffect, Suspense, isValidElement, cloneElement, ReactElement } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams, usePathname } from "next/navigation"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -29,10 +30,15 @@ import { cn } from "@/lib/utils"
 import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import StudentAvatar from "@/components/brand/StudentAvatar"
 
+/**
+ * @fileOverview Official Result Node Hub Client with Detailed Debugging.
+ * FIXED: Standardized ID retrieval and enhanced lookup resilience.
+ */
+
 export default function ResultClient() {
-  const params = useParams()
   const router = useRouter()
-  const mockId = params.id as string
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const db = useFirestore()
   const { user, profile } = useUser()
   const { toast } = useToast()
@@ -47,6 +53,14 @@ export default function ResultClient() {
     setMounted(true)
   }, [])
 
+  const mockId = useMemo(() => {
+    const queryId = searchParams.get('id');
+    if (queryId) return queryId;
+    const pathSegments = pathname.split('/').filter(Boolean);
+    const lastSegment = pathSegments[pathSegments.length - 1];
+    return lastSegment !== 'view' ? lastSegment : null;
+  }, [pathname, searchParams]);
+
   const resultRef = useMemo(() => (db && user && mockId ? doc(db, "results", `${user.uid}_${mockId}`) : null), [db, user, mockId]);
   const { data: sessionData, loading: resultLoading } = useDoc<any>(resultRef);
 
@@ -56,6 +70,11 @@ export default function ResultClient() {
   }, [db, mockId])
 
   const { data: rawGlobalResults } = useCollection<any>(globalResultsQuery)
+
+  useEffect(() => {
+     console.log("[DEBUG_RESULT] Resolved Mock ID:", mockId);
+     if (sessionData) console.log("[DEBUG_RESULT] Attempt Data Found:", sessionData);
+  }, [mockId, sessionData]);
 
   const merit = useMemo(() => {
      if (!rawGlobalResults || !sessionData) return { rank: '?', total: 0, percentile: 0, list: [] };
@@ -123,12 +142,16 @@ export default function ResultClient() {
      </div>
   );
 
-  if (!sessionData) return (
+  if (!sessionData && !resultLoading) return (
      <div className="h-screen flex flex-col items-center justify-center text-center bg-white p-6 space-y-6">
-        <AlertCircle className="h-10 w-10 text-slate-200" />
+        <div className="h-16 w-16 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto text-rose-500 shadow-xl border border-rose-100">
+           <AlertCircle className="h-8 w-8" />
+        </div>
         <div className="space-y-1">
-           <h2 className="text-xl font-headline font-black uppercase text-[#0F172A]">Registry Link Missing</h2>
-           <p className="text-slate-500 font-medium text-sm max-w-xs mx-auto">This attempt data node could not be verified.</p>
+           <h2 className="text-xl font-headline font-black uppercase text-[#0F172A]">Result Node Missing</h2>
+           <p className="text-slate-500 font-medium text-sm max-w-xs mx-auto">
+              Your results for mock <code className="text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">{mockId}</code> could not be verified in the cloud.
+           </p>
         </div>
         <Button asChild className="bg-[#0F172A] hover:bg-black text-white rounded-xl h-11 px-8 font-black uppercase text-[10px]"><Link href="/dashboard">Return Dashboard</Link></Button>
      </div>
@@ -145,22 +168,22 @@ export default function ResultClient() {
                  <Trophy className="h-6 w-6 md:h-8 md:w-8" />
               </div>
               <div className="min-w-0 flex-1 space-y-1.5">
-                 <h1 className="text-lg md:text-3xl font-black text-white uppercase tracking-tight leading-tight">{sessionData.mockTitle}</h1>
-                 <p className="text-[9px] md:text-[11px] font-bold text-slate-500 uppercase tracking-widest">Performance Hub</p>
+                 <h1 className="text-lg md:text-3xl font-black text-white uppercase tracking-tight leading-tight">{sessionData?.mockTitle || "Practice Result"}</h1>
+                 <p className="text-[9px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest">Performance Hub</p>
               </div>
            </div>
 
            <div className="flex flex-wrap items-center justify-center lg:justify-end gap-6 md:gap-10 shrink-0 w-full lg:w-auto px-2">
-              <ResultPill label="SCORE" val={(sessionData.score || 0).toFixed(1)} color={(sessionData.score || 0) < 0 ? "text-rose-400" : "text-primary"} />
+              <ResultPill label="SCORE" val={(sessionData?.score || 0).toFixed(1)} color={(sessionData?.score || 0) < 0 ? "text-rose-400" : "text-primary"} />
               <div className="hidden md:block w-px h-10 bg-white/10" />
               <ResultPill label="RANK" val={`#${merit.rank}`} color="text-white" />
               <div className="hidden md:block w-px h-10 bg-white/10" />
-              <ResultPill label="ACCURACY" val={`${sessionData.accuracy || 0}%`} color="text-emerald-400" />
+              <ResultPill label="ACCURACY" val={`${sessionData?.accuracy || 0}%`} color="text-emerald-400" />
            </div>
 
            <div className="flex gap-4 shrink-0 w-full lg:w-auto">
               <Button asChild className="w-full lg:w-auto h-12 md:h-14 px-8 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[10px] tracking-widest rounded-xl shadow-xl transition-all border-none active:scale-95">
-                 <Link href={`/mocks/${sessionData.mockId}/instructions`} className="flex items-center justify-center gap-3">
+                 <Link href={`/mocks/instructions?id=${mockId}`} className="flex items-center justify-center gap-3">
                     <RefreshCw className="h-4 w-4" /> RE-ATTEMPT
                  </Link>
               </Button>
@@ -176,14 +199,14 @@ export default function ResultClient() {
               
               <div className="flex flex-wrap gap-2">
                  <FilterBtn active={activeReviewFilter === 'ALL'} onClick={() => setActiveReviewFilter('ALL')} label="ALL" count={questions.length} icon={<BarChart3 className="h-3.5 w-3.5" />} activeColor="bg-slate-900 border-slate-900" />
-                 <FilterBtn active={activeReviewFilter === 'CORRECT'} onClick={() => setActiveReviewFilter('CORRECT')} label="CORRECT" count={sessionData.correctCount || 0} icon={<CheckCircle2 className="h-3.5 w-3.5" />} activeColor="bg-emerald-600 border-emerald-600" />
-                 <FilterBtn active={activeReviewFilter === 'WRONG'} onClick={() => setActiveReviewFilter('WRONG')} label="WRONG" count={sessionData.wrongCount || 0} icon={<XCircle className="h-3.5 w-3.5" />} activeColor="bg-rose-600 border-rose-600" />
+                 <FilterBtn active={activeReviewFilter === 'CORRECT'} onClick={() => setActiveReviewFilter('CORRECT')} label="CORRECT" count={sessionData?.correctCount || 0} icon={<CheckCircle2 className="h-3.5 w-3.5" />} activeColor="bg-emerald-600 border-emerald-600" />
+                 <FilterBtn active={activeReviewFilter === 'WRONG'} onClick={() => setActiveReviewFilter('WRONG')} label="WRONG" count={sessionData?.wrongCount || 0} icon={<XCircle className="h-3.5 w-3.5" />} activeColor="bg-rose-600 border-rose-600" />
               </div>
            </div>
 
            <TabsContent value="SOLUTIONS" className="space-y-5 md:space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
               {filteredQuestions.length > 0 ? filteredQuestions.map((q: any) => {
-                 const ans = sessionData.answers?.[q.index];
+                 const ans = sessionData?.answers?.[q.index];
                  const isCorrect = ans !== undefined && ['A','B','C','D'][ans] === q.correctAnswer;
                  const isSkipped = ans === undefined || ans === null;
                  return (

@@ -23,7 +23,8 @@ import {
   RefreshCw,
   Gem,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
+  AlertCircle
 } from "lucide-react"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -32,8 +33,8 @@ import { cn } from "@/lib/utils"
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Universal Mock Overview Hub Client.
- * FIXED: Standardized ID retrieval to handle both path segments and query parameters.
+ * @fileOverview Universal Mock Overview Hub Client with Detailed Debugging.
+ * FIXED: Standardized ID retrieval and enhanced lookup resilience for static builds.
  */
 
 export default function MockOverviewClient() {
@@ -43,20 +44,26 @@ export default function MockOverviewClient() {
   const db = useFirestore()
   const { user, profile, loading: userLoading } = useUser()
   
-  // SUPPORT DUAL ROUTING (Path ID vs Query ID)
+  const [isLocked, setIsLocked] = useState(false);
+  const [accessChecked, setAccessChecked] = useState(false);
+  const [activeAttempt, setActiveAttempt] = useState<any>(null);
+  const [debugLog, setDebugLog] = useState<string[]>([]);
+
   const mockId = useMemo(() => {
     const queryId = searchParams.get('id');
     if (queryId) return queryId;
-    const pathSegments = pathname.split('/');
+    const pathSegments = pathname.split('/').filter(Boolean);
     const lastSegment = pathSegments[pathSegments.length - 1];
     return lastSegment !== 'view' ? lastSegment : null;
   }, [pathname, searchParams]);
 
   const { data: mock, loading: mockLoading } = useDoc<any>(useMemo(() => (db && mockId ? doc(db, "mocks", mockId) : null), [db, mockId]))
-  
-  const [isLocked, setIsLocked] = useState(false);
-  const [accessChecked, setAccessChecked] = useState(false);
-  const [activeAttempt, setActiveAttempt] = useState<any>(null);
+
+  useEffect(() => {
+    console.log("[DEBUG] Route Path:", pathname);
+    console.log("[DEBUG] Search Params:", searchParams.toString());
+    console.log("[DEBUG] Resolved Mock ID:", mockId);
+  }, [pathname, searchParams, mockId]);
 
   useEffect(() => {
     if (!userLoading && !user) {
@@ -66,14 +73,25 @@ export default function MockOverviewClient() {
 
   useEffect(() => {
     async function checkAccess() {
-      if (mockLoading || !user || !mock || !db || !profile || !mockId) return;
+      if (mockLoading || !user || !mock || !db || !profile || !mockId) {
+        if (!mockLoading && mockId && !mock) {
+           console.error("[DEBUG] Firestore Lookup FAILED for Collection: 'mocks' ID:", mockId);
+        }
+        return;
+      };
+
+      console.log("[DEBUG] Firestore Lookup SUCCESS for ID:", mockId);
+      console.log("[DEBUG] Mock Data:", mock);
 
       const tier = (mock.accessLevel || 'FREE').toUpperCase();
       const isPremium = tier === 'PREMIUM';
       
       try {
         const attemptSnap = await getDoc(doc(db, "attempts", `${user.uid}_${mockId}`));
-        if (attemptSnap.exists()) setActiveAttempt(attemptSnap.data());
+        if (attemptSnap.exists()) {
+           console.log("[DEBUG] Active Attempt Found:", attemptSnap.data());
+           setActiveAttempt(attemptSnap.data());
+        }
       } catch (e) {}
 
       const userEmail = user?.email?.toLowerCase();
@@ -105,55 +123,20 @@ export default function MockOverviewClient() {
 
   if (!mockId || (!mock && !mockLoading)) return (
     <div className="h-screen flex flex-col items-center justify-center text-center p-6 space-y-6">
-       <AlertCircle className="h-16 w-16 text-slate-200" />
-       <div className="space-y-1">
-          <h2 className="text-2xl font-black text-[#0F172A] uppercase">Registry Link Missing</h2>
-          <p className="text-slate-500 font-medium max-w-xs mx-auto">This practice series could not be verified in the current build.</p>
+       <div className="h-16 w-16 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500 shadow-xl border border-rose-100">
+          <AlertCircle className="h-8 w-8" />
        </div>
-       <Button onClick={() => router.back()} variant="outline" className="rounded-xl h-12 px-8">Return Back</Button>
+       <div className="space-y-2">
+          <h2 className="text-2xl font-black text-[#0F172A] uppercase">Node Not Found</h2>
+          <p className="text-slate-500 font-medium max-w-xs mx-auto">
+             The mock ID <code className="text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">{mockId}</code> could not be located in the registry.
+          </p>
+       </div>
+       <div className="flex flex-col gap-3">
+          <Button onClick={() => router.back()} variant="outline" className="rounded-xl h-12 px-8">Return Back</Button>
+          <button onClick={() => window.location.reload()} className="text-[9px] font-black text-slate-300 uppercase tracking-widest hover:text-primary transition-colors">Force Refresh Registry</button>
+       </div>
     </div>
-  );
-
-  if (isLocked) return (
-     <div className="min-h-screen bg-slate-50 flex flex-col font-body">
-        <Navbar />
-        <main className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-           <Card className="max-w-xl w-full bg-white rounded-[3rem] p-10 md:p-16 shadow-5xl border-none space-y-10 animate-in fade-in zoom-in-95 duration-500 overflow-hidden relative">
-              <div className="absolute top-0 right-0 p-8 opacity-5 rotate-12"><Gem className="h-48 w-48 text-primary" /></div>
-              
-              <div className="space-y-6 relative z-10">
-                 <div className="h-20 w-20 bg-rose-50 rounded-[2rem] flex items-center justify-center mx-auto text-rose-500 shadow-xl border border-rose-100">
-                    <Lock className="h-10 w-10" />
-                 </div>
-                 <div className="space-y-3">
-                    <h2 className="text-3xl md:text-4xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-[0.9]">Premium Mock Locked</h2>
-                    <p className="text-slate-500 font-medium text-sm md:text-lg max-w-sm mx-auto">
-                       {profile?.passStatus === 'expired' 
-                         ? "Your elite pass has expired. Renew now to unlock this preparation node." 
-                         : "This mock is part of the elite practice registry."}
-                    </p>
-                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3 text-left relative z-10 bg-slate-50/80 p-8 rounded-[2rem] border border-slate-100">
-                 <ValueProp text="500+ Premium Mock Series" />
-                 <ValueProp text="Detailed AI Solutions" />
-                 <ValueProp text="State Merit List Entries" />
-                 <ValueProp text="Solved Previous Papers" />
-              </div>
-
-              <div className="pt-4 space-y-4 relative z-10">
-                 <Button asChild className="w-full h-16 bg-primary hover:bg-blue-700 text-white rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-2xl transition-all active:scale-95 border-none">
-                    <Link href="/pass">{profile?.passStatus === 'expired' ? 'Renew Elite Pass' : 'Unlock Now'} <ArrowRight className="ml-2 h-4 w-4" /></Link>
-                 </Button>
-                 <button onClick={() => router.back()} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-primary transition-colors">
-                    Return to Library
-                 </button>
-              </div>
-           </Card>
-        </main>
-        <Footer />
-     </div>
   );
 
   return (
@@ -230,10 +213,4 @@ function FeatureNode({ icon: Icon, title, desc }: any) {
       </div>
     </div>
   );
-}
-
-function AlertCircle(props: any) {
-  return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-alert-circle"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-  )
 }

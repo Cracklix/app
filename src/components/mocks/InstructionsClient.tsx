@@ -1,15 +1,16 @@
+
 'use client';
 
 import React, { useEffect, useState, useMemo, isValidElement } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useDoc, useFirestore, useUser } from "@/firebase";
-import { doc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, Info, CheckCircle2, Clock, BookOpen, Zap, Globe, ChevronRight, Home, Lock } from "lucide-react";
+import { ShieldCheck, Info, CheckCircle2, Clock, BookOpen, Zap, Globe, ChevronRight, Home, Lock, AlertCircle } from "lucide-react";
 import { useExamStore } from "@/store/useExamStore";
 import { cn } from "@/lib/utils";
 import { LanguageDisplayMode } from "@/types";
@@ -22,9 +23,15 @@ interface InstructionsClientProps {
   mockId: string;
 }
 
-export default function InstructionsClient({ mockId }: InstructionsClientProps) {
+/**
+ * @fileOverview Official Mock Instructions Hub Client.
+ * FIXED: Standardized ID retrieval and enhanced lookup resilience.
+ */
+
+export default function InstructionsClient({ mockId: propMockId }: InstructionsClientProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const db = useFirestore();
   const { user, profile, loading: userLoading } = useUser();
   const { toast } = useToast();
@@ -32,7 +39,16 @@ export default function InstructionsClient({ mockId }: InstructionsClientProps) 
   const [accessChecked, setAccessChecked] = useState(false);
   const [accessError, setAccessError] = useState<string | null>(null);
 
-  const { data: mock, loading } = useDoc<any>(useMemo(() => (db ? doc(db, "mocks", mockId) : null), [db, mockId]));
+  const mockId = useMemo(() => {
+    if (propMockId) return propMockId;
+    const queryId = searchParams.get('id');
+    if (queryId) return queryId;
+    const pathSegments = pathname.split('/').filter(Boolean);
+    const lastSegment = pathSegments[pathSegments.length - 2]; // Handles /mocks/[id]/instructions
+    return lastSegment !== 'instructions' ? lastSegment : null;
+  }, [pathname, searchParams, propMockId]);
+
+  const { data: mock, loading } = useDoc<any>(useMemo(() => (db && mockId ? doc(db, "mocks", mockId) : null), [db, mockId]));
 
   useEffect(() => {
     if (!userLoading && !user) {
@@ -40,10 +56,16 @@ export default function InstructionsClient({ mockId }: InstructionsClientProps) 
     }
   }, [user, userLoading, router, pathname]);
 
-  // DYNAMIC ACCESS ENFORCEMENT
   useEffect(() => {
      async function auditAccess() {
-        if (loading || userLoading || !user || !mock || !profile || !db) return;
+        if (loading || userLoading || !user || !mock || !profile || !db) {
+           if (!loading && mockId && !mock) {
+              console.error("[DEBUG_INSTRUCTIONS] Firestore Lookup FAILED for ID:", mockId);
+           }
+           return;
+        }
+
+        console.log("[DEBUG_INSTRUCTIONS] Firestore Lookup SUCCESS for ID:", mockId);
 
         const userEmail = user.email?.toLowerCase();
         const isAdmin = profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN' || (userEmail && SUPER_ADMIN_WHITELIST.includes(userEmail));
@@ -53,7 +75,6 @@ export default function InstructionsClient({ mockId }: InstructionsClientProps) 
            return;
         }
 
-        // 1. Audit Primary Pass Expiry
         const now = new Date();
         const expiry = profile.passExpiresAt ? new Date(profile.passExpiresAt) : null;
         if (!expiry || now > expiry) {
@@ -63,10 +84,9 @@ export default function InstructionsClient({ mockId }: InstructionsClientProps) 
            }
         }
 
-        // 2. Audit Dynamic Mappings (Allowed Mocks/Categories)
         const passId = profile.status || 'free-pass';
         const passRef = doc(db, "passes", passId);
-        const passSnap = await (await import("firebase/firestore")).getDoc(passRef);
+        const passSnap = await getDoc(passRef);
         
         if (passSnap.exists()) {
            const passData = passSnap.data();
@@ -91,6 +111,19 @@ export default function InstructionsClient({ mockId }: InstructionsClientProps) 
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-6">
        <Zap className="h-10 w-10 text-primary animate-pulse" />
        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Auditing Access Node...</p>
+    </div>
+  );
+
+  if (!mockId || (!mock && !loading)) return (
+    <div className="h-screen flex flex-col items-center justify-center text-center p-6 space-y-6">
+       <div className="h-16 w-16 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500 shadow-xl border border-rose-100">
+          <AlertCircle className="h-8 w-8" />
+       </div>
+       <div className="space-y-2">
+          <h2 className="text-2xl font-black text-[#0F172A] uppercase">Test Node Not Found</h2>
+          <p className="text-slate-500 font-medium max-w-xs mx-auto">The instructions for ID <code className="text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">{mockId}</code> could not be fetched.</p>
+       </div>
+       <Button onClick={() => router.back()} variant="outline" className="rounded-xl h-12 px-8">Return Back</Button>
     </div>
   );
 
@@ -153,7 +186,7 @@ export default function InstructionsClient({ mockId }: InstructionsClientProps) 
                  </div>
 
                  <Button 
-                    onClick={() => router.push(`/mocks/${mockId}/attempt`)}
+                    onClick={() => router.push(`/mocks/attempt?id=${mockId}`)}
                     className="w-full h-16 md:h-20 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-[0.2em] text-[11px] md:text-sm rounded-2xl md:rounded-[2rem] shadow-4xl group transition-all active:scale-95 border-none"
                  >
                     Initialize Test <ChevronRight className="ml-3 h-5 w-5 group-hover:translate-x-2 transition-transform" />

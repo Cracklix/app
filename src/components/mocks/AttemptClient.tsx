@@ -29,7 +29,7 @@ const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
  * @fileOverview Official Mock Attempt Client Hub.
- * FIXED: Standardized ID retrieval to prevent 404s in static builds.
+ * FIXED: Standardized ID retrieval and lookup resilience for high-fidelity CBT.
  */
 
 export default function AttemptClient({ mockId: propMockId }: { mockId?: string }) {
@@ -44,8 +44,8 @@ export default function AttemptClient({ mockId: propMockId }: { mockId?: string 
     if (propMockId) return propMockId;
     const queryId = searchParams.get('id');
     if (queryId) return queryId;
-    const pathSegments = pathname.split('/');
-    const lastSegment = pathSegments[pathSegments.length - 2]; // For /mocks/[id]/attempt
+    const pathSegments = pathname.split('/').filter(Boolean);
+    const lastSegment = pathSegments[pathSegments.length - 2]; // Handles /mocks/[id]/attempt
     return lastSegment !== 'attempt' ? lastSegment : null;
   }, [pathname, searchParams, propMockId]);
 
@@ -72,10 +72,20 @@ export default function AttemptClient({ mockId: propMockId }: { mockId?: string 
 
   useEffect(() => {
     async function loadExam() {
-      if (!db || !user || !mockId || !profile) return;
+      if (!db || !user || !mockId || !profile) {
+         if (!mockId && !isInitializing) setInitError("Attempt identity node lost.");
+         return;
+      }
+      
+      console.log("[DEBUG_ATTEMPT] Initializing CBT Hub for ID:", mockId);
+
       try {
         const mockSnap = await getDoc(doc(db, "mocks", mockId));
-        if (!mockSnap.exists()) throw new Error("Test registry node not found.");
+        if (!mockSnap.exists()) {
+           console.error("[DEBUG_ATTEMPT] Firestore Mock MISSING for ID:", mockId);
+           throw new Error("Test registry node not found.");
+        }
+        
         const mData = mockSnap.data();
         setMockData(mData);
 
@@ -94,11 +104,7 @@ export default function AttemptClient({ mockId: propMockId }: { mockId?: string 
         }
 
         if (tier === 'PREMIUM' && !hasActivePass) {
-           toast({ 
-             variant: "destructive", 
-             title: "Access Blocked", 
-             description: "Premium Mock requires an active Elite Pass." 
-           });
+           toast({ variant: "destructive", title: "Access Blocked", description: "Premium Mock requires an active Elite Pass." });
            router.replace('/pass');
            return;
         }
@@ -118,13 +124,7 @@ export default function AttemptClient({ mockId: propMockId }: { mockId?: string 
         const sortedQs = questionIds.map((id: string) => fetchedQuestions.find((q: any) => q.id === id)).filter(Boolean);
         
         if (sortedQs.length === 0) {
-           toast({ 
-             variant: "destructive", 
-             title: "Registry Mismatch", 
-             description: "Questions for this test could not be synced." 
-           });
-           router.push("/mocks");
-           return;
+           throw new Error("Registry Mismatch: Questions could not be synced.");
         }
 
         const attemptSnap = await getDoc(doc(db, "attempts", `${user.uid}_${mockId}`));
@@ -190,11 +190,7 @@ export default function AttemptClient({ mockId: propMockId }: { mockId?: string 
       
       router.replace(`/results/view?id=${mockId}`);
     } catch (e: any) {
-      toast({
-        variant: "destructive",
-        title: "Submission Error",
-        description: "Could not save results."
-      });
+      toast({ variant: "destructive", title: "Submission Error", description: "Could not save results." });
     } finally {
       setIsSubmittingFinal(false);
     }
@@ -215,10 +211,12 @@ export default function AttemptClient({ mockId: propMockId }: { mockId?: string 
 
   if (initError || !mockId) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-white p-10 text-center space-y-8">
-       <AlertCircle className="h-16 w-16 text-rose-500" />
+       <div className="h-16 w-16 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto text-rose-500 shadow-xl border border-rose-100">
+          <AlertCircle className="h-8 w-8" />
+       </div>
        <div className="space-y-2">
           <h2 className="text-2xl font-black text-[#0F172A] uppercase leading-tight">Sync Failure</h2>
-          <p className="text-slate-500 font-medium max-w-sm mx-auto">{initError || "Mock context lost."}</p>
+          <p className="text-slate-500 font-medium max-w-sm mx-auto">{initError || "Mock context lost during resolution."}</p>
        </div>
        <Button onClick={() => router.replace('/dashboard')} className="h-14 px-10 bg-[#0F172A] text-white rounded-2xl font-black uppercase text-[10px]">Return to Dashboard</Button>
     </div>

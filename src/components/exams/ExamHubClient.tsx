@@ -5,7 +5,7 @@ import React, { useMemo, useState, useEffect } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useDoc, useCollection, useFirestore, useUser } from "@/firebase"
-import { doc, collection, query, where, updateDoc, arrayUnion, arrayRemove, serverTimestamp } from "firebase/firestore"
+import { doc, collection, query, where, updateDoc, arrayUnion, arrayRemove, serverTimestamp, getDoc } from "firebase/firestore"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,7 +20,8 @@ import {
   Layers,
   RefreshCw,
   Star,
-  CheckCircle2
+  CheckCircle2,
+  AlertCircle
 } from "lucide-react"
 import { useParams, useRouter, useSearchParams, usePathname } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -30,8 +31,8 @@ import { useToast } from "@/hooks/use-toast"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Universal Exam Hub Client.
- * FIXED: Standardized ID retrieval and navigation to prevent 404s in static builds.
+ * @fileOverview Universal Exam Hub Client with Detailed Debugging.
+ * FIXED: Standardized ID retrieval and enhanced lookup resilience.
  */
 
 export default function ExamHubClient() {
@@ -45,8 +46,9 @@ export default function ExamHubClient() {
   const examId = useMemo(() => {
     const queryId = searchParams.get('id');
     if (queryId) return queryId;
-    const pathSegments = pathname.split('/');
-    return pathSegments[pathSegments.length - 1];
+    const pathSegments = pathname.split('/').filter(Boolean);
+    const lastSegment = pathSegments[pathSegments.length - 1];
+    return lastSegment !== 'view' ? lastSegment : null;
   }, [pathname, searchParams]);
 
   const { data: exam, loading: examLoading } = useDoc<any>(useMemo(() => (db && examId ? doc(db, "exams", examId) : null), [db, examId]))
@@ -62,6 +64,13 @@ export default function ExamHubClient() {
   const { data: categories } = useCollection<any>(useMemo(() => (db ? collection(db, "categories") : null), [db]))
 
   const [isPinning, setIsPinning] = useState(false);
+
+  useEffect(() => {
+    console.log("[DEBUG_EXAM] Resolved Exam ID:", examId);
+    if (!examLoading && examId && !exam) {
+       console.error("[DEBUG_EXAM] Firestore Exam MISSING for ID:", examId);
+    }
+  }, [examId, exam, examLoading]);
 
   const isPinned = useMemo(() => profile?.pinnedExams?.includes(examId) || false, [profile, examId]);
 
@@ -96,14 +105,18 @@ export default function ExamHubClient() {
     }
   }, [rawMocks, rawPyqs, examId])
 
-  if (examLoading || userLoading) return <div className="h-screen flex flex-col items-center justify-center bg-white space-y-4"><Zap className="h-8 w-8 text-primary animate-pulse" /><p className="text-[10px] font-black uppercase text-slate-300">Synchronizing...</p></div>;
+  if (examLoading || userLoading) return <div className="h-screen flex flex-col items-center justify-center bg-white space-y-4"><Zap className="h-8 w-8 text-primary animate-pulse" /><p className="text-[10px] font-black uppercase text-slate-300">Synchronizing Hub...</p></div>;
   
   if (!examId || (!exam && !examLoading)) return (
     <div className="h-screen flex flex-col items-center justify-center text-center p-6 space-y-6 bg-white">
-       <Layers className="h-16 w-16 text-slate-200" />
-       <div className="space-y-1">
-          <h2 className="text-2xl font-black text-[#0F172A] uppercase">Exam Node Unknown</h2>
-          <p className="text-slate-500 font-medium max-w-xs mx-auto">This recruitment vertical could not be verified.</p>
+       <div className="h-16 w-16 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto text-rose-500 shadow-xl border border-rose-100">
+          <AlertCircle className="h-8 w-8" />
+       </div>
+       <div className="space-y-2">
+          <h2 className="text-2xl font-black text-[#0F172A] uppercase">Vertical Not Found</h2>
+          <p className="text-slate-500 font-medium max-w-xs mx-auto">
+             The vertical ID <code className="text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">{examId}</code> could not be verified in the registry.
+          </p>
        </div>
        <Button onClick={() => router.back()} variant="outline" className="rounded-xl h-12 px-8">Return Back</Button>
     </div>
@@ -176,7 +189,7 @@ function DashboardTab({ value, label, icon: Icon }: { value: string, label: stri
 function MockList({ data, results, isPassActive, loading, boards }: any) {
    const router = useRouter();
    if (loading) return <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-40 md:h-64 w-full rounded-xl md:rounded-[2.5rem] bg-white" />)}</div>;
-   if (data.length === 0) return <div className="py-24 text-center opacity-20 flex flex-col items-center gap-4 text-slate-300"><Zap className="h-10 w-10" /><p className="font-headline font-black text-lg md:text-xl uppercase tracking-widest">Section Empty</p></div>;
+   if (data.length === 0) return <div className="py-24 text-center opacity-20 flex flex-col items-center justify-center space-y-4 text-slate-300"><Zap className="h-10 w-10" /><p className="font-headline font-black text-lg md:text-xl uppercase tracking-widest">Section Empty</p></div>;
 
    return (
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
@@ -219,7 +232,7 @@ function MockList({ data, results, isPassActive, loading, boards }: any) {
 
 function NotesList({ data, isPassActive, loading, type }: any) {
    if (loading) return <div className="grid grid-cols-1 md:grid-cols-2 gap-3">{Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-xl bg-white" />)}</div>;
-   if (data.length === 0) return <div className="py-24 text-center opacity-20 flex flex-col items-center gap-4 text-slate-300"><Layers className="h-10 w-10" /><p className="font-headline font-black text-lg md:text-xl uppercase tracking-widest">No Items</p></div>;
+   if (data.length === 0) return <div className="py-24 text-center opacity-20 flex flex-col items-center justify-center space-y-4 text-slate-300"><Layers className="h-10 w-10" /><p className="font-headline font-black text-lg md:text-xl uppercase tracking-widest">No Items</p></div>;
 
    return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
