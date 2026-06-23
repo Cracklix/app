@@ -49,3 +49,4 @@ keystore-secrets.txt
 # OS
 Thumbs.db
 .DS_Store
+keystore_base64.txt
