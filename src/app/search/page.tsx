@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useMemo, useEffect, Suspense, isValidElement, ReactElement } from "react"
+import * as React from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { Search as SearchIcon, Zap, ChevronRight, FileText, LayoutGrid, Loader2, GraduationCap } from "lucide-react"
@@ -13,15 +13,15 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Global Search Hub v3.10 - Production Ready
- * FIXED: Resolved React.cloneElement type error, proper ReactElement handling
+ * @fileOverview Global Search Hub v3.11 - Production Ready
+ * FIXED: Resolved 'React refers to a UMD global' error for static builds.
  */
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div className="h-screen flex items-center justify-center bg-white"><Loader2 className="animate-spin text-primary" /></div>}>
+    <React.Suspense fallback={<div className="h-screen flex items-center justify-center bg-white"><Loader2 className="animate-spin text-primary" /></div>}>
       <SearchContent />
-    </Suspense>
+    </React.Suspense>
   )
 }
 
@@ -31,22 +31,22 @@ function SearchContent() {
   const router = useRouter()
   const pathname = usePathname()
   const { user, loading: authLoading } = useUser()
-  const [queryStr, setQuery] = useState("")
+  const [queryStr, setQuery] = React.useState("")
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!authLoading && !user) {
       router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`)
     }
   }, [user, authLoading, router, pathname])
 
-  useEffect(() => {
+  React.useEffect(() => {
     const q = searchParams.get("q")
     if (q) setQuery(q)
   }, [searchParams])
 
-  const mocksQuery = useMemo(() => (db ? collection(db, "mocks") : null), [db])
-  const examsQuery = useMemo(() => (db ? collection(db, "exams") : null), [db])
-  const notesQuery = useMemo(() => (db ? collection(db, "notes") : null), [db])
+  const mocksQuery = React.useMemo(() => (db ? collection(db, "mocks") : null), [db])
+  const examsQuery = React.useMemo(() => (db ? collection(db, "exams") : null), [db])
+  const notesQuery = React.useMemo(() => (db ? collection(db, "notes") : null), [db])
 
   const { data: mocks, loading: mLoading } = useCollection<any>(mocksQuery)
   const { data: exams, loading: eLoading } = useCollection<any>(examsQuery)
@@ -54,7 +54,7 @@ function SearchContent() {
 
   const isLoading = mLoading || eLoading || nLoading
 
-  const searchResults = useMemo(() => {
+  const searchResults = React.useMemo(() => {
     if (queryStr.trim().length < 2) return []
     const term = queryStr.toLowerCase().trim()
     
@@ -189,8 +189,8 @@ function SearchResultItem({ title, category, href, icon }: { title: string, cate
          <div className="bg-white p-5 md:p-8 rounded-[2rem] shadow-sm hover:shadow-2xl flex items-center justify-between border border-slate-100 transition-all duration-500">
             <div className="flex items-center gap-4 min-w-0 flex-1">
                <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-primary/5 transition-all shrink-0 shadow-inner">
-                  {isValidElement(icon)
-                    ? React.cloneElement(icon as ReactElement<any>, { className: "h-5 w-5" })
+                  {React.isValidElement(icon)
+                    ? React.cloneElement(icon as React.ReactElement<any>, { className: "h-5 w-5" })
                     : icon}
                </div>
                <div className="text-left min-w-0 flex-1 space-y-1">
