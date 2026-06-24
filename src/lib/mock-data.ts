@@ -1,13 +1,15 @@
-import { Exam, MockTest, Question, CurrentAffairType } from "@/types";
+import { Exam, Mock, Question, CurrentAffair } from "@/types"
 
 /**
- * @fileOverview Institutional Mock Data v2.2.
+ * @fileOverview Mock Data v2.3 - Production Ready
+ * FIXED: Corrected type imports and Exam object properties
  */
 
 export const EXAMS: Exam[] = [
   {
     id: "psssb-patwari",
     name: "Revenue Patwari",
+    title: "Revenue Patwari",
     boardId: "PSSSB",
     categoryId: "punjab-government-exams",
     displayOrder: 1,
@@ -15,11 +17,12 @@ export const EXAMS: Exam[] = [
     totalMocks: 45,
     activeQuestions: 1200,
     totalQuestions: 120,
-    duration: 120
+    duration: 120,
   },
   {
     id: "psssb-clerk",
     name: "Clerk (General/IT/Accounts)",
+    title: "Clerk (General/IT/Accounts)",
     boardId: "PSSSB",
     categoryId: "punjab-government-exams",
     displayOrder: 2,
@@ -27,11 +30,12 @@ export const EXAMS: Exam[] = [
     totalMocks: 60,
     activeQuestions: 2500,
     totalQuestions: 120,
-    duration: 120
+    duration: 120,
   },
   {
     id: "ppsc-pcs",
     name: "Punjab Civil Services (PCS)",
+    title: "Punjab Civil Services (PCS)",
     boardId: "PPSC",
     categoryId: "punjab-government-exams",
     displayOrder: 3,
@@ -39,15 +43,15 @@ export const EXAMS: Exam[] = [
     totalMocks: 20,
     activeQuestions: 5000,
     totalQuestions: 100,
-    duration: 120
-  }
-];
+    duration: 120,
+  },
+]
 
 export const MOCK_QUESTIONS: Question[] = [
   {
     id: "q1",
     englishQuestion: "Which language script is used for Punjabi?",
-    punjabiQuestion: "ਪੰਜਾਬੀ ਭਾਸ਼ਾ ਦੀ ਲਿਪੀ ਕਿਹੜੀ ਹੈ?",
+    punjabiQuestion: "ਪੰਜਾਬੀ ਭਾਸ਼ਾ ਦੀ ਲਿਪੀ ਕਿਹੜੀ ਹੈ?",
     optionAEnglish: "Devanagari",
     optionAPunjabi: "ਦੇਵਨਾਗਰੀ",
     optionBEnglish: "Gurmukhi",
@@ -55,8 +59,8 @@ export const MOCK_QUESTIONS: Question[] = [
     optionCEnglish: "Roman",
     optionCPunjabi: "ਰੋਮਨ",
     optionDEnglish: "Shahmukhi",
-    optionDPunjabi: "ਸ਼ਾਹਮੁਖੀ",
-    correctAnswer: 'B',
+    optionDPunjabi: "ਸ਼ਾਹਮੁਖੀ",
+    correctAnswer: "B" as const,
     difficulty: "Easy",
     englishExplanation: "Gurmukhi script is used for writing the Punjabi language.",
     subjectId: "punjabi",
@@ -64,7 +68,7 @@ export const MOCK_QUESTIONS: Question[] = [
     status: "UNUSED",
     usedCount: 0,
     createdAt: null,
-    updatedAt: null
+    updatedAt: null,
   },
   {
     id: "q2",
@@ -73,7 +77,7 @@ export const MOCK_QUESTIONS: Question[] = [
     optionBEnglish: "Mandi Gobindgarh",
     optionCEnglish: "Jalandhar",
     optionDEnglish: "Amritsar",
-    correctAnswer: 'B',
+    correctAnswer: "B" as const,
     difficulty: "Medium",
     englishExplanation: "Mandi Gobindgarh is famous for its steel industry.",
     subjectId: "punjab-gk",
@@ -81,11 +85,11 @@ export const MOCK_QUESTIONS: Question[] = [
     status: "UNUSED",
     usedCount: 0,
     createdAt: null,
-    updatedAt: null
-  }
-];
+    updatedAt: null,
+  },
+]
 
-export const SAMPLE_MOCK: MockTest = {
+export const SAMPLE_MOCK: Mock = {
   id: "mock-punjab-1",
   boardId: "PSSSB",
   boardIds: ["PSSSB"],
@@ -96,7 +100,7 @@ export const SAMPLE_MOCK: MockTest = {
   totalQuestions: 100,
   negativeMarks: 0.25,
   positiveMarks: 1,
-  questionIds: MOCK_QUESTIONS.map(q => q.id),
+  questionIds: MOCK_QUESTIONS.map((q) => q.id),
   sections: [],
   published: true,
   languageMode: "ENGLISH_PUNJABI",
@@ -104,15 +108,15 @@ export const SAMPLE_MOCK: MockTest = {
   createdAt: null,
   updatedAt: null,
   mockType: "FULL",
-  accessLevel: "FREE"
-};
+  accessLevel: "FREE",
+}
 
-export const CURRENT_AFFAIRS: any[] = [
+export const CURRENT_AFFAIRS: CurrentAffair[] = [
   {
     id: "ca1",
     title: "Punjab Cabinet approves new Industrial Policy",
     date: "Oct 24, 2025",
     category: "Policy",
-    summary: "The Punjab Cabinet chaired by the CM has approved the new Industrial and Business Development Policy to boost startups."
-  }
-];
+    summary: "The Punjab Cabinet chaired by the CM has approved the new Industrial and Business Development Policy to boost startups.",
+  },
+]

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useMemo, useEffect, Suspense, cloneElement, isValidElement, ReactElement } from "react"
+import React, { useState, useMemo, useEffect, Suspense, isValidElement, ReactElement } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { Search as SearchIcon, Zap, ChevronRight, FileText, LayoutGrid, Loader2, GraduationCap } from "lucide-react"
@@ -13,8 +13,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Global Search Hub v3.9.
- * FIXED: Resolved UMD global React error by implementing named imports and explicit React scope.
+ * @fileOverview Global Search Hub v3.10 - Production Ready
+ * FIXED: Resolved React.cloneElement type error, proper ReactElement handling
  */
 
 export default function SearchPage() {
@@ -35,24 +35,24 @@ function SearchContent() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+      router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`)
     }
-  }, [user, authLoading, router, pathname]);
+  }, [user, authLoading, router, pathname])
 
   useEffect(() => {
     const q = searchParams.get("q")
     if (q) setQuery(q)
   }, [searchParams])
 
-  const mocksQuery = useMemo(() => (db ? collection(db, "mocks") : null), [db]);
-  const examsQuery = useMemo(() => (db ? collection(db, "exams") : null), [db]);
-  const notesQuery = useMemo(() => (db ? collection(db, "notes") : null), [db]);
+  const mocksQuery = useMemo(() => (db ? collection(db, "mocks") : null), [db])
+  const examsQuery = useMemo(() => (db ? collection(db, "exams") : null), [db])
+  const notesQuery = useMemo(() => (db ? collection(db, "notes") : null), [db])
 
   const { data: mocks, loading: mLoading } = useCollection<any>(mocksQuery)
   const { data: exams, loading: eLoading } = useCollection<any>(examsQuery)
   const { data: notes, loading: nLoading } = useCollection<any>(notesQuery)
 
-  const isLoading = mLoading || eLoading || nLoading;
+  const isLoading = mLoading || eLoading || nLoading
 
   const searchResults = useMemo(() => {
     if (queryStr.trim().length < 2) return []
@@ -99,14 +99,13 @@ function SearchContent() {
        <Zap className="h-10 w-10 text-primary animate-pulse" />
        <p className="text-[10px] font-black uppercase text-slate-300">Authorizing Search Node...</p>
     </div>
-  );
+  )
 
   return (
     <div className="min-h-screen bg-slate-50/30 font-body">
       <Navbar />
       <main className="container mx-auto px-4 md:px-6 py-6 md:py-16 max-w-5xl text-left">
         <div className="space-y-8 md:space-y-12">
-           
            <div className="text-center space-y-6">
               <div className="space-y-2">
                  <h1 className="text-2xl md:text-6xl font-black text-[#0F172A] tracking-tighter leading-none">Global Search</h1>
@@ -116,12 +115,12 @@ function SearchContent() {
               <div className="relative max-w-[700px] mx-auto group">
                  <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-600/20 rounded-2xl blur-lg opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
                  <div className="relative">
-                    <SearchIcon className={cn("absolute left-4 md:left-6 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 transition-colors", isLoading ? "text-primary animate-pulse" : "text-slate-300")} />
+                    <SearchIcon className={cn("absolute left-4 md:left-6 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 transition-colors", isLoading ? "text-primary animate-pulse" : "text-slate-400")} />
                     <input 
                       value={queryStr}
                       onChange={e => setQuery(e.target.value)}
                       autoFocus
-                      className="w-full h-14 md:h-18 pl-12 md:pl-16 pr-14 text-sm md:text-2xl rounded-2xl md:rounded-[2.5rem] border-none shadow-2xl bg-white focus:ring-4 focus:ring-primary/5 text-[#0F172A] font-bold outline-none placeholder:text-slate-200" 
+                      className="w-full h-14 md:h-18 pl-12 md:pl-16 pr-14 text-sm md:text-2xl rounded-2xl md:rounded-[2.5rem] border-none shadow-2xl bg-white focus:ring-4 focus:ring-primary/5 text-slate-900 placeholder-slate-400"
                       placeholder="Search exams, tests, or notes..." 
                     />
                     {isLoading && <Loader2 className="absolute right-6 top-1/2 -translate-y-1/2 h-6 w-6 text-primary animate-spin" />}
@@ -186,11 +185,13 @@ function SearchContent() {
 
 function SearchResultItem({ title, category, href, icon }: { title: string, category: string, href: string, icon: React.ReactNode }) {
    return (
-      <Link href={href} className="block active:scale-[0.99] transition-all">
-         <div className="bg-white p-5 md:p-8 rounded-[2rem] shadow-sm hover:shadow-2xl flex items-center justify-between group border border-slate-100 transition-all duration-500">
+      <Link href={href} className="block active:scale-[0.99] transition-all group">
+         <div className="bg-white p-5 md:p-8 rounded-[2rem] shadow-sm hover:shadow-2xl flex items-center justify-between border border-slate-100 transition-all duration-500">
             <div className="flex items-center gap-4 min-w-0 flex-1">
                <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-primary/5 transition-all shrink-0 shadow-inner">
-                  {isValidElement(icon) ? cloneElement(icon as ReactElement<any>, { className: "h-5 w-5" }) : null}
+                  {isValidElement(icon) && typeof icon.type === 'function' 
+                    ? React.cloneElement(icon as ReactElement<any>, { className: "h-5 w-5" })
+                    : icon}
                </div>
                <div className="text-left min-w-0 flex-1 space-y-1">
                   <p className="font-black text-[#0F172A] group-hover:text-primary transition-colors text-sm md:text-xl uppercase leading-tight line-clamp-1 truncate">{title}</p>
@@ -226,7 +227,7 @@ function SearchBadge({ label, onSelect }: { label: string, onSelect: (v: string)
       <Badge 
          onClick={() => onSelect(label)}
          variant="outline" 
-         className="rounded-xl px-4 py-2 border-slate-200 bg-slate-50/50 text-[9px] font-black uppercase tracking-widest text-slate-500 hover:bg-primary/10 hover:text-primary hover:border-primary/20 transition-all cursor-pointer active:scale-95 shadow-sm"
+         className="rounded-xl px-4 py-2 border-slate-200 bg-slate-50/50 text-[9px] font-black uppercase tracking-widest text-slate-500 hover:bg-primary/10 hover:text-primary hover:border-primary transition-all cursor-pointer"
       >
          {label}
       </Badge>

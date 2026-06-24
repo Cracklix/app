@@ -7,16 +7,19 @@ import { Badge } from "@/components/ui/badge"
 import { Exam } from "@/types"
 
 interface ExamCardProps {
-  exam: Exam 
+  exam: Exam
 }
 
 /**
- * @fileOverview Exam Vertical Card v1.8.
- * FIXED: Resolved property access errors by correctly mapping canonical Exam interface fields.
+ * @fileOverview Exam Card Component v1.9 - Production Ready
+ * FIXED: Resolved Exam interface property access errors
  */
 export default function ExamCard({ exam }: ExamCardProps) {
-  const examName = exam.name || "Official Vertical";
-  
+  const examName = exam.name || exam.title || "Official Vertical"
+  const examDescription = exam.description || "Official preparation vertical verified by institutional patterns."
+  const totalMocksCount = exam.totalMocks ?? 0
+  const activeQuestionsCount = exam.activeQuestions ?? 0
+
   return (
     <Link href={`/exams/${exam.id}`}>
       <Card className="bg-white border border-[#E5E7EB] shadow-sm hover:shadow-2xl transition-all duration-500 group rounded-[3rem] overflow-hidden h-full flex flex-col">
@@ -24,29 +27,29 @@ export default function ExamCard({ exam }: ExamCardProps) {
           <div className="flex justify-between items-start mb-8 md:mb-10">
             <AuthorityLogo boardId={exam.boardId} size="xl" className="bg-slate-50 rounded-[2rem] group-hover:scale-105 transition-transform" />
             <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded shadow-sm">
-              {(exam.boardId || 'OFFICIAL').toUpperCase()} HUB
+              {(exam.boardId || "OFFICIAL").toUpperCase()} HUB
             </Badge>
           </div>
-          
+
           <div className="flex-1 space-y-6">
             <h3 className="font-headline text-2xl md:text-3xl font-black text-[#0B1F3A] group-hover:text-primary transition-colors leading-tight">
               {examName}
             </h3>
-            
+
             <p className="text-sm text-gray-500 font-medium leading-relaxed line-clamp-2">
-              {exam.description || "Official preparation vertical verified by institutional patterns."}
+              {examDescription}
             </p>
 
             <div className="flex flex-wrap gap-2.5">
-               <AvailabilityBadge label={`${exam.totalMocks || 0} Mocks`} emoji="📚" />
-               <AvailabilityBadge label={`${exam.activeQuestions || 0} Questions`} emoji="📝" />
-               <AvailabilityBadge label="Bilingual" emoji="🌐" />
+              <AvailabilityBadge label={`${totalMocksCount} Mocks`} emoji="📚" />
+              <AvailabilityBadge label={`${activeQuestionsCount} Questions`} emoji="📝" />
+              <AvailabilityBadge label="Bilingual" emoji="🌐" />
             </div>
           </div>
 
           <div className="mt-12 pt-8 border-t border-gray-50">
-            <Button className="w-full h-14 md:h-16 rounded-2xl bg-[#0F172A] hover:bg-primary text-white font-black uppercase text-[11px] tracking-[0.2em] shadow-xl border-none transition-all active:scale-95 gap-3">
-               Open Exam <ChevronRight className="h-5 w-5" />
+            <Button className="w-full h-14 md:h-16 rounded-2xl bg-[#0F172A] hover:bg-primary text-white font-black uppercase text-[11px] tracking-[0.2em] shadow-xl border-none transition-all active:scale-95">
+              Open Exam <ChevronRight className="h-5 w-5" />
             </Button>
           </div>
         </CardContent>
@@ -55,11 +58,11 @@ export default function ExamCard({ exam }: ExamCardProps) {
   )
 }
 
-function AvailabilityBadge({ label, emoji }: { label: string, emoji: string }) {
-   return (
-      <Badge variant="outline" className="bg-slate-50 border-slate-100 text-[#0F172A] text-[9px] font-black uppercase px-3 py-1.5 rounded-xl flex items-center gap-2">
-         <span className="text-xs">{emoji}</span>
-         {label}
-      </Badge>
-   )
+function AvailabilityBadge({ label, emoji }: { label: string; emoji: string }) {
+  return (
+    <Badge variant="outline" className="bg-slate-50 border-slate-100 text-[#0F172A] text-[9px] font-black uppercase px-3 py-1.5 rounded-xl flex items-center gap-2">
+      <span className="text-xs">{emoji}</span>
+      {label}
+    </Badge>
+  )
 }
