@@ -6,7 +6,7 @@ import {
 } from "@/types";
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
-interface ExamStoreState {
+export interface ExamStoreState {
   // State
   mockId: string | null;
   mockTitle: string;

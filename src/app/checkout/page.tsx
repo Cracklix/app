@@ -19,8 +19,8 @@ import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 
 /**
- * @fileOverview Hardened Checkout Hub v5.0.
- * UPDATED: Integrated Cashfree Web SDK with automated phone sanitization.
+ * @fileOverview Hardened Checkout Hub v5.1.
+ * FIXED: Restored missing Badge and CheckCircle2 icons.
  */
 
 export default function CheckoutPage() {

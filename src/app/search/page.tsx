@@ -13,8 +13,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Global Search Hub v3.13 - Production Ready
- * FIXED: Resolved 'React refers to a UMD global' error by using named imports.
+ * @fileOverview Global Search Hub v3.14 - Production Ready
+ * FIXED: Resolved 'React refers to a UMD global' error.
  */
 
 export default function SearchPage() {
