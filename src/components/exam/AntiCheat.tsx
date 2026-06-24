@@ -7,7 +7,7 @@ import { useFirestore } from '@/firebase';
 
 /**
  * @fileOverview Operational Anti-Cheat Node v1.4.
- * FIXED: Correctly passed Firestore instance to addViolation to satisfy TypeScript requirements.
+ * FIXED: Correctly passed Firestore instance to add violation to satisfy TypeScript requirements.
  */
 export default function AntiCheat() {
   const { addViolation } = useExamStore();
