@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState, useEffect, useMemo, Suspense, cloneElement, ReactElement, isValidElement } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { Search as SearchIcon, Zap, ChevronRight, FileText, LayoutGrid, Loader2, GraduationCap } from "lucide-react"
@@ -13,15 +13,15 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Global Search Hub v3.12 - Production Ready
- * FIXED: Resolved 'React refers to a UMD global' error for static builds by standardizing import.
+ * @fileOverview Global Search Hub v3.13 - Production Ready
+ * FIXED: Resolved 'React refers to a UMD global' error by using named imports.
  */
 
 export default function SearchPage() {
   return (
-    <React.Suspense fallback={<div className="h-screen flex items-center justify-center bg-white"><Loader2 className="animate-spin text-primary" /></div>}>
+    <Suspense fallback={<div className="h-screen flex items-center justify-center bg-white"><Loader2 className="animate-spin text-primary" /></div>}>
       <SearchContent />
-    </React.Suspense>
+    </Suspense>
   )
 }
 
@@ -31,22 +31,22 @@ function SearchContent() {
   const router = useRouter()
   const pathname = usePathname()
   const { user, loading: authLoading } = useUser()
-  const [queryStr, setQuery] = React.useState("")
+  const [queryStr, setQuery] = useState("")
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!authLoading && !user) {
       router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`)
     }
   }, [user, authLoading, router, pathname])
 
-  React.useEffect(() => {
+  useEffect(() => {
     const q = searchParams.get("q")
     if (q) setQuery(q)
   }, [searchParams])
 
-  const mocksQuery = React.useMemo(() => (db ? collection(db, "mocks") : null), [db])
-  const examsQuery = React.useMemo(() => (db ? collection(db, "exams") : null), [db])
-  const notesQuery = React.useMemo(() => (db ? collection(db, "notes") : null), [db])
+  const mocksQuery = useMemo(() => (db ? collection(db, "mocks") : null), [db])
+  const examsQuery = useMemo(() => (db ? collection(db, "exams") : null), [db])
+  const notesQuery = useMemo(() => (db ? collection(db, "notes") : null), [db])
 
   const { data: mocks, loading: mLoading } = useCollection<any>(mocksQuery)
   const { data: exams, loading: eLoading } = useCollection<any>(examsQuery)
@@ -54,7 +54,7 @@ function SearchContent() {
 
   const isLoading = mLoading || eLoading || nLoading
 
-  const searchResults = React.useMemo(() => {
+  const searchResults = useMemo(() => {
     if (queryStr.trim().length < 2) return []
     const term = queryStr.toLowerCase().trim()
     
@@ -183,13 +183,13 @@ function SearchContent() {
   )
 }
 
-function SearchResultItem({ title, category, href, icon }: { title: string, category: string, href: string, icon: React.ReactNode }) {
+function SearchResultItem({ title, category, href, icon }: { title: string, category: string, href: string, icon: ReactElement }) {
    return (
       <Link href={href} className="block active:scale-[0.99] transition-all group">
          <div className="bg-white p-5 md:p-8 rounded-[2rem] shadow-sm hover:shadow-2xl flex items-center justify-between border border-slate-100 transition-all duration-500">
             <div className="flex items-center gap-4 min-w-0 flex-1">
                <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-primary/5 transition-all shrink-0 shadow-inner">
-                  {React.cloneElement(icon as React.ReactElement<any>, { className: "h-5 w-5" })}
+                  {cloneElement(icon, { className: "h-5 w-5" })}
                </div>
                <div className="text-left min-w-0 flex-1 space-y-1">
                   <p className="font-black text-[#0F172A] group-hover:text-primary transition-colors text-sm md:text-xl uppercase leading-tight line-clamp-1 truncate">{title}</p>

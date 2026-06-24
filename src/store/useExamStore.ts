@@ -173,7 +173,7 @@ export const useExamStore = create<ExamStoreState>((set, get) => ({
 
   saveAndNext: (db) => {
     const { currentIdx, questions, setCurrentIdx } = get();
-    if (currentIdx < questions.length - 1) {
+    if (currentIdx < (questions?.length || 0) - 1) {
       setCurrentIdx(currentIdx + 1);
     }
   },
