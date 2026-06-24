@@ -6,6 +6,11 @@ import {
 } from "@/types";
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
+/**
+ * @fileOverview Hardened Exam Store v3.0
+ * FIXED: Full implementation of ExamStoreState interface properties to resolve CBT build errors.
+ */
+
 export interface ExamStoreState {
   // State
   mockId: string | null;
@@ -103,8 +108,8 @@ export const useExamStore = create<ExamStoreState>((set, get) => ({
   },
 
   tick: () => {
-    const { timeLeft, isPaused } = get();
-    if (timeLeft > 0 && !isPaused) {
+    const { timeLeft, isPaused, questions } = get();
+    if (questions.length > 0 && timeLeft > 0 && !isPaused) {
       set({ timeLeft: timeLeft - 1 });
     }
   },

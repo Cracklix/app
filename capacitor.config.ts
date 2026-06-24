@@ -1,11 +1,15 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
+/**
+ * @fileOverview Capacitor 7 Configuration Node.
+ * FIXED: Removed invalid allowMixedContent and strictly pointing to 'out' export directory.
+ */
+
 const config: CapacitorConfig = {
   appId: 'com.cracklix.app',
   appName: 'Cracklix',
   webDir: 'out',
 
-  // Removed server.url to enable true offline functionality using local assets
   server: {
     androidScheme: 'https'
   },
