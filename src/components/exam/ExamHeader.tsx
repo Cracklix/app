@@ -53,7 +53,7 @@ export default function ExamHeader({
   }, [baseLanguageMode]);
 
   return (
-    <header className="bg-[#0B1528] text-white flex flex-col shrink-0 z-[100] border-b border-white/5 shadow-lg sticky top-0 h-14 md:h-16">
+    <header className="bg-[#0B1528] text-white flex flex-col shrink-0 striped z-[100] border-b border-white/5 shadow-lg sticky top-0 h-14 md:h-16">
       <div className="h-full flex items-center justify-between px-3 md:px-8 gap-1 md:gap-4">
         
         {/* LEFT: BACK & PROGRESS */}

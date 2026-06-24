@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
@@ -57,18 +56,21 @@ export default function AttemptClient({ mockId: propMockId }: { mockId?: string 
   const [isSubmittingFinal, setIsSubmittingFinal] = useState(false);
   const [mockData, setMockData] = useState<any>(null);
 
-  const initExam = useExamStore(s => s.initExam);
-  const tick = useExamStore(s => s.tick);
-  const isPaused = useExamStore(s => s.isPaused);
-  const setPaused = useExamStore(s => s.setPaused);
-  const currentIdx = useExamStore(s => s.currentIdx);
-  const questions = useExamStore(s => s.questions);
-  const answers = useExamStore(s => s.answers);
-  const mockTitle = useExamStore(s => s.mockTitle);
-  const setAnswer = useExamStore(s => s.setAnswer);
-  const startTime = useExamStore(s => s.startTime);
-  const language = useExamStore(s => s.language); 
-  const timeLeft = useExamStore(s => s.timeLeft);
+  const {
+    initExam,
+    tick,
+    isPaused,
+    setPaused,
+    currentIdx,
+    questions,
+    answers,
+    mockTitle,
+    setAnswer,
+    startTime,
+    language,
+    timeLeft,
+    setCurrentIdx
+  } = useExamStore();
 
   useEffect(() => {
     async function loadExam() {
@@ -77,12 +79,9 @@ export default function AttemptClient({ mockId: propMockId }: { mockId?: string 
          return;
       }
       
-      console.log("[DEBUG_ATTEMPT] Initializing CBT Hub for ID:", mockId);
-
       try {
         const mockSnap = await getDoc(doc(db, "mocks", mockId));
         if (!mockSnap.exists()) {
-           console.error("[DEBUG_ATTEMPT] Firestore Mock MISSING for ID:", mockId);
            throw new Error("Test registry node not found.");
         }
         
@@ -287,7 +286,7 @@ export default function AttemptClient({ mockId: propMockId }: { mockId?: string 
              <SheetTitle>Navigation Palette</SheetTitle>
              <SheetDescription>Navigate through questions.</SheetDescription>
           </SheetHeader>
-          <QuestionPalette onSelect={(idx: number) => { useExamStore.getState().setCurrentIdx(idx); setIsPaletteOpen(false); }} onSubmit={() => { setIsPaletteOpen(false); setShowSubmitModal(true); }} />
+          <QuestionPalette onSelect={(idx: number) => { setCurrentIdx(idx); setIsPaletteOpen(false); }} onSubmit={() => { setIsPaletteOpen(false); setShowSubmitModal(true); }} />
         </SheetContent>
       </Sheet>
 

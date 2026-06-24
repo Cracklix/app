@@ -23,10 +23,7 @@ interface QuestionPaletteProps {
  * UPDATED: Decreased grid box size for a balanced high-density look.
  */
 export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteProps) {
-  const questions = useExamStore(s => s.questions);
-  const status = useExamStore(s => s.status);
-  const currentIdx = useExamStore(s => s.currentIdx);
-  const visited = useExamStore(s => s.visited);
+  const { questions, status, currentIdx, visited } = useExamStore();
 
   // Status Aggregation
   const stats = useMemo(() => {
@@ -81,7 +78,7 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
                       {section.name}
                    </h4>
                    <div className="grid grid-cols-5 gap-1.5 md:gap-2">
-                      {section.questions.map((q) => (
+                      {section.questions.map((q: any) => (
                          <QuestionNode 
                            key={q.globalIdx} 
                            index={q.globalIdx} 
