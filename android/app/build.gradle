@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     namespace "com.cracklix.app"
@@ -11,66 +12,55 @@ android {
         versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
-             // Fragments allowed to have more than one dot in their name.
-             // Avoids some AAPT2 errors in certain environments.
-             namespaced = false
+             // Fragments allowed to find the correct icon files
+             cruncherEnabled = false
         }
     }
-    
-    signingConfigs {
-        release {
-            storeFile file('release.keystore')
-            storePassword System.getenv("KEYSTORE_PASSWORD") ?: "android"
-            keyAlias System.getenv("KEY_ALIAS") ?: "androiddebugkey"
-            keyPassword System.getenv("KEY_PASSWORD") ?: "android"
-        }
-    }
-
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
-            ndk {
-                debugSymbolLevel 'FULL'
-            }
-        }
-        debug {
             minifyEnabled false
-            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
-    lintOptions {
-        checkReleaseBuilds false
-        abortOnError false
-    }
-
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+    kotlinOptions {
+        jvmTarget = '21'
     }
 }
 
 repositories {
-    google()
-    mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.core:core-splashscreen:1.0.1'
+    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "androidx.core:core-splashscreen:1.0.1"
     implementation project(':capacitor-android')
+    implementation project(':capacitor-app')
+    implementation project(':capacitor-browser')
+    implementation project(':capacitor-filesystem')
+    implementation project(':capacitor-keyboard')
+    implementation project(':capacitor-share')
+    implementation project(':capacitor-status-bar')
     implementation project(':capacitor-cordova-android-plugins')
-    
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:core:3.5.1'
+    testImplementation "junit:junit:4.13.2"
+    androidTestImplementation "androidx.test.ext:junit:1.1.5"
+    androidTestImplementation "androidx.test.espresso:core:3.5.1"
 }
 
-apply from: 'capacitor.build.gradle'
+// Avoid library conflicts
+configurations.all {
+    resolutionStrategy {
+        force 'androidx.core:core:1.12.0'
+        force 'androidx.core:core-ktx:1.12.0'
+    }
+}
 
 try {
     def servicesJSON = file('google-services.json')
@@ -78,5 +68,5 @@ try {
         apply plugin: 'com.google.gms.google-services'
     }
 } catch(Exception e) {
-    logger.info("google-services.json not found, google-services plugin not applied. This is fine if you're not using Firebase.")
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
 }

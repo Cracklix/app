@@ -1,12 +1,12 @@
 {
   "name": "Cracklix | Punjab's Mock Test Platform",
   "short_name": "Cracklix",
-  "description": "Punjab's most advanced government exam preparation platform.",
+  "description": "Punjab's most trusted government exam preparation platform.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#2563EB",
+  "theme_color": "#1677FF",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -34,15 +34,12 @@
       "purpose": "maskable"
     }
   ],
-  "categories": [
-    "education",
-    "productivity"
-  ],
+  "categories": ["education", "productivity"],
   "prefer_related_applications": true,
   "related_applications": [
     {
       "platform": "play",
-      "url": "https://play.google.com/store/apps/details?id=com.cracklix.app",
+      "url": "https://cracklix.vercel.app",
       "id": "com.cracklix.app"
     }
   ]
