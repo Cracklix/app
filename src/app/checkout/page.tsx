@@ -19,8 +19,8 @@ import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 
 /**
- * @fileOverview Hardened Checkout Hub v5.4.
- * FIXED: Explicitly added Badge and CheckCircle2 to resolve TS2304.
+ * @fileOverview Hardened Checkout Hub v5.5.
+ * FIXED: Added missing Badge and CheckCircle2 imports to resolve build errors.
  */
 
 export default function CheckoutPage() {

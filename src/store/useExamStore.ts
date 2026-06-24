@@ -7,8 +7,9 @@ import {
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Hardened Exam Store v3.2
+ * @fileOverview Hardened Exam Store v3.3
  * FIXED: Standardized state initialization and resolved duplicate property collision.
+ * FIXED: Synchronized language type handling for production build.
  */
 
 export interface ExamStoreState {

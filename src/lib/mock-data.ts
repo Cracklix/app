@@ -1,8 +1,8 @@
-import { Exam, Mock, Question, CurrentAffair } from "@/types"
+import { Exam, MockTest, Question, CurrentAffairType, Notification } from "@/types"
 
 /**
- * @fileOverview Mock Data v2.3 - Production Ready
- * FIXED: Corrected type imports and Exam object properties
+ * @fileOverview Mock Data v2.4 - Production Ready
+ * FIXED: Corrected type imports and property values to satisfy build criteria.
  */
 
 export const EXAMS: Exam[] = [
@@ -60,7 +60,7 @@ export const MOCK_QUESTIONS: Question[] = [
     optionCPunjabi: "ਰੋਮਨ",
     optionDEnglish: "Shahmukhi",
     optionDPunjabi: "ਸ਼ਾਹਮੁਖੀ",
-    correctAnswer: "B" as const,
+    correctAnswer: "B",
     difficulty: "Easy",
     englishExplanation: "Gurmukhi script is used for writing the Punjabi language.",
     subjectId: "punjabi",
@@ -77,7 +77,7 @@ export const MOCK_QUESTIONS: Question[] = [
     optionBEnglish: "Mandi Gobindgarh",
     optionCEnglish: "Jalandhar",
     optionDEnglish: "Amritsar",
-    correctAnswer: "B" as const,
+    correctAnswer: "B",
     difficulty: "Medium",
     englishExplanation: "Mandi Gobindgarh is famous for its steel industry.",
     subjectId: "punjab-gk",
@@ -89,7 +89,7 @@ export const MOCK_QUESTIONS: Question[] = [
   },
 ]
 
-export const SAMPLE_MOCK: Mock = {
+export const SAMPLE_MOCK: MockTest = {
   id: "mock-punjab-1",
   boardId: "PSSSB",
   boardIds: ["PSSSB"],
@@ -110,13 +110,3 @@ export const SAMPLE_MOCK: Mock = {
   mockType: "FULL",
   accessLevel: "FREE",
 }
-
-export const CURRENT_AFFAIRS: CurrentAffair[] = [
-  {
-    id: "ca1",
-    title: "Punjab Cabinet approves new Industrial Policy",
-    date: "Oct 24, 2025",
-    category: "Policy",
-    summary: "The Punjab Cabinet chaired by the CM has approved the new Industrial and Business Development Policy to boost startups.",
-  },
-]
