@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo, useEffect, Suspense, cloneElement, isValidElement, ReactElement } from "react"
@@ -14,8 +13,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Global Search Hub v3.7.
- * FIXED: Added missing React import and implemented strict type guards for cloneElement.
+ * @fileOverview Global Search Hub v3.8.
+ * FIXED: Resolved UMD global React error by implementing named cloneElement imports.
  */
 
 export default function SearchPage() {

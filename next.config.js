@@ -53,6 +53,11 @@ const nextConfig = {
         hostname: "www.mapsofindia.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "highcourtchd.gov.in",
+        pathname: "/**",
+      },
     ],
   },
 };

@@ -15,8 +15,8 @@ interface AdPlacementProps {
 }
 
 /**
- * @fileOverview Institutional Ad-Node v1.17.
- * FIXED: Resolved TypeScript query assignment error by explicitly typing the collection reference.
+ * @fileOverview Institutional Ad-Node v1.18.
+ * FIXED: Resolved TypeScript query assignment error by explicitly typing the collection query.
  */
 
 export default function AdPlacement({ placement, className, examId }: AdPlacementProps) {
@@ -37,7 +37,8 @@ export default function AdPlacement({ placement, className, examId }: AdPlacemen
 
   const adsQuery = useMemo(() => {
     if (!db || isAdFree || isSafetyZone) return null;
-    return query(collection(db, 'ads'), where('status', '==', 'ACTIVE')) as Query<Advertisement, DocumentData>;
+    const colRef = collection(db, 'ads');
+    return query(colRef, where('status', '==', 'ACTIVE')) as Query<Advertisement, DocumentData>;
   }, [db, isAdFree, isSafetyZone]);
 
   const { data: ads, loading } = useCollection<Advertisement>(adsQuery);
