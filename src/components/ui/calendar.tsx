@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
 /**
- * @fileOverview Refined Calendar Component v2.6 (Hardened).
+ * @fileOverview Refined Calendar Component v2.6.1 (Build Restoration).
  * FIXED: Corrected IconLeft/Right prop errors by implementing the modern DayPicker v9 Chevron sub-structure.
  */
 
@@ -60,7 +60,7 @@ function Calendar({
         Chevron: ({ orientation }) => {
           if (orientation === "left") return <ChevronLeft className="h-4 w-4" />;
           if (orientation === "right") return <ChevronRight className="h-4 w-4" />;
-          return null;
+          return <div />;
         },
       }}
       {...props}

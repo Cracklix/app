@@ -30,8 +30,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import Link from "next/link"
 
 /**
- * @fileOverview Institutional Support Hub v2.8.0.
- * FIXED: Restored missing Link and Loader2 imports for production stability.
+ * @fileOverview Institutional Support Hub v2.8.1.
+ * FIXED: Restored missing Link and Loader2 imports to resolve build worker errors.
  */
 
 export default function SupportPage() {

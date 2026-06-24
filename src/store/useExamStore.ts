@@ -44,8 +44,8 @@ const initialState: AttemptState = {
 };
 
 /**
- * @fileOverview Professional CBT State Store v43.4.
- * FIXED: Removed duplicate isSubmitting property and corrected type widening for initial language.
+ * @fileOverview Professional CBT State Store v43.5.
+ * FIXED: Removed duplicate isSubmitting property and fixed illegal type widening.
  */
 export const useExamStore = create<ExamStore>((set, get) => ({
   ...initialState,
