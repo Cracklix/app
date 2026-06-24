@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -8,9 +9,8 @@ import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
 /**
- * @fileOverview Refined Calendar Component v2.3 (Build Hardened).
- * FIXED: Corrected return elements in Chevron sub-component to satisfy React 19 / Next.js 15 constraints.
- * UPDATED: Optimized for react-day-picker v9.
+ * @fileOverview Refined Calendar Component v2.4 (Build Hardened).
+ * FIXED: Properly defined components sub-structure for modern react-day-picker.
  */
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
@@ -58,10 +58,10 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Chevron: ({ orientation }) => {
-          if (orientation === "left") return <ChevronLeft className="h-4 w-4" />;
-          if (orientation === "right") return <ChevronRight className="h-4 w-4" />;
-          return <span className="h-4 w-4 invisible" />;
+        Chevron: (props) => {
+          if (props.orientation === "left") return <ChevronLeft className="h-4 w-4" />;
+          if (props.orientation === "right") return <ChevronRight className="h-4 w-4" />;
+          return null;
         },
       }}
       {...props}

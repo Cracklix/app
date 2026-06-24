@@ -23,7 +23,7 @@ import {
   CheckCircle2,
   AlertCircle
 } from "lucide-react"
-import { useParams, useRouter, useSearchParams, usePathname } from "next/navigation"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
@@ -66,9 +66,11 @@ export default function ExamHubClient() {
   const [isPinning, setIsPinning] = useState(false);
 
   useEffect(() => {
-    console.log("[DEBUG_EXAM] Resolved Exam ID:", examId);
+    console.log("[DEBUG_EXAM] Requested ID:", examId);
     if (!examLoading && examId && !exam) {
-       console.error("[DEBUG_EXAM] Firestore Exam MISSING for ID:", examId);
+       console.error("[DEBUG_EXAM] Document not found in 'exams' collection for ID:", examId);
+    } else if (exam) {
+       console.log("[DEBUG_EXAM] Matched Document:", exam.name);
     }
   }, [examId, exam, examLoading]);
 
@@ -81,10 +83,10 @@ export default function ExamHubClient() {
     try {
       if (isPinned) {
         await updateDoc(userRef, { pinnedExams: arrayRemove(examId), updatedAt: serverTimestamp() });
-        toast({ title: "Removed from list" });
+        toast({ title: "Removed from hub" });
       } else {
         await updateDoc(userRef, { pinnedExams: arrayUnion(examId), updatedAt: serverTimestamp() });
-        toast({ title: "Added to list" });
+        toast({ title: "Added to your hub" });
       }
     } finally { setIsPinning(false); }
   };
@@ -217,7 +219,7 @@ function MockList({ data, results, isPassActive, loading, boards }: any) {
                         onClick={() => router.push(locked ? '/pass' : `/mocks/instructions?id=${mock.id}`)} 
                         className={cn(
                           "w-full h-9 md:h-14 rounded-full font-black text-[8px] md:text-[11px] tracking-widest uppercase shadow-md border-none transition-all active:scale-95 flex items-center justify-center gap-2 md:gap-3", 
-                          locked ? "bg-orange-50 text-white" : "bg-[#0F172A] text-white"
+                          locked ? "bg-orange-500 text-white" : "bg-[#0F172A] text-white"
                         )}
                       >
                         {locked ? <><Lock className="h-2.5 w-2.5 md:h-4 md:w-4" /> UNLOCK</> : 'Start'}
@@ -251,7 +253,7 @@ function NotesList({ data, isPassActive, loading, type }: any) {
                   </div>
                   <button onClick={() => window.open(isLocked ? '/pass' : (item.pdfUrl || '#'), isLocked ? '_self' : '_blank')} className={cn(
                     "h-9 md:h-11 px-5 md:px-8 rounded-full font-black uppercase text-[9px] md:text-[10px] tracking-widest shadow-md shrink-0 border-none transition-all active:scale-95",
-                    isLocked ? "bg-orange-50 text-white" : "bg-[#0F172A] text-white"
+                    isLocked ? "bg-orange-500 text-white" : "bg-[#0F172A] text-white"
                   )}>
                      {isLocked ? 'UNLOCK' : 'GET'}
                   </button>

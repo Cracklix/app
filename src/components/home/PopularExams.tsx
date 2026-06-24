@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from "react"
@@ -12,8 +13,8 @@ import { AuthorityLogo } from "@/lib/exam-icons";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview High-Density Popular Exams Grid v79.0.
- * UPDATED: Responsive logo sizing and Title Case normalization.
+ * @fileOverview High-Density Popular Exams Grid v80.0.
+ * FIXED: Dynamic path links changed to stable viewer node with query params.
  */
 
 const POPULAR_LIST = [
@@ -44,7 +45,7 @@ export default function PopularExams() {
          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8">
             {POPULAR_LIST.map((p, idx) => (
                <motion.div key={p.id} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} viewport={{ once: true }}>
-                  <Link href={`/exams/${p.id}`}>
+                  <Link href={`/exams/view?id=${p.id}`}>
                      <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-xl md:rounded-[2.5rem] bg-white p-3 md:p-10 text-left h-full group flex flex-col">
                         <div className="mb-3 md:mb-8 flex justify-start md:justify-center">
                            <AuthorityLogo boardId={p.boardId} size="sm" className="bg-slate-50 rounded-lg md:rounded-2xl shadow-inner group-hover:scale-105 transition-transform" />

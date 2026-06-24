@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useMemo, useEffect, Suspense, cloneElement, isValidElement, ReactElement } from "react"
@@ -13,8 +14,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Global Search Hub v3.5 (Build Restored).
- * FIXED: Explicit import of React and sub-methods to satisfy strict production build worker.
+ * @fileOverview Global Search Hub v3.6.
+ * FIXED: Explicit named imports and strict type guards for production build worker.
  */
 
 export default function SearchPage() {

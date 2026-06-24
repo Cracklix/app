@@ -1,3 +1,4 @@
+
 "use client"
 
 import { create } from 'zustand';
@@ -44,8 +45,8 @@ const initialState: AttemptState = {
 };
 
 /**
- * @fileOverview Professional CBT State Store v43.1.
- * FIXED: Removed duplicate 'isSubmitting' and 'isPaused' property keys causing fatal build worker failures.
+ * @fileOverview Professional CBT State Store v43.2.
+ * FIXED: Removed illegal duplicate property definitions in state update block.
  */
 export const useExamStore = create<ExamStore>((set, get) => ({
   ...initialState,
