@@ -13,8 +13,8 @@ import { AuthorityLogo } from "@/lib/exam-icons";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview High-Density Popular Exams Grid v80.0.
- * FIXED: Dynamic path links changed to stable viewer node with query params.
+ * @fileOverview High-Density Popular Exams Grid v81.0.
+ * FIXED: Dynamic path links changed to stable viewer node with query params to avoid static 404s.
  */
 
 const POPULAR_LIST = [

@@ -45,7 +45,7 @@ const initialState: AttemptState = {
 };
 
 /**
- * @fileOverview Professional CBT State Store v43.2.
+ * @fileOverview Professional CBT State Store v43.3.
  * FIXED: Removed illegal duplicate property definitions in state update block.
  */
 export const useExamStore = create<ExamStore>((set, get) => ({

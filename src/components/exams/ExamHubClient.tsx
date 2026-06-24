@@ -69,8 +69,6 @@ export default function ExamHubClient() {
     console.log("[DEBUG_EXAM] Requested ID:", examId);
     if (!examLoading && examId && !exam) {
        console.error("[DEBUG_EXAM] Document not found in 'exams' collection for ID:", examId);
-    } else if (exam) {
-       console.log("[DEBUG_EXAM] Matched Document:", exam.name);
     }
   }, [examId, exam, examLoading]);
 
@@ -201,7 +199,7 @@ function MockList({ data, results, isPassActive, loading, boards }: any) {
             const board = boards?.find((b: any) => b.id === (mock.boardIds?.[0] || mock.boardId));
 
             return (
-               <Card key={mock.id} className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-2xl md:rounded-[2.5rem] bg-white p-4 md:p-10 text-center flex flex-col h-auto min-h-[200px] md:min-h-[400px] group relative overflow-hidden">
+               <Card key={mock.id} className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-2xl md:rounded-[3rem] bg-white p-4 md:p-10 text-center flex flex-col h-auto min-h-[200px] md:min-h-[400px] group relative overflow-hidden">
                   <div className="h-10 w-10 md:h-20 md:w-20 mx-auto mb-4 md:mb-8">
                      <AuthorityLogo board={board} size="md" className="w-10 h-10 md:w-20 md:h-20 bg-slate-50 rounded-lg md:rounded-xl" />
                   </div>
@@ -216,7 +214,7 @@ function MockList({ data, results, isPassActive, loading, boards }: any) {
                   </CardHeader>
                   <CardContent className="p-0 mt-4 md:mt-8">
                      <button 
-                        onClick={() => router.push(locked ? '/pass' : `/mocks/instructions?id=${mock.id}`)} 
+                        onClick={() => router.push(locked ? '/pass' : `/mocks/view?id=${mock.id}`)} 
                         className={cn(
                           "w-full h-9 md:h-14 rounded-full font-black text-[8px] md:text-[11px] tracking-widest uppercase shadow-md border-none transition-all active:scale-95 flex items-center justify-center gap-2 md:gap-3", 
                           locked ? "bg-orange-500 text-white" : "bg-[#0F172A] text-white"

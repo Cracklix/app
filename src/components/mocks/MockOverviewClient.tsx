@@ -47,7 +47,6 @@ export default function MockOverviewClient() {
   const [isLocked, setIsLocked] = useState(false);
   const [accessChecked, setAccessChecked] = useState(false);
   const [activeAttempt, setActiveAttempt] = useState<any>(null);
-  const [debugLog, setDebugLog] = useState<string[]>([]);
 
   const mockId = useMemo(() => {
     const queryId = searchParams.get('id');
@@ -60,10 +59,11 @@ export default function MockOverviewClient() {
   const { data: mock, loading: mockLoading } = useDoc<any>(useMemo(() => (db && mockId ? doc(db, "mocks", mockId) : null), [db, mockId]))
 
   useEffect(() => {
-    console.log("[DEBUG] Route Path:", pathname);
-    console.log("[DEBUG] Search Params:", searchParams.toString());
-    console.log("[DEBUG] Resolved Mock ID:", mockId);
-  }, [pathname, searchParams, mockId]);
+    console.log("[DEBUG_MOCK] Requested ID:", mockId);
+    if (!mockLoading && mockId && !mock) {
+       console.error("[DEBUG_MOCK] Firestore Lookup FAILED for ID:", mockId);
+    }
+  }, [mockId, mock, mockLoading]);
 
   useEffect(() => {
     if (!userLoading && !user) {
@@ -73,15 +73,7 @@ export default function MockOverviewClient() {
 
   useEffect(() => {
     async function checkAccess() {
-      if (mockLoading || !user || !mock || !db || !profile || !mockId) {
-        if (!mockLoading && mockId && !mock) {
-           console.error("[DEBUG] Firestore Lookup FAILED for Collection: 'mocks' ID:", mockId);
-        }
-        return;
-      };
-
-      console.log("[DEBUG] Firestore Lookup SUCCESS for ID:", mockId);
-      console.log("[DEBUG] Mock Data:", mock);
+      if (mockLoading || !user || !mock || !db || !profile || !mockId) return;
 
       const tier = (mock.accessLevel || 'FREE').toUpperCase();
       const isPremium = tier === 'PREMIUM';
@@ -89,7 +81,6 @@ export default function MockOverviewClient() {
       try {
         const attemptSnap = await getDoc(doc(db, "attempts", `${user.uid}_${mockId}`));
         if (attemptSnap.exists()) {
-           console.log("[DEBUG] Active Attempt Found:", attemptSnap.data());
            setActiveAttempt(attemptSnap.data());
         }
       } catch (e) {}
@@ -117,7 +108,7 @@ export default function MockOverviewClient() {
   if (mockLoading || userLoading || (user && mockId && !accessChecked)) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-6">
        <Zap className="h-12 w-12 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Synchronizing Hub...</p>
+       <p className="text-[10px] font-black uppercase text-slate-300">Synchronizing Hub...</p>
     </div>
   );
 
@@ -134,7 +125,6 @@ export default function MockOverviewClient() {
        </div>
        <div className="flex flex-col gap-3">
           <Button onClick={() => router.back()} variant="outline" className="rounded-xl h-12 px-8">Return Back</Button>
-          <button onClick={() => window.location.reload()} className="text-[9px] font-black text-slate-300 uppercase tracking-widest hover:text-primary transition-colors">Force Refresh Registry</button>
        </div>
     </div>
   );
@@ -190,15 +180,6 @@ export default function MockOverviewClient() {
       <Footer />
     </div>
   )
-}
-
-function ValueProp({ text }: { text: string }) {
-   return (
-      <div className="flex items-center gap-3">
-         <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
-         <span className="text-[11px] md:text-sm font-bold text-[#0F172A] uppercase tracking-tight">{text}</span>
-      </div>
-   );
 }
 
 function FeatureNode({ icon: Icon, title, desc }: any) {

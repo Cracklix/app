@@ -14,8 +14,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Global Search Hub v3.6.
- * FIXED: Explicit named imports and strict type guards for production build worker.
+ * @fileOverview Global Search Hub v3.7.
+ * FIXED: Added missing React import and implemented strict type guards for cloneElement.
  */
 
 export default function SearchPage() {

@@ -19,8 +19,8 @@ import { cn } from "@/lib/utils"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview High-Density Mock Grid v77.0 (Stable Path).
- * UPDATED: Switched dynamic paths to query parameters (?id=...) to ensure 100% routing stability in static builds.
+ * @fileOverview High-Density Mock Grid v78.0 (Stable Path).
+ * FIXED: Switched links to stable viewer node with query params to bypass static export 404s.
  */
 
 export default function LatestMocks() {
