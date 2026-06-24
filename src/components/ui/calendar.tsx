@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
 /**
- * @fileOverview Refined Calendar Component v2.1 (Hardened).
- * FIXED: Resolved TS return type errors for Next.js 15 build worker.
+ * @fileOverview Refined Calendar Component v2.2 (Build Hardened).
+ * FIXED: Corrected return elements in Chevron sub-component to satisfy React 19 / Next.js 15 constraints.
  */
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
@@ -60,7 +60,7 @@ function Calendar({
         Chevron: ({ orientation }) => {
           if (orientation === "left") return <ChevronLeft className="h-4 w-4" />;
           if (orientation === "right") return <ChevronRight className="h-4 w-4" />;
-          return <ChevronRight className="h-4 w-4 invisible" />;
+          return <span className="h-4 w-4 invisible" />;
         },
       }}
       {...props}

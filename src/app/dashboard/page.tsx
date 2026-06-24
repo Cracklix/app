@@ -34,7 +34,7 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v42.3 (Lag & Blanking Hardened).
+ * @fileOverview Student Dashboard v42.4 (Performance & Study Hours Fix).
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading } = useUser();
@@ -108,10 +108,9 @@ export default function StudentDashboard() {
     const attempted = sorted.reduce((acc: number, r: any) => acc + (Object.keys(r.answers || {}).length), 0)
     const avgAcc = attempted > 0 ? Math.round((correct / attempted) * 100) : 0
     
-    // Study Hours Fix: Sum test durations, ignore large values (corruption)
+    // Study Hours Fix: Precise duration calculation
     const totalSeconds = sorted.reduce((acc: number, r: any) => {
        const val = Number(r.timeTaken) || 0;
-       // Any value above 6 hours (21600s) for a single test is likely a corrupted timestamp
        return acc + (val > 21600 ? 0 : val);
     }, 0)
 
@@ -217,7 +216,7 @@ export default function StudentDashboard() {
                           ))
                       ) : stats.list.length > 0 ? (
                           stats.list.map((r: any) => (
-                            <Link key={r.id} href={`/results/${r.mockId}`} className="p-4 md:p-8 flex items-center justify-between hover:bg-slate-50/50 transition-all group">
+                            <Link key={r.id} href={`/results/view?id=${r.mockId}`} className="p-4 md:p-8 flex items-center justify-between hover:bg-slate-50/50 transition-all group">
                                 <div className="flex items-center gap-3 md:gap-6 min-w-0 flex-1">
                                   <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-slate-50 flex items-center justify-center shrink-0 shadow-inner">
                                       <Zap className="h-4 w-4 md:h-5 md:w-5 text-primary" />
