@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
           cache: 'npm'
 
       - name: Setup Java 21
@@ -40,8 +40,7 @@ jobs:
         run: |
           rm -rf www
           mkdir -p www
-          cp -r .next/* www/ || true
-          cp -r public/* www/ || true
+          cp -r out/* www/ || true
 
       - name: Sync Capacitor
         run: npx cap sync android
@@ -71,7 +70,7 @@ jobs:
             echo "KEY_PASSWORD=android" >> $GITHUB_ENV
           fi
 
-      # ✅ Build Release APK with Lint Skipping
+      # ✅ Build Release APK with Warning Suppression
       - name: Build Android App
         working-directory: android
         run: |
