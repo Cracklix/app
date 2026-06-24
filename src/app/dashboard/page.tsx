@@ -34,7 +34,8 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v42.4 (Performance & Study Hours Fix).
+ * @fileOverview Student Dashboard v42.4 (Typography Refined).
+ * FIXED: Removed uppercase from primary elements and modernized Title Case.
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading } = useUser();
@@ -108,7 +109,6 @@ export default function StudentDashboard() {
     const attempted = sorted.reduce((acc: number, r: any) => acc + (Object.keys(r.answers || {}).length), 0)
     const avgAcc = attempted > 0 ? Math.round((correct / attempted) * 100) : 0
     
-    // Study Hours Fix: Precise duration calculation
     const totalSeconds = sorted.reduce((acc: number, r: any) => {
        const val = Number(r.timeTaken) || 0;
        return acc + (val > 21600 ? 0 : val);
@@ -148,7 +148,7 @@ export default function StudentDashboard() {
                  <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
                     <UserIcon className="h-5 w-5" />
                  </div>
-                 <p className="text-xs md:sm font-bold uppercase tracking-tight">Complete your profile for state merit rankings and better recommendations.</p>
+                 <p className="text-xs md:text-sm font-bold tracking-tight">Complete your profile for state merit rankings and better recommendations.</p>
               </div>
               <div className="flex gap-2 w-full md:w-auto">
                  <Button asChild size="sm" className="bg-white text-blue-600 hover:bg-slate-100 flex-1 md:flex-none h-9 px-6 rounded-lg text-[9px]">
@@ -295,7 +295,7 @@ function QuickToolLink({ href, label, icon: Icon }: any) {
       <Link href={href} className="flex items-center justify-between p-3 md:p-4 rounded-xl border border-slate-50 bg-slate-50/50 hover:bg-slate-100 transition-all active:scale-[0.98] group">
          <div className="flex items-center gap-3">
             <Icon className="h-4 w-4 text-primary" />
-            <span className="text-xs md:sm font-bold text-[#0F172A]">{label}</span>
+            <span className="text-xs md:text-sm font-bold text-[#0F172A]">{label}</span>
          </div>
          <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-primary transition-all" />
       </Link>

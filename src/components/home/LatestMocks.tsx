@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo } from "react"
@@ -20,7 +19,7 @@ import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
  * @fileOverview High-Density Mock Grid v78.0 (Stable Path).
- * FIXED: Switched links to stable viewer node with query params to bypass static export 404s.
+ * FIXED: Removed uppercase from primary elements for clean Title Case look.
  */
 
 export default function LatestMocks() {
@@ -61,7 +60,7 @@ export default function LatestMocks() {
             const tier = (mock.accessLevel || 'FREE').toUpperCase();
             const isPremium = tier === 'PREMIUM';
             const locked = isPremium && !isPassActive;
-            const boardId = mock.boardIds?.[0] || mock.boardId || "GENERAL";
+            const boardId = mock.boardId || mock.boardIds?.[0] || "GENERAL";
             
             return (
               <motion.div key={mock.id} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} viewport={{ once: true }}>
@@ -82,13 +81,13 @@ export default function LatestMocks() {
                      </div>
 
                      <div className="flex items-center gap-1.5 pt-0.5">
-                        {isPremium && <Badge className="bg-orange-50 text-orange-600 border-none text-[6px] md:text-[8px] font-black px-1.5 py-0.5 rounded uppercase">Premium</Badge>}
+                        {isPremium && <Badge className="bg-orange-50 text-orange-600 border-none text-[6px] md:text-[8px] font-black px-1.5 py-0.5 rounded">Premium</Badge>}
                      </div>
                   </CardHeader>
 
                   <div className="mt-4 md:mt-10 pt-3 border-t border-slate-50">
                      <Button asChild className={cn(
-                       "w-full h-8 md:h-14 rounded-full font-black text-[8px] md:text-[11px] tracking-[0.2em] uppercase shadow-md border-none transition-all active:scale-95 gap-2", 
+                       "w-full h-8 md:h-14 rounded-full font-black text-[8px] md:text-[11px] tracking-widest uppercase shadow-md border-none transition-all active:scale-95 gap-2", 
                        locked ? "bg-orange-500 hover:bg-orange-600 text-white" : "bg-[#0F172A] hover:bg-black text-white"
                      )}>
                         <Link href={locked ? '/pass' : `/mocks/view?id=${mock.id}`}>

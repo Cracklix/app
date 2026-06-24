@@ -8,8 +8,8 @@ import Link from "next/link";
 import Image from "next/image";
 
 /**
- * @fileOverview Meet Founder section v2.1.
- * UPDATED: Optimized with next/image for production performance.
+ * @fileOverview Meet Founder section v2.2.
+ * UPDATED: Removed uppercase from primary title for consistent Title Case.
  */
 
 export default function MeetFounder() {
@@ -44,7 +44,7 @@ export default function MeetFounder() {
                 </Badge>
               </div>
 
-              <h3 className="text-xl md:text-4xl font-black text-[#0F172A] uppercase tracking-tight leading-none">
+              <h3 className="text-xl md:text-4xl font-black text-[#0F172A] tracking-tight leading-none">
                 Meet the Founder
               </h3>
             </div>

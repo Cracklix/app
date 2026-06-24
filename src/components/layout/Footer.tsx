@@ -19,7 +19,8 @@ import {
 } from "@/lib/constants";
 
 /**
- * @fileOverview Compact High-Density Footer v10.0 (Syntax Fixed).
+ * @fileOverview Compact High-Density Footer v10.1.
+ * UPDATED: Removed uppercase from sectional headers and links for modern readability.
  */
 
 export default function Footer() {
@@ -48,7 +49,7 @@ export default function Footer() {
 
           {/* Links Group */}
           <div className="space-y-6">
-            <h3 className="text-[10px] md:text-xs font-black text-primary tracking-widest uppercase">Quick Links</h3>
+            <h3 className="text-xs md:text-sm font-bold text-primary tracking-tight">Quick Links</h3>
             <ul className="space-y-3">
               <FooterLink href="/">Home</FooterLink>
               <FooterLink href="/exams">Exams</FooterLink>
@@ -60,7 +61,7 @@ export default function Footer() {
 
           {/* Resources Group */}
           <div className="hidden lg:block space-y-6">
-            <h3 className="text-[10px] md:text-xs font-black text-primary tracking-widest uppercase">Resources</h3>
+            <h3 className="text-xs md:text-sm font-bold text-primary tracking-tight">Resources</h3>
             <ul className="space-y-3">
               <FooterLink href="/mocks">Mock Tests</FooterLink>
               <FooterLink href="/pyqs">Previous Papers</FooterLink>
@@ -71,7 +72,7 @@ export default function Footer() {
 
           {/* Support Group */}
           <div className="col-span-1 lg:col-span-1 space-y-6">
-            <h3 className="text-[10px] md:text-xs font-black text-primary tracking-widest uppercase">Support</h3>
+            <h3 className="text-xs md:text-sm font-bold text-primary tracking-tight">Support</h3>
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-[11px] md:text-base text-slate-400">
                 <Phone className="h-4 w-4 text-primary shrink-0" />
@@ -90,7 +91,7 @@ export default function Footer() {
       <div className="border-t border-white/5 bg-black/20 py-6">
         <div className="mx-auto max-w-7xl px-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-[10px] md:text-[14px] text-slate-500 font-medium">© {currentYear} Cracklix</p>
-          <div className="flex items-center gap-3 text-[10px] md:text-[12px] font-black uppercase text-slate-600 tracking-tight">
+          <div className="flex items-center gap-3 text-[10px] md:text-[12px] font-bold text-slate-600 tracking-tight">
             <ShieldCheck className="h-4 w-4 text-emerald-500" />
             <span>Institutional Registry Verified</span>
           </div>
@@ -103,7 +104,7 @@ export default function Footer() {
 function FooterLink({ href, children }: { href: string; children: React.ReactNode; }) {
   return (
     <li>
-      <Link href={href} className="text-[11px] md:text-[15px] text-slate-400 hover:text-white transition-colors font-bold uppercase tracking-tight">
+      <Link href={href} className="text-[11px] md:text-[15px] text-slate-400 hover:text-white transition-colors font-bold tracking-tight">
         {children}
       </Link>
     </li>

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useDoc, useFirestore, useUser } from "@/firebase";
+import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { AuthorityLogo } from "@/lib/exam-icons";
 import Image from "next/image"
@@ -125,10 +125,10 @@ function QuickActionCard({ boardId, label, href }: { boardId: string, label: str
           <AuthorityLogo boardId={boardId} size="md" className="bg-transparent shadow-none p-0" />
         </div>
         <div className="text-left flex-1 min-w-0">
-          <h3 className="text-xs md:text-lg font-[900] text-[#0F172A] leading-tight group-hover:text-primary transition-colors uppercase tracking-tight">
+          <h3 className="text-xs md:text-lg font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors tracking-tight">
             {label}
           </h3>
-          <p className="text-[7px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Institutional Hub</p>
+          <p className="text-[7px] md:text-[9px] font-bold text-slate-400 uppercase tracking-tight mt-1">Official Hub</p>
         </div>
         <div className="h-6 w-6 md:h-8 md:w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-200 group-hover:bg-primary/5 group-hover:text-primary transition-all shrink-0">
            <ChevronRight className="h-3 w-3 md:h-4 md:w-4 transition-transform group-hover:translate-x-0.5" />

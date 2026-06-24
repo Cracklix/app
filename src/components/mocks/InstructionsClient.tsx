@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState, useMemo, isValidElement } from "react";
@@ -24,8 +23,8 @@ interface InstructionsClientProps {
 }
 
 /**
- * @fileOverview Official Mock Instructions Hub Client.
- * FIXED: Standardized ID retrieval and enhanced lookup resilience.
+ * @fileOverview Official Mock Instructions Hub Client v2.0.
+ * UPDATED: Removed uppercase from guidelines and labels for modern readability.
  */
 
 export default function InstructionsClient({ mockId: propMockId }: InstructionsClientProps) {
@@ -44,7 +43,7 @@ export default function InstructionsClient({ mockId: propMockId }: InstructionsC
     const queryId = searchParams.get('id');
     if (queryId) return queryId;
     const pathSegments = pathname.split('/').filter(Boolean);
-    const lastSegment = pathSegments[pathSegments.length - 2]; // Handles /mocks/[id]/instructions
+    const lastSegment = pathSegments[pathSegments.length - 2]; 
     return lastSegment !== 'instructions' ? lastSegment : null;
   }, [pathname, searchParams, propMockId]);
 
@@ -58,14 +57,7 @@ export default function InstructionsClient({ mockId: propMockId }: InstructionsC
 
   useEffect(() => {
      async function auditAccess() {
-        if (loading || userLoading || !user || !mock || !profile || !db) {
-           if (!loading && mockId && !mock) {
-              console.error("[DEBUG_INSTRUCTIONS] Firestore Lookup FAILED for ID:", mockId);
-           }
-           return;
-        }
-
-        console.log("[DEBUG_INSTRUCTIONS] Firestore Lookup SUCCESS for ID:", mockId);
+        if (loading || userLoading || !user || !mock || !profile || !db) return;
 
         const userEmail = user.email?.toLowerCase();
         const isAdmin = profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN' || (userEmail && SUPER_ADMIN_WHITELIST.includes(userEmail));
@@ -105,25 +97,12 @@ export default function InstructionsClient({ mockId: propMockId }: InstructionsC
         setAccessChecked(true);
      }
      auditAccess();
-  }, [mock, loading, user, userLoading, profile, db, mockId, router, toast]);
+  }, [mock, loading, user, userLoading, profile, db, mockId]);
 
   if (loading || userLoading || (user && mock && !accessChecked && !accessError)) return (
     <div className="h-screen flex flex-col items-center justify-center bg-white space-y-6">
        <Zap className="h-10 w-10 text-primary animate-pulse" />
        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Auditing Access Node...</p>
-    </div>
-  );
-
-  if (!mockId || (!mock && !loading)) return (
-    <div className="h-screen flex flex-col items-center justify-center text-center p-6 space-y-6">
-       <div className="h-16 w-16 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500 shadow-xl border border-rose-100">
-          <AlertCircle className="h-8 w-8" />
-       </div>
-       <div className="space-y-2">
-          <h2 className="text-2xl font-black text-[#0F172A] uppercase">Test Node Not Found</h2>
-          <p className="text-slate-500 font-medium max-w-xs mx-auto">The instructions for ID <code className="text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">{mockId}</code> could not be fetched.</p>
-       </div>
-       <Button onClick={() => router.back()} variant="outline" className="rounded-xl h-12 px-8">Return Back</Button>
     </div>
   );
 
@@ -163,15 +142,15 @@ export default function InstructionsClient({ mockId: propMockId }: InstructionsC
            </div>
 
            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-              <StatPlate icon={<Clock />} label="DURATION" val={`${mock.duration}m`} />
-              <StatPlate icon={<BookOpen />} label="QUESTIONS" val={mock.totalQuestions} />
-              <StatPlate icon={<Zap />} label="TOTAL MARKS" val={mock.totalQuestions * (mock.positiveMarks || 1)} />
-              <StatPlate icon={<ShieldCheck />} label="PENALTY" val={`-${mock.negativeMarks || 0.25}`} />
+              <StatPlate icon={<Clock />} label="Duration" val={`${mock.duration}m`} />
+              <StatPlate icon={<BookOpen />} label="Questions" val={mock.totalQuestions} />
+              <StatPlate icon={<Zap />} label="Total Marks" val={mock.totalQuestions * (mock.positiveMarks || 1)} />
+              <StatPlate icon={<ShieldCheck />} label="Penalty" val={`-${mock.negativeMarks || 0.25}`} />
            </div>
 
            <Card className="border-none shadow-2xl rounded-[2rem] md:rounded-[3rem] bg-white overflow-hidden border border-slate-100">
               <CardHeader className="p-6 md:p-10 bg-slate-50/50 border-b border-slate-100">
-                 <CardTitle className="text-base md:text-2xl font-headline font-black uppercase text-[#0F172A] flex items-center gap-4">
+                 <CardTitle className="text-base md:text-2xl font-headline font-black text-[#0F172A] flex items-center gap-4">
                     <Info className="h-6 w-6 text-primary" /> Test Guidelines
                  </CardTitle>
               </CardHeader>
@@ -218,7 +197,7 @@ function Instruction({ text }: { text: string }) {
        <div className="h-6 w-6 rounded-full bg-slate-100 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-primary transition-colors">
           <CheckCircle2 className="h-3.5 w-3.5 text-slate-400 group-hover:text-white" />
        </div>
-       <p className="text-slate-600 font-bold uppercase text-[9px] md:text-[13px] leading-relaxed tracking-tight group-hover:text-[#0F172A] transition-colors">{text}</p>
+       <p className="text-slate-600 font-bold text-[9px] md:text-[13px] leading-relaxed tracking-tight group-hover:text-[#0F172A] transition-colors">{text}</p>
     </div>
   )
 }

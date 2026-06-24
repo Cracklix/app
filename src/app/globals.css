@@ -62,9 +62,6 @@
     @apply bg-background text-foreground antialiased;
     -webkit-tap-highlight-color: transparent;
     -webkit-text-size-adjust: 100%;
-    
-    /* PWA SAFE AREA HARDENING */
-    /* Padding is handled by specific layout containers to prevent browser UI overlap issues */
   }
   
   h1 { @apply font-black tracking-tight leading-[0.95]; }

@@ -44,7 +44,7 @@ const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
  * @fileOverview Standardized Navbar v63.0.
- * UPDATED: Increased logo and header heights for massive brand presence.
+ * UPDATED: Optimized typography for professional Title Case look.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -139,7 +139,7 @@ export default function Navbar() {
           <div className="flex items-center gap-1 md:gap-4 shrink-0">
             {profile?.passStatus === 'active' && timeLeft && (
                <div className="hidden sm:flex flex-col items-end mr-2">
-                  <span className="text-[8px] font-black uppercase text-emerald-600 tracking-widest leading-none">PREMIUM</span>
+                  <span className="text-[8px] font-black uppercase text-emerald-600 tracking-widest leading-none">Premium</span>
                   <span className="text-[10px] font-bold text-slate-400 mt-1 leading-none">{timeLeft}</span>
                </div>
             )}

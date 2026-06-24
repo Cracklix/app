@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 /**
  * @fileOverview High-Fidelity Single-Line Stats Bar v6.5.
- * FIXED: Resolved text overlap and cramped alignment by increasing font scales and padding.
+ * FIXED: Removed uppercase from labels and increased font scales for modern look.
  */
 
 const formatCompact = (num: number) => {
@@ -73,11 +73,11 @@ export default function StatsBar() {
                 {loading && !stats ? (
                   <Skeleton className="h-4 md:h-12 w-16 md:w-20 bg-slate-50" />
                 ) : (
-                  <span className="text-base md:text-4xl font-black text-[#0F172A] tabular-nums tracking-tighter leading-none antialiased">
+                  <span className="text-lg md:text-4xl font-black text-[#0F172A] tabular-nums tracking-tighter leading-none antialiased">
                     {item.val}
                   </span>
                 )}
-                <span className="text-[10px] md:text-[11px] font-bold text-slate-400 mt-1 md:mt-3 leading-none truncate w-full uppercase tracking-widest">
+                <span className="text-[10px] md:text-sm font-bold text-slate-400 mt-1 md:mt-3 leading-none truncate w-full tracking-tight">
                   {item.label}
                 </span>
               </div>

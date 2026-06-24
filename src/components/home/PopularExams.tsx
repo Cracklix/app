@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from "react"
@@ -13,8 +12,8 @@ import { AuthorityLogo } from "@/lib/exam-icons";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview High-Density Popular Exams Grid v81.0.
- * FIXED: Dynamic path links changed to stable viewer node with query params to avoid static 404s.
+ * @fileOverview High-Density Popular Exams Grid v81.1.
+ * FIXED: Removed uppercase from headings for modern Title Case readability.
  */
 
 const POPULAR_LIST = [
@@ -35,7 +34,7 @@ export default function PopularExams() {
          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 md:mb-16 gap-1 px-1">
             <div className="space-y-0.5">
                <h2 className="text-xl md:text-5xl font-black text-[#04102B] tracking-tight leading-none">Popular Exams</h2>
-               <p className="text-[#94A3B8] font-bold text-[10px] md:text-sm tracking-tight">Top Target Hubs</p>
+               <p className="text-[#94A3B8] font-bold text-[10px] md:text-sm tracking-tight">Top target hubs</p>
             </div>
             <Link href="/exams" className="text-primary font-black uppercase text-[9px] md:text-xs tracking-widest hover:underline flex items-center gap-2 group">
                View All <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
@@ -79,7 +78,7 @@ export default function PopularExams() {
 
 function MiniChip({ emoji, label }: { emoji: string, label: string }) {
    return (
-      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-slate-50 border border-slate-100 text-[7px] md:text-[9px] font-black uppercase text-slate-400">
+      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-slate-50 border border-slate-100 text-[7px] md:text-[9px] font-bold text-slate-400">
          <span>{emoji}</span> {label}
       </span>
    )

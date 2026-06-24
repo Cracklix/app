@@ -17,8 +17,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Density Study Anywhere Hub v28.2.
- * ALIGNMENT: Standardized side margins to match Hero section.
+ * @fileOverview High-Density Study Anywhere Hub v28.3.
+ * UPDATED: Normalized typography to Title Case.
  */
 
 export default function AppPreview() {
@@ -35,8 +35,8 @@ export default function AppPreview() {
            </div>
 
            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-              <FeatureCard icon={Smartphone} label="Mobile Friendly" desc="Optimized for PWA" color="text-blue-500" />
-              <FeatureCard icon={Zap} label="PWA Support" desc="Rapid Node Loading" color="text-orange-500" />
+              <FeatureCard icon={Smartphone} label="Mobile Friendly" desc="Optimized for Android" color="text-blue-500" />
+              <FeatureCard icon={Zap} label="Fast Loading" desc="Rapid Node Loading" color="text-orange-500" />
               <FeatureCard icon={LayoutGrid} label="Offline Access" desc="Sync Data Online" color="text-indigo-500" />
               <FeatureCard icon={Activity} label="Tracking" desc="Analytics Insight" color="text-emerald-500" />
            </div>
@@ -47,7 +47,7 @@ export default function AppPreview() {
               </div>
               <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                  <div className="text-center md:text-left space-y-2">
-                    <h3 className="text-xl md:text-3xl font-black uppercase">Elite Membership</h3>
+                    <h3 className="text-xl md:text-3xl font-black">Elite Membership</h3>
                     <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                        <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3 w-3 text-primary" /> All Mock Tests</span>
                        <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3 w-3 text-primary" /> Premium Notes</span>
@@ -73,8 +73,8 @@ function FeatureCard({ icon: Icon, label, desc, color }: any) {
          <div className={cn("h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center mx-auto shadow-inner group-hover:scale-110 transition-transform", color)}>
             <Icon className="h-5 w-5 md:h-6 md:w-6" />
          </div>
-         <h4 className="text-[11px] md:text-sm font-black text-[#0F172A] uppercase leading-none">{label}</h4>
-         <p className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">{desc}</p>
+         <h4 className="text-[11px] md:text-sm font-black text-[#0F172A] leading-none">{label}</h4>
+         <p className="text-[8px] md:text-[10px] font-bold text-slate-400 tracking-tight">{desc}</p>
       </Card>
    )
 }

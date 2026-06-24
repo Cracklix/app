@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo, useEffect, Suspense, isValidElement, cloneElement, ReactElement } from "react"
@@ -31,8 +30,8 @@ import QuestionRenderer from "@/components/questions/QuestionRenderer"
 import StudentAvatar from "@/components/brand/StudentAvatar"
 
 /**
- * @fileOverview Official Result Node Hub Client with Detailed Debugging.
- * FIXED: Standardized ID retrieval and enhanced lookup resilience.
+ * @fileOverview Official Result Node Hub Client v2.2.
+ * UPDATED: Removed uppercase from labels and buttons for refined readability.
  */
 
 export default function ResultClient() {
@@ -70,11 +69,6 @@ export default function ResultClient() {
   }, [db, mockId])
 
   const { data: rawGlobalResults } = useCollection<any>(globalResultsQuery)
-
-  useEffect(() => {
-     console.log("[DEBUG_RESULT] Resolved Mock ID:", mockId);
-     if (sessionData) console.log("[DEBUG_RESULT] Attempt Data Found:", sessionData);
-  }, [mockId, sessionData]);
 
   const merit = useMemo(() => {
      if (!rawGlobalResults || !sessionData) return { rank: '?', total: 0, percentile: 0, list: [] };
@@ -148,9 +142,9 @@ export default function ResultClient() {
            <AlertCircle className="h-8 w-8" />
         </div>
         <div className="space-y-1">
-           <h2 className="text-xl font-headline font-black uppercase text-[#0F172A]">Result Node Missing</h2>
+           <h2 className="text-xl font-headline font-black uppercase text-[#0F172A]">Result node missing</h2>
            <p className="text-slate-500 font-medium text-sm max-w-xs mx-auto">
-              Your results for mock <code className="text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">{mockId}</code> could not be verified in the cloud.
+              Your results for mock could not be verified in the cloud.
            </p>
         </div>
         <Button asChild className="bg-[#0F172A] hover:bg-black text-white rounded-xl h-11 px-8 font-black uppercase text-[10px]"><Link href="/dashboard">Return Dashboard</Link></Button>
@@ -169,22 +163,22 @@ export default function ResultClient() {
               </div>
               <div className="min-w-0 flex-1 space-y-1.5">
                  <h1 className="text-lg md:text-3xl font-black text-white uppercase tracking-tight leading-tight">{sessionData?.mockTitle || "Practice Result"}</h1>
-                 <p className="text-[9px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest">Performance Hub</p>
+                 <p className="text-[9px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest">Performance hub</p>
               </div>
            </div>
 
            <div className="flex flex-wrap items-center justify-center lg:justify-end gap-6 md:gap-10 shrink-0 w-full lg:w-auto px-2">
-              <ResultPill label="SCORE" val={(sessionData?.score || 0).toFixed(1)} color={(sessionData?.score || 0) < 0 ? "text-rose-400" : "text-primary"} />
+              <ResultPill label="Score" val={(sessionData?.score || 0).toFixed(1)} color={(sessionData?.score || 0) < 0 ? "text-rose-400" : "text-primary"} />
               <div className="hidden md:block w-px h-10 bg-white/10" />
-              <ResultPill label="RANK" val={`#${merit.rank}`} color="text-white" />
+              <ResultPill label="Rank" val={`#${merit.rank}`} color="text-white" />
               <div className="hidden md:block w-px h-10 bg-white/10" />
-              <ResultPill label="ACCURACY" val={`${sessionData?.accuracy || 0}%`} color="text-emerald-400" />
+              <ResultPill label="Accuracy" val={`${sessionData?.accuracy || 0}%`} color="text-emerald-400" />
            </div>
 
            <div className="flex gap-4 shrink-0 w-full lg:w-auto">
-              <Button asChild className="w-full lg:w-auto h-12 md:h-14 px-8 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[10px] tracking-widest rounded-xl shadow-xl transition-all border-none active:scale-95">
+              <Button asChild className="w-full lg:w-auto h-12 md:h-14 px-8 bg-primary hover:bg-blue-700 text-white font-black text-[10px] tracking-widest rounded-xl shadow-xl transition-all border-none active:scale-95">
                  <Link href={`/mocks/instructions?id=${mockId}`} className="flex items-center justify-center gap-3">
-                    <RefreshCw className="h-4 w-4" /> RE-ATTEMPT
+                    <RefreshCw className="h-4 w-4" /> Re-Attempt
                  </Link>
               </Button>
            </div>
@@ -193,14 +187,14 @@ export default function ResultClient() {
         <Tabs defaultValue="SOLUTIONS" className="space-y-6 md:space-y-8">
            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <TabsList className="bg-white border border-slate-100 p-1.5 h-12 md:h-14 rounded-xl shadow-md inline-flex">
-                 <TabsTrigger value="SOLUTIONS" className="rounded-lg px-6 md:px-8 font-black uppercase text-[9px] md:text-[10px] h-full data-[state=active]:bg-[#0B1528] data-[state=active]:text-white transition-all">Solutions</TabsTrigger>
-                 <TabsTrigger value="TOPPER" className="rounded-lg px-6 md:px-8 font-black uppercase text-[9px] md:text-[10px] h-full data-[state=active]:bg-[#0B1528] data-[state=active]:text-white transition-all">Leaderboard</TabsTrigger>
+                 <TabsTrigger value="SOLUTIONS" className="rounded-lg px-6 md:px-8 font-black text-[9px] md:text-[10px] h-full data-[state=active]:bg-[#0B1528] data-[state=active]:text-white transition-all">Solutions</TabsTrigger>
+                 <TabsTrigger value="TOPPER" className="rounded-lg px-6 md:px-8 font-black text-[9px] md:text-[10px] h-full data-[state=active]:bg-[#0B1528] data-[state=active]:text-white transition-all">Leaderboard</TabsTrigger>
               </TabsList>
               
               <div className="flex flex-wrap gap-2">
-                 <FilterBtn active={activeReviewFilter === 'ALL'} onClick={() => setActiveReviewFilter('ALL')} label="ALL" count={questions.length} icon={<BarChart3 className="h-3.5 w-3.5" />} activeColor="bg-slate-900 border-slate-900" />
-                 <FilterBtn active={activeReviewFilter === 'CORRECT'} onClick={() => setActiveReviewFilter('CORRECT')} label="CORRECT" count={sessionData?.correctCount || 0} icon={<CheckCircle2 className="h-3.5 w-3.5" />} activeColor="bg-emerald-600 border-emerald-600" />
-                 <FilterBtn active={activeReviewFilter === 'WRONG'} onClick={() => setActiveReviewFilter('WRONG')} label="WRONG" count={sessionData?.wrongCount || 0} icon={<XCircle className="h-3.5 w-3.5" />} activeColor="bg-rose-600 border-rose-600" />
+                 <FilterBtn active={activeReviewFilter === 'ALL'} onClick={() => setActiveReviewFilter('ALL')} label="All" count={questions.length} icon={<BarChart3 className="h-3.5 w-3.5" />} activeColor="bg-slate-900 border-slate-900" />
+                 <FilterBtn active={activeReviewFilter === 'CORRECT'} onClick={() => setActiveReviewFilter('CORRECT')} label="Correct" count={sessionData?.correctCount || 0} icon={<CheckCircle2 className="h-3.5 w-3.5" />} activeColor="bg-emerald-600 border-emerald-600" />
+                 <FilterBtn active={activeReviewFilter === 'WRONG'} onClick={() => setActiveReviewFilter('WRONG')} label="Wrong" count={sessionData?.wrongCount || 0} icon={<XCircle className="h-3.5 w-3.5" />} activeColor="bg-rose-600 border-rose-600" />
               </div>
            </div>
 
@@ -219,11 +213,11 @@ export default function ResultClient() {
                                 <Badge variant="outline" className="border-slate-100 text-slate-400 uppercase text-[8px] md:text-[10px] font-black px-2 py-0.5 rounded">{(q.subjectId || "GK").toUpperCase()}</Badge>
                              </div>
                              {isCorrect ? (
-                                <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[8px] md:text-[10px] uppercase px-3 py-1 rounded-full shadow-sm">CORRECT</Badge>
+                                <Badge className="bg-emerald-50 text-emerald-600 border-none font-bold text-[8px] md:text-[10px] px-3 py-1 rounded-full shadow-sm">Correct</Badge>
                              ) : isSkipped ? (
-                                <Badge className="bg-slate-50 text-slate-400 border-none font-black text-[8px] md:text-[10px] uppercase px-3 py-1 rounded-full">SKIPPED</Badge>
+                                <Badge className="bg-slate-50 text-slate-400 border-none font-bold text-[8px] md:text-[10px] px-3 py-1 rounded-full">Skipped</Badge>
                              ) : (
-                                <Badge className="bg-rose-50 text-rose-600 border-none font-black text-[8px] md:text-[10px] uppercase px-3 py-1 rounded-full shadow-sm">WRONG</Badge>
+                                <Badge className="bg-rose-50 text-rose-600 border-none font-bold text-[8px] md:text-[10px] px-3 py-1 rounded-full shadow-sm">Wrong</Badge>
                              )}
                           </div>
                           <div className="w-full">
@@ -241,7 +235,7 @@ export default function ResultClient() {
               }) : (
                  <div className="py-24 text-center opacity-30 flex flex-col items-center justify-center space-y-4">
                     <AlertCircle className="h-12 w-12 text-slate-300" />
-                    <p className="font-headline font-black text-xl uppercase tracking-widest">No Items Found</p>
+                    <p className="font-headline font-black text-xl">No items found</p>
                  </div>
               )}
            </TabsContent>
@@ -252,7 +246,7 @@ export default function ResultClient() {
                     <div className="p-5 md:p-8 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between mb-4">
                        <div className="flex items-center gap-3">
                           <Users className="h-5 w-5 text-primary" />
-                          <p className="text-[10px] md:text-sm font-black uppercase text-slate-500 tracking-tight">Global Registry: <span className="text-[#0F172A]">{merit.total} Aspirants</span></p>
+                          <p className="text-[10px] md:text-sm font-bold text-slate-500 tracking-tight">Global Registry: <span className="text-[#0F172A]">{merit.total} Aspirants</span></p>
                        </div>
                     </div>
 
@@ -267,7 +261,7 @@ export default function ResultClient() {
                                  <span className={cn("font-black w-6 md:w-10 text-xs md:text-2xl tabular-nums", i < 3 ? "text-primary" : "text-slate-300")}>#{i+1}</span>
                                  <StudentAvatar profile={{ name, gender: r.gender }} className="h-8 w-8 md:h-14 md:w-14 rounded-lg md:rounded-2xl border border-white shadow-sm" />
                                  <div className="min-w-0 flex-1">
-                                    <p className={cn("font-black text-xs md:text-xl uppercase truncate", isCurrentUser ? "text-primary" : "text-[#0F172A]")}>{name} {isCurrentUser && "(You)"}</p>
+                                    <p className={cn("font-black text-xs md:text-xl truncate", isCurrentUser ? "text-primary" : "text-[#0F172A]")}>{name} {isCurrentUser && "(You)"}</p>
                                     <p className="text-[7px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Score: {(r.score || 0).toFixed(1)}</p>
                                  </div>
                               </div>
@@ -291,7 +285,7 @@ export default function ResultClient() {
 function ResultPill({ label, val, color, className }: any) {
    return (
       <div className={cn("flex flex-col items-center lg:items-start gap-1", className)}>
-         <span className="text-[7px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">{label}</span>
+         <span className="text-[7px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">{label}</span>
          <span className={cn("text-lg md:text-3xl font-headline font-black leading-none tabular-nums tracking-tighter", color)}>{val}</span>
       </div>
    )
@@ -299,7 +293,7 @@ function ResultPill({ label, val, color, className }: any) {
 
 function FilterBtn({ active, onClick, label, count, icon, activeColor }: any) {
    return (
-      <button onClick={onClick} className={cn("px-4 py-2.5 rounded-xl text-[8px] md:text-[10px] font-black uppercase tracking-widest border transition-all flex items-center gap-2.5 whitespace-nowrap active:scale-[0.98] shadow-sm", active ? `${activeColor} text-white shadow-md` : "bg-white border-slate-100 text-slate-400 hover:border-slate-200")}>
+      <button onClick={onClick} className={cn("px-4 py-2.5 rounded-xl text-[8px] md:text-[10px] font-bold border transition-all flex items-center gap-2.5 whitespace-nowrap active:scale-[0.98] shadow-sm", active ? `${activeColor} text-white shadow-md` : "bg-white border-slate-100 text-slate-400 hover:border-slate-200")}>
          {icon} {label} <span className="opacity-60 ml-0.5">({count})</span>
       </button>
    )

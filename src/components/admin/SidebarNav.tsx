@@ -40,10 +40,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-interface SidebarNavProps {
-  isOpen: boolean;
-  pathname: string;
-}
+/**
+ * Admin Sidebar Navigation v3.1.
+ * UPDATED: Removed uppercase from sectional labels for improved readability.
+ */
 
 const NAV_GROUPS = [
   {
@@ -96,7 +96,6 @@ export default function SidebarNav({
   isOpen,
   pathname,
 }: SidebarNavProps) {
-  // Flatten all items to find the most specific match
   const allNavItems = React.useMemo(() => NAV_GROUPS.flatMap(g => g.items), []);
 
   return (
@@ -105,7 +104,7 @@ export default function SidebarNav({
         {NAV_GROUPS.map((group) => (
           <div key={group.label} className="space-y-2">
             {isOpen ? (
-              <p className="px-4 text-[10px] font-black tracking-tight text-slate-400">
+              <p className="px-4 text-[10px] font-bold tracking-tight text-slate-400">
                 {group.label}
               </p>
             ) : (
@@ -115,9 +114,6 @@ export default function SidebarNav({
             <div className="space-y-0.5">
               {group.items.map((item) => {
                 const Icon = item.icon;
-                
-                // Specific Match Logic: 
-                // An item is active if the path matches AND there isn't a LONGER (more specific) match in the list.
                 const isExact = pathname === item.href;
                 const isMatch = item.href !== "/admin" && pathname.startsWith(item.href);
                 const hasBetterMatch = allNavItems.some(other => 
@@ -178,4 +174,9 @@ export default function SidebarNav({
       </nav>
     </TooltipProvider>
   );
+}
+
+interface SidebarNavProps {
+  isOpen: boolean;
+  pathname: string;
 }

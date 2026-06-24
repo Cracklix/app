@@ -15,16 +15,16 @@ import { LanguageDisplayMode } from '@/types';
 import { useMemo } from 'react';
 
 const ALL_LANG_MODES: { label: string, value: LanguageDisplayMode }[] = [
-  { label: "ENGLISH ONLY", value: "ENGLISH" },
-  { label: "ਪੰਜਾਬੀ ONLY", value: "PUNJABI" },
-  { label: "HINDI ONLY", value: "HINDI" },
-  { label: "ENGLISH & ਪੰਜਾਬੀ", value: "ENGLISH_PUNJABI" },
-  { label: "ENGLISH & हिन्दी", value: "ENGLISH_HINDI" },
+  { label: "English Only", value: "ENGLISH" },
+  { label: "ਪੰਜਾਬੀ Only", value: "PUNJABI" },
+  { label: "Hindi Only", value: "HINDI" },
+  { label: "English & ਪੰਜਾਬੀ", value: "ENGLISH_PUNJABI" },
+  { label: "English & हिन्दी", value: "ENGLISH_HINDI" },
 ];
 
 /**
- * @fileOverview Hardened CBT Header v37.0 (Mobile Optimized).
- * FIXED: Optimized spacing to prevent MAP button clipping on small mobile screens.
+ * @fileOverview Hardened CBT Header v37.1 (Typography Refined).
+ * FIXED: Removed uppercase from dropdown labels and command button.
  */
 export default function ExamHeader({ 
   onPaletteToggle, 
@@ -99,7 +99,7 @@ export default function ExamHeader({
                         key={mode.value} 
                         onSelect={() => setLanguage(mode.value)}
                         className={cn(
-                          "text-[10px] font-black uppercase px-4 py-3 rounded-xl cursor-pointer tracking-wider mb-1 last:mb-0",
+                          "text-[10px] font-bold px-4 py-3 rounded-xl cursor-pointer tracking-tight mb-1 last:mb-0",
                           language === mode.value ? "bg-primary text-white" : "hover:bg-white/5 text-slate-400"
                         )}
                       >
@@ -121,7 +121,7 @@ export default function ExamHeader({
              onClick={onPaletteToggle}
              className="bg-primary hover:bg-blue-600 text-white h-8 md:h-11 px-3 md:px-8 rounded-lg md:rounded-xl font-black uppercase text-[10px] md:text-[11px] tracking-widest flex items-center justify-center shadow-lg active:scale-95 border-none transition-all flex-shrink"
            >
-              MAP
+              Map
            </button>
         </div>
       </div>

@@ -13,8 +13,8 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview High-Density Merit Hub v8.1.
- * ALIGNMENT: Standardized side margins to match Hero section.
+ * @fileOverview High-Density Merit Hub v8.2.
+ * UPDATED: Removed uppercase from headings for clean modern typography.
  */
 export default function MeritPreview() {
   const db = useFirestore();
@@ -49,7 +49,7 @@ export default function MeritPreview() {
                  <Trophy className="h-5 w-5 text-primary" />
                  <h2 className="text-xl md:text-4xl font-black text-[#0F172A] tracking-tight leading-none">Hall of Rankers</h2>
               </div>
-              <p className="text-[10px] md:text-sm font-bold text-slate-400 uppercase tracking-widest">Real-time Merit Hub</p>
+              <p className="text-[10px] md:text-sm font-bold text-slate-400 uppercase tracking-tight">Real-time merit hub</p>
            </div>
            <Button asChild variant="ghost" className="text-primary font-black uppercase text-[9px] tracking-widest gap-2">
               <Link href="/leaderboard">View All <ChevronRight className="h-4 w-4" /></Link>

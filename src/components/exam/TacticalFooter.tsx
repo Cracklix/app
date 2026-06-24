@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { useFirestore } from '@/firebase';
 
 /**
- * @file Overview Institutional CBT Tactical Action Bar v3.0.
- * UPDATED: Professional wording and high-density mobile layout.
+ * @file Overview Institutional CBT Tactical Action Bar v3.1.
+ * UPDATED: Removed uppercase from button labels for high-fidelity legibility.
  */
 export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const currentIdx = useExamStore(s => s.currentIdx);
@@ -22,22 +22,22 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
         <Button 
           variant="outline" 
           onClick={() => markForReview(currentIdx, db)}
-          className="h-14 md:h-16 rounded-2xl font-black uppercase text-[8px] md:text-[11px] tracking-tight border-slate-200 text-[#334155] bg-white active:scale-95 shadow-sm px-1 leading-tight"
+          className="h-14 md:h-16 rounded-2xl font-black text-[9px] md:text-[11px] tracking-tight border-slate-200 text-[#334155] bg-white active:scale-95 shadow-sm px-1 leading-tight"
         >
-          Mark for <br className="md:hidden" /> Review
+          Mark for Review
         </Button>
 
         <Button 
           variant="outline" 
           onClick={() => clearAnswer(currentIdx, db)}
-          className="h-14 md:h-16 rounded-2xl font-black uppercase text-[8px] md:text-[11px] tracking-widest border-slate-200 text-[#334155] bg-white active:scale-95 shadow-sm"
+          className="h-14 md:h-16 rounded-2xl font-black text-[9px] md:text-[11px] tracking-widest border-slate-200 text-[#334155] bg-white active:scale-95 shadow-sm"
         >
           Clear
         </Button>
 
         <Button 
           onClick={() => saveAndNext(db)}
-          className="h-14 md:h-16 bg-primary hover:bg-blue-700 text-white rounded-2xl font-black uppercase text-[8px] md:text-[11px] tracking-widest shadow-xl border-none active:scale-95"
+          className="h-14 md:h-16 bg-primary hover:bg-blue-700 text-white rounded-2xl font-black text-[9px] md:text-[11px] tracking-widest shadow-xl border-none active:scale-95"
         >
           Save & Next
         </Button>
