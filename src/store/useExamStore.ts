@@ -43,6 +43,10 @@ const initialState: AttemptState = {
   endTime: 0,
 };
 
+/**
+ * @fileOverview Professional CBT State Store v43.1.
+ * FIXED: Removed duplicate 'isSubmitting' and 'isPaused' property keys causing fatal build worker failures.
+ */
 export const useExamStore = create<ExamStore>((set, get) => ({
   ...initialState,
   questions: [],

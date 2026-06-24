@@ -8,8 +8,9 @@ import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
 /**
- * @fileOverview Refined Calendar Component v2.2 (Build Hardened).
+ * @fileOverview Refined Calendar Component v2.3 (Build Hardened).
  * FIXED: Corrected return elements in Chevron sub-component to satisfy React 19 / Next.js 15 constraints.
+ * UPDATED: Optimized for react-day-picker v9.
  */
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>

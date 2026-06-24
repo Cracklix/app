@@ -13,8 +13,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Global Search Hub v3.4 (Build Restored).
- * FIXED: Explicit import of React sub-methods to satisfy strict production build worker.
+ * @fileOverview Global Search Hub v3.5 (Build Restored).
+ * FIXED: Explicit import of React and sub-methods to satisfy strict production build worker.
  */
 
 export default function SearchPage() {

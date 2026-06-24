@@ -2,7 +2,7 @@ import ExamHubClient from "@/components/exams/ExamHubClient";
 
 /**
  * @fileOverview Official Exam Hub Entry.
- * FIXED: Expanded registry nodes to resolve 404 errors for PSSSB SA and others.
+ * FIXED: Expanded registry nodes to resolve 404 errors for PSSSB Patwari and others.
  */
 
 export const dynamicParams = false;
@@ -12,6 +12,7 @@ export async function generateStaticParams() {
   return [
     { id: 'pcs' },
     { id: 'patwari' },
+    { id: 'psssb-patwari' },
     { id: 'constable' },
     { id: 'clerk' },
     { id: 'psssb-sa' },
