@@ -7,8 +7,7 @@ const config: CapacitorConfig = {
 
   server: {
     url: 'https://cracklix.vercel.app',
-    androidScheme: 'https',
-    allowMixedContent: true
+    androidScheme: 'https'
   },
 
   plugins: {

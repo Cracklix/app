@@ -17,7 +17,6 @@ export interface UseErrorHandlerOptions {
 
 export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
   const { onError, logError = true, userId, context } = options
-  const errorTimeoutRef = useRef<NodeJS.Timeout>()
 
   const handleError = useCallback(
     async (error: any, defaultMessage?: string) => {

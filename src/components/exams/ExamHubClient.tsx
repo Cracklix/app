@@ -1,7 +1,6 @@
-
 "use client"
 
-import React, { useMemo, useState, useEffect } from "react"
+import React, { useMemo, useState, useEffect, Suspense } from "react"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import { useDoc, useCollection, useFirestore, useUser } from "@/firebase"
@@ -66,13 +65,12 @@ export default function ExamHubClient() {
   const [isPinning, setIsPinning] = useState(false);
 
   useEffect(() => {
-    console.log("[DEBUG_EXAM] Requested ID:", examId);
     if (!examLoading && examId && !exam) {
        console.error("[DEBUG_EXAM] Document not found in 'exams' collection for ID:", examId);
     }
   }, [examId, exam, examLoading]);
 
-  const isPinned = useMemo(() => profile?.pinnedExams?.includes(examId) || false, [profile, examId]);
+  const isPinned = useMemo(() => (examId && profile?.pinnedExams?.includes(examId)) || false, [profile, examId]);
 
   const togglePin = async () => {
     if (!db || !user || isPinning || !examId) return;
@@ -96,6 +94,7 @@ export default function ExamHubClient() {
   }, [user, profile]);
 
   const groupedContent = useMemo(() => {
+    if (!examId) return { FULL: [], SUBJECT: [], SECTIONAL: [], PYQ: [] };
     const mocks = (rawMocks || []).filter(m => m.examId === examId || m.examIds?.includes(examId));
     return {
       FULL: mocks.filter(m => m.mockType === 'FULL'),
@@ -115,7 +114,7 @@ export default function ExamHubClient() {
        <div className="space-y-2">
           <h2 className="text-2xl font-black text-[#0F172A] uppercase">Vertical Not Found</h2>
           <p className="text-slate-500 font-medium max-w-xs mx-auto">
-             The vertical ID <code className="text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">{examId}</code> could not be verified in the registry.
+             The vertical vertical could not be verified in the registry.
           </p>
        </div>
        <Button onClick={() => router.back()} variant="outline" className="rounded-xl h-12 px-8">Return Back</Button>
@@ -217,7 +216,7 @@ function MockList({ data, results, isPassActive, loading, boards }: any) {
                         onClick={() => router.push(locked ? '/pass' : `/mocks/view?id=${mock.id}`)} 
                         className={cn(
                           "w-full h-9 md:h-14 rounded-full font-black text-[8px] md:text-[11px] tracking-widest uppercase shadow-md border-none transition-all active:scale-95 flex items-center justify-center gap-2 md:gap-3", 
-                          locked ? "bg-orange-500 text-white" : "bg-[#0F172A] text-white"
+                          locked ? "bg-orange-50 text-white" : "bg-[#0F172A] text-white"
                         )}
                       >
                         {locked ? <><Lock className="h-2.5 w-2.5 md:h-4 md:w-4" /> UNLOCK</> : 'Start'}
@@ -251,7 +250,7 @@ function NotesList({ data, isPassActive, loading, type }: any) {
                   </div>
                   <button onClick={() => window.open(isLocked ? '/pass' : (item.pdfUrl || '#'), isLocked ? '_self' : '_blank')} className={cn(
                     "h-9 md:h-11 px-5 md:px-8 rounded-full font-black uppercase text-[9px] md:text-[10px] tracking-widest shadow-md shrink-0 border-none transition-all active:scale-95",
-                    isLocked ? "bg-orange-500 text-white" : "bg-[#0F172A] text-white"
+                    isLocked ? "bg-orange-50 text-white" : "bg-[#0F172A] text-white"
                   )}>
                      {isLocked ? 'UNLOCK' : 'GET'}
                   </button>

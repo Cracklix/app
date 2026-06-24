@@ -16,6 +16,7 @@ import { submitManualPayment, activateFreePass } from "@/app/actions/payment"
 import { doc } from "firebase/firestore"
 import Script from "next/script"
 import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
 
 /**
  * @fileOverview Hardened Checkout Hub v5.0.
