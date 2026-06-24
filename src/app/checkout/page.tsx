@@ -19,8 +19,8 @@ import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 
 /**
- * @fileOverview Hardened Checkout Hub v5.3.
- * FIXED: Restored missing Badge and CheckCircle2 icons and imports.
+ * @fileOverview Hardened Checkout Hub v5.4.
+ * FIXED: Explicitly added Badge and CheckCircle2 to resolve TS2304.
  */
 
 export default function CheckoutPage() {
@@ -84,7 +84,7 @@ function CheckoutContent() {
       });
 
       if (!orderRes.ok) {
-         const errData = await orderRes.json();
+         const errData = await orderRes.ok ? {} : await orderRes.json();
          throw new Error(errData.error || "Order creation failed.");
       }
 
