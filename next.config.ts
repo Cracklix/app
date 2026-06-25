@@ -5,18 +5,12 @@ const withPWA = require("next-pwa")({
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === "development",
-  buildExcludes: [/middleware-manifest\.json$/, /_next\/static\/chunks\/.*\.map$/],
-  reloadOnOnline: true,
+  buildExcludes: [/middleware-manifest\.json$/],
 });
 
-/**
- * @fileOverview Next.js 15 Configuration for Static Export.
- * ENFORCED: output: 'export' for Capacitor compatibility.
- * ENFORCED: Authorized i.ibb.co for remote image rendering.
- */
 const nextConfig: NextConfig = {
-  output: 'export',
-  
+  output: "export",
+
   reactStrictMode: true,
 
   eslint: {
@@ -29,25 +23,14 @@ const nextConfig: NextConfig = {
 
   images: {
     unoptimized: true,
-    remotePatterns: [
-      { protocol: "https", hostname: "firebasestorage.googleapis.com", pathname: "/**" },
-      { protocol: "https", hostname: "lh3.googleusercontent.com", pathname: "/**" },
-      { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
-      { protocol: "https", hostname: "picsum.photos", pathname: "/**" },
-      { protocol: "https", hostname: "i.ibb.co", pathname: "/**" },
-      { protocol: "https", hostname: "ibb.co", pathname: "/**" },
-      { protocol: "https", hostname: "sssb.punjab.gov.in", pathname: "/**" },
-      { protocol: "https", hostname: "joinindianarmy.nic.in", pathname: "/**" },
-      { protocol: "https", hostname: "punjabpolice.gov.in", pathname: "/**" },
-    ],
-  },
-
-  generateBuildId: async () => {
-    return `cracklix-prod-${Date.now()}`;
   },
 
   poweredByHeader: false,
   compress: true,
+
+  generateBuildId: async () => {
+    return `cracklix-prod-${Date.now()}`;
+  },
 };
 
 export default withPWA(nextConfig);

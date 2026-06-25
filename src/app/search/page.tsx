@@ -13,8 +13,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Search Center v6.7.
- * FIXED: TypeScript cloneElement type mismatch and UMD global React errors.
+ * @fileOverview Search Center v6.8.
+ * FIXED: Explicitly typed ReactElement for cloneElement to satisfy TypeScript strictness.
  */
 
 export default function SearchPage() {
