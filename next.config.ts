@@ -30,11 +30,6 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "lh3.googleusercontent.com", pathname: "/**" },
       { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
       { protocol: "https", hostname: "picsum.photos", pathname: "/**" },
-      { protocol: "https", hostname: "sssb.punjab.gov.in", pathname: "/**" },
-      { protocol: "https", hostname: "punjabpolice.gov.in", pathname: "/**" },
-      { protocol: "https", hostname: "joinindianarmy.nic.in", pathname: "/**" },
-      { protocol: "https", hostname: "www.mapsofindia.com", pathname: "/**" },
-      { protocol: "https", hostname: "highcourtchd.gov.in", pathname: "/**" },
     ],
   },
 

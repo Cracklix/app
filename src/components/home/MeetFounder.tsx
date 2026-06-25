@@ -8,9 +8,8 @@ import Link from "next/link";
 import Image from "next/image";
 
 /**
- * @fileOverview Meet Founder section v3.0.
+ * @fileOverview Meet Founder section v3.1.
  * UPDATED: Replaced external i.ibb.co URL with local public asset.
- * UPDATED: Standardized typography to Title Case.
  */
 
 export default function MeetFounder() {
@@ -51,7 +50,7 @@ export default function MeetFounder() {
             </div>
 
             <p className="text-[11px] md:text-lg text-slate-500 font-medium leading-relaxed max-w-md mx-auto md:mx-0">
-              Arsh Grewal is building Punjab's smartest preparation hub to eliminate preparation barriers for every student.
+              Arsh Grewal is building Punjab's smartest platform to help every student prepare for their dream government job.
             </p>
 
             <div className="pt-2 md:pt-4">

@@ -16,7 +16,7 @@ import { AuthorityLogo } from "@/lib/exam-icons";
 import Image from "next/image"
 
 /**
- * @fileOverview Hero Hub v4.1 - Standardized Case.
+ * @fileOverview Hero Hub v4.2 - Standardized Case & Simple Language.
  */
 export default function Hero() {
   const db = useFirestore();
@@ -55,7 +55,7 @@ export default function Hero() {
               </h1>
 
               <p className="text-[13px] sm:text-lg text-slate-500 max-w-lg leading-relaxed font-medium">
-                Mock Tests, PYQs, and Study Material verified by official patterns.
+                Practice Tests, Old Papers, and Notes verified by official board patterns.
               </p>
             </div>
           </div>
@@ -72,27 +72,17 @@ export default function Hero() {
               />
             </motion.div>
           </div>
-
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="lg:hidden flex justify-center mt-4">
-            <Image 
-              src="/images/hero-student.png" 
-              alt="Cracklix Student Hub" 
-              width={300}
-              height={300}
-              className="h-[140px] w-auto drop-shadow-xl" 
-            />
-          </motion.div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mt-10 md:mt-20">
           <QuickActionCard 
             boardId="mock-test"
-            label="Mock Tests" 
+            label="Practice Tests" 
             href="/mocks" 
           />
           <QuickActionCard 
             boardId="study-material"
-            label="Study Material" 
+            label="Notes & PDFs" 
             href="/study-material" 
           />
           <QuickActionCard 
@@ -109,10 +99,10 @@ export default function Hero() {
 
         <div className="flex flex-row gap-3 md:gap-5 mt-8 md:mt-12 justify-center lg:justify-start">
           <Button asChild className="flex-1 md:flex-none h-14 md:h-18 rounded-full font-black text-xs md:text-sm tracking-widest px-6 md:px-14 shadow-xl active:scale-95 transition-all border-none">
-            <Link href="/mocks" className="flex items-center gap-2">Start free mock <ArrowRight className="h-4 w-4" /></Link>
+            <Link href="/mocks" className="flex items-center gap-2">Start Free Test <ArrowRight className="h-4 w-4" /></Link>
           </Button>
           <Button asChild variant="outline" className="flex-1 md:flex-none h-14 md:h-18 rounded-full font-black text-xs md:text-sm tracking-widest px-6 md:px-14 shadow-sm border-2 active:scale-95 transition-all">
-            <Link href="/exams">View Tests</Link>
+            <Link href="/exams">Browse All</Link>
           </Button>
         </div>
       </div>
@@ -133,7 +123,7 @@ function QuickActionCard({ boardId, label, href }: { boardId: string, label: str
           </h3>
           <p className="text-[7px] md:text-[9px] font-bold text-slate-400 tracking-tight mt-1">Official Hub</p>
         </div>
-        <div className="h-6 w-6 h-6 w-6 md:h-8 md:w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-200 group-hover:bg-primary/5 group-hover:text-primary transition-all shrink-0">
+        <div className="h-6 w-6 md:h-8 md:w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-200 group-hover:bg-primary/5 group-hover:text-primary transition-all shrink-0">
            <ChevronRight className="h-3 w-3 md:h-4 md:w-4 transition-transform group-hover:translate-x-0.5" />
         </div>
       </div>

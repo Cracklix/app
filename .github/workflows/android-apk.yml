@@ -36,6 +36,8 @@ jobs:
 
       - name: Verify Web Distribution
         run: |
+          echo "Checking root contents:"
+          ls -la
           if [ ! -d "out" ]; then echo "❌ 'out' directory missing"; exit 1; fi
           if [ ! -f "out/index.html" ]; then echo "❌ 'out/index.html' missing"; exit 1; fi
           echo "✅ Web distribution verified."
@@ -86,7 +88,7 @@ jobs:
               --out cracklix-production.apk cracklix-aligned.apk
           fi
           
-          # Copy to distribution folder
+          # Copy to distribution folder for direct download
           mkdir -p out/apk
           cp cracklix-production.apk out/apk/cracklix-production.apk
           

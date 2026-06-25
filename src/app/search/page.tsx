@@ -13,7 +13,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Search Center v6.0 - Standardized Case & Production Hardened.
+ * @fileOverview Search Center v6.1 - Standardized Case & Production Hardened.
  * FIXED: TypeScript cloneElement type mismatch for strict production build.
  */
 
@@ -108,7 +108,7 @@ function SearchContent() {
         <div className="space-y-8 md:space-y-12">
            <div className="text-center space-y-6">
               <div className="space-y-2">
-                 <h1 className="text-2xl md:text-6xl font-black text-[#0F172A] tracking-tighter leading-none">Find your test</h1>
+                 <h1 className="text-2xl md:text-6xl font-black text-[#0F172A] tracking-tighter leading-none">Find Your Test</h1>
                  <p className="text-slate-400 font-bold text-[9px] md:text-[11px] uppercase tracking-[0.4em]">Instant access to the test bank</p>
               </div>
               
@@ -132,7 +132,7 @@ function SearchContent() {
               <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                     <h3 className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">Results: {searchResults.length} items</h3>
-                    <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black px-3 py-0.5 rounded-lg uppercase">Verified list</Badge>
+                    <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black px-3 py-0.5 rounded-lg uppercase">Verified List</Badge>
                  </div>
                  <div className="grid grid-cols-1 gap-3">
                     {searchResults.length > 0 ? searchResults.map((res, i) => (
@@ -153,7 +153,7 @@ function SearchContent() {
                  <Card className="border-none shadow-xl rounded-2xl md:rounded-[2.5rem] p-10 bg-[#0B1528] text-white overflow-hidden relative group">
                     <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform"><LayoutGrid className="h-44 w-44" /></div>
                     <div className="relative z-10 space-y-8">
-                       <h4 className="font-black text-[10px] text-primary uppercase tracking-[0.4em]">Quick search</h4>
+                       <h4 className="font-black text-[10px] text-primary uppercase tracking-[0.4em]">Quick Search</h4>
                        <ul className="space-y-5">
                           <TrendingItem text="PSSSB Patwari Hub" onSelect={setQuery} />
                           <TrendingItem text="Punjab Police SI" onSelect={setQuery} />
@@ -164,7 +164,7 @@ function SearchContent() {
                  </Card>
                  <Card className="border-none shadow-xl rounded-[2.5rem] p-10 bg-white group overflow-hidden border border-slate-100">
                     <div className="relative z-10 space-y-8">
-                       <h4 className="font-black text-[10px] text-slate-400 uppercase tracking-[0.4em]">Study items</h4>
+                       <h4 className="font-black text-[10px] text-slate-400 uppercase tracking-[0.4em]">Study Items</h4>
                        <div className="flex flex-wrap gap-3">
                           <SearchBadge label="Army Hub" onSelect={setQuery} />
                           <SearchBadge label="PPSC Hub" onSelect={setQuery} />

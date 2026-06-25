@@ -1,20 +1,16 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from "next/link";
 import {
   Search,
   User,
-  LogOut,
   Menu,
   ShieldCheck,
   ChevronRight,
   Gem,
-  ArrowRight,
   Settings,
-  HelpCircle,
   CreditCard,
-  Clock
 } from "lucide-react";
 import { useUser, useAuth } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -43,8 +39,7 @@ import PWAInstallButton from "@/components/PWAInstallButton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Standardized Navbar v63.1.
- * UPDATED: Normalized badge text case.
+ * @fileOverview Standardized Navbar v63.2 - Simplified.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -52,7 +47,7 @@ export default function Navbar() {
   const [timeLeft, setTimeLeft] = useState("");
 
   const { user, profile, loading } = useUser();
-  const auth = authInstance();
+  const auth = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -88,11 +83,6 @@ export default function Navbar() {
 
     return () => clearInterval(interval);
   }, [profile?.passExpiresAt]);
-
-  function authInstance() {
-    const { auth } = require('@/firebase/app').initializeFirebase();
-    return auth;
-  }
 
   const handleLogout = async () => {
     try {
@@ -136,15 +126,15 @@ export default function Navbar() {
 
           <div className="hidden lg:flex items-center justify-center gap-8 flex-1">
             <NavLink href="/" label="Home" active={pathname === '/'} />
-            <NavLink href="/exams" label="Mock Tests" active={pathname === '/exams'} />
-            <NavLink href="/pyqs" label="Previous Papers" active={pathname === '/pyqs'} />
-            <NavLink href="/current-affairs" label="Study Material" active={pathname === '/current-affairs'} />
+            <NavLink href="/exams" label="Practice Tests" active={pathname === '/exams'} />
+            <NavLink href="/pyqs" label="Old Papers" active={pathname === '/pyqs'} />
+            <NavLink href="/current-affairs" label="Notes & PDFs" active={pathname === '/current-affairs'} />
           </div>
 
           <div className="flex items-center gap-1 md:gap-4 shrink-0">
             {profile?.passStatus === 'active' && timeLeft && (
                <div className="hidden sm:flex flex-col items-end mr-2">
-                  <span className="text-[8px] font-black text-emerald-600 tracking-widest leading-none">Premium</span>
+                  <span className="text-[8px] font-black text-emerald-600 tracking-widest leading-none uppercase">Premium</span>
                   <span className="text-[10px] font-bold text-slate-400 mt-1 leading-none">{timeLeft}</span>
                </div>
             )}
@@ -195,7 +185,7 @@ export default function Navbar() {
                     <div className="h-px w-full bg-slate-100" />
                     <div className="w-full space-y-1 text-left">
                        <ProfileMenuItem href="/dashboard" icon={ShieldCheck} label="My Progress" />
-                       <ProfileMenuItem href="/pass" icon={CreditCard} label="My Pass" />
+                       <ProfileMenuItem href="/pass" icon={CreditCard} label="Pro Pass" />
                        <ProfileMenuItem href="/profile" icon={Settings} label="Settings" />
                        {isAdmin && <ProfileMenuItem href="/admin" icon={ShieldCheck} label="Admin Panel" highlight />}
                     </div>
