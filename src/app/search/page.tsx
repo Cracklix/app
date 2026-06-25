@@ -13,8 +13,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Global Search Hub v3.22 - Type Hardened.
- * FIXED: Explicit ReactElement casting for cloneElement to satisfy strict TS checks.
+ * @fileOverview Global Search Hub v3.23 - Hardened ReactElement Typing.
  */
 
 export default function SearchPage() {
@@ -183,14 +182,14 @@ function SearchContent() {
   )
 }
 
-function SearchResultItem({ title, category, href, icon }: { title: string, category: string, href: string, icon: ReactElement }) {
+function SearchResultItem({ title, category, href, icon }: { title: string, category: string, href: string, icon: React.ReactNode }) {
    return (
       <Link href={href} className="block active:scale-[0.99] transition-all group">
          <div className="bg-white p-5 md:p-8 rounded-[2rem] shadow-sm hover:shadow-2xl flex items-center justify-between border border-slate-100 transition-all duration-500">
             <div className="flex items-center gap-4 min-w-0 flex-1">
                <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-primary/5 transition-all shrink-0 shadow-inner">
                   {isValidElement(icon)
-                    ? cloneElement(icon as React.ReactElement<any>, {
+                    ? cloneElement(icon as ReactElement<{ className?: string }>, {
                         className: "h-5 w-5",
                       })
                     : icon}
