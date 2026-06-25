@@ -13,9 +13,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Search Center v6.6.
- * FIXED: TypeScript cloneElement type mismatch for strict production build.
- * FIXED: Standardized React imports to avoid UMD global errors.
+ * @fileOverview Search Center v6.7.
+ * FIXED: TypeScript cloneElement type mismatch and UMD global React errors.
  */
 
 export default function SearchPage() {
@@ -110,7 +109,7 @@ function SearchContent() {
            <div className="text-center space-y-6">
               <div className="space-y-2">
                  <h1 className="text-2xl md:text-6xl font-black text-[#0F172A] tracking-tighter leading-none">Find Your Test</h1>
-                 <p className="text-slate-400 font-bold text-[9px] md:text-[11px] uppercase tracking-[0.4em]">Instant access to the test bank</p>
+                 <p className="text-slate-400 font-bold text-[9px] md:text-11px uppercase tracking-[0.4em]">Instant access to the test bank</p>
               </div>
               
               <div className="relative max-w-[700px] mx-auto group">
