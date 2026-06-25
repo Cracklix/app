@@ -13,9 +13,9 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Search Center v6.2.
+ * @fileOverview Search Center v6.5.
  * FIXED: TypeScript cloneElement type mismatch for strict production build.
- * FIXED: Corrected Icon rendering logic for Lucide components.
+ * FIXED: Standardized React imports to avoid UMD global errors.
  */
 
 export default function SearchPage() {

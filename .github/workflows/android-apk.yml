@@ -32,7 +32,7 @@ jobs:
         run: npm ci
 
       - name: Build Next.js Static Export
-        run: npm run build:android
+        run: npm run build
 
       - name: Verify Web Distribution
         run: |
