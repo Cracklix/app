@@ -18,8 +18,7 @@ import { cn } from "@/lib/utils"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Official Institutional Study Material Hub v1.3.
- * UPDATED: Integrated branded Study Material logo into header.
+ * @fileOverview Notes Center - Simplified Language v2.0.
  */
 
 export default function StudyMaterialPage() {
@@ -51,7 +50,7 @@ export default function StudyMaterialPage() {
   if (authLoading || !user) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
        <Zap className="h-10 w-10 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase text-slate-300">Synchronizing Session...</p>
+       <p className="text-[10px] font-black uppercase text-slate-300">Syncing...</p>
     </div>
   );
 
@@ -65,20 +64,20 @@ export default function StudyMaterialPage() {
             <div className="space-y-4 text-left">
               <div className="flex items-center gap-3">
                  <AuthorityLogo boardId="study-material" size="sm" className="bg-transparent shadow-none p-0" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Official Study Assets</span>
+                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Official Notes & PDFs</span>
               </div>
               <h1 className="text-4xl md:text-6xl font-headline font-black text-[#0F172A] tracking-tight leading-[0.9]">
-                Study <br/> <span className="text-primary">Material</span>
+                Notes <br/> <span className="text-primary">Center</span>
               </h1>
               <p className="text-slate-500 font-medium text-lg max-w-xl">
-                Verified study materials, guides, and notes curated for all Punjab Government exams.
+                Verified study materials, guides, and notes for all Punjab exams.
               </p>
             </div>
             <div className="relative w-full md:w-96">
               <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
               <Input 
                 className="pl-16 h-16 rounded-2xl bg-white border-none shadow-2xl shadow-slate-200/50 text-lg font-medium" 
-                placeholder="Search material..." 
+                placeholder="Search notes..." 
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
               />
@@ -115,10 +114,10 @@ export default function StudyMaterialPage() {
 
           <div className="bg-[#0B1528] rounded-[3rem] p-10 md:p-16 text-white relative overflow-hidden shadow-4xl text-left">
              <div className="relative z-10 max-w-2xl space-y-6">
-                <h2 className="text-3xl md:text-4xl font-headline font-black uppercase leading-tight">Elite Preparation Hub</h2>
-                <p className="text-slate-400 text-base md:text-lg font-medium">Unlock exclusive summary guides and PDFs verified for the latest recruitment notifications.</p>
+                <h2 className="text-3xl md:text-4xl font-headline font-black uppercase leading-tight">Pro Test Center</h2>
+                <p className="text-slate-400 text-base md:text-lg font-medium">Unlock all premium PDFs and notes for the latest job notifications.</p>
                 <Button asChild className="w-full md:w-auto h-16 px-12 bg-primary hover:bg-blue-700 text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-2xl mt-4 border-none transition-all active:scale-95">
-                   <Link href="/pass">Get Elite Access Now <Zap className="h-5 w-5 fill-current ml-2" /></Link>
+                   <Link href="/pass">Unlock Pro Now <Zap className="h-5 w-5 fill-current ml-2" /></Link>
                 </Button>
              </div>
           </div>
@@ -139,7 +138,7 @@ function NotesGrid({ data, loading, profile }: any) {
    if (!data || data.length === 0) return (
       <div className="h-80 flex flex-col items-center justify-center text-slate-300 bg-white rounded-[4rem] border-2 border-dashed border-slate-100 shadow-inner">
          <FileArchive className="h-16 w-16 mb-6 opacity-10" />
-         <p className="font-headline font-black text-xl uppercase tracking-widest">No material found</p>
+         <p className="font-headline font-black text-xl uppercase tracking-widest">No Notes Found</p>
       </div>
    );
 
@@ -180,7 +179,7 @@ function DownloadCard({ asset, profile }: { asset: any, profile: any }) {
                   {asset.isFree ? (
                      <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">FREE ACCESS</span>
                   ) : (
-                     <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest">ELITE HUB</span>
+                     <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest">PRO PASS</span>
                   )}
                </div>
                <h3 className="text-xl md:text-2xl font-headline font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors flex-1">
@@ -188,11 +187,11 @@ function DownloadCard({ asset, profile }: { asset: any, profile: any }) {
                </h3>
                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-slate-50 mt-auto">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                     <Clock className="h-3.5 w-3.5" /> Registry Verified
+                     <Clock className="h-3.5 w-3.5" /> Verified Node
                   </p>
                   {isLocked ? (
                      <Button asChild className="w-full sm:w-auto h-12 px-8 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase tracking-widest text-[9px] rounded-xl gap-2 shadow-xl border-none">
-                        <Link href="/pass"><Lock className="h-4 w-4" /> Unlock Hub</Link>
+                        <Link href="/pass"><Lock className="h-4 w-4" /> Get Pass</Link>
                      </Button>
                   ) : (
                      <Button asChild className="w-full sm:w-auto h-12 px-8 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-widest text-[9px] rounded-xl gap-2 shadow-xl border-none">

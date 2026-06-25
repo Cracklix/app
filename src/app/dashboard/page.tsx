@@ -34,8 +34,7 @@ import StudentAvatar from "@/components/brand/StudentAvatar"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview Student Dashboard v42.4 (Typography Refined).
- * FIXED: Removed uppercase from primary elements and modernized Title Case.
+ * @fileOverview Student Home - Simplified Language v43.0.
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading } = useUser();
@@ -127,7 +126,7 @@ export default function StudentDashboard() {
   if (!mounted || authLoading || (user && !profile)) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
        <Zap className="h-8 w-8 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase text-slate-300">Syncing Progress Hub...</p>
+       <p className="text-[10px] font-black uppercase text-slate-300">Syncing Progress...</p>
     </div>
   );
 
@@ -148,7 +147,7 @@ export default function StudentDashboard() {
                  <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
                     <UserIcon className="h-5 w-5" />
                  </div>
-                 <p className="text-xs md:text-sm font-bold tracking-tight">Complete your profile for state merit rankings and better recommendations.</p>
+                 <p className="text-xs md:text-sm font-bold tracking-tight">Complete your profile to see state ranks and suggested tests.</p>
               </div>
               <div className="flex gap-2 w-full md:w-auto">
                  <Button asChild size="sm" className="bg-white text-blue-600 hover:bg-slate-100 flex-1 md:flex-none h-9 px-6 rounded-lg text-[9px]">
@@ -195,17 +194,17 @@ export default function StudentDashboard() {
               </section>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-5">
-                <MetricItem label="Progress" val={resultsLoading ? "..." : `${stats.readiness}%`} icon={<TrendingUp className="text-primary" />} />
+                <MetricItem label="Prep Level" val={resultsLoading ? "..." : `${stats.readiness}%`} icon={<TrendingUp className="text-primary" />} />
                 <MetricItem label="Accuracy" val={resultsLoading ? "..." : `${stats.avgAccuracy}%`} icon={<Target className="text-emerald-500" />} />
-                <MetricItem label="Test Count" val={resultsLoading ? "..." : stats.total} icon={<ClipboardList className="text-blue-500" />} />
-                <MetricItem label="Study Hours" val={resultsLoading ? "..." : stats.hours} icon={<Clock className="text-amber-500" />} />
+                <MetricItem label="Total Tests" val={resultsLoading ? "..." : stats.total} icon={<ClipboardList className="text-blue-500" />} />
+                <MetricItem label="Study Time" val={resultsLoading ? "..." : stats.hours} icon={<Clock className="text-amber-500" />} />
               </div>
 
               <Card className="border-none shadow-xl rounded-xl md:rounded-[2rem] bg-white overflow-hidden text-left border border-slate-100">
                 <CardHeader className="p-4 md:p-8 border-b border-slate-50 bg-slate-50/30">
                     <div className="space-y-0.5">
-                      <h3 className="font-black text-sm md:text-xl text-[#0F172A]">Recent Attempts</h3>
-                      <p className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Test History</p>
+                      <h3 className="font-black text-sm md:text-xl text-[#0F172A]">Recent Tests</h3>
+                      <p className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">My History</p>
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -246,12 +245,12 @@ export default function StudentDashboard() {
               <Card className="border-none shadow-4xl bg-gradient-to-br from-blue-600 to-primary text-white p-6 md:p-10 rounded-2xl md:rounded-[2rem] relative overflow-hidden group">
                 <div className="absolute bottom-0 right-0 p-4 opacity-10 rotate-12 group-hover:scale-110 transition-transform duration-1000"><Flame className="h-24 w-24 md:h-32 w-32" /></div>
                 <div className="relative z-10 space-y-2 md:space-y-4 text-left">
-                    <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/70">STUDY STREAK</p>
+                    <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/70">DAILY STREAK</p>
                     <div className="flex items-baseline gap-2">
                       <div className="text-4xl md:text-7xl font-black leading-none">{resultsLoading ? "..." : stats.streak}</div>
                       <div className="space-y-0.5">
                           <p className="text-sm md:text-lg font-black uppercase">Days</p>
-                          <p className="text-[7px] font-bold uppercase text-white/60">Practice Activity</p>
+                          <p className="text-[7px] font-bold uppercase text-white/60">Study Streak</p>
                       </div>
                     </div>
                 </div>
@@ -260,9 +259,9 @@ export default function StudentDashboard() {
               <div className="bg-white p-4 md:p-6 rounded-2xl border border-slate-100 shadow-xl space-y-4 md:space-y-6">
                  <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Quick Tools</h4>
                  <div className="grid grid-cols-1 gap-2 md:gap-3">
-                    <QuickToolLink href="/my-exams" label="My Exams" icon={Target} />
-                    <QuickToolLink href="/analytics" label="Full Analytics" icon={TrendingUp} />
-                    <QuickToolLink href="/bookmarks" label="Saved Questions" icon={Bookmark} />
+                    <QuickToolLink href="/my-exams" label="My Tests" icon={Target} />
+                    <QuickToolLink href="/analytics" label="Result Analysis" icon={TrendingUp} />
+                    <QuickToolLink href="/bookmarks" label="Saved MCQs" icon={Bookmark} />
                  </div>
               </div>
           </div>

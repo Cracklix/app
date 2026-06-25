@@ -13,8 +13,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Global Search Hub v3.33 - Production Hardened.
- * FIXED: Resolved UMD global error and ReactElement type mismatch.
+ * @fileOverview Search Hub v4.0 - Simplified Language & Production Hardened.
  */
 
 export default function SearchPage() {
@@ -85,7 +84,7 @@ function SearchContent() {
        n.subjectId?.toLowerCase().includes(term)
     ).map((n: any) => ({ 
        title: n.title, 
-       type: "Study Material", 
+       type: "Notes & PDFs", 
        href: `/notes`, 
        boardId: n.boardId,
        icon: <FileText className="h-5 w-5" />
@@ -97,7 +96,7 @@ function SearchContent() {
   if (authLoading || !user) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
        <Zap className="h-10 w-10 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase text-slate-300">Authorizing Search Node...</p>
+       <p className="text-[10px] font-black uppercase text-slate-300">Authorizing Search...</p>
     </div>
   )
 
@@ -108,8 +107,8 @@ function SearchContent() {
         <div className="space-y-8 md:space-y-12">
            <div className="text-center space-y-6">
               <div className="space-y-2">
-                 <h1 className="text-2xl md:text-6xl font-black text-[#0F172A] tracking-tighter leading-none">Global Search</h1>
-                 <p className="text-slate-400 font-bold uppercase text-[9px] md:text-[11px] tracking-[0.4em]">Instant Access to the Registry</p>
+                 <h1 className="text-2xl md:text-6xl font-black text-[#0F172A] tracking-tighter leading-none">Find Your Test</h1>
+                 <p className="text-slate-400 font-bold uppercase text-[9px] md:text-[11px] tracking-[0.4em]">Instant Access to the Test Bank</p>
               </div>
               
               <div className="relative max-w-[700px] mx-auto group">
@@ -131,8 +130,8 @@ function SearchContent() {
            {queryStr.length >= 2 ? (
               <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <h3 className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">RESULTS: {searchResults.length} NODES</h3>
-                    <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black px-3 py-0.5 rounded-lg uppercase">Registry Connected</Badge>
+                    <h3 className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">RESULTS: {searchResults.length} ITEMS</h3>
+                    <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black px-3 py-0.5 rounded-lg uppercase">Verified List</Badge>
                  </div>
                  <div className="grid grid-cols-1 gap-3">
                     {searchResults.length > 0 ? searchResults.map((res, i) => (
@@ -158,19 +157,19 @@ function SearchContent() {
                           <TrendingItem text="PSSSB Patwari Hub" onSelect={setQuery} />
                           <TrendingItem text="Punjab Police SI" onSelect={setQuery} />
                           <TrendingItem text="Mental Ability Tests" onSelect={setQuery} />
-                          <TrendingItem text="Solved Previous Papers" onSelect={setQuery} />
+                          <TrendingItem text="Solved Old Papers" onSelect={setQuery} />
                        </ul>
                     </div>
                  </Card>
                  <Card className="border-none shadow-xl rounded-[2.5rem] p-10 bg-white group overflow-hidden border border-slate-100">
                     <div className="relative z-10 space-y-8">
-                       <h4 className="font-black text-[10px] text-slate-400 uppercase tracking-[0.4em]">Preparation Assets</h4>
+                       <h4 className="font-black text-[10px] text-slate-400 uppercase tracking-[0.4em]">Study Items</h4>
                        <div className="flex flex-wrap gap-3">
                           <SearchBadge label="Army Hub" onSelect={setQuery} />
                           <SearchBadge label="PPSC Hub" onSelect={setQuery} />
                           <SearchBadge label="Clerk Series" onSelect={setQuery} />
-                          <SearchBadge label="Elite Pass" onSelect={setQuery} />
-                          <SearchBadge label="Merit List" onSelect={setQuery} />
+                          <SearchBadge label="Pro Pass" onSelect={setQuery} />
+                          <SearchBadge label="Top Rankers" onSelect={setQuery} />
                        </div>
                     </div>
                  </Card>
@@ -200,7 +199,7 @@ function SearchResultItem({ title, category, href, icon }: { title: string, cate
                   <div className="flex items-center gap-3">
                      <Badge className="bg-slate-100 text-slate-500 border-none text-[8px] md:text-[9px] font-black uppercase px-2 py-0.5 rounded shadow-sm">{category}</Badge>
                      <div className="h-1 w-1 rounded-full bg-slate-200" />
-                     <span className="text-[8px] font-black uppercase tracking-widest text-primary">Verified Node</span>
+                     <span className="text-[8px] font-black uppercase tracking-widest text-primary">Verified</span>
                   </div>
                </div>
             </div>

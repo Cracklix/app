@@ -16,9 +16,7 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 /**
- * @fileOverview High-Density Pass Center v26.0 (Typography Fixed).
- * UPDATED: Removed forced uppercase and refined button logic for modern "Buy Now" style.
- * FIXED: Corrected Link import from "link" to "next/link".
+ * @fileOverview Pass Center - Simplified Language v27.0.
  */
 
 export default function PassPage() {
@@ -85,7 +83,7 @@ export default function PassPage() {
       
       <main className="container mx-auto px-3 md:px-8 py-4 md:py-12 max-w-7xl space-y-6 md:space-y-16">
         
-        {/* COMPACT MANAGEMENT CARD */}
+        {/* PASS MANAGEMENT */}
         {mounted && profile?.passStatus && passStatus !== 'none' && (
            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
               <Card className="max-w-4xl mx-auto border border-slate-100 bg-white rounded-2xl md:rounded-[2rem] p-3 md:p-10 shadow-xl text-left overflow-hidden relative">
@@ -98,10 +96,10 @@ export default function PassPage() {
                           </div>
                           <div>
                              <h2 className="text-base md:text-2xl font-headline font-black text-[#0F172A] leading-none">
-                               {passStatus === 'active' ? 'Active Pass' : 'Pass Expired'}
+                               {passStatus === 'active' ? 'Active Pro Pass' : 'Pass Expired'}
                              </h2>
                              <Badge className={cn("mt-1 border-none text-[7px] md:text-[9px] font-black uppercase px-2 py-0.5", passStatus === 'active' ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600")}>
-                                Tier: {profile?.pass?.plan || 'PREMIUM'}
+                                Plan: {profile?.pass?.plan || 'PRO'}
                              </Badge>
                           </div>
                        </div>
@@ -116,23 +114,22 @@ export default function PassPage() {
                        ) : passStatus === 'expired' ? (
                           <div className="p-2 bg-rose-50 rounded-lg border border-rose-100 flex items-center gap-2 text-rose-600">
                              <AlertCircle className="h-3 w-3 shrink-0" />
-                             <p className="text-[9px] font-bold uppercase">Pass expired. Renew to continue.</p>
+                             <p className="text-[9px] font-bold uppercase">Pass expired. Renew to continue practicing.</p>
                           </div>
                        ) : null}
                     </div>
 
                     <Button asChild className="w-full md:w-auto h-11 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-[10px] tracking-widest shadow-xl border-none">
-                       <Link href="#plans">Extend Validity <ArrowRight className="ml-2 h-3 w-3" /></Link>
+                       <Link href="#plans">Renew Pass <ArrowRight className="ml-2 h-3 w-3" /></Link>
                     </Button>
                  </div>
               </Card>
 
-              {/* SUBSCRIPTION QUEUE VISIBILITY */}
               {profile.queuedPasses && profile.queuedPasses.length > 0 && (
                  <div className="max-w-4xl mx-auto space-y-4">
                     <div className="flex items-center gap-3 px-2">
                        <Layers className="h-4 w-4 text-primary" />
-                       <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Scheduled Extensions</h3>
+                       <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Upcoming Plans</h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                        {profile.queuedPasses.map((q, i) => (
@@ -143,10 +140,10 @@ export default function PassPage() {
                                 </div>
                                 <div>
                                    <p className="text-xs font-black text-[#0F172A] uppercase">{q.name}</p>
-                                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">{q.durationDays} Days Duration</p>
+                                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">{q.durationDays} Days Extra</p>
                                 </div>
                              </div>
-                             <Badge variant="outline" className="border-slate-100 text-slate-300 text-[7px] font-black uppercase px-2 py-1">Queued #{i+1}</Badge>
+                             <Badge variant="outline" className="border-slate-100 text-slate-300 text-[7px] font-black uppercase px-2 py-1">In Line #{i+1}</Badge>
                           </div>
                        ))}
                     </div>
@@ -156,15 +153,15 @@ export default function PassPage() {
         )}
 
         <div id="plans" className="text-center space-y-1.5 md:space-y-6 px-1">
-           <h1 className="text-xl md:text-5xl font-black text-[#0F172A] leading-tight">Elite Preparation Pass</h1>
-           <p className="text-[11px] md:text-lg text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed">Verified patterns and official audit rationalizations for Punjab government exams.</p>
+           <h1 className="text-xl md:text-5xl font-black text-[#0F172A] leading-tight">Cracklix Pro Pass</h1>
+           <p className="text-[11px] md:text-lg text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed">Get all mock tests, solutions, and rank list for Punjab exams.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
            {passesLoading ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-2xl bg-white" />) : passes.map((plan, idx) => {
              const isCurrentPlan = profile?.status === plan.id;
              const btnText = passStatus === 'active' 
-               ? (isCurrentPlan ? "Extend Plan" : "Upgrade Hub") 
+               ? (isCurrentPlan ? "Renew Plan" : "Upgrade Plan") 
                : (plan.price === 0 ? "Activate Free" : "Buy Now");
 
              return (

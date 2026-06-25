@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useFirestore } from '@/firebase';
 
 /**
- * @file Overview Institutional CBT Tactical Action Bar v3.1.
- * UPDATED: Removed uppercase from button labels for high-fidelity legibility.
+ * @file Overview Test Action Bar - Simplified.
  */
 export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
   const currentIdx = useExamStore(s => s.currentIdx);
@@ -24,7 +23,7 @@ export default function TacticalFooter({ onSubmit }: { onSubmit: () => void }) {
           onClick={() => markForReview(currentIdx, db)}
           className="h-14 md:h-16 rounded-2xl font-black text-[9px] md:text-[11px] tracking-tight border-slate-200 text-[#334155] bg-white active:scale-95 shadow-sm px-1 leading-tight"
         >
-          Mark for Review
+          Review Later
         </Button>
 
         <Button 
