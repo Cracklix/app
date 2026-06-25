@@ -20,8 +20,8 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 
 /**
- * @fileOverview Hardened Checkout Hub v5.7.
- * FIXED: Restored Badge, Link, and CheckCircle2 imports to resolve compilation errors.
+ * @fileOverview Hardened Checkout Hub v5.8.
+ * FIXED: Restored missing Badge, Link and Loader2 imports.
  */
 
 export default function CheckoutPage() {
@@ -85,7 +85,7 @@ function CheckoutContent() {
       });
 
       if (!orderRes.ok) {
-         const errData = await orderRes.ok ? {} : await orderRes.json();
+         const errData = await orderRes.json();
          throw new Error(errData.error || "Order creation failed.");
       }
 
@@ -148,11 +148,6 @@ function CheckoutContent() {
                        <Button onClick={handlePaymentInitiation} disabled={onlineProcessing} className="w-full h-16 md:h-20 bg-primary hover:bg-blue-700 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-full shadow-3xl border-none transition-all active:scale-95">
                           {onlineProcessing ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Zap className="h-5 w-5 mr-2" /> Pay ₹{planData.price} Now</>}
                        </Button>
-                       <div className="mt-8 flex items-center justify-center gap-4 text-slate-300">
-                          <span className="text-[8px] font-black uppercase tracking-widest">PCI-DSS Compliant</span>
-                          <div className="w-px h-3 bg-slate-200" />
-                          <span className="text-[8px] font-black uppercase tracking-widest">256-bit SSL</span>
-                       </div>
                     </Card>
                  </TabsContent>
 
@@ -174,7 +169,6 @@ function CheckoutContent() {
                           <div className="space-y-2">
                              <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">12-Digit UTR Number</Label>
                              <Input value={utr} onChange={e => setUtr(e.target.value.replace(/\D/g, '').slice(0,12))} className="h-14 rounded-2xl border-slate-200 bg-slate-50 text-center font-black text-xl tracking-[0.3em] shadow-inner" placeholder="---" />
-                             <p className="text-[8px] font-bold text-slate-400 text-center uppercase mt-2">Enter the transaction ID from your bank app</p>
                           </div>
                           <Button 
                              onClick={async () => {
