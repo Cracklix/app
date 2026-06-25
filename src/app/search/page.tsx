@@ -13,8 +13,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Search Center v7.3.
- * FIXED: Standardized React import and implemented type-safe cloneElement to resolve build blockers.
+ * @fileOverview Search Center v7.5.
+ * FIXED: Standardized React import and type-safe cloneElement.
  */
 
 export default function SearchPage() {

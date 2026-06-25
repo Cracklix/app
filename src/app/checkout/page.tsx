@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 
 /**
- * @fileOverview Checkout Hub v8.2.
+ * @fileOverview Checkout Hub v8.3.
  * FIXED: Restored missing Badge and CheckCircle2 imports to resolve build blockers.
  */
 
