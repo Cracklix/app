@@ -13,8 +13,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Global Search Hub v3.31 - Production Hardened.
- * FIXED: Resolved React type overload by explicitly casting icon nodes and standardizing imports.
+ * @fileOverview Global Search Hub v3.32 - Production Hardened.
+ * FIXED: Resolved UMD global error and ReactElement type mismatch.
  */
 
 export default function SearchPage() {

@@ -9,43 +9,43 @@
     {
       "id": "promo-psssb",
       "description": "PSSSB Official Institutional Promotion",
-      "imageUrl": "https://sssb.punjab.gov.in/wp-content/uploads/2025/08/sssb-1.jpg",
+      "imageUrl": "/images/promo-psssb.jpg",
       "imageHint": "psssb official"
     },
     {
       "id": "hero-army",
       "description": "Indian Army Preparation Node",
-      "imageUrl": "https://joinindianarmy.nic.in/writereaddata/Portal/Images/Banner/Banner1.jpg",
+      "imageUrl": "/images/hero-army.jpg",
       "imageHint": "indian army"
     },
     {
       "id": "hero-punjab",
       "description": "Punjab Heritage Hero",
-      "imageUrl": "https://picsum.photos/seed/punjab-hero/1200/800",
+      "imageUrl": "/images/hero-punjab.jpg",
       "imageHint": "punjab heritage"
     },
     {
       "id": "map-punjab",
       "description": "Punjab Geographic Node",
-      "imageUrl": "https://www.mapsofindia.com/maps/punjab/punjab-map.jpg",
+      "imageUrl": "/images/map-punjab.jpg",
       "imageHint": "punjab map"
     },
     {
       "id": "map-india",
       "description": "India National Registry Map",
-      "imageUrl": "https://www.mapsofindia.com/images2/india-map.jpg",
+      "imageUrl": "/images/map-india.jpg",
       "imageHint": "india map"
     },
     {
       "id": "mock-police",
       "description": "Punjab Police Operational Readiness",
-      "imageUrl": "https://punjabpolice.gov.in/media/images/pp7.original.jpg",
+      "imageUrl": "/images/mock-police.jpg",
       "imageHint": "punjab police"
     },
     {
       "id": "founder-arsh",
       "description": "Arsh Grewal - Founder & Lead Developer",
-      "imageUrl": "https://i.ibb.co/5hkxTtKS/Whats-App-Image-2026-05-28-at-10-31-36-AM.jpg",
+      "imageUrl": "/logo/founder-arsh.jpg",
       "imageHint": "professional man"
     }
   ]

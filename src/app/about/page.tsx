@@ -21,8 +21,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import Image from "next/image"
 
 /**
- * @fileOverview Institutional About Center v21.5.
- * UPDATED: Optimized with next/image for production performance and resolved build warnings.
+ * @fileOverview Institutional About Center v21.6.
+ * UPDATED: Replaced external i.ibb.co URL with local public asset.
  */
 
 export default function AboutPage() {
@@ -33,7 +33,7 @@ export default function AboutPage() {
     setMounted(true);
   }, []);
 
-  const founderImg = "https://i.ibb.co/5hkxTtKS/Whats-App-Image-2026-05-28-at-10-31-36-AM.jpg";
+  const founderImg = "/logo/founder-arsh.jpg";
 
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats } = useDoc<any>(statsRef);

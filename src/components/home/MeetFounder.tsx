@@ -8,12 +8,12 @@ import Link from "next/link";
 import Image from "next/image";
 
 /**
- * @fileOverview Meet Founder section v2.2.
- * UPDATED: Removed uppercase from primary title for consistent Title Case.
+ * @fileOverview Meet Founder section v2.3.
+ * UPDATED: Replaced external i.ibb.co URL with local public asset.
  */
 
 export default function MeetFounder() {
-  const founderImg = "https://i.ibb.co/5hkxTtKS/Whats-App-Image-2026-05-28-at-10-31-36-AM.jpg";
+  const founderImg = "/logo/founder-arsh.jpg";
 
   return (
     <section className="py-8 md:py-24 bg-white overflow-hidden border-t border-slate-100">
