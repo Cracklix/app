@@ -7,7 +7,7 @@ import {
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Hardened Exam Store v8.0.
+ * @fileOverview Hardened Exam Store v8.1.
  * FIXED: Resolved duplicate property assignment and standardized initial state types.
  */
 
@@ -68,6 +68,7 @@ export const useExamStore = create<ExamStoreState>((set, get) => ({
   initExam: (mockId, title, userId, questions, duration, resumeData, languageMode) => {
     const finalLang: LanguageDisplayMode = languageMode || "ENGLISH_PUNJABI";
     
+    // Core base state shared between fresh start and resume
     const baseState = {
       mockId,
       mockTitle: title,

@@ -37,8 +37,9 @@ import {
 import Link from "next/link"
 
 /**
- * @fileOverview Support Center v6.2.
- * FIXED: Restored missing Link and Loader2 imports for build stabilization.
+ * @fileOverview Support Center v6.3.
+ * FIXED: Restored missing Link and Loader2 imports.
+ * NORMALIZED: Removed forced uppercase from UI labels.
  */
 
 export default function SupportPage() {
@@ -127,7 +128,7 @@ export default function SupportPage() {
             <div className="flex items-center gap-3">
               <MessageCircle className="h-5 w-5 text-primary" />
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                Support Center
+                Support center
               </span>
             </div>
             <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-[#0F172A] tracking-tight leading-[0.9] break-words antialiased">
@@ -141,7 +142,7 @@ export default function SupportPage() {
             onClick={() => setIsRaising(true)}
             className="h-16 px-10 bg-primary hover:bg-blue-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-3xl flex items-center gap-2 transition-all active:scale-95"
           >
-            <Plus className="h-5 w-5" /> Raise New Ticket
+            <Plus className="h-5 w-5" /> Raise new ticket
           </button>
         </div>
 
@@ -285,7 +286,7 @@ export default function SupportPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">
-                  Issue Type
+                  Issue type
                 </Label>
                 <select
                   value={formData.type}
@@ -321,7 +322,7 @@ export default function SupportPage() {
             </div>
             <div className="space-y-2">
               <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">
-                Subject Headline
+                Subject headline
               </Label>
               <Input
                 value={formData.subject}
@@ -334,7 +335,7 @@ export default function SupportPage() {
             </div>
             <div className="space-y-2">
               <Label className="text-[9px] font-black uppercase text-slate-500 ml-1">
-                Statement of Issue
+                Statement of issue
               </Label>
               <Textarea
                 value={formData.message}

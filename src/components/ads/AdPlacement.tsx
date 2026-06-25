@@ -15,7 +15,7 @@ interface AdPlacementProps {
 }
 
 /**
- * @fileOverview Institutional Ad-Node v1.18.
+ * @fileOverview Institutional Ad-Node v1.19.
  * FIXED: Resolved TypeScript query assignment error by explicitly typing the collection query.
  */
 

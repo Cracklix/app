@@ -13,8 +13,9 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Search Center v7.0.
+ * @fileOverview Search Center v7.1.
  * FIXED: Standardized React import and implemented type-safe cloneElement to resolve build blockers.
+ * NORMALIZED: Removed forced uppercase from UI labels.
  */
 
 export default function SearchPage() {
@@ -108,7 +109,7 @@ function SearchContent() {
         <div className="space-y-8 md:space-y-12">
            <div className="text-center space-y-6">
               <div className="space-y-2">
-                 <h1 className="text-2xl md:text-6xl font-black text-[#0F172A] tracking-tighter leading-none">Find Your Test</h1>
+                 <h1 className="text-2xl md:text-6xl font-black text-[#0F172A] tracking-tighter leading-none">Find your test</h1>
                  <p className="text-slate-400 font-bold text-[9px] md:text-11px uppercase tracking-[0.4em]">Instant access to the test bank</p>
               </div>
               
@@ -131,7 +132,7 @@ function SearchContent() {
            {queryStr.length >= 2 ? (
               <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <h3 className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">Results: {searchResults.length} items</h3>
+                    <h3 className="text-[10px] font-bold text-slate-400">Results: {searchResults.length} items</h3>
                     <Badge className="bg-primary/5 text-primary border-none text-[8px] font-black px-3 py-0.5 rounded-lg uppercase">Verified List</Badge>
                  </div>
                  <div className="grid grid-cols-1 gap-3">
@@ -196,7 +197,7 @@ function SearchResultItem({ title, category, href, icon }: { title: string, cate
                     : icon}
                </div>
                <div className="text-left min-w-0 flex-1 space-y-1">
-                  <p className="font-black text-[#0F172A] group-hover:text-primary transition-colors text-sm md:text-xl uppercase leading-tight line-clamp-1 truncate">{title}</p>
+                  <p className="font-bold text-[#0F172A] group-hover:text-primary transition-colors text-sm md:text-xl leading-tight line-clamp-1 truncate">{title}</p>
                   <div className="flex items-center gap-3">
                      <Badge className="bg-slate-100 text-slate-500 border-none text-[8px] md:text-[9px] font-black rounded shadow-sm">{category}</Badge>
                      <div className="h-1 w-1 rounded-full bg-slate-200" />
