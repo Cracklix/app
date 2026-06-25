@@ -11,7 +11,7 @@ interface ExamCardProps {
 }
 
 /**
- * @fileOverview Exam Card Component v4.3.
+ * @fileOverview Exam Card Component v4.4.
  * FIXED: Property access synchronized with the core Exam interface (categoryId, totalMocks).
  */
 export default function ExamCard({ exam }: ExamCardProps) {
