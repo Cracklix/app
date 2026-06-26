@@ -14,9 +14,8 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Refined Admin Layout v13.4 - Logo Scaled & Realigned.
+ * @fileOverview Refined Admin Layout v13.5 - Logo Scaled & Offset.
  */
-
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useUser();
   const authInstance = useAuth();
@@ -97,8 +96,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
               <Logo
                 variant="light"
-                className="shrink-0 -ml-5"
-                imgClassName="h-[70px] md:h-[130px]"
+                className="shrink-0 -ml-8"
+                imgClassName="h-[70px] md:h-[160px]"
               />
             </div>
             
