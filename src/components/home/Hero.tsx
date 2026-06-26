@@ -16,14 +16,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import { useDoc, useFirestore } from "@/firebase";
-import { doc } from "firebase/firestore";
+import { useDoc, useFirestore, useCollection } from "@/firebase";
+import { doc, collection, query, orderBy } from "firebase/firestore";
 import { AuthorityLogo } from "@/lib/exam-icons";
 import Image from "next/image";
 
 /**
- * @fileOverview Refined Hero Hub v85.0.
- * Layout: Text -> Image -> Cards -> Premium Buttons (Mobile).
+ * @fileOverview Refined Hero Hub v86.0.
+ * Layout: Text -> Image -> Action Cards -> Buttons -> Board Hub.
  */
 export default function Hero() {
   const db = useFirestore();
@@ -36,10 +36,13 @@ export default function Hero() {
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats } = useDoc<any>(statsRef);
 
+  const boardsQuery = useMemo(() => (db ? query(collection(db, "boards"), orderBy("displayOrder", "asc")) : null), [db]);
+  const { data: boards } = useCollection<any>(boardsQuery);
+
   if (!mounted) return null;
 
   return (
-    <section className="relative overflow-hidden bg-white pt-4 pb-10 md:pt-20 md:pb-32 border-b border-slate-50">
+    <section className="relative overflow-hidden bg-white pt-4 pb-12 md:pt-20 md:pb-32 border-b border-slate-50">
       <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 md:gap-20 lg:gap-24 items-center">
 
@@ -48,7 +51,7 @@ export default function Hero() {
             <motion.div 
                initial={{ opacity: 0, y: -10 }}
                animate={{ opacity: 1, y: 0 }}
-               className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50/50 border border-blue-100/50 group hover:border-primary/30 transition-all cursor-default"
+               className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50/50 border border-blue-100/50"
             >
               <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 animate-pulse" />
               <span className="text-[11px] md:text-sm font-bold text-slate-600 tracking-tight">
@@ -57,7 +60,7 @@ export default function Hero() {
             </motion.div>
 
             <div className="space-y-3 md:space-y-6">
-              <h1 className="text-[clamp(26px,6vw,34px)] lg:text-[clamp(26px,6vw,84px)] font-black tracking-tighter text-[#0F172A] leading-[1.1] md:leading-[0.95] antialiased">
+              <h1 className="text-[clamp(26px,6vw,34px)] lg:text-[clamp(26px,6vw,84px)] font-black tracking-tighter text-[#0F172A] leading-[1.1] md:leading-[0.95] antialiased uppercase">
                 Crack Punjab Govt Exams <br className="hidden md:block"/>
                 <span className="text-primary italic">With Confidence</span>
               </h1>
@@ -67,7 +70,7 @@ export default function Hero() {
               </p>
             </div>
 
-            {/* MOBILE ONLY: HERO IMAGE PLACEMENT (Above Cards) */}
+            {/* MOBILE ONLY: HERO IMAGE PLACEMENT (Center fold) */}
             <div className="flex lg:hidden flex-col items-center w-full max-w-[240px] mx-auto py-2">
                <motion.div 
                  initial={{ opacity: 0, scale: 0.95 }} 
@@ -105,6 +108,22 @@ export default function Hero() {
                   </Link>
                </Button>
             </div>
+
+            {/* OFFICIAL BOARDS HUB */}
+            <div className="pt-8 md:pt-12 space-y-4">
+              <p className="text-[10px] md:text-[11px] font-black uppercase text-slate-400 tracking-widest text-center lg:text-left">Browse Official Boards</p>
+              <div className="flex flex-wrap justify-center lg:justify-start gap-2 md:gap-3">
+                {boards?.map((board: any) => (
+                  <Link 
+                    key={board.id} 
+                    href={`/exams/hub/${board.id}`}
+                    className="px-4 py-2 md:px-6 md:py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[11px] md:text-[13px] font-black text-slate-500 hover:text-primary hover:border-primary hover:bg-white hover:shadow-lg transition-all active:scale-95 whitespace-nowrap"
+                  >
+                    {board.abbreviation} Hub
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* DESKTOP ONLY: HERO IMAGE */}
@@ -138,7 +157,7 @@ function QuickActionCard({ boardId, label, href }: { boardId: string, label: str
           <AuthorityLogo boardId={boardId} size="lg" className="bg-transparent shadow-none border-none p-0 w-full h-full" />
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-[12px] md:text-lg font-bold text-[#0F172A] group-hover:text-primary transition-colors leading-tight truncate">
+          <h3 className="text-[13px] md:text-lg font-bold text-[#0F172A] group-hover:text-primary transition-colors leading-tight truncate">
             {label}
           </h3>
         </div>
