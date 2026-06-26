@@ -37,8 +37,8 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v16.0.
- * OPTIMIZED: Compact desktop header height (80px) and refined node spacing.
+ * @fileOverview Institutional Navbar v16.1.
+ * FIXED: Removed logo overlap and negative margins for proper alignment.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -107,7 +107,7 @@ export default function Navbar() {
       <nav className="w-full h-[64px] md:h-[80px] transition-all duration-300">
         <div className="w-full max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between gap-2 md:gap-4">
 
-          <div className="flex items-center shrink-0 h-full gap-0">
+          <div className="flex items-center shrink-0 h-full">
             <button
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open menu"
@@ -118,12 +118,11 @@ export default function Navbar() {
 
             <Logo
               variant="light"
-              className="flex-shrink-0 -ml-12"
-              imgClassName="h-[52px] md:h-[100px]"
+              className="flex-shrink-0 ml-3 md:ml-5"
+              imgClassName="h-10 md:h-12"
             />
           </div>
 
-          {/* Desktop Navigation Links - Centered & Fluid */}
           <div className="hidden lg:flex items-center justify-center gap-8 xl:gap-12 flex-1 lg:-ml-10">
             <NavLink href="/" label="Home" active={pathname === '/'} />
             <NavLink href="/exams" label="Mock Tests" active={pathname === '/exams'} />

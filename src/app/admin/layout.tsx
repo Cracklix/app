@@ -14,7 +14,8 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Refined Admin Layout v13.5 - Logo Scaled & Offset.
+ * @fileOverview Refined Admin Layout v13.6.
+ * FIXED: Removed logo overlap and standardized header spacing.
  */
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useUser();
@@ -86,7 +87,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       )}>
         <header className="pt-safe border-b border-slate-50 bg-white/80 backdrop-blur-xl sticky top-0 z-40 shrink-0">
           <div className="h-[80px] md:h-[112px] flex items-center px-4 md:px-10 justify-between">
-            <div className="flex items-center h-full gap-0">
+            <div className="flex items-center h-full">
               <button 
                 onClick={toggleSidebar}
                 className="bg-white border border-slate-200 text-slate-700 h-10 w-10 md:h-11 md:w-11 rounded-xl shadow-sm flex items-center justify-center active:scale-95 transition-all hover:border-primary/30 z-10"
@@ -96,8 +97,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
               <Logo
                 variant="light"
-                className="shrink-0 -ml-12"
-                imgClassName="h-[70px] md:h-[160px]"
+                className="shrink-0 ml-3 md:ml-6"
+                imgClassName="h-10 md:h-14"
               />
             </div>
             
