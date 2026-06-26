@@ -13,8 +13,8 @@ import { AuthorityLogo } from '@/lib/exam-icons';
 import { Badge } from '@/components/ui/badge';
 
 /**
- * @fileOverview Featured Categories Hub v26.0.
- * UPDATED: Set to strict 4-column grid on desktop for visual consistency.
+ * @fileOverview Featured Categories Hub v28.0.
+ * FIXED: Card width constrained to narrow portrait pills to match Hero.
  */
 
 const STRICT_WHITELIST = [
@@ -38,8 +38,8 @@ export default function FeaturedCategories() {
   }, [rawCategories]);
 
   return (
-    <section className="py-6 md:py-24 bg-white border-t border-slate-50">
-      <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6 md:space-y-16">
+    <section className="py-8 md:py-24 bg-white border-t border-slate-50">
+      <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 md:space-y-20">
         
         <div className="space-y-2 text-left px-1">
           <div className="flex items-center gap-2 md:gap-4">
@@ -51,12 +51,12 @@ export default function FeaturedCategories() {
           <p className="max-w-2xl text-[14px] md:text-[clamp(13px,1.5vw,18px)] font-medium text-slate-500">Choose an exam to start your study.</p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-12">
           {catLoading ? (
             Array.from({ length: 4 }).map((_, i) => (
               <Skeleton 
                 key={i} 
-                className="h-[280px] md:h-[420px] w-full rounded-2xl md:rounded-[3rem] bg-slate-50" 
+                className="h-[300px] md:h-[500px] w-full max-w-[180px] md:max-w-[340px] mx-auto rounded-[2.5rem] md:rounded-[4rem] bg-slate-50" 
               />
             ))
           ) : categories.map((cat, idx) => {
@@ -73,31 +73,31 @@ export default function FeaturedCategories() {
                 className="flex flex-col h-full"
               >
                  <Link href={`/exams/category/${cat.id}`} className="h-full block">
-                    <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[24px] md:rounded-[3rem] bg-white group overflow-hidden flex flex-col p-4 md:p-10 lg:p-12 h-full min-h-[280px] md:min-h-[420px]">
+                    <Card className="w-full max-w-[180px] md:max-w-[340px] mx-auto border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2.5rem] md:rounded-[4rem] bg-white group overflow-hidden flex flex-col p-4 md:p-14 h-full min-h-[300px] md:min-h-[500px]">
                        
-                       <div className="flex justify-center mb-4 md:mb-12 shrink-0">
-                          <div className="h-11 w-11 md:h-24 md:w-24 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform overflow-hidden">
+                       <div className="flex justify-center mb-6 md:mb-16 shrink-0">
+                          <div className="h-11 w-11 md:h-28 md:w-28 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform overflow-hidden">
                              <AuthorityLogo category={cat} size="lg" className="bg-transparent shadow-none border-none p-0 h-full w-full" />
                           </div>
                        </div>
 
                        <div className="flex-1 flex flex-col justify-start text-center min-w-0">
-                          <div className="space-y-2 md:space-y-4">
+                          <div className="space-y-3 md:space-y-6">
                              <div className="flex justify-center h-4 md:h-7">
-                                <Badge className="bg-primary/5 text-primary border-none font-bold text-[11px] px-2.5 py-0.5 rounded-full shadow-sm w-fit tracking-tight">
+                                <Badge className="bg-primary/5 text-primary border-none font-bold text-[11px] px-3 py-1 rounded-full shadow-sm w-fit tracking-tight">
                                    {boardLabel} Hub
                                 </Badge>
                              </div>
-                             <h3 className="text-[16px] md:text-[clamp(15px,1.8vw,20px)] font-semibold leading-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2">
+                             <h3 className="text-[16px] md:text-[clamp(18px,2vw,28px)] font-bold leading-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2">
                                 {cat.title}
                              </h3>
                           </div>
                        </div>
 
-                       <div className="mt-auto shrink-0 pt-4 md:pt-8">
-                          <Button variant="ghost" className="w-full h-12 md:h-14 lg:h-16 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-bold text-[14px] md:text-[15px] tracking-tight gap-2 shadow-md border-none active:scale-95">
+                       <div className="mt-auto shrink-0 pt-6 md:pt-12">
+                          <Button variant="ghost" className="w-full h-11 md:h-16 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-black text-[10px] md:text-[13px] tracking-widest uppercase shadow-md border-none active:scale-95 gap-2">
                              Open
-                             <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                             <ChevronRight className="h-4 w-4" />
                           </Button>
                        </div>
                     </Card>

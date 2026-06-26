@@ -20,10 +20,12 @@ import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { AuthorityLogo } from "@/lib/exam-icons";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview Refined Hero Hub v92.0.
- * UPDATED: Synchronized Quick Action cards and buttons with PWA UI standards.
+ * @fileOverview High-Fidelity Hero Hub v95.0.
+ * FIXED: Card width constrained to narrow portrait pills.
+ * UPDATED: Premium CTA button design.
  */
 export default function Hero() {
   const db = useFirestore();
@@ -88,7 +90,7 @@ export default function Hero() {
                     <Link 
                       key={i} 
                       href={board.href}
-                      className="px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-100 text-[10px] md:text-[11px] font-black text-slate-400 whitespace-nowrap shadow-sm hover:border-primary/30 hover:text-primary transition-all active:scale-95"
+                      className="px-2.5 py-0.5 rounded-lg bg-slate-50 border border-slate-100 text-[10px] md:text-[11px] font-black text-slate-400 whitespace-nowrap shadow-sm hover:border-primary/30 hover:text-primary transition-all active:scale-95"
                     >
                       {board.label}
                     </Link>
@@ -97,15 +99,15 @@ export default function Hero() {
               </div>
             </div>
 
-            <div className="hidden lg:flex flex-col sm:flex-row gap-4 pt-4 w-full max-w-xl">
-               <Button asChild className="sm:flex-1 h-12 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-base shadow-xl shadow-blue-500/20 rounded-full active:scale-95 transition-all border-none">
-                  <Link href="/mocks" className="flex items-center justify-center gap-2">
-                    <Play className="h-4 w-4 fill-current" /> Start Study
+            <div className="hidden lg:flex flex-col sm:flex-row gap-6 pt-6 w-full max-w-xl">
+               <Button asChild className="sm:flex-1 h-16 md:h-24 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-black text-xs md:text-xl uppercase tracking-widest shadow-4xl shadow-blue-500/30 rounded-full active:scale-95 transition-all border-none">
+                  <Link href="/mocks" className="flex items-center justify-center gap-4">
+                    <Play className="h-5 w-5 md:h-8 md:w-8 fill-current" /> Start Prep
                   </Link>
                </Button>
-               <Button asChild variant="outline" className="sm:flex-1 h-12 px-10 rounded-full font-bold text-base border-2 border-slate-200 hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95">
-                  <Link href="/exams" className="flex items-center justify-center gap-2">
-                    <LayoutGrid className="h-4 w-4" /> View Exams
+               <Button asChild variant="outline" className="sm:flex-1 h-16 md:h-24 px-10 rounded-full font-black text-xs md:text-xl uppercase tracking-widest border-2 border-slate-200 hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95 text-[#0F172A]">
+                  <Link href="/exams" className="flex items-center justify-center gap-4">
+                    <LayoutGrid className="h-5 w-5 md:h-8 md:w-8" /> View Exams
                   </Link>
                </Button>
             </div>
@@ -130,7 +132,7 @@ export default function Hero() {
           </div>
 
           {/* 3. Action Grid & Mobile CTAs */}
-          <div className="col-span-1 lg:col-span-2 space-y-6 md:space-y-12 order-3">
+          <div className="col-span-1 lg:col-span-2 space-y-8 md:space-y-16 order-3">
              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
                 <QuickActionCard boardId="mock-test" label="Mock Tests" href="/mocks" />
                 <QuickActionCard boardId="study-material" label="Notes" href="/notes" />
@@ -138,15 +140,15 @@ export default function Hero() {
                 <QuickActionCard boardId="current-affairs" label="Current Affairs" href="/current-affairs" />
              </div>
 
-             <div className="flex flex-col sm:flex-row gap-4 pt-2 w-full max-w-xl mx-auto lg:hidden">
-                <Button asChild className="w-full sm:flex-1 h-12 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-[15px] shadow-xl shadow-blue-500/20 rounded-full active:scale-95 transition-all border-none">
-                    <Link href="/mocks" className="flex items-center justify-center gap-2">
-                      <Play className="h-4 w-4 fill-current" /> Start Study
+             <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full max-w-xl mx-auto lg:hidden">
+                <Button asChild className="w-full sm:flex-1 h-16 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-black text-sm uppercase tracking-widest shadow-4xl shadow-blue-500/30 rounded-full active:scale-95 transition-all border-none">
+                    <Link href="/mocks" className="flex items-center justify-center gap-3">
+                      <Play className="h-5 w-5 fill-current" /> Start Prep
                     </Link>
                 </Button>
-                <Button asChild variant="outline" className="w-full sm:flex-1 h-12 px-10 rounded-full font-bold text-[15px] border-2 border-slate-200 hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95">
-                    <Link href="/exams" className="flex items-center justify-center gap-2">
-                      <LayoutGrid className="h-4 w-4" /> View Exams
+                <Button asChild variant="outline" className="w-full sm:flex-1 h-16 px-10 rounded-full font-black text-sm uppercase tracking-widest border-2 border-slate-200 hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95 text-[#0F172A]">
+                    <Link href="/exams" className="flex items-center justify-center gap-3">
+                      <LayoutGrid className="h-5 w-5" /> View Exams
                     </Link>
                 </Button>
              </div>
@@ -161,14 +163,14 @@ export default function Hero() {
 function QuickActionCard({ boardId, label, href }: { boardId: string, label: string, href: string }) {
   return (
     <Link href={href} className="block group h-full">
-      <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[24px] md:rounded-[3rem] bg-white group overflow-hidden flex flex-col p-4 md:p-10 lg:p-12 h-full min-h-[280px] md:min-h-[420px] text-center">
-        <div className="flex justify-center mb-4 md:mb-12 shrink-0">
-          <div className="h-11 w-11 md:h-24 md:w-24 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform overflow-hidden">
+      <Card className="w-full max-w-[180px] md:max-w-[340px] mx-auto border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2.5rem] md:rounded-[4rem] bg-white group overflow-hidden flex flex-col p-4 md:p-14 lg:p-16 h-full min-h-[280px] md:min-h-[480px] text-center">
+        <div className="flex justify-center mb-6 md:mb-16 shrink-0">
+          <div className="h-12 w-12 md:h-28 md:w-28 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
              <AuthorityLogo boardId={boardId} size="lg" className="bg-transparent shadow-none border-none p-0 h-full w-full" />
           </div>
         </div>
         <div className="flex-1 flex flex-col justify-start min-w-0">
-           <h3 className="text-[16px] md:text-[clamp(15px,1.8vw,26px)] font-bold tracking-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2">
+           <h3 className="text-[16px] md:text-[clamp(18px,2vw,32px)] font-bold tracking-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2">
               {label}
            </h3>
         </div>
