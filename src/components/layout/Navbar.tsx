@@ -39,7 +39,7 @@ import PWAInstallButton from "@/components/PWAInstallButton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Standardized Navbar v69.1 - Mobile Icon Scale Optimized.
+ * @fileOverview Standardized Navbar v70.0 - Icon Scale & Mobile Alignment Refined.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -112,9 +112,9 @@ export default function Navbar() {
             <button
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open menu"
-              className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-lg md:rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0 hover:border-primary/30 z-10"
+              className="flex items-center justify-center w-9 h-9 md:w-11 md:h-11 rounded-lg md:rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0 hover:border-primary/30 z-10"
             >
-              <Menu className="w-[22px] h-[22px] md:w-6 md:h-6" />
+              <Menu className="w-[20px] h-[20px] md:w-6 md:h-6" />
             </button>
 
             <Logo
@@ -142,21 +142,21 @@ export default function Navbar() {
 
             <Link
               href="/search"
-              className="w-10 h-10 md:w-11 md:h-11 rounded-lg md:rounded-xl flex items-center justify-center bg-slate-50 text-slate-600 hover:text-primary transition-all active:scale-95"
+              className="w-9 h-9 md:w-11 md:h-11 rounded-lg md:rounded-xl flex items-center justify-center bg-slate-50 text-slate-600 hover:text-primary transition-all active:scale-95"
             >
-              <Search className="w-[20px] h-[20px] md:w-5 md:h-5" />
+              <Search className="w-[18px] h-[18px] md:w-5 md:h-5" />
             </Link>
 
             {loading ? (
-              <Skeleton className="w-10 h-10 md:w-11 md:h-11 rounded-lg md:rounded-xl bg-slate-100" />
+              <Skeleton className="w-9 h-9 md:w-11 md:h-11 rounded-lg md:rounded-xl bg-slate-100" />
             ) : user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="w-10 h-10 md:h-11 rounded-lg md:rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center active:scale-95 transition-all">
+                  <button className="w-9 h-9 md:h-11 rounded-lg md:rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center active:scale-95 transition-all">
                     <StudentAvatar
                       profile={profile}
                       className="w-full h-full border-none"
-                      iconClassName="w-[20px] h-[20px] md:w-6 md:h-6"
+                      iconClassName="w-[18px] h-[18px] md:w-6 md:h-6"
                     />
                   </button>
                 </DropdownMenuTrigger>
