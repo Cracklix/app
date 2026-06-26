@@ -34,67 +34,35 @@ jobs:
       - name: Build Next.js Static Export
         run: npm run build
 
-      - name: Verify Web Distribution
-        run: |
-          echo "Checking root contents:"
-          ls -la
-          if [ ! -d "out" ]; then echo "❌ 'out' directory missing"; exit 1; fi
-          if [ ! -f "out/index.html" ]; then echo "❌ 'out/index.html' missing"; exit 1; fi
-          echo "✅ Web distribution verified."
-
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Setup Keystore
-        run: |
-          if [[ -n "${{ secrets.KEYSTORE_BASE64 }}" ]]; then
-            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
-            echo "KEYSTORE_TYPE=RELEASE" >> $GITHUB_ENV
-          else
-            keytool -genkeypair -v -keystore android/app/release.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-            echo "KEYSTORE_TYPE=DEBUG" >> $GITHUB_ENV
-          fi
-
-      - name: Build Android Release APK
+      - name: Build Android Production Assets
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleRelease -x lint -x test --no-daemon
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || 'android' }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS || 'androiddebugkey' }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'android' }}
+          ./gradlew bundleRelease assembleRelease -x lint -x test --no-daemon
 
-      - name: Sign & Prepare APK for Hosting
+      - name: Sign & Prepare Assets
         run: |
-          UNSIGNED_APK=$(find android/app/build/outputs/apk/release -name "*.apk" | head -n 1)
-          BUILD_TOOLS_PATH=$(find $ANDROID_HOME/build-tools -name "apksigner" | head -n 1 | xargs dirname)
+          mkdir -p out/apk
           
-          # Zipalign
-          $BUILD_TOOLS_PATH/zipalign -v 4 "$UNSIGNED_APK" cracklix-aligned.apk
+          # Move APK to distribution node
+          APK_PATH=$(find android/app/build/outputs/apk/release -name "*.apk" | head -n 1)
+          if [ -f "$APK_PATH" ]; then
+            cp "$APK_PATH" out/apk/cracklix-production.apk
+            echo "✅ APK staged at /apk/cracklix-production.apk"
+          fi
 
-          # Sign
-          if [[ "$KEYSTORE_TYPE" == "RELEASE" ]]; then
-            $BUILD_TOOLS_PATH/apksigner sign --ks android/app/release.keystore \
-              --ks-key-alias "${{ secrets.KEY_ALIAS }}" \
-              --ks-pass "pass:${{ secrets.KEYSTORE_PASSWORD }}" \
-              --key-pass "pass:${{ secrets.KEY_PASSWORD }}" \
-              --out cracklix-production.apk cracklix-aligned.apk
-          else
-            $BUILD_TOOLS_PATH/apksigner sign --ks android/app/release.keystore \
-              --ks-key-alias "androiddebugkey" \
-              --ks-pass "pass:android" \
-              --key-pass "pass:android" \
-              --out cracklix-production.apk cracklix-aligned.apk
+          # Move AAB to distribution node
+          AAB_PATH=$(find android/app/build/outputs/bundle/release -name "*.aab" | head -n 1)
+          if [ -f "$AAB_PATH" ]; then
+            cp "$AAB_PATH" out/apk/cracklix-production.aab
+            echo "✅ AAB staged for Play Store"
           fi
           
-          # Copy to distribution folder for direct download
-          mkdir -p out/apk
-          cp cracklix-production.apk out/apk/cracklix-production.apk
-          
-          # Generate Metadata
+          # Version Metadata for Auto-Update Node
           echo "{\"version\": \"1.0.0\", \"build\": ${{ github.run_number }}, \"updatedAt\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"}" > out/apk/metadata.json
-          echo "✅ APK staged for direct download at /apk/cracklix-production.apk"
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0

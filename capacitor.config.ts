@@ -18,7 +18,7 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 2000,
+      launchShowDuration: 3000,
       backgroundColor: "#0B1528",
       showSpinner: false,
       androidScaleType: "CENTER_CROP",
@@ -38,7 +38,7 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: false,
     captureInput: true,
-    webContentsDebuggingEnabled: false // Disabled for production security
+    webContentsDebuggingEnabled: false
   }
 };
 
