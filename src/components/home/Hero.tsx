@@ -24,9 +24,8 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Hero Hub v98.0.
- * FIXED: Resolved 'image' module resolution error.
- * FIXED: Tightened card padding to remove extra bottom space and enforced edge-to-edge mobile layout.
+ * @fileOverview High-Fidelity Hero Hub v99.0.
+ * UPDATED: Reduced desktop padding and typography scales.
  */
 export default function Hero() {
   const db = useFirestore();
@@ -56,13 +55,13 @@ export default function Hero() {
   if (!mounted) return null;
 
   return (
-    <section className="relative overflow-hidden bg-white pt-6 pb-12 md:pt-16 md:pb-28 border-b border-slate-50">
+    <section className="relative overflow-hidden bg-white pt-6 pb-12 md:pt-8 md:pb-12 border-b border-slate-50">
       <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto">
         
-        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 md:gap-20 lg:gap-24 items-center px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center px-4 sm:px-6 lg:px-8">
 
           {/* 1. Text Content Hub */}
-          <div className="text-center lg:text-left space-y-6 md:space-y-8 flex flex-col order-1">
+          <div className="text-center lg:text-left space-y-4 md:space-y-6 flex flex-col order-1">
             
             <motion.div 
                initial={{ opacity: 0, y: -10 }}
@@ -75,14 +74,14 @@ export default function Hero() {
               </span>
             </motion.div>
 
-            <div className="space-y-4 md:space-y-6">
-              <h1 className="text-[26px] md:text-[clamp(32px,4vw,64px)] xl:text-[72px] font-[900] tracking-tighter text-[#0F172A] leading-[1.1] md:leading-[0.95] antialiased">
+            <div className="space-y-3 md:space-y-4">
+              <h1 className="text-[26px] md:text-[clamp(32px,3.5vw,48px)] xl:text-[56px] font-[900] tracking-tighter text-[#0F172A] leading-[1.1] md:leading-[0.95] antialiased">
                 Crack Punjab Govt Exams <br className="hidden md:block"/>
                 <span className="text-primary italic">With Confidence</span>
               </h1>
 
-              <div className="space-y-4 md:space-y-6">
-                <p className="text-[14px] md:text-xl text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-bold tracking-tight">
+              <div className="space-y-4 md:space-y-4">
+                <p className="text-[14px] md:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-bold tracking-tight">
                   Mock tests and notes checked by official patterns.
                 </p>
                 
@@ -100,15 +99,15 @@ export default function Hero() {
               </div>
             </div>
 
-            <div className="hidden lg:flex flex-col sm:flex-row gap-6 pt-6 w-full max-w-xl">
-               <Button asChild className="sm:flex-1 h-16 md:h-24 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-black text-xs md:text-xl uppercase tracking-widest shadow-4xl shadow-blue-500/30 rounded-full active:scale-95 transition-all border-none">
+            <div className="hidden lg:flex flex-col sm:flex-row gap-4 pt-4 w-full max-w-lg">
+               <Button asChild className="sm:flex-1 h-14 md:h-16 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-black text-xs md:text-lg uppercase tracking-widest shadow-4xl shadow-blue-500/30 rounded-full active:scale-95 transition-all border-none">
                   <Link href="/mocks" className="flex items-center justify-center gap-4">
-                    <Play className="h-5 w-5 md:h-8 md:w-8 fill-current" /> Start Prep
+                    <Play className="h-5 w-5 md:h-6 md:w-6 fill-current" /> Start Prep
                   </Link>
                </Button>
-               <Button asChild variant="outline" className="sm:flex-1 h-16 md:h-24 px-10 rounded-full font-black text-xs md:text-xl uppercase tracking-widest border-2 border-slate-200 hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95 text-[#0F172A]">
+               <Button asChild variant="outline" className="sm:flex-1 h-14 md:h-16 px-10 rounded-full font-black text-xs md:text-lg uppercase tracking-widest border-2 border-slate-200 hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95 text-[#0F172A]">
                   <Link href="/exams" className="flex items-center justify-center gap-4">
-                    <LayoutGrid className="h-5 w-5 md:h-8 md:w-8" /> View Exams
+                    <LayoutGrid className="h-5 w-5 md:h-6 md:w-6" /> View Exams
                   </Link>
                </Button>
             </div>
@@ -126,7 +125,7 @@ export default function Hero() {
                 src="/images/hero-student.png" 
                 alt="Cracklix Study" 
                 fill
-                className="object-contain drop-shadow-[0_20px_50px_rgba(22,119,255,0.15)] lg:drop-shadow-[0_35px_80px_rgba(22,119,255,0.2)]" 
+                className="object-contain drop-shadow-[0_20px_50px_rgba(22,119,255,0.15)] lg:drop-shadow-[0_25px_60px_rgba(22,119,255,0.15)]" 
                 priority
               />
             </motion.div>
@@ -134,8 +133,8 @@ export default function Hero() {
         </div>
 
         {/* 3. Action Grid & Mobile CTAs - Edge to Edge on mobile */}
-        <div className="mt-8 md:mt-16 space-y-8 md:space-y-16 px-0 sm:px-6 lg:px-8">
-           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-8">
+        <div className="mt-8 md:mt-12 space-y-8 md:space-y-12 px-0 sm:px-6 lg:px-8">
+           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6">
               <QuickActionCard boardId="mock-test" label="Mock Tests" href="/mocks" />
               <QuickActionCard boardId="study-material" label="Notes" href="/notes" />
               <QuickActionCard boardId="pyq" label="PYQ Papers" href="/pyqs" />
@@ -164,14 +163,14 @@ export default function Hero() {
 function QuickActionCard({ boardId, label, href }: { boardId: string, label: string, href: string }) {
   return (
     <Link href={href} className="block group h-full">
-      <Card className="w-full md:max-w-[340px] mx-auto border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] md:rounded-[3rem] bg-white group overflow-hidden flex flex-col p-4 pt-6 pb-4 md:p-10 text-center">
-        <div className="flex justify-center mb-4 md:mb-10 shrink-0">
-          <div className="h-14 w-14 md:h-20 md:w-20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
+      <Card className="w-full md:max-w-[340px] mx-auto border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] md:rounded-[3rem] bg-white group overflow-hidden flex flex-col p-4 pt-6 pb-4 md:p-8 text-center">
+        <div className="flex justify-center mb-4 md:mb-8 shrink-0">
+          <div className="h-14 w-14 md:h-16 md:w-16 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
              <AuthorityLogo boardId={boardId} size="lg" className="bg-transparent shadow-none border-none p-0 h-full w-full" />
           </div>
         </div>
         <div className="min-w-0">
-           <h3 className="text-[14px] md:text-[clamp(16px,1.8vw,26px)] font-bold tracking-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2">
+           <h3 className="text-[14px] md:text-[clamp(16px,1.5vw,22px)] font-bold tracking-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2">
               {label}
            </h3>
         </div>

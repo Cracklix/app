@@ -13,8 +13,8 @@ import { AuthorityLogo } from '@/lib/exam-icons';
 import { Badge } from '@/components/ui/badge';
 
 /**
- * @fileOverview Featured Categories Hub v31.0.
- * FIXED: Optimized card padding to remove extra bottom space.
+ * @fileOverview Featured Categories Hub v32.0.
+ * UPDATED: Reduced desktop section padding and text scales.
  */
 
 const STRICT_WHITELIST = [
@@ -38,25 +38,25 @@ export default function FeaturedCategories() {
   }, [rawCategories]);
 
   return (
-    <section className="py-8 md:py-24 bg-white border-t border-slate-50">
-      <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto space-y-8 md:space-y-20">
+    <section className="py-8 md:py-12 bg-white border-t border-slate-50">
+      <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto space-y-8 md:space-y-12">
         
         <div className="space-y-2 text-left px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 md:gap-4">
-             <div className="h-8 w-8 md:h-12 md:w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-inner shrink-0">
-               <Layers className="h-4 w-4 md:h-6 md:w-6" />
+             <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-inner shrink-0">
+               <Layers className="h-4 w-4 md:h-5 md:w-5" />
              </div>
-             <h2 className="text-[22px] md:text-[clamp(24px,4vw,36px)] font-bold tracking-tight text-[#0F172A]">Choose Exam</h2>
+             <h2 className="text-[22px] md:text-3xl font-bold tracking-tight text-[#0F172A]">Choose Exam</h2>
           </div>
-          <p className="max-w-2xl text-[14px] md:text-[clamp(13px,1.5vw,18px)] font-medium text-slate-500">Choose an exam to start your study.</p>
+          <p className="max-w-2xl text-[14px] md:text-base font-medium text-slate-500">Choose an exam to start your study.</p>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-12 px-0 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-0 sm:px-6 lg:px-8">
           {catLoading ? (
             Array.from({ length: 4 }).map((_, i) => (
               <Skeleton 
                 key={i} 
-                className="h-[200px] md:h-[350px] w-full mx-auto rounded-[1.5rem] md:rounded-[3rem] bg-slate-50" 
+                className="h-[200px] md:h-[300px] w-full mx-auto rounded-[1.5rem] md:rounded-[3rem] bg-slate-50" 
               />
             ))
           ) : categories.map((cat, idx) => {
@@ -73,29 +73,29 @@ export default function FeaturedCategories() {
                 className="flex flex-col h-full"
               >
                  <Link href={`/exams/category/${cat.id}`} className="h-full block">
-                    <Card className="w-full mx-auto border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] md:rounded-[3rem] bg-white group overflow-hidden flex flex-col p-4 pt-6 pb-4 md:p-10 h-full text-center">
+                    <Card className="w-full mx-auto border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] md:rounded-[3rem] bg-white group overflow-hidden flex flex-col p-4 pt-6 pb-4 md:p-8 h-full text-center">
                        
-                       <div className="flex justify-center mb-4 md:mb-10 shrink-0">
-                          <div className="h-14 w-14 md:h-24 md:w-24 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform overflow-hidden">
+                       <div className="flex justify-center mb-4 md:mb-8 shrink-0">
+                          <div className="h-14 w-14 md:h-16 md:w-16 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform overflow-hidden">
                              <AuthorityLogo category={cat} size="lg" className="bg-transparent shadow-none border-none p-0 h-full w-full" />
                           </div>
                        </div>
 
                        <div className="flex-1 flex flex-col justify-start min-w-0">
-                          <div className="space-y-2 md:space-y-4">
+                          <div className="space-y-2 md:space-y-3">
                              <div className="flex justify-center h-4 md:h-6">
                                 <Badge className="bg-primary/5 text-primary border-none font-bold text-[10px] px-2 py-0.5 rounded-full shadow-sm w-fit tracking-tight">
                                    {boardLabel} Hub
                                 </Badge>
                              </div>
-                             <h3 className="text-[14px] md:text-[clamp(16px,2vw,24px)] font-bold leading-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2">
+                             <h3 className="text-[14px] md:text-lg font-bold leading-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2">
                                 {cat.title}
                              </h3>
                           </div>
                        </div>
 
-                       <div className="mt-auto shrink-0 pt-4 md:pt-10">
-                          <Button variant="ghost" className="w-full h-10 md:h-14 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-black text-[10px] md:text-[13px] tracking-widest uppercase border-none active:scale-95 gap-2">
+                       <div className="mt-auto shrink-0 pt-4 md:pt-8">
+                          <Button variant="ghost" className="w-full h-10 md:h-12 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-black text-[10px] md:text-xs tracking-widest uppercase border-none active:scale-95 gap-2">
                              Open
                              <ChevronRight className="h-4 w-4" />
                           </Button>

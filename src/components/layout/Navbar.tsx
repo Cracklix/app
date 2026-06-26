@@ -37,8 +37,8 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v15.0.
- * OPTIMIZED: Enhanced widescreen layout for PC and fluid navigation nodes.
+ * @fileOverview Institutional Navbar v16.0.
+ * OPTIMIZED: Compact desktop header height (80px) and refined node spacing.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -99,12 +99,12 @@ export default function Navbar() {
       SUPER_ADMIN_WHITELIST.includes(user.email.toLowerCase()));
 
   if (!mounted) {
-    return <nav className="w-full border-b border-slate-100 bg-white h-[64px] md:h-[100px]" />;
+    return <nav className="w-full border-b border-slate-100 bg-white h-[64px] md:h-[80px]" />;
   }
 
   return (
     <div className="sticky top-0 z-50 w-full font-body pt-safe bg-white border-b border-slate-100 shadow-sm">
-      <nav className="w-full h-[64px] md:h-[112px] transition-all duration-300">
+      <nav className="w-full h-[64px] md:h-[80px] transition-all duration-300">
         <div className="w-full max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between gap-2 md:gap-4">
 
           <div className="flex items-center shrink-0 h-full gap-0">
@@ -119,12 +119,12 @@ export default function Navbar() {
             <Logo
               variant="light"
               className="flex-shrink-0 -ml-12"
-              imgClassName="h-[52px] md:h-[160px]"
+              imgClassName="h-[52px] md:h-[100px]"
             />
           </div>
 
           {/* Desktop Navigation Links - Centered & Fluid */}
-          <div className="hidden lg:flex items-center justify-center gap-8 xl:gap-14 flex-1 lg:-ml-10">
+          <div className="hidden lg:flex items-center justify-center gap-8 xl:gap-12 flex-1 lg:-ml-10">
             <NavLink href="/" label="Home" active={pathname === '/'} />
             <NavLink href="/exams" label="Mock Tests" active={pathname === '/exams'} />
             <NavLink href="/pyqs" label="Old Papers" active={pathname === '/pyqs'} />
@@ -210,7 +210,7 @@ export default function Navbar() {
 
 function NavLink({ href, label, active }: { href: string; label: string; active?: boolean; }) {
   return (
-    <Link href={href} className={cn("text-[13px] xl:text-[15px] font-bold tracking-tight transition-all", active ? "text-primary border-b-2 border-primary" : "text-slate-500 hover:text-primary")}>
+    <Link href={href} className={cn("text-[13px] xl:text-[14px] font-bold tracking-tight transition-all", active ? "text-primary border-b-2 border-primary" : "text-slate-500 hover:text-primary")}>
       {label}
     </Link>
   );

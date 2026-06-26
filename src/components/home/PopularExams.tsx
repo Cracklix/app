@@ -12,8 +12,8 @@ import { AuthorityLogo } from "@/lib/exam-icons";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Popular Exams Hub v26.0.
- * FIXED: Optimized card padding to remove extra bottom space.
+ * @fileOverview Popular Exams Hub v27.0.
+ * UPDATED: Reduced desktop vertical spacing and text scales.
  */
 
 const POPULAR_LIST = [
@@ -27,26 +27,26 @@ const POPULAR_LIST = [
 
 export default function PopularExams() {
   return (
-    <section className="py-8 md:py-24 bg-slate-50/50 border-t border-slate-100">
-      <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto space-y-8 md:space-y-20">
+    <section className="py-8 md:py-12 bg-slate-50/50 border-t border-slate-100">
+      <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto space-y-8 md:space-y-12">
          
          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 text-left px-4 sm:px-6 lg:px-8">
             <div className="space-y-2">
                <div className="flex items-center gap-3 md:gap-4">
-                  <div className="h-8 w-8 md:h-12 md:w-12 rounded-xl bg-blue-50 flex items-center justify-center text-primary shadow-inner shrink-0">
-                    <Target className="h-4 w-4 md:h-6 md:w-6" />
+                  <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl bg-blue-50 flex items-center justify-center text-primary shadow-inner shrink-0">
+                    <Target className="h-4 w-4 md:h-5 md:w-5" />
                   </div>
-                  <h2 className="text-[clamp(24px,4vw,36px)] font-bold tracking-tight text-[#0F172A]">Popular Exams</h2>
+                  <h2 className="text-[clamp(24px,3vw,30px)] font-bold tracking-tight text-[#0F172A]">Popular Exams</h2>
                </div>
-               <p className="max-w-2xl text-[clamp(13px,1.5vw,16px)] font-medium text-slate-500">Start your study with our most popular exam groups.</p>
+               <p className="max-w-2xl text-[clamp(13px,1.2vw,16px)] font-medium text-slate-500">Start your study with our most popular exam groups.</p>
             </div>
             <Link href="/exams" className="text-primary font-bold text-[13px] md:text-base tracking-tight hover:underline flex items-center gap-2 group shrink-0">
                View All <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
          </div>
 
-         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-12 px-0 sm:px-6 lg:px-8">
-            {POPULAR_LIST.map((p, idx) => (
+         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-0 sm:px-6 lg:px-8">
+            {POPULAR_LIST.slice(0, 4).map((p, idx) => (
                <motion.div 
                  key={p.id} 
                  initial={{ opacity: 0, scale: 0.98 }} 
@@ -56,17 +56,17 @@ export default function PopularExams() {
                  className="flex flex-col h-full"
                >
                   <Link href={`/exams/view?id=${p.id}`} className="h-full block">
-                     <Card className="w-full mx-auto border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] md:rounded-[3rem] bg-white p-4 pt-6 pb-4 md:p-10 h-full text-center flex flex-col">
+                     <Card className="w-full mx-auto border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] md:rounded-[3rem] bg-white p-4 pt-6 pb-4 md:p-8 h-full text-center flex flex-col">
                         
-                        <div className="flex justify-center mb-4 md:mb-12 shrink-0">
-                          <div className="h-14 w-14 md:h-24 md:w-24 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500 overflow-hidden">
+                        <div className="flex justify-center mb-4 md:mb-8 shrink-0">
+                          <div className="h-14 w-14 md:h-16 md:w-16 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500 overflow-hidden">
                               <AuthorityLogo boardId={p.boardId} size="lg" className="bg-transparent shadow-none border-none p-0 h-full w-full" />
                           </div>
                         </div>
 
                         <div className="flex-1 flex flex-col justify-center min-w-0">
-                           <div className="space-y-2 md:space-y-6">
-                              <h3 className="text-[14px] md:text-[clamp(16px,2vw,24px)] font-bold leading-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2">
+                           <div className="space-y-2 md:space-y-4">
+                              <h3 className="text-[14px] md:text-lg font-bold leading-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2">
                                  {p.name}
                               </h3>
                               <div className="flex justify-center">
@@ -75,8 +75,8 @@ export default function PopularExams() {
                            </div>
                         </div>
 
-                        <div className="mt-auto shrink-0 pt-4 md:pt-10">
-                           <Button variant="ghost" className="w-full h-10 md:h-14 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-black text-[10px] md:text-[13px] tracking-widest uppercase shadow-md border-none active:scale-95 gap-2">
+                        <div className="mt-auto shrink-0 pt-4 md:pt-8">
+                           <Button variant="ghost" className="w-full h-10 md:h-12 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-black text-[10px] md:text-xs tracking-widest uppercase shadow-md border-none active:scale-95 gap-2">
                               Open <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4" />
                            </Button>
                         </div>
