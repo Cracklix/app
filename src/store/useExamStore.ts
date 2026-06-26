@@ -7,8 +7,8 @@ import {
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Hardened Exam Store v8.8.
- * FIXED: Removed duplicate 'violations' property and standardized LanguageDisplayMode initialization.
+ * @fileOverview Hardened Exam Store v8.9.
+ * FIXED: Standardized LanguageDisplayMode initialization and removed redundant syntax.
  */
 
 export interface ExamStoreState {
@@ -66,7 +66,6 @@ export const useExamStore = create<ExamStoreState>((set, get) => ({
   violations: 0,
 
   initExam: (mockId, title, userId, questions, duration, resumeData, languageMode) => {
-    // Defaulting to ENGLISH_PUNJABI if mode is empty or invalid
     const finalLang: LanguageDisplayMode = languageMode || "ENGLISH_PUNJABI";
     const isResuming = resumeData && resumeData.status !== 'COMPLETED';
     

@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
 
 /**
- * @fileOverview Operational Anti-Cheat Node v4.7.
+ * @fileOverview Operational Anti-Cheat Node v4.8.
  * FIXED: Pass Firestore db instance to addViolation to satisfy TypeScript requirements.
  */
 export default function AntiCheat() {
@@ -17,7 +17,6 @@ export default function AntiCheat() {
   useEffect(() => {
     const handleBlur = () => {
       if (!db) return;
-      // Explicitly passing db instance to addViolation node
       addViolation(db);
       toast({
         variant: "destructive",
