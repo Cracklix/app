@@ -16,14 +16,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import { useDoc, useFirestore, useCollection } from "@/firebase";
-import { doc, collection, query, orderBy } from "firebase/firestore";
+import { useDoc, useFirestore } from "@/firebase";
+import { doc } from "firebase/firestore";
 import { AuthorityLogo } from "@/lib/exam-icons";
 import Image from "next/image";
 
 /**
- * @fileOverview Refined Hero Hub v87.0.
- * Layout: Text -> Image -> Action Cards -> Buttons -> Punjab Specific Boards.
+ * @fileOverview Refined Hero Hub v88.0.
+ * Layout: Text -> Image -> Action Grid -> Buttons.
+ * Boards integrated into description area with premium pills.
  */
 export default function Hero() {
   const db = useFirestore();
@@ -36,25 +37,21 @@ export default function Hero() {
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
   const { data: stats } = useDoc<any>(statsRef);
 
-  const boardsQuery = useMemo(() => (db ? query(collection(db, "boards"), orderBy("displayOrder", "asc")) : null), [db]);
-  const { data: boards } = useCollection<any>(boardsQuery);
-
-  const punjabBoards = useMemo(() => {
-    if (!boards) return [];
-    return boards.filter((b: any) => 
-      ['PPSC', 'PSSSB', 'Punjab Police'].includes(b.abbreviation)
-    );
-  }, [boards]);
+  const boardList = [
+    "PSSSB", "PPSC", "PSPCL", "PSTET", "CTET", 
+    "ETT Cader", "Lecturer Cader", "Master Cader", 
+    "BFUHS Exam", "And Other Exams"
+  ];
 
   if (!mounted) return null;
 
   return (
-    <section className="relative overflow-hidden bg-white pt-4 pb-12 md:pt-20 md:pb-32 border-b border-slate-50">
+    <section className="relative overflow-hidden bg-white pt-6 pb-12 md:pt-20 md:pb-32 border-b border-slate-50">
       <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 md:gap-20 lg:gap-24 items-center">
 
           {/* 1. Text Content Hub */}
-          <div className="text-center lg:text-left space-y-4 md:space-y-10 order-1">
+          <div className="text-center lg:text-left space-y-6 md:space-y-10">
             <motion.div 
                initial={{ opacity: 0, y: -10 }}
                animate={{ opacity: 1, y: 0 }}
@@ -66,23 +63,37 @@ export default function Hero() {
               </span>
             </motion.div>
 
-            <div className="space-y-3 md:space-y-6">
-              <h1 className="text-[clamp(26px,6vw,34px)] lg:text-[clamp(26px,6vw,84px)] font-black tracking-tighter text-[#0F172A] leading-[1.1] md:leading-[0.95] antialiased">
+            <div className="space-y-4 md:space-y-6">
+              <h1 className="text-[clamp(26px,6vw,44px)] lg:text-[clamp(26px,6vw,84px)] font-black tracking-tighter text-[#0F172A] leading-[1.1] md:leading-[0.95] antialiased">
                 Crack Punjab Govt Exams <br className="hidden md:block"/>
                 <span className="text-primary italic">with Confidence</span>
               </h1>
 
-              <p className="text-[clamp(13px,3vw,16px)] lg:text-xl text-slate-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium tracking-tight">
-                Mock tests and notes checked by official patterns.
-              </p>
+              <div className="space-y-4 md:space-y-6">
+                <p className="text-[clamp(14px,3vw,18px)] lg:text-xl text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-bold tracking-tight">
+                  Mock tests and notes checked by official patterns.
+                </p>
+                
+                {/* Styled Board Hub inside Description */}
+                <div className="flex flex-wrap justify-center lg:justify-start gap-2 max-w-xl mx-auto lg:mx-0">
+                  {boardList.map((board, i) => (
+                    <span 
+                      key={i} 
+                      className="px-3 py-1 rounded-lg bg-slate-50 border border-slate-100 text-[10px] md:text-[12px] font-bold text-slate-400 whitespace-nowrap shadow-sm"
+                    >
+                      {board}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* MOBILE ONLY: HERO IMAGE PLACEMENT (Center fold) */}
-            <div className="flex lg:hidden flex-col items-center w-full max-w-[240px] mx-auto py-2">
+            <div className="flex lg:hidden flex-col items-center w-full max-w-[280px] mx-auto py-4">
                <motion.div 
                  initial={{ opacity: 0, scale: 0.95 }} 
                  animate={{ opacity: 1, scale: 1 }} 
-                 className="relative w-full aspect-[4/3] overflow-visible"
+                 className="relative w-full aspect-square"
                >
                  <Image 
                    src="/images/hero-student.png" 
@@ -97,7 +108,7 @@ export default function Hero() {
             {/* QUICK ACTION CLUSTER */}
             <div className="grid grid-cols-2 gap-3 mt-4 md:mt-12">
               <QuickActionCard boardId="mock-test" label="Mock Tests" href="/mocks" />
-              <QuickActionCard boardId="study-material" label="Study Notes" href="/notes" />
+              <QuickActionCard boardId="study-material" label="Notes" href="/notes" />
               <QuickActionCard boardId="pyq" label="PYQ Papers" href="/pyqs" />
               <QuickActionCard boardId="current-affairs" label="Current Affairs" href="/current-affairs" />
             </div>
@@ -115,26 +126,10 @@ export default function Hero() {
                   </Link>
                </Button>
             </div>
-
-            {/* PUNJAB SPECIFIC BOARDS */}
-            <div className="pt-8 md:pt-12 space-y-4">
-              <p className="text-[10px] md:text-[11px] font-black uppercase text-slate-400 tracking-widest text-center lg:text-left">Official Punjab Boards</p>
-              <div className="flex flex-wrap justify-center lg:justify-start gap-2 md:gap-3">
-                {punjabBoards.map((board: any) => (
-                  <Link 
-                    key={board.id} 
-                    href={`/exams/hub/${board.id}`}
-                    className="px-4 py-2 md:px-6 md:py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[11px] md:text-[13px] font-bold text-slate-600 hover:text-primary hover:border-primary hover:bg-white hover:shadow-lg transition-all active:scale-95 whitespace-nowrap"
-                  >
-                    {board.abbreviation}
-                  </Link>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* DESKTOP ONLY: HERO IMAGE */}
-          <div className="hidden lg:flex flex-col items-center w-full max-w-none mx-auto lg:mx-0 order-2">
+          <div className="hidden lg:flex flex-col items-center w-full max-w-none mx-auto lg:mx-0">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }} 
               animate={{ opacity: 1, scale: 1 }} 
@@ -164,7 +159,7 @@ function QuickActionCard({ boardId, label, href }: { boardId: string, label: str
           <AuthorityLogo boardId={boardId} size="lg" className="bg-transparent shadow-none border-none p-0 w-full h-full" />
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-[13px] md:text-lg font-bold text-[#0F172A] group-hover:text-primary transition-colors leading-tight">
+          <h3 className="text-[14px] md:text-lg font-bold text-[#0F172A] group-hover:text-primary transition-colors leading-tight">
             {label}
           </h3>
         </div>
