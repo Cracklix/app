@@ -7,8 +7,8 @@ import {
 import { Firestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * @fileOverview Hardened Exam Store v8.7.
- * FIXED: Standardized LanguageDisplayMode initialization and fixed duplicate property errors.
+ * @fileOverview Hardened Exam Store v8.8.
+ * FIXED: Removed duplicate 'violations' property and standardized LanguageDisplayMode initialization.
  */
 
 export interface ExamStoreState {
@@ -66,6 +66,7 @@ export const useExamStore = create<ExamStoreState>((set, get) => ({
   violations: 0,
 
   initExam: (mockId, title, userId, questions, duration, resumeData, languageMode) => {
+    // Defaulting to ENGLISH_PUNJABI if mode is empty or invalid
     const finalLang: LanguageDisplayMode = languageMode || "ENGLISH_PUNJABI";
     const isResuming = resumeData && resumeData.status !== 'COMPLETED';
     
@@ -176,7 +177,10 @@ export const useExamStore = create<ExamStoreState>((set, get) => ({
 
     if (db && state.userId && state.mockId) {
       const attemptRef = doc(db, "attempts", `${state.userId}_${state.mockId}`);
-      setDoc(attemptRef, { violations: newVal, updatedAt: serverTimestamp() }, { merge: true });
+      setDoc(attemptRef, { 
+        violations: newVal, 
+        updatedAt: serverTimestamp() 
+      }, { merge: true });
     }
   }
 }));

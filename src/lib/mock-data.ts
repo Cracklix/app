@@ -1,49 +1,40 @@
-import { Exam, MockTest, Question, CurrentAffairType, Notification } from "@/types"
+import { Exam, MockTest, Question } from "@/types"
 
 /**
- * @fileOverview Mock Data v2.4 - Production Ready
- * FIXED: Corrected type imports and property values to satisfy build criteria.
+ * @fileOverview Mock Data v2.5 - Hardened Types
+ * FIXED: Removed redundant CurrentAffair and Notification imports; synchronized Exam structure.
  */
 
 export const EXAMS: Exam[] = [
   {
     id: "psssb-patwari",
     name: "Revenue Patwari",
-    title: "Revenue Patwari",
     boardId: "PSSSB",
     categoryId: "punjab-government-exams",
     displayOrder: 1,
     description: "Prepare for Revenue Patwari, Canal Patwari and Ziladar recruitment for Punjab Government departments.",
     totalMocks: 45,
     activeQuestions: 1200,
-    totalQuestions: 120,
-    duration: 120,
   },
   {
     id: "psssb-clerk",
     name: "Clerk (General/IT/Accounts)",
-    title: "Clerk (General/IT/Accounts)",
     boardId: "PSSSB",
     categoryId: "punjab-government-exams",
     displayOrder: 2,
     description: "Multi-departmental clerk recruitment exams with Punjabi qualifying sections.",
     totalMocks: 60,
     activeQuestions: 2500,
-    totalQuestions: 120,
-    duration: 120,
   },
   {
     id: "ppsc-pcs",
     name: "Punjab Civil Services (PCS)",
-    title: "Punjab Civil Services (PCS)",
     boardId: "PPSC",
     categoryId: "punjab-government-exams",
     displayOrder: 3,
     description: "Higher Class A & B services including Executive, DSP, and Tehsildar posts.",
     totalMocks: 20,
     activeQuestions: 5000,
-    totalQuestions: 100,
-    duration: 120,
   },
 ]
 

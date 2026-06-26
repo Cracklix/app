@@ -13,7 +13,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Search Center v7.8.
+ * @fileOverview Search Center v7.9.
  * FIXED: Replaced React.cloneElement with cloneElement to avoid UMD global type errors.
  */
 

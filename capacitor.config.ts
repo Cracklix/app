@@ -11,7 +11,7 @@ const config: CapacitorConfig = {
   webDir: 'out',
   bundledWebRuntime: false,
   server: {
-    // CRITICAL: Point this to your production URL for the live APK
+    // CRITICAL: Load production URL directly for authenticated sessions
     url: 'https://cracklix.vercel.app',
     allowNavigation: ['*'],
     androidScheme: 'https'
