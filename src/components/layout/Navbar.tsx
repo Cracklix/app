@@ -37,8 +37,8 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v16.6.
- * FIXED: Shifted whole start section to the far left edge of the header.
+ * @fileOverview Institutional Navbar v17.0.
+ * FIXED: Removed all left padding to push logo to the extreme left edge.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -105,20 +105,20 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-50 w-full font-body pt-safe bg-white border-b border-slate-100 shadow-sm">
       <nav className="w-full h-[64px] md:h-[80px] transition-all duration-300">
-        <div className="w-full max-w-[1440px] 2xl:max-w-[1800px] mx-auto pl-2 pr-4 md:pl-4 md:pr-8 h-full flex items-center justify-between gap-2 md:gap-4">
+        <div className="w-full max-w-[1440px] 2xl:max-w-[1800px] mx-auto pl-0 pr-4 md:pl-0 md:pr-8 h-full flex items-center justify-between gap-2 md:gap-4">
 
           <div className="flex items-center shrink-0 h-full">
             <button
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open menu"
-              className="flex items-center justify-center w-9 h-9 md:w-11 md:h-11 rounded-lg md:rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0 hover:border-primary/30 z-10"
+              className="flex items-center justify-center w-9 h-9 md:w-11 md:h-11 rounded-lg md:rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0 hover:border-primary/30 z-10 ml-2 md:ml-4"
             >
               <Menu className="w-[22px] h-[22px] md:w-6 md:h-6" />
             </button>
 
             <Logo
               variant="light"
-              className="flex-shrink-0 ml-1 md:ml-2" 
+              className="flex-shrink-0 ml-0 md:ml-1" 
               imgClassName="h-12 md:h-16"
               align="left"
             />
