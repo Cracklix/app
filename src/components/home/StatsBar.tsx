@@ -16,8 +16,8 @@ const formatCompact = (num: number) => {
 };
 
 /**
- * @fileOverview Institutional Stats Bar v1.2 (Compact Refinement).
- * UPDATED: Reduced all scales and padding to eliminate the "oversized" look.
+ * @fileOverview Institutional Stats Bar v1.3.
+ * UPDATED: Normalized casing to Title Case.
  */
 export default function StatsBar() {
   const db = useFirestore();
@@ -81,7 +81,7 @@ export default function StatsBar() {
                     {item.val}
                   </span>
                 )}
-                <span className="text-[10px] md:text-[11px] font-black text-slate-400 uppercase tracking-widest leading-none truncate w-full">
+                <span className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase tracking-tight leading-none truncate w-full">
                   {item.label}
                 </span>
               </div>

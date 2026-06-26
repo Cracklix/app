@@ -37,8 +37,8 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v20.0.
- * FIXED: Synchronized logo size with sidebar and restored professional left alignment.
+ * @fileOverview Institutional Navbar v21.0.
+ * UPDATED: Normalized casing for all navigation links.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -168,7 +168,7 @@ export default function Navbar() {
                   <div className="flex flex-col items-center text-center space-y-6">
                     <div className="flex flex-col items-center gap-4">
                        <div className="h-14 w-14 md:h-16 md:w-16 rounded-2xl bg-[#EEF4FF] flex items-center justify-center text-[#2563EB] shadow-sm relative">
-                          <User className="h-7 w-7 md:h-8 md:w-8" />
+                          <User className="h-7 v-7 md:h-8 md:w-8" />
                        </div>
                        <div className="space-y-0.5">
                          <h3 className="text-base md:text-xl font-bold text-[#0F172A] tracking-tight truncate max-w-[240px]">

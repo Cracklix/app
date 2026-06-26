@@ -24,8 +24,8 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Hero Hub v101.0.
- * UPDATED: Reduced mobile button scale and typography to match PWA density standards.
+ * @fileOverview High-Fidelity Hero Hub v102.0.
+ * UPDATED: Removed unnecessary uppercase from labels and buttons.
  */
 export default function Hero() {
   const db = useFirestore();
@@ -90,7 +90,7 @@ export default function Hero() {
                     <Link 
                       key={i} 
                       href={board.href}
-                      className="px-2.5 py-0.5 rounded-lg bg-slate-50 border border-slate-100 text-[10px] md:text-[11px] font-black text-slate-400 whitespace-nowrap shadow-sm hover:border-primary/30 hover:text-primary transition-all active:scale-95"
+                      className="px-2.5 py-0.5 rounded-lg bg-slate-50 border border-slate-100 text-[10px] md:text-[11px] font-bold text-slate-400 whitespace-nowrap shadow-sm hover:border-primary/30 hover:text-primary transition-all active:scale-95"
                     >
                       {board.label}
                     </Link>
@@ -100,12 +100,12 @@ export default function Hero() {
             </div>
 
             <div className="hidden lg:flex flex-col sm:flex-row gap-4 pt-4 w-full max-w-lg">
-               <Button asChild className="sm:flex-1 h-12 md:h-16 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-[13px] md:text-lg uppercase tracking-widest shadow-4xl shadow-blue-500/30 rounded-full active:scale-95 transition-all border-none">
+               <Button asChild className="sm:flex-1 h-12 md:h-16 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-[13px] md:text-lg tracking-tight rounded-full active:scale-95 transition-all border-none">
                   <Link href="/mocks" className="flex items-center justify-center gap-3">
                     <Play className="h-4 w-4 md:h-6 md:w-6 fill-current" /> Start Prep
                   </Link>
                </Button>
-               <Button asChild variant="outline" className="sm:flex-1 h-12 md:h-16 px-10 rounded-full font-bold text-[13px] md:text-lg uppercase tracking-widest border-2 border-slate-200 hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95 text-[#0F172A]">
+               <Button asChild variant="outline" className="sm:flex-1 h-12 md:h-16 px-10 rounded-full font-bold text-[13px] md:text-lg tracking-tight border-2 border-slate-200 hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95 text-[#0F172A]">
                   <Link href="/exams" className="flex items-center justify-center gap-3">
                     <LayoutGrid className="h-4 w-4 md:h-6 md:w-6" /> View Exams
                   </Link>
@@ -142,12 +142,12 @@ export default function Hero() {
            </div>
 
            <div className="flex flex-col sm:flex-row gap-3 pt-4 w-full max-w-xl mx-auto px-4 lg:hidden">
-              <Button asChild className="w-full sm:flex-1 h-12 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-[13px] uppercase tracking-widest shadow-xl shadow-blue-500/20 rounded-full active:scale-95 transition-all border-none">
+              <Button asChild className="w-full sm:flex-1 h-12 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-[13px] tracking-tight shadow-xl shadow-blue-500/20 rounded-full active:scale-95 transition-all border-none">
                   <Link href="/mocks" className="flex items-center justify-center gap-2.5">
                     <Play className="h-4 w-4 fill-current" /> Start Prep
                   </Link>
               </Button>
-              <Button asChild variant="outline" className="w-full sm:flex-1 h-12 px-10 rounded-full font-bold text-[13px] uppercase tracking-widest border-2 border-slate-200 hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95 text-[#0F172A]">
+              <Button asChild variant="outline" className="w-full sm:flex-1 h-12 px-10 rounded-full font-bold text-[13px] tracking-tight border-2 border-slate-200 hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95 text-[#0F172A]">
                   <Link href="/exams" className="flex items-center justify-center gap-2.5">
                     <LayoutGrid className="h-4 w-4" /> View Exams
                   </Link>

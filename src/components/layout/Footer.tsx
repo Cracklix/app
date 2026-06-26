@@ -22,8 +22,8 @@ import PLATFORM_VERSION from "@/lib/version";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Institutional Footer Hub v20.0.
- * UPDATED: Further maximized logo scale for a premium high-fidelity brand finish.
+ * @fileOverview Institutional Footer Hub v21.0.
+ * UPDATED: Normalized casing for category headers.
  */
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -53,7 +53,7 @@ export default function Footer() {
 
           {/* Links Group */}
           <div className="col-span-1 lg:col-span-1 space-y-6 pt-10 md:pt-14">
-            <h3 className="text-sm font-bold text-primary tracking-tight uppercase">Quick Links</h3>
+            <h3 className="text-sm font-bold text-primary tracking-tight">Quick Links</h3>
             <ul className="space-y-3">
               <FooterLink href="/">Home</FooterLink>
               <FooterLink href="/exams">Exams</FooterLink>
@@ -65,7 +65,7 @@ export default function Footer() {
 
           {/* Resources Group */}
           <div className="hidden lg:block lg:col-span-1 space-y-6 pt-10 md:pt-14">
-            <h3 className="text-sm font-bold text-primary tracking-tight uppercase">Resources</h3>
+            <h3 className="text-sm font-bold text-primary tracking-tight">Resources</h3>
             <ul className="space-y-3">
               <FooterLink href="/mocks">Mock Tests</FooterLink>
               <FooterLink href="/pyqs">Previous Papers</FooterLink>
@@ -76,7 +76,7 @@ export default function Footer() {
 
           {/* Support Group */}
           <div className="col-span-2 lg:col-span-1 space-y-6 pt-10 md:pt-14">
-            <h3 className="text-sm font-bold text-primary tracking-tight uppercase">Support</h3>
+            <h3 className="text-sm font-bold text-primary tracking-tight">Support</h3>
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-[14px] md:text-[15px] text-slate-400">
                 <Phone className="h-4 w-4 text-primary shrink-0" />

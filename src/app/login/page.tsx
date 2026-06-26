@@ -44,8 +44,8 @@ import Image from "next/image"
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Cracklix Premium Login Hub v84.0.
- * UPDATED: Maximized logo scales for a dominant institutional entry.
+ * @fileOverview Cracklix Premium Login Hub v85.0.
+ * UPDATED: Normalized casing for headings and labels.
  */
 
 const formatCompact = (num: number) => {
@@ -157,7 +157,7 @@ function LoginContent() {
     if (Capacitor.isNativePlatform()) {
        toast({
          title: "📱 Mobile Login",
-         description: "Please use your Email and Password to login on the Android app.",
+         description: "Please use your email and password to login on the Android app.",
          variant: "destructive"
        });
        return;
@@ -249,7 +249,7 @@ function LoginContent() {
       <div className="flex-1 flex flex-col items-center justify-start p-4 md:p-12 lg:p-20 relative bg-slate-50 lg:bg-white overflow-y-auto">
         
         <div className="w-full flex items-center justify-between mb-8 lg:hidden">
-           <Link href="/" className="flex items-center gap-2 text-slate-400 font-black uppercase text-[10px] tracking-widest hover:text-primary transition-colors">
+           <Link href="/" className="flex items-center gap-2 text-slate-400 font-bold uppercase text-[10px] tracking-widest hover:text-primary transition-colors">
               <ChevronLeft className="h-4 w-4" /> Home
            </Link>
            <Logo variant="light" align="left" className="h-28" />
@@ -266,7 +266,7 @@ function LoginContent() {
                <h2 className="text-2xl md:text-4xl font-[900] tracking-tight text-[#0F172A] leading-none">
                  {mode === 'login' ? 'Welcome Back' : 'Create Account'}
                </h2>
-               <p className="text-slate-400 font-bold text-[10px] md:text-[11px] uppercase tracking-[0.2em] mt-2">
+               <p className="text-slate-400 font-bold text-[10px] md:text-[11px] uppercase tracking-widest mt-2">
                  {mode === 'login' ? 'Access your preparation hub' : 'Join the elite preparation network'}
                </p>
             </div>
@@ -274,7 +274,7 @@ function LoginContent() {
             <form onSubmit={handleEmailAuth} className="space-y-6">
               {mode === 'register' && (
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Full Name</Label>
+                  <Label className="text-[10px] font-bold text-slate-400 ml-1">Full Name</Label>
                   <div className="relative group">
                     <User className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
                     <Input value={name} onChange={(e) => setName(e.target.value)} required className="h-14 md:h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] font-bold pl-12 md:pl-14 shadow-inner" placeholder="e.g. Arsh Grewal" />
@@ -283,7 +283,7 @@ function LoginContent() {
               )}
               
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Email Address</Label>
+                <Label className="text-[10px] font-bold text-slate-400 ml-1">Email Address</Label>
                 <div className="relative group">
                   <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
                   <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-14 md:h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] font-bold pl-12 md:pl-14 shadow-inner" placeholder="name@domain.com" />
@@ -292,20 +292,20 @@ function LoginContent() {
 
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Password</Label>
+                  <Label className="text-[10px] font-bold text-slate-400 ml-1">Password</Label>
                   <div className="relative group">
                     <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-                    <Input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required className="h-14 md:h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] pl-12 md:pl-14 pr-12 font-bold shadow-inner" placeholder="Secret Key" />
+                    <Input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required className="h-14 md:h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] pl-12 md:pl-14 pr-12 font-bold shadow-inner" placeholder="Secret key" />
                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">{showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}</button>
                   </div>
                 </div>
 
                 {mode === 'register' && (
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Confirm Password</Label>
+                    <Label className="text-[10px] font-bold text-slate-400 ml-1">Confirm Password</Label>
                     <div className="relative group">
                       <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-                      <Input type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="h-14 md:h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] pl-12 md:pl-14 shadow-inner" placeholder="Repeat Key" />
+                      <Input type={showPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="h-14 md:h-16 rounded-2xl bg-slate-50 border-none text-[#0F172A] pl-12 md:pl-14 shadow-inner" placeholder="Repeat key" />
                     </div>
                   </div>
                 )}
@@ -314,23 +314,23 @@ function LoginContent() {
                   <div className="flex items-center justify-between px-1">
                     <div className="flex items-center space-x-2">
                       <Checkbox id="remember" className="rounded-md" />
-                      <label htmlFor="remember" className="text-[11px] font-bold text-slate-500 uppercase tracking-wider cursor-pointer">Remember Me</label>
+                      <label htmlFor="remember" className="text-[11px] font-bold text-slate-500 uppercase tracking-wider cursor-pointer">Remember me</label>
                     </div>
-                    <button type="button" onClick={() => setIsResetDialogOpen(true)} className="text-[11px] font-[900] uppercase tracking-widest text-primary">Forgot Password?</button>
+                    <button type="button" onClick={() => setIsResetDialogOpen(true)} className="text-[11px] font-black text-primary">Forgot password?</button>
                   </div>
                 )}
               </div>
 
               <div className="pt-2 flex flex-col gap-4">
-                <Button type="submit" className="w-full h-14 md:h-18 bg-blue-600 text-white font-black text-xs uppercase tracking-[0.2em] rounded-full shadow-xl border-none transition-all active:scale-[0.98]" disabled={loading}>
+                <Button type="submit" className="w-full h-14 md:h-18 bg-blue-600 text-white font-bold text-xs uppercase tracking-widest rounded-full shadow-xl border-none transition-all active:scale-[0.98]" disabled={loading}>
                   {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : (mode === 'login' ? "Continue to Hub" : "Create My Account")}
                 </Button>
                 <div className="flex items-center gap-3 py-1">
                   <div className="h-px flex-1 bg-slate-100" />
-                  <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">OR</span>
+                  <span className="text-[9px] font-bold text-slate-300 uppercase">OR</span>
                   <div className="h-px flex-1 bg-slate-100" />
                 </div>
-                <Button variant="outline" className="w-full h-14 border-2 border-slate-100 text-[#0F172A] gap-3 rounded-full font-black text-[10px] md:text-[11px] hover:bg-slate-50 uppercase tracking-widest shadow-sm" onClick={handleGoogleSignIn} disabled={loading}>
+                <Button variant="outline" className="w-full h-14 border-2 border-slate-100 text-[#0F172A] gap-3 rounded-full font-bold text-[10px] md:text-[11px] hover:bg-slate-50 uppercase tracking-tight shadow-sm" onClick={handleGoogleSignIn} disabled={loading}>
                    <Image src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width={20} height={20} className="h-5 w-5" alt="Google Logo" /> Google Login
                 </Button>
               </div>
@@ -344,7 +344,7 @@ function LoginContent() {
                     setMode(mode === 'login' ? 'register' : 'login');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }} 
-                  className="text-primary font-[900] uppercase tracking-widest ml-2 hover:underline"
+                  className="text-primary font-black ml-2 hover:underline"
                 >
                   {mode === 'login' ? 'Create Account' : 'Login Hub'}
                 </button>
@@ -358,17 +358,17 @@ function LoginContent() {
         <DialogContent className="bg-white rounded-[2rem] max-w-[440px] p-8 md:p-12 shadow-5xl text-left border-none">
           <DialogHeader className="text-center space-y-4">
             <div className="h-14 w-14 md:h-16 md:w-16 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto text-primary shadow-xl">{resetLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : <RefreshCw className="h-6 w-6" />}</div>
-            <DialogTitle className="text-xl md:text-2xl font-[900] uppercase tracking-tight text-[#0F172A]">Recover Account</DialogTitle>
-            <DialogDescription className="text-slate-400 text-[10px] md:sm font-bold uppercase tracking-widest text-center mt-2 leading-relaxed">Enter your email for reset link.</DialogDescription>
+            <DialogTitle className="text-xl md:text-2xl font-[900] tracking-tight text-[#0F172A]">Recover Account</DialogTitle>
+            <DialogDescription className="text-slate-400 text-[10px] md:sm font-bold text-center mt-2 leading-relaxed">Enter your email for reset link.</DialogDescription>
           </DialogHeader>
           <div className="py-8 space-y-6">
             <div className="space-y-1.5 text-left">
-              <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Your Email</Label>
+              <Label className="text-[10px] font-bold text-slate-400 ml-1">Your email</Label>
               <Input type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="aspirant@cracklix.com" className="h-16 bg-slate-50 border-none rounded-2xl text-[#0F172A] text-base font-bold px-6 shadow-inner" />
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={() => handleResetPassword()} disabled={resetLoading} className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-[10px] tracking-widest rounded-full shadow-xl transition-all border-none">
+            <Button onClick={() => handleResetPassword()} disabled={resetLoading} className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] tracking-widest rounded-full shadow-xl transition-all border-none">
               {resetLoading ? "Processing..." : "Send Reset Link"}
             </Button>
           </DialogFooter>
