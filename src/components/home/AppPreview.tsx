@@ -16,12 +16,16 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
+/**
+ * @fileOverview Study Anywhere v1.1.
+ * UPDATED: Replaced "node" with "Hub" and normalized typography.
+ */
 export default function AppPreview() {
   const features = [
     { icon: Smartphone, label: "Mobile Hub", desc: "Optimized for Android 14", color: "text-blue-500", bgColor: "bg-blue-50" },
-    { icon: Zap, label: "Fast Engine", desc: "Instant test rendering node", color: "text-orange-500", bgColor: "bg-orange-50" },
-    { icon: LayoutGrid, label: "Offline First", desc: "Study without data nodes", color: "text-indigo-500", bgColor: "bg-indigo-50" },
-    { icon: Activity, label: "Live Ranks", desc: "Real-time state merit index", color: "text-emerald-500", bgColor: "bg-emerald-50" }
+    { icon: Zap, label: "Fast Engine", desc: "Instant test Hub", color: "text-orange-500", bgColor: "bg-orange-50" },
+    { icon: LayoutGrid, label: "Offline Mode", desc: "Study without data", color: "text-indigo-500", bgColor: "bg-indigo-50" },
+    { icon: Activity, label: "Live Ranks", desc: "Real-time state merit list", color: "text-emerald-500", bgColor: "bg-emerald-50" }
   ];
 
   return (
@@ -34,13 +38,13 @@ export default function AppPreview() {
                  <div className="h-8 w-8 md:h-12 md:w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-inner shrink-0">
                     <Smartphone className="h-4 w-4 md:h-6 md:w-6" />
                  </div>
-                 <h2 className="text-[clamp(24px,4vw,40px)] font-black tracking-tight leading-none text-[#0F172A]">Study Anywhere</h2>
+                 <h2 className="text-[22px] md:text-[clamp(24px,4vw,36px)] font-bold tracking-tight text-[#0F172A]">Study Anywhere</h2>
               </div>
-              <p className="max-w-2xl text-[clamp(13px,1.5vw,18px)] font-medium text-slate-500">Experience Punjab's smartest preparation platform verified on all mobile devices.</p>
+              <p className="max-w-2xl text-[14px] md:text-[clamp(13px,1.5vw,18px)] font-medium text-slate-500">Experience Punjab's smartest platform on all mobile devices.</p>
            </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-8 lg:gap-10">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-10">
            {features.map((f, i) => (
             <motion.div 
               key={i}
@@ -50,7 +54,7 @@ export default function AppPreview() {
               transition={{ duration: 0.4, delay: i * 0.05 }}
               className="flex flex-col h-full"
             >
-              <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-2xl md:rounded-[3rem] bg-white p-5 md:p-10 lg:p-12 flex flex-col h-full min-h-[220px] md:min-h-[400px] relative overflow-hidden group">
+              <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-2xl md:rounded-[3rem] bg-white p-4 md:p-10 lg:p-12 flex flex-col h-full min-h-[220px] md:min-h-[400px] relative overflow-hidden group">
                  
                  <div className="flex justify-center mb-4 md:mb-12 shrink-0">
                     <div className={cn("h-11 w-11 md:h-24 md:w-24 rounded-xl md:rounded-3xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform", f.bgColor, f.color)}>
@@ -59,17 +63,17 @@ export default function AppPreview() {
                  </div>
 
                  <div className="flex-1 flex flex-col justify-start text-center space-y-2 md:space-y-6">
-                    <h3 className="text-[clamp(14px,1.8vw,26px)] font-black tracking-tight leading-tight text-[#0F172A]">
+                    <h3 className="text-[15px] md:text-[clamp(14px,1.8vw,26px)] font-bold tracking-tight text-[#0F172A]">
                        {f.label}
                     </h3>
-                    <p className="text-[clamp(11px,1.2vw,16px)] font-medium text-slate-400 leading-snug line-clamp-3 tracking-tight">
+                    <p className="text-[12px] md:text-[clamp(11px,1.2vw,16px)] font-medium text-slate-400 leading-snug line-clamp-3 tracking-tight">
                        {f.desc}
                     </p>
                  </div>
 
                  <div className="mt-auto shrink-0 pt-6 md:pt-10">
-                    <Button asChild variant="ghost" className="w-full h-11 md:h-14 lg:h-16 rounded-full bg-slate-50 text-[#0F172A] hover:bg-primary hover:text-white transition-all font-bold text-[clamp(9px,1vw,12px)] tracking-tight border-none shadow-sm active:scale-95">
-                       <Link href="/install">Get App Node</Link>
+                    <Button asChild variant="ghost" className="w-full h-11 md:h-14 lg:h-16 rounded-full bg-slate-50 text-[#0F172A] hover:bg-primary hover:text-white transition-all font-bold text-[14px] md:text-[15px] tracking-tight border-none shadow-sm active:scale-95">
+                       <Link href="/install">Get App</Link>
                     </Button>
                  </div>
               </Card>
@@ -90,14 +94,14 @@ export default function AppPreview() {
                  </div>
                  <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10 md:gap-16">
                     <div className="text-center lg:text-left space-y-6 md:space-y-12 flex-1">
-                       <h3 className="text-[clamp(28px,6vw,72px)] font-black tracking-tighter leading-[0.9] text-white">Elite <br/> Membership</h3>
+                       <h3 className="text-[clamp(28px,6vw,72px)] font-black tracking-tighter leading-[0.9] text-white">Elite Hub</h3>
                        <div className="flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-4 text-[clamp(10px,1.5vw,20px)] font-bold text-slate-400 tracking-tight">
                           <span className="flex items-center gap-2 md:gap-4"><CheckCircle2 className="h-4 w-4 md:h-7 md:w-7 text-primary" /> Full Series</span>
                           <span className="flex items-center gap-2 md:gap-4"><CheckCircle2 className="h-4 w-4 md:h-7 md:w-7 text-primary" /> Premium Hub</span>
                           <span className="flex items-center gap-2 md:gap-4"><CheckCircle2 className="h-4 w-4 md:h-7 md:w-7 text-primary" /> State Ranks</span>
                        </div>
                     </div>
-                    <Button asChild className="w-full lg:w-auto h-16 md:h-24 px-12 md:px-24 bg-primary hover:bg-blue-700 text-white font-bold text-[clamp(11px,1.2vw,16px)] shadow-4xl transition-all border-none active:scale-95 shrink-0 rounded-full">
+                    <Button asChild className="w-full lg:w-auto h-16 md:h-24 px-12 md:px-24 bg-primary hover:bg-blue-700 text-white font-bold text-[14px] md:text-[15px] shadow-4xl transition-all border-none active:scale-95 shrink-0 rounded-full">
                        <Link href="/pass" className="flex items-center justify-center gap-3">
                          Join Elite Now <ChevronRight className="h-4 w-4 md:h-8 md:w-8" />
                        </Link>

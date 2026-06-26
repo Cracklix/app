@@ -13,7 +13,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 /**
- * @fileOverview Current Affairs Preview Hub v18.0.
+ * @fileOverview Current Affairs Preview Hub v19.0.
+ * UPDATED: Replaced "node" with "Hub" and refined typography.
  */
 export default function CurrentAffairsPreview() {
   const db = useFirestore();
@@ -98,4 +99,3 @@ export default function CurrentAffairsPreview() {
     </section>
   );
 }
-

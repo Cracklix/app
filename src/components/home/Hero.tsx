@@ -22,9 +22,8 @@ import { AuthorityLogo } from "@/lib/exam-icons";
 import Image from "next/image";
 
 /**
- * @fileOverview Refined Hero Hub v88.0.
- * Layout: Text -> Image -> Action Grid -> Buttons.
- * Boards integrated into description area with premium pills.
+ * @fileOverview Refined Hero Hub v89.0.
+ * UPDATED: Replaced "node" with "Hub" and reduced text scales for full visibility.
  */
 export default function Hero() {
   const db = useFirestore();
@@ -40,7 +39,7 @@ export default function Hero() {
   const boardList = [
     "PSSSB", "PPSC", "PSPCL", "PSTET", "CTET", 
     "ETT Cader", "Lecturer Cader", "Master Cader", 
-    "BFUHS Exam", "And Other Exams"
+    "BFUHS Exam", "And Others"
   ];
 
   if (!mounted) return null;
@@ -74,12 +73,12 @@ export default function Hero() {
                   Mock tests and notes checked by official patterns.
                 </p>
                 
-                {/* Styled Board Hub inside Description */}
-                <div className="flex flex-wrap justify-center lg:justify-start gap-2 max-w-xl mx-auto lg:mx-0">
+                {/* Styled Board Hub - Reduced text size for full visibility */}
+                <div className="flex flex-wrap justify-center lg:justify-start gap-1.5 md:gap-2 max-w-xl mx-auto lg:mx-0">
                   {boardList.map((board, i) => (
                     <span 
                       key={i} 
-                      className="px-3 py-1 rounded-lg bg-slate-50 border border-slate-100 text-[10px] md:text-[12px] font-bold text-slate-400 whitespace-nowrap shadow-sm"
+                      className="px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-100 text-[10px] md:text-[11px] font-bold text-slate-400 whitespace-nowrap shadow-sm"
                     >
                       {board}
                     </span>
@@ -105,7 +104,7 @@ export default function Hero() {
                </motion.div>
             </div>
 
-            {/* QUICK ACTION CLUSTER */}
+            {/* QUICK ACTION GRID */}
             <div className="grid grid-cols-2 gap-3 mt-4 md:mt-12">
               <QuickActionCard boardId="mock-test" label="Mock Tests" href="/mocks" />
               <QuickActionCard boardId="study-material" label="Notes" href="/notes" />
@@ -154,12 +153,12 @@ export default function Hero() {
 function QuickActionCard({ boardId, label, href }: { boardId: string, label: string, href: string }) {
   return (
     <Link href={href} className="block group h-full">
-      <Card className="bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 rounded-2xl md:rounded-[2.5rem] p-4 md:p-10 flex flex-col md:flex-row items-center gap-2 md:gap-6 cursor-pointer active:scale-[0.98] h-full text-center md:text-left">
+      <Card className="bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 rounded-2xl md:rounded-[2.5rem] p-3.5 md:p-10 flex flex-col md:flex-row items-center gap-2 md:gap-6 cursor-pointer active:scale-[0.98] h-full text-center md:text-left">
         <div className="h-10 w-10 md:h-16 md:w-16 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
           <AuthorityLogo boardId={boardId} size="lg" className="bg-transparent shadow-none border-none p-0 w-full h-full" />
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-[14px] md:text-lg font-bold text-[#0F172A] group-hover:text-primary transition-colors leading-tight">
+          <h3 className="text-[13px] md:text-lg font-bold text-[#0F172A] group-hover:text-primary transition-colors leading-tight">
             {label}
           </h3>
         </div>

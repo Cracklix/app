@@ -75,10 +75,10 @@ export default function FeaturedCategories() {
                                 <AuthorityLogo category={cat} size="lg" className="bg-transparent shadow-none border-none p-0 h-full w-full" />
                              </div>
                              <div className="space-y-1.5 md:space-y-3">
-                                <Badge className="bg-primary/5 text-primary border-none font-bold text-[12px] px-2.5 py-0.5 rounded-full shadow-sm w-fit tracking-tight">
+                                <Badge className="bg-primary/5 text-primary border-none font-bold text-[11px] px-2.5 py-0.5 rounded-full shadow-sm w-fit tracking-tight">
                                    {boardLabel} Hub
                                 </Badge>
-                                <h3 className="text-[18px] md:text-[clamp(15px,1.8vw,20px)] font-semibold leading-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2">
+                                <h3 className="text-[16px] md:text-[clamp(15px,1.8vw,20px)] font-semibold leading-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2">
                                    {cat.title}
                                 </h3>
                              </div>
@@ -86,7 +86,7 @@ export default function FeaturedCategories() {
                        </div>
 
                        <div className="mt-auto shrink-0 pt-4 md:pt-8">
-                          <Button variant="ghost" className="w-full h-12 md:h-14 lg:h-16 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-bold text-[15px] tracking-tight gap-2 shadow-md border-none active:scale-95">
+                          <Button variant="ghost" className="w-full h-12 md:h-14 lg:h-16 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-bold text-[14px] md:text-[15px] tracking-tight gap-2 shadow-md border-none active:scale-95">
                              Open
                              <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4" />
                           </Button>

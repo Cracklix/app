@@ -76,12 +76,12 @@ export default function LatestMocks() {
                   </div>
 
                   <div className="flex-1 flex flex-col justify-start text-center min-w-0">
-                    <h3 className="text-[18px] md:text-[clamp(15px,1.7vw,20px)] font-semibold leading-tight tracking-tight line-clamp-2 text-[#0F172A] group-hover:text-primary transition-colors mb-3 md:mb-8">
+                    <h3 className="text-[15px] md:text-[clamp(15px,1.7vw,20px)] font-semibold leading-tight tracking-tight line-clamp-2 text-[#0F172A] group-hover:text-primary transition-colors mb-3 md:mb-8">
                         {mock.title}
                     </h3>
                     
                     <div className="mt-auto md:mt-0 space-y-3 md:space-y-5">
-                       <div className="flex flex-wrap items-center justify-center gap-3 md:gap-8 text-[13px] md:text-[clamp(9px,1vw,12px)] font-bold text-slate-400 tracking-tight">
+                       <div className="flex flex-wrap items-center justify-center gap-3 md:gap-8 text-[11px] md:text-[clamp(9px,1vw,12px)] font-bold text-slate-400 tracking-tight">
                           <span className="flex items-center gap-1.5"><BookOpen className="h-4 w-4 md:h-5 md:w-5 text-primary" /> {mock.totalQuestions} Qs</span>
                           <span className="flex items-center gap-1.5"><Clock className="h-4 w-4 md:h-5 md:w-5 text-primary" /> {mock.duration}m</span>
                        </div>
@@ -98,7 +98,7 @@ export default function LatestMocks() {
 
                   <div className="mt-auto pt-5 md:pt-10 shrink-0">
                     <Button asChild className={cn(
-                      "w-full h-12 md:h-16 lg:h-18 rounded-full font-bold text-[15px] shadow-lg border-none transition-all active:scale-95 gap-2 md:gap-3", 
+                      "w-full h-12 md:h-16 lg:h-18 rounded-full font-bold text-[14px] md:text-[15px] shadow-lg border-none transition-all active:scale-95 gap-2 md:gap-3", 
                       locked ? "bg-amber-500 hover:bg-amber-600 text-white" : "bg-[#0F172A] text-white"
                     )}>
                         <Link href={locked ? '/pass' : `/mocks/view?id=${mock.id}`} className="flex items-center justify-center">
@@ -112,7 +112,7 @@ export default function LatestMocks() {
             )
           }) : (
             <div className="col-span-full py-24 text-center opacity-30 italic font-bold text-lg text-slate-400">
-               Syncing mock tests...
+               Syncing tests...
             </div>
           )}
         </div>

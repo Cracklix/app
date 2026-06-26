@@ -12,6 +12,10 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 
+/**
+ * @fileOverview Top Rankers Preview Hub v19.0.
+ * UPDATED: Replaced institutional jargon and optimized mobile layout.
+ */
 export default function MeritPreview() {
   const db = useFirestore();
   
@@ -33,7 +37,7 @@ export default function MeritPreview() {
         uniqueMap.set(res.userId, res);
       }
     });
-    return Array.from(uniqueMap.values()).sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, 12);
+    return Array.from(uniqueMap.values()).sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, 10);
   }, [results]);
 
   return (
@@ -44,9 +48,9 @@ export default function MeritPreview() {
            <div className="space-y-2">
               <div className="flex items-center gap-3 md:gap-4">
                  <Trophy className="h-8 w-8 md:h-12 md:w-12 text-primary shrink-0" />
-                 <h2 className="text-[clamp(24px,4vw,36px)] font-black text-[#0F172A] tracking-tight leading-none">Top Rankers</h2>
+                 <h2 className="text-[22px] md:text-[clamp(24px,4vw,36px)] font-bold tracking-tight text-[#0F172A]">Top Rankers</h2>
               </div>
-              <p className="text-[clamp(13px,1.5vw,18px)] font-medium text-slate-500 italic">See the top students preparing across Punjab.</p>
+              <p className="text-[14px] md:text-[clamp(13px,1.5vw,18px)] font-medium text-slate-500 italic">See the top students preparing across Punjab.</p>
            </div>
            <Button asChild variant="ghost" className="text-primary font-bold text-[13px] md:text-base tracking-tight gap-2 group shrink-0 p-0 h-auto">
               <Link href="/leaderboard" className="flex items-center gap-2">View All <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
@@ -67,13 +71,13 @@ export default function MeritPreview() {
                           <div className="relative shrink-0">
                              <StudentAvatar profile={{ name: cleanName, gender: res.gender }} className="h-10 w-10 md:h-24 md:w-24 rounded-xl md:rounded-[2rem] border border-slate-50 shadow-inner group-hover:scale-110 transition-transform" />
                              <div className={cn(
-                                "absolute -bottom-1.5 -right-1.5 h-5 w-5 md:h-10 md:w-10 rounded-lg md:rounded-xl flex items-center justify-center text-white text-[8px] md:text-sm font-bold shadow-xl border-2 border-white transition-all",
+                                "absolute -bottom-1.5 -right-1.5 h-4 w-4 md:h-10 md:w-10 rounded-lg md:rounded-xl flex items-center justify-center text-white text-[8px] md:text-sm font-bold shadow-xl border-2 border-white transition-all",
                                 i === 0 ? "bg-amber-400" : i === 1 ? "bg-slate-300" : "bg-orange-400"
                              )}>
                                 {i + 1}
                              </div>
                           </div>
-                          <div className="min-w-0 w-full space-y-1">
+                          <div className="min-w-0 w-full space-y-0.5 md:space-y-1">
                              <p className="font-bold text-[11px] md:text-xl text-[#0F172A] truncate leading-none tracking-tight">{cleanName}</p>
                              <div className="flex flex-col items-center">
                                 <p className="text-[9px] md:text-sm font-bold text-slate-400 tracking-tight tabular-nums">Score: {Math.round(res.score)}</p>

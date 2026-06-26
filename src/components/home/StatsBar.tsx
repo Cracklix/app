@@ -15,6 +15,10 @@ const formatCompact = (num: number) => {
   return num.toString();
 };
 
+/**
+ * @fileOverview Institutional Stats Bar v1.1.
+ * UPDATED: Cleaned terminology and refined typography.
+ */
 export default function StatsBar() {
   const db = useFirestore();
   const statsRef = useMemo(() => (db ? doc(db, "settings", "stats") : null), [db]);
@@ -73,11 +77,11 @@ export default function StatsBar() {
                 {loading && !stats ? (
                   <Skeleton className="h-6 md:h-20 w-16 md:w-48 bg-slate-50 rounded-xl mx-auto" />
                 ) : (
-                  <span className="text-[22px] md:text-5xl lg:text-7xl font-black text-[#0F172A] tabular-nums tracking-tighter leading-none antialiased">
+                  <span className="text-[20px] md:text-5xl lg:text-7xl font-bold text-[#0F172A] tabular-nums tracking-tighter leading-none antialiased">
                     {item.val}
                   </span>
                 )}
-                <span className="text-[13px] md:text-sm font-bold text-slate-400 tracking-tight leading-none truncate w-full">
+                <span className="text-[12px] md:text-sm font-bold text-slate-400 tracking-tight leading-none truncate w-full">
                   {item.label}
                 </span>
               </div>
