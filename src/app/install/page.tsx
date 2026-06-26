@@ -12,26 +12,28 @@ import {
   ChevronRight,
   Clock,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  ShieldAlert
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { PLATFORM_VERSION } from "@/lib/version";
 
 /**
- * @fileOverview Official Direct APK Download Hub v3.1.
- * UPDATED: Optimized typography and direct download logic.
+ * @fileOverview Official Direct APK Download Hub v4.0.
+ * Optimized for institutional authority and seamless onboarding.
  */
 export default function InstallPage() {
   const [mounted, setMounted] = useState(false);
-  const [metadata, setMetadata] = useState<any>(null);
+  const [apkFound, setApkFound] = useState(true); // Default to true, validated in effect
 
   useEffect(() => {
     setMounted(true);
-    fetch('/apk/metadata.json')
-      .then(res => res.json())
-      .then(data => setMetadata(data))
-      .catch(() => setMetadata({ version: "1.0.0", build: 1, updatedAt: new Date().toISOString() }));
+    // Silent audit check for production APK
+    fetch('/apk/cracklix-production.apk', { method: 'HEAD' })
+      .then(res => setApkFound(res.ok))
+      .catch(() => setApkFound(false));
   }, []);
 
   const handleDownload = () => {
@@ -59,12 +61,12 @@ export default function InstallPage() {
                 Cracklix <br/> <span className="text-primary">Android</span>
               </h1>
               <p className="text-slate-500 font-medium text-base md:text-2xl max-w-2xl mx-auto leading-tight">
-                 Download the official app for Punjab Government Exam preparation. No GitHub login required.
+                 Experience native performance and offline mock tests. Download the official stable release below.
               </p>
            </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16 items-start pb-20">
            <div className="lg:col-span-7">
               <Card className="border-none shadow-5xl rounded-[3rem] bg-[#0B1528] text-white overflow-hidden p-8 md:p-16 space-y-12 relative group">
                  <div className="absolute top-0 right-0 p-12 opacity-5 rotate-12 group-hover:scale-110 transition-transform duration-1000">
@@ -74,36 +76,35 @@ export default function InstallPage() {
                  <div className="relative z-10 space-y-10">
                     <div className="flex items-center justify-between">
                        <Badge className="bg-primary text-white border-none px-4 py-1.5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl">
-                          STABLE RELEASE
+                          PRODUCTION BUILD
                        </Badge>
-                       {metadata && (
-                         <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                           <Clock className="h-3 w-3 text-primary" /> Updated: {new Date(metadata.updatedAt).toLocaleDateString()}
-                         </div>
-                       )}
+                       <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                         <Clock className="h-3 w-3 text-primary" /> Updated: {PLATFORM_VERSION.releaseDate}
+                       </div>
                     </div>
 
                     <div className="space-y-8">
                        <div className="space-y-2">
-                          <h2 className="text-3xl md:text-6xl font-black tracking-tight">V{metadata?.version || '1.0.0'}</h2>
-                          <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.4em]">Official Preparation Node</p>
+                          <h2 className="text-3xl md:text-6xl font-black tracking-tight">V{PLATFORM_VERSION.version}</h2>
+                          <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.4em]">Official Registry Node</p>
                        </div>
 
                        <div className="space-y-6">
                           <p className="text-slate-400 text-base md:text-xl font-medium leading-relaxed">
-                            Experience the full power of Cracklix with native performance, offline support, and high-fidelity practice attempts.
+                            Includes full access to the MCQ Bank, Hall of Rankers, and high-speed Computer Based Test simulation.
                           </p>
                           <div className="flex flex-col gap-4">
                              <Button 
                                onClick={handleDownload}
+                               disabled={!apkFound}
                                className="w-full h-16 md:h-24 bg-primary hover:bg-blue-700 text-white font-black uppercase text-xs md:text-lg tracking-[0.2em] rounded-[2rem] border-none shadow-4xl group active:scale-[0.98] transition-all"
                              >
                                 <Download className="h-6 w-6 md:h-8 md:w-8 mr-4 group-hover:translate-y-1 transition-transform" /> 
-                                Download APK
+                                {apkFound ? 'Download APK Now' : 'Syncing Build...'}
                              </Button>
                              <div className="flex items-center justify-center gap-6 text-slate-500 font-bold text-[10px] uppercase tracking-widest">
-                                <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-emerald-500" /> Size: ~12MB</span>
-                                <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-emerald-500" /> Build: #{metadata?.build || '---'}</span>
+                                <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-emerald-500" /> Play Protect Verified</span>
+                                <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-emerald-500" /> Version Control Active</span>
                              </div>
                           </div>
                        </div>
@@ -114,23 +115,23 @@ export default function InstallPage() {
 
            <div className="lg:col-span-5 space-y-10 text-left">
               <div className="space-y-6">
-                 <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em] ml-2">Installation Guide</h3>
+                 <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em] ml-2">Simple Installation</h3>
                  <div className="space-y-3">
-                    <GuideStep step="1" title="Download" desc="Click the button to start the APK transfer." />
-                    <GuideStep step="2" title="Authorize" desc="Enable 'Install from Unknown Sources' if prompted." />
-                    <GuideStep step="3" title="Initialize" desc="Open the app and sync your profile hub." />
+                    <GuideStep step="1" title="Get APK" desc="Tap the download button and wait for the transfer to complete." />
+                    <GuideStep step="2" title="Enable Sources" desc="Go to Settings > Security and enable 'Install from Unknown Sources'." />
+                    <GuideStep step="3" title="Sync Account" desc="Open Cracklix and login with your email to restore your Elite Pass." />
                  </div>
               </div>
 
               <div className="p-8 bg-blue-50 rounded-[2.5rem] border border-blue-100 space-y-6 shadow-sm">
                  <div className="flex items-center gap-4">
                     <div className="h-10 w-10 bg-white rounded-xl flex items-center justify-center text-primary shadow-sm">
-                       <AlertCircle className="h-5 w-5" />
+                       <ShieldAlert className="h-5 w-5" />
                     </div>
-                    <h4 className="font-black text-blue-900 uppercase text-sm">Safe & Secure</h4>
+                    <h4 className="font-black text-blue-900 uppercase text-sm">Security Node</h4>
                  </div>
                  <p className="text-xs md:text-sm text-blue-700 font-medium leading-relaxed uppercase">
-                    Every build is scanned by Google Play Protect and verified by Arsh Grewal Management for data integrity.
+                    Every production APK is digitally signed and audited by Arsh Grewal Management for full data integrity and privacy.
                  </p>
               </div>
            </div>

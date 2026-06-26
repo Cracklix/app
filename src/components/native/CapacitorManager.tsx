@@ -11,38 +11,31 @@ import { useUser } from '@/firebase';
 const Security = registerPlugin<any>('Security');
 
 /**
- * @fileOverview Hardened Capacitor Bridge v2.0.
- * Handles hardware back button, external links, and role-based screenshot protection.
+ * @fileOverview Production Capacitor Bridge v3.0.
+ * Handles hardware back button, system status bars, and external browser routing.
  */
 export default function CapacitorManager() {
   const { profile } = useUser();
 
-  // Role-based Screenshot Protection Toggle
+  // 1. Role-based Screenshot Protection
   useEffect(() => {
-    if (!Capacitor.isNativePlatform()) {
-      return;
-    }
+    if (!Capacitor.isNativePlatform()) return;
 
     if (profile) {
       const isAdmin = profile.role === 'ADMIN' || profile.role === 'SUPER_ADMIN';
-      // If user is Admin, disable protection (enabled: false)
-      // If user is Student, enable protection (enabled: true)
-      Security.setPrivacyScreen({ enabled: !isAdmin }).catch((err: any) => {
-        console.warn('[SECURITY_BRIDGE] Failed to toggle privacy screen:', err);
-      });
+      // Protect content for students, allow for admins
+      Security.setPrivacyScreen({ enabled: !isAdmin }).catch(() => {});
     }
   }, [profile]);
 
   useEffect(() => {
-    if (!Capacitor.isNativePlatform()) {
-      return;
-    }
+    if (!Capacitor.isNativePlatform()) return;
 
     let backListenerHandle: PluginListenerHandle | null = null;
     let urlListenerHandle: PluginListenerHandle | null = null;
 
     const setupListeners = async () => {
-      // Hardware Back Button Handling
+      // 2. Hardware Back Button Protocol
       backListenerHandle = await App.addListener('backButton', ({ canGoBack }) => {
         if (!canGoBack) {
           App.exitApp();
@@ -51,7 +44,16 @@ export default function CapacitorManager() {
         }
       });
 
-      // Deep Link Listener
+      // 3. Status Bar Standard (Matches Website Branding)
+      try {
+        await StatusBar.setStyle({ style: Style.Dark });
+        await StatusBar.setBackgroundColor({ color: '#0B1528' });
+        await StatusBar.setOverlaysWebView({ overlay: false });
+      } catch (e) {
+        console.warn('[NATIVE_BRIDGE] StatusBar init failed');
+      }
+
+      // 4. App Deep Linking
       urlListenerHandle = await App.addListener('appUrlOpen', (data) => {
         const slug = data.url.split('.app').pop();
         if (slug) window.location.href = slug;
@@ -60,15 +62,7 @@ export default function CapacitorManager() {
 
     setupListeners();
 
-    // Status Bar Configuration
-    try {
-      StatusBar.setStyle({ style: Style.Dark });
-      StatusBar.setBackgroundColor({ color: '#0B1528' });
-    } catch (e) {
-      console.warn('[NATIVE_BRIDGE] StatusBar plugin error');
-    }
-
-    // External Browser Interceptor
+    // 5. External Link Interceptor (PDFs and Third-Party)
     const handleLinkClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest('a');
@@ -77,7 +71,7 @@ export default function CapacitorManager() {
         try {
           const url = new URL(anchor.href);
           const isExternal = url.hostname !== window.location.hostname;
-          const isPdf = anchor.href.endsWith('.pdf');
+          const isPdf = anchor.href.toLowerCase().endsWith('.pdf');
 
           if (isExternal || isPdf) {
             e.preventDefault();

@@ -1,29 +1,44 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 /**
- * @fileOverview Capacitor 7 Configuration for Cracklix Android.
- * Optimized for production Next.js 15 static exports.
+ * @fileOverview Production Capacitor Configuration for Cracklix Android.
+ * Optimized for institutional readiness and high-fidelity WebView performance.
  */
 
 const config: CapacitorConfig = {
   appId: 'com.cracklix.app',
   appName: 'Cracklix',
   webDir: 'out',
+  bundledWebRuntime: false,
   server: {
+    // CRITICAL: Point this to your production URL for the live APK
+    url: 'https://cracklix.vercel.app',
+    allowNavigation: ['*'],
     androidScheme: 'https'
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 3000,
-      backgroundColor: "#FFFFFF",
+      launchShowDuration: 2000,
+      backgroundColor: "#0B1528",
       showSpinner: false,
-      androidScaleType: "CENTER_CROP"
+      androidScaleType: "CENTER_CROP",
+      splashFullScreen: true,
+      splashImmersive: true
     },
     Keyboard: {
       resize: 'body',
       style: 'dark',
       resizeOnFullScreen: true
+    },
+    StatusBar: {
+      backgroundColor: '#0B1528',
+      style: 'DARK'
     }
+  },
+  android: {
+    allowMixedContent: false,
+    captureInput: true,
+    webContentsDebuggingEnabled: false // Disabled for production security
   }
 };
 
