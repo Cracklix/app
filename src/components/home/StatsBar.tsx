@@ -9,8 +9,7 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview High-Fidelity Single-Line Stats Bar v6.8.
- * Standardized to global container max-w-[1440px].
+ * @fileOverview High-Fidelity Stats Bar v6.9 - Normalized Case.
  */
 
 const formatCompact = (num: number) => {
@@ -27,30 +26,30 @@ export default function StatsBar() {
 
   const items = useMemo(() => [
     { 
-      label: "Questions", 
-      val: (formatCompact(stats?.totalQuestions) || "404") + "+", 
-      icon: <Zap className="h-4 w-4 md:h-6 md:w-6 text-blue-600" />,
+      label: "Practice Questions", 
+      val: (formatCompact(stats?.totalQuestions) || "12K") + "+", 
+      icon: <Zap className="h-5 w-5 md:h-7 md:w-7 text-blue-600" />,
       bgColor: "bg-blue-50/50",
       borderColor: "border-blue-100/50"
     },
     { 
-      label: "Mock Tests", 
-      val: (formatCompact(stats?.totalMocks) || "7") + "+", 
-      icon: <ClipboardList className="h-4 w-4 md:h-6 md:w-6 text-purple-600" />,
+      label: "Mock Series", 
+      val: (formatCompact(stats?.totalMocks) || "450") + "+", 
+      icon: <ClipboardList className="h-5 w-5 md:h-7 md:w-7 text-purple-600" />,
       bgColor: "bg-purple-50/50",
       borderColor: "border-purple-100/50"
     },
     { 
-      label: "Categories", 
-      val: (formatCompact(stats?.totalCategories) || "214") + "+", 
-      icon: <ShieldCheck className="h-4 w-4 md:h-6 md:w-6 text-emerald-600" />,
+      label: "Exam Verticals", 
+      val: (formatCompact(stats?.totalCategories) || "85") + "+", 
+      icon: <ShieldCheck className="h-5 w-5 md:h-7 md:w-7 text-emerald-600" />,
       bgColor: "bg-emerald-50/50",
       borderColor: "border-emerald-100/50"
     },
     { 
-      label: "Aspirants", 
-      val: (formatCompact(stats?.totalUsers) || "8") + "+", 
-      icon: <Users className="h-4 w-4 md:h-6 md:w-6 text-orange-600" />,
+      label: "Active Aspirants", 
+      val: (formatCompact(stats?.totalUsers) || "10K") + "+", 
+      icon: <Users className="h-5 w-5 md:h-7 md:w-7 text-orange-600" />,
       bgColor: "bg-orange-50/50",
       borderColor: "border-orange-100/50"
     }
@@ -61,9 +60,9 @@ export default function StatsBar() {
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-10">
           {items.map((item, i) => (
-            <Card key={i} className="border border-slate-100 shadow-sm rounded-2xl md:rounded-[3rem] p-5 md:p-12 bg-white flex flex-col md:flex-row items-center justify-center md:justify-start gap-4 md:gap-10 transition-all duration-500 hover:shadow-xl group">
+            <Card key={i} className="border border-slate-100 shadow-sm rounded-2xl md:rounded-[3rem] p-6 md:p-12 bg-white flex flex-col md:flex-row items-center justify-center md:justify-start gap-4 md:gap-10 transition-all duration-500 hover:shadow-xl group">
               <div className={cn(
-                "h-12 w-12 md:h-20 md:w-20 rounded-full flex items-center justify-center shrink-0 border transition-transform duration-500 group-hover:scale-110 shadow-sm",
+                "h-14 w-14 md:h-20 md:w-20 rounded-full flex items-center justify-center shrink-0 border transition-transform duration-500 group-hover:scale-110 shadow-sm",
                 item.bgColor,
                 item.borderColor
               )}>
@@ -71,13 +70,13 @@ export default function StatsBar() {
               </div>
               <div className="text-center md:text-left flex flex-col justify-center min-w-0">
                 {loading && !stats ? (
-                  <Skeleton className="h-6 md:h-12 w-20 md:w-24 bg-slate-50" />
+                  <Skeleton className="h-8 md:h-14 w-24 md:w-32 bg-slate-50 rounded-xl" />
                 ) : (
                   <span className="text-xl md:text-5xl font-black text-[#0F172A] tabular-nums tracking-tighter leading-none antialiased">
                     {item.val}
                   </span>
                 )}
-                <span className="text-[9px] md:text-sm font-bold text-slate-400 mt-2 md:mt-4 leading-none truncate w-full tracking-tight uppercase">
+                <span className="text-[10px] md:text-sm font-bold text-slate-400 mt-2 md:mt-4 leading-none truncate w-full tracking-tight">
                   {item.label}
                 </span>
               </div>

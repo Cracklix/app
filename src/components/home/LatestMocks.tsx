@@ -18,8 +18,7 @@ import { cn } from "@/lib/utils"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview High-Density Mock Grid v81.0.
- * Standardized to global container max-w-[1440px].
+ * @fileOverview Standardized Mock Grid v82.0 - Title Case & Normalized Case.
  */
 
 export default function LatestMocks() {
@@ -48,12 +47,12 @@ export default function LatestMocks() {
               <h2 className="text-xl md:text-5xl font-black text-[#0F172A] tracking-tight leading-none">Latest Mock Tests</h2>
               <p className="text-slate-500 font-medium text-sm md:text-lg">Freshly updated series for all major Punjab recruitments.</p>
            </div>
-           <Link href="/mocks" className="text-primary font-black uppercase text-[9px] md:text-xs tracking-widest hover:underline flex items-center gap-2 group">
+           <Link href="/mocks" className="text-primary font-bold text-base tracking-tight hover:underline flex items-center gap-2 group">
               View All <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
            </Link>
         </div>
         
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
           {loading ? (
              Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-40 md:h-80 w-full rounded-xl md:rounded-[2.5rem] bg-slate-50" />)
           ) : mocks.length > 0 ? mocks.map((mock, i) => {
@@ -64,35 +63,35 @@ export default function LatestMocks() {
             
             return (
               <motion.div key={mock.id} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} viewport={{ once: true }}>
-                <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-xl md:rounded-[2.5rem] bg-white p-3 md:p-8 text-left md:text-center flex flex-col h-full group relative overflow-hidden">
+                <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-2xl md:rounded-[2.5rem] bg-white p-6 md:p-12 text-left md:text-center flex flex-col h-full group relative overflow-hidden">
                   
-                  <div className="mb-3 md:mb-8 flex justify-start md:justify-center">
-                     <AuthorityLogo boardId={boardId} size="sm" className="w-10 h-10 md:w-16 md:h-16 bg-slate-50 rounded-lg md:rounded-2xl shadow-inner group-hover:scale-105 transition-transform" />
+                  <div className="mb-6 md:mb-10 flex justify-start md:justify-center">
+                     <AuthorityLogo boardId={boardId} size="md" className="h-16 w-16 md:h-24 md:w-24 bg-slate-50 rounded-xl md:rounded-[2rem] shadow-inner group-hover:scale-105 transition-transform" />
                   </div>
 
-                  <CardHeader className="p-0 flex-1 space-y-1 md:space-y-4">
-                     <CardTitle className="font-bold text-sm md:text-2xl text-[#0F172A] leading-tight tracking-tight line-clamp-2">
+                  <CardHeader className="p-0 flex-1 space-y-4 md:space-y-6">
+                     <CardTitle className="text-xl md:text-3xl font-black text-[#0F172A] leading-tight tracking-tight line-clamp-2">
                         {mock.title}
                      </CardTitle>
                      
-                     <div className="flex flex-col md:flex-row flex-wrap items-start md:items-center gap-1 md:gap-4 text-[7px] md:text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                        <span className="flex items-center gap-1"><BookOpen className="h-2.5 w-2.5 md:h-4 md:w-4 text-primary/50" /> {mock.totalQuestions} Qs</span>
-                        <span className="flex items-center gap-1"><Clock className="h-2.5 w-2.5 md:h-4 md:w-4 text-primary/50" /> {mock.duration}m</span>
+                     <div className="flex flex-col md:flex-row flex-wrap items-start md:items-center justify-center gap-2 md:gap-4 text-[11px] font-bold text-slate-400 uppercase tracking-tight">
+                        <span className="flex items-center gap-1.5"><BookOpen className="h-4 w-4 text-primary/50" /> {mock.totalQuestions} Questions</span>
+                        <span className="flex items-center gap-1.5"><Clock className="h-4 w-4 text-primary/50" /> {mock.duration} Mins</span>
                      </div>
 
-                     <div className="flex items-center gap-1.5 pt-0.5">
-                        {isPremium && <Badge className="bg-orange-50 text-orange-600 border-none text-[6px] md:text-[8px] font-black px-1.5 py-0.5 rounded">Premium</Badge>}
+                     <div className="flex items-center justify-center gap-1.5 pt-0.5">
+                        {isPremium && <Badge className="bg-orange-50 text-orange-600 border-none text-[11px] font-black px-3 py-1 rounded-full">Elite Pass</Badge>}
                      </div>
                   </CardHeader>
 
-                  <div className="mt-4 md:mt-10 pt-3 border-t border-slate-50">
+                  <div className="mt-8 md:mt-14 pt-4 border-t border-slate-50">
                      <Button asChild className={cn(
-                       "w-full h-8 md:h-14 rounded-full font-black text-[8px] md:text-[11px] tracking-widest uppercase shadow-md border-none transition-all active:scale-95 gap-2 md:gap-3", 
+                       "w-full h-12 md:h-16 rounded-full font-semibold text-base tracking-tight shadow-md border-none transition-all active:scale-95 gap-3", 
                        locked ? "bg-orange-500 hover:bg-orange-600 text-white" : "bg-[#0F172A] hover:bg-black text-white"
                      )}>
-                        <Link href={locked ? '/pass' : `/mocks/view?id=${mock.id}`} className="flex items-center justify-center gap-1 md:gap-2">
-                           {locked ? <Lock className="h-2.5 w-2.5 md:h-4 md:w-4" /> : null}
-                           {locked ? 'Unlock' : 'Start'}
+                        <Link href={locked ? '/pass' : `/mocks/view?id=${mock.id}`} className="flex items-center justify-center gap-2">
+                           {locked ? <Lock className="h-4 w-4" /> : null}
+                           {locked ? 'Unlock Pass' : 'Start Learning'}
                         </Link>
                      </Button>
                   </div>

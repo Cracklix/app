@@ -39,7 +39,7 @@ import PWAInstallButton from "@/components/PWAInstallButton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Standardized Navbar v66.0 - Logo Scaled & Realigned.
+ * @fileOverview Standardized Navbar v67.0 - Title Case Normalized.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -134,14 +134,14 @@ export default function Navbar() {
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
             {profile?.passStatus === 'active' && timeLeft && (
                <div className="hidden sm:flex flex-col items-end mr-1">
-                  <span className="text-[8px] font-black text-emerald-600 tracking-widest leading-none uppercase">Premium</span>
+                  <span className="text-[8px] font-black text-emerald-600 tracking-tight leading-none uppercase">Premium</span>
                   <span className="text-[10px] font-bold text-slate-400 mt-1 leading-none">{timeLeft}</span>
                </div>
             )}
 
             <PWAInstallButton 
               variant="outline"
-              className="hidden md:flex h-9 px-4 text-[9px] rounded-lg border-slate-200"
+              className="hidden md:flex h-9 px-4 text-[10px] rounded-lg border-slate-200"
             />
 
             <Link
@@ -189,7 +189,7 @@ export default function Navbar() {
                        <ProfileMenuItem href="/profile" icon={Settings} label="Settings" />
                        {isAdmin && <ProfileMenuItem href="/admin" icon={ShieldCheck} label="Admin Panel" highlight />}
                     </div>
-                    <Button onClick={handleLogout} className="w-full h-11 bg-[#FEF2F2] hover:bg-[#FEE2E2] text-[#EF4444] font-bold text-[11px] rounded-xl transition-all border-none">Log Out</Button>
+                    <Button onClick={handleLogout} variant="ghost" className="w-full h-11 bg-[#FEF2F2] hover:bg-[#FEE2E2] text-[#EF4444] font-bold text-[11px] rounded-xl transition-all border-none">Log Out</Button>
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>

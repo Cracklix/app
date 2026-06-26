@@ -22,8 +22,7 @@ import PLATFORM_VERSION from "@/lib/version";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Compact High-Density Footer v10.4.
- * OPTIMIZED: Increased container width for desktop widescreen.
+ * @fileOverview Compact High-Density Footer v10.5 - Normal Case Sync.
  */
 
 export default function Footer() {
@@ -41,8 +40,8 @@ export default function Footer() {
               align="left"
               imgClassName="h-[80px] md:h-[120px]"
             />
-            <p className="max-w-[320px] text-[11px] md:text-[15px] leading-relaxed text-slate-400 font-bold uppercase tracking-tight">
-              Punjab's most advanced exam platform for serious aspirants.
+            <p className="max-w-[320px] text-[15px] leading-relaxed text-slate-400 font-medium tracking-tight">
+              Punjab's smart exam preparation platform for every aspirant.
             </p>
             <div className="flex items-center gap-4">
               <SocialIcon href={TELEGRAM_GROUP} icon={<MessageCircle className="h-5 w-5" />} />
@@ -53,7 +52,7 @@ export default function Footer() {
 
           {/* Links Group */}
           <div className="space-y-6">
-            <h3 className="text-xs md:text-sm font-bold text-primary tracking-tight uppercase">Quick Links</h3>
+            <h3 className="text-sm font-bold text-primary tracking-tight">Quick Links</h3>
             <ul className="space-y-3">
               <FooterLink href="/">Home</FooterLink>
               <FooterLink href="/exams">Exams</FooterLink>
@@ -65,7 +64,7 @@ export default function Footer() {
 
           {/* Resources Group */}
           <div className="hidden lg:block space-y-6">
-            <h3 className="text-xs md:text-sm font-bold text-primary tracking-tight uppercase">Resources</h3>
+            <h3 className="text-sm font-bold text-primary tracking-tight">Resources</h3>
             <ul className="space-y-3">
               <FooterLink href="/mocks">Mock Tests</FooterLink>
               <FooterLink href="/pyqs">Previous Papers</FooterLink>
@@ -76,13 +75,13 @@ export default function Footer() {
 
           {/* Support Group */}
           <div className="col-span-1 lg:col-span-1 space-y-6">
-            <h3 className="text-xs md:text-sm font-bold text-primary tracking-tight uppercase">Support</h3>
+            <h3 className="text-sm font-bold text-primary tracking-tight">Support</h3>
             <div className="space-y-4">
-              <div className="flex items-center gap-3 text-[11px] md:text-[15px] text-slate-400">
+              <div className="flex items-center gap-3 text-[15px] text-slate-400">
                 <Phone className="h-4 w-4 text-primary shrink-0" />
                 <a href={`tel:${SUPPORT_PHONE}`} className="hover:text-white transition-colors truncate font-bold">{SUPPORT_PHONE}</a>
               </div>
-              <div className="flex items-center gap-3 text-[11px] md:text-[15px] text-slate-400">
+              <div className="flex items-center gap-3 text-[15px] text-slate-400">
                 <Mail className="h-4 w-4 text-primary shrink-0" />
                 <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-white transition-colors truncate font-bold">{SUPPORT_EMAIL}</a>
               </div>
@@ -95,12 +94,12 @@ export default function Footer() {
       <div className="border-t border-white/5 bg-black/20 py-6">
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
-             <p className="text-[10px] md:text-[12px] text-slate-500 font-bold uppercase tracking-widest">© {currentYear} Cracklix</p>
-             <Badge variant="outline" className="border-white/10 text-slate-500 text-[8px] font-black tracking-widest">V{PLATFORM_VERSION.version}</Badge>
+             <p className="text-[12px] text-slate-500 font-bold">© {currentYear} Cracklix</p>
+             <Badge variant="outline" className="border-white/10 text-slate-500 text-[10px] font-black tracking-widest">V{PLATFORM_VERSION.version}</Badge>
           </div>
-          <div className="flex items-center gap-3 text-[10px] md:text-[12px] font-bold text-slate-600 tracking-tight uppercase">
+          <div className="flex items-center gap-3 text-[12px] font-bold text-slate-600 tracking-tight">
             <ShieldCheck className="h-4 w-4 text-emerald-500" />
-            <span>Institutional Registry Verified</span>
+            <span>Trusted Platform</span>
           </div>
         </div>
       </div>
@@ -111,7 +110,7 @@ export default function Footer() {
 function FooterLink({ href, children }: { href: string; children: React.ReactNode; }) {
   return (
     <li>
-      <Link href={href} className="text-[11px] md:text-[14px] text-slate-400 hover:text-white transition-colors font-bold tracking-tight uppercase">
+      <Link href={href} className="text-[14px] text-slate-400 hover:text-white transition-colors font-bold tracking-tight">
         {children}
       </Link>
     </li>

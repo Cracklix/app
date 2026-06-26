@@ -16,7 +16,7 @@ import { AuthorityLogo } from "@/lib/exam-icons";
 import Image from "next/image"
 
 /**
- * @fileOverview Hero Hub v4.4 - Strategic CTA placement below resource cards.
+ * @fileOverview Hero Hub v4.5 - Title Case Refined.
  */
 export default function Hero() {
   const db = useFirestore();
@@ -41,27 +41,27 @@ export default function Hero() {
             <motion.div 
                initial={{ opacity: 0, x: -20 }}
                animate={{ opacity: 1, x: 0 }}
-               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-100 shadow-sm group hover:border-primary/30 transition-all cursor-default"
+               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-100 shadow-sm group hover:border-primary/30 transition-all cursor-default"
             >
-              <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 animate-pulse" />
-              <span className="text-[10px] md:text-[12px] font-bold text-slate-700 tracking-tight">
-                Punjab's Smart Exam Platform
+              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 animate-pulse" />
+              <span className="text-[13px] font-bold text-slate-700 tracking-tight">
+                Punjab's smartest exam platform
               </span>
             </motion.div>
 
             <div className="space-y-4 md:space-y-6">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.05]">
-                Crack Punjab Govt Exam <br/>
+              <h1 className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tight text-slate-900 leading-[1.05]">
+                Crack Punjab Govt Exams <br/>
                 <span className="block text-primary">with Confidence</span>
               </h1>
 
-              <p className="text-[13px] sm:text-lg text-slate-500 max-w-xl leading-relaxed font-medium">
-                Practice Tests, Old Papers, and Notes verified by official board patterns. Join thousands of successful aspirants today.
+              <p className="text-base md:text-xl text-slate-500 max-w-xl leading-relaxed font-medium">
+                Practice tests, previous papers, and study material verified by official board patterns. Join every successful aspirant today.
               </p>
             </div>
           </div>
 
-          {/* RIGHT: HERO IMAGE - RESTORED FOR MOBILE */}
+          {/* RIGHT: HERO IMAGE */}
           <div className="flex flex-col items-center order-2 mt-8 lg:mt-0">
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }} 
@@ -81,8 +81,8 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* QUICK ACTIONS - POSITIONED BELOW HERO IMAGE ON MOBILE */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mt-12 md:mt-24">
+        {/* QUICK ACTIONS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mt-12 md:mt-24">
           <QuickActionCard 
             boardId="mock-test"
             label="Practice Tests" 
@@ -90,33 +90,33 @@ export default function Hero() {
           />
           <QuickActionCard 
             boardId="study-material"
-            label="Notes & PDFs" 
+            label="Study Material" 
             href="/study-material" 
           />
           <QuickActionCard 
             boardId="pyq"
-            label="Old Papers" 
+            label="Previous Papers" 
             href="/pyqs" 
           />
           <QuickActionCard 
             boardId="current-affairs"
-            label="Daily News" 
+            label="Current Affairs" 
             href="/current-affairs" 
           />
         </div>
 
-        {/* PRIMARY CALL TO ACTION - NOW BELOW ALL RESOURCE CARDS */}
+        {/* PRIMARY CALL TO ACTION */}
         <motion.div 
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
            transition={{ delay: 0.4 }}
-           className="mt-10 md:mt-16 flex flex-col sm:flex-row justify-center items-center gap-3 md:gap-5"
+           className="mt-12 md:mt-20 flex flex-col sm:flex-row justify-center items-center gap-4 md:gap-6"
         >
-           <Button asChild className="w-full sm:w-auto h-12 md:h-16 rounded-full font-black text-[10px] md:text-xs tracking-widest px-12 md:px-16 shadow-xl active:scale-95 transition-all border-none">
-              <Link href="/mocks" className="flex items-center gap-2">Start Free Test <ArrowRight className="h-4 w-4" /></Link>
+           <Button asChild size="lg" className="w-full sm:w-auto h-14 md:h-16 px-12 md:px-20 rounded-full font-bold text-base tracking-tight shadow-xl active:scale-95 transition-all border-none">
+              <Link href="/mocks" className="flex items-center gap-2">Start Learning <ArrowRight className="h-5 w-5" /></Link>
            </Button>
-           <Button asChild variant="outline" className="w-full sm:w-auto h-12 md:h-16 rounded-full font-black text-[10px] md:text-xs tracking-widest px-12 md:px-16 shadow-sm border-2 active:scale-95 transition-all">
-              <Link href="/exams">Browse All Exams</Link>
+           <Button asChild variant="outline" size="lg" className="w-full sm:w-auto h-14 md:h-16 px-12 md:px-20 rounded-full font-bold text-base tracking-tight shadow-sm border-2 active:scale-95 transition-all">
+              <Link href="/exams">Explore Exams</Link>
            </Button>
         </motion.div>
       </div>
@@ -127,18 +127,18 @@ export default function Hero() {
 function QuickActionCard({ boardId, label, href }: { boardId: string, label: string, href: string }) {
   return (
     <Link href={href} className="block group h-full">
-      <div className="bg-white rounded-[2rem] p-5 md:p-6 flex items-center gap-4 md:gap-5 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-500 cursor-pointer border border-slate-100 active:scale-[0.98] h-full">
-        <div className="h-11 w-11 md:h-16 md:w-16 rounded-2xl md:rounded-[2.5rem] bg-slate-50 shadow-inner flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500 overflow-hidden">
+      <div className="bg-white rounded-[2.5rem] p-6 md:p-8 flex items-center gap-5 md:gap-6 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 cursor-pointer border border-slate-100 active:scale-[0.98] h-full">
+        <div className="h-12 w-12 md:h-16 md:w-16 rounded-2xl bg-slate-50 shadow-inner flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500 overflow-hidden">
           <AuthorityLogo boardId={boardId} size="md" className="bg-transparent shadow-none p-0" />
         </div>
         <div className="text-left flex-1 min-w-0">
-          <h3 className="text-sm md:text-lg font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors tracking-tight">
+          <h3 className="text-base md:text-xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors tracking-tight">
             {label}
           </h3>
-          <p className="text-[8px] md:text-[9px] font-bold text-slate-400 tracking-tight mt-1 uppercase">Verified Hub</p>
+          <p className="text-[11px] font-bold text-slate-400 mt-1">Verified Hub</p>
         </div>
-        <div className="h-7 w-7 rounded-full bg-slate-50 flex items-center justify-center text-slate-200 group-hover:bg-primary/5 group-hover:text-primary transition-all shrink-0">
-           <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+        <div className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-200 group-hover:bg-primary/5 group-hover:text-primary transition-all shrink-0">
+           <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
         </div>
       </div>
     </Link>
