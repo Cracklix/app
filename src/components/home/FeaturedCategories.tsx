@@ -13,7 +13,8 @@ import { AuthorityLogo } from '@/lib/exam-icons';
 import { Badge } from '@/components/ui/badge';
 
 /**
- * @fileOverview Standardized Category Grid v128.0 - Normalized Case & pill buttons.
+ * @fileOverview Standardized Category Grid v130.0 - Mobile Horizontal Carousel.
+ * FIXED: Mobile layout now uses scroll-snap carousel with 1.3 cards visible.
  */
 
 const STRICT_WHITELIST = [
@@ -39,6 +40,8 @@ export default function FeaturedCategories() {
   return (
     <section className="py-12 md:py-24 bg-white border-t border-slate-50 overflow-x-hidden">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 md:space-y-16 text-left">
+        
+        {/* Section Header */}
         <div className="space-y-2 px-1">
            <div className="flex items-center gap-3">
               <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary shadow-inner shrink-0">
@@ -49,9 +52,15 @@ export default function FeaturedCategories() {
            <p className="text-slate-500 font-medium text-sm md:text-2xl max-w-2xl">Select your recruitment category to explore verified exams and preparation hubs.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-10">
+        {/* Categories Carousel/Grid */}
+        <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:mx-0 md:px-0 md:gap-10 pb-4">
           {catLoading ? (
-            Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-64 md:h-96 w-full rounded-[2rem] bg-slate-50" />)
+            Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton 
+                key={i} 
+                className="flex-shrink-0 w-[85vw] max-w-[330px] h-[440px] md:w-auto md:max-w-none md:h-96 rounded-[2rem] md:rounded-[3rem] bg-slate-50" 
+              />
+            ))
           ) : categories.map((cat, idx) => {
             const catBoards = boards?.filter(b => b.categoryId === cat.id) || [];
             const boardLabel = catBoards.length > 0 ? catBoards[0].abbreviation : "Official";
@@ -65,28 +74,32 @@ export default function FeaturedCategories() {
                 whileTap={{ scale: 0.98 }}
                 viewport={{ once: true }} 
                 transition={{ duration: 0.4, delay: idx * 0.05 }}
-                className="h-full"
+                className="flex-shrink-0 w-[85vw] max-w-[330px] h-[450px] md:w-auto md:max-w-none md:h-full snap-start"
               >
                  <Link href={`/exams/category/${cat.id}`} className="h-full block">
-                    <Card className="border border-slate-100 shadow-sm hover:shadow-3xl transition-all duration-700 rounded-[2rem] md:rounded-[3rem] bg-white group overflow-hidden flex flex-col p-6 md:p-14 h-full relative">
+                    <Card className="border border-slate-100 shadow-sm hover:shadow-3xl transition-all duration-700 rounded-[2rem] md:rounded-[3rem] bg-white group overflow-hidden flex flex-col justify-between p-6 md:p-14 h-full relative">
                        
-                       <div className="space-y-4 mb-6 md:mb-10">
-                          <div className="h-16 w-16 md:h-24 md:w-24 bg-slate-50 rounded-2xl md:rounded-[2.5rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-700 overflow-hidden">
-                             <AuthorityLogo category={cat} size="lg" className="h-full w-full p-2" />
+                       {/* Top Content Area */}
+                       <div>
+                          <div className="space-y-4 mb-6 md:mb-10">
+                             <div className="h-16 w-16 md:h-24 md:w-24 bg-slate-50 rounded-2xl md:rounded-[2.5rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-700 overflow-hidden">
+                                <AuthorityLogo category={cat} size="lg" className="h-full w-full p-2" />
+                             </div>
+                             <Badge className="bg-primary/5 text-primary border-none font-black text-[13px] px-4 py-1.5 rounded-full shadow-sm w-fit tracking-tight">
+                                {boardLabel} Hub
+                             </Badge>
                           </div>
-                          <Badge className="bg-primary/5 text-primary border-none font-black text-[13px] px-4 py-1.5 rounded-full shadow-sm w-fit tracking-tight">
-                             {boardLabel} Hub
-                          </Badge>
-                       </div>
-                       
-                       <div className="space-y-2 md:space-y-4 flex-1">
-                          <h3 className="text-xl md:text-3xl font-black text-[#0F172A] leading-tight line-clamp-2 tracking-tight">{cat.title}</h3>
-                          <p className="text-base md:text-lg text-slate-500 line-clamp-2 leading-relaxed font-medium">
-                            {cat.description || "Browse official government recruitment and preparation series."}
-                          </p>
+                          
+                          <div className="space-y-2 md:space-y-4">
+                             <h3 className="text-xl md:text-3xl font-black text-[#0F172A] leading-tight line-clamp-2 tracking-tight">{cat.title}</h3>
+                             <p className="text-sm md:text-lg text-slate-500 line-clamp-2 leading-relaxed font-medium">
+                               {cat.description || "Browse official government recruitment and preparation series."}
+                             </p>
+                          </div>
                        </div>
 
-                       <div className="mt-10 md:mt-20 pt-6 border-t border-slate-50">
+                       {/* Bottom Button Area - Aligned */}
+                       <div className="mt-8 md:mt-12 pt-6 border-t border-slate-50">
                           <Button variant="ghost" className="w-full h-14 md:h-16 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-semibold text-base gap-3 shadow-xl border-none">
                              Start Learning <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                           </Button>
