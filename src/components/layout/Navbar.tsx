@@ -39,7 +39,7 @@ import PWAInstallButton from "@/components/PWAInstallButton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Standardized Navbar v63.3 - Proportional Scaling.
+ * @fileOverview Standardized Navbar v63.4 - Proportional Scaling.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -112,7 +112,7 @@ export default function Navbar() {
             <button
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open menu"
-              className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-lg md:rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0 hover:border-primary/30 mr-2 lg:hidden"
+              className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-lg md:rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0 hover:border-primary/30 mr-2"
             >
               <Menu className="w-5 h-5 md:w-6 md:h-6" />
             </button>
