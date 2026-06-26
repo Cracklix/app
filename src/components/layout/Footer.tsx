@@ -22,8 +22,8 @@ import PLATFORM_VERSION from "@/lib/version";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * @fileOverview Institutional Footer Hub v19.0.
- * UPDATED: Zero top space for the branding node and synchronized high-fidelity scales.
+ * @fileOverview Institutional Footer Hub v20.0.
+ * UPDATED: Further maximized logo scale for a premium high-fidelity brand finish.
  */
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -38,7 +38,7 @@ export default function Footer() {
             <Logo
               variant="dark"
               align="left"
-              className="h-28 md:h-40 -ml-2"
+              className="h-32 md:h-48 -ml-2"
               imgClassName="h-full w-auto"
             />
             <p className="max-w-[320px] text-[15px] leading-relaxed text-slate-400 font-medium tracking-tight">
