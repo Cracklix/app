@@ -61,11 +61,11 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
            
            {/* 1. STATUS LEGEND HUB - INCREASED TEXT & CIRCLES */}
            <div className="grid grid-cols-2 gap-2">
-              <SummaryCard count={stats.answered} label="ANSWERED" color="bg-[#1E5EFF]" />
-              <SummaryCard count={stats.notAnswered} label="NOT ANSWERED" color="bg-[#94A3B8]" />
-              <SummaryCard count={stats.marked} label="MARKED" color="bg-[#F43F5E]" />
-              <SummaryCard count={stats.notVisited} label="NOT VISITED" color="bg-white" textColor="text-[#94A3B8]" border="border-slate-100" />
-              <SummaryCard count={stats.ansMarked} label="ANS & MARKED" color="bg-[#6366F1]" colSpan={2} />
+              <SummaryCard count={stats.answered} label="Answered" color="bg-[#1E5EFF]" />
+              <SummaryCard count={stats.notAnswered} label="Not Answered" color="bg-[#94A3B8]" />
+              <SummaryCard count={stats.marked} label="Marked" color="bg-[#F43F5E]" />
+              <SummaryCard count={stats.notVisited} label="Not Visited" color="bg-white" textColor="text-[#94A3B8]" border="border-slate-100" />
+              <SummaryCard count={stats.ansMarked} label="Ans & Marked" color="bg-[#6366F1]" colSpan={2} />
            </div>
 
            <div className="h-px w-full bg-slate-100" />
@@ -102,7 +102,7 @@ export default function QuestionPalette({ onSelect, onSubmit }: QuestionPaletteP
                 }}
                 className="w-full h-11 bg-[#10B981] hover:bg-[#059669] text-white font-black uppercase tracking-widest text-[10px] rounded-xl shadow-md border-none transition-all active:scale-95"
               >
-                 FINISH TEST
+                 Finish Test
               </Button>
            </div>
         </div>

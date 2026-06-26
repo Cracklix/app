@@ -84,8 +84,8 @@ export default function QuestionRenderer({
               </div>
            </div>
            <div className="flex items-center gap-4 text-slate-300">
-              <button className="p-1.5 hover:bg-slate-50 rounded-lg transition-colors"><Bookmark className="h-4 w-4 md:h-5 md:h-5 hover:text-primary transition-colors" /></button>
-              <button className="p-1.5 hover:bg-rose-50 rounded-lg transition-colors"><AlertTriangle className="h-4 w-4 md:h-5 md:h-5 hover:text-rose-500 transition-colors" /></button>
+              <button className="p-1.5 hover:bg-slate-50 rounded-lg transition-colors"><Bookmark className="h-4 w-4 md:h-5 md:w-5 hover:text-primary transition-colors" /></button>
+              <button className="p-1.5 hover:bg-rose-50 rounded-lg transition-colors"><AlertTriangle className="h-4 w-4 md:h-5 md:w-5 hover:text-rose-500 transition-colors" /></button>
            </div>
         </div>
       )}
@@ -146,12 +146,12 @@ export default function QuestionRenderer({
       {showSolution && (
         <div className="mt-6 pt-6 border-t border-slate-100 space-y-4">
            <div className="flex items-center gap-3">
-              <Badge className="bg-[#0F172A] text-white border-none font-black text-[8px] md:text-[10px] uppercase px-4 py-1 rounded-xl tracking-widest shadow-lg">RATIONALE</Badge>
+              <Badge className="bg-[#0F172A] text-white border-none font-black text-[8px] md:text-[10px] uppercase px-4 py-1 rounded-xl tracking-widest shadow-lg">Rationale</Badge>
               <div className="h-px flex-1 bg-slate-50" />
            </div>
            <div className="bg-slate-50 p-4 md:p-8 rounded-xl md:rounded-[2.5rem] border border-slate-100 text-slate-500 leading-relaxed font-medium text-[11px] md:text-base space-y-4 shadow-inner">
               <p className="font-black text-[9px] md:text-[11px] uppercase text-[#0B1528] pb-2 border-b border-slate-200/50 flex items-center gap-3">
-                 <ShieldCheck className="h-4 w-4 text-emerald-500" /> OFFICIAL KEY: {q.correctAnswer}
+                 <ShieldCheck className="h-4 w-4 text-emerald-500" /> Official Key: {q.correctAnswer}
               </p>
               <div className="space-y-4">
                 {showEn && q.englishExplanation && <MathText text={q.englishExplanation} className="text-inherit" />}

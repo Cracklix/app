@@ -110,22 +110,22 @@ export default function Footer() {
       </div>
     </footer>
   );
-}
 
-function FooterLink({ href, children }: { href: string; children: React.ReactNode; }) {
-  return (
-    <li>
-      <Link href={href} className="text-[14px] text-slate-400 hover:text-white transition-colors font-bold tracking-tight">
-        {children}
+  function FooterLink({ href, children }: { href: string; children: React.ReactNode; }) {
+    return (
+      <li>
+        <Link href={href} className="text-[14px] text-slate-400 hover:text-white transition-colors font-bold tracking-tight">
+          {children}
+        </Link>
+      </li>
+    );
+  }
+
+  function SocialIcon({ href, icon }: { href: string; icon: React.ReactNode; }) {
+    return (
+      <Link href={href} target={href.startsWith('http') ? "_blank" : undefined} className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-white hover:bg-primary transition-all border border-white/5">
+        {icon}
       </Link>
-    </li>
-  );
-}
-
-function SocialIcon({ href, icon }: { href: string; icon: React.ReactNode; }) {
-  return (
-    <Link href={href} target={href.startsWith('http') ? "_blank" : undefined} className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-white hover:bg-primary transition-all border border-white/5">
-      {icon}
-    </Link>
-  );
+    );
+  }
 }
