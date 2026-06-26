@@ -12,8 +12,7 @@ import { AuthorityLogo } from "@/lib/exam-icons";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Popular Exams Hub v27.0.
- * UPDATED: Reduced desktop vertical spacing and text scales.
+ * @fileOverview Popular Exams Hub v27.1 (Circular Branding).
  */
 
 const POPULAR_LIST = [
@@ -27,7 +26,7 @@ const POPULAR_LIST = [
 
 export default function PopularExams() {
   return (
-    <section className="py-8 md:py-12 bg-slate-50/50 border-t border-slate-100">
+    <section className="py-8 md:py-12 bg-slate-50/50 border-t border-slate-100 px-1">
       <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto space-y-8 md:space-y-12">
          
          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 text-left px-4 sm:px-6 lg:px-8">
@@ -56,17 +55,15 @@ export default function PopularExams() {
                  className="flex flex-col h-full"
                >
                   <Link href={`/exams/view?id=${p.id}`} className="h-full block">
-                     <Card className="w-full mx-auto border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] md:rounded-[3rem] bg-white p-4 pt-6 pb-4 md:p-8 h-full text-center flex flex-col">
+                     <Card className="w-full mx-auto border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] md:rounded-[3rem] bg-white p-4 pt-6 pb-4 md:p-10 h-full text-center flex flex-col group">
                         
-                        <div className="flex justify-center mb-4 md:mb-8 shrink-0">
-                          <div className="h-14 w-14 md:h-16 md:w-16 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500 overflow-hidden">
-                              <AuthorityLogo boardId={p.boardId} size="lg" className="bg-transparent shadow-none border-none p-0 h-full w-full" />
-                          </div>
+                        <div className="flex justify-center mb-4 md:mb-10 shrink-0">
+                          <AuthorityLogo boardId={p.boardId} size="md" className="shadow-lg group-hover:scale-110 transition-transform" />
                         </div>
 
                         <div className="flex-1 flex flex-col justify-center min-w-0">
                            <div className="space-y-2 md:space-y-4">
-                              <h3 className="text-[14px] md:text-lg font-bold leading-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2">
+                              <h3 className="text-[14px] md:text-lg lg:text-xl font-bold leading-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2 uppercase">
                                  {p.name}
                               </h3>
                               <div className="flex justify-center">
@@ -75,8 +72,8 @@ export default function PopularExams() {
                            </div>
                         </div>
 
-                        <div className="mt-auto shrink-0 pt-4 md:pt-8">
-                           <Button variant="ghost" className="w-full h-10 md:h-12 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-black text-[10px] md:text-xs tracking-widest uppercase shadow-md border-none active:scale-95 gap-2">
+                        <div className="mt-auto shrink-0 pt-4 md:pt-10">
+                           <Button variant="ghost" className="w-full h-10 md:h-12 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-black text-[10px] md:text-xs tracking-widest uppercase border-none active:scale-95 gap-2">
                               Open <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4" />
                            </Button>
                         </div>
@@ -92,7 +89,7 @@ export default function PopularExams() {
 
 function MiniChip({ emoji, label }: { emoji: string, label: string }) {
    return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-50 border border-slate-100 text-[9px] font-bold text-slate-400 tracking-tight">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-50 border border-slate-100 text-[9px] font-bold text-slate-400 tracking-tight uppercase">
          <span>{emoji}</span> {label}
       </span>
    )
