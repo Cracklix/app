@@ -33,7 +33,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 215 100% 54%;
     
-    --radius: 1.25rem; /* 20px - Modern Squared Radius */
+    --radius: 1.5rem; /* 24px - Modern Standard */
 
     --header-height-mobile: 80px;
     --header-height-desktop: 112px;
@@ -42,18 +42,14 @@
 
 @layer base {
   html {
-    font-size: 14px;
+    font-size: 16px;
     scroll-behavior: smooth;
-  }
-  @media (max-width: 480px) {
-    html {
-      font-size: 13px;
-    }
   }
 
   * {
     @apply border-border;
   }
+  
   html, body {
     width: 100%;
     position: relative;
@@ -62,30 +58,29 @@
     @apply bg-background text-foreground antialiased;
     -webkit-tap-highlight-color: transparent;
     -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
   }
   
-  /* Typography Scale v2.0 */
+  /* Fluid Typography Scale */
   h1 { 
-    @apply font-black tracking-tight leading-[1.1] text-[#0F172A]; 
-    font-size: 34px;
-  }
-  @media (max-width: 1024px) {
-    h1 { font-size: 28px; }
-  }
-  @media (max-width: 640px) {
-    h1 { font-size: 24px; }
+    @apply font-black tracking-tighter leading-[1.05] text-[#0F172A]; 
+    font-size: clamp(2rem, 5vw, 4.5rem);
   }
 
-  h2 { @apply font-black tracking-tight leading-[1.1]; font-size: 28px; }
-  h3 { @apply font-black tracking-tight leading-tight; font-size: 22px; }
+  h2 { 
+    @apply font-black tracking-tight leading-[1.1] text-[#0F172A]; 
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+  }
+
+  h3 { 
+    @apply font-black tracking-tight leading-tight text-[#0F172A]; 
+    font-size: clamp(1.125rem, 2.5vw, 1.75rem);
+  }
   
   p { 
     @apply font-medium text-slate-500; 
-    font-size: 18px; 
+    font-size: clamp(0.875rem, 1.2vw, 1.125rem);
     line-height: 1.6;
-  }
-  @media (max-width: 640px) {
-    p { font-size: 16px; }
   }
 
   input, textarea, select {
@@ -121,9 +116,20 @@
 }
 
 .shadow-4xl {
-  box-shadow: 0 20px 40px -10px rgba(22, 119, 255, 0.15);
+  box-shadow: 0 20px 40px -10px rgba(22, 119, 255, 0.12);
 }
 
 .shadow-5xl {
-  box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.15);
+}
+
+/* Fluid Spacing Utilities */
+.section-py {
+  padding-top: clamp(2.5rem, 8vw, 6rem);
+  padding-bottom: clamp(2.5rem, 8vw, 6rem);
+}
+
+.container-px {
+  padding-left: clamp(1rem, 5vw, 2.5rem);
+  padding-right: clamp(1rem, 5vw, 2.5rem);
 }

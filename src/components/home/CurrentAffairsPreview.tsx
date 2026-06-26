@@ -9,6 +9,8 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AuthorityLogo } from '@/lib/exam-icons';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 
 export default function CurrentAffairsPreview() {
   const db = useFirestore();
@@ -25,48 +27,49 @@ export default function CurrentAffairsPreview() {
   const { data: items, loading } = useCollection<any>(hubQuery);
 
   return (
-    <section className="py-8 md:py-24 bg-slate-50/50 border-t border-slate-100">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 md:space-y-16 text-left">
+    <section className="section-py bg-slate-50/50 border-t border-slate-100">
+      <div className="max-w-[1440px] mx-auto container-px space-y-8 md:space-y-16">
         
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-2 px-1">
-           <div className="space-y-1">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+           <div className="space-y-2">
               <div className="flex items-center gap-3">
                  <AuthorityLogo boardId="current-affairs" size="sm" className="bg-transparent shadow-none p-0 shrink-0" />
-                 <h2 className="text-3xl md:text-5xl font-bold text-[#0F172A] tracking-tight">Current Affairs</h2>
+                 <h2 className="tracking-tight">Current Affairs</h2>
               </div>
-              <p className="text-slate-500 font-medium text-base md:text-lg leading-tight">Daily bilingual updates for Punjab recruitments.</p>
+              <p className="max-w-2xl leading-tight">Daily verified updates and bilingual nodes curated for all Punjab recruitment boards.</p>
            </div>
            <Link href="/current-affairs" className="text-blue-600 font-bold text-base tracking-tight hover:underline flex items-center gap-2 group shrink-0">
-              View All <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              View All Updates <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
            </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-10">
+        <div className="grid gap-4 md:gap-8 lg:gap-10 grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))]">
            {loading ? (
-              Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[200px] md:h-80 rounded-[24px] md:rounded-2xl bg-white" />)
+              Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="aspect-video w-full rounded-[var(--radius)] bg-white" />)
            ) : items?.map((item, idx) => (
               <motion.div 
                 key={item.id}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.05 }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="flex flex-col"
               >
                  <Link href="/current-affairs" className="h-full block">
-                    <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[24px] md:rounded-[2.5rem] bg-white p-[18px] md:p-12 h-full flex flex-col justify-between">
+                    <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[var(--radius)] bg-white p-6 md:p-10 lg:p-12 h-full flex flex-col justify-between min-h-[220px] md:min-h-[280px]">
                        <div className="flex flex-col h-full">
-                          <div className="flex justify-between items-start mb-4 md:mb-10">
-                             <Badge variant="outline" className="bg-slate-50 border-slate-100 text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-lg uppercase">CA</Badge>
-                             <span className="text-[10px] font-bold text-slate-300 tracking-tight flex items-center gap-1 uppercase">
-                                <Calendar className="h-3 w-3" /> {item.month}
+                          <div className="flex justify-between items-start mb-6 md:mb-10">
+                             <Badge variant="outline" className="bg-slate-50 border-slate-100 text-slate-400 text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-tight">Verified</Badge>
+                             <span className="text-[11px] font-bold text-slate-400 tracking-widest flex items-center gap-1.5 uppercase">
+                                <Calendar className="h-3.5 w-3.5 text-primary/60" /> {item.month} {item.year}
                              </span>
                           </div>
-                          <h3 className="text-[18px] md:text-2xl font-bold text-[#0F172A] leading-tight mb-4 uppercase tracking-tight line-clamp-2">
+                          <h3 className="leading-tight mb-4 tracking-tight line-clamp-2 flex-1">
                              {item.title}
                           </h3>
-                          <div className="mt-auto pt-4 border-t border-slate-50">
-                             <Button variant="ghost" className="w-full h-[52px] md:h-14 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-semibold text-base border-none shadow-md">
-                                Read <ChevronRight className="h-4 w-4" />
+                          <div className="mt-8 pt-6 border-t border-slate-50">
+                             <Button variant="ghost" className="w-full h-12 md:h-14 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-semibold text-base border-none shadow-md active:scale-95">
+                                Read More <ChevronRight className="h-4 w-4" />
                              </Button>
                           </div>
                        </div>
@@ -79,4 +82,3 @@ export default function CurrentAffairsPreview() {
     </section>
   );
 }
-import { motion } from 'framer-motion';

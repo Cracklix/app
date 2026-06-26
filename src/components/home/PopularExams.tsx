@@ -24,55 +24,55 @@ const POPULAR_LIST = [
 
 export default function PopularExams() {
   return (
-    <section className="py-8 md:py-24 bg-slate-50/50 border-t border-slate-100">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 text-left space-y-8 md:space-y-16">
-         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-2 px-1">
-            <div className="space-y-1">
+    <section className="section-py bg-slate-50/50 border-t border-slate-100">
+      <div className="max-w-[1440px] mx-auto container-px space-y-8 md:space-y-16">
+         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+            <div className="space-y-2">
                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 bg-blue-50 rounded-lg flex items-center justify-center text-primary shadow-inner shrink-0"><Target className="h-5 w-5" /></div>
-                  <h2 className="text-3xl md:text-5xl font-bold text-[#04102B] tracking-tight">Popular Exams</h2>
+                  <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl bg-blue-50 flex items-center justify-center text-primary shadow-inner shrink-0">
+                    <Target className="h-5 w-5 md:h-6 md:w-6" />
+                  </div>
+                  <h2 className="tracking-tight">Popular Exams</h2>
                </div>
-               <p className="text-slate-500 font-medium text-base md:text-2xl max-w-2xl leading-tight">Direct links to most attempted preparation hubs.</p>
+               <p className="max-w-2xl">Direct access to the most attempted recruitment preparation hubs.</p>
             </div>
             <Link href="/exams" className="text-primary font-bold text-base tracking-tight hover:underline flex items-center gap-2 group shrink-0">
                View Registry <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
          </div>
 
-         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-10">
+         <div className="grid gap-4 md:gap-8 lg:gap-10 grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))]">
             {POPULAR_LIST.map((p, idx) => (
                <motion.div 
                  key={p.id} 
-                 initial={{ opacity: 0, y: 10 }} 
-                 whileInView={{ opacity: 1, y: 0 }} 
+                 initial={{ opacity: 0, scale: 0.95 }} 
+                 whileInView={{ opacity: 1, scale: 1 }} 
                  viewport={{ once: true }} 
-                 transition={{ delay: idx * 0.05 }} 
+                 transition={{ duration: 0.4, delay: idx * 0.05 }} 
+                 className="flex flex-col"
                >
                   <Link href={`/exams/view?id=${p.id}`} className="h-full block">
-                     <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[24px] md:rounded-[3rem] bg-white p-[18px] md:p-12 text-left h-[230px] md:h-full group flex flex-col justify-between relative overflow-hidden">
-                        <div>
-                           <div className="mb-4 md:mb-12 flex justify-start">
-                              <div className="h-12 w-12 md:h-24 md:w-24 bg-slate-50 rounded-[1rem] md:rounded-[2.5rem] shadow-inner flex items-center justify-center overflow-hidden p-2">
+                     <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[var(--radius)] bg-white p-6 md:p-10 lg:p-12 flex flex-col justify-between group h-full min-h-[260px] md:min-h-[320px] relative overflow-hidden">
+                        <div className="flex flex-col h-full">
+                           <div className="mb-6 md:mb-10">
+                              <div className="h-14 w-14 md:h-20 md:w-20 bg-slate-50 rounded-xl md:rounded-2xl shadow-inner flex items-center justify-center overflow-hidden p-2 group-hover:scale-110 transition-transform">
                                  <AuthorityLogo boardId={p.boardId} size="md" className="h-full w-full" />
                               </div>
                            </div>
                            
-                           <div className="space-y-1">
-                              <h3 className="text-[18px] md:text-3xl font-bold text-[#04102B] leading-tight tracking-tight truncate">
-                                 {p.name}
-                              </h3>
-                              
-                              <div className="flex flex-wrap gap-1.5">
+                           <div className="space-y-3 flex-1">
+                              <h3 className="tracking-tight truncate">{p.name}</h3>
+                              <div className="flex flex-wrap gap-2">
                                  <MiniChip emoji="📚" label="Mocks" />
                                  <MiniChip emoji="⚡" label="Live" />
                               </div>
                            </div>
-                        </div>
 
-                        <div className="mt-4 pt-4 border-t border-slate-50">
-                           <Button variant="ghost" className="w-full h-[52px] md:h-14 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-semibold text-base border-none shadow-md">
-                              Open <ChevronRight className="h-4 w-4 ml-1" />
-                           </Button>
+                           <div className="mt-8 pt-6 border-t border-slate-50">
+                              <Button variant="ghost" className="w-full h-12 md:h-14 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-semibold text-base border-none shadow-md active:scale-95">
+                                 Open Exam <ChevronRight className="h-4 w-4 ml-1" />
+                              </Button>
+                           </div>
                         </div>
                      </Card>
                   </Link>
@@ -86,8 +86,8 @@ export default function PopularExams() {
 
 function MiniChip({ emoji, label }: { emoji: string, label: string }) {
    return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-50 border border-slate-100 text-[11px] font-bold text-slate-400">
-         <span className="text-[10px]">{emoji}</span> {label}
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-100 text-[11px] font-bold text-slate-400">
+         <span>{emoji}</span> {label}
       </span>
    )
 }

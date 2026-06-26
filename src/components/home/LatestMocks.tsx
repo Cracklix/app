@@ -36,21 +36,21 @@ export default function LatestMocks() {
   }, [profile]);
 
   return (
-    <section className="py-8 md:py-24 bg-white border-t border-slate-50">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 md:space-y-16">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-2 text-left px-1">
-           <div className="space-y-1">
-              <h2 className="text-3xl md:text-5xl font-bold text-[#0F172A] tracking-tight">Latest Mock Tests</h2>
-              <p className="text-slate-500 font-medium text-base md:text-lg leading-tight">Freshly updated series for Punjab recruitments.</p>
+    <section className="section-py bg-white border-t border-slate-50">
+      <div className="max-w-[1440px] mx-auto container-px space-y-8 md:space-y-16">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 text-left">
+           <div className="space-y-2">
+              <h2 className="tracking-tight">Latest Mock Tests</h2>
+              <p className="max-w-2xl">Freshly updated practice series mapped to the latest recruitment notifications.</p>
            </div>
            <Link href="/mocks" className="text-primary font-bold text-base tracking-tight hover:underline flex items-center gap-2 group shrink-0">
               View All <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
            </Link>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-10">
+        <div className="grid gap-4 md:gap-8 lg:gap-10 grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))]">
           {loading ? (
-             Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[260px] md:h-96 w-full rounded-[24px] md:rounded-[2.5rem] bg-slate-50" />)
+             Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="aspect-[4/5] w-full rounded-[var(--radius)] bg-slate-50" />)
           ) : mocks.length > 0 ? mocks.map((mock, i) => {
             const tier = (mock.accessLevel || 'FREE').toUpperCase();
             const isPremium = tier === 'PREMIUM';
@@ -60,45 +60,48 @@ export default function LatestMocks() {
             return (
               <motion.div 
                 key={mock.id} 
-                initial={{ opacity: 0, y: 10 }} 
+                initial={{ opacity: 0, y: 20 }} 
                 whileInView={{ opacity: 1, y: 0 }} 
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }} 
+                transition={{ duration: 0.5, delay: i * 0.1 }} 
+                className="flex flex-col"
               >
-                <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[24px] md:rounded-[2.5rem] bg-white p-[18px] md:p-12 text-left md:text-center h-[260px] md:h-full flex flex-col justify-between group relative overflow-hidden">
+                <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[var(--radius)] bg-white p-6 md:p-10 lg:p-12 flex flex-col justify-between group h-full relative overflow-hidden min-h-[360px] md:min-h-[420px]">
                   
                   <div className="flex flex-col h-full">
-                     <div className="mb-4 md:mb-10 flex justify-start md:justify-center">
-                        <div className="h-12 w-12 md:h-24 md:w-24 bg-slate-50 rounded-[1rem] md:rounded-[2rem] shadow-inner group-hover:scale-110 transition-transform overflow-hidden flex items-center justify-center p-2">
+                     <div className="mb-8 md:mb-12 flex justify-start md:justify-center">
+                        <div className="h-14 w-14 md:h-20 md:w-20 bg-slate-50 rounded-2xl md:rounded-3xl shadow-inner group-hover:scale-110 transition-transform overflow-hidden flex items-center justify-center p-2">
                            <AuthorityLogo boardId={boardId} size="md" className="h-full w-full" />
                         </div>
                      </div>
 
-                     <CardHeader className="p-0 flex-1 space-y-2 md:space-y-6">
-                        <CardTitle className="text-[18px] md:text-3xl font-bold text-[#0F172A] leading-tight tracking-tight line-clamp-2">
+                     <CardHeader className="p-0 flex-1 space-y-4">
+                        <CardTitle className="leading-tight tracking-tight line-clamp-2 text-center md:text-center">
                            {mock.title}
                         </CardTitle>
                         
-                        <div className="flex flex-col md:flex-row flex-wrap items-start md:items-center justify-center gap-1.5 md:gap-4 text-[11px] font-bold text-slate-400 uppercase tracking-tight">
-                           <span className="flex items-center gap-1"><BookOpen className="h-3.5 w-3.5 text-primary/50" /> {mock.totalQuestions} Qs</span>
-                           <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-primary/50" /> {mock.duration}m</span>
+                        <div className="flex flex-wrap items-center justify-center gap-4 text-[12px] font-bold text-slate-400 uppercase tracking-tight">
+                           <span className="flex items-center gap-1.5"><BookOpen className="h-4 w-4 text-primary/60" /> {mock.totalQuestions} Qs</span>
+                           <span className="flex items-center gap-1.5"><Clock className="h-4 w-4 text-primary/60" /> {mock.duration}m</span>
                         </div>
 
                         {isPremium && (
-                          <div className="pt-0.5">
-                             <Badge className="bg-orange-50 text-orange-600 border-none text-[10px] font-bold px-2 py-0.5 rounded-full">Elite</Badge>
+                          <div className="flex justify-center pt-2">
+                             <Badge className="bg-amber-50 text-amber-600 border-none text-[11px] font-bold px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5">
+                                <Lock className="h-3 w-3" /> Elite Pass
+                             </Badge>
                           </div>
                         )}
                      </CardHeader>
 
-                     <div className="mt-4 pt-4 border-t border-slate-50">
+                     <div className="mt-8 pt-6 border-t border-slate-50">
                         <Button asChild className={cn(
-                          "w-full h-[52px] md:h-14 rounded-full font-semibold text-[15px] md:text-base tracking-tight shadow-md border-none transition-all active:scale-95 gap-2", 
-                          locked ? "bg-orange-500 hover:bg-orange-600 text-white" : "bg-[#0F172A] hover:bg-black text-white"
+                          "w-full h-12 md:h-14 rounded-full font-bold text-base tracking-tight shadow-md border-none transition-all active:scale-95 gap-2", 
+                          locked ? "bg-amber-500 hover:bg-amber-600 text-white" : "bg-[#0F172A] hover:bg-black text-white"
                         )}>
                            <Link href={locked ? '/pass' : `/mocks/view?id=${mock.id}`} className="flex items-center justify-center gap-2">
-                              {locked && <Lock className="h-4 w-4" />}
-                              Start
+                              {locked ? 'Unlock Series' : 'Start Test'}
+                              <ChevronRight className="h-4 w-4" />
                            </Link>
                         </Button>
                      </div>
@@ -107,8 +110,8 @@ export default function LatestMocks() {
               </motion.div>
             )
           }) : (
-            <div className="col-span-full py-20 text-center opacity-20 italic font-bold text-sm tracking-widest">
-               No tests deployed.
+            <div className="col-span-full py-20 text-center opacity-30 italic font-bold text-base">
+               No practice tests available in this hub.
             </div>
           )}
         </div>

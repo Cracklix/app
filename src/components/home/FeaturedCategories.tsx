@@ -33,29 +33,25 @@ export default function FeaturedCategories() {
   }, [rawCategories]);
 
   return (
-    <section className="py-8 md:py-24 bg-white border-t border-slate-50">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 md:space-y-16">
+    <section className="section-py bg-white border-t border-slate-50">
+      <div className="max-w-[1440px] mx-auto container-px space-y-8 md:space-y-16">
         
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-2 px-1">
-           <div className="space-y-1">
-              <div className="flex items-center gap-3">
-                 <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary shadow-inner shrink-0">
-                   <Layers className="h-5 w-5" />
-                 </div>
-                 <h2 className="text-3xl md:text-5xl font-bold text-[#0F172A] tracking-tight">Choose Category</h2>
-              </div>
-              <p className="text-slate-500 font-medium text-base md:text-2xl max-w-2xl leading-tight">Select your recruitment category to explore verified hubs.</p>
-           </div>
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+             <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-inner shrink-0">
+               <Layers className="h-5 w-5 md:h-6 md:w-6" />
+             </div>
+             <h2 className="tracking-tight">Choose Category</h2>
+          </div>
+          <p className="max-w-2xl">Select your recruitment category to explore verified preparation hubs.</p>
         </div>
 
-        {/* Categories Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-10">
+        <div className="grid gap-4 md:gap-8 lg:gap-10 grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))]">
           {catLoading ? (
-            Array.from({ length: 4 }).map((_, i) => (
+            Array.from({ length: 3 }).map((_, i) => (
               <Skeleton 
                 key={i} 
-                className="h-[320px] md:h-96 w-full rounded-[24px] md:rounded-[3rem] bg-slate-50" 
+                className="aspect-[4/5] md:aspect-square w-full rounded-[var(--radius)] bg-slate-50" 
               />
             ))
           ) : categories.map((cat, idx) => {
@@ -65,16 +61,17 @@ export default function FeaturedCategories() {
             return (
               <motion.div 
                 key={cat.id} 
-                initial={{ opacity: 0, y: 10 }} 
+                initial={{ opacity: 0, y: 20 }} 
                 whileInView={{ opacity: 1, y: 0 }} 
                 viewport={{ once: true }} 
-                transition={{ duration: 0.4, delay: idx * 0.05 }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="flex flex-col"
               >
                  <Link href={`/exams/category/${cat.id}`} className="h-full block">
-                    <Card className="border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 rounded-[24px] md:rounded-[3rem] bg-white group overflow-hidden flex flex-col justify-between p-[18px] md:p-14 h-[320px] md:h-full relative">
+                    <Card className="border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 rounded-[var(--radius)] bg-white group overflow-hidden flex flex-col p-6 md:p-10 lg:p-12 h-full min-h-[380px] md:min-h-[440px]">
                        <div className="flex flex-col h-full">
-                          <div className="space-y-3 mb-4">
-                             <div className="h-14 w-14 md:h-24 md:w-24 bg-slate-50 rounded-[1.25rem] md:rounded-[2.5rem] flex items-center justify-center shadow-inner overflow-hidden">
+                          <div className="space-y-4 mb-6">
+                             <div className="h-16 w-16 md:h-24 md:w-24 bg-slate-50 rounded-2xl md:rounded-3xl flex items-center justify-center shadow-inner overflow-hidden">
                                 <AuthorityLogo category={cat} size="md" className="h-full w-full p-2" />
                              </div>
                              <Badge className="bg-primary/5 text-primary border-none font-bold text-[13px] px-3 py-1 rounded-full shadow-sm w-fit tracking-tight">
@@ -82,17 +79,16 @@ export default function FeaturedCategories() {
                              </Badge>
                           </div>
                           
-                          <div className="space-y-1 flex-1">
-                             <h3 className="text-[18px] md:text-3xl font-bold text-[#0F172A] leading-tight line-clamp-1 tracking-tight">{cat.title}</h3>
-                             <p className="text-[15px] md:text-lg text-slate-500 line-clamp-2 leading-relaxed font-medium">
+                          <div className="space-y-2 flex-1">
+                             <h3 className="leading-tight line-clamp-2">{cat.title}</h3>
+                             <p className="line-clamp-3 leading-relaxed font-medium">
                                {cat.description || "Browse official preparation series."}
                              </p>
                           </div>
 
-                          <div className="mt-4 pt-4 border-t border-slate-50">
-                             <Button variant="ghost" className="w-full h-[52px] md:h-16 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-semibold text-base gap-3 shadow-md border-none">
-                                <span className="hidden md:inline">Start Learning</span>
-                                <span className="md:hidden text-[15px]">Start Learning</span>
+                          <div className="mt-8 pt-6 border-t border-slate-50">
+                             <Button variant="ghost" className="w-full h-12 md:h-14 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-semibold text-base gap-3 shadow-md border-none active:scale-95">
+                                Start Learning
                                 <ChevronRight className="h-4 w-4" />
                              </Button>
                           </div>
