@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { useCollection, useFirestore, useDoc } from '@/firebase';
 import { collection, query, limit, doc, orderBy } from 'firebase/firestore';
-import { Trophy, ChevronRight, Zap } from 'lucide-react';
+import { Trophy, ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -14,8 +14,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 
 /**
- * @fileOverview Institutional Merit Hub v19.0 - 4-Item Visible Scroll.
- * UPDATED: Horizontal scroll for mobile showing top 10, with 4 visible at start.
+ * @fileOverview Universal Responsive Merit Hub v22.0.
+ * SCALING: Mobile (Horizontal Scroll - 4 Visible) -> Tablet/Desktop (Grid - 4 to 6 Cols).
  */
 export default function MeritPreview() {
   const db = useFirestore();
@@ -38,53 +38,50 @@ export default function MeritPreview() {
         uniqueMap.set(res.userId, res);
       }
     });
-    // Show top 10 to enable scrolling beyond the top 4
-    return Array.from(uniqueMap.values()).sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, 10);
+    return Array.from(uniqueMap.values()).sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, 12);
   }, [results]);
 
   return (
-    <section className="py-8 md:py-24 bg-slate-50/50 border-t border-slate-100 overflow-hidden">
-      <div className="max-w-[1440px] mx-auto container-px text-left space-y-6 md:space-y-16">
+    <section className="py-10 md:py-24 bg-slate-50/50 border-t border-slate-100 overflow-hidden">
+      <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 text-left space-y-8 md:space-y-16">
         
-        {/* Header Hub */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-2 px-1">
-           <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                 <Trophy className="h-5 w-5 md:h-8 md:w-8 text-primary shrink-0" />
-                 <h2 className="text-[22px] md:text-5xl font-black text-[#0F172A] tracking-tight leading-none">Hall of Rankers</h2>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 text-left">
+           <div className="space-y-2">
+              <div className="flex items-center gap-3 md:gap-4">
+                 <Trophy className="h-8 w-8 md:h-12 md:w-12 text-primary shrink-0" />
+                 <h2 className="text-[clamp(24px,4vw,40px)] font-black text-[#0F172A] tracking-tight leading-none">Hall of Rankers</h2>
               </div>
-              <p className="text-[12px] md:text-xl font-medium text-slate-500">Real-time merit hub for every Punjab aspirant.</p>
+              <p className="text-[clamp(13px,1.5vw,18px)] font-medium text-slate-500 italic">Real-time merit hub tracking topper nodes across Punjab.</p>
            </div>
-           <Button asChild variant="ghost" className="text-primary font-bold text-[11px] md:text-base tracking-tight gap-2 group shrink-0 p-0 h-auto">
-              <Link href="/leaderboard" className="flex items-center gap-2">View Full List <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></Link>
+           <Button asChild variant="ghost" className="text-primary font-bold text-[13px] md:text-base tracking-tight gap-2 group shrink-0 p-0 h-auto">
+              <Link href="/leaderboard" className="flex items-center gap-2">View Merit List <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
            </Button>
         </div>
 
-        {/* Merit Horizontal Scroll - 4 Visible on Mobile */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 gap-2 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-8 lg:gap-10">
+        <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 gap-3 md:grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 md:gap-8 lg:gap-10">
            {resultsLoading ? (
-              Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="flex-shrink-0 w-[23%] h-24 md:h-32 md:w-full rounded-xl bg-white" />)
+              Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="flex-shrink-0 w-[23%] h-24 md:h-64 md:w-full rounded-2xl md:rounded-[3rem] bg-white" />)
            ) : topRankers.map((res, i) => {
               const name = (res.userName && res.userName !== 'Aspirant' && !res.userName.includes('@')) ? res.userName : (res.userEmail?.split('@')[0] || "Aspirant");
               const cleanName = name.split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
 
               return (
-                 <div key={res.id} className="flex-shrink-0 w-[23%] md:w-full snap-start">
-                    <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all group overflow-hidden bg-white p-2 md:p-8 h-full flex flex-col justify-center rounded-xl md:rounded-[3rem]">
-                       <div className="flex flex-col items-center text-center space-y-1.5 md:space-y-4">
+                 <div key={res.id} className="flex-shrink-0 w-[23%] md:w-full snap-start h-full">
+                    <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 group overflow-hidden bg-white p-3 md:p-10 flex flex-col justify-center rounded-2xl md:rounded-[4rem] h-full min-h-[110px] md:min-h-[300px]">
+                       <div className="flex flex-col items-center text-center space-y-2 md:space-y-6">
                           <div className="relative shrink-0">
-                             <StudentAvatar profile={{ name: cleanName, gender: res.gender }} className="h-8 w-8 md:h-20 md:w-20 rounded-lg md:rounded-3xl border border-slate-50 shadow-inner group-hover:scale-110 transition-transform" />
+                             <StudentAvatar profile={{ name: cleanName, gender: res.gender }} className="h-10 w-10 md:h-24 md:w-24 rounded-xl md:rounded-[2rem] border border-slate-50 shadow-inner group-hover:scale-110 transition-transform" />
                              <div className={cn(
-                                "absolute -bottom-1 -right-1 h-4 w-4 md:h-8 md:w-8 rounded-md md:rounded-lg flex items-center justify-center text-white text-[7px] md:text-xs font-black shadow-lg border border-white transition-all",
+                                "absolute -bottom-1.5 -right-1.5 h-5 w-5 md:h-10 md:w-10 rounded-lg md:rounded-xl flex items-center justify-center text-white text-[8px] md:text-sm font-black shadow-xl border-2 border-white transition-all",
                                 i === 0 ? "bg-amber-400" : i === 1 ? "bg-slate-300" : "bg-orange-400"
                              )}>
                                 {i + 1}
                              </div>
                           </div>
-                          <div className="min-w-0 w-full">
-                             <p className="font-black text-[9px] md:text-2xl text-[#0F172A] truncate leading-none">{cleanName}</p>
-                             <div className="flex flex-col items-center mt-1">
-                                <p className="text-[7px] md:text-sm font-bold text-slate-400 leading-none">Score: {Math.round(res.score)}</p>
+                          <div className="min-w-0 w-full space-y-1">
+                             <p className="font-black text-[11px] md:text-xl text-[#0F172A] truncate leading-none uppercase tracking-tight">{cleanName}</p>
+                             <div className="flex flex-col items-center">
+                                <p className="text-[9px] md:text-sm font-bold text-slate-400 uppercase tracking-widest tabular-nums">Score: {Math.round(res.score)}</p>
                              </div>
                           </div>
                        </div>
