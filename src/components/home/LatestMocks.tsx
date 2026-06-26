@@ -17,10 +17,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
-/**
- * @fileOverview Standardized Mock Grid v82.0 - Title Case & Normalized Case.
- */
-
 export default function LatestMocks() {
   const db = useFirestore()
   const { profile } = useUser()
@@ -40,21 +36,21 @@ export default function LatestMocks() {
   }, [profile]);
 
   return (
-    <section className="py-12 md:py-24 bg-white border-t border-slate-50">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-16 gap-4 text-left px-1">
+    <section className="py-12 md:py-24 bg-white border-t border-slate-50 overflow-x-hidden">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 md:space-y-16">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 text-left px-1">
            <div className="space-y-1">
               <h2 className="text-xl md:text-5xl font-black text-[#0F172A] tracking-tight leading-none">Latest Mock Tests</h2>
               <p className="text-slate-500 font-medium text-sm md:text-lg">Freshly updated series for all major Punjab recruitments.</p>
            </div>
-           <Link href="/mocks" className="text-primary font-bold text-base tracking-tight hover:underline flex items-center gap-2 group">
+           <Link href="/mocks" className="text-primary font-bold text-base tracking-tight hover:underline flex items-center gap-2 group shrink-0">
               View All <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
            </Link>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+        <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:mx-0 md:px-0 md:gap-10 pb-4">
           {loading ? (
-             Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-40 md:h-80 w-full rounded-xl md:rounded-[2.5rem] bg-slate-50" />)
+             Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="flex-shrink-0 w-[85vw] max-w-[330px] h-[450px] md:w-auto md:max-w-none md:h-96 rounded-xl md:rounded-[2.5rem] bg-slate-50" />)
           ) : mocks.length > 0 ? mocks.map((mock, i) => {
             const tier = (mock.accessLevel || 'FREE').toUpperCase();
             const isPremium = tier === 'PREMIUM';
@@ -62,11 +58,20 @@ export default function LatestMocks() {
             const boardId = mock.boardId || mock.boardIds?.[0] || "GENERAL";
             
             return (
-              <motion.div key={mock.id} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} viewport={{ once: true }}>
+              <motion.div 
+                key={mock.id} 
+                initial={{ opacity: 0, y: 15 }} 
+                whileInView={{ opacity: 1, y: 0 }} 
+                transition={{ delay: i * 0.05 }} 
+                viewport={{ once: true }}
+                className="flex-shrink-0 w-[85vw] max-w-[330px] h-[450px] md:w-auto md:max-w-none md:h-full snap-start"
+              >
                 <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-2xl md:rounded-[2.5rem] bg-white p-6 md:p-12 text-left md:text-center flex flex-col h-full group relative overflow-hidden">
                   
                   <div className="mb-6 md:mb-10 flex justify-start md:justify-center">
-                     <AuthorityLogo boardId={boardId} size="md" className="h-16 w-16 md:h-24 md:w-24 bg-slate-50 rounded-xl md:rounded-[2rem] shadow-inner group-hover:scale-105 transition-transform" />
+                     <div className="h-16 w-16 md:h-24 md:w-24 bg-slate-50 rounded-xl md:rounded-[2rem] shadow-inner group-hover:scale-105 transition-transform overflow-hidden flex items-center justify-center">
+                        <AuthorityLogo boardId={boardId} size="md" className="h-full w-full p-2" />
+                     </div>
                   </div>
 
                   <CardHeader className="p-0 flex-1 space-y-4 md:space-y-6">
@@ -86,7 +91,7 @@ export default function LatestMocks() {
 
                   <div className="mt-8 md:mt-14 pt-4 border-t border-slate-50">
                      <Button asChild className={cn(
-                       "w-full h-12 md:h-16 rounded-full font-semibold text-base tracking-tight shadow-md border-none transition-all active:scale-95 gap-3", 
+                       "w-full h-14 rounded-full font-semibold text-base tracking-tight shadow-md border-none transition-all active:scale-95 gap-3", 
                        locked ? "bg-orange-500 hover:bg-orange-600 text-white" : "bg-[#0F172A] hover:bg-black text-white"
                      )}>
                         <Link href={locked ? '/pass' : `/mocks/view?id=${mock.id}`} className="flex items-center justify-center gap-2">

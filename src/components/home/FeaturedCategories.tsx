@@ -12,11 +12,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AuthorityLogo } from '@/lib/exam-icons';
 import { Badge } from '@/components/ui/badge';
 
-/**
- * @fileOverview Standardized Category Grid v130.0 - Mobile Horizontal Carousel.
- * FIXED: Mobile layout now uses scroll-snap carousel with 1.3 cards visible.
- */
-
 const STRICT_WHITELIST = [
   "punjab-government-exams",
   "punjab-teaching-exams",
@@ -39,17 +34,19 @@ export default function FeaturedCategories() {
 
   return (
     <section className="py-12 md:py-24 bg-white border-t border-slate-50 overflow-x-hidden">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 md:space-y-16 text-left">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 text-left space-y-8 md:space-y-16">
         
         {/* Section Header */}
-        <div className="space-y-2 px-1">
-           <div className="flex items-center gap-3">
-              <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary shadow-inner shrink-0">
-                <Layers className="h-5 w-5" />
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 px-1">
+           <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                 <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary shadow-inner shrink-0">
+                   <Layers className="h-5 w-5" />
+                 </div>
+                 <h2 className="text-xl md:text-4xl font-black text-[#0F172A] tracking-tight">Choose Category</h2>
               </div>
-              <h2 className="text-xl md:text-4xl font-black text-[#0F172A] tracking-tight">Choose Category</h2>
+              <p className="text-slate-500 font-medium text-sm md:text-2xl max-w-2xl">Select your recruitment category to explore verified preparation hubs.</p>
            </div>
-           <p className="text-slate-500 font-medium text-sm md:text-2xl max-w-2xl">Select your recruitment category to explore verified exams and preparation hubs.</p>
         </div>
 
         {/* Categories Carousel/Grid */}
@@ -58,7 +55,7 @@ export default function FeaturedCategories() {
             Array.from({ length: 3 }).map((_, i) => (
               <Skeleton 
                 key={i} 
-                className="flex-shrink-0 w-[85vw] max-w-[330px] h-[440px] md:w-auto md:max-w-none md:h-96 rounded-[2rem] md:rounded-[3rem] bg-slate-50" 
+                className="flex-shrink-0 w-[85vw] max-w-[330px] h-[450px] md:w-auto md:max-w-none md:h-96 rounded-[2rem] md:rounded-[3rem] bg-slate-50" 
               />
             ))
           ) : categories.map((cat, idx) => {
@@ -78,8 +75,6 @@ export default function FeaturedCategories() {
               >
                  <Link href={`/exams/category/${cat.id}`} className="h-full block">
                     <Card className="border border-slate-100 shadow-sm hover:shadow-3xl transition-all duration-700 rounded-[2rem] md:rounded-[3rem] bg-white group overflow-hidden flex flex-col justify-between p-6 md:p-14 h-full relative">
-                       
-                       {/* Top Content Area */}
                        <div>
                           <div className="space-y-4 mb-6 md:mb-10">
                              <div className="h-16 w-16 md:h-24 md:w-24 bg-slate-50 rounded-2xl md:rounded-[2.5rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-700 overflow-hidden">
@@ -98,7 +93,6 @@ export default function FeaturedCategories() {
                           </div>
                        </div>
 
-                       {/* Bottom Button Area - Aligned */}
                        <div className="mt-8 md:mt-12 pt-6 border-t border-slate-50">
                           <Button variant="ghost" className="w-full h-14 md:h-16 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-semibold text-base gap-3 shadow-xl border-none">
                              Start Learning <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />

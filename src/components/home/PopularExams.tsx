@@ -11,10 +11,6 @@ import { Card } from "@/components/ui/card";
 import { AuthorityLogo } from "@/lib/exam-icons";
 import { Button } from "@/components/ui/button";
 
-/**
- * @fileOverview Standardized Popular Exams Grid v84.0 - Title Case & pill buttons.
- */
-
 const POPULAR_LIST = [
   { name: "PCS", id: "pcs", boardId: "PPSC", hasMocks: true },
   { name: "Constable", id: "constable", boardId: "Punjab Police", hasMocks: true },
@@ -43,9 +39,16 @@ export default function PopularExams() {
             </Link>
          </div>
 
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-10">
+         <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 gap-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:mx-0 md:px-0 md:gap-10 pb-4">
             {POPULAR_LIST.map((p, idx) => (
-               <motion.div key={p.id} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} transition={{ delay: idx * 0.05 }} viewport={{ once: true }} className="h-full">
+               <motion.div 
+                 key={p.id} 
+                 initial={{ opacity: 0, scale: 0.95 }} 
+                 whileInView={{ opacity: 1, scale: 1 }} 
+                 transition={{ delay: idx * 0.05 }} 
+                 viewport={{ once: true }} 
+                 className="flex-shrink-0 w-[85vw] max-w-[330px] h-[450px] md:w-auto md:max-w-none md:h-full snap-start"
+               >
                   <Link href={`/exams/view?id=${p.id}`} className="h-full block">
                      <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-3xl transition-all duration-700 rounded-[2rem] md:rounded-[3rem] bg-white p-6 md:p-12 text-left h-full group flex flex-col relative overflow-hidden">
                         <div className="mb-6 md:mb-12 flex justify-start">
