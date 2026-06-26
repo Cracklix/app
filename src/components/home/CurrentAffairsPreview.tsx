@@ -18,61 +18,65 @@ export default function CurrentAffairsPreview() {
     return query(
       collection(db, "current_affairs_hub"), 
       where("status", "==", "PUBLISHED"),
-      limit(3)
+      limit(4)
     );
   }, [db]);
 
   const { data: items, loading } = useCollection<any>(hubQuery);
 
   return (
-    <section className="py-12 md:py-24 bg-slate-50/50 border-t border-slate-100 overflow-x-hidden">
+    <section className="py-8 md:py-24 bg-slate-50/50 border-t border-slate-100">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 md:space-y-16 text-left">
         
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 px-1">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-2 px-1">
            <div className="space-y-1">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                  <AuthorityLogo boardId="current-affairs" size="sm" className="bg-transparent shadow-none p-0 shrink-0" />
-                 <span className="text-[9px] font-bold text-slate-400 tracking-tight uppercase">Study Material</span>
+                 <h2 className="text-3xl md:text-5xl font-bold text-[#0F172A] tracking-tight">Current Affairs</h2>
               </div>
-              <h2 className="text-2xl md:text-5xl font-extrabold text-[#0F172A] tracking-tight leading-none">Current Affairs</h2>
-              <p className="text-slate-500 font-medium text-sm md:text-lg">Daily bilingual updates verified for Punjab recruitments.</p>
+              <p className="text-slate-500 font-medium text-base md:text-lg leading-tight">Daily bilingual updates for Punjab recruitments.</p>
            </div>
-           <Link href="/current-affairs" className="text-blue-600 font-black uppercase text-[9px] md:text-xs tracking-widest hover:underline flex items-center gap-2 group shrink-0">
-              View All <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+           <Link href="/current-affairs" className="text-blue-600 font-bold text-base tracking-tight hover:underline flex items-center gap-2 group shrink-0">
+              View All <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
            </Link>
         </div>
 
-        <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 gap-4 md:grid md:grid-cols-3 md:mx-0 md:px-0 md:gap-10 pb-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-10">
            {loading ? (
-              Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="flex-shrink-0 w-[85vw] max-w-[330px] h-[450px] md:w-auto md:max-w-none md:h-80 rounded-2xl bg-white" />)
-           ) : items?.map((item) => (
-              <div 
+              Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[200px] md:h-80 rounded-[24px] md:rounded-2xl bg-white" />)
+           ) : items?.map((item, idx) => (
+              <motion.div 
                 key={item.id}
-                className="flex-shrink-0 w-[85vw] max-w-[330px] h-[450px] md:w-auto md:max-w-none md:h-full snap-start"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.05 }}
               >
                  <Link href="/current-affairs" className="h-full block">
-                    <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] md:rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col p-6 md:p-12">
-                       <div className="flex justify-between items-start mb-6 md:mb-10">
-                          <Badge variant="outline" className="bg-slate-50 border-slate-100 text-slate-400 text-[7px] md:text-[9px] font-black px-2 py-1 rounded-lg uppercase">CA Hub</Badge>
-                          <span className="text-[8px] md:text-[10px] font-bold text-slate-300 tracking-tight flex items-center gap-1.5 uppercase">
-                             <Calendar className="h-3.5 w-3.5 text-blue-600/50" /> {item.month} {item.year}
-                          </span>
-                       </div>
-                       <h3 className="text-base md:text-2xl font-black text-[#0F172A] leading-tight group-hover:text-blue-600 transition-colors flex-1 mb-6 uppercase tracking-tight line-clamp-3">
-                          {item.title}
-                       </h3>
-                       <div className="mt-auto flex items-center justify-between pt-6 border-t border-slate-50">
-                          <span className="text-[8px] md:text-[11px] font-black text-[#0F172A] tracking-widest flex items-center gap-2 uppercase">
-                             <Zap className="h-3.5 w-3.5 text-blue-600 fill-current" /> Read Now
-                          </span>
-                          <ChevronRight className="h-4 w-4 text-slate-200 group-hover:text-blue-600 transition-all" />
+                    <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[24px] md:rounded-[2.5rem] bg-white p-[18px] md:p-12 h-full flex flex-col justify-between">
+                       <div className="flex flex-col h-full">
+                          <div className="flex justify-between items-start mb-4 md:mb-10">
+                             <Badge variant="outline" className="bg-slate-50 border-slate-100 text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-lg uppercase">CA</Badge>
+                             <span className="text-[10px] font-bold text-slate-300 tracking-tight flex items-center gap-1 uppercase">
+                                <Calendar className="h-3 w-3" /> {item.month}
+                             </span>
+                          </div>
+                          <h3 className="text-[18px] md:text-2xl font-bold text-[#0F172A] leading-tight mb-4 uppercase tracking-tight line-clamp-2">
+                             {item.title}
+                          </h3>
+                          <div className="mt-auto pt-4 border-t border-slate-50">
+                             <Button variant="ghost" className="w-full h-[52px] md:h-14 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-semibold text-base border-none shadow-md">
+                                Read <ChevronRight className="h-4 w-4" />
+                             </Button>
+                          </div>
                        </div>
                     </Card>
                  </Link>
-              </div>
+              </motion.div>
            ))}
         </div>
       </div>
     </section>
   );
 }
+import { motion } from 'framer-motion';
