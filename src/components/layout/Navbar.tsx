@@ -37,8 +37,8 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v21.0.
- * UPDATED: Normalized casing for all navigation links.
+ * @fileOverview Institutional Navbar v21.1.
+ * UPDATED: Replaced "Daily News" with "Current Affairs" for hub consistency.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -127,7 +127,7 @@ export default function Navbar() {
             <NavLink href="/" label="Home" active={pathname === '/'} />
             <NavLink href="/exams" label="Mock Tests" active={pathname === '/exams'} />
             <NavLink href="/pyqs" label="Old Papers" active={pathname === '/pyqs'} />
-            <NavLink href="/current-affairs" label="Daily News" active={pathname === '/current-affairs'} />
+            <NavLink href="/current-affairs" label="Current Affairs" active={pathname === '/current-affairs'} />
             <NavLink href="/leaderboard" label="Top Rankers" active={pathname === '/leaderboard'} />
           </div>
 
