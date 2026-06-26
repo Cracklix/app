@@ -18,8 +18,8 @@ import { cn } from "@/lib/utils"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview Latest Mock Tests Hub v23.0.
- * FIXED: Reduced vertical white space in cards.
+ * @fileOverview Latest Mock Tests Hub v25.0.
+ * FIXED: Optimized card padding to remove extra bottom space.
  */
 export default function LatestMocks() {
   const db = useFirestore()
@@ -41,9 +41,9 @@ export default function LatestMocks() {
 
   return (
     <section className="py-8 md:py-24 bg-white border-t border-slate-100">
-      <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 md:space-y-20">
+      <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto space-y-8 md:space-y-20">
         
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 text-left px-1">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 text-left px-4 sm:px-6 lg:px-8">
            <div className="space-y-2">
               <h2 className="text-[22px] md:text-[clamp(24px,4vw,36px)] font-bold tracking-tight text-[#0F172A]">Latest Mock Tests</h2>
               <p className="max-w-2xl text-[14px] md:text-[clamp(13px,1.5vw,16px)] font-medium text-slate-500">Best mock tests checked by latest Punjab boards.</p>
@@ -53,9 +53,9 @@ export default function LatestMocks() {
            </Link>
         </div>
         
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-12 px-0 sm:px-6 lg:px-8">
           {loading ? (
-             Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[220px] md:h-[350px] w-full max-w-[180px] md:max-w-[340px] mx-auto rounded-[2rem] md:rounded-[3rem] bg-slate-50" />)
+             Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[200px] md:h-[350px] w-full mx-auto rounded-[1.5rem] md:rounded-[3rem] bg-slate-50" />)
           ) : mocks.length > 0 ? mocks.map((mock, i) => {
             const tier = (mock.accessLevel || 'FREE').toUpperCase();
             const isPremium = tier === 'PREMIUM';
@@ -71,10 +71,10 @@ export default function LatestMocks() {
                 transition={{ duration: 0.4, delay: i * 0.05 }} 
                 className="flex flex-col h-full"
               >
-                <Card className="w-full max-w-[180px] md:max-w-[340px] mx-auto border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2rem] md:rounded-[3rem] bg-white p-4 md:p-8 h-full min-h-[220px] md:min-h-[350px] relative overflow-hidden group text-center flex flex-col">
+                <Card className="w-full mx-auto border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] md:rounded-[3rem] bg-white p-4 pt-6 pb-4 md:p-8 h-full text-center flex flex-col group relative overflow-hidden">
                   
                   <div className="flex justify-center mb-4 md:mb-10 shrink-0">
-                    <div className="h-10 w-10 md:h-24 md:w-24 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500 overflow-hidden">
+                    <div className="h-14 w-14 md:h-24 md:w-24 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500 overflow-hidden">
                         <AuthorityLogo boardId={boardId} size="lg" className="bg-transparent shadow-none border-none p-0 h-full w-full" />
                     </div>
                   </div>

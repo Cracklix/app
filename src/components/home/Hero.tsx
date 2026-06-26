@@ -11,7 +11,8 @@ import {
   FileStack,
   Newspaper,
   Play,
-  LayoutGrid
+  LayoutGrid,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -23,8 +24,9 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * @fileOverview High-Fidelity Hero Hub v96.0.
- * FIXED: Reduced vertical space in action cards while keeping fixed narrow width.
+ * @fileOverview High-Fidelity Hero Hub v98.0.
+ * FIXED: Resolved 'image' module resolution error.
+ * FIXED: Tightened card padding to remove extra bottom space and enforced edge-to-edge mobile layout.
  */
 export default function Hero() {
   const db = useFirestore();
@@ -55,9 +57,9 @@ export default function Hero() {
 
   return (
     <section className="relative overflow-hidden bg-white pt-6 pb-12 md:pt-16 md:pb-28 border-b border-slate-50">
-      <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto">
         
-        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 md:gap-20 lg:gap-24 items-center">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 md:gap-20 lg:gap-24 items-center px-4 sm:px-6 lg:px-8">
 
           {/* 1. Text Content Hub */}
           <div className="text-center lg:text-left space-y-6 md:space-y-8 flex flex-col order-1">
@@ -129,31 +131,31 @@ export default function Hero() {
               />
             </motion.div>
           </div>
-
-          {/* 3. Action Grid & Mobile CTAs */}
-          <div className="col-span-1 lg:col-span-2 space-y-8 md:space-y-16 order-3">
-             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-                <QuickActionCard boardId="mock-test" label="Mock Tests" href="/mocks" />
-                <QuickActionCard boardId="study-material" label="Notes" href="/notes" />
-                <QuickActionCard boardId="pyq" label="PYQ Papers" href="/pyqs" />
-                <QuickActionCard boardId="current-affairs" label="Current Affairs" href="/current-affairs" />
-             </div>
-
-             <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full max-w-xl mx-auto lg:hidden">
-                <Button asChild className="w-full sm:flex-1 h-16 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-black text-sm uppercase tracking-widest shadow-4xl shadow-blue-500/30 rounded-full active:scale-95 transition-all border-none">
-                    <Link href="/mocks" className="flex items-center justify-center gap-3">
-                      <Play className="h-5 w-5 fill-current" /> Start Prep
-                    </Link>
-                </Button>
-                <Button asChild variant="outline" className="w-full sm:flex-1 h-16 px-10 rounded-full font-black text-sm uppercase tracking-widest border-2 border-slate-200 hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95 text-[#0F172A]">
-                    <Link href="/exams" className="flex items-center justify-center gap-3">
-                      <LayoutGrid className="h-5 w-5" /> View Exams
-                    </Link>
-                </Button>
-             </div>
-          </div>
-
         </div>
+
+        {/* 3. Action Grid & Mobile CTAs - Edge to Edge on mobile */}
+        <div className="mt-8 md:mt-16 space-y-8 md:space-y-16 px-0 sm:px-6 lg:px-8">
+           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-8">
+              <QuickActionCard boardId="mock-test" label="Mock Tests" href="/mocks" />
+              <QuickActionCard boardId="study-material" label="Notes" href="/notes" />
+              <QuickActionCard boardId="pyq" label="PYQ Papers" href="/pyqs" />
+              <QuickActionCard boardId="current-affairs" label="Current Affairs" href="/current-affairs" />
+           </div>
+
+           <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full max-w-xl mx-auto px-4 lg:hidden">
+              <Button asChild className="w-full sm:flex-1 h-16 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-black text-sm uppercase tracking-widest shadow-4xl shadow-blue-500/30 rounded-full active:scale-95 transition-all border-none">
+                  <Link href="/mocks" className="flex items-center justify-center gap-3">
+                    <Play className="h-5 w-5 fill-current" /> Start Prep
+                  </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full sm:flex-1 h-16 px-10 rounded-full font-black text-sm uppercase tracking-widest border-2 border-slate-200 hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95 text-[#0F172A]">
+                  <Link href="/exams" className="flex items-center justify-center gap-3">
+                    <LayoutGrid className="h-5 w-5" /> View Exams
+                  </Link>
+              </Button>
+           </div>
+        </div>
+
       </div>
     </section>
   );
@@ -162,13 +164,13 @@ export default function Hero() {
 function QuickActionCard({ boardId, label, href }: { boardId: string, label: string, href: string }) {
   return (
     <Link href={href} className="block group h-full">
-      <Card className="w-full max-w-[180px] md:max-w-[340px] mx-auto border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2rem] md:rounded-[3.5rem] bg-white group overflow-hidden flex flex-col p-4 md:p-8 h-full min-h-[160px] md:min-h-[280px] text-center">
+      <Card className="w-full md:max-w-[340px] mx-auto border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] md:rounded-[3rem] bg-white group overflow-hidden flex flex-col p-4 pt-6 pb-4 md:p-10 text-center">
         <div className="flex justify-center mb-4 md:mb-10 shrink-0">
-          <div className="h-10 w-10 md:h-20 md:w-20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
+          <div className="h-14 w-14 md:h-20 md:w-20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
              <AuthorityLogo boardId={boardId} size="lg" className="bg-transparent shadow-none border-none p-0 h-full w-full" />
           </div>
         </div>
-        <div className="flex-1 flex flex-col justify-center min-w-0">
+        <div className="min-w-0">
            <h3 className="text-[14px] md:text-[clamp(16px,1.8vw,26px)] font-bold tracking-tight text-[#0F172A] group-hover:text-primary transition-colors line-clamp-2">
               {label}
            </h3>
