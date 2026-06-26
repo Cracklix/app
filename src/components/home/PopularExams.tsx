@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from "react"
@@ -56,8 +57,8 @@ export default function PopularExams() {
                      <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-2xl md:rounded-[3rem] bg-white p-4 md:p-8 lg:p-10 flex flex-col h-full min-h-[210px] md:min-h-[340px] relative overflow-hidden group">
                         <div className="flex-1 flex flex-col justify-start">
                            <div className="space-y-3 md:space-y-6">
-                              <div className="h-10 w-10 md:h-20 md:w-20 bg-slate-50 rounded-xl md:rounded-3xl shadow-inner flex items-center justify-center overflow-hidden p-1.5 md:p-3 group-hover:scale-110 transition-transform">
-                                 <AuthorityLogo boardId={p.boardId} size="sm" className="h-full w-full" />
+                              <div className="h-10 w-10 md:h-20 md:w-20 flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-110 transition-transform">
+                                 <AuthorityLogo boardId={p.boardId} size="lg" className="bg-transparent shadow-none border-none p-0 h-full w-full" />
                               </div>
                               <div className="space-y-1.5">
                                 <h3 className="text-[clamp(13px,1.6vw,22px)] font-black tracking-tight text-[#0F172A] group-hover:text-primary transition-colors leading-tight line-clamp-2">

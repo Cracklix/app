@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useEffect, useState } from "react";
@@ -37,7 +38,7 @@ export default function Hero() {
       <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 md:gap-20 lg:gap-24 items-center">
 
-          {/* 1. TEXT CONTENT HUB */}
+          {/* 1. Text Content Hub */}
           <div className="text-center lg:text-left space-y-6 md:space-y-12 order-1">
             <motion.div 
                initial={{ opacity: 0, y: -10 }}
@@ -56,16 +57,24 @@ export default function Hero() {
                 <span className="text-primary italic">With Confidence</span>
               </h1>
 
-              <p className="text-[clamp(14px,1.8vw,16px)] lg:text-2xl text-slate-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium tracking-tight">
+              <p className="text-[clamp(14px,3vw,16px)] lg:text-2xl text-slate-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium tracking-tight">
                 Mock tests and study nodes verified by official commission patterns.
               </p>
             </div>
 
-            {/* DESKTOP CTAs */}
+            {/* QUICK ACTION CLUSTER FOR MOBILE - In-between text and illustration */}
+            <div className="grid grid-cols-2 gap-3 mt-8 lg:hidden">
+              <QuickActionCard boardId="mock-test" label="Practice Tests" href="/mocks" />
+              <QuickActionCard boardId="study-material" label="Study Material" href="/study-material" />
+              <QuickActionCard boardId="pyq" label="Previous Papers" href="/pyqs" />
+              <QuickActionCard boardId="current-affairs" label="Current Affairs" href="/current-affairs" />
+            </div>
+
+            {/* Desktop CTAs */}
             <div className="hidden lg:flex flex-col sm:flex-row gap-6 pt-6 max-w-xl">
                <Button asChild className="flex-1 h-18 md:h-24 px-12 rounded-[2rem] font-bold text-base md:text-lg shadow-4xl active:scale-95 transition-all border-none">
                   <Link href="/mocks" className="flex items-center justify-center gap-3">
-                    Start Learning <ArrowRight className="h-6 w-6" />
+                    Start Learning <ArrowRight className="h-4 w-4 md:h-6 md:w-6" />
                   </Link>
                </Button>
                <Button asChild variant="outline" className="flex-1 h-18 md:h-24 px-12 rounded-[2rem] font-bold text-base md:text-lg shadow-sm border-[3px] active:scale-95 transition-all">
@@ -74,7 +83,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* 2. VISUAL ANCHOR (Hidden on small mobile to prioritize quick actions, but appears below text if visible) */}
+          {/* 2. Visual Anchor */}
           <div className="flex flex-col items-center order-2 w-full max-w-[280px] md:max-w-none mx-auto lg:mx-0">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }} 
@@ -93,16 +102,16 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* 3. QUICK ACTION CLUSTER */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8 mt-12 md:mt-32">
+        {/* 3. Quick Action Cluster FOR DESKTOP */}
+        <div className="hidden lg:grid grid-cols-4 gap-8 mt-32">
           <QuickActionCard boardId="mock-test" label="Practice Tests" href="/mocks" />
           <QuickActionCard boardId="study-material" label="Study Material" href="/study-material" />
           <QuickActionCard boardId="pyq" label="Previous Papers" href="/pyqs" />
           <QuickActionCard boardId="current-affairs" label="Current Affairs" href="/current-affairs" />
         </div>
 
-        {/* 4. MOBILE CTAs */}
-        <div className="flex flex-col gap-3 pt-10 lg:hidden px-1">
+        {/* 4. Mobile Bottom CTAs */}
+        <div className="flex flex-col gap-3 mt-10 lg:hidden px-1">
            <Button asChild className="w-full h-12 md:h-14 rounded-full font-bold text-[15px] shadow-xl active:scale-95 transition-all border-none">
               <Link href="/mocks" className="flex items-center justify-center gap-2">
                 Start Learning <ArrowRight className="h-4 w-4" />
@@ -121,8 +130,8 @@ function QuickActionCard({ boardId, label, href }: { boardId: string, label: str
   return (
     <Link href={href} className="block group h-full">
       <Card className="bg-white rounded-2xl md:rounded-[3rem] p-4 md:p-12 flex flex-col md:flex-row items-center gap-3 md:gap-8 shadow-sm hover:shadow-3xl hover:-translate-y-1.5 transition-all duration-500 cursor-pointer border border-slate-100 active:scale-[0.98] h-full text-center md:text-left">
-        <div className="h-10 w-10 md:h-20 md:w-20 rounded-xl md:rounded-[2rem] bg-slate-50 shadow-inner flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
-          <AuthorityLogo boardId={boardId} size="sm" className="bg-transparent shadow-none p-0 h-6 w-6 md:h-12 md:w-12" />
+        <div className="h-10 w-10 md:h-20 md:w-20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+          <AuthorityLogo boardId={boardId} size="lg" className="bg-transparent shadow-none border-none p-0 w-full h-full" />
         </div>
         <div className="min-w-0 flex-1 space-y-1">
           <h3 className="text-[12px] md:text-2xl font-bold text-[#0F172A] leading-tight group-hover:text-primary transition-colors tracking-tight">

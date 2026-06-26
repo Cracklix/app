@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useMemo } from 'react';
@@ -68,11 +69,11 @@ export default function FeaturedCategories() {
                 className="flex flex-col h-full"
               >
                  <Link href={`/exams/category/${cat.id}`} className="h-full block">
-                    <Card className="border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 rounded-2xl md:rounded-[3rem] bg-white group overflow-hidden flex flex-col p-4 md:p-10 lg:p-12 h-full min-h-[280px] md:min-h-[420px]">
+                    <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-2xl md:rounded-[3rem] bg-white group overflow-hidden flex flex-col p-4 md:p-10 lg:p-12 h-full min-h-[280px] md:min-h-[420px]">
                        <div className="flex-1 flex flex-col justify-start">
                           <div className="space-y-3 md:space-y-6">
-                             <div className="h-11 w-11 md:h-24 md:w-24 bg-slate-50 rounded-xl md:rounded-3xl flex items-center justify-center shadow-inner overflow-hidden shrink-0 group-hover:scale-105 transition-transform">
-                                <AuthorityLogo category={cat} size="sm" className="h-full w-full p-1.5 md:p-5" />
+                             <div className="h-11 w-11 md:h-24 md:w-24 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform overflow-hidden">
+                                <AuthorityLogo category={cat} size="lg" className="bg-transparent shadow-none border-none p-0 h-full w-full" />
                              </div>
                              <div className="space-y-1.5 md:space-y-3">
                                 <Badge className="bg-primary/5 text-primary border-none font-bold text-[clamp(8px,1vw,12px)] px-2.5 py-0.5 rounded-full shadow-sm w-fit tracking-tight">

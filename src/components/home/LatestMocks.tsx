@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo } from "react"
@@ -75,8 +76,8 @@ export default function LatestMocks() {
                 <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-2xl md:rounded-[3rem] bg-white p-4 md:p-10 lg:p-12 flex flex-col group h-full min-h-[220px] md:min-h-[420px] relative overflow-hidden">
                   
                   <div className="flex justify-center mb-4 md:mb-12 shrink-0">
-                    <div className="h-10 w-10 md:h-24 md:w-24 bg-slate-50 rounded-xl md:rounded-3xl shadow-inner group-hover:scale-110 transition-transform overflow-hidden flex items-center justify-center p-1.5 md:p-4">
-                        <AuthorityLogo boardId={boardId} size="sm" className="h-full w-full" />
+                    <div className="h-10 w-10 md:h-24 md:w-24 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500 overflow-hidden">
+                        <AuthorityLogo boardId={boardId} size="lg" className="bg-transparent shadow-none border-none p-0 h-full w-full" />
                     </div>
                   </div>
 
@@ -104,7 +105,7 @@ export default function LatestMocks() {
                   <div className="mt-auto pt-5 md:pt-10 shrink-0">
                     <Button asChild className={cn(
                       "w-full h-11 md:h-16 lg:h-18 rounded-full font-bold text-[clamp(10px,1.1vw,14px)] shadow-lg border-none transition-all active:scale-95 gap-2 md:gap-3", 
-                      locked ? "bg-amber-500 hover:bg-amber-600 text-white" : "bg-[#0F172A] hover:bg-black text-white"
+                      locked ? "bg-amber-500 hover:bg-amber-600 text-white" : "bg-[#0F172A] text-white"
                     )}>
                         <Link href={locked ? '/pass' : `/mocks/view?id=${mock.id}`} className="flex items-center justify-center">
                           {locked ? 'Unlock Hub' : 'Start Prep'}
