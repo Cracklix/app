@@ -12,6 +12,9 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+/**
+ * @fileOverview Current Affairs Preview Hub v18.0.
+ */
 export default function CurrentAffairsPreview() {
   const db = useFirestore();
   
@@ -27,27 +30,27 @@ export default function CurrentAffairsPreview() {
   const { data: items, loading } = useCollection<any>(hubQuery);
 
   return (
-    <section className="py-8 md:py-24 bg-slate-50/50 border-t border-slate-100">
-      <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6 md:space-y-16">
+    <section className="py-10 md:py-24 bg-slate-50/50 border-t border-slate-100">
+      <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6 md:space-y-12">
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 text-left px-1">
-           <div className="space-y-2">
+           <div className="space-y-1">
               <div className="flex items-center gap-3 md:gap-4">
                  <div className="h-8 w-8 md:h-12 md:w-12 rounded-xl bg-blue-50 flex items-center justify-center text-primary shadow-inner shrink-0">
                     <AuthorityLogo boardId="current-affairs" size="sm" className="bg-transparent shadow-none p-0" />
                  </div>
-                 <h2 className="text-[clamp(24px,4vw,36px)] font-black tracking-tight leading-none text-[#0F172A]">Daily News</h2>
+                 <h2 className="text-[22px] md:text-[clamp(24px,4vw,36px)] font-bold tracking-tight text-[#0F172A]">Current Affairs</h2>
               </div>
-              <p className="max-w-2xl text-[clamp(13px,1.5vw,18px)] font-medium text-slate-500">Daily news and updates for all Punjab boards.</p>
+              <p className="max-w-2xl text-[14px] md:text-[clamp(13px,1.5vw,18px)] font-medium text-slate-500">Stay updated with daily verified news and tests.</p>
            </div>
-           <Link href="/current-affairs" className="text-primary font-bold text-[13px] md:text-base tracking-tight hover:underline flex items-center gap-2 group shrink-0">
+           <Link href="/current-affairs" className="text-primary font-bold text-[13px] md:text-[15px] tracking-tight hover:underline flex items-center gap-2 group shrink-0">
               View All <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
            </Link>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-10">
            {loading ? (
-              Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[210px] md:h-[420px] w-full rounded-2xl md:rounded-[3rem] bg-white border border-slate-50" />)
+              Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[230px] md:h-[400px] w-full rounded-[24px] md:rounded-[3rem] bg-white border border-slate-100" />)
            ) : items?.map((item, idx) => (
               <motion.div 
                 key={item.id}
@@ -58,31 +61,32 @@ export default function CurrentAffairsPreview() {
                 className="flex flex-col h-full"
               >
                  <Link href="/current-affairs" className="h-full block">
-                    <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[24px] md:rounded-[3rem] bg-white p-[16px] md:p-10 lg:p-12 h-full flex flex-col group min-h-[210px] md:min-h-[420px] relative overflow-hidden">
+                    <Card className="border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[24px] md:rounded-[3rem] bg-white p-4 md:p-10 flex flex-col group h-full min-h-[230px] md:min-h-[400px] relative overflow-hidden">
                        
-                       <div className="flex justify-center mb-4 md:mb-12 shrink-0">
-                          <div className="h-10 w-10 md:h-24 md:w-24 bg-slate-50 rounded-xl md:rounded-3xl shadow-inner group-hover:scale-110 transition-transform overflow-hidden flex items-center justify-center p-1.5 md:p-4">
-                              <AuthorityLogo boardId="current-affairs" size="sm" className="h-full w-full opacity-80" />
+                       <div className="flex justify-center mb-4 md:mb-10 shrink-0">
+                          <div className="h-10 w-10 md:h-20 md:w-20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                              <AuthorityLogo boardId="current-affairs" size="lg" className="bg-transparent shadow-none p-0 w-full h-full opacity-80" />
                           </div>
                        </div>
 
                        <div className="flex-1 flex flex-col justify-start text-center min-w-0">
-                          <h3 className="text-[clamp(15px,1.7vw,20px)] font-black leading-tight tracking-tight line-clamp-2 text-[#0F172A] group-hover:text-primary transition-colors mb-3 md:mb-8">
+                          <h3 className="text-[15px] md:text-xl font-bold leading-tight tracking-tight line-clamp-2 text-[#0F172A] group-hover:text-primary transition-colors mb-2 md:mb-6">
                              {item.title}
                           </h3>
                           
-                          <div className="mt-auto md:mt-0 space-y-3 md:space-y-5">
-                             <div className="flex flex-wrap items-center justify-center gap-3 md:gap-8 text-[clamp(9px,1vw,12px)] font-bold text-slate-400 tracking-tight">
-                                <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 md:h-5 md:w-5 text-primary" /> {item.month}</span>
-                                <span className="flex items-center gap-1.5">Bilingual</span>
+                          <div className="mt-auto md:mt-0 space-y-2 md:space-y-4">
+                             <div className="flex items-center justify-center gap-2 md:gap-4 text-[11px] md:text-[13px] font-bold text-slate-400 tracking-tight">
+                                <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" /> {item.month}</span>
+                                <span className="h-1 w-1 rounded-full bg-slate-200" />
+                                <span>Bilingual</span>
                              </div>
                           </div>
                        </div>
 
-                       <div className="mt-auto pt-5 md:pt-10 shrink-0">
-                          <Button variant="ghost" className="w-full h-[48px] md:h-16 lg:h-18 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-bold text-[clamp(13px,1.1vw,14px)] tracking-tight shadow-lg border-none active:scale-95 gap-2 md:gap-3">
+                       <div className="mt-auto pt-4 md:pt-8 shrink-0">
+                          <Button variant="ghost" className="w-full h-12 md:h-14 lg:h-16 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-bold text-[14px] md:text-[15px] tracking-tight shadow-lg border-none active:scale-95 gap-2">
                              Start Test
-                             <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
+                             <ChevronRight className="h-4 w-4" />
                           </Button>
                        </div>
                     </Card>
@@ -94,3 +98,4 @@ export default function CurrentAffairsPreview() {
     </section>
   );
 }
+

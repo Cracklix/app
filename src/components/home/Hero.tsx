@@ -9,7 +9,9 @@ import {
   ClipboardList,
   BookOpen,
   FileStack,
-  Newspaper
+  Newspaper,
+  Play,
+  LayoutGrid
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -17,8 +19,12 @@ import Link from "next/link";
 import { useDoc, useFirestore } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { AuthorityLogo } from "@/lib/exam-icons";
-import Image from "next/image"
+import Image from "next/image";
 
+/**
+ * @fileOverview Refined Hero Hub v85.0.
+ * Layout: Text -> Image -> Cards -> Premium Buttons (Mobile).
+ */
 export default function Hero() {
   const db = useFirestore();
   const [mounted, setMounted] = useState(false);
@@ -33,62 +39,81 @@ export default function Hero() {
   if (!mounted) return null;
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-blue-50 pt-6 pb-12 md:pt-24 md:pb-32">
+    <section className="relative overflow-hidden bg-white pt-4 pb-10 md:pt-20 md:pb-32 border-b border-slate-50">
       <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 md:gap-20 lg:gap-24 items-center">
 
           {/* 1. Text Content Hub */}
-          <div className="text-center lg:text-left space-y-6 md:space-y-12 order-1">
+          <div className="text-center lg:text-left space-y-4 md:space-y-10 order-1">
             <motion.div 
                initial={{ opacity: 0, y: -10 }}
                animate={{ opacity: 1, y: 0 }}
-               className="inline-flex items-center gap-2 md:gap-3 px-4 py-1.5 rounded-full bg-white border border-slate-100 shadow-sm group hover:border-primary/30 transition-all cursor-default"
+               className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50/50 border border-blue-100/50 group hover:border-primary/30 transition-all cursor-default"
             >
-              <Star className="h-3 w-3 md:h-4 md:w-4 text-yellow-500 fill-yellow-500 animate-pulse" />
-              <span className="text-[10px] md:text-sm font-bold text-slate-600 tracking-tight">
+              <Star className="h-3 w-3 text-yellow-500 fill-yellow-500 animate-pulse" />
+              <span className="text-[11px] md:text-sm font-bold text-slate-600 tracking-tight">
                 Punjab's smartest study platform
               </span>
             </motion.div>
 
-            <div className="space-y-4 md:space-y-8">
-              <h1 className="text-[clamp(24px,6vw,32px)] lg:text-[clamp(24px,6vw,84px)] font-[900] tracking-tighter text-[#0F172A] leading-[1] md:leading-[0.95] antialiased">
-                Pass Punjab Govt Exams <br className="hidden md:block"/>
+            <div className="space-y-3 md:space-y-6">
+              <h1 className="text-[clamp(26px,6vw,34px)] lg:text-[clamp(26px,6vw,84px)] font-black tracking-tighter text-[#0F172A] leading-[1.1] md:leading-[0.95] antialiased">
+                Crack Punjab Govt Exams <br className="hidden md:block"/>
                 <span className="text-primary italic">With Confidence</span>
               </h1>
 
-              <p className="text-[clamp(13px,3vw,15px)] lg:text-2xl text-slate-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium tracking-tight">
+              <p className="text-[clamp(13px,3vw,16px)] lg:text-xl text-slate-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium tracking-tight">
                 Mock tests and notes checked by official patterns.
               </p>
             </div>
 
-            {/* QUICK ACTION CLUSTER FOR MOBILE */}
-            <div className="grid grid-cols-2 gap-3 mt-8 lg:hidden">
-              <QuickActionCard boardId="mock-test" label="Mock Tests" href="/mocks" />
-              <QuickActionCard boardId="study-material" label="Notes" href="/study-material" />
-              <QuickActionCard boardId="pyq" label="Old Papers" href="/pyqs" />
-              <QuickActionCard boardId="current-affairs" label="Daily News" href="/current-affairs" />
+            {/* MOBILE ONLY: HERO IMAGE PLACEMENT (Above Cards) */}
+            <div className="flex lg:hidden flex-col items-center w-full max-w-[240px] mx-auto py-2">
+               <motion.div 
+                 initial={{ opacity: 0, scale: 0.95 }} 
+                 animate={{ opacity: 1, scale: 1 }} 
+                 className="relative w-full aspect-[4/3] overflow-visible"
+               >
+                 <Image 
+                   src="/images/hero-student.png" 
+                   alt="Cracklix Study" 
+                   fill
+                   className="object-contain drop-shadow-[0_20px_50px_rgba(22,119,255,0.15)]" 
+                   priority
+                 />
+               </motion.div>
             </div>
 
-            {/* Desktop CTAs */}
-            <div className="hidden lg:flex flex-col sm:flex-row gap-6 pt-6 max-w-xl">
-               <Button asChild className="flex-1 h-18 md:h-24 px-12 rounded-[2rem] font-bold text-base md:text-lg shadow-4xl active:scale-95 transition-all border-none">
-                  <Link href="/mocks" className="flex items-center justify-center gap-3">
-                    Start <ArrowRight className="h-4 w-4 md:h-6 md:w-6" />
+            {/* QUICK ACTION CLUSTER */}
+            <div className="grid grid-cols-2 gap-3 mt-4 md:mt-12">
+              <QuickActionCard boardId="mock-test" label="Mock Tests" href="/mocks" />
+              <QuickActionCard boardId="study-material" label="Notes" href="/notes" />
+              <QuickActionCard boardId="pyq" label="PYQ Papers" href="/pyqs" />
+              <QuickActionCard boardId="current-affairs" label="Current Affairs" href="/current-affairs" />
+            </div>
+
+            {/* PREMIUM CTA BUTTONS */}
+            <div className="flex flex-col sm:flex-row gap-4 pt-4 md:pt-8 w-full max-w-xl mx-auto lg:mx-0">
+               <Button asChild className="w-full sm:flex-1 h-12 md:h-20 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-[15px] md:text-lg shadow-xl shadow-blue-500/20 rounded-full active:scale-95 transition-all border-none">
+                  <Link href="/mocks" className="flex items-center justify-center gap-2">
+                    <Play className="h-4 w-4 md:h-5 md:w-5 fill-current" /> Start Study
                   </Link>
                </Button>
-               <Button asChild variant="outline" className="flex-1 h-18 md:h-24 px-12 rounded-[2rem] font-bold text-base md:text-lg shadow-sm border-[3px] active:scale-95 transition-all">
-                  <Link href="/exams">View Exams</Link>
+               <Button asChild variant="outline" className="w-full sm:flex-1 h-12 md:h-20 px-10 rounded-full font-bold text-[15px] md:text-lg border-2 border-slate-200 hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95">
+                  <Link href="/exams" className="flex items-center justify-center gap-2">
+                    <LayoutGrid className="h-4 w-4 md:h-5 md:w-5" /> View Exams
+                  </Link>
                </Button>
             </div>
           </div>
 
-          {/* 2. Visual Anchor */}
-          <div className="flex flex-col items-center order-2 w-full max-w-[280px] md:max-w-none mx-auto lg:mx-0">
+          {/* DESKTOP ONLY: HERO IMAGE */}
+          <div className="hidden lg:flex flex-col items-center w-full max-w-none mx-auto lg:mx-0 order-2">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }} 
               animate={{ opacity: 1, scale: 1 }} 
               transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }} 
-              className="relative w-full aspect-[4/3] lg:aspect-square overflow-visible"
+              className="relative w-full aspect-square overflow-visible"
             >
               <Image 
                 src="/images/hero-student.png" 
@@ -100,26 +125,6 @@ export default function Hero() {
             </motion.div>
           </div>
         </div>
-
-        {/* 3. Quick Action Cluster FOR DESKTOP */}
-        <div className="hidden lg:grid grid-cols-4 gap-8 mt-32">
-          <QuickActionCard boardId="mock-test" label="Mock Tests" href="/mocks" />
-          <QuickActionCard boardId="study-material" label="Notes" href="/study-material" />
-          <QuickActionCard boardId="pyq" label="Old Papers" href="/pyqs" />
-          <QuickActionCard boardId="current-affairs" label="Daily News" href="/current-affairs" />
-        </div>
-
-        {/* 4. Mobile Bottom CTAs */}
-        <div className="flex flex-col gap-3 mt-10 lg:hidden px-1">
-           <Button asChild className="w-full h-12 md:h-14 rounded-full font-bold text-[15px] shadow-xl active:scale-95 transition-all border-none">
-              <Link href="/mocks" className="flex items-center justify-center gap-2">
-                Start <ArrowRight className="h-4 w-4" />
-              </Link>
-           </Button>
-           <Button asChild variant="outline" className="w-full h-12 md:h-14 rounded-full font-bold text-[15px] shadow-sm border-2 active:scale-95 transition-all">
-              <Link href="/exams">View Exams</Link>
-           </Button>
-        </div>
       </div>
     </section>
   );
@@ -128,15 +133,14 @@ export default function Hero() {
 function QuickActionCard({ boardId, label, href }: { boardId: string, label: string, href: string }) {
   return (
     <Link href={href} className="block group h-full">
-      <Card className="bg-transparent border-none p-4 md:p-12 flex flex-col md:flex-row items-center gap-3 md:gap-8 hover:-translate-y-1.5 transition-all duration-500 cursor-pointer active:scale-[0.98] h-full text-center md:text-left">
-        <div className="h-10 w-10 md:h-20 md:w-20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+      <Card className="bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 rounded-2xl md:rounded-[2.5rem] p-4 md:p-10 flex flex-col md:flex-row items-center gap-2 md:gap-6 cursor-pointer active:scale-[0.98] h-full text-center md:text-left">
+        <div className="h-10 w-10 md:h-16 md:w-16 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
           <AuthorityLogo boardId={boardId} size="lg" className="bg-transparent shadow-none border-none p-0 w-full h-full" />
         </div>
-        <div className="min-w-0 flex-1 space-y-1">
-          <h3 className="text-[12px] md:text-2xl font-bold text-[#0F172A] leading-tight group-hover:text-primary transition-colors tracking-tight">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-[12px] md:text-lg font-bold text-[#0F172A] group-hover:text-primary transition-colors leading-tight truncate">
             {label}
           </h3>
-          <p className="hidden md:block text-[10px] font-bold text-slate-400 tracking-tight">Checked Hub</p>
         </div>
       </Card>
     </Link>
