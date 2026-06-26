@@ -22,7 +22,7 @@ export default function StatsBar() {
 
   const items = useMemo(() => [
     { 
-      label: "Practice Nodes", 
+      label: "Practice", 
       val: (formatCompact(stats?.totalQuestions) || "12K") + "+", 
       icon: <Zap className="h-5 w-5 md:h-10 md:w-10" />,
       color: "text-blue-600",
@@ -30,7 +30,7 @@ export default function StatsBar() {
       borderColor: "border-blue-100/50"
     },
     { 
-      label: "Mock Series", 
+      label: "Mock Tests", 
       val: (formatCompact(stats?.totalMocks) || "450") + "+", 
       icon: <ClipboardList className="h-5 w-5 md:h-10 md:w-10" />,
       color: "text-purple-600",
@@ -38,7 +38,7 @@ export default function StatsBar() {
       borderColor: "border-purple-100/50"
     },
     { 
-      label: "Exam Verticals", 
+      label: "Exams", 
       val: (formatCompact(stats?.totalCategories) || "85") + "+", 
       icon: <ShieldCheck className="h-5 w-5 md:h-10 md:w-10" />,
       color: "text-emerald-600",
@@ -46,7 +46,7 @@ export default function StatsBar() {
       borderColor: "border-emerald-100/50"
     },
     { 
-      label: "Active Aspirants", 
+      label: "Students", 
       val: (formatCompact(stats?.totalUsers) || "10K") + "+", 
       icon: <Users className="h-5 w-5 md:h-10 md:w-10" />,
       color: "text-orange-600",
@@ -58,11 +58,11 @@ export default function StatsBar() {
   return (
     <section className="bg-blue-50/30 py-8 md:py-24 border-y border-slate-100">
       <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-3 md:gap-12 grid-cols-2 md:grid-cols-4">
+        <div className="grid gap-4 md:gap-12 grid-cols-2 md:grid-cols-4">
           {items.map((item, i) => (
-            <Card key={i} className="border border-slate-100 shadow-sm rounded-2xl md:rounded-[4rem] p-5 md:p-14 lg:p-20 bg-white flex flex-col items-center justify-center gap-4 md:gap-10 transition-all duration-700 hover:shadow-4xl group h-full">
+            <Card key={i} className="border border-slate-100 shadow-sm rounded-2xl md:rounded-[4rem] p-4 md:p-14 lg:p-20 bg-white flex flex-col items-center justify-center gap-4 md:gap-10 transition-all duration-700 hover:shadow-4xl group h-full">
               <div className={cn(
-                "h-12 w-12 md:h-28 md:w-28 rounded-full flex items-center justify-center shrink-0 border transition-transform duration-700 group-hover:scale-110 shadow-inner",
+                "h-11 w-11 md:h-28 md:w-28 rounded-full flex items-center justify-center shrink-0 border transition-transform duration-700 group-hover:scale-110 shadow-inner",
                 item.bgColor,
                 item.borderColor,
                 item.color
@@ -73,11 +73,11 @@ export default function StatsBar() {
                 {loading && !stats ? (
                   <Skeleton className="h-6 md:h-20 w-16 md:w-48 bg-slate-50 rounded-xl mx-auto" />
                 ) : (
-                  <span className="text-[22px] md:text-5xl lg:text-7xl font-black text-[#0F172A] tabular-nums tracking-tighter leading-none antialiased">
+                  <span className="text-[20px] md:text-5xl lg:text-7xl font-black text-[#0F172A] tabular-nums tracking-tighter leading-none antialiased">
                     {item.val}
                   </span>
                 )}
-                <span className="text-[10px] md:text-sm font-bold text-slate-400 tracking-tight leading-none truncate w-full">
+                <span className="text-[11px] md:text-sm font-bold text-slate-400 tracking-tight leading-none truncate w-full">
                   {item.label}
                 </span>
               </div>

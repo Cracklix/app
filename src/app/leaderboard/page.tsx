@@ -15,8 +15,7 @@ import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 
 /**
- * @fileOverview Institutional Merit Hub v16.3.
- * UPDATED: Title Case normalization and container standardization for high-resolution desktop.
+ * @fileOverview Institutional Top Rankers Hub v16.3.
  */
 
 export default function LeaderboardPage() {
@@ -83,19 +82,19 @@ export default function LeaderboardPage() {
       {authLoading ? (
          <div className="flex-1 flex flex-col items-center justify-center space-y-6 py-20">
             <Zap className="h-10 w-10 text-primary animate-pulse" />
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Syncing Merit List...</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Syncing Top Rankers...</p>
          </div>
       ) : (
          <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-24 max-w-[1440px] space-y-12 md:space-y-24">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
                <div className="space-y-6 text-left">
-                  <div className="flex items-center gap-4"><div className="h-10 w-10 md:h-12 md:w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner"><ShieldCheck className="h-6 w-6 md:h-7 md:w-7" /></div><span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-500">Official Merit Registry</span></div>
-                  <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-[#0F172A] tracking-tight leading-[0.9] break-words antialiased uppercase">Hall of Rankers</h1>
-                  <p className="text-slate-500 font-medium text-sm md:text-2xl max-w-2xl leading-tight tracking-tight">Real-time Punjab merit rankings derived from authenticated mock results.</p>
+                  <div className="flex items-center gap-4"><div className="h-10 w-10 md:h-12 md:w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner"><ShieldCheck className="h-6 w-6 md:h-7 md:w-7" /></div><span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-slate-500">Official Rank List</span></div>
+                  <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-[#0F172A] tracking-tight leading-[0.9] break-words antialiased uppercase">Top Rankers</h1>
+                  <p className="text-slate-500 font-medium text-sm md:text-2xl max-w-2xl leading-tight tracking-tight">Real-time Punjab merit rankings from mock tests.</p>
                </div>
                <div className="relative w-full md:w-[480px] group">
                   <div className="absolute -inset-1 bg-gradient-to-r from-primary to-blue-400 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
-                  <div className="relative"><Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-slate-400 group-focus:text-primary transition-colors" /><Input className="h-16 md:h-20 pl-16 rounded-2xl md:rounded-[2rem] bg-white border-none shadow-xl text-lg md:text-xl font-bold" placeholder="Search aspirant identity..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
+                  <div className="relative"><Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-slate-400 group-focus:text-primary transition-colors" /><Input className="h-16 md:h-20 pl-16 rounded-2xl md:rounded-[2rem] bg-white border-none shadow-xl text-lg md:text-xl font-bold" placeholder="Search student name..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
                </div>
             </div>
 
@@ -111,7 +110,7 @@ export default function LeaderboardPage() {
                <CardContent className="p-0">
                   <div className="p-6 md:p-12 border-b border-slate-50 bg-slate-50/30 grid grid-cols-12 text-[8px] md:text-[11px] font-black uppercase tracking-widest text-slate-500">
                     <div className="col-span-2 md:col-span-1">RANK</div>
-                    <div className="col-span-6 md:col-span-7">ASPIRANT IDENTITY</div>
+                    <div className="col-span-6 md:col-span-7">STUDENT NAME</div>
                     <div className="col-span-2 text-center">POINTS</div>
                     <div className="col-span-2 text-right">ACCURACY</div>
                   </div>
@@ -124,7 +123,7 @@ export default function LeaderboardPage() {
                              <div className="col-span-2 text-center"><div className="inline-flex flex-col items-center"><span className="font-headline font-black text-xl md:text-5xl text-[#0F172A] tracking-tighter leading-none">{(entry.score || 0).toFixed(1)}</span><span className="text-[7px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1 md:mt-2">PTS</span></div></div>
                              <div className="col-span-2 text-right"><Badge className={cn("border-none text-[9px] md:text-[15px] font-black px-3 md:px-8 py-1.5 md:py-3 rounded-xl md:rounded-2xl shadow-lg", entry.accuracy > 85 ? "bg-emerald-50 text-emerald-600" : entry.accuracy > 60 ? "bg-amber-50 text-amber-600" : "bg-slate-100 text-slate-400")}>{entry.accuracy}%</Badge></div>
                           </div>
-                        )) : (<div className="py-32 flex flex-col items-center justify-center text-slate-300 opacity-20 text-center space-y-6"><Activity className="h-24 w-24" /><p className="font-headline font-black text-3xl uppercase tracking-widest">No merit data verified</p></div>)}
+                        )) : (<div className="py-32 flex flex-col items-center justify-center text-slate-300 opacity-20 text-center space-y-6"><Activity className="h-24 w-24" /><p className="font-headline font-black text-3xl uppercase tracking-widest">No merit data checked</p></div>)}
                   </div>
                </CardContent>
             </Card>
@@ -145,7 +144,7 @@ function PodiumCard({ rank, data, color, isMain }: any) {
             <div className={cn("absolute -bottom-5 left-1/2 -translate-x-1/2 h-12 w-12 md:h-20 md:w-20 rounded-2xl md:rounded-3xl flex items-center justify-center shadow-2xl border-4 border-white transition-transform group-hover:rotate-12", color)}>
                <Trophy className="h-6 w-6 md:h-10 md:w-10 text-white fill-current" />
             </div>
-            {isMain && (<div className="absolute -top-12 left-1/2 -translate-x-1/2 animate-bounce"><Badge className="bg-primary text-white border-none font-black text-[11px] px-6 py-2 rounded-full shadow-2xl uppercase tracking-widest">State Merit #1</Badge></div>)}
+            {isMain && (<div className="absolute -top-12 left-1/2 -translate-x-1/2 animate-bounce"><Badge className="bg-primary text-white border-none font-black text-[11px] px-6 py-2 rounded-full shadow-2xl uppercase tracking-widest">State Rank #1</Badge></div>)}
          </div>
          <div className="text-center space-y-4">
             <h3 className={cn("font-headline font-black text-[#0F172A] uppercase tracking-tight truncate max-w-[280px]", isMain ? "text-2xl md:text-5xl" : "text-lg md:text-3xl")}>{data?.name || '---'}</h3>

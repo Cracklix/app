@@ -16,8 +16,7 @@ import { useRouter, usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 /**
- * @fileOverview Institutional Previous Papers Hub v2.2.
- * RESPONSIVE: Expanded container and optimized desktop width.
+ * @fileOverview Official Old Papers Hub v2.2.
  */
 
 export default function PreviousPapersPage() {
@@ -59,7 +58,7 @@ export default function PreviousPapersPage() {
   if (authLoading || !user) return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-white space-y-4">
        <Zap className="h-10 w-10 text-primary animate-pulse" />
-       <p className="text-[10px] font-black uppercase text-slate-300">Securing Archive...</p>
+       <p className="text-[10px] font-black uppercase text-slate-300">Syncing...</p>
     </div>
   );
 
@@ -70,10 +69,10 @@ export default function PreviousPapersPage() {
         <div className="space-y-16 md:space-y-24">
           <div className="space-y-6 md:space-y-10">
             <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-9xl font-black text-[#0F172A] break-words antialiased leading-[0.9] tracking-tighter uppercase">
-              Previous <br/> <span className="text-primary">Papers Hub</span>
+              Old <br/> <span className="text-primary">Papers</span>
             </h1>
             <p className="text-slate-500 font-medium text-sm md:text-2xl max-w-4xl mx-auto leading-snug">
-              Access authentic solved exam papers with verified official answer keys for all major Punjab Government recruitments.
+              Get official old exam papers with checked answer keys for all Punjab govt jobs.
             </p>
           </div>
 
@@ -82,7 +81,7 @@ export default function PreviousPapersPage() {
              <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-7 w-7 text-slate-300 group-focus-within:text-primary transition-colors" />
              <Input 
                 className="h-16 md:h-24 pl-16 pr-8 rounded-2xl md:rounded-[2.5rem] bg-white border-none shadow-2xl text-lg md:text-2xl font-bold text-[#0F172A]" 
-                placeholder="Search official archives..." 
+                placeholder="Search old papers..." 
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
              />
@@ -102,7 +101,7 @@ export default function PreviousPapersPage() {
                     </div>
                     <div>
                        <h2 className="text-2xl md:text-5xl font-headline font-black text-primary uppercase leading-tight tracking-tight">{groupTitle}</h2>
-                       <p className="text-[10px] md:text-[14px] font-black text-slate-400 uppercase tracking-[0.4em] mt-2">{items[0]?.boardId || 'PSSSB'} REGISTRY HUB</p>
+                       <p className="text-[10px] md:text-[14px] font-black text-slate-400 uppercase tracking-[0.4em] mt-2">{items[0]?.boardId || 'Official'} Hub</p>
                     </div>
                   </CardHeader>
 
@@ -135,7 +134,7 @@ export default function PreviousPapersPage() {
                               className="h-12 md:h-16 px-10 md:px-14 bg-[#0F172A] hover:bg-black text-white rounded-2xl md:rounded-3xl font-black uppercase text-[10px] md:text-[12px] tracking-widest gap-3 shadow-xl transition-all flex-1 md:flex-none border-none active:scale-95"
                             >
                                <a href={paper.pdfUrl} target="_blank" rel="noopener noreferrer">
-                                  <Download className="h-5 w-5" /> Fetch PDF
+                                  <Download className="h-5 w-5" /> Download
                                </a>
                             </Button>
                          </div>
@@ -147,7 +146,7 @@ export default function PreviousPapersPage() {
             ) : (
               <div className="py-40 flex flex-col items-center justify-center text-slate-300 opacity-20 text-center space-y-8">
                  <Sparkles className="h-24 w-24 text-slate-400" />
-                 <p className="font-headline font-black text-3xl uppercase tracking-widest">Archive Hub Empty</p>
+                 <p className="font-headline font-black text-3xl uppercase tracking-widest">No Papers Found</p>
               </div>
             )}
           </div>

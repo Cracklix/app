@@ -35,7 +35,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 /**
  * @fileOverview Student Home - Simplified Language v43.1.
- * UPDATED: Normalized text case to Title Case.
  */
 export default function StudentDashboard() {
   const { user, profile, loading: authLoading } = useUser();
@@ -175,7 +174,7 @@ export default function StudentDashboard() {
                   <div className="flex-1 space-y-1.5 min-w-0 text-left">
                     <div className="space-y-0.5">
                         <h2 className="text-lg md:text-3xl font-black tracking-tight truncate">
-                          {profile?.name || user?.displayName || "Aspirant"}
+                          {profile?.name || user?.displayName || "Student"}
                         </h2>
                         <div className="flex flex-wrap items-center justify-start gap-2">
                           <div className={cn(
@@ -195,7 +194,7 @@ export default function StudentDashboard() {
               </section>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-5">
-                <MetricItem label="Prep Level" val={resultsLoading ? "..." : `${stats.readiness}%`} icon={<TrendingUp className="text-primary" />} />
+                <MetricItem label="Progress" val={resultsLoading ? "..." : `${stats.readiness}%`} icon={<TrendingUp className="text-primary" />} />
                 <MetricItem label="Accuracy" val={resultsLoading ? "..." : `${stats.avgAccuracy}%`} icon={<Target className="text-emerald-500" />} />
                 <MetricItem label="Total Tests" val={resultsLoading ? "..." : stats.total} icon={<ClipboardList className="text-blue-500" />} />
                 <MetricItem label="Study Time" val={resultsLoading ? "..." : stats.hours} icon={<Clock className="text-amber-500" />} />
@@ -260,8 +259,8 @@ export default function StudentDashboard() {
               <div className="bg-white p-4 md:p-6 rounded-2xl border border-slate-100 shadow-xl space-y-4 md:space-y-6">
                  <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Quick Tools</h4>
                  <div className="grid grid-cols-1 gap-2 md:gap-3">
-                    <QuickToolLink href="/my-exams" label="My Tests" icon={Target} />
-                    <QuickToolLink href="/analytics" label="Result Analysis" icon={TrendingUp} />
+                    <QuickToolLink href="/my-exams" label="My Exams" icon={Target} />
+                    <QuickToolLink href="/analytics" label="My Progress" icon={TrendingUp} />
                     <QuickToolLink href="/bookmarks" label="Saved MCQs" icon={Bookmark} />
                  </div>
               </div>

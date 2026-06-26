@@ -37,19 +37,19 @@ export default function MeritPreview() {
   }, [results]);
 
   return (
-    <section className="py-10 md:py-24 bg-slate-50/50 border-t border-slate-100 overflow-hidden">
+    <section className="py-8 md:py-24 bg-slate-50/50 border-t border-slate-100 overflow-hidden">
       <div className="max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 text-left space-y-8 md:space-y-16">
         
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 text-left">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 text-left px-1">
            <div className="space-y-2">
               <div className="flex items-center gap-3 md:gap-4">
                  <Trophy className="h-8 w-8 md:h-12 md:w-12 text-primary shrink-0" />
-                 <h2 className="text-[clamp(24px,4vw,40px)] font-black text-[#0F172A] tracking-tight leading-none">Hall of Rankers</h2>
+                 <h2 className="text-[clamp(24px,4vw,36px)] font-black text-[#0F172A] tracking-tight leading-none">Top Rankers</h2>
               </div>
-              <p className="text-[clamp(13px,1.5vw,18px)] font-medium text-slate-500 italic">Real-time merit hub tracking topper nodes across Punjab.</p>
+              <p className="text-[clamp(13px,1.5vw,18px)] font-medium text-slate-500 italic">See the top students preparing across Punjab.</p>
            </div>
            <Button asChild variant="ghost" className="text-primary font-bold text-[13px] md:text-base tracking-tight gap-2 group shrink-0 p-0 h-auto">
-              <Link href="/leaderboard" className="flex items-center gap-2">View Merit List <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
+              <Link href="/leaderboard" className="flex items-center gap-2">View All <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
            </Button>
         </div>
 
@@ -57,7 +57,7 @@ export default function MeritPreview() {
            {resultsLoading ? (
               Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="flex-shrink-0 w-[23%] h-24 md:h-64 md:w-full rounded-2xl md:rounded-[3rem] bg-white" />)
            ) : topRankers.map((res, i) => {
-              const name = (res.userName && res.userName !== 'Aspirant' && !res.userName.includes('@')) ? res.userName : (res.userEmail?.split('@')[0] || "Aspirant");
+              const name = (res.userName && res.userName !== 'Aspirant' && !res.userName.includes('@')) ? res.userName : (res.userEmail?.split('@')[0] || "Student");
               const cleanName = name.split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
 
               return (

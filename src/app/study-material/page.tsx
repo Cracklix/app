@@ -19,7 +19,6 @@ import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
  * @fileOverview Notes Center v2.2 (Typography Hardened).
- * UPDATED: Converted headers and strings to Title Case.
  */
 
 export default function StudyMaterialPage() {
@@ -64,20 +63,20 @@ export default function StudyMaterialPage() {
           <div className="space-y-6">
             <div className="flex items-center gap-3">
                <AuthorityLogo boardId="study-material" size="sm" className="bg-transparent shadow-none p-0" />
-               <span className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] text-slate-500">Institutional Repository</span>
+               <span className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] text-slate-500">Official Notes Hub</span>
             </div>
             <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-[#0F172A] tracking-tighter uppercase leading-[0.9]">
-              Download <br/> <span className="text-primary">Center</span>
+              Study <br/> <span className="text-primary">Notes</span>
             </h1>
             <p className="text-slate-500 font-medium text-sm md:text-2xl max-w-2xl leading-snug">
-              Verified study materials, syllabus guides, and premium notes curated for all Punjab recruitment boards.
+              Checked study notes and syllabus guides for all Punjab board exams.
             </p>
           </div>
           <div className="relative w-full lg:w-[480px]">
             <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-slate-400" />
             <Input 
               className="pl-16 h-16 md:h-20 rounded-2xl md:rounded-[2rem] bg-white border-none shadow-2xl text-lg md:text-xl font-medium" 
-              placeholder="Search registry..." 
+              placeholder="Search notes..." 
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
@@ -88,13 +87,13 @@ export default function StudyMaterialPage() {
            <div className="bg-white border border-slate-100 p-1.5 rounded-2xl md:rounded-3xl shadow-sm flex w-full md:w-auto overflow-x-auto no-scrollbar justify-start gap-2">
              <TabsList className="bg-transparent border-none p-0 h-12 md:h-16 flex gap-2">
                 <TabsTrigger value="notes" className="rounded-xl px-6 md:px-10 font-black uppercase text-[10px] md:text-[11px] gap-3 h-full shrink-0 data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
-                  <FileText className="h-4 w-4" /> Prep Notes
+                  <FileText className="h-4 w-4" /> Notes
                 </TabsTrigger>
                 <TabsTrigger value="syllabus" className="rounded-xl px-6 md:px-10 font-black uppercase text-[10px] md:text-[11px] gap-3 h-full shrink-0 data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
-                  <Info className="h-4 w-4" /> Syllabus Hub
+                  <Info className="h-4 w-4" /> Syllabus
                 </TabsTrigger>
                 <TabsTrigger value="archives" className="rounded-xl px-6 md:px-10 font-black uppercase text-[10px] md:text-[11px] gap-3 h-full shrink-0 data-[state=active]:bg-[#0F172A] data-[state=active]:text-white transition-all">
-                  <FileArchive className="h-4 w-4" /> E-Book Vault
+                  <FileArchive className="h-4 w-4" /> E-Books
                 </TabsTrigger>
              </TabsList>
            </div>
@@ -116,12 +115,12 @@ export default function StudyMaterialPage() {
            <div className="absolute top-0 right-0 p-16 opacity-5 rotate-12 group-hover:scale-125 transition-transform"><AuthorityLogo boardId="study-material" size="xl" className="h-96 w-96 opacity-5" /></div>
            <div className="relative z-10 max-w-3xl space-y-8 md:space-y-12">
               <div className="space-y-4">
-                 <Badge className="bg-primary/20 text-primary border-none px-5 py-2 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl">PRO Access</Badge>
-                 <h2 className="text-3xl sm:text-5xl md:text-7xl font-black uppercase leading-[0.9] tracking-tight">Registry <br/> Test Center</h2>
+                 <Badge className="bg-primary/20 text-primary border-none px-5 py-2 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl">Premium</Badge>
+                 <h2 className="text-3xl sm:text-5xl md:text-7xl font-black uppercase leading-[0.9] tracking-tight">Unlock <br/> All Notes</h2>
               </div>
-              <p className="text-slate-400 text-sm md:text-2xl font-medium leading-snug">Unlock all premium institutional PDFs, solved papers, and expert notes for all Punjab government exams.</p>
+              <p className="text-slate-400 text-sm md:text-2xl font-medium leading-snug">Get all premium PDF notes and solved papers for all Punjab govt exams.</p>
               <Button asChild className="w-full md:w-auto h-14 md:h-20 px-10 md:px-20 bg-primary hover:bg-blue-700 text-white font-black uppercase tracking-[0.2em] text-[10px] md:text-sm rounded-2xl md:rounded-[2.5rem] shadow-4xl border-none transition-all active:scale-95">
-                 <Link href="/pass">Activate Elite Pass <Zap className="h-5 w-5 fill-current ml-3" /></Link>
+                 <Link href="/pass">Unlock Pass <Zap className="h-5 w-5 fill-current ml-3" /></Link>
               </Button>
            </div>
         </div>
@@ -141,7 +140,7 @@ function NotesGrid({ data, loading, profile }: any) {
    if (!data || data.length === 0) return (
       <div className="py-40 flex flex-col items-center justify-center text-slate-300 bg-white rounded-[4rem] border-2 border-dashed border-slate-200 shadow-inner mx-1">
          <FileArchive className="h-20 w-20 mb-8 opacity-10" />
-         <p className="font-headline font-black text-2xl uppercase tracking-widest">No Notes Detected</p>
+         <p className="font-headline font-black text-2xl uppercase tracking-widest">No Notes Found</p>
       </div>
    );
 
@@ -180,9 +179,9 @@ function DownloadCard({ asset, profile }: { asset: any, profile: any }) {
                      {asset.subjectId || 'General'}
                   </Badge>
                   {asset.isFree ? (
-                     <span className="text-[10px] md:text-[12px] font-black text-emerald-600 uppercase tracking-widest">Free Access Node</span>
+                     <span className="text-[10px] md:text-[12px] font-black text-emerald-600 uppercase tracking-widest">Free Note</span>
                   ) : (
-                     <span className="text-[10px] md:text-[12px] font-black text-orange-600 uppercase tracking-widest">Elite Registry</span>
+                     <span className="text-[10px] md:text-[12px] font-black text-orange-600 uppercase tracking-widest">Elite Hub</span>
                   )}
                </div>
                <h3 className="text-xl md:text-3xl font-black text-[#0F172A] leading-tight group-hover:text-primary transition-colors flex-1 tracking-tight truncate max-w-full">
@@ -190,7 +189,7 @@ function DownloadCard({ asset, profile }: { asset: any, profile: any }) {
                </h3>
                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pt-6 border-t border-slate-50 mt-auto">
                   <div className="flex items-center gap-3 text-[10px] md:text-[12px] font-black text-slate-400 uppercase tracking-widest">
-                     <Clock className="h-4 w-4 text-slate-300" /> Registry Verified
+                     <Clock className="h-4 w-4 text-slate-300" /> Official Note
                   </div>
                   {isLocked ? (
                      <Button asChild className="w-full sm:w-auto h-12 md:h-14 px-10 bg-orange-500 hover:bg-orange-600 text-white font-black uppercase tracking-widest text-[10px] rounded-xl md:rounded-2xl gap-3 shadow-xl border-none active:scale-95 transition-all">
@@ -199,7 +198,7 @@ function DownloadCard({ asset, profile }: { asset: any, profile: any }) {
                   ) : (
                      <Button asChild className="w-full sm:w-auto h-12 md:h-14 px-10 bg-[#0F172A] hover:bg-black text-white font-black uppercase tracking-widest text-[10px] rounded-xl md:rounded-2xl gap-3 shadow-xl border-none active:scale-95 transition-all">
                         <a href={asset.pdfUrl} target="_blank" rel="noopener noreferrer">
-                           <Download className="h-4 w-4" /> Fetch File
+                           <Download className="h-4 w-4" /> Download
                         </a>
                      </Button>
                   )}

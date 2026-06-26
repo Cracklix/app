@@ -13,7 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * Production Mobile Bottom Navigation v1.6 - Icon Scale Optimized.
+ * Production Mobile Bottom Navigation v1.6.
  */
 
 export default function MobileNav() {
@@ -44,7 +44,7 @@ export default function MobileNav() {
       icon: Zap,
     },
     {
-      label: "My Progress",
+      label: "Progress",
       href: "/dashboard",
       icon: BarChart3,
     },

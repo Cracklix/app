@@ -122,7 +122,7 @@ export default function Navbar() {
           {/* Desktop Navigation Links */}
           <div className="hidden lg:flex items-center justify-center gap-10 xl:gap-14 flex-1 lg:-ml-10">
             <NavLink href="/" label="Home" active={pathname === '/'} />
-            <NavLink href="/exams" label="Practice Tests" active={pathname === '/exams'} />
+            <NavLink href="/exams" label="Mock Tests" active={pathname === '/exams'} />
             <NavLink href="/pyqs" label="Old Papers" active={pathname === '/pyqs'} />
             <NavLink href="/current-affairs" label="Notes & PDFs" active={pathname === '/current-affairs'} />
           </div>
@@ -143,7 +143,7 @@ export default function Navbar() {
             </Link>
 
             {loading ? (
-              <Skeleton className="w-9 h-9 md:w-11 md:h-11 rounded-lg md:rounded-xl bg-slate-100" />
+              <Skeleton className="w-9 h-9 md:h-11 rounded-lg md:rounded-xl bg-slate-100" />
             ) : user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -168,9 +168,9 @@ export default function Navbar() {
                        </div>
                        <div className="space-y-0.5">
                          <h3 className="text-base md:text-xl font-bold text-[#0F172A] tracking-tight truncate max-w-[240px]">
-                           {profile?.name || "Aspirant"}
+                           {profile?.name || "Student"}
                          </h3>
-                         <Link href="/profile" className="text-[11px] md:text-[13px] font-bold text-[#94A3B8] hover:text-primary">View Profile</Link>
+                         <Link href="/profile" className="text-[11px] md:text-[13px] font-bold text-[#94A3B8] hover:text-primary">My Profile</Link>
                        </div>
                     </div>
                     <div className="h-px w-full bg-slate-100" />

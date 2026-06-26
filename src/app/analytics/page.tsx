@@ -26,7 +26,6 @@ import BackButton from "@/components/navigation/BackButton"
 
 /**
  * @fileOverview Official Progress Report Hub v3.2 (Hardened).
- * FIXED: Added hydration guard to prevent Internal Server Error during Recharts SSR.
  */
 
 export default function DeepAnalytics() {
@@ -101,16 +100,16 @@ export default function DeepAnalytics() {
       <main className="container mx-auto px-4 py-8 max-w-6xl space-y-10 text-left">
          <div className="flex flex-row justify-between items-center gap-2">
             <div className="flex items-center gap-1 md:gap-4 flex-1 min-w-0">
-               <BackButton label="Dashboard" fallback="/dashboard" className="p-0" />
+               <BackButton label="Home" fallback="/dashboard" className="p-0" />
                <div className="h-8 w-px bg-slate-200 hidden md:block" />
                <div className="min-w-0 flex-1">
-                  <h1 className="text-xl md:text-4xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-tight truncate">Progress Report</h1>
+                  <h1 className="text-xl md:text-4xl font-headline font-black text-[#0F172A] uppercase tracking-tight leading-tight truncate">My Progress</h1>
                   <p className="text-slate-500 font-medium text-[9px] md:text-sm hidden sm:block">Detailed analysis of your study progress.</p>
                </div>
             </div>
             <div className="flex gap-4 shrink-0">
                <Badge className="bg-emerald-50 text-emerald-600 border-none px-2 md:px-4 py-1.5 rounded-xl font-black uppercase text-[8px] md:text-[10px] tracking-widest flex items-center gap-2 shadow-sm">
-                  {dataLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Activity className="h-3 w-3" />} <span className="hidden xs:inline">{dataLoading ? 'Syncing...' : 'Real-time Stats'}</span>
+                  {dataLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Activity className="h-3 w-3" />} <span className="hidden xs:inline">{dataLoading ? 'Syncing...' : 'Live Progress'}</span>
                </Badge>
             </div>
          </div>
@@ -118,8 +117,8 @@ export default function DeepAnalytics() {
          {results.length === 0 && !dataLoading ? (
             <Card className="p-20 text-center border-2 border-dashed rounded-[3rem] opacity-40">
                <Activity className="h-16 w-16 mx-auto mb-6 text-slate-300" />
-               <p className="font-headline font-black text-xl text-slate-500 uppercase">Awaiting Performance Data</p>
-               <p className="text-sm font-medium mt-2">Complete a mock test to generate your progress nodes.</p>
+               <p className="font-headline font-black text-xl text-slate-500 uppercase">Awaiting Progress Data</p>
+               <p className="text-sm font-medium mt-2">Complete a mock test to see your progress.</p>
             </Card>
          ) : (
             <>
@@ -135,7 +134,7 @@ export default function DeepAnalytics() {
                      <CardHeader className="p-8 md:p-10 border-b border-slate-50 bg-slate-50/30">
                         <div className="flex items-center gap-4">
                            <TrendingUp className="h-6 w-6 text-primary" />
-                           <CardTitle className="font-headline text-2xl font-black uppercase text-[#0F172A]">Accuracy Chart</CardTitle>
+                           <CardTitle className="font-headline text-2xl font-black uppercase text-[#0F172A]">Progress Chart</CardTitle>
                         </div>
                         <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Your score trends across recent tests</CardDescription>
                      </CardHeader>
@@ -190,7 +189,7 @@ export default function DeepAnalytics() {
                         <div className="space-y-2">
                            <h4 className="text-2xl font-headline font-black uppercase text-emerald-900 leading-none">Ready for Exam</h4>
                            <p className="text-sm font-medium text-emerald-700 leading-relaxed italic">
-                              "Your performance index shows a <strong>{analytics.avgAcc}%</strong> average accuracy in the last {results.length} sessions."
+                              "Your progress shows a <strong>{analytics.avgAcc}%</strong> average accuracy in the last {results.length} sessions."
                            </p>
                         </div>
                      </div>

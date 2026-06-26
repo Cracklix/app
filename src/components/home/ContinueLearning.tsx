@@ -13,8 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AuthorityLogo } from '@/lib/exam-icons';
 
 /**
- * @fileOverview High-Fidelity "My Exams" Hub v12.5.
- * UPDATED: Normalized text case to Title Case.
+ * @fileOverview "My Exams" Hub v12.5.
  */
 
 export default function ContinueLearning() {
@@ -67,7 +66,7 @@ export default function ContinueLearning() {
               <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-blue-50 flex items-center justify-center text-primary shadow-sm shrink-0">
                  <Target className="h-4 w-4 md:h-5 md:w-5" />
               </div>
-              <h2 className="text-xl md:text-4xl font-headline font-black text-[#0F172A] tracking-tight leading-none">My Exams</h2>
+              <h2 className="text-xl md:text-4xl font-headline font-black text-[#0F172A] tracking-tight leading-none">My Progress</h2>
            </div>
            <Button asChild variant="ghost" className="text-primary font-black text-[9px] md:text-xs tracking-widest gap-2">
               <Link href="/my-exams">View All <ChevronRight className="h-3 w-3" /></Link>
@@ -78,7 +77,7 @@ export default function ContinueLearning() {
            <div className="lg:col-span-7 space-y-6">
               <div className="flex items-center gap-2 px-1">
                  <Zap className="h-3.5 w-3.5 text-primary" />
-                 <p className="text-[10px] md:text-xs font-black tracking-widest text-slate-400">Continue Practice</p>
+                 <p className="text-[10px] md:text-xs font-black tracking-widest text-slate-400">Continue Learning</p>
               </div>
               <div className="grid grid-cols-1 gap-4 md:gap-6">
                  {resultsLoading ? (
@@ -105,7 +104,7 @@ export default function ContinueLearning() {
                     ))
                  ) : (
                     <div className="p-12 text-center bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
-                       <p className="text-[10px] font-black text-slate-400">No recent attempts found</p>
+                       <p className="text-[10px] font-black text-slate-400">No tests taken yet</p>
                     </div>
                  )}
               </div>
@@ -114,7 +113,7 @@ export default function ContinueLearning() {
            <div className="lg:col-span-5 space-y-6">
               <div className="flex items-center gap-2 px-1">
                  <Star className="h-3.5 w-3.5 text-amber-500 fill-current" />
-                 <p className="text-[10px] md:text-xs font-black tracking-widest text-slate-400">Pinned Verticals</p>
+                 <p className="text-[10px] md:text-xs font-black tracking-widest text-slate-400">Pinned Exams</p>
               </div>
               <div className="grid grid-cols-1 gap-4">
                  {examsLoading ? (
@@ -142,7 +141,7 @@ export default function ContinueLearning() {
                     })
                  ) : (
                     <div className="p-8 text-center bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200">
-                       <p className="text-[10px] font-black text-slate-400">Follow an exam vertical to pin it</p>
+                       <p className="text-[10px] font-black text-slate-400">Save an exam to see it here</p>
                     </div>
                  )}
               </div>
