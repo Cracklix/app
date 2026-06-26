@@ -37,8 +37,8 @@ import { Button } from "@/components/ui/button";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Institutional Navbar v16.5.
- * FIXED: Shifted logo to be exactly right of the menu button with minimal margin.
+ * @fileOverview Institutional Navbar v16.6.
+ * FIXED: Shifted whole start section to the far left edge of the header.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -105,7 +105,7 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-50 w-full font-body pt-safe bg-white border-b border-slate-100 shadow-sm">
       <nav className="w-full h-[64px] md:h-[80px] transition-all duration-300">
-        <div className="w-full max-w-[1440px] 2xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between gap-2 md:gap-4">
+        <div className="w-full max-w-[1440px] 2xl:max-w-[1800px] mx-auto pl-2 pr-4 md:pl-4 md:pr-8 h-full flex items-center justify-between gap-2 md:gap-4">
 
           <div className="flex items-center shrink-0 h-full">
             <button
@@ -118,8 +118,9 @@ export default function Navbar() {
 
             <Logo
               variant="light"
-              className="flex-shrink-0 ml-1 md:ml-2" // Positioned directly next to the button
+              className="flex-shrink-0 ml-1 md:ml-2" 
               imgClassName="h-12 md:h-16"
+              align="left"
             />
           </div>
 

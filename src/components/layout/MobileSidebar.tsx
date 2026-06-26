@@ -28,8 +28,8 @@ import ShareButton from "@/components/navigation/ShareButton";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview Mobile Sidebar v51.0.
- * FIXED: Increased logo size in the sidebar header.
+ * @fileOverview Mobile Sidebar v52.0.
+ * UPDATED: Maximized logo scale and strictly left-aligned branding header.
  */
 export default function MobileSidebar({
   onClose,
@@ -74,11 +74,11 @@ export default function MobileSidebar({
     <div className="flex h-full flex-col bg-white font-body overflow-hidden text-left">
 
       {/* HEADER: LOGO & CLOSE */}
-      <div className="h-[80px] px-4 shrink-0 bg-white border-b border-slate-50 flex items-center justify-between">
+      <div className="h-[80px] px-3 shrink-0 bg-white border-b border-slate-50 flex items-center justify-between">
          <Logo
            variant="light"
            align="left"
-           className="h-12 w-44 md:h-16 md:w-56"
+           className="h-14 md:h-20"
            imgClassName="h-full w-auto"
            onClick={onClose}
          />
