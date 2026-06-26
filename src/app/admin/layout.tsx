@@ -96,7 +96,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
               <Logo
                 variant="light"
-                className="shrink-0 -ml-8"
+                className="shrink-0 -ml-12"
                 imgClassName="h-[70px] md:h-[160px]"
               />
             </div>

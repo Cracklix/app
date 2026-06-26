@@ -119,7 +119,7 @@ export default function Navbar() {
 
             <Logo
               variant="light"
-              className="flex-shrink-0 -ml-8"
+              className="flex-shrink-0 -ml-12"
               imgClassName="h-[64px] md:h-[160px]"
             />
           </div>
