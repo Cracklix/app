@@ -12,6 +12,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AuthorityLogo } from '@/lib/exam-icons';
 import { Badge } from '@/components/ui/badge';
 
+/**
+ * @fileOverview Institutional Category Hub v30.0.
+ * UPDATED: Reduced mobile font sizes for high-density PWA.
+ * FULL TEXT: Removed truncation from titles.
+ */
+
 const STRICT_WHITELIST = [
   "punjab-government-exams",
   "punjab-teaching-exams",
@@ -34,16 +40,16 @@ export default function FeaturedCategories() {
 
   return (
     <section className="py-8 md:py-24 bg-white border-t border-slate-50">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6 md:space-y-16">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-5 md:space-y-16">
         
         <div className="space-y-1 md:space-y-2">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
              <div className="h-6 w-6 md:h-10 md:w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shadow-inner shrink-0">
                <Layers className="h-3.5 w-3.5 md:h-6 md:w-6" />
              </div>
-             <h2 className="text-[26px] md:text-5xl font-black tracking-tight leading-none text-[#0F172A]">Choose Category</h2>
+             <h2 className="text-[24px] md:text-5xl font-black tracking-tight leading-none text-[#0F172A]">Choose Category</h2>
           </div>
-          <p className="max-w-2xl text-[14px] md:text-xl text-slate-500 font-medium">Select your recruitment category to explore verified preparation hubs.</p>
+          <p className="max-w-2xl text-[13px] md:text-xl text-slate-500 font-medium">Select your recruitment category to explore verified preparation hubs.</p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-8 lg:gap-10">
@@ -51,7 +57,7 @@ export default function FeaturedCategories() {
             Array.from({ length: 4 }).map((_, i) => (
               <Skeleton 
                 key={i} 
-                className="h-[240px] md:h-[400px] w-full rounded-2xl md:rounded-[3rem] bg-slate-50" 
+                className="h-[220px] md:h-[400px] w-full rounded-xl md:rounded-[3rem] bg-slate-50" 
               />
             ))
           ) : categories.map((cat, idx) => {
@@ -74,17 +80,17 @@ export default function FeaturedCategories() {
                              <div className="h-10 w-10 md:h-24 md:w-24 bg-slate-50 rounded-xl md:rounded-3xl flex items-center justify-center shadow-inner overflow-hidden shrink-0">
                                 <AuthorityLogo category={cat} size="sm" className="h-full w-full p-1 md:p-4" />
                              </div>
-                             <Badge className="bg-primary/5 text-primary border-none font-bold text-[10px] md:text-[13px] px-2 py-0.5 rounded-full shadow-sm w-fit tracking-tight">
+                             <Badge className="bg-primary/5 text-primary border-none font-bold text-[9px] md:text-[13px] px-2 py-0.5 rounded-full shadow-sm w-fit tracking-tight">
                                 {boardLabel} Hub
                              </Badge>
-                             <h3 className="text-[15px] md:text-2xl font-black leading-tight line-clamp-2 text-[#0F172A] group-hover:text-primary transition-colors">
+                             <h3 className="text-[14px] md:text-2xl font-black leading-tight text-[#0F172A] group-hover:text-primary transition-colors">
                                 {cat.title}
                              </h3>
                           </div>
 
                           <div className="mt-2 md:mt-4">
-                             <Button variant="ghost" className="w-full h-10 md:h-14 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-semibold text-[13px] md:text-base gap-2 shadow-md border-none active:scale-95">
-                                Start Learning
+                             <Button variant="ghost" className="w-full h-10 md:h-14 rounded-full bg-[#0F172A] text-white group-hover:bg-primary transition-all font-semibold text-[12px] md:text-base gap-2 shadow-md border-none active:scale-95">
+                                Open Hub
                                 <ChevronRight className="h-3 w-3" />
                              </Button>
                           </div>

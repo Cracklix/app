@@ -9,7 +9,8 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview High-Fidelity Stats Bar v8.0 - Compact Mobile Layout.
+ * @fileOverview High-Fidelity Stats Bar v9.0 - Ultra Compact Mobile.
+ * REDUCED: Sizes by 15% on mobile for premium PWA feel.
  */
 
 const formatCompact = (num: number) => {
@@ -28,7 +29,7 @@ export default function StatsBar() {
     { 
       label: "Practice Questions", 
       val: (formatCompact(stats?.totalQuestions) || "12K") + "+", 
-      icon: <Zap className="h-5 w-5 md:h-8 md:w-8" />,
+      icon: <Zap className="h-4 w-4 md:h-8 md:w-8" />,
       color: "text-blue-600",
       bgColor: "bg-blue-50/50",
       borderColor: "border-blue-100/50"
@@ -36,7 +37,7 @@ export default function StatsBar() {
     { 
       label: "Mock Series", 
       val: (formatCompact(stats?.totalMocks) || "450") + "+", 
-      icon: <ClipboardList className="h-5 w-5 md:h-8 md:w-8" />,
+      icon: <ClipboardList className="h-4 w-4 md:h-8 md:w-8" />,
       color: "text-purple-600",
       bgColor: "bg-purple-50/50",
       borderColor: "border-purple-100/50"
@@ -44,7 +45,7 @@ export default function StatsBar() {
     { 
       label: "Exam Verticals", 
       val: (formatCompact(stats?.totalCategories) || "85") + "+", 
-      icon: <ShieldCheck className="h-5 w-5 md:h-8 md:w-8" />,
+      icon: <ShieldCheck className="h-4 w-4 md:h-8 md:w-8" />,
       color: "text-emerald-600",
       bgColor: "bg-emerald-50/50",
       borderColor: "border-emerald-100/50"
@@ -52,7 +53,7 @@ export default function StatsBar() {
     { 
       label: "Active Aspirants", 
       val: (formatCompact(stats?.totalUsers) || "10K") + "+", 
-      icon: <Users className="h-5 w-5 md:h-8 md:w-8" />,
+      icon: <Users className="h-4 w-4 md:h-8 md:w-8" />,
       color: "text-orange-600",
       bgColor: "bg-orange-50/50",
       borderColor: "border-orange-100/50"
@@ -60,28 +61,28 @@ export default function StatsBar() {
   ], [stats]);
 
   return (
-    <section className="bg-blue-50 py-8 md:py-20">
+    <section className="bg-blue-50 py-6 md:py-20">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-3 md:gap-8 grid-cols-2 md:grid-cols-4">
+        <div className="grid gap-2 md:gap-8 grid-cols-2 md:grid-cols-4">
           {items.map((item, i) => (
-            <Card key={i} className="border border-slate-100 shadow-sm rounded-2xl md:rounded-[var(--radius)] p-4 md:p-12 lg:p-16 bg-white flex flex-col items-center justify-center gap-3 md:gap-6 transition-all duration-500 hover:shadow-2xl group h-full">
+            <Card key={i} className="border border-slate-100 shadow-sm rounded-xl md:rounded-[var(--radius)] p-3 md:p-12 lg:p-16 bg-white flex flex-col items-center justify-center gap-2 md:gap-6 transition-all duration-500 hover:shadow-2xl group h-full">
               <div className={cn(
-                "h-11 w-11 md:h-24 md:w-24 rounded-full flex items-center justify-center shrink-0 border transition-transform duration-500 group-hover:scale-110 shadow-inner",
+                "h-9 w-9 md:h-24 md:w-24 rounded-full flex items-center justify-center shrink-0 border transition-transform duration-500 group-hover:scale-110 shadow-inner",
                 item.bgColor,
                 item.borderColor,
                 item.color
               )}>
                 {item.icon}
               </div>
-              <div className="text-center flex flex-col justify-center min-w-0 space-y-1 md:space-y-2">
+              <div className="text-center flex flex-col justify-center min-w-0 space-y-0.5 md:space-y-2">
                 {loading && !stats ? (
-                  <Skeleton className="h-6 md:h-16 w-16 md:w-40 bg-slate-50 rounded-lg mx-auto" />
+                  <Skeleton className="h-5 md:h-16 w-12 md:w-40 bg-slate-50 rounded-lg mx-auto" />
                 ) : (
-                  <span className="text-[22px] md:text-6xl font-black text-[#0F172A] tabular-nums tracking-tighter leading-none antialiased">
+                  <span className="text-[20px] md:text-6xl font-black text-[#0F172A] tabular-nums tracking-tighter leading-none antialiased">
                     {item.val}
                   </span>
                 )}
-                <span className="text-[11px] md:text-sm font-bold text-slate-400 uppercase tracking-widest leading-none truncate w-full">
+                <span className="text-[10px] md:text-sm font-bold text-slate-400 uppercase tracking-widest leading-none truncate w-full">
                   {item.label}
                 </span>
               </div>
