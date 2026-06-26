@@ -14,8 +14,7 @@ import { cn } from "@/lib/utils";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Refined Admin Layout v13.1.
- * RESPONSIVE: Content area expanded to max-w-full to reduce sidebar-content gap on widescreen.
+ * @fileOverview Refined Admin Layout v13.2 - Logo Scaled.
  */
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -87,11 +86,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         isSidebarOpen ? "lg:pl-[280px]" : "lg:pl-[88px]"
       )}>
         <header className="pt-safe border-b border-slate-50 bg-white/80 backdrop-blur-xl sticky top-0 z-40 shrink-0">
-          <div className="h-[80px] md:h-[100px] flex items-center px-4 md:px-10 justify-between">
-            <div className="flex items-center gap-2 md:gap-4 h-full">
+          <div className="h-[80px] md:h-[112px] flex items-center px-4 md:px-10 justify-between">
+            <div className="flex items-center h-full">
               <button 
                 onClick={toggleSidebar}
-                className="bg-white border border-slate-200 text-slate-700 h-10 w-10 md:h-11 md:h-11 rounded-xl shadow-sm flex items-center justify-center active:scale-95 transition-all hover:border-primary/30"
+                className="bg-white border border-slate-200 text-slate-700 h-10 w-10 md:h-11 md:w-11 rounded-xl shadow-sm flex items-center justify-center active:scale-95 transition-all hover:border-primary/30 mr-2"
               >
                 <Menu className="w-5 h-5 md:w-6 md:h-6" />
               </button>
@@ -99,7 +98,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Logo
                 variant="light"
                 className="shrink-0"
-                imgClassName="h-[60px] md:h-[80px]"
+                imgClassName="h-[60px] md:h-[110px]"
               />
             </div>
             

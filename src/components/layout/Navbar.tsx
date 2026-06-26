@@ -39,7 +39,7 @@ import PWAInstallButton from "@/components/PWAInstallButton";
 const SUPER_ADMIN_WHITELIST = ['arshdeepgrewal1122@gmail.com'];
 
 /**
- * @fileOverview Standardized Navbar v63.4 - Proportional Scaling.
+ * @fileOverview Standardized Navbar v64.0 - Logo Scaled & Tightened.
  */
 export default function Navbar() {
   const [mounted, setMounted] = useState(false);
@@ -105,14 +105,14 @@ export default function Navbar() {
 
   return (
     <div className="sticky top-0 z-50 w-full font-body pt-safe bg-white border-b border-slate-100">
-      <nav className="w-full h-[80px] md:h-[100px] transition-all duration-300">
+      <nav className="w-full h-[80px] md:h-[112px] transition-all duration-300">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between gap-2 md:gap-4">
 
-          <div className="flex items-center shrink-0 h-full">
+          <div className="flex items-center shrink-0 h-full gap-1 md:gap-2">
             <button
               onClick={() => setIsSidebarOpen(true)}
               aria-label="Open menu"
-              className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-lg md:rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0 hover:border-primary/30 mr-2"
+              className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-lg md:rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-95 transition-all shrink-0 hover:border-primary/30"
             >
               <Menu className="w-5 h-5 md:w-6 md:h-6" />
             </button>
@@ -120,7 +120,7 @@ export default function Navbar() {
             <Logo
               variant="light"
               className="flex-shrink-0"
-              imgClassName="h-[56px] md:h-[72px]"
+              imgClassName="h-[56px] md:h-[100px]"
             />
           </div>
 
