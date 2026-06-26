@@ -19,6 +19,7 @@ import {
   SUPPORT_PHONE,
 } from "@/lib/constants";
 import PLATFORM_VERSION from "@/lib/version";
+import { Badge } from "@/components/ui/badge";
 
 /**
  * @fileOverview Compact High-Density Footer v10.2.

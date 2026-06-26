@@ -76,7 +76,7 @@ export default function BrandMagicPage() {
                      )}>
                         {preview ? (
                            <div className="relative w-full h-full p-10">
-                              <Image src={preview} alt="Logo Preview" fill className="object-contain" />
+                              <Image src={preview} alt="Logo Preview" fill sizes="400px" className="object-contain" />
                            </div>
                         ) : (
                            <div className="text-center space-y-4">
@@ -131,7 +131,7 @@ export default function BrandMagicPage() {
                   <div className="w-full aspect-square rounded-[3.5rem] bg-black/40 border-2 border-white/5 flex flex-col items-center justify-center transition-all overflow-hidden relative group shadow-5xl">
                      {result ? (
                         <>
-                           <Image src={result} alt="Transformed Result" fill className="object-cover" />
+                           <Image src={result} alt="Transformed Result" fill sizes="(max-width: 768px) 100vw, 800px" className="object-cover" />
                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-6">
                               <Button asChild className="h-16 px-10 rounded-2xl bg-white text-[#0F172A] hover:bg-slate-100 font-black uppercase text-[10px] tracking-widest gap-3">
                                  <a href={result} download="cracklix-magic.png">

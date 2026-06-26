@@ -110,6 +110,7 @@ export default function AboutPage() {
                         src="/founder.png"
                         alt="Arsh Grewal"
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
                         className="object-cover grayscale group-hover:grayscale-0 transition-all duration-1000"
                         priority
                         data-ai-hint="professional man"
@@ -158,7 +159,7 @@ export default function AboutPage() {
                  </div>
                  <div className="relative z-10 space-y-4 md:space-y-6">
                     <h2 className="text-2xl md:text-5xl font-headline font-black uppercase text-white tracking-tight leading-none">Ready to start <br/> your journey?</h2>
-                    <Button asChild className="h-12 md:h-16 px-8 md:px-14 bg-white text-[#0B1528] hover:bg-slate-100 font-black uppercase text-[9px] md:text-[11px] tracking-[0.2em] rounded-xl md:rounded-2xl shadow-3xl gap-2 border-none">
+                    <Button asChild className="h-12 md:h-16 px-8 md:px-14 bg-white text-[#0B1528] hover:bg-slate-100 font-black uppercase text-[9px] md:text-[11px] tracking-gl.2em] rounded-xl md:rounded-2xl shadow-3xl gap-2 border-none">
                        <Link href="/login">Join the Cracklix Hub <ChevronRight className="h-4 w-4" /></Link>
                     </Button>
                  </div>

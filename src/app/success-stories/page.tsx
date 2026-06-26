@@ -67,6 +67,7 @@ export default function SuccessStoriesPage() {
                             src={story.imageUrl || "/images/topper-placeholder.png"} 
                             fill 
                             alt={story.name} 
+                            sizes="(max-width: 768px) 100vw, 33vw"
                             className="object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" 
                          />
                          <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-transparent to-transparent opacity-60" />

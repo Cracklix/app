@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo, useState, useRef } from "react"
@@ -204,7 +203,7 @@ export default function MasterRegistryPage() {
                            <TableCell className="px-10 py-8">
                               <div className="flex items-center gap-6">
                                  <div className="relative h-12 w-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
-                                    {b.iconUrl ? <Image src={b.iconUrl} alt={b.abbreviation} fill className="object-contain p-2" /> : <Landmark className="h-6 w-6 text-slate-300" />}
+                                    {b.iconUrl ? <Image src={b.iconUrl} alt={b.abbreviation} fill sizes="48px" className="object-contain p-2" /> : <Landmark className="h-6 w-6 text-slate-300" />}
                                  </div>
                                  <div>
                                     <p className="font-black text-[#0F172A] text-xl uppercase leading-none">{b.abbreviation}</p>
@@ -340,7 +339,7 @@ export default function MasterRegistryPage() {
                   <div className="flex flex-col items-center gap-6">
                      <div className="relative h-32 w-32 rounded-[2rem] bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden group shadow-inner">
                         {isUploading ? <Loader2 className="h-6 w-6 text-primary animate-spin" /> : 
-                         editingBoard?.iconUrl ? <Image src={editingBoard.iconUrl} alt="Hub Logo" fill className="object-contain p-4" /> : <ImageIcon className="h-10 w-10 text-slate-300" />}
+                         editingBoard?.iconUrl ? <Image src={editingBoard.iconUrl} alt="Hub Logo" fill sizes="128px" className="object-contain p-4" /> : <ImageIcon className="h-10 w-10 text-slate-300" />}
                      </div>
                      <Button variant="outline" className="h-11 px-8 rounded-xl font-black uppercase text-[9px] gap-2 border-slate-200" onClick={() => fileInputRef.current?.click()}>
                         <Upload className="h-4 w-4" /> {isUploading ? 'Syncing...' : 'Upload Logo'}

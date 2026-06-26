@@ -155,7 +155,7 @@ function CheckoutContent() {
                     <Card className="border-none shadow-5xl rounded-[3rem] bg-white p-8 md:p-14 space-y-12 border border-slate-100">
                        <div className="flex flex-col items-center gap-8">
                           <div className="relative h-52 w-52 md:h-64 md:w-64 p-4 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200">
-                            <Image src={qrUrl} alt="UPI QR Code" fill className="object-contain p-4" unoptimized />
+                            <Image src={qrUrl} alt="UPI QR Code" fill sizes="256px" className="object-contain p-4" unoptimized />
                           </div>
                           <div className="w-full p-5 bg-slate-900 rounded-2xl flex items-center justify-between shadow-2xl">
                              <div className="text-left">

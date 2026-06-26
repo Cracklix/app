@@ -120,7 +120,7 @@ export default function SuccessStoryManagement() {
                   <TableCell className="px-6 md:px-12 py-5 md:py-8 text-left">
                      <div className="flex items-center gap-4 md:gap-6">
                         <div className="relative h-10 w-10 md:h-14 md:w-14 rounded-xl overflow-hidden bg-slate-50 shadow-inner group-hover:scale-105 transition-transform border border-slate-100">
-                           <Image src={s.imageUrl} alt={s.name} fill className="object-cover" />
+                           <Image src={s.imageUrl} alt={s.name} fill sizes="56px" className="object-cover" />
                         </div>
                         <div>
                            <p className="font-bold text-[#0F172A] text-sm md:text-lg leading-tight truncate">{s.name}</p>

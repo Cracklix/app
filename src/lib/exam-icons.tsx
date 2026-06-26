@@ -77,6 +77,7 @@ export const AuthorityLogo = ({ board, category, boardId, categoryId, className,
           src={logoUrl} 
           alt="Official Authority Logo" 
           fill
+          sizes="(max-width: 768px) 100vw, 128px"
           className="object-contain animate-in fade-in duration-500"
           referrerPolicy="no-referrer"
         />
