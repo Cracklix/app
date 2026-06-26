@@ -12,8 +12,8 @@ import { AuthorityLogo } from "@/lib/exam-icons";
 import { Button } from "@/components/ui/button";
 
 /**
- * @fileOverview High-Density Popular Exams Grid v82.0.
- * UPDATED: Title Case strings. Acronyms preserved.
+ * @fileOverview High-Density Popular Exams Grid v83.0.
+ * Standardized to global container max-w-[1440px].
  */
 
 const POPULAR_LIST = [
@@ -29,12 +29,12 @@ const POPULAR_LIST = [
 
 export default function PopularExams() {
   return (
-    <section className="py-10 md:py-24 bg-slate-50/50 border-t border-slate-100 overflow-x-hidden">
+    <section className="py-12 md:py-24 bg-slate-50/50 border-t border-slate-100 overflow-x-hidden">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 text-left space-y-8 md:space-y-16">
          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 px-1">
             <div className="space-y-2">
                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 bg-blue-50 rounded-lg flex items-center justify-center text-primary shadow-inner"><Target className="h-5 w-5" /></div>
+                  <div className="h-8 w-8 bg-blue-50 rounded-lg flex items-center justify-center text-primary shadow-inner shrink-0"><Target className="h-5 w-5" /></div>
                   <h2 className="text-xl md:text-5xl font-black text-[#04102B] tracking-tight leading-none">Popular Exams</h2>
                </div>
                <p className="text-slate-500 font-medium text-sm md:text-2xl max-w-2xl">Direct links to the most attempted recruitment preparation hubs.</p>
@@ -46,8 +46,8 @@ export default function PopularExams() {
 
          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-10">
             {POPULAR_LIST.map((p, idx) => (
-               <motion.div key={p.id} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} transition={{ delay: idx * 0.05 }} viewport={{ once: true }}>
-                  <Link href={`/exams/view?id=${p.id}`}>
+               <motion.div key={p.id} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} transition={{ delay: idx * 0.05 }} viewport={{ once: true }} className="h-full">
+                  <Link href={`/exams/view?id=${p.id}`} className="h-full block">
                      <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-3xl transition-all duration-700 rounded-[2rem] md:rounded-[3rem] bg-white p-5 md:p-12 text-left h-full group flex flex-col relative overflow-hidden">
                         <div className="mb-6 md:mb-12 flex justify-start">
                            <div className="h-14 w-14 md:h-24 md:w-24 bg-slate-50 rounded-2xl md:rounded-[2.5rem] shadow-inner group-hover:scale-110 transition-transform duration-700 overflow-hidden flex items-center justify-center p-2">

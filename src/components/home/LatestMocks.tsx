@@ -18,8 +18,8 @@ import { cn } from "@/lib/utils"
 import { AuthorityLogo } from "@/lib/exam-icons"
 
 /**
- * @fileOverview High-Density Mock Grid v80.0.
- * UPDATED: Removed forced uppercase.
+ * @fileOverview High-Density Mock Grid v81.0.
+ * Standardized to global container max-w-[1440px].
  */
 
 export default function LatestMocks() {
@@ -41,7 +41,7 @@ export default function LatestMocks() {
   }, [profile]);
 
   return (
-    <section className="py-10 md:py-24 bg-white border-t border-slate-50">
+    <section className="py-12 md:py-24 bg-white border-t border-slate-50">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-16 gap-4 text-left px-1">
            <div className="space-y-1">

@@ -9,8 +9,8 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
- * @fileOverview High-Fidelity Single-Line Stats Bar v6.7.
- * UPDATED: Standardized typography to Title Case and unified container.
+ * @fileOverview High-Fidelity Single-Line Stats Bar v6.8.
+ * Standardized to global container max-w-[1440px].
  */
 
 const formatCompact = (num: number) => {
@@ -57,13 +57,13 @@ export default function StatsBar() {
   ], [stats]);
 
   return (
-    <section className="bg-blue-50 py-8 md:py-16">
+    <section className="bg-blue-50 py-10 md:py-16">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-10">
           {items.map((item, i) => (
-            <Card key={i} className="border border-slate-100 shadow-sm rounded-2xl md:rounded-[2.5rem] p-4 md:p-10 bg-white flex flex-col md:flex-row items-center justify-center md:justify-start gap-3 md:gap-8 transition-all duration-500 hover:shadow-xl group">
+            <Card key={i} className="border border-slate-100 shadow-sm rounded-2xl md:rounded-[3rem] p-5 md:p-12 bg-white flex flex-col md:flex-row items-center justify-center md:justify-start gap-4 md:gap-10 transition-all duration-500 hover:shadow-xl group">
               <div className={cn(
-                "h-10 w-10 md:h-16 md:w-16 rounded-full flex items-center justify-center shrink-0 border transition-transform duration-500 group-hover:scale-110 shadow-sm",
+                "h-12 w-12 md:h-20 md:w-20 rounded-full flex items-center justify-center shrink-0 border transition-transform duration-500 group-hover:scale-110 shadow-sm",
                 item.bgColor,
                 item.borderColor
               )}>
@@ -71,13 +71,13 @@ export default function StatsBar() {
               </div>
               <div className="text-center md:text-left flex flex-col justify-center min-w-0">
                 {loading && !stats ? (
-                  <Skeleton className="h-4 md:h-12 w-16 md:w-20 bg-slate-50" />
+                  <Skeleton className="h-6 md:h-12 w-20 md:w-24 bg-slate-50" />
                 ) : (
-                  <span className="text-lg md:text-3xl font-black text-[#0F172A] tabular-nums tracking-tighter leading-none antialiased">
+                  <span className="text-xl md:text-5xl font-black text-[#0F172A] tabular-nums tracking-tighter leading-none antialiased">
                     {item.val}
                   </span>
                 )}
-                <span className="text-[10px] md:text-sm font-bold text-slate-400 mt-1 md:mt-3 leading-none truncate w-full tracking-tight">
+                <span className="text-[9px] md:text-sm font-bold text-slate-400 mt-2 md:mt-4 leading-none truncate w-full tracking-tight uppercase">
                   {item.label}
                 </span>
               </div>

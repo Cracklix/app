@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Zap, BookOpen, Layers, ChevronRight } from 'lucide-react';
+import { Layers, ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -13,8 +13,8 @@ import { AuthorityLogo } from '@/lib/exam-icons';
 import { Badge } from '@/components/ui/badge';
 
 /**
- * @fileOverview High-Density Category Explorer v126.0.
- * UPDATED: Converted headers to Title Case. Acronyms preserved.
+ * @fileOverview High-Density Category Explorer v127.0.
+ * Standardized to global container max-w-[1440px].
  */
 
 const STRICT_WHITELIST = [
@@ -38,11 +38,13 @@ export default function FeaturedCategories() {
   }, [rawCategories]);
 
   return (
-    <section className="py-10 md:py-24 bg-white border-t border-slate-50 overflow-x-hidden">
+    <section className="py-12 md:py-24 bg-white border-t border-slate-50 overflow-x-hidden">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 md:space-y-16 text-left">
         <div className="space-y-2 px-1">
            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary shadow-inner"><Layers className="h-5 w-5" /></div>
+              <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary shadow-inner shrink-0">
+                <Layers className="h-5 w-5" />
+              </div>
               <h2 className="text-xl md:text-5xl font-black text-[#0F172A] tracking-tight leading-none">Choose Category</h2>
            </div>
            <p className="text-slate-500 font-medium text-sm md:text-2xl max-w-2xl">Select your recruitment category to explore verified exams and preparation hubs.</p>

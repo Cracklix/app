@@ -9,18 +9,18 @@ import Link from "next/link";
 import Image from "next/image";
 
 /**
- * @fileOverview Meet Founder section v4.0.
- * UPDATED: Optimized with local founder asset and priority Next.js Image component.
+ * @fileOverview Meet Founder section v4.1.
+ * Standardized to global container max-w-[1440px].
  */
 
 export default function MeetFounder() {
   return (
-    <section className="py-8 md:py-24 bg-white overflow-hidden border-t border-slate-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-slate-50/50 rounded-[2.5rem] md:rounded-[3rem] overflow-hidden shadow-4xl border border-slate-100 flex flex-col md:flex-row items-center p-6 md:p-14 gap-6 md:gap-14 group hover:border-primary/20 transition-all duration-700 max-w-4xl mx-auto">
+    <section className="py-12 md:py-24 bg-white overflow-hidden border-t border-slate-100">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-slate-50/50 rounded-[2.5rem] md:rounded-[4rem] overflow-hidden shadow-4xl border border-slate-100 flex flex-col md:flex-row items-center p-8 md:p-20 gap-8 md:gap-20 group hover:border-primary/20 transition-all duration-700 w-full relative">
 
           <div className="relative shrink-0">
-            <div className="relative h-20 w-20 md:h-44 md:w-44 rounded-full overflow-hidden border-[4px] border-white shadow-2xl bg-[#0B1528] ring-1 ring-slate-200">
+            <div className="relative h-28 w-28 md:h-64 md:w-64 rounded-full overflow-hidden border-[4px] md:border-[8px] border-white shadow-2xl bg-[#0B1528] ring-1 ring-slate-200">
               <Image
                 src="/founder.png"
                 alt="Arsh Grewal"
@@ -31,35 +31,35 @@ export default function MeetFounder() {
               />
             </div>
 
-            <div className="absolute -bottom-1 -right-1 h-7 w-7 md:h-12 md:w-12 bg-emerald-500 rounded-lg border-[3px] border-white flex items-center justify-center text-white shadow-xl">
-              <ShieldCheck className="h-3 w-3 md:h-6 md:w-6" />
+            <div className="absolute -bottom-1 -right-1 h-8 w-8 md:h-16 md:w-16 bg-emerald-500 rounded-2xl border-[3px] md:border-[6px] border-white flex items-center justify-center text-white shadow-xl">
+              <ShieldCheck className="h-4 w-4 md:h-8 md:w-8" />
             </div>
           </div>
 
-          <div className="flex-1 space-y-3 md:space-y-6 text-center md:text-left">
-            <div className="space-y-1">
+          <div className="flex-1 space-y-4 md:space-y-8 text-center md:text-left">
+            <div className="space-y-2">
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
-                <Badge className="bg-[#0F172A] text-white border-none px-2.5 py-0.5 rounded-md font-bold text-[8px] md:text-[9px] uppercase tracking-tight">
+                <Badge className="bg-[#0F172A] text-white border-none px-3 py-1 rounded-lg font-black text-[8px] md:text-[10px] uppercase tracking-widest">
                   Founder
                 </Badge>
               </div>
 
-              <h3 className="text-xl md:text-4xl font-black text-[#0F172A] tracking-tight leading-none">
+              <h3 className="text-2xl md:text-6xl font-black text-[#0F172A] tracking-tight leading-none uppercase">
                 Meet the Founder
               </h3>
             </div>
 
-            <p className="text-[11px] md:text-lg text-slate-500 font-medium leading-relaxed max-w-md mx-auto md:mx-0">
-              Arsh Grewal is building Punjab's smartest platform to help every student prepare for their dream government job.
+            <p className="text-[12px] md:text-xl text-slate-500 font-medium leading-relaxed max-w-2xl mx-auto md:mx-0">
+              Arsh Grewal is building Punjab's smartest platform to help every student prepare for their dream government job. Driven by high-fidelity preparation standards.
             </p>
 
-            <div className="pt-2 md:pt-4">
+            <div className="pt-2 md:pt-6">
               <Button
                 asChild
-                className="h-11 md:h-14 px-8 bg-[#0F172A] hover:bg-black text-white font-bold text-[10px] md:text-xs tracking-tight rounded-xl shadow-xl transition-all active:scale-95 border-none"
+                className="h-12 md:h-18 px-10 md:px-14 bg-[#0F172A] hover:bg-black text-white font-black uppercase text-[10px] md:text-xs tracking-[0.2em] rounded-2xl shadow-xl transition-all active:scale-95 border-none"
               >
-                <Link href="/about" className="flex items-center gap-2">
-                  Read Story <ArrowRight className="h-4 w-4" />
+                <Link href="/about" className="flex items-center gap-3">
+                  Read Story <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
                 </Link>
               </Button>
             </div>

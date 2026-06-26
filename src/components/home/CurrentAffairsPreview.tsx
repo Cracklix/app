@@ -4,15 +4,15 @@ import React, { useMemo } from 'react';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, query, where, limit } from 'firebase/firestore';
 import { Calendar, ChevronRight, Zap } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AuthorityLogo } from '@/lib/exam-icons';
 
 /**
- * @fileOverview High-Density Study Preview v2.0.
- * UPDATED: Standardized to Title Case and widescreen container alignment.
+ * @fileOverview High-Density Study Preview v2.1.
+ * Standardized to global container max-w-[1440px].
  */
 export default function CurrentAffairsPreview() {
   const db = useFirestore();
@@ -29,43 +29,43 @@ export default function CurrentAffairsPreview() {
   const { data: items, loading } = useCollection<any>(hubQuery);
 
   return (
-    <section className="py-10 md:py-24 bg-slate-50/50">
+    <section className="py-12 md:py-24 bg-slate-50/50">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 md:space-y-16 text-left">
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 px-1">
            <div className="space-y-1">
               <div className="flex items-center gap-2">
-                 <AuthorityLogo boardId="current-affairs" size="sm" className="bg-transparent shadow-none p-0" />
+                 <AuthorityLogo boardId="current-affairs" size="sm" className="bg-transparent shadow-none p-0 shrink-0" />
                  <span className="text-[9px] font-bold text-slate-400 tracking-tight uppercase">Study Material</span>
               </div>
-              <h2 className="text-2xl md:text-5xl font-extrabold text-[#0F172A] tracking-tight">Current Affairs</h2>
+              <h2 className="text-2xl md:text-5xl font-extrabold text-[#0F172A] tracking-tight leading-none">Current Affairs</h2>
               <p className="text-slate-500 font-medium text-sm md:text-lg">Daily bilingual updates verified for Punjab recruitments.</p>
            </div>
-           <Link href="/current-affairs" className="text-blue-600 font-black uppercase text-[9px] md:text-xs tracking-widest hover:underline flex items-center gap-2 group">
+           <Link href="/current-affairs" className="text-blue-600 font-black uppercase text-[9px] md:text-xs tracking-widest hover:underline flex items-center gap-2 group shrink-0">
               View All <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
            </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-10">
            {loading ? (
               Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-2xl bg-white" />)
            ) : items?.map((item) => (
-              <Link key={item.id} href="/current-affairs">
-                 <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] md:rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col p-4 md:p-10">
-                    <div className="flex justify-between items-start mb-4 md:mb-6">
-                       <Badge variant="outline" className="bg-slate-50 border-slate-100 text-slate-400 text-[7px] font-bold px-1.5 py-0.5 rounded uppercase">CA Hub</Badge>
-                       <span className="text-[8px] md:text-[9px] font-bold text-slate-300 tracking-tight flex items-center gap-1.5">
-                          <Calendar className="h-3 w-3 text-blue-600/50" /> {item.month} {item.year}
+              <Link key={item.id} href="/current-affairs" className="h-full">
+                 <Card className="border border-[#E5E7EB] shadow-sm hover:shadow-xl transition-all duration-500 rounded-[1.5rem] md:rounded-[2.5rem] bg-white group overflow-hidden h-full flex flex-col p-5 md:p-12">
+                    <div className="flex justify-between items-start mb-6 md:mb-10">
+                       <Badge variant="outline" className="bg-slate-50 border-slate-100 text-slate-400 text-[7px] md:text-[9px] font-black px-2 py-1 rounded-lg uppercase">CA Hub</Badge>
+                       <span className="text-[8px] md:text-[10px] font-bold text-slate-300 tracking-tight flex items-center gap-1.5 uppercase">
+                          <Calendar className="h-3.5 w-3.5 text-blue-600/50" /> {item.month} {item.year}
                        </span>
                     </div>
-                    <h3 className="text-sm md:text-xl font-bold text-[#0F172A] leading-tight group-hover:text-blue-600 transition-colors flex-1 mb-4">
+                    <h3 className="text-base md:text-2xl font-black text-[#0F172A] leading-tight group-hover:text-blue-600 transition-colors flex-1 mb-6 uppercase tracking-tight">
                        {item.title}
                     </h3>
-                    <div className="flex items-center justify-between pt-4 border-t border-slate-50">
-                       <span className="text-[8px] md:text-[10px] font-black text-[#0F172A] tracking-widest flex items-center gap-1.5 uppercase">
-                          <Zap className="h-3 w-3 text-blue-600 fill-current" /> Read Now
+                    <div className="flex items-center justify-between pt-6 border-t border-slate-50">
+                       <span className="text-[8px] md:text-[11px] font-black text-[#0F172A] tracking-widest flex items-center gap-2 uppercase">
+                          <Zap className="h-3.5 w-3.5 text-blue-600 fill-current" /> Read Now
                        </span>
-                       <ChevronRight className="h-3 w-3 text-slate-200 group-hover:text-blue-600 transition-all" />
+                       <ChevronRight className="h-4 w-4 text-slate-200 group-hover:text-blue-600 transition-all" />
                     </div>
                  </Card>
               </Link>
